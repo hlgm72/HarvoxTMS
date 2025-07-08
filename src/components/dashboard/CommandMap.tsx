@@ -70,7 +70,7 @@ export function CommandMap() {
           name,
           geotab_id,
           license_plate,
-          vehicle_positions!inner (
+          vehicle_positions (
             latitude,
             longitude,
             speed,
