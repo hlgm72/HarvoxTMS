@@ -169,8 +169,25 @@ serve(async (req) => {
     }
 
     // Test Supabase connection
-    const supabaseUrl = 'https://htaotttcnjxqzpsrqwll.supabase.co';
-    const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0YW90dHRjbmp4cXpwc3Jxd2xsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTk0MDE4NiwiZXhwIjoyMDY3NTE2MTg2fQ.0HYYWdqZKWQakwR8W1Yz8uqZLmXWZfP4OhYCqG6BXnw';
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('Missing Supabase configuration:', {
+        hasUrl: !!supabaseUrl,
+        hasServiceKey: !!supabaseServiceKey
+      });
+      return new Response(
+        JSON.stringify({ 
+          error: 'Missing Supabase configuration. Please configure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Supabase secrets.',
+          timestamp: new Date().toISOString()
+        }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
     
     const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
     
