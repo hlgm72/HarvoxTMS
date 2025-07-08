@@ -123,20 +123,33 @@ export function CommandMap() {
   const syncGeotabData = async (action = 'sync-all') => {
     try {
       setSyncStatus(`Sincronizando ${action}...`);
-      const { data, error } = await supabase.functions.invoke('geotab-sync', {
+      
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout: Sincronización tardó más de 30 segundos')), 30000)
+      );
+      
+      const syncPromise = supabase.functions.invoke('geotab-sync', {
         body: { action }
       });
+      
+      const result = await Promise.race([syncPromise, timeoutPromise]);
+      const { data, error } = result as any;
 
-      if (error) throw error;
+      if (error) {
+        console.error('Geotab sync error:', error);
+        throw error;
+      }
 
+      console.log('Sync result:', data);
       setSyncStatus('Sincronización exitosa');
       await loadVehicles();
       
       setTimeout(() => setSyncStatus(''), 3000);
     } catch (error) {
       console.error('Error syncing Geotab data:', error);
-      setSyncStatus('Error en sincronización');
-      setTimeout(() => setSyncStatus(''), 3000);
+      setSyncStatus(`Error: ${error.message}`);
+      setTimeout(() => setSyncStatus(''), 5000);
     }
   };
 
