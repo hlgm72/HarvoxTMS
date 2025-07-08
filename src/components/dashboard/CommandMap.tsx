@@ -54,7 +54,9 @@ export function CommandMap() {
   const map = useRef<google.maps.Map | null>(null);
   const markers = useRef<google.maps.Marker[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [googleApiKey, setGoogleApiKey] = useState<string>('');
+  const [googleApiKey, setGoogleApiKey] = useState<string>(() => {
+    return localStorage.getItem('google-maps-api-key') || '';
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState<string>('');
 
@@ -236,6 +238,7 @@ export function CommandMap() {
   }, []);
 
   const handleGoogleApiKeySubmit = (key: string) => {
+    localStorage.setItem('google-maps-api-key', key);
     setGoogleApiKey(key);
   };
 
