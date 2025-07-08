@@ -287,6 +287,79 @@ serve(async (req) => {
       }
     }
     
+    // Sync positions if requested
+    if (action === 'sync-positions' || action === 'sync-all') {
+      console.log('Starting position sync...');
+      try {
+        // Get device status info to see which devices are actually online
+        const deviceStatusInfo = await geotab.getDeviceStatusInfo();
+        console.log(`Found ${deviceStatusInfo?.length || 0} device status records`);
+        
+        // Get log records (GPS positions) for the last 24 hours
+        const logRecords = await geotab.getLogRecords();
+        console.log(`Found ${logRecords?.length || 0} log records`);
+        
+        if (logRecords && logRecords.length > 0) {
+          for (const record of logRecords) {
+            if (!record.device || !record.dateTime || !record.latitude || !record.longitude) {
+              continue;
+            }
+            
+            // Find the corresponding vehicle in our database
+            const { data: vehicle, error: vehicleError } = await supabaseClient
+              .from('vehicles')
+              .select('id')
+              .eq('geotab_id', record.device.id)
+              .maybeSingle();
+            
+            if (vehicleError || !vehicle) {
+              console.log(`Vehicle not found for device ${record.device.id}`);
+              continue;
+            }
+            
+            // Check if this position already exists
+            const { data: existingPosition, error: positionError } = await supabaseClient
+              .from('vehicle_positions')
+              .select('id')
+              .eq('vehicle_id', vehicle.id)
+              .eq('date_time', record.dateTime)
+              .maybeSingle();
+            
+            if (positionError) {
+              console.error('Error checking existing position:', positionError);
+              continue;
+            }
+            
+            if (!existingPosition) {
+              const { error: insertError } = await supabaseClient
+                .from('vehicle_positions')
+                .insert({
+                  vehicle_id: vehicle.id,
+                  geotab_device_id: record.device.id,
+                  latitude: record.latitude,
+                  longitude: record.longitude,
+                  speed: record.speed || 0,
+                  bearing: record.bearing || 0,
+                  odometer: record.odometer || 0,
+                  engine_hours: record.engineHours || 0,
+                  date_time: record.dateTime
+                });
+              
+              if (insertError) {
+                console.error('Error inserting position:', insertError);
+              } else {
+                syncResults.positions++;
+              }
+            }
+          }
+          console.log(`Synced ${syncResults.positions} new positions`);
+        }
+      } catch (error) {
+        console.error('Error syncing positions:', error);
+        syncResults.message += `Error syncing positions: ${error.message}. `;
+      }
+    }
+    
     // Sync drivers if requested
     if (action === 'sync-drivers' || action === 'sync-all') {
       console.log('Starting driver sync...');
