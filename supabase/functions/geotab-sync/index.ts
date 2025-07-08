@@ -21,6 +21,7 @@ class GeotabAPI {
 
   private async authenticate(): Promise<boolean> {
     try {
+      console.log('Attempting Geotab authentication...');
       const response = await fetch('https://my.geotab.com/apiv1', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -34,7 +35,9 @@ class GeotabAPI {
         })
       });
 
+      console.log('Geotab response status:', response.status);
       const data = await response.json();
+      console.log('Geotab response data:', data);
       
       if (data.result && data.result.credentials) {
         this.credentials = data.result.credentials;
