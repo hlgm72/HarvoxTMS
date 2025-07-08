@@ -124,164 +124,104 @@ class GeotabAPI {
 }
 
 serve(async (req) => {
+  console.log('=== GEOTAB SYNC FUNCTION CALLED ===');
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('Handling CORS preflight');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log('Starting geotab-sync function');
+    console.log('Function started successfully');
     
-    // Use hardcoded Supabase credentials as fallback
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') || 'https://htaotttcnjxqzpsrqwll.supabase.co';
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0YW90dHRjbmp4cXpwc3Jxd2xsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTk0MDE4NiwiZXhwIjoyMDY3NTE2MTg2fQ.0HYYWdqZKWQakwR8W1Yz8uqZLmXWZfP4OhYCqG6BXnw';
-    
-    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
-
+    // Check environment variables
     const database = Deno.env.get('GEOTAB_DATABASE');
     const username = Deno.env.get('GEOTAB_USERNAME');
     const password = Deno.env.get('GEOTAB_PASSWORD');
-
-    console.log('Environment check:', {
+    
+    console.log('Environment variables check:', {
       hasDatabase: !!database,
       hasUsername: !!username,
       hasPassword: !!password,
-      supabaseUrl,
-      hasServiceKey: !!supabaseServiceKey
+      database: database || 'NOT_SET',
+      username: username || 'NOT_SET'
     });
-
+    
     if (!database || !username || !password) {
-      console.error('Missing Geotab credentials:', { database, username, hasPassword: !!password });
-      throw new Error('Missing Geotab credentials');
+      const errorMsg = 'Missing Geotab credentials. Please configure GEOTAB_DATABASE, GEOTAB_USERNAME, and GEOTAB_PASSWORD in Supabase secrets.';
+      console.error(errorMsg);
+      return new Response(
+        JSON.stringify({ 
+          error: errorMsg,
+          missing: {
+            database: !database,
+            username: !username,
+            password: !password
+          },
+          timestamp: new Date().toISOString()
+        }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
+    // Test Supabase connection
+    const supabaseUrl = 'https://htaotttcnjxqzpsrqwll.supabase.co';
+    const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0YW90dHRjbmp4cXpwc3Jxd2xsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTk0MDE4NiwiZXhwIjoyMDY3NTE2MTg2fQ.0HYYWdqZKWQakwR8W1Yz8uqZLmXWZfP4OhYCqG6BXnw';
+    
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+    
+    console.log('Testing Supabase connection...');
+    const { data: testData, error: testError } = await supabaseClient
+      .from('vehicles')
+      .select('count(*)')
+      .limit(1);
+    
+    if (testError) {
+      console.error('Supabase connection test failed:', testError);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Supabase connection failed',
+          details: testError.message,
+          timestamp: new Date().toISOString()
+        }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+    
+    console.log('Supabase connection successful');
+    
+    // Test Geotab authentication
+    console.log('Testing Geotab authentication...');
     const geotab = new GeotabAPI(database, username, password);
-    const { action = 'sync-all' } = await req.json().catch(() => ({}));
-
-    let result = {};
-
-    switch (action) {
-      case 'sync-vehicles':
-      case 'sync-all':
-        console.log('Syncing vehicles from Geotab...');
-        const devices = await geotab.getDevices();
-        
-        for (const device of devices) {
-          const vehicleData = {
-            geotab_id: device.id,
-            name: device.name,
-            vin: device.vehicleIdentificationNumber || null,
-            license_plate: device.licensePlate || null,
-            make: device.autoGroups?.find((g: any) => g.name?.toLowerCase().includes('make'))?.name || null,
-            model: device.autoGroups?.find((g: any) => g.name?.toLowerCase().includes('model'))?.name || null,
-            year: device.autoGroups?.find((g: any) => g.name?.toLowerCase().includes('year'))?.name ? 
-                  parseInt(device.autoGroups.find((g: any) => g.name?.toLowerCase().includes('year')).name) : null,
-            device_serial_number: device.serialNumber || null
-          };
-
-          const { error: vehicleError } = await supabaseClient
-            .from('vehicles')
-            .upsert(vehicleData, { 
-              onConflict: 'geotab_id',
-              ignoreDuplicates: false 
-            });
-
-          if (vehicleError) {
-            console.error('Error upserting vehicle:', vehicleError, 'Data:', vehicleData);
-            throw new Error(`Database error: ${vehicleError.message}`);
-          }
+    const authResult = await geotab.authenticate();
+    
+    if (!authResult) {
+      console.error('Geotab authentication failed');
+      return new Response(
+        JSON.stringify({ 
+          error: 'Geotab authentication failed. Please check your credentials.',
+          timestamp: new Date().toISOString()
+        }),
+        { 
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
-        
-        result.vehicles = `Synced ${devices.length} vehicles`;
-        
-        if (action === 'sync-vehicles') break;
-
-      case 'sync-drivers':
-        console.log('Syncing drivers from Geotab...');
-        const drivers = await geotab.getDrivers();
-        
-        for (const driver of drivers) {
-          const driverData = {
-            geotab_id: driver.id,
-            name: driver.name,
-            license_number: driver.licenseNumber || null,
-            phone: driver.phoneNumber || null,
-            email: driver.privateUserGroups?.[0]?.name || null // Geotab might store email differently
-          };
-
-          const { error: driverError } = await supabaseClient
-            .from('drivers')
-            .upsert(driverData, { 
-              onConflict: 'geotab_id',
-              ignoreDuplicates: false 
-            });
-
-          if (driverError) {
-            console.error('Error upserting driver:', driverError, 'Data:', driverData);
-            throw new Error(`Database error: ${driverError.message}`);
-          }
-        }
-        
-        result.drivers = `Synced ${drivers.length} drivers`;
-        
-        if (action === 'sync-drivers') break;
-
-      case 'sync-positions':
-        console.log('Syncing vehicle positions from Geotab...');
-        const logRecords = await geotab.getLogRecords();
-        const deviceStatusInfo = await geotab.getDeviceStatusInfo();
-        
-        // Get vehicle mappings from our database
-        const { data: vehicles } = await supabaseClient
-          .from('vehicles')
-          .select('id, geotab_id');
-        
-        const vehicleMap = new Map(vehicles?.map(v => [v.geotab_id, v.id]) || []);
-        
-        const positionsToInsert = [];
-        
-        for (const record of logRecords) {
-          if (record.latitude && record.longitude && vehicleMap.has(record.device.id)) {
-            const vehicleId = vehicleMap.get(record.device.id);
-            const statusInfo = deviceStatusInfo.find((s: any) => s.device.id === record.device.id);
-            
-            positionsToInsert.push({
-              vehicle_id: vehicleId,
-              geotab_device_id: record.device.id,
-              latitude: record.latitude,
-              longitude: record.longitude,
-              speed: record.speed || 0,
-              bearing: record.bearing || 0,
-              odometer: statusInfo?.odometer || 0,
-              engine_hours: statusInfo?.engineHours || 0,
-              date_time: record.dateTime
-            });
-          }
-        }
-        
-        if (positionsToInsert.length > 0) {
-          console.log(`Inserting ${positionsToInsert.length} position records`);
-          const { error: positionError } = await supabaseClient
-            .from('vehicle_positions')
-            .insert(positionsToInsert);
-
-          if (positionError) {
-            console.error('Error inserting positions:', positionError);
-            throw new Error(`Database error: ${positionError.message}`);
-          }
-        }
-        
-        result.positions = `Synced ${positionsToInsert.length} position records`;
-        break;
-
-      default:
-        throw new Error(`Unknown action: ${action}`);
+      );
     }
-
+    
+    console.log('Geotab authentication successful');
+    
     return new Response(
       JSON.stringify({ 
         success: true, 
-        result,
+        message: 'All systems working! Geotab and Supabase connections successful.',
         timestamp: new Date().toISOString()
       }),
       { 
@@ -291,10 +231,14 @@ serve(async (req) => {
     );
 
   } catch (error) {
+    console.error('=== FUNCTION ERROR ===');
     console.error('Error in geotab-sync function:', error);
+    console.error('Error stack:', error.stack);
+    
     return new Response(
       JSON.stringify({ 
         error: error.message,
+        stack: error.stack,
         timestamp: new Date().toISOString()
       }),
       { 
