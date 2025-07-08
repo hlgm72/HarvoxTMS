@@ -127,6 +127,8 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Starting geotab-sync function');
+    
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -136,7 +138,16 @@ serve(async (req) => {
     const username = Deno.env.get('GEOTAB_USERNAME');
     const password = Deno.env.get('GEOTAB_PASSWORD');
 
+    console.log('Environment check:', {
+      hasDatabase: !!database,
+      hasUsername: !!username,
+      hasPassword: !!password,
+      hasSupabaseUrl: !!Deno.env.get('SUPABASE_URL'),
+      hasServiceKey: !!Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    });
+
     if (!database || !username || !password) {
+      console.error('Missing Geotab credentials:', { database, username, hasPassword: !!password });
       throw new Error('Missing Geotab credentials');
     }
 
@@ -164,12 +175,17 @@ serve(async (req) => {
             device_serial_number: device.serialNumber || null
           };
 
-          await supabaseClient
+          const { error: vehicleError } = await supabaseClient
             .from('vehicles')
             .upsert(vehicleData, { 
               onConflict: 'geotab_id',
               ignoreDuplicates: false 
             });
+
+          if (vehicleError) {
+            console.error('Error upserting vehicle:', vehicleError, 'Data:', vehicleData);
+            throw new Error(`Database error: ${vehicleError.message}`);
+          }
         }
         
         result.vehicles = `Synced ${devices.length} vehicles`;
@@ -189,12 +205,17 @@ serve(async (req) => {
             email: driver.privateUserGroups?.[0]?.name || null // Geotab might store email differently
           };
 
-          await supabaseClient
+          const { error: driverError } = await supabaseClient
             .from('drivers')
             .upsert(driverData, { 
               onConflict: 'geotab_id',
               ignoreDuplicates: false 
             });
+
+          if (driverError) {
+            console.error('Error upserting driver:', driverError, 'Data:', driverData);
+            throw new Error(`Database error: ${driverError.message}`);
+          }
         }
         
         result.drivers = `Synced ${drivers.length} drivers`;
@@ -235,9 +256,15 @@ serve(async (req) => {
         }
         
         if (positionsToInsert.length > 0) {
-          await supabaseClient
+          console.log(`Inserting ${positionsToInsert.length} position records`);
+          const { error: positionError } = await supabaseClient
             .from('vehicle_positions')
             .insert(positionsToInsert);
+
+          if (positionError) {
+            console.error('Error inserting positions:', positionError);
+            throw new Error(`Database error: ${positionError.message}`);
+          }
         }
         
         result.positions = `Synced ${positionsToInsert.length} position records`;
