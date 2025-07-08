@@ -106,8 +106,11 @@ export function CommandMap() {
           latestPosition: latestPosition ? {
             lat: latestPosition.latitude,
             lng: latestPosition.longitude,
-            time: latestPosition.date_time
-          } : null
+            time: latestPosition.date_time,
+            speed: latestPosition.speed,
+            odometer: latestPosition.odometer
+          } : null,
+          allPositionTimes: vehicle.vehicle_positions?.map(p => p.date_time).slice(0, 3) // Show first 3 timestamps
         });
 
         return {
