@@ -59,8 +59,8 @@ class GeotabAPI {
 
   private async makeGeotabCall(method: string, params: any = {}) {
     if (!this.credentials) {
-      const authSuccess = await this.authenticate();
-      if (!authSuccess) {
+      const authResult = await this.authenticate();
+      if (!authResult.success) {
         throw new Error('Failed to authenticate with Geotab');
       }
     }

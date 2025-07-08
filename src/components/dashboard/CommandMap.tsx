@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader } from "@googlemaps/js-api-loader";
+import { useToast } from "@/hooks/use-toast";
 
 interface Vehicle {
   id: string;
@@ -59,6 +60,7 @@ export function CommandMap() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState<string>('');
+  const { toast } = useToast();
 
   // Load vehicles from database
   const loadVehicles = async () => {
@@ -123,10 +125,15 @@ export function CommandMap() {
   const syncGeotabData = async (action = 'sync-all') => {
     try {
       setSyncStatus(`Sincronizando ${action}...`);
+      toast({
+        title: "Sincronizando...",
+        description: `Iniciando sincronización de ${action}`
+      });
       
-      // Add timeout to prevent hanging
+      // Extended timeout for position sync which is slower
+      const timeoutMs = action === 'sync-positions' ? 120000 : 30000; // 2 minutes for positions, 30s for others
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout: Sincronización tardó más de 30 segundos')), 30000)
+        setTimeout(() => reject(new Error(`Timeout: Sincronización tardó más de ${timeoutMs/1000} segundos`)), timeoutMs)
       );
       
       const syncPromise = supabase.functions.invoke('geotab-sync', {
@@ -142,14 +149,23 @@ export function CommandMap() {
       }
 
       console.log('Sync result:', data);
-      setSyncStatus('Sincronización exitosa');
-      await loadVehicles();
+      setSyncStatus('');
       
-      setTimeout(() => setSyncStatus(''), 3000);
+      toast({
+        title: "✅ Sincronización exitosa",
+        description: data?.message || `${action} completado correctamente`
+      });
+      
+      await loadVehicles();
     } catch (error) {
       console.error('Error syncing Geotab data:', error);
-      setSyncStatus(`Error: ${error.message}`);
-      setTimeout(() => setSyncStatus(''), 5000);
+      setSyncStatus('');
+      
+      toast({
+        title: "❌ Error de sincronización",
+        description: error.message,
+        variant: "destructive"
+      });
     }
   };
 
