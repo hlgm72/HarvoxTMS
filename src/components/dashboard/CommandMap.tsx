@@ -70,7 +70,7 @@ export function CommandMap() {
           name,
           geotab_id,
           license_plate,
-          vehicle_positions (
+          vehicle_positions!inner (
             latitude,
             longitude,
             speed,
@@ -83,8 +83,23 @@ export function CommandMap() {
 
       if (error) throw error;
 
+      // Get the latest position for each vehicle
       const vehiclesWithPositions = vehicleData?.map(vehicle => {
-        const latestPosition = vehicle.vehicle_positions?.[0];
+        // Sort positions by date_time to get the most recent
+        const sortedPositions = vehicle.vehicle_positions?.sort((a, b) => 
+          new Date(b.date_time).getTime() - new Date(a.date_time).getTime()
+        );
+        const latestPosition = sortedPositions?.[0];
+        
+        console.log('Vehicle positions for', vehicle.name, {
+          totalPositions: vehicle.vehicle_positions?.length || 0,
+          latestPosition: latestPosition ? {
+            lat: latestPosition.latitude,
+            lng: latestPosition.longitude,
+            time: latestPosition.date_time
+          } : null
+        });
+
         return {
           id: vehicle.id,
           name: vehicle.name,
