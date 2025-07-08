@@ -115,7 +115,9 @@ class GeotabAPI {
 
   async getLogRecords() {
     const toDate = new Date();
-    const fromDate = new Date(toDate.getTime() - (24 * 60 * 60 * 1000)); // Last 24 hours
+    const fromDate = new Date(toDate.getTime() - (2 * 60 * 60 * 1000)); // Last 2 hours instead of 24
+
+    console.log('Getting GPS positions from:', fromDate.toISOString(), 'to:', toDate.toISOString());
 
     return await this.makeGeotabCall('Get', {
       typeName: 'LogRecord',
@@ -207,7 +209,7 @@ serve(async (req) => {
     const authResult = await geotab.authenticate();
     
     if (!authResult.success) {
-      console.error('Geotab authentication failed');
+      console.error('Geotab authentication failed:', authResult.error);
       return new Response(
         JSON.stringify({ 
           error: 'Geotab authentication failed. Please check your credentials.',
