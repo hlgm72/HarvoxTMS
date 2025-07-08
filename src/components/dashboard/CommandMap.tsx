@@ -50,6 +50,11 @@ const getStatusText = (status: string) => {
   }
 };
 
+// Convert km/h to mph
+const convertToMph = (speedKmh: number | undefined): number => {
+  return speedKmh ? Math.round(speedKmh * 0.621371) : 0;
+};
+
 export function CommandMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<google.maps.Map | null>(null);
@@ -233,7 +238,7 @@ export function CommandMap() {
           content: `
             <div style="padding: 8px; font-family: system-ui;">
               <h4 style="margin: 0 0 8px 0; font-weight: 600;">${vehicle.name}</h4>
-              <p style="margin: 4px 0; font-size: 14px;">Velocidad: ${vehicle.speed || 0} km/h</p>
+              <p style="margin: 4px 0; font-size: 14px;">Velocidad: ${convertToMph(vehicle.speed)} mph</p>
               <p style="margin: 4px 0; font-size: 14px;">Odómetro: ${vehicle.odometer || 0} km</p>
               <p style="margin: 4px 0; font-size: 12px; color: #666;">
                 ${vehicle.last_update ? new Date(vehicle.last_update).toLocaleString() : 'Sin datos'}
@@ -421,7 +426,7 @@ export function CommandMap() {
                 </div>
                 <div className="text-right">
                   <div className="text-xs font-medium">
-                    {vehicle.speed ? `${vehicle.speed} km/h` : '0 km/h'}
+                    {convertToMph(vehicle.speed)} mph
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {vehicle.odometer ? `${vehicle.odometer} km` : 'N/A'}
