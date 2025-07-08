@@ -177,7 +177,7 @@ serve(async (req) => {
     console.log('Testing Supabase connection...');
     const { data: testData, error: testError } = await supabaseClient
       .from('vehicles')
-      .select('count(*)')
+      .select('id')
       .limit(1);
     
     if (testError) {
