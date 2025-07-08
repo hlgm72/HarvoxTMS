@@ -115,7 +115,7 @@ class GeotabAPI {
 
   async getLogRecords() {
     const toDate = new Date();
-    const fromDate = new Date(toDate.getTime() - (30 * 60 * 1000)); // Last 30 minutes for faster sync
+    const fromDate = new Date(toDate.getTime() - (5 * 60 * 1000)); // Last 5 minutes for real-time tracking
 
     console.log('Getting GPS positions from:', fromDate.toISOString(), 'to:', toDate.toISOString());
 
