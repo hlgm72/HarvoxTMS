@@ -92,10 +92,12 @@ export function CommandMap() {
 
       // Get the latest position for each vehicle
       const vehiclesWithPositions = vehicleData?.map(vehicle => {
-        // Sort positions by date_time to get the most recent
-        const sortedPositions = vehicle.vehicle_positions?.sort((a, b) => 
-          new Date(b.date_time).getTime() - new Date(a.date_time).getTime()
-        );
+        // Sort positions by date_time to get the most recent (newest first)
+        const sortedPositions = vehicle.vehicle_positions?.sort((a, b) => {
+          const timeA = new Date(a.date_time).getTime();
+          const timeB = new Date(b.date_time).getTime();
+          return timeB - timeA; // Newest first
+        });
         const latestPosition = sortedPositions?.[0];
         
         console.log('Vehicle positions for', vehicle.name, {
