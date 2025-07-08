@@ -223,10 +223,128 @@ serve(async (req) => {
     
     console.log('Geotab authentication successful');
     
+    // Determine action from request body
+    const requestBody = await req.json();
+    const action = requestBody?.action || 'sync-all';
+    
+    console.log('Action requested:', action);
+    
+    let syncResults = {
+      vehicles: 0,
+      drivers: 0,
+      positions: 0,
+      message: ''
+    };
+    
+    // Sync vehicles if requested
+    if (action === 'sync-vehicles' || action === 'sync-all') {
+      console.log('Starting vehicle sync...');
+      try {
+        const devices = await geotab.getDevices();
+        console.log(`Found ${devices?.length || 0} devices from Geotab`);
+        
+        if (devices && devices.length > 0) {
+          for (const device of devices) {
+            const { data: existingVehicle, error: checkError } = await supabaseClient
+              .from('vehicles')
+              .select('id')
+              .eq('geotab_id', device.id)
+              .maybeSingle();
+            
+            if (checkError) {
+              console.error('Error checking existing vehicle:', checkError);
+              continue;
+            }
+            
+            if (!existingVehicle) {
+              const { error: insertError } = await supabaseClient
+                .from('vehicles')
+                .insert({
+                  geotab_id: device.id,
+                  name: device.name || `Vehicle ${device.serialNumber || device.id}`,
+                  vin: device.vehicleIdentificationNumber,
+                  license_plate: device.licensePlate,
+                  make: device.vehicleModel?.manufacturer?.name,
+                  model: device.vehicleModel?.name,
+                  year: device.vehicleModel?.year,
+                  device_serial_number: device.serialNumber
+                });
+              
+              if (insertError) {
+                console.error('Error inserting vehicle:', insertError);
+              } else {
+                syncResults.vehicles++;
+                console.log(`Inserted vehicle: ${device.name}`);
+              }
+            } else {
+              console.log(`Vehicle already exists: ${device.name}`);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error syncing vehicles:', error);
+        syncResults.message += `Error syncing vehicles: ${error.message}. `;
+      }
+    }
+    
+    // Sync drivers if requested
+    if (action === 'sync-drivers' || action === 'sync-all') {
+      console.log('Starting driver sync...');
+      try {
+        const drivers = await geotab.getDrivers();
+        console.log(`Found ${drivers?.length || 0} drivers from Geotab`);
+        
+        if (drivers && drivers.length > 0) {
+          for (const driver of drivers) {
+            const { data: existingDriver, error: checkError } = await supabaseClient
+              .from('drivers')
+              .select('id')
+              .eq('geotab_id', driver.id)
+              .maybeSingle();
+            
+            if (checkError) {
+              console.error('Error checking existing driver:', checkError);
+              continue;
+            }
+            
+            if (!existingDriver) {
+              const { error: insertError } = await supabaseClient
+                .from('drivers')
+                .insert({
+                  geotab_id: driver.id,
+                  name: driver.name || `Driver ${driver.id}`,
+                  license_number: driver.licenseNumber,
+                  phone: driver.phone,
+                  email: driver.email
+                });
+              
+              if (insertError) {
+                console.error('Error inserting driver:', insertError);
+              } else {
+                syncResults.drivers++;
+                console.log(`Inserted driver: ${driver.name}`);
+              }
+            } else {
+              console.log(`Driver already exists: ${driver.name}`);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error syncing drivers:', error);
+        syncResults.message += `Error syncing drivers: ${error.message}. `;
+      }
+    }
+    
+    const message = syncResults.message || 
+      `Successfully synced ${syncResults.vehicles} vehicles and ${syncResults.drivers} drivers.`;
+    
+    console.log('Sync completed:', syncResults);
+    
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'All systems working! Geotab and Supabase connections successful.',
+        message,
+        results: syncResults,
         timestamp: new Date().toISOString()
       }),
       { 
