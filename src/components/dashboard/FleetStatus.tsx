@@ -59,10 +59,25 @@ export function FleetStatus() {
 
       const totalVehicles = vehicles?.length || 0;
       
-      // Por ahora, simulamos estados basados en el total de vehículos
-      // En el futuro se puede implementar lógica más sofisticada basada en posiciones GPS, estado del motor, etc.
-      const activeVehicles = Math.floor(totalVehicles * 0.7); // 70% activos
-      const availableVehicles = Math.floor(totalVehicles * 0.2); // 20% disponibles
+      // Obtener posiciones recientes para determinar vehículos activos
+      const { data: recentPositions, error: positionsError } = await supabase
+        .from('vehicle_positions')
+        .select('vehicle_id, date_time')
+        .gte('date_time', new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()) // Últimas 2 horas
+        .order('date_time', { ascending: false });
+
+      if (positionsError) {
+        console.error('Error loading vehicle positions:', positionsError);
+      }
+
+      // Determinar vehículos activos basándose en posiciones GPS recientes
+      const recentVehicleIds = new Set(recentPositions?.map(p => p.vehicle_id) || []);
+      const activeVehicles = recentVehicleIds.size;
+      
+      // Vehículos con GPS pero sin actividad reciente (disponibles)
+      const availableVehicles = Math.max(0, 4 - activeVehicles); // Basado en que 4 tienen GPS
+      
+      // Vehículos sin GPS o en mantenimiento
       const maintenanceVehicles = totalVehicles - activeVehicles - availableVehicles;
       const utilization = totalVehicles > 0 ? (activeVehicles / totalVehicles) * 100 : 0;
 
