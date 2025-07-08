@@ -74,9 +74,17 @@ export function FleetStatus() {
       const recentVehicleIds = new Set(recentPositions?.map(p => p.vehicle_id) || []);
       const activeVehicles = recentVehicleIds.size;
       
+      console.log('FleetStatus Debug:', {
+        totalVehicles,
+        recentPositions: recentPositions?.length || 0,
+        activeVehicles,
+        hasPositions: !!recentPositions
+      });
+      
       // Si no hay posiciones sincronizadas, mostrar estado basado en info conocida
       let availableVehicles, maintenanceVehicles;
       if (recentPositions && recentPositions.length === 0) {
+        console.log('No hay posiciones sincronizadas - usando datos temporales');
         // No hay posiciones sincronizadas - mostrar 2 activos como indica el usuario
         const realActiveVehicles = 2; // Usuario dice que hay 2 conectados
         const realAvailableVehicles = 2; // 4 con GPS - 2 activos = 2 disponibles
