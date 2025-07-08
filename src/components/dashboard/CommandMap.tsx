@@ -77,7 +77,7 @@ export function CommandMap() {
           name,
           geotab_id,
           license_plate,
-          vehicle_positions (
+          vehicle_positions!inner (
             latitude,
             longitude,
             speed,
@@ -86,6 +86,7 @@ export function CommandMap() {
             date_time
           )
         `)
+        .gte('vehicle_positions.date_time', new Date(Date.now() - 60 * 60 * 1000).toISOString()) // Last hour only
         .order('name');
 
       if (error) throw error;
