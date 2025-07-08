@@ -132,10 +132,11 @@ serve(async (req) => {
   try {
     console.log('Starting geotab-sync function');
     
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    // Use hardcoded Supabase credentials as fallback
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || 'https://htaotttcnjxqzpsrqwll.supabase.co';
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0YW90dHRjbmp4cXpwc3Jxd2xsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTk0MDE4NiwiZXhwIjoyMDY3NTE2MTg2fQ.0HYYWdqZKWQakwR8W1Yz8uqZLmXWZfP4OhYCqG6BXnw';
+    
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
 
     const database = Deno.env.get('GEOTAB_DATABASE');
     const username = Deno.env.get('GEOTAB_USERNAME');
@@ -145,8 +146,8 @@ serve(async (req) => {
       hasDatabase: !!database,
       hasUsername: !!username,
       hasPassword: !!password,
-      hasSupabaseUrl: !!Deno.env.get('SUPABASE_URL'),
-      hasServiceKey: !!Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+      supabaseUrl,
+      hasServiceKey: !!supabaseServiceKey
     });
 
     if (!database || !username || !password) {
