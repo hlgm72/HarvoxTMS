@@ -19,9 +19,13 @@ class GeotabAPI {
     this.password = password;
   }
 
-  private async authenticate(): Promise<boolean> {
+  private async authenticate(): Promise<{success: boolean, error?: any}> {
     try {
       console.log('Attempting Geotab authentication...');
+      console.log('Database:', this.database);
+      console.log('Username:', this.username);
+      console.log('Password length:', this.password?.length || 0);
+      
       const response = await fetch('https://my.geotab.com/apiv1', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -37,19 +41,19 @@ class GeotabAPI {
 
       console.log('Geotab response status:', response.status);
       const data = await response.json();
-      console.log('Geotab response data:', data);
+      console.log('Geotab response data:', JSON.stringify(data, null, 2));
       
       if (data.result && data.result.credentials) {
         this.credentials = data.result.credentials;
         console.log('Geotab authentication successful');
-        return true;
+        return { success: true };
       } else {
         console.error('Geotab authentication failed:', data.error);
-        return false;
+        return { success: false, error: data.error };
       }
     } catch (error) {
       console.error('Error authenticating with Geotab:', error);
-      return false;
+      return { success: false, error: error.message };
     }
   }
 
@@ -202,11 +206,12 @@ serve(async (req) => {
     const geotab = new GeotabAPI(database, username, password);
     const authResult = await geotab.authenticate();
     
-    if (!authResult) {
+    if (!authResult.success) {
       console.error('Geotab authentication failed');
       return new Response(
         JSON.stringify({ 
           error: 'Geotab authentication failed. Please check your credentials.',
+          geotabError: authResult.error,
           timestamp: new Date().toISOString()
         }),
         { 
