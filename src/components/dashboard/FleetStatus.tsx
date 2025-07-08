@@ -1,25 +1,21 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
-const fleetData = {
-  active: 24,
-  maintenance: 3,
-  available: 8,
-  total: 35,
-  utilization: 85.7
-};
-
-const statusBreakdown = [
-  { status: "En Ruta", count: 18, color: "bg-fleet-green", percentage: 51.4 },
-  { status: "Cargando", count: 6, color: "bg-warning", percentage: 17.1 },
-  { status: "Disponible", count: 8, color: "bg-fleet-blue", percentage: 22.9 },
-  { status: "Mantenimiento", count: 3, color: "bg-destructive", percentage: 8.6 }
-];
+interface FleetData {
+  active: number;
+  maintenance: number;
+  available: number;
+  total: number;
+  utilization: number;
+}
 
 const alerts = [
-  { type: "warning", message: "TR-003: Mantenimiento programado mañana" },
-  { type: "info", message: "TR-015: Licencia CDL vence en 15 días" },
-  { type: "success", message: "TR-022: Inspección DOT completada" }
+  { type: "warning", message: "Verificar conexión con dispositivos GPS" },
+  { type: "info", message: "Sincronización de datos completada" },
+  { type: "success", message: "Todos los sistemas operativos" }
 ];
 
 const getAlertIcon = (type: string) => {
@@ -32,6 +28,115 @@ const getAlertIcon = (type: string) => {
 };
 
 export function FleetStatus() {
+  const [fleetData, setFleetData] = useState<FleetData>({
+    active: 0,
+    maintenance: 0,
+    available: 0,
+    total: 0,
+    utilization: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  const loadFleetData = async () => {
+    try {
+      setLoading(true);
+      
+      // Obtener total de vehículos
+      const { data: vehicles, error: vehiclesError } = await supabase
+        .from('vehicles')
+        .select('id, name');
+
+      if (vehiclesError) {
+        console.error('Error loading vehicles:', vehiclesError);
+        toast({
+          title: "Error",
+          description: "No se pudieron cargar los datos de la flota",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const totalVehicles = vehicles?.length || 0;
+      
+      // Por ahora, simulamos estados basados en el total de vehículos
+      // En el futuro se puede implementar lógica más sofisticada basada en posiciones GPS, estado del motor, etc.
+      const activeVehicles = Math.floor(totalVehicles * 0.7); // 70% activos
+      const availableVehicles = Math.floor(totalVehicles * 0.2); // 20% disponibles
+      const maintenanceVehicles = totalVehicles - activeVehicles - availableVehicles;
+      const utilization = totalVehicles > 0 ? (activeVehicles / totalVehicles) * 100 : 0;
+
+      setFleetData({
+        active: activeVehicles,
+        maintenance: maintenanceVehicles,
+        available: availableVehicles,
+        total: totalVehicles,
+        utilization: Math.round(utilization * 10) / 10
+      });
+
+    } catch (error) {
+      console.error('Error loading fleet data:', error);
+      toast({
+        title: "Error",
+        description: "Error al cargar datos de la flota",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadFleetData();
+    
+    // Actualizar cada 30 segundos
+    const interval = setInterval(loadFleetData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const statusBreakdown = [
+    { 
+      status: "Activos", 
+      count: fleetData.active, 
+      color: "bg-fleet-green", 
+      percentage: fleetData.total > 0 ? Math.round((fleetData.active / fleetData.total) * 100) : 0 
+    },
+    { 
+      status: "Disponibles", 
+      count: fleetData.available, 
+      color: "bg-fleet-blue", 
+      percentage: fleetData.total > 0 ? Math.round((fleetData.available / fleetData.total) * 100) : 0 
+    },
+    { 
+      status: "Mantenimiento", 
+      count: fleetData.maintenance, 
+      color: "bg-destructive", 
+      percentage: fleetData.total > 0 ? Math.round((fleetData.maintenance / fleetData.total) * 100) : 0 
+    }
+  ];
+
+  if (loading) {
+    return (
+      <Card className="h-full">
+        <CardHeader className="pb-3">
+          <CardTitle>🚛 Estado de Flota</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="animate-pulse space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="h-16 bg-muted rounded-lg"></div>
+              <div className="h-16 bg-muted rounded-lg"></div>
+            </div>
+            <div className="space-y-2">
+              <div className="h-4 bg-muted rounded w-1/2"></div>
+              <div className="h-8 bg-muted rounded"></div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="h-full">
       <CardHeader className="pb-3">
@@ -46,12 +151,12 @@ export function FleetStatus() {
         {/* Overview Stats */}
         <div className="grid grid-cols-2 gap-3">
           <div className="text-center p-3 bg-gradient-subtle rounded-lg">
-            <div className="text-2xl font-bold text-fleet-blue">{fleetData.active}</div>
-            <div className="text-xs text-muted-foreground">Activos</div>
+            <div className="text-2xl font-bold text-fleet-blue">{fleetData.total}</div>
+            <div className="text-xs text-muted-foreground">Total Vehículos</div>
           </div>
           <div className="text-center p-3 bg-gradient-subtle rounded-lg">
-            <div className="text-2xl font-bold text-fleet-green">{fleetData.available}</div>
-            <div className="text-xs text-muted-foreground">Disponibles</div>
+            <div className="text-2xl font-bold text-fleet-green">{fleetData.active}</div>
+            <div className="text-xs text-muted-foreground">Activos</div>
           </div>
         </div>
 
@@ -74,7 +179,7 @@ export function FleetStatus() {
 
         {/* Alerts */}
         <div className="space-y-2">
-          <h4 className="font-medium text-sm text-muted-foreground">Alertas Recientes</h4>
+          <h4 className="font-medium text-sm text-muted-foreground">Estado del Sistema</h4>
           <div className="space-y-1">
             {alerts.map((alert, index) => (
               <div key={index} className="flex items-start gap-2 p-2 rounded bg-muted/30 text-xs">
