@@ -115,7 +115,7 @@ class GeotabAPI {
 
   async getLogRecords() {
     const toDate = new Date();
-    const fromDate = new Date(toDate.getTime() - (2 * 60 * 60 * 1000)); // Last 2 hours instead of 24
+    const fromDate = new Date(toDate.getTime() - (30 * 60 * 1000)); // Last 30 minutes for faster sync
 
     console.log('Getting GPS positions from:', fromDate.toISOString(), 'to:', toDate.toISOString());
 
