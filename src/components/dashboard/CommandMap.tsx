@@ -66,6 +66,8 @@ export function CommandMap() {
   const [isLoading, setIsLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState<string>('');
   const { toast } = useToast();
+  const isInitialLoad = useRef(true);
+  const userHasInteracted = useRef(false);
 
   // Load vehicles from database
   const loadVehicles = async () => {
@@ -204,6 +206,14 @@ export function CommandMap() {
             }
           ]
         });
+
+        // Add event listeners to detect user interaction
+        map.current.addListener('zoom_changed', () => {
+          userHasInteracted.current = true;
+        });
+        map.current.addListener('dragstart', () => {
+          userHasInteracted.current = true;
+        });
       }
     }).catch(error => {
       console.error('Error loading Google Maps:', error);
@@ -261,14 +271,15 @@ export function CommandMap() {
       }
     });
 
-    // Fit map to show all markers
-    if (markers.current.length > 0) {
+    // Only fit map to show all markers on initial load or if user hasn't interacted
+    if (markers.current.length > 0 && (isInitialLoad.current || !userHasInteracted.current)) {
       const bounds = new google.maps.LatLngBounds();
       markers.current.forEach(marker => {
         const position = marker.getPosition();
         if (position) bounds.extend(position);
       });
       map.current.fitBounds(bounds);
+      isInitialLoad.current = false;
     }
   }, [vehicles]);
 
