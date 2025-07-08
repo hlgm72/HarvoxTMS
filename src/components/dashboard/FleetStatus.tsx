@@ -83,7 +83,7 @@ export function FleetStatus() {
       
       // Si no hay posiciones sincronizadas, mostrar estado basado en info conocida
       let availableVehicles, maintenanceVehicles;
-      if (recentPositions && recentPositions.length === 0) {
+      if (!recentPositions || recentPositions.length === 0) {
         console.log('No hay posiciones sincronizadas - usando datos temporales');
         // No hay posiciones sincronizadas - mostrar 2 activos como indica el usuario
         const realActiveVehicles = 2; // Usuario dice que hay 2 conectados
