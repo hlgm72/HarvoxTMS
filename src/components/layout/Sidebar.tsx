@@ -30,13 +30,14 @@ const companies = [
 ];
 
 const navigationItems = [
-  { title: "Dashboard", url: "/", icon: "📊" },
-  { title: "Conductores", url: "/drivers", icon: "👨‍✈️" },
-  { title: "Cargas", url: "/loads", icon: "📦" },
+  { title: "Centro de Comando", url: "/", icon: "🎯", badge: "Live" },
+  { title: "Conductores", url: "/drivers", icon: "👨‍✈️", badge: "18" },
+  { title: "Flota", url: "/equipment", icon: "🚛", badge: "42" },
+  { title: "Cargas", url: "/loads", icon: "📦", badge: "24" },
+  { title: "Rutas", url: "/routes", icon: "🗺️" },
   { title: "Clientes", url: "/clients", icon: "🏢" },
-  { title: "Equipos", url: "/equipment", icon: "🚛" },
   { title: "Facturación", url: "/billing", icon: "💰" },
-  { title: "Reportes", url: "/reports", icon: "📈" },
+  { title: "Reportes", url: "/reports", icon: "📊" },
   { title: "Documentos", url: "/documents", icon: "📄" },
 ];
 
@@ -119,7 +120,20 @@ export function AppSidebar() {
                       className={({ isActive }) => getNavCls({ isActive })}
                     >
                       <span className="text-lg mr-3">{item.icon}</span>
-                      {!collapsed && <span>{item.title}</span>}
+                      {!collapsed && (
+                        <div className="flex items-center justify-between flex-1">
+                          <span>{item.title}</span>
+                          {item.badge && (
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${
+                              item.badge === "Live" 
+                                ? "bg-fleet-green text-white animate-pulse" 
+                                : "bg-primary/10 text-primary"
+                            }`}>
+                              {item.badge}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

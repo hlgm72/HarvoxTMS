@@ -17,18 +17,22 @@ export function Header() {
         <div className="flex items-center gap-4">
           <SidebarTrigger className="p-2" />
           <div>
-            <h1 className="text-xl font-semibold text-foreground">
-              Centro de Comando
+            <h1 className="text-xl font-semibold bg-gradient-fleet bg-clip-text text-transparent">
+              FleetNest Command Center
             </h1>
-            <p className="text-sm text-muted-foreground">
-              Gestiona tu flota de transporte
+            <p className="text-sm text-muted-foreground flex items-center gap-2">
+              <span className="w-2 h-2 bg-fleet-green rounded-full animate-pulse"></span>
+              Sistema operativo en tiempo real
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm">
-            Nuevo Carga
+        <div className="flex items-center gap-3">
+          <Button variant="outline" size="sm" className="border-fleet-blue text-fleet-blue hover:bg-fleet-blue hover:text-white">
+            + Nueva Carga
+          </Button>
+          <Button size="sm" className="bg-gradient-fleet text-white shadow-fleet">
+            🚨 Despacho Rápido
           </Button>
           
           <DropdownMenu>

@@ -17,18 +17,19 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222 84% 4%;
 
-    --primary: 216 87% 52%;
+    --primary: 214 88% 27%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 216 87% 62%;
+    --primary-glow: 214 88% 35%;
+    --primary-light: 214 88% 92%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 84% 4%;
+    --secondary: 210 16% 93%;
+    --secondary-foreground: 214 88% 27%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 210 16% 93%;
+    --muted-foreground: 215 25% 27%;
 
-    --accent: 216 87% 97%;
-    --accent-foreground: 216 87% 20%;
+    --accent: 214 88% 96%;
+    --accent-foreground: 214 88% 27%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -38,6 +39,12 @@ All colors MUST be HSL.
 
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
+
+    --fleet-blue: 214 88% 27%;
+    --fleet-navy: 214 95% 20%;
+    --fleet-sky: 199 95% 74%;
+    --fleet-orange: 25 95% 53%;
+    --fleet-green: 142 76% 36%;
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
@@ -49,12 +56,16 @@ All colors MUST be HSL.
     --chart-4: 0 84% 60%;
     --chart-5: 270 95% 75%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(216 87% 52%), hsl(216 87% 62%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 40% 98%));
+    --gradient-primary: linear-gradient(135deg, hsl(214 88% 27%), hsl(214 88% 35%));
+    --gradient-fleet: linear-gradient(135deg, hsl(214 95% 20%), hsl(214 88% 27%));
+    --gradient-command: linear-gradient(135deg, hsl(214 88% 27%), hsl(199 95% 74%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 16% 98%));
     --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 46%));
+    --gradient-warning: linear-gradient(135deg, hsl(38 92% 50%), hsl(25 95% 53%));
     
-    --shadow-elegant: 0 10px 25px -5px hsl(216 87% 52% / 0.1);
-    --shadow-glow: 0 0 30px hsl(216 87% 62% / 0.3);
+    --shadow-elegant: 0 10px 25px -5px hsl(214 88% 27% / 0.15);
+    --shadow-glow: 0 0 30px hsl(214 88% 35% / 0.4);
+    --shadow-fleet: 0 4px 20px -2px hsl(214 88% 27% / 0.25);
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
