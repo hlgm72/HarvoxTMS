@@ -407,7 +407,6 @@ export default function Auth() {
                     onChange={(e) => {
                       const inputValue = e.target.value;
                       const cleanValue = inputValue.replace(/\s/g, '');
-                      console.log('Email onChange - Input:', `"${inputValue}"`, '→ Clean:', `"${cleanValue}"`);
                       setFormData(prev => ({ ...prev, email: cleanValue }));
                       validateField('email', cleanValue);
                       if (error) setError(null);
@@ -415,7 +414,6 @@ export default function Auth() {
                     onKeyPress={(e) => {
                       // Prevent spaces from being typed
                       if (e.key === ' ') {
-                        console.log('Space blocked!');
                         e.preventDefault();
                       }
                     }}
