@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Building2, Users, Truck, Activity, Plus, Settings, Mail, Phone, User, Briefcase,
   BarChart3, Shield, Database, Globe, ChevronRight, Search, Filter,
-  TrendingUp, AlertTriangle, CheckCircle, Clock, Eye
+  TrendingUp, AlertTriangle, CheckCircle, Clock, Eye, Zap, UserCheck
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -251,301 +251,9 @@ export default function SuperAdminDashboard() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-subtle">
-        {/* Enhanced Header Section */}
-        <div className="bg-primary text-white shadow-lg relative overflow-hidden">
-          {/* Background decoration */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-32 translate-x-32"></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-24 -translate-x-24"></div>
-          </div>
-          
-          <div className="relative p-8">
-            <div className="flex justify-between items-start">
-              <div className="space-y-4">
-                <div>
-                  <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in text-white">
-                    FleetNest Control Center
-                  </h1>
-                  <p className="text-white font-body text-lg">Sistema de administración global</p>
-                </div>
-                
-                <div className="flex items-center gap-4 animate-fade-in" style={{animationDelay: '0.1s'}}>
-                  <Badge variant="secondary" className="bg-white text-primary border-0 hover:bg-white/90 transition-colors font-semibold">
-                    <Shield className="h-3 w-3 mr-1" />
-                    System Administrator
-                  </Badge>
-                  <div className="flex items-center gap-2 text-white">
-                    <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-medium">System Status: Operational</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex gap-3 animate-fade-in" style={{animationDelay: '0.2s'}}>
-                <Button 
-                  variant="outline" 
-                  className="bg-white/10 border-white text-white hover:bg-white hover:text-primary transition-all hover:scale-105 font-medium"
-                >
-                  <Settings className="h-4 w-4 mr-2" />
-                  System Settings
-                </Button>
-                <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-                  <DialogTrigger asChild>
-                    <Button className="bg-gradient-primary hover:shadow-glow transition-all hover:scale-105">
-                      <Plus className="h-4 w-4 mr-2" />
-                      New Company
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2">
-                        <Building2 className="h-5 w-5 text-primary" />
-                        Create New Company
-                      </DialogTitle>
-                      <DialogDescription>
-                        Add a new transportation company to the FleetNest system.
-                      </DialogDescription>
-                    </DialogHeader>
-                    
-                    <div className="grid grid-cols-2 gap-6 py-4">
-                      {/* Company Information */}
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2 pb-2 border-b">
-                          <Building2 className="h-4 w-4 text-primary" />
-                          <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
-                            Company Information
-                          </h3>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="company-name">Company Name *</Label>
-                          <Input
-                            id="company-name"
-                            value={newCompany.name}
-                            {...companyNameHandlers}
-                            placeholder="Swift Transportation"
-                            className="transition-all focus:scale-[1.01]"
-                          />
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="company-email">Company Email *</Label>
-                          <div className="relative">
-                            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              id="company-email"
-                              type="email"
-                              value={newCompany.email}
-                              onChange={(e) => {
-                                const cleanValue = e.target.value.replace(/\s/g, '');
-                                setNewCompany(prev => ({ ...prev, email: cleanValue }));
-                              }}
-                              onKeyPress={(e) => {
-                                if (e.key === ' ') {
-                                  e.preventDefault();
-                                }
-                              }}
-                              placeholder="contact@company.com"
-                              className="pl-10 transition-all focus:scale-[1.01]"
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="company-phone">Company Phone *</Label>
-                          <div className="relative">
-                            <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              id="company-phone"
-                              value={newCompany.phone}
-                              {...companyPhoneHandlers}
-                              placeholder="(555) 123-4567"
-                              className="pl-10 transition-all focus:scale-[1.01]"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Owner Information */}
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2 pb-2 border-b">
-                          <User className="h-4 w-4 text-primary" />
-                          <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
-                            Owner/Primary Contact
-                          </h3>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="owner-name">Owner Name *</Label>
-                          <div className="relative">
-                            <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              id="owner-name"
-                              value={newCompany.owner_name}
-                              {...ownerNameHandlers}
-                              placeholder="John Smith"
-                              className="pl-10 transition-all focus:scale-[1.01]"
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="owner-email">Owner Email *</Label>
-                          <div className="relative">
-                            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              id="owner-email"
-                              type="email"
-                              value={newCompany.owner_email}
-                              onChange={(e) => {
-                                const cleanValue = e.target.value.replace(/\s/g, '');
-                                setNewCompany(prev => ({ ...prev, owner_email: cleanValue }));
-                              }}
-                              onKeyPress={(e) => {
-                                if (e.key === ' ') {
-                                  e.preventDefault();
-                                }
-                              }}
-                              placeholder="john@company.com"
-                              className="pl-10 transition-all focus:scale-[1.01]"
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="owner-phone">Owner Phone *</Label>
-                          <div className="relative">
-                            <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              id="owner-phone"
-                              value={newCompany.owner_phone}
-                              {...ownerPhoneHandlers}
-                              placeholder="(555) 987-6543"
-                              className="pl-10 transition-all focus:scale-[1.01]"
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="owner-title">Owner Title</Label>
-                          <div className="relative">
-                            <Briefcase className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              id="owner-title"
-                              value={newCompany.owner_title}
-                              {...ownerTitleHandlers}
-                              placeholder="CEO, President, Fleet Manager..."
-                              className="pl-10 transition-all focus:scale-[1.01]"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Plan Configuration */}
-                      <div className="col-span-2 space-y-4">
-                        <div className="flex items-center gap-2 pb-2 border-b">
-                          <BarChart3 className="h-4 w-4 text-primary" />
-                          <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
-                            Plan Configuration
-                          </h3>
-                        </div>
-                        
-                        <div className="grid grid-cols-3 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="plan-type">Plan Type</Label>
-                            <Select 
-                              value={newCompany.plan_type} 
-                              onValueChange={(value) => setNewCompany(prev => ({ ...prev, plan_type: value }))}
-                            >
-                              <SelectTrigger className="transition-all focus:scale-[1.01]">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="basic">
-                                  <div className="flex items-center gap-2">
-                                    <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
-                                    Basic Plan
-                                  </div>
-                                </SelectItem>
-                                <SelectItem value="professional">
-                                  <div className="flex items-center gap-2">
-                                    <div className="h-2 w-2 bg-purple-500 rounded-full"></div>
-                                    Professional Plan
-                                  </div>
-                                </SelectItem>
-                                <SelectItem value="enterprise">
-                                  <div className="flex items-center gap-2">
-                                    <div className="h-2 w-2 bg-orange-500 rounded-full"></div>
-                                    Enterprise Plan
-                                  </div>
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <Label htmlFor="max-vehicles">Max Vehicles</Label>
-                            <Input
-                              id="max-vehicles"
-                              type="number"
-                              value={newCompany.max_vehicles}
-                              onChange={(e) => setNewCompany(prev => ({ ...prev, max_vehicles: parseInt(e.target.value) }))}
-                              min="1"
-                              className="transition-all focus:scale-[1.01]"
-                            />
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <Label htmlFor="max-users">Max Users</Label>
-                            <Input
-                              id="max-users"
-                              type="number"
-                              value={newCompany.max_users}
-                              onChange={(e) => setNewCompany(prev => ({ ...prev, max_users: parseInt(e.target.value) }))}
-                              min="1"
-                              className="transition-all focus:scale-[1.01]"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end gap-2 pt-4">
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setShowCreateDialog(false)}
-                        disabled={isCreatingCompany}
-                      >
-                        Cancel
-                      </Button>
-                      <Button 
-                        onClick={handleCreateCompany}
-                        disabled={isCreatingCompany}
-                        className="bg-gradient-primary hover:shadow-glow"
-                      >
-                        {isCreatingCompany ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                            Creating...
-                          </>
-                        ) : (
-                          <>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Create Company
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
-          </div>
-        </div>
-
+      <div className="min-h-screen bg-gradient-subtle p-6">
         {/* Enhanced Navigation Tabs */}
-        <div className="bg-white border-b shadow-sm">
+        <div className="bg-white border-b shadow-sm mb-6 rounded-lg">
           <div className="p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-4 bg-muted/50 p-1 rounded-xl">
@@ -885,6 +593,256 @@ export default function SuperAdminDashboard() {
             </Tabs>
           </div>
         </div>
+        
+        {/* Floating Action Button for Create Company */}
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <DialogTrigger asChild>
+            <Button className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-gradient-primary hover:shadow-glow transition-all hover:scale-105">
+              <Plus className="h-6 w-6" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Building2 className="h-5 w-5 text-primary" />
+                Create New Company
+              </DialogTitle>
+              <DialogDescription>
+                Add a new transportation company to the FleetNest system.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="grid grid-cols-2 gap-6 py-4">
+              {/* Company Information */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b">
+                  <Building2 className="h-4 w-4 text-primary" />
+                  <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
+                    Company Information
+                  </h3>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="company-name">Company Name *</Label>
+                  <Input
+                    id="company-name"
+                    value={newCompany.name}
+                    {...companyNameHandlers}
+                    placeholder="Swift Transportation"
+                    className="transition-all focus:scale-[1.01]"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="company-email">Company Email *</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="company-email"
+                      type="email"
+                      value={newCompany.email}
+                      onChange={(e) => {
+                        const cleanValue = e.target.value.replace(/\s/g, '');
+                        setNewCompany(prev => ({ ...prev, email: cleanValue }));
+                      }}
+                      onKeyPress={(e) => {
+                        if (e.key === ' ') {
+                          e.preventDefault();
+                        }
+                      }}
+                      placeholder="contact@company.com"
+                      className="pl-10 transition-all focus:scale-[1.01]"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="company-phone">Company Phone *</Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="company-phone"
+                      value={newCompany.phone}
+                      {...companyPhoneHandlers}
+                      placeholder="(555) 123-4567"
+                      className="pl-10 transition-all focus:scale-[1.01]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Owner Information */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b">
+                  <User className="h-4 w-4 text-primary" />
+                  <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
+                    Owner/Primary Contact
+                  </h3>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="owner-name">Owner Name *</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="owner-name"
+                      value={newCompany.owner_name}
+                      {...ownerNameHandlers}
+                      placeholder="John Smith"
+                      className="pl-10 transition-all focus:scale-[1.01]"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="owner-email">Owner Email *</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="owner-email"
+                      type="email"
+                      value={newCompany.owner_email}
+                      onChange={(e) => {
+                        const cleanValue = e.target.value.replace(/\s/g, '');
+                        setNewCompany(prev => ({ ...prev, owner_email: cleanValue }));
+                      }}
+                      onKeyPress={(e) => {
+                        if (e.key === ' ') {
+                          e.preventDefault();
+                        }
+                      }}
+                      placeholder="john@company.com"
+                      className="pl-10 transition-all focus:scale-[1.01]"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="owner-phone">Owner Phone *</Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="owner-phone"
+                      value={newCompany.owner_phone}
+                      {...ownerPhoneHandlers}
+                      placeholder="(555) 987-6543"
+                      className="pl-10 transition-all focus:scale-[1.01]"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="owner-title">Owner Title</Label>
+                  <div className="relative">
+                    <Briefcase className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="owner-title"
+                      value={newCompany.owner_title}
+                      {...ownerTitleHandlers}
+                      placeholder="CEO, President, Fleet Manager..."
+                      className="pl-10 transition-all focus:scale-[1.01]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Plan Configuration */}
+              <div className="col-span-2 space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b">
+                  <BarChart3 className="h-4 w-4 text-primary" />
+                  <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
+                    Plan Configuration
+                  </h3>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="plan-type">Plan Type</Label>
+                    <Select 
+                      value={newCompany.plan_type} 
+                      onValueChange={(value) => setNewCompany(prev => ({ ...prev, plan_type: value }))}
+                    >
+                      <SelectTrigger className="transition-all focus:scale-[1.01]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="basic">
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
+                            Basic Plan
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="professional">
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 bg-purple-500 rounded-full"></div>
+                            Professional Plan
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="enterprise">
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 bg-orange-500 rounded-full"></div>
+                            Enterprise Plan
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="max-vehicles">Max Vehicles</Label>
+                    <Input
+                      id="max-vehicles"
+                      type="number"
+                      value={newCompany.max_vehicles}
+                      onChange={(e) => setNewCompany(prev => ({ ...prev, max_vehicles: parseInt(e.target.value) }))}
+                      min="1"
+                      className="transition-all focus:scale-[1.01]"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="max-users">Max Users</Label>
+                    <Input
+                      id="max-users"
+                      type="number"
+                      value={newCompany.max_users}
+                      onChange={(e) => setNewCompany(prev => ({ ...prev, max_users: parseInt(e.target.value) }))}
+                      min="1"
+                      className="transition-all focus:scale-[1.01]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowCreateDialog(false)}
+                disabled={isCreatingCompany}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleCreateCompany}
+                disabled={isCreatingCompany}
+                className="bg-gradient-primary hover:shadow-glow"
+              >
+                {isCreatingCompany ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Company
+                  </>
+                )}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
