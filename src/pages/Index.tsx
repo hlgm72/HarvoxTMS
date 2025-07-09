@@ -9,6 +9,10 @@ import templateMobile from "@/assets/template-mobile.jpg";
 import templateCommandDark from "@/assets/template-command-dark.jpg";
 import mobileDriverApp from "@/assets/mobile-driver-app.jpg";
 import mobileDriverDark from "@/assets/mobile-driver-dark.jpg";
+import designForms from "@/assets/design-forms.jpg";
+import designTables from "@/assets/design-tables.jpg";
+import designCards from "@/assets/design-cards.jpg";
+import designComponents from "@/assets/design-components.jpg";
 
 const Index = () => {
   const [showDarkPreview, setShowDarkPreview] = useState(false);
@@ -212,10 +216,146 @@ const Index = () => {
             </div>
           </div>
           
+          {/* Design System Components Section */}
+          <div className="mt-12 space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold mb-4">🎨 Design System - Componentes</h2>
+              <p className="text-muted-foreground text-lg">
+                Vista detallada de formularios, tablas, cards y elementos UI
+              </p>
+            </div>
+            
+            <div className="grid gap-8">
+              {/* Forms Section */}
+              <div className="rounded-xl border bg-card overflow-hidden shadow-lg">
+                <div className="flex flex-col lg:flex-row">
+                  <div className="lg:w-2/3">
+                    <img 
+                      src={designForms} 
+                      alt="FleetNest Forms Design System"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="lg:w-1/3 p-6 space-y-4">
+                    <div>
+                      <h3 className="text-2xl font-bold">📋 Formularios</h3>
+                      <p className="text-sm text-muted-foreground font-medium">Floating Labels + Icons</p>
+                      <p className="text-muted-foreground mt-2">Formularios modernos con iconos contextuales</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-semibold mb-2">Características:</h4>
+                      <ul className="space-y-1 text-sm text-muted-foreground">
+                        <li>• Floating labels con animación suave</li>
+                        <li>• Iconos TMS específicos (truck, user, map-pin)</li>
+                        <li>• Estados de validación visuales</li>
+                        <li>• Focus states con accent orange</li>
+                        <li>• Typography: Inter body + JetBrains Mono datos</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Tables Section */}
+              <div className="rounded-xl border bg-card overflow-hidden shadow-lg">
+                <div className="flex flex-col lg:flex-row">
+                  <div className="lg:w-2/3">
+                    <img 
+                      src={designTables} 
+                      alt="FleetNest Tables Design System"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="lg:w-1/3 p-6 space-y-4">
+                    <div>
+                      <h3 className="text-2xl font-bold">📊 Tablas</h3>
+                      <p className="text-sm text-muted-foreground font-medium">Modern Data Tables</p>
+                      <p className="text-muted-foreground mt-2">Tablas optimizadas para datos de flota</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-semibold mb-2">Características:</h4>
+                      <ul className="space-y-1 text-sm text-muted-foreground">
+                        <li>• Headers con acciones integradas</li>
+                        <li>• Datos monospace para truck numbers</li>
+                        <li>• Status badges coloridos y consistentes</li>
+                        <li>• Hover effects y action dropdowns</li>
+                        <li>• Responsive con opción de densidad</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Cards Section */}
+              <div className="rounded-xl border bg-card overflow-hidden shadow-lg">
+                <div className="flex flex-col lg:flex-row">
+                  <div className="lg:w-2/3">
+                    <img 
+                      src={designCards} 
+                      alt="FleetNest Cards Design System"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="lg:w-1/3 p-6 space-y-4">
+                    <div>
+                      <h3 className="text-2xl font-bold">🎴 Cards</h3>
+                      <p className="text-sm text-muted-foreground font-medium">KPI, Load & Driver Cards</p>
+                      <p className="text-muted-foreground mt-2">Cards específicas para contextos TMS</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-semibold mb-2">Tipos de Cards:</h4>
+                      <ul className="space-y-1 text-sm text-muted-foreground">
+                        <li>• <strong>KPI Cards</strong> - Dashboard con métricas</li>
+                        <li>• <strong>Load Cards</strong> - Detalles de cargas</li>
+                        <li>• <strong>Driver Cards</strong> - Perfiles móviles</li>
+                        <li>• Border-left accent en cards importantes</li>
+                        <li>• Hover effects con shadow elevation</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Components Section */}
+              <div className="rounded-xl border bg-card overflow-hidden shadow-lg">
+                <div className="flex flex-col lg:flex-row">
+                  <div className="lg:w-2/3">
+                    <img 
+                      src={designComponents} 
+                      alt="FleetNest UI Components Design System"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="lg:w-1/3 p-6 space-y-4">
+                    <div>
+                      <h3 className="text-2xl font-bold">🔧 Componentes UI</h3>
+                      <p className="text-sm text-muted-foreground font-medium">Badges, Buttons & States</p>
+                      <p className="text-muted-foreground mt-2">Elementos UI unificados y consistentes</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-semibold mb-2">Elementos:</h4>
+                      <ul className="space-y-1 text-sm text-muted-foreground">
+                        <li>• <strong>Status Badges</strong> - Active, In-Transit, Delivered</li>
+                        <li>• <strong>Buttons</strong> - Primary, Outline, Ghost variants</li>
+                        <li>• <strong>Progress & Loading</strong> - States consistentes</li>
+                        <li>• <strong>Dropdowns & Toggles</strong> - Elementos interactivos</li>
+                        <li>• Palette orange/blue para consistency</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
           <div className="mt-8 p-6 bg-muted rounded-xl text-center">
-            <h3 className="text-xl font-semibold mb-2">¿Ya tienes tu favorito?</h3>
+            <h3 className="text-xl font-semibold mb-2">¿Te gusta el Design System Command Center?</h3>
             <p className="text-muted-foreground">
-              Dime cuál template prefieres y lo implementaré en tu aplicación FleetNest
+              Con todas estas especificaciones visuales, ¿procedo a implementar el template completo?
             </p>
           </div>
         </div>
