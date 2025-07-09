@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Layout } from '@/components/layout/Layout';
+import { SimpleLayout } from '@/components/layout/SimpleLayout';
 import { useToast } from '@/hooks/use-toast';
 import { useFleetNotifications } from '@/components/notifications';
 import { createTextHandlers } from '@/lib/textUtils';
@@ -219,7 +219,7 @@ export default function SuperAdminDashboard() {
 
   if (loading) {
     return (
-      <Layout>
+      <SimpleLayout>
         <div className="p-6">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
@@ -228,13 +228,13 @@ export default function SuperAdminDashboard() {
             </div>
           </div>
         </div>
-      </Layout>
+      </SimpleLayout>
     );
   }
 
   if (!isSuperAdmin) {
     return (
-      <Layout>
+      <SimpleLayout>
         <div className="p-6">
           <Card>
             <CardContent className="pt-6">
@@ -245,12 +245,12 @@ export default function SuperAdminDashboard() {
             </CardContent>
           </Card>
         </div>
-      </Layout>
+      </SimpleLayout>
     );
   }
 
   return (
-    <Layout>
+    <SimpleLayout>
       <div className="min-h-screen bg-gradient-subtle">
         {/* Enhanced Header Section */}
         <div className="bg-primary text-white shadow-lg relative overflow-hidden">
@@ -886,6 +886,6 @@ export default function SuperAdminDashboard() {
           </div>
         </div>
       </div>
-    </Layout>
+    </SimpleLayout>
   );
 }
