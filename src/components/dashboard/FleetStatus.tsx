@@ -137,13 +137,13 @@ export function FleetStatus() {
     { 
       status: "Activos", 
       count: fleetData.active, 
-      color: "bg-fleet-green", 
+      color: "bg-success", 
       percentage: fleetData.total > 0 ? Math.round((fleetData.active / fleetData.total) * 100) : 0 
     },
     { 
       status: "Disponibles", 
       count: fleetData.available, 
-      color: "bg-fleet-blue", 
+      color: "bg-primary", 
       percentage: fleetData.total > 0 ? Math.round((fleetData.available / fleetData.total) * 100) : 0 
     },
     { 
@@ -181,7 +181,7 @@ export function FleetStatus() {
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2">
           🚛 Estado de Flota
-          <Badge variant="outline" className="bg-fleet-green/10 text-fleet-green border-fleet-green/20">
+          <Badge variant="outline" className="bg-success/10 text-success border-success/20">
             {fleetData.utilization}% Activa
           </Badge>
         </CardTitle>
@@ -190,11 +190,11 @@ export function FleetStatus() {
         {/* Overview Stats */}
         <div className="grid grid-cols-2 gap-3">
           <div className="text-center p-3 bg-gradient-subtle rounded-lg">
-            <div className="text-2xl font-bold text-fleet-blue">{fleetData.total}</div>
+            <div className="text-2xl font-bold text-primary">{fleetData.total}</div>
             <div className="text-xs text-muted-foreground">Total Vehículos</div>
           </div>
           <div className="text-center p-3 bg-gradient-subtle rounded-lg">
-            <div className="text-2xl font-bold text-fleet-green">{fleetData.active}</div>
+            <div className="text-2xl font-bold text-success">{fleetData.active}</div>
             <div className="text-xs text-muted-foreground">Activos</div>
           </div>
         </div>

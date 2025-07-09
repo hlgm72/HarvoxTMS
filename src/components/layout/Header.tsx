@@ -21,14 +21,14 @@ export function Header() {
               FleetNest Command Center
             </h1>
             <p className="text-sm text-muted-foreground flex items-center gap-2">
-              <span className="w-2 h-2 bg-fleet-green rounded-full animate-pulse"></span>
+              <span className="w-2 h-2 bg-success rounded-full animate-pulse"></span>
               Sistema operativo en tiempo real
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" className="border-fleet-blue text-fleet-blue hover:bg-fleet-blue hover:text-white">
+          <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
             + Nueva Carga
           </Button>
           <Button size="sm" className="bg-gradient-fleet text-white shadow-fleet">

@@ -82,7 +82,15 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// FleetNest specific colors
+				'fleet-orange': 'hsl(var(--fleet-orange))',
+				'fleet-orange-dark': 'hsl(var(--fleet-orange-dark))',
+				'fleet-blue': 'hsl(var(--fleet-blue))',
+				'fleet-navy': 'hsl(var(--fleet-navy))',
+				'fleet-green': 'hsl(var(--fleet-green))',
+				'fleet-red': 'hsl(var(--fleet-red))',
+				'fleet-sky': 'hsl(var(--fleet-sky))'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

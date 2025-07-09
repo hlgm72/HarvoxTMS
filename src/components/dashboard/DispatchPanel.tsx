@@ -61,7 +61,7 @@ export function DispatchPanel() {
           <CardTitle className="flex items-center gap-2">
             🚚 Panel de Despacho
           </CardTitle>
-          <Button size="sm" className="bg-gradient-fleet text-white shadow-fleet">
+          <Button size="sm" className="bg-gradient-primary text-white shadow-glow">
             + Asignar Carga
           </Button>
         </div>
@@ -84,7 +84,7 @@ export function DispatchPanel() {
                     {getPriorityText(load.priority)}
                   </Badge>
                 </div>
-                <span className="text-sm font-medium text-fleet-green">{load.value}</span>
+                <span className="text-sm font-medium text-success">{load.value}</span>
               </div>
               
               <div className="text-xs text-muted-foreground space-y-1">
@@ -102,7 +102,7 @@ export function DispatchPanel() {
                 <Button variant="outline" size="sm" className="text-xs flex-1">
                   Ver Detalles
                 </Button>
-                <Button size="sm" className="text-xs bg-fleet-blue text-white hover:bg-fleet-navy">
+                <Button size="sm" className="text-xs bg-primary text-primary-foreground hover:bg-primary/90">
                   Asignar
                 </Button>
               </div>
