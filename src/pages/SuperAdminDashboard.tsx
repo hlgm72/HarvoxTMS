@@ -6,7 +6,13 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Building2, Users, Truck, Activity, Plus, Settings, Mail, Phone, User, Briefcase } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Building2, Users, Truck, Activity, Plus, Settings, Mail, Phone, User, Briefcase,
+  BarChart3, Shield, Database, Globe, ChevronRight, Search, Filter,
+  TrendingUp, AlertTriangle, CheckCircle, Clock, Eye
+} from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Layout } from '@/components/layout/Layout';
@@ -42,6 +48,7 @@ export default function SuperAdminDashboard() {
   const { user, isSuperAdmin, loading } = useAuth();
   const { toast } = useToast();
   const { showSuccess, showError } = useFleetNotifications();
+  const [activeTab, setActiveTab] = useState('overview');
   const [stats, setStats] = useState<CompanyStats>({
     total_companies: 0,
     total_users: 0,
@@ -52,6 +59,7 @@ export default function SuperAdminDashboard() {
   const [loadingData, setLoadingData] = useState(true);
   const [isCreatingCompany, setIsCreatingCompany] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const [newCompany, setNewCompany] = useState({
     name: '',
     email: '',
