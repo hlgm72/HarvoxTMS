@@ -5,12 +5,16 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Truck, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Auth() {
   const { t } = useTranslation(['auth', 'common']);
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,17 +36,50 @@ export default function Auth() {
     setError(null);
 
     try {
-      // TODO: Implement actual authentication logic
-      console.log(isLogin ? 'Login attempt:' : 'Signup attempt:', formData);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // For demo purposes
-      setError(t('auth:errors.auth_pending'));
-      
+      if (isLogin) {
+        // Sign in existing user
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (error) throw error;
+
+        if (data.user) {
+          toast({
+            title: "Welcome back!",
+            description: "You have been successfully logged in.",
+          });
+          navigate('/setup');
+        }
+      } else {
+        // Sign up new user
+        const { data, error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/setup`,
+            data: {
+              first_name: formData.firstName,
+              last_name: formData.lastName,
+              company_name: formData.companyName,
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        if (data.user) {
+          toast({
+            title: "Account created!",
+            description: "Please check your email to verify your account.",
+          });
+          // Don't navigate yet - wait for email verification
+        }
+      }
     } catch (err: any) {
-      setError(err.message || 'Error de autenticación');
+      console.error('Authentication error:', err);
+      setError(err.message || 'Authentication error occurred');
     } finally {
       setLoading(false);
     }
