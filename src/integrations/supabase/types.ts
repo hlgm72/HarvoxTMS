@@ -14,6 +14,122 @@ export type Database = {
   }
   public: {
     Tables: {
+      companies: {
+        Row: {
+          city_id: string | null
+          created_at: string
+          dot_number: string | null
+          ein: string | null
+          email: string | null
+          id: string
+          mc_number: string | null
+          name: string
+          payment_day: number
+          phone: string | null
+          state_id: string
+          street_address: string
+          updated_at: string
+          zip_code: string
+        }
+        Insert: {
+          city_id?: string | null
+          created_at?: string
+          dot_number?: string | null
+          ein?: string | null
+          email?: string | null
+          id?: string
+          mc_number?: string | null
+          name: string
+          payment_day?: number
+          phone?: string | null
+          state_id: string
+          street_address: string
+          updated_at?: string
+          zip_code: string
+        }
+        Update: {
+          city_id?: string | null
+          created_at?: string
+          dot_number?: string | null
+          ein?: string | null
+          email?: string | null
+          id?: string
+          mc_number?: string | null
+          name?: string
+          payment_day?: number
+          phone?: string | null
+          state_id?: string
+          street_address?: string
+          updated_at?: string
+          zip_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "companies_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "state_cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "companies_state_id_fkey"
+            columns: ["state_id"]
+            isOneToOne: false
+            referencedRelation: "states"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_documents: {
+        Row: {
+          company_id: string
+          content_type: string | null
+          created_at: string
+          document_type: string
+          expires_at: string | null
+          file_name: string
+          file_size: number | null
+          file_url: string
+          id: string
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          company_id: string
+          content_type?: string | null
+          created_at?: string
+          document_type: string
+          expires_at?: string | null
+          file_name: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          company_id?: string
+          content_type?: string | null
+          created_at?: string
+          document_type?: string
+          expires_at?: string | null
+          file_name?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       drivers: {
         Row: {
           created_at: string
