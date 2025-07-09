@@ -23,21 +23,21 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222 84% 4%;
 
-    /* Primary: Transport Orange */
-    --primary: 16 100% 60%;        /* #FF6B35 - Transport Orange */
+    /* Primary: Fleet Blue */
+    --primary: 214 88% 54%;        /* #2563EB - Fleet Blue */
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 16 100% 70%;   /* Lighter orange for effects */
-    --primary-light: 16 100% 95%;  /* Very light orange for backgrounds */
+    --primary-glow: 214 88% 64%;   /* Lighter blue for effects */
+    --primary-light: 214 88% 95%;  /* Very light blue for backgrounds */
 
-    /* Secondary: Fleet Blue */
-    --secondary: 214 88% 54%;      /* #2563EB - Fleet Blue */
+    /* Secondary: Transport Orange */
+    --secondary: 16 100% 60%;      /* #FF6B35 - Transport Orange */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 210 16% 93%;
     --muted-foreground: 215 25% 27%;
 
-    --accent: 16 100% 96%;         /* Light orange accent */
-    --accent-foreground: 16 100% 60%;
+    --accent: 214 88% 96%;         /* Light blue accent */
+    --accent-foreground: 214 88% 54%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -58,21 +58,21 @@ All colors MUST be HSL.
     --fleet-sky: 199 89% 48%;      /* Info/secondary actions */
     
     /* Command Center Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--fleet-orange)), hsl(var(--fleet-orange-dark)));
+    --gradient-primary: linear-gradient(135deg, hsl(var(--fleet-blue)), hsl(var(--fleet-navy)));
     --gradient-fleet: linear-gradient(135deg, hsl(var(--fleet-blue)), hsl(var(--fleet-navy)));
     --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
     
-    /* Shadows with orange/blue theme */
-    --shadow-fleet: 0 10px 30px -10px hsl(var(--fleet-orange) / 0.3);
-    --shadow-glow: 0 0 40px hsl(var(--fleet-orange) / 0.4);
+    /* Shadows with blue/orange theme */
+    --shadow-fleet: 0 10px 30px -10px hsl(var(--fleet-blue) / 0.3);
+    --shadow-glow: 0 0 40px hsl(var(--fleet-blue) / 0.4);
     --shadow-blue: 0 10px 30px -10px hsl(var(--fleet-blue) / 0.3);
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 16 100% 60%;            /* Orange ring for focus states */
+    --ring: 214 88% 54%;            /* Blue ring for focus states */
 
     /* Chart colors using fleet theme */
-    --chart-1: 16 100% 60%;         /* Fleet orange */
-    --chart-2: 214 88% 54%;         /* Fleet blue */
+    --chart-1: 214 88% 54%;         /* Fleet blue */
+    --chart-2: 16 100% 60%;         /* Fleet orange */
     --chart-3: 142 76% 36%;         /* Fleet green */
     --chart-4: 0 84% 60%;           /* Fleet red */
     --chart-5: 199 89% 48%;         /* Fleet sky */
@@ -82,12 +82,12 @@ All colors MUST be HSL.
     /* Sidebar colors */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 16 100% 60%;  /* Orange primary for sidebar */
+    --sidebar-primary: 214 88% 54%;  /* Blue primary for sidebar */
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 16 100% 96%;   /* Light orange accent */
-    --sidebar-accent-foreground: 16 100% 60%;
+    --sidebar-accent: 214 88% 96%;   /* Light blue accent */
+    --sidebar-accent-foreground: 214 88% 54%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 16 100% 60%;
+    --sidebar-ring: 214 88% 54%;
 
     /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -104,38 +104,38 @@ All colors MUST be HSL.
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    /* Primary stays orange in dark mode */
-    --primary: 16 100% 65%;         /* Slightly lighter orange for dark mode */
+    /* Primary stays blue in dark mode */
+    --primary: 214 88% 60%;         /* Slightly lighter blue for dark mode */
     --primary-foreground: 222.2 47.4% 11.2%;
-    --primary-glow: 16 100% 75%;
-    --primary-light: 16 100% 10%;
+    --primary-glow: 214 88% 70%;
+    --primary-light: 214 88% 10%;
 
-    /* Secondary: Fleet Blue adjusted for dark */
-    --secondary: 214 88% 60%;       /* Lighter blue for dark mode */
+    /* Secondary: Orange adjusted for dark */
+    --secondary: 16 100% 65%;       /* Lighter orange for dark mode */
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 16 100% 15%;          /* Dark orange accent */
-    --accent-foreground: 16 100% 65%;
+    --accent: 214 88% 15%;          /* Dark blue accent */
+    --accent-foreground: 214 88% 65%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 16 100% 65%;
+    --ring: 214 88% 60%;
 
     /* Dark mode sidebar */
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 16 100% 65%;
+    --sidebar-primary: 214 88% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 16 100% 65%;
+    --sidebar-ring: 214 88% 60%;
   }
 }
 
