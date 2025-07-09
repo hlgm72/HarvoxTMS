@@ -130,6 +130,62 @@ export type Database = {
           },
         ]
       }
+      driver_profiles: {
+        Row: {
+          cdl_class: string | null
+          created_at: string
+          date_of_birth: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          hire_date: string | null
+          id: string
+          is_active: boolean
+          license_expiry_date: string | null
+          license_number: string | null
+          license_state: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cdl_class?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          hire_date?: string | null
+          id?: string
+          is_active?: boolean
+          license_expiry_date?: string | null
+          license_number?: string | null
+          license_state?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cdl_class?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          hire_date?: string | null
+          id?: string
+          is_active?: boolean
+          license_expiry_date?: string | null
+          license_number?: string | null
+          license_state?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_profiles_license_state_fkey"
+            columns: ["license_state"]
+            isOneToOne: false
+            referencedRelation: "states"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       drivers: {
         Row: {
           created_at: string
@@ -160,6 +216,45 @@ export type Database = {
           name?: string
           phone?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          phone: string | null
+          preferred_language: string | null
+          timezone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          preferred_language?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          preferred_language?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -212,6 +307,53 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      user_company_roles: {
+        Row: {
+          company_id: string
+          created_at: string
+          delegated_at: string | null
+          delegated_by: string | null
+          id: string
+          is_active: boolean
+          permissions: Json | null
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          delegated_at?: string | null
+          delegated_by?: string | null
+          id?: string
+          is_active?: boolean
+          permissions?: Json | null
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          delegated_at?: string | null
+          delegated_by?: string | null
+          id?: string
+          is_active?: boolean
+          permissions?: Json | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_company_roles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vehicle_assignments: {
         Row: {
@@ -352,7 +494,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      user_role:
+        | "company_owner"
+        | "senior_dispatcher"
+        | "dispatcher"
+        | "driver"
+        | "safety_manager"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -479,6 +626,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: [
+        "company_owner",
+        "senior_dispatcher",
+        "dispatcher",
+        "driver",
+        "safety_manager",
+      ],
+    },
   },
 } as const
