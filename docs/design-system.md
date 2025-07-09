@@ -20,6 +20,12 @@
 - **Escalable:** Preparado para idiomas futuros (Francés, Portugués)
 - **Automático:** TODA página/componente bilingüe desde implementación inicial
 
+### **Componentes Reutilizables:** Sistema Automático desde Día 1
+- **Principio:** Cualquier elemento repetido → componente reutilizable inmediato
+- **Organización:** Componentes base + TMS específicos + hooks personalizados
+- **Consistencia:** Design system aplicado automáticamente en todos los componentes
+- **Escalabilidad:** Componentes preparados para 2-100+ trucks desde inicio
+
 ---
 
 ## 📋 **SISTEMA DE FORMULARIOS**
