@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import fleetNestLogoWhite from '@/assets/fleetnest-logo-white.png';
-import fleetNestLogoMain from '@/assets/fleetnest-logo-main.png';
+import fleetNestLogoWhite from '@/assets/fleetnest-logo-minimal-white.png';
+import fleetNestLogoMain from '@/assets/fleetnest-logo-minimal.png';
 
 export default function Auth() {
   const { t } = useTranslation(['auth', 'common']);
@@ -202,13 +202,13 @@ export default function Auth() {
         <div className="max-w-lg animate-fade-in">
           {/* Logo and Branding */}
           <div className="flex items-center space-x-4 mb-8">
-            <div className="flex items-center space-x-4 p-4 rounded-2xl bg-white/10 backdrop-blur-sm">
+            <div className="flex items-center space-x-4 p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20">
               <img 
                 src={fleetNestLogoWhite} 
                 alt="FleetNest Logo" 
-                className="h-12 w-12 object-contain"
+                className="h-14 w-14 object-contain filter drop-shadow-lg"
               />
-              <span className="text-3xl font-heading font-bold text-white">{t('common:app.name')}</span>
+              <span className="text-3xl font-heading font-bold text-white drop-shadow-lg">{t('common:app.name')}</span>
             </div>
           </div>
           
@@ -275,13 +275,13 @@ export default function Auth() {
           <CardHeader className="text-center pb-6">
             {/* Logo for Mobile */}
             <div className="flex justify-center mb-6 lg:hidden">
-              <div className="flex items-center space-x-3 p-3 rounded-2xl bg-gradient-primary">
+              <div className="flex items-center space-x-3 p-4 rounded-2xl bg-gradient-primary shadow-glow">
                 <img 
                   src={fleetNestLogoWhite} 
                   alt="FleetNest Logo" 
-                  className="h-8 w-8 object-contain"
+                  className="h-10 w-10 object-contain filter drop-shadow-lg"
                 />
-                <span className="text-xl font-heading font-bold text-white">{t('common:app.name')}</span>
+                <span className="text-xl font-heading font-bold text-white drop-shadow-lg">{t('common:app.name')}</span>
               </div>
             </div>
             
