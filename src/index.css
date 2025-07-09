@@ -174,16 +174,24 @@ All colors MUST be HSL.
   }
   
   .auth-background {
-    background-image: 
+    background: 
       linear-gradient(135deg, 
-        hsla(var(--primary), 0.85) 0%, 
-        hsla(var(--primary-glow), 0.75) 50%, 
-        hsla(var(--fleet-navy), 0.9) 100%),
-      url('/auth-bg-logistics.jpg');
+        rgba(52, 82, 149, 0.8) 0%, 
+        rgba(65, 105, 175, 0.7) 50%, 
+        rgba(32, 67, 133, 0.85) 100%),
+      url('/auth-bg.jpg');
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
     background-attachment: fixed;
     min-height: 100vh;
+  }
+  
+  /* Fallback para móviles */
+  @media (max-width: 768px) {
+    .auth-background {
+      background-attachment: scroll;
+    }
   }
   
   .auth-card {
