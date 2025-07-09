@@ -162,6 +162,7 @@ export type Database = {
           cdl_class: string | null
           created_at: string
           date_of_birth: string | null
+          driver_id: string | null
           emergency_contact_name: string | null
           emergency_contact_phone: string | null
           hire_date: string | null
@@ -177,6 +178,7 @@ export type Database = {
           cdl_class?: string | null
           created_at?: string
           date_of_birth?: string | null
+          driver_id?: string | null
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
           hire_date?: string | null
@@ -192,6 +194,7 @@ export type Database = {
           cdl_class?: string | null
           created_at?: string
           date_of_birth?: string | null
+          driver_id?: string | null
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
           hire_date?: string | null
