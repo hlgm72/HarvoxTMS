@@ -157,6 +157,78 @@ export type Database = {
           },
         ]
       }
+      company_drivers: {
+        Row: {
+          base_salary: number | null
+          benefits_eligible: boolean | null
+          created_at: string
+          department: string | null
+          employee_id: string | null
+          employment_type: string | null
+          hire_date: string | null
+          hourly_rate: number | null
+          id: string
+          is_active: boolean
+          job_title: string | null
+          last_review_date: string | null
+          next_review_date: string | null
+          pay_frequency: string | null
+          performance_rating: number | null
+          sick_days_accrued: number | null
+          termination_date: string | null
+          termination_reason: string | null
+          updated_at: string
+          user_id: string
+          vacation_days_accrued: number | null
+        }
+        Insert: {
+          base_salary?: number | null
+          benefits_eligible?: boolean | null
+          created_at?: string
+          department?: string | null
+          employee_id?: string | null
+          employment_type?: string | null
+          hire_date?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_active?: boolean
+          job_title?: string | null
+          last_review_date?: string | null
+          next_review_date?: string | null
+          pay_frequency?: string | null
+          performance_rating?: number | null
+          sick_days_accrued?: number | null
+          termination_date?: string | null
+          termination_reason?: string | null
+          updated_at?: string
+          user_id: string
+          vacation_days_accrued?: number | null
+        }
+        Update: {
+          base_salary?: number | null
+          benefits_eligible?: boolean | null
+          created_at?: string
+          department?: string | null
+          employee_id?: string | null
+          employment_type?: string | null
+          hire_date?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_active?: boolean
+          job_title?: string | null
+          last_review_date?: string | null
+          next_review_date?: string | null
+          pay_frequency?: string | null
+          performance_rating?: number | null
+          sick_days_accrued?: number | null
+          termination_date?: string | null
+          termination_reason?: string | null
+          updated_at?: string
+          user_id?: string
+          vacation_days_accrued?: number | null
+        }
+        Relationships: []
+      }
       driver_profiles: {
         Row: {
           cdl_class: string | null
@@ -246,6 +318,48 @@ export type Database = {
           name?: string
           phone?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      owner_operators: {
+        Row: {
+          business_address: string | null
+          business_email: string | null
+          business_name: string | null
+          business_phone: string | null
+          business_type: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          tax_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_address?: string | null
+          business_email?: string | null
+          business_name?: string | null
+          business_phone?: string | null
+          business_type?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          tax_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_address?: string | null
+          business_email?: string | null
+          business_name?: string | null
+          business_phone?: string | null
+          business_type?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          tax_id?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
