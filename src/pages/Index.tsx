@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Truck, 
   MapPin, 
   BarChart3, 
   Shield, 
@@ -12,11 +11,13 @@ import {
   ArrowRight,
   Phone,
   Mail,
-  Star
+  Star,
+  Truck
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import fleetNestLogo from '@/assets/fleetnest-logo-original.png';
 
 export default function Index() {
   const { t } = useTranslation(['landing', 'common']);
@@ -62,8 +63,12 @@ export default function Index() {
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Truck className="h-8 w-8 text-primary" />
+            <div className="flex items-center space-x-3">
+              <img 
+                src={fleetNestLogo} 
+                alt="FleetNest Logo" 
+                className="h-10 w-10 object-contain"
+              />
               <span className="text-2xl font-bold text-primary">{t('common:app.name')}</span>
             </div>
             
@@ -246,8 +251,12 @@ export default function Index() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
-                <Truck className="h-8 w-8 text-primary" />
+              <div className="flex items-center space-x-3 mb-4">
+                <img 
+                  src={fleetNestLogo} 
+                  alt="FleetNest Logo" 
+                  className="h-10 w-10 object-contain"
+                />
                 <span className="text-2xl font-bold text-primary">{t('common:app.name')}</span>
               </div>
               <p className="text-muted-foreground mb-4">
