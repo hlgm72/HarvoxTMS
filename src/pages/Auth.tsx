@@ -404,7 +404,17 @@ export default function Auth() {
                     id="email"
                     type="email"
                     value={formData.email}
-                    {...emailHandlers}
+                    onChange={(e) => {
+                      const cleanValue = e.target.value.replace(/\s/g, '');
+                      console.log('Email onChange:', e.target.value, '→', cleanValue);
+                      setFormData(prev => ({ ...prev, email: cleanValue }));
+                      validateField('email', cleanValue);
+                      if (error) setError(null);
+                    }}
+                    onBlur={(e) => {
+                      const trimmedValue = e.target.value.trim();
+                      setFormData(prev => ({ ...prev, email: trimmedValue }));
+                    }}
                     placeholder={t('auth:form.email_placeholder')}
                     className={`auth-input pl-10 font-body ${fieldErrors.email ? 'border-destructive' : ''}`}
                     required
