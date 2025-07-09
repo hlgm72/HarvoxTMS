@@ -1,260 +1,200 @@
-# FleetNest TMS - Task Breakdown Detallado
+# FleetNest TMS - Desglose de Tareas Específicas
 
-## 🔧 **FASE 1: FUNDACIÓN MULTI-TENANT**
+## 🎯 **TAREA ACTUAL: FASE 1.2 - Autenticación Multi-Tenant**
 
-### 1.1 Google OAuth Integration
-**Dependencias:** Supabase Auth configurado ✅
-**Complejidad:** Media | **Estimación:** 4-6 horas
+### **Subtarea 1: Database Schema Multi-Tenant** ⏰ 30 min
+```sql
+-- Crear tablas base para multi-tenancy
+CREATE TABLE companies (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  mc_number TEXT UNIQUE,
+  dot_number TEXT UNIQUE,
+  address JSONB,
+  phone TEXT,
+  email TEXT,
+  logo_url TEXT,
+  settings JSONB DEFAULT '{}',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
 
-#### Subtareas Técnicas:
-1. **Configurar Google Cloud Console**
-   - Crear proyecto en Google Cloud
-   - Habilitar Google+ API
-   - Configurar OAuth consent screen
-   - Obtener Client ID y Client Secret
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  display_name TEXT,
+  avatar_url TEXT,
+  phone TEXT,
+  preferences JSONB DEFAULT '{}',
+  last_active_company UUID REFERENCES companies(id),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
 
-2. **Supabase OAuth Config**
-   - Agregar Google como provider en Supabase
-   - Configurar redirect URLs
-   - Setear Site URL correctamente
+CREATE TYPE app_role AS ENUM ('owner', 'senior_dispatcher', 'dispatcher', 'driver');
 
-3. **Frontend Implementation**
-   - Instalar @supabase/auth-ui-react (opcional)
-   - Crear botón "Sign in with Google"
-   - Manejar OAuth callback
-   - Error handling para OAuth flows
-
-4. **Testing**
-   - Probar login/logout con Google
-   - Verificar user metadata
-   - Validar session persistence
-
----
-
-### 1.2 Companies Table & Multi-Tenancy
-**Dependencias:** Ninguna
-**Complejidad:** Alta | **Estimación:** 8-10 horas
-
-#### Subtareas Técnicas:
-1. **Database Migration - Companies**
-   ```sql
-   CREATE TABLE public.companies (
-     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-     name TEXT NOT NULL,
-     mc_number TEXT,
-     dot_number TEXT,
-     address JSONB,
-     logo_url TEXT,
-     settings JSONB DEFAULT '{}',
-     is_active BOOLEAN DEFAULT true,
-     created_at TIMESTAMPTZ DEFAULT now(),
-     updated_at TIMESTAMPTZ DEFAULT now()
-   );
-   ```
-
-2. **Database Migration - User Company Roles**
-   ```sql
-   CREATE TABLE public.user_company_roles (
-     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-     company_id UUID REFERENCES public.companies(id) ON DELETE CASCADE,
-     role TEXT NOT NULL CHECK (role IN ('owner', 'senior_dispatcher', 'dispatcher', 'driver')),
-     permissions JSONB DEFAULT '[]',
-     delegated_by UUID REFERENCES auth.users(id),
-     delegated_at TIMESTAMPTZ,
-     is_active BOOLEAN DEFAULT true,
-     created_at TIMESTAMPTZ DEFAULT now(),
-     UNIQUE(user_id, company_id, role)
-   );
-   ```
-
-3. **RLS Policies Implementation**
-   - Policy para companies (solo usuarios con rol en esa company)
-   - Policy para user_company_roles (solo sus propios roles)
-   - Policy para service_role (acceso completo para sync)
-
-4. **User Preferences Table**
-   ```sql
-   CREATE TABLE public.user_preferences (
-     user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-     last_active_company UUID REFERENCES public.companies(id),
-     last_active_role TEXT,
-     settings JSONB DEFAULT '{}',
-     updated_at TIMESTAMPTZ DEFAULT now()
-   );
-   ```
-
----
-
-### 1.3 Role Switching UI System
-**Dependencias:** Companies table, User roles
-**Complejidad:** Alta | **Estimación:** 10-12 horas
-
-#### Subtareas Técnicas:
-1. **Custom Hooks Development**
-   ```typescript
-   // useAuth hook con multi-tenant
-   const useAuth = () => {
-     const [user, setUser] = useState<User | null>(null);
-     const [activeCompany, setActiveCompany] = useState<string | null>(null);
-     const [activeRole, setActiveRole] = useState<string | null>(null);
-     const [availableCompanies, setAvailableCompanies] = useState<CompanyRole[]>([]);
-   }
-
-   // usePermissions hook
-   const usePermissions = () => {
-     const canAccess = (permission: string) => boolean;
-     const hasRole = (role: string) => boolean;
-   }
-   ```
-
-2. **Company Selector Component**
-   - Dropdown con lista de compañías del usuario
-   - Visual indicator de compañía activa
-   - Cambio de contexto y recarga de datos
-   - Loading states durante cambio
-
-3. **Role Switcher Component**  
-   - Dropdown con roles disponibles en compañía activa
-   - Indicador visual de rol activo
-   - Persistencia en localStorage
-   - Validación de permisos en tiempo real
-
-4. **Context Provider Setup**
-   ```typescript
-   const MultiTenantContext = createContext<{
-     activeCompany: Company | null;
-     activeRole: string | null;
-     switchCompany: (companyId: string) => void;
-     switchRole: (role: string) => void;
-     permissions: string[];
-   }>();
-   ```
-
----
-
-### 1.4 Panel Superadmin
-**Dependencias:** Companies table, Role system
-**Complejidad:** Media | **Estimación:** 6-8 horas
-
-#### Subtareas Técnicas:
-1. **Route Protection**
-   ```typescript
-   const SuperadminRoute = ({ children }) => {
-     const { user } = useAuth();
-     const isSuperadmin = user?.email === 'admin@fleetnest.com'; // Temporal
-     return isSuperadmin ? children : <Navigate to="/" />;
-   };
-   ```
-
-2. **Companies Management Page**
-   - Lista de todas las compañías
-   - Filtros (activas, suspendidas, por fecha)
-   - Acciones: ver detalles, suspender, activar
-   - Stats básicas por compañía
-
-3. **Create Company Form**
-   ```typescript
-   interface CompanyForm {
-     name: string;
-     mcNumber?: string;
-     dotNumber?: string;
-     address: {
-       street: string;
-       city: string;
-       state: string;
-       zip: string;
-     };
-     ownerEmail: string; // Para crear primer usuario
-   }
-   ```
-
-4. **Company Dashboard**
-   - Overview stats (users, vehicles, loads)
-   - Quick actions (suspend, contact owner)
-   - Activity timeline básico
-
----
-
-### 1.5 Responsive Header System
-**Dependencias:** Role switching, Company selector
-**Complejidad:** Media | **Estimación:** 6-8 horas
-
-#### Subtareas Técnicas:
-1. **Header Component Structure**
-   ```typescript
-   const Header = () => {
-     const { isMobile } = useBreakpoint();
-     return (
-       <header className="flex items-center justify-between p-4">
-         <div className="flex items-center gap-4">
-           <SidebarTrigger />
-           <Logo />
-           {!isMobile && <CompanySelector />}
-         </div>
-         <div className="flex items-center gap-2">
-           {!isMobile && <RoleSwitcher />}
-           <ThemeToggle />
-           <UserMenu />
-         </div>
-       </header>
-     );
-   };
-   ```
-
-2. **Mobile Adaptation**
-   - Company/Role selector en sidebar en mobile
-   - Hamburger menu para navegación
-   - Touch-friendly button sizes
-   - Responsive breakpoints
-
-3. **Theme Toggle Implementation**
-   ```typescript
-   const ThemeToggle = () => {
-     const [theme, setTheme] = useState<'light' | 'dark'>('light');
-     
-     useEffect(() => {
-       document.documentElement.classList.toggle('dark', theme === 'dark');
-     }, [theme]);
-   };
-   ```
-
-4. **User Menu Dropdown**
-   - Profile link
-   - Company settings (si es owner)
-   - Logout functionality
-   - Role/company quick switcher
-
----
-
-## 🔗 **Dependencias Entre Tareas**
-
-```mermaid
-graph TD
-    A[Google OAuth] --> B[Companies Table]
-    B --> C[User Company Roles]
-    C --> D[Role Switching UI]
-    D --> E[Superadmin Panel]
-    D --> F[Responsive Header]
-    E --> G[Fase 2 Ready]
-    F --> G
+CREATE TABLE user_company_roles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  company_id UUID REFERENCES companies(id) ON DELETE CASCADE NOT NULL,
+  role app_role NOT NULL,
+  permissions JSONB DEFAULT '[]',
+  delegated_by UUID REFERENCES auth.users(id),
+  delegated_at TIMESTAMP WITH TIME ZONE,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  UNIQUE(user_id, company_id, role)
+);
 ```
 
+### **Subtarea 2: RLS Policies** ⏰ 20 min
+```sql
+-- Companies table policies
+ALTER TABLE companies ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view companies they belong to" ON companies
+  FOR SELECT USING (
+    id IN (
+      SELECT company_id FROM user_company_roles 
+      WHERE user_id = auth.uid() AND is_active = true
+    )
+  );
+
+-- Profiles table policies  
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view all profiles" ON profiles FOR SELECT USING (true);
+CREATE POLICY "Users can update own profile" ON profiles 
+  FOR UPDATE USING (auth.uid() = id);
+
+-- User company roles policies
+ALTER TABLE user_company_roles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view their own roles" ON user_company_roles
+  FOR SELECT USING (auth.uid() = user_id);
+```
+
+### **Subtarea 3: Auth Pages** ⏰ 45 min
+- ✅ **Login Page** - `/auth` con formulario email/password
+- ✅ **Signup Page** - Registro + creación de primera empresa
+- ✅ **Company Creation** - Formulario MC number, DOT, info básica
+- ✅ **Auth State Management** - Hook para user/session/company
+
+### **Subtarea 4: Company Switcher** ⏰ 30 min
+- ✅ **Dropdown en Header** - Selector de empresa activa
+- ✅ **Context Provider** - Estado global de empresa actual
+- ✅ **Permissions Hook** - Verificar permisos por rol
+
+### **Subtarea 5: Role-Based Navigation** ⏰ 20 min
+- ✅ **Protected Routes** - Componente para verificar acceso
+- ✅ **Dynamic Menu** - Items basados en rol de usuario
+- ✅ **Permission Guards** - Hide/show features por rol
+
 ---
 
-## ⚠️ **Riesgos y Consideraciones**
+## 🎯 **SIGUIENTE TAREA: FASE 1.3 - Layout Command Center**
 
-### Riesgos Técnicos:
-1. **OAuth Flow** - Configuración incorrecta puede bloquear logins
-2. **RLS Policies** - Políticas mal configuradas = seguridad comprometida
-3. **Role Switching** - State management complejo puede causar bugs
-4. **Mobile UX** - Navegación en pantallas pequeñas puede ser confusa
+### **Subtarea 1: Sidebar with Navigation** ⏰ 30 min
+- 🔲 **Collapsible Sidebar** - Con iconos y labels
+- 🔲 **Menu Items** - Dashboard, Fleet, Loads, Drivers, Reports
+- 🔲 **Active State** - Highlight current route
+- 🔲 **Role Filtering** - Show/hide items by permissions
 
-### Mitigaciones:
-1. **Testing exhaustivo** de flujos de auth
-2. **Revisión de políticas** RLS antes de producción
-3. **State management** con Context API bien estructurado
-4. **Prototipado móvil** antes de implementación
+### **Subtarea 2: Main Content Area** ⏰ 20 min
+- 🔲 **Responsive Layout** - Adjust to sidebar state
+- 🔲 **Page Headers** - Title + actions per page
+- 🔲 **Breadcrumbs** - Navigation context
+- 🔲 **Loading States** - Skeleton components
+
+### **Subtarea 3: Info Panel (Right)** ⏰ 25 min
+- 🔲 **Contextual Info** - Based on current page
+- 🔲 **Quick Actions** - Frequent tasks shortcut
+- 🔲 **Notifications** - System alerts
+- 🔲 **Collapsible** - Can hide on smaller screens
 
 ---
-*Última actualización: Enero 2025*
+
+## 🎯 **DESPUÉS: FASE 1.4 - i18n Implementation**
+
+### **Subtarea 1: i18n Setup** ⏰ 25 min
+- 🔲 **react-i18next Config** - Initialization
+- 🔲 **Language Files** - en/common.json, es/common.json
+- 🔲 **Language Switcher** - Toggle EN/ES
+- 🔲 **Browser Detection** - Default language
+
+### **Subtarea 2: Translation Structure** ⏰ 30 min
+```json
+// locales/en/common.json
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "fleet": "Fleet",
+    "loads": "Loads",
+    "drivers": "Drivers"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit"
+  },
+  "fleet": {
+    "vehicles": "Vehicles",
+    "status": "Status",
+    "active": "Active",
+    "maintenance": "Maintenance"
+  }
+}
+```
+
+### **Subtarea 3: Component Translation** ⏰ 35 min
+- 🔲 **Replace Hardcoded Text** - All components use t()
+- 🔲 **Form Labels** - All inputs with translations
+- 🔲 **Error Messages** - Localized error handling
+- 🔲 **Date/Number Formatting** - Locale-specific
+
+---
+
+## 🎯 **FINALMENTE: FASE 1.5 - Fleet Management Basic**
+
+### **Subtarea 1: Vehicles CRUD** ⏰ 40 min
+- 🔲 **Vehicles Table** - List with search/filter
+- 🔲 **Add Vehicle Form** - Modal with validation
+- 🔲 **Edit Vehicle** - Update functionality
+- 🔲 **Delete Vehicle** - With confirmation
+
+### **Subtarea 2: Drivers CRUD** ⏰ 40 min
+- 🔲 **Drivers Table** - Contact info, license
+- 🔲 **Add Driver Form** - With photo upload
+- 🔲 **License Tracking** - Expiration alerts
+- 🔲 **Driver Assignments** - Link to vehicles
+
+### **Subtarea 3: Fleet Dashboard** ⏰ 30 min
+- 🔲 **KPI Cards** - Total vehicles, active, etc.
+- 🔲 **Status Overview** - Visual fleet status
+- 🔲 **Recent Activity** - Latest changes
+- 🔲 **Quick Actions** - Add vehicle/driver buttons
+
+---
+
+## ⏱️ **ESTIMACIONES TOTALES**
+
+### **Fase 1 Completa: ~6-8 horas**
+- **1.2 Auth Multi-Tenant**: 2h 25min
+- **1.3 Layout Command Center**: 1h 15min  
+- **1.4 i18n Implementation**: 1h 30min
+- **1.5 Fleet Management**: 1h 50min
+
+### **Orden de Implementación:**
+1. **Database Schema** → Base fundamental
+2. **Auth System** → Security layer
+3. **Layout Structure** → UI foundation
+4. **i18n System** → Localization
+5. **Fleet CRUD** → First business feature
+
+---
+
+## 🚀 **¿COMENZAMOS CON SUBTAREA 1?**
+
+**Implementamos el Database Schema Multi-Tenant ahora mismo?**
+- Creamos las tablas `companies`, `profiles`, `user_company_roles`
+- Configuramos RLS policies para seguridad
+- Preparamos base para autenticación
+
+**Una vez aprobado, seguimos con Auth Pages y Company Switcher.**

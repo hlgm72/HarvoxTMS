@@ -1,185 +1,203 @@
-# FleetNest TMS - Definition of Done
+# FleetNest TMS - Definición de "Terminado"
 
-## 🎯 **Criterios Generales de Calidad**
+## ✅ **CRITERIOS UNIVERSALES**
 
-### **Todos los Tasks Deben Cumplir:**
-- ✅ **Funcionalidad completa** según especificación
-- ✅ **UI/UX responsive** en mobile, tablet, desktop
-- ✅ **Dark/Light mode** soporte completo
-- ✅ **TypeScript** sin errores de tipo
-- ✅ **Performance** - Sin lags perceptibles
-- ✅ **Accessibility** - Navegación por teclado, contraste
-- ✅ **Error handling** - Estados de error manejados
-- ✅ **Loading states** - Feedback visual durante operaciones
+Cada feature/componente/página se considera **TERMINADO** solo cuando cumple:
 
----
+### **🎨 Design System**
+- ✅ Usa **semantic tokens** de `index.css` (nunca `text-white`, `bg-black`, etc.)
+- ✅ Tipografías correctas: **Outfit** (headings), **Inter** (body), **JetBrains Mono** (códigos)
+- ✅ **Responsivo** 100% (Mobile, Tablet, Desktop)
+- ✅ **Dark/Light mode** compatible
+- ✅ **Hover effects** y transiciones suaves
+- ✅ **Loading states** con skeletons apropiados
 
-## 🔐 **AUTHENTICATION & SECURITY TASKS**
+### **🌍 Internacionalización**
+- ✅ **CERO texto hardcoded** - Todo usa `t('namespace.key')`
+- ✅ **Inglés + Español** funcionando perfecto
+- ✅ **Formatos localizados** para fechas, números, monedas
+- ✅ **Mensajes de error** traducidos
+- ✅ **Preparado para futuras lenguas**
 
-### Definition of Done:
-- [ ] **Login/Logout** funciona en todos los navegadores principales
-- [ ] **Session persistence** - Usuario permanece logueado al refrescar
-- [ ] **OAuth flow** - Redirección correcta después de login social
-- [ ] **Error messages** - Mensajes descriptivos para errores de auth
-- [ ] **Security** - No hay datos sensibles en localStorage
-- [ ] **RLS Testing** - Usuarios solo ven datos de sus compañías
-- [ ] **Permission validation** - Frontend y backend validan permisos
+### **🔒 Seguridad & Multi-Tenancy**
+- ✅ **RLS policies** implementadas correctamente
+- ✅ **Company isolation** - Solo datos de empresa activa
+- ✅ **Role-based access** - Permisos por rol verificados
+- ✅ **Auth guards** en todas las rutas protegidas
+- ✅ **Input validation** client + server side
 
-### Checklist Técnico:
-```typescript
-// Debe existir y funcionar:
-const { user, session } = useAuth();
-const { canAccess } = usePermissions();
-const { activeCompany, switchCompany } = useMultiTenant();
-```
+### **⚡ Performance**
+- ✅ **Loading < 2 segundos** en initial load
+- ✅ **Updates < 500ms** en cambios incrementales
+- ✅ **TanStack Query** con cache strategies
+- ✅ **Debounced inputs** en búsquedas
+- ✅ **Optimistic updates** donde aplique
 
----
+### **🧪 Funcionalidad**
+- ✅ **CRUD completo** - Create, Read, Update, Delete funcionando
+- ✅ **Validaciones robustas** - Client + server
+- ✅ **Error handling** - Mensajes user-friendly
+- ✅ **Success feedback** - Toasts/confirmaciones
+- ✅ **Edge cases** considerados y manejados
 
-## 🏢 **MULTI-TENANT TASKS**
-
-### Definition of Done:
-- [ ] **Company isolation** - Datos completamente aislados por companyId
-- [ ] **Role switching** - Cambio fluido entre roles sin bugs
-- [ ] **Company switching** - Cambio de contexto actualiza toda la UI
-- [ ] **Permission enforcement** - UI se adapta a permisos del rol activo
-- [ ] **Data consistency** - No hay data leaks entre compañías
-- [ ] **Performance** - Switching no causa delays perceptibles
-
-### Criterios UI/UX:
-- [ ] **Visual feedback** - Usuario siempre sabe su contexto actual
-- [ ] **Smooth transitions** - Cambios de rol/company son fluidos
-- [ ] **Mobile optimized** - Selectors accesibles en pantallas pequeñas
-- [ ] **Keyboard navigation** - Accesible por teclado completo
+### **📱 UX/UI Excellence**
+- ✅ **Intuitive navigation** - Usuario sabe dónde está
+- ✅ **Touch targets ≥ 44px** en mobile
+- ✅ **Keyboard accessible** - Tab navigation
+- ✅ **Visual feedback** - States claros (active, disabled, loading)
+- ✅ **Consistent spacing** - Design system spacing
 
 ---
 
-## 🎨 **UI/UX COMPONENT TASKS**
+## 📋 **CHECKLIST POR TIPO**
 
-### Definition of Done:
-- [ ] **Responsive Design**
-  - Mobile (< 768px): Layout stack, sidebar collapses
-  - Tablet (768-1024px): Layout híbrido, sidebar mini
-  - Desktop (> 1024px): Layout completo, sidebar expandido
+### **🗃️ CRUD Page (ej: Vehicles Management)**
+- ✅ **Table View** - Lista con search/filter/sort
+- ✅ **Add Modal/Form** - Validaciones + success handling
+- ✅ **Edit Functionality** - In-place o modal
+- ✅ **Delete Confirmation** - Destructive action protection
+- ✅ **Bulk Actions** - Select multiple items
+- ✅ **Export/Import** - CSV/Excel functionality
+- ✅ **Pagination** - Para datasets grandes
+- ✅ **Empty States** - Cuando no hay datos
+- ✅ **Loading States** - Skeletons durante fetch
+- ✅ **Error States** - Network/validation errors
 
-- [ ] **Interactive States**
-  - Hover effects en todos los clickeables
-  - Focus states visibles para accesibilidad
-  - Active states para elementos seleccionados
-  - Disabled states cuando aplique
+### **📊 Dashboard Page**
+- ✅ **KPI Cards** - Métricas clave con trends
+- ✅ **Charts/Graphs** - Data visualization
+- ✅ **Real-time Updates** - Auto-refresh apropiado
+- ✅ **Contextual Actions** - Quick actions relevantes
+- ✅ **Drill-down** - Navigate to detail views
+- ✅ **Date Filters** - Range selectors
+- ✅ **Export Options** - PDF/Excel reports
+- ✅ **Responsive Layout** - Stack en mobile
 
-- [ ] **Loading & Error States**
-  - Skeleton loaders para contenido que carga
-  - Error boundaries para errores inesperados
-  - Retry mechanisms donde sea apropiado
-  - Empty states informativos
+### **📝 Form Component**
+- ✅ **Field Validation** - Real-time + submit
+- ✅ **Error Display** - Clear, specific messages
+- ✅ **Loading States** - Submit button states
+- ✅ **Auto-save** - Draft functionality si aplica
+- ✅ **Required Fields** - Visual indicators
+- ✅ **Character Limits** - Counters donde aplique
+- ✅ **File Uploads** - Progress + preview
+- ✅ **Form Reset** - Clear functionality
 
-### Checklist Visual:
-- [ ] **Colors** - Solo colores del design system (no hardcoded)
-- [ ] **Typography** - Jerarquía clara y consistente
-- [ ] **Spacing** - Margin/padding consistente usando tokens
-- [ ] **Icons** - Solo Lucide icons, tamaño apropiado
-- [ ] **Animations** - Smooth, no distraen, respetan prefer-reduced-motion
-
----
-
-## 📊 **DASHBOARD & DATA TASKS**
-
-### Definition of Done:
-- [ ] **Real-time updates** - Datos se actualizan automáticamente
-- [ ] **Performance** - Carga inicial < 3 segundos
-- [ ] **Data accuracy** - Números coinciden con base de datos
-- [ ] **Filter functionality** - Filtros funcionan correctamente
-- [ ] **Export capabilities** - Datos se pueden exportar si requerido
-- [ ] **Empty states** - Manejo elegante cuando no hay datos
-
-### Criterios de Performance:
-- [ ] **Query optimization** - Usar índices apropiados
-- [ ] **Pagination** - Para listas grandes (>100 items)
-- [ ] **Caching** - TanStack Query configurado correctamente
-- [ ] **Lazy loading** - Componentes pesados cargan cuando necesario
-
----
-
-## 🔧 **DATABASE & MIGRATION TASKS**
-
-### Definition of Done:
-- [ ] **Migration successful** - Ejecuta sin errores en fresh DB
-- [ ] **Rollback tested** - Migration se puede revertir
-- [ ] **Data integrity** - Foreign keys y constraints correctos
-- [ ] **RLS policies** - Seguridad apropiada implementada
-- [ ] **Indexes created** - Performance optimizada
-- [ ] **Triggers working** - Updated_at y otros triggers funcionan
-
-### Checklist de Seguridad:
-```sql
--- Debe existir para cada tabla multi-tenant:
-CREATE POLICY "company_isolation" ON table_name
-FOR ALL USING (
-  company_id IN (
-    SELECT company_id FROM user_company_roles 
-    WHERE user_id = auth.uid() AND is_active = true
-  )
-);
-```
+### **🗂️ Table Component**
+- ✅ **Sortable Columns** - Click headers to sort
+- ✅ **Filterable Data** - Per-column filters
+- ✅ **Row Selection** - Checkbox multiselect
+- ✅ **Action Menus** - Row-level actions
+- ✅ **Expandable Rows** - Detail views
+- ✅ **Virtual Scrolling** - Para >1000 rows
+- ✅ **Column Resizing** - User customizable
+- ✅ **Column Hiding** - Show/hide preferences
 
 ---
 
-## 📱 **MOBILE-SPECIFIC TASKS**
+## 🎯 **CRITERIOS DE ACEPTACIÓN ESPECÍFICOS TMS**
 
-### Definition of Done:
-- [ ] **Touch targets** - Mínimo 44px para elementos tocables
-- [ ] **Swipe gestures** - Donde sea apropiado y natural
-- [ ] **Orientation support** - Funciona en portrait y landscape
-- [ ] **Keyboard behavior** - Input focus correcto en móvil
-- [ ] **Performance** - No lag en dispositivos medios
-- [ ] **Offline graceful** - Manejo elegante de pérdida de conexión
+### **🚛 Fleet Management**
+- ✅ **Vehicle Status** - Real-time (active/maintenance/available)
+- ✅ **Driver Assignment** - Current + historical
+- ✅ **Maintenance Alerts** - Upcoming/overdue
+- ✅ **GPS Integration** - Live positions si disponible
+- ✅ **Document Storage** - Registration, insurance, etc.
+- ✅ **Utilization Metrics** - Miles, hours, efficiency
 
----
+### **📦 Load Management**
+- ✅ **Load Board** - Dispatch-friendly view
+- ✅ **Status Tracking** - Pending → Delivered
+- ✅ **Document Upload** - BOL, POD, invoices
+- ✅ **Rate Calculation** - Base + extras
+- ✅ **Customer Integration** - Link to customer profiles
+- ✅ **Driver Communication** - In-app messaging
 
-## 🧪 **TESTING REQUIREMENTS**
-
-### Cada Task Debe Incluir:
-- [ ] **Manual testing** - Funcionalidad probada manualmente
-- [ ] **Cross-browser** - Chrome, Safari, Firefox, Edge
-- [ ] **Device testing** - Mobile, tablet, desktop
-- [ ] **Edge cases** - Casos límite identificados y manejados
-- [ ] **Error scenarios** - Qué pasa cuando algo falla
-- [ ] **Performance testing** - No memory leaks, performance aceptable
-
-### Criterios de Regresión:
-- [ ] **Existing functionality** - Nada se rompe con nuevos cambios
-- [ ] **Multi-tenant isolation** - Nueva funcionalidad respeta aislamiento
-- [ ] **Permission system** - Nuevas features respetan permisos existentes
-
----
-
-## 📋 **DOCUMENTATION REQUIREMENTS**
-
-### Cada Feature Debe Incluir:
-- [ ] **Code comments** - Lógica compleja explicada
-- [ ] **Component props** - TypeScript interfaces documentadas
-- [ ] **Usage examples** - Cómo usar nuevos componentes/hooks
-- [ ] **Database changes** - Migrations documentadas en task-breakdown
-- [ ] **Breaking changes** - Si los hay, claramente documentados
+### **💰 Financial Features**
+- ✅ **Automated Invoicing** - From completed loads
+- ✅ **Payment Tracking** - Aging reports
+- ✅ **Driver Settlements** - Weekly pay calculations
+- ✅ **Expense Tracking** - Fuel, maintenance, etc.
+- ✅ **Profit Analysis** - Per load/customer/driver
+- ✅ **Tax Compliance** - IFTA, quarterly reports
 
 ---
 
-## ✅ **SIGN-OFF CHECKLIST**
+## 🔍 **TESTING CHECKLIST**
 
-### Antes de Marcar Task como Completo:
-1. [ ] **Funcionalidad** - Hace lo que se supone que debe hacer
-2. [ ] **UI/UX** - Se ve bien y es usable
-3. [ ] **Performance** - No introduce lags o problemas
-4. [ ] **Security** - No introduce vulnerabilidades
-5. [ ] **Documentation** - Actualizada apropiadamente
-6. [ ] **Testing** - Probado en múltiples escenarios
-7. [ ] **Code review** - Código limpio y mantenible
+### **📱 Device Testing**
+- ✅ **iPhone Safari** - iOS mobile experience
+- ✅ **Android Chrome** - Android mobile experience
+- ✅ **iPad** - Tablet landscape/portrait
+- ✅ **Desktop Chrome** - Primary browser
+- ✅ **Desktop Firefox** - Alternative browser
+- ✅ **Desktop Safari** - Mac users
 
-### Final Validation:
-- **Owner perspective:** ¿Un dueño de compañía podría usar esto productivamente?
-- **Dispatcher perspective:** ¿Un dispatcher encuentra valor inmediato?
-- **Driver perspective:** ¿Un conductor puede usarlo sin confusión?
-- **Superadmin perspective:** ¿Un admin del sistema tiene control apropiado?
+### **🌐 Browser Testing**
+- ✅ **Chrome** - Latest version
+- ✅ **Firefox** - Latest version
+- ✅ **Safari** - Latest version
+- ✅ **Edge** - Latest version
+- ✅ **Internet Explorer** - Si requirement específico
+
+### **⚡ Performance Testing**
+- ✅ **Initial Load** - < 2 segundos
+- ✅ **Navigation** - < 500ms between pages
+- ✅ **Search/Filter** - < 1 segundo response
+- ✅ **File Upload** - Progress indicators
+- ✅ **Large Datasets** - No browser freeze
+- ✅ **Network Throttling** - 3G/4G simulation
+
+### **🔐 Security Testing**
+- ✅ **Authentication** - Login/logout flows
+- ✅ **Authorization** - Role-based access
+- ✅ **Data Isolation** - Company boundaries
+- ✅ **Input Sanitization** - XSS prevention
+- ✅ **SQL Injection** - Parameterized queries
+- ✅ **CSRF Protection** - Token validation
 
 ---
-*Última actualización: Enero 2025*
+
+## 📈 **MÉTRICAS DE CALIDAD**
+
+### **Performance Targets**
+- 🎯 **Time to Interactive**: < 3 segundos
+- 🎯 **First Contentful Paint**: < 1.5 segundos
+- 🎯 **Largest Contentful Paint**: < 2.5 segundos
+- 🎯 **Cumulative Layout Shift**: < 0.1
+- 🎯 **Core Web Vitals**: Green en todas
+
+### **Accessibility Targets**
+- 🎯 **WCAG 2.1 AA**: Compliance completo
+- 🎯 **Keyboard Navigation**: 100% funcional
+- 🎯 **Screen Reader**: Compatible
+- 🎯 **Color Contrast**: 4.5:1 minimum
+- 🎯 **Touch Targets**: ≥ 44px minimum
+
+### **Business Targets**
+- 🎯 **User Task Success**: > 95%
+- 🎯 **Error Rate**: < 1%
+- 🎯 **Support Tickets**: < 5% of usage
+- 🎯 **Feature Adoption**: > 80% active use
+- 🎯 **Customer Satisfaction**: > 4.5/5
+
+---
+
+## ✋ **DEFINITIVAMENTE NO TERMINADO SI:**
+
+- ❌ Hay **texto hardcoded** en inglés/español
+- ❌ No funciona en **mobile** correctamente
+- ❌ **Performance** slow (>3s initial load)
+- ❌ **Errores de consola** presentes
+- ❌ **Auth/RLS** permite acceso indebido
+- ❌ **UX confusa** - usuario se pierde
+- ❌ **Data corruption** possible
+- ❌ **Edge cases** causan crashes
+- ❌ **Accessibility** poor (no keyboard nav)
+- ❌ **Design inconsistency** con resto de app
+
+---
+
+**🎯 REGLA DE ORO: Si no cumple 100% de estos criterios, NO está terminado.**
+
+*La calidad nunca es opcional en un TMS profesional.*
