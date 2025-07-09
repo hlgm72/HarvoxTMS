@@ -11,7 +11,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import fleetNestLogoWhite from '@/assets/fleetnest-logo-white.png';
-import fleetNestLogoMain from '@/assets/fleetnest-logo-navy.png';
+import fleetNestLogoMain from '@/assets/fleetnest-logo-original.png';
 
 export default function Auth() {
   const { t } = useTranslation(['auth', 'common']);
