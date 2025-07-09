@@ -253,7 +253,7 @@ export default function SuperAdminDashboard() {
     <Layout>
       <div className="min-h-screen bg-gradient-subtle">
         {/* Enhanced Header Section */}
-        <div className="bg-gradient-fleet text-white shadow-blue relative overflow-hidden">
+        <div className="bg-primary text-white shadow-lg relative overflow-hidden">
           {/* Background decoration */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-32 translate-x-32"></div>
@@ -264,19 +264,19 @@ export default function SuperAdminDashboard() {
             <div className="flex justify-between items-start">
               <div className="space-y-4">
                 <div>
-                  <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in text-white drop-shadow-lg">
+                  <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in text-white">
                     FleetNest Control Center
                   </h1>
-                  <p className="text-white/95 font-body text-lg drop-shadow-md">Sistema de administración global</p>
+                  <p className="text-white font-body text-lg">Sistema de administración global</p>
                 </div>
                 
                 <div className="flex items-center gap-4 animate-fade-in" style={{animationDelay: '0.1s'}}>
-                  <Badge variant="secondary" className="bg-white/30 text-white border-white/40 hover:bg-white/40 transition-colors drop-shadow-sm">
+                  <Badge variant="secondary" className="bg-white text-primary border-0 hover:bg-white/90 transition-colors font-semibold">
                     <Shield className="h-3 w-3 mr-1" />
                     System Administrator
                   </Badge>
-                  <div className="flex items-center gap-2 text-white drop-shadow-md">
-                    <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse drop-shadow-sm"></div>
+                  <div className="flex items-center gap-2 text-white">
+                    <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse"></div>
                     <span className="text-sm font-medium">System Status: Operational</span>
                   </div>
                 </div>
@@ -285,7 +285,7 @@ export default function SuperAdminDashboard() {
               <div className="flex gap-3 animate-fade-in" style={{animationDelay: '0.2s'}}>
                 <Button 
                   variant="outline" 
-                  className="bg-white/20 border-white/40 text-white hover:bg-white/30 hover:text-white transition-all hover:scale-105 drop-shadow-md font-medium"
+                  className="bg-white/10 border-white text-white hover:bg-white hover:text-primary transition-all hover:scale-105 font-medium"
                 >
                   <Settings className="h-4 w-4 mr-2" />
                   System Settings

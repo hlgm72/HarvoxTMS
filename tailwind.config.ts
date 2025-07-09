@@ -152,6 +152,7 @@ export default {
 			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-fleet': 'var(--gradient-fleet)',
 				'gradient-subtle': 'var(--gradient-subtle)',
 				'gradient-success': 'var(--gradient-success)'
 			},
