@@ -264,20 +264,20 @@ export default function SuperAdminDashboard() {
             <div className="flex justify-between items-start">
               <div className="space-y-4">
                 <div>
-                  <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in">
+                  <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in text-white drop-shadow-lg">
                     FleetNest Control Center
                   </h1>
-                  <p className="text-white/90 font-body text-lg">Sistema de administración global</p>
+                  <p className="text-white/95 font-body text-lg drop-shadow-md">Sistema de administración global</p>
                 </div>
                 
                 <div className="flex items-center gap-4 animate-fade-in" style={{animationDelay: '0.1s'}}>
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30 hover:bg-white/30 transition-colors">
+                  <Badge variant="secondary" className="bg-white/30 text-white border-white/40 hover:bg-white/40 transition-colors drop-shadow-sm">
                     <Shield className="h-3 w-3 mr-1" />
                     System Administrator
                   </Badge>
-                  <div className="flex items-center gap-2 text-white/80">
-                    <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span className="text-sm">System Status: Operational</span>
+                  <div className="flex items-center gap-2 text-white drop-shadow-md">
+                    <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse drop-shadow-sm"></div>
+                    <span className="text-sm font-medium">System Status: Operational</span>
                   </div>
                 </div>
               </div>
@@ -285,7 +285,7 @@ export default function SuperAdminDashboard() {
               <div className="flex gap-3 animate-fade-in" style={{animationDelay: '0.2s'}}>
                 <Button 
                   variant="outline" 
-                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all hover:scale-105"
+                  className="bg-white/20 border-white/40 text-white hover:bg-white/30 hover:text-white transition-all hover:scale-105 drop-shadow-md font-medium"
                 >
                   <Settings className="h-4 w-4 mr-2" />
                   System Settings
