@@ -10,8 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import fleetNestLogoWhite from '@/assets/fleetnest-logo-white.png';
-import fleetNestLogoMain from '@/assets/fleetnest-logo-original.png';
+import fleetNestLogo from '@/assets/fleetnest-logo.png';
 
 export default function Auth() {
   const { t } = useTranslation(['auth', 'common']);
@@ -204,7 +203,7 @@ export default function Auth() {
           <div className="flex items-center space-x-4 mb-8">
             <div className="flex items-center space-x-4 p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20">
               <img 
-                src={fleetNestLogoWhite} 
+                src={fleetNestLogo}
                 alt="FleetNest Logo" 
                 className="h-16 w-16 object-contain filter drop-shadow-lg"
               />
@@ -277,7 +276,7 @@ export default function Auth() {
             <div className="flex justify-center mb-6 lg:hidden">
               <div className="flex items-center space-x-3 p-4 rounded-2xl bg-gradient-primary shadow-glow">
                 <img 
-                  src={fleetNestLogoWhite} 
+                  src={fleetNestLogo} 
                   alt="FleetNest Logo" 
                   className="h-12 w-12 object-contain filter drop-shadow-lg"
                 />
