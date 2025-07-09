@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import fleetNestLogoWhite from '@/assets/fleetnest-logo-white-hex.png';
-import fleetNestLogoMain from '@/assets/fleetnest-logo-gradient.png';
+import fleetNestLogoWhite from '@/assets/fleetnest-logo-white.png';
+import fleetNestLogoMain from '@/assets/fleetnest-logo-navy.png';
 
 export default function Auth() {
   const { t } = useTranslation(['auth', 'common']);
