@@ -159,21 +159,10 @@ export type Database = {
       }
       company_drivers: {
         Row: {
-          base_salary: number | null
           benefits_eligible: boolean | null
           created_at: string
-          department: string | null
-          employee_id: string | null
-          employment_type: string | null
-          hire_date: string | null
-          hourly_rate: number | null
           id: string
           is_active: boolean
-          job_title: string | null
-          last_review_date: string | null
-          next_review_date: string | null
-          pay_frequency: string | null
-          performance_rating: number | null
           sick_days_accrued: number | null
           termination_date: string | null
           termination_reason: string | null
@@ -182,21 +171,10 @@ export type Database = {
           vacation_days_accrued: number | null
         }
         Insert: {
-          base_salary?: number | null
           benefits_eligible?: boolean | null
           created_at?: string
-          department?: string | null
-          employee_id?: string | null
-          employment_type?: string | null
-          hire_date?: string | null
-          hourly_rate?: number | null
           id?: string
           is_active?: boolean
-          job_title?: string | null
-          last_review_date?: string | null
-          next_review_date?: string | null
-          pay_frequency?: string | null
-          performance_rating?: number | null
           sick_days_accrued?: number | null
           termination_date?: string | null
           termination_reason?: string | null
@@ -205,21 +183,10 @@ export type Database = {
           vacation_days_accrued?: number | null
         }
         Update: {
-          base_salary?: number | null
           benefits_eligible?: boolean | null
           created_at?: string
-          department?: string | null
-          employee_id?: string | null
-          employment_type?: string | null
-          hire_date?: string | null
-          hourly_rate?: number | null
           id?: string
           is_active?: boolean
-          job_title?: string | null
-          last_review_date?: string | null
-          next_review_date?: string | null
-          pay_frequency?: string | null
-          performance_rating?: number | null
           sick_days_accrued?: number | null
           termination_date?: string | null
           termination_reason?: string | null
