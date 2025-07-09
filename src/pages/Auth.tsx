@@ -187,7 +187,7 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen auth-background flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen auth-background flex relative overflow-hidden">
       {/* Floating Elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-20 left-20 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse"></div>
@@ -195,28 +195,91 @@ export default function Auth() {
         <div className="absolute top-1/2 left-10 w-16 h-16 bg-white/10 rounded-full blur-lg animate-pulse delay-500"></div>
       </div>
       
-      <div className="w-full max-w-md relative z-10">
-        {/* Back to landing */}
-        <div className="mb-8 flex justify-between items-center animate-fade-in">
-          <Link to="/" className="inline-flex items-center text-white/80 hover:text-white transition-all duration-300 hover:transform hover:translate-x-1">
+      {/* Hero Section - Left Side */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 xl:px-16 relative z-10">
+        <div className="max-w-lg animate-fade-in">
+          {/* Logo and Branding */}
+          <div className="flex items-center space-x-3 mb-8">
+            <div className="flex items-center space-x-3 p-4 rounded-2xl bg-white/10 backdrop-blur-sm">
+              <Truck className="h-12 w-12 text-white" />
+              <span className="text-3xl font-heading font-bold text-white">{t('common:app.name')}</span>
+            </div>
+          </div>
+          
+          {/* Hero Content */}
+          <h1 className="text-5xl xl:text-6xl font-heading font-bold text-white mb-6 leading-tight">
+            {t('common:app.tagline')}
+          </h1>
+          
+          <p className="text-xl text-white/90 font-body mb-8 leading-relaxed">
+            Gestiona tu flota de transporte con tecnología de vanguardia. 
+            Tracking GPS en tiempo real, optimización de rutas, y control total de tus operaciones.
+          </p>
+          
+          {/* Features List */}
+          <div className="space-y-4 mb-8">
+            {[
+              { icon: "🚛", text: "Tracking GPS en tiempo real" },
+              { icon: "📊", text: "Dashboard inteligente y reportes" },
+              { icon: "👥", text: "Gestión completa de conductores" },
+              { icon: "⚡", text: "Optimización automática de rutas" }
+            ].map((feature, index) => (
+              <div key={index} className="flex items-center space-x-3 animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
+                <span className="text-2xl">{feature.icon}</span>
+                <span className="text-white/90 font-body">{feature.text}</span>
+              </div>
+            ))}
+          </div>
+          
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-6 p-6 bg-white/10 backdrop-blur-sm rounded-2xl">
+            <div className="text-center">
+              <div className="text-3xl font-heading font-bold text-white">500+</div>
+              <div className="text-sm text-white/70 font-body">Empresas</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-heading font-bold text-white">10K+</div>
+              <div className="text-sm text-white/70 font-body">Vehículos</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-heading font-bold text-white">99.9%</div>
+              <div className="text-sm text-white/70 font-body">Uptime</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Auth Form - Right Side */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-8 relative z-10">
+        {/* Back to landing - Mobile Only */}
+        <div className="absolute top-4 left-4 lg:hidden animate-fade-in">
+          <Link to="/" className="inline-flex items-center text-white/80 hover:text-white transition-all duration-300">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            <span className="font-body">{t('common:actions.back_home')}</span>
+            <span className="font-body text-sm">{t('common:actions.back_home')}</span>
           </Link>
+        </div>
+        
+        {/* Language Switcher - Mobile Only */}
+        <div className="absolute top-4 right-4 lg:hidden">
           <LanguageSwitcher />
         </div>
+        
+        <div className="w-full max-w-md mt-16 lg:mt-0">
 
         <Card className="w-full auth-card animate-scale-in">
-          <CardHeader className="text-center pb-8">
-            <div className="flex justify-center mb-6">
+          <CardHeader className="text-center pb-6">
+            {/* Logo for Mobile */}
+            <div className="flex justify-center mb-6 lg:hidden">
               <div className="flex items-center space-x-3 p-3 rounded-2xl bg-gradient-primary">
-                <Truck className="h-10 w-10 text-white" />
-                <span className="text-2xl font-heading font-bold text-white">{t('common:app.name')}</span>
+                <Truck className="h-8 w-8 text-white" />
+                <span className="text-xl font-heading font-bold text-white">{t('common:app.name')}</span>
               </div>
             </div>
-            <CardTitle className="text-3xl font-heading font-bold text-foreground mb-2">
+            
+            <CardTitle className="text-2xl lg:text-3xl font-heading font-bold text-foreground mb-2">
               {isLogin ? t('auth:title.login') : t('auth:title.signup')}
             </CardTitle>
-            <CardDescription className="font-body text-muted-foreground text-base">
+            <CardDescription className="font-body text-muted-foreground">
               {isLogin 
                 ? t('auth:description.login')
                 : t('auth:description.signup')
@@ -441,17 +504,29 @@ export default function Auth() {
           </CardContent>
         </Card>
 
-        <div className="mt-8 text-center text-sm text-white/70 animate-fade-in">
+        {/* Legal Text */}
+        <div className="mt-6 text-center text-xs text-white/60 animate-fade-in">
           <p className="font-body">
             {t('common:legal.legal_acceptance')}{' '}
-            <a href="#" className="text-white hover:text-white/90 underline transition-colors">
+            <a href="#" className="text-white/80 hover:text-white underline transition-colors">
               {t('common:legal.terms_of_service')}
             </a>{' '}
             y{' '}
-            <a href="#" className="text-white hover:text-white/90 underline transition-colors">
+            <a href="#" className="text-white/80 hover:text-white underline transition-colors">
               {t('common:legal.privacy_policy')}
             </a>
           </p>
+        </div>
+        
+        {/* Desktop Navigation */}
+        <div className="hidden lg:flex justify-between items-center mt-8 animate-fade-in">
+          <Link to="/" className="inline-flex items-center text-white/80 hover:text-white transition-all duration-300">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            <span className="font-body">{t('common:actions.back_home')}</span>
+          </Link>
+          <LanguageSwitcher />
+        </div>
+        
         </div>
       </div>
     </div>
