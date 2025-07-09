@@ -1,0 +1,93 @@
+{
+  "hero": {
+    "badge": "🚀 Plataforma de Gestión de Flotas #1",
+    "title": "Gestiona tu Flota de",
+    "title_highlight": "Transporte",
+    "title_end": "con Inteligencia",
+    "subtitle": "FleetNest te ayuda a optimizar operaciones, reducir costos y mantener el cumplimiento regulatorio con nuestra plataforma todo-en-uno para empresas de transporte.",
+    "features": {
+      "no_credit_card": "Sin tarjeta de crédito",
+      "quick_setup": "Setup en 5 minutos",
+      "support_included": "Soporte incluido"
+    }
+  },
+  "features": {
+    "title": "Todo lo que Necesitas para Gestionar tu Flota",
+    "subtitle": "Herramientas poderosas diseñadas específicamente para empresas de transporte",
+    "items": {
+      "real_time_tracking": {
+        "title": "Tracking en Tiempo Real",
+        "description": "Monitorea tu flota en tiempo real con GPS integrado y actualizaciones automáticas de ubicación."
+      },
+      "advanced_reports": {
+        "title": "Reportes Avanzados",
+        "description": "Análisis detallados de rendimiento, costos operativos y métricas clave para tu negocio."
+      },
+      "driver_management": {
+        "title": "Gestión de Conductores",
+        "description": "Administra perfiles de conductores, licencias, certificaciones y horarios de trabajo."
+      },
+      "comprehensive_safety": {
+        "title": "Seguridad Integral",
+        "description": "Cumplimiento DOT, alertas de seguridad y monitoreo de comportamiento de conducción."
+      },
+      "route_optimization": {
+        "title": "Optimización de Rutas",
+        "description": "Planifica rutas eficientes, reduce costos de combustible y mejora tiempos de entrega."
+      },
+      "preventive_maintenance": {
+        "title": "Mantenimiento Preventivo",
+        "description": "Programa mantenimientos, trackea reparaciones y mantén tu flota en óptimas condiciones."
+      }
+    }
+  },
+  "benefits": {
+    "title": "¿Por qué Elegir FleetNest?",
+    "subtitle": "Más de 500 empresas de transporte confían en FleetNest para optimizar sus operaciones y aumentar su rentabilidad.",
+    "items": [
+      "Reduce costos operativos hasta 25%",
+      "Mejora la eficiencia de rutas",
+      "Cumplimiento automático DOT/FMCSA",
+      "Reportes en tiempo real",
+      "Integración con Geotab",
+      "Soporte 24/7"
+    ],
+    "stats": {
+      "cost_reduction": "25%",
+      "cost_reduction_label": "Reducción de Costos",
+      "cost_reduction_desc": "Promedio de ahorro reportado por nuestros clientes",
+      "rating": "4.9/5 - Calificación promedio"
+    }
+  },
+  "cta": {
+    "title": "¿Listo para Optimizar tu Flota?",
+    "subtitle": "Únete a cientos de empresas que ya están ahorrando tiempo y dinero con FleetNest"
+  },
+  "footer": {
+    "description": "La plataforma líder en gestión de flotas de transporte. Optimiza, controla y crece tu negocio con nuestras herramientas profesionales.",
+    "sections": {
+      "product": {
+        "title": "Producto",
+        "links": {
+          "features": "Características",
+          "integrations": "Integraciones",
+          "api": "API",
+          "security": "Seguridad"
+        }
+      },
+      "support": {
+        "title": "Soporte",
+        "links": {
+          "documentation": "Documentación",
+          "help_center": "Centro de Ayuda",
+          "contact": "Contacto",
+          "system_status": "Estado del Sistema"
+        }
+      }
+    },
+    "contact": {
+      "phone": "(555) 123-4567",
+      "email": "info@fleetnest.com"
+    }
+  }
+}

@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Setup from "./pages/Setup";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import './i18n/config';
 
 const queryClient = new QueryClient();
 

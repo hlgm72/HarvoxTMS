@@ -15,49 +15,46 @@ import {
   Star
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 export default function Index() {
+  const { t } = useTranslation(['landing', 'common']);
+  
   const features = [
     {
       icon: MapPin,
-      title: "Tracking en Tiempo Real",
-      description: "Monitorea tu flota en tiempo real con GPS integrado y actualizaciones automáticas de ubicación."
+      title: t('landing:features.items.real_time_tracking.title'),
+      description: t('landing:features.items.real_time_tracking.description')
     },
     {
       icon: BarChart3,
-      title: "Reportes Avanzados", 
-      description: "Análisis detallados de rendimiento, costos operativos y métricas clave para tu negocio."
+      title: t('landing:features.items.advanced_reports.title'), 
+      description: t('landing:features.items.advanced_reports.description')
     },
     {
       icon: Users,
-      title: "Gestión de Conductores",
-      description: "Administra perfiles de conductores, licencias, certificaciones y horarios de trabajo."
+      title: t('landing:features.items.driver_management.title'),
+      description: t('landing:features.items.driver_management.description')
     },
     {
       icon: Shield,
-      title: "Seguridad Integral",
-      description: "Cumplimiento DOT, alertas de seguridad y monitoreo de comportamiento de conducción."
+      title: t('landing:features.items.comprehensive_safety.title'),
+      description: t('landing:features.items.comprehensive_safety.description')
     },
     {
       icon: Clock,
-      title: "Optimización de Rutas",
-      description: "Planifica rutas eficientes, reduce costos de combustible y mejora tiempos de entrega."
+      title: t('landing:features.items.route_optimization.title'),
+      description: t('landing:features.items.route_optimization.description')
     },
     {
       icon: Truck,
-      title: "Mantenimiento Preventivo",
-      description: "Programa mantenimientos, trackea reparaciones y mantén tu flota en óptimas condiciones."
+      title: t('landing:features.items.preventive_maintenance.title'),
+      description: t('landing:features.items.preventive_maintenance.description')
     }
   ];
 
-  const benefits = [
-    "Reduce costos operativos hasta 25%",
-    "Mejora la eficiencia de rutas",
-    "Cumplimiento automático DOT/FMCSA",
-    "Reportes en tiempo real",
-    "Integración con Geotab",
-    "Soporte 24/7"
-  ];
+  const benefits = t('landing:benefits.items', { returnObjects: true }) as string[];
 
   return (
     <div className="min-h-screen bg-background">
@@ -67,30 +64,31 @@ export default function Index() {
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center space-x-2">
               <Truck className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold text-primary">FleetNest</span>
+              <span className="text-2xl font-bold text-primary">{t('common:app.name')}</span>
             </div>
             
             <nav className="hidden md:flex items-center space-x-8">
               <a href="#features" className="text-muted-foreground hover:text-primary transition-colors">
-                Características
+                {t('common:navigation.features')}
               </a>
               <a href="#benefits" className="text-muted-foreground hover:text-primary transition-colors">
-                Beneficios
+                {t('common:navigation.benefits')}
               </a>
               <a href="#contact" className="text-muted-foreground hover:text-primary transition-colors">
-                Contacto
+                {t('common:navigation.contact')}
               </a>
             </nav>
 
             <div className="flex items-center space-x-4">
+              <LanguageSwitcher />
               <Link to="/setup">
                 <Button variant="outline" size="sm">
-                  Admin
+                  {t('common:navigation.admin')}
                 </Button>
               </Link>
               <Link to="/auth">
                 <Button size="sm">
-                  Iniciar Sesión
+                  {t('common:navigation.login')}
                 </Button>
               </Link>
             </div>
@@ -104,41 +102,40 @@ export default function Index() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center max-w-4xl mx-auto">
             <Badge variant="secondary" className="mb-6">
-              🚀 Plataforma de Gestión de Flotas #1
+              {t('landing:hero.badge')}
             </Badge>
             
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-6">
-              Gestiona tu Flota de{" "}
-              <span className="text-primary">Transporte</span>{" "}
-              con Inteligencia
+              {t('landing:hero.title')}{" "}
+              <span className="text-primary">{t('landing:hero.title_highlight')}</span>{" "}
+              {t('landing:hero.title_end')}
             </h1>
             
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              FleetNest te ayuda a optimizar operaciones, reducir costos y mantener el cumplimiento 
-              regulatorio con nuestra plataforma todo-en-uno para empresas de transporte.
+              {t('landing:hero.subtitle')}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/auth">
                 <Button size="lg" className="text-lg px-8 py-4">
-                  Comenzar Gratis
+                  {t('common:actions.get_started')}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Button variant="outline" size="lg" className="text-lg px-8 py-4">
-                Ver Demo
+                {t('common:actions.view_demo')}
               </Button>
             </div>
             
             <div className="flex items-center justify-center gap-2 mt-8 text-sm text-muted-foreground">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Sin tarjeta de crédito</span>
+              <span>{t('landing:hero.features.no_credit_card')}</span>
               <span>•</span>
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Setup en 5 minutos</span>
+              <span>{t('landing:hero.features.quick_setup')}</span>
               <span>•</span>
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Soporte incluido</span>
+              <span>{t('landing:hero.features.support_included')}</span>
             </div>
           </div>
         </div>
@@ -149,10 +146,10 @@ export default function Index() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Todo lo que Necesitas para Gestionar tu Flota
+              {t('landing:features.title')}
             </h2>
             <p className="text-xl text-muted-foreground">
-              Herramientas poderosas diseñadas específicamente para empresas de transporte
+              {t('landing:features.subtitle')}
             </p>
           </div>
           
@@ -182,11 +179,10 @@ export default function Index() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                ¿Por qué Elegir FleetNest?
+                {t('landing:benefits.title')}
               </h2>
               <p className="text-xl text-muted-foreground mb-8">
-                Más de 500 empresas de transporte confían en FleetNest para optimizar 
-                sus operaciones y aumentar su rentabilidad.
+                {t('landing:benefits.subtitle')}
               </p>
               
               <div className="space-y-4">
@@ -202,9 +198,9 @@ export default function Index() {
             <div className="relative">
               <div className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl flex items-center justify-center">
                 <div className="text-center p-8">
-                  <div className="text-6xl font-bold text-primary mb-2">25%</div>
-                  <div className="text-xl font-semibold mb-2">Reducción de Costos</div>
-                  <div className="text-muted-foreground">Promedio de ahorro reportado por nuestros clientes</div>
+                  <div className="text-6xl font-bold text-primary mb-2">{t('landing:benefits.stats.cost_reduction')}</div>
+                  <div className="text-xl font-semibold mb-2">{t('landing:benefits.stats.cost_reduction_label')}</div>
+                  <div className="text-muted-foreground">{t('landing:benefits.stats.cost_reduction_desc')}</div>
                   
                   <div className="flex justify-center mt-6">
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -212,7 +208,7 @@ export default function Index() {
                     ))}
                   </div>
                   <div className="text-sm text-muted-foreground mt-2">
-                    4.9/5 - Calificación promedio
+                    {t('landing:benefits.stats.rating')}
                   </div>
                 </div>
               </div>
@@ -225,21 +221,21 @@ export default function Index() {
       <section className="py-20 bg-primary">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-6">
-            ¿Listo para Optimizar tu Flota?
+            {t('landing:cta.title')}
           </h2>
           <p className="text-xl text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
-            Únete a cientos de empresas que ya están ahorrando tiempo y dinero con FleetNest
+            {t('landing:cta.subtitle')}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/auth">
               <Button size="lg" variant="secondary" className="text-lg px-8 py-4">
-                Comenzar Ahora - Gratis
+                {t('common:actions.start_now')}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-              Contactar Ventas
+              {t('common:actions.contact_sales')}
             </Button>
           </div>
         </div>
@@ -252,47 +248,46 @@ export default function Index() {
             <div className="md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <Truck className="h-8 w-8 text-primary" />
-                <span className="text-2xl font-bold text-primary">FleetNest</span>
+                <span className="text-2xl font-bold text-primary">{t('common:app.name')}</span>
               </div>
               <p className="text-muted-foreground mb-4">
-                La plataforma líder en gestión de flotas de transporte. 
-                Optimiza, controla y crece tu negocio con nuestras herramientas profesionales.
+                {t('landing:footer.description')}
               </p>
               <div className="flex space-x-4">
                 <Button variant="outline" size="sm">
                   <Phone className="h-4 w-4 mr-2" />
-                  (555) 123-4567
+                  {t('landing:footer.contact.phone')}
                 </Button>
                 <Button variant="outline" size="sm">
                   <Mail className="h-4 w-4 mr-2" />
-                  info@fleetnest.com
+                  {t('landing:footer.contact.email')}
                 </Button>
               </div>
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Producto</h3>
+              <h3 className="font-semibold mb-4">{t('landing:footer.sections.product.title')}</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-colors">Características</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Integraciones</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">API</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Seguridad</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t('landing:footer.sections.product.links.features')}</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t('landing:footer.sections.product.links.integrations')}</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t('landing:footer.sections.product.links.api')}</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t('landing:footer.sections.product.links.security')}</a></li>
               </ul>
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Soporte</h3>
+              <h3 className="font-semibold mb-4">{t('landing:footer.sections.support.title')}</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-colors">Documentación</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Centro de Ayuda</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Contacto</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Estado del Sistema</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t('landing:footer.sections.support.links.documentation')}</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t('landing:footer.sections.support.links.help_center')}</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t('landing:footer.sections.support.links.contact')}</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t('landing:footer.sections.support.links.system_status')}</a></li>
               </ul>
             </div>
           </div>
           
           <div className="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
-            <p>&copy; 2024 FleetNest. Todos los derechos reservados.</p>
+            <p>&copy; 2024 {t('common:app.name')}. {t('common:legal.rights_reserved')}</p>
           </div>
         </div>
       </footer>

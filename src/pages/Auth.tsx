@@ -6,8 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Truck, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 export default function Auth() {
+  const { t } = useTranslation(['auth', 'common']);
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +39,7 @@ export default function Auth() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // For demo purposes
-      setError('Funcionalidad de autenticación pendiente de implementar');
+      setError(t('auth:errors.auth_pending'));
       
     } catch (err: any) {
       setError(err.message || 'Error de autenticación');
@@ -49,11 +52,12 @@ export default function Auth() {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Back to landing */}
-        <div className="mb-6">
+        <div className="mb-6 flex justify-between items-center">
           <Link to="/" className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver al inicio
+            {t('common:actions.back_home')}
           </Link>
+          <LanguageSwitcher />
         </div>
 
         <Card className="w-full">
@@ -61,16 +65,16 @@ export default function Auth() {
             <div className="flex justify-center mb-4">
               <div className="flex items-center space-x-2">
                 <Truck className="h-8 w-8 text-primary" />
-                <span className="text-2xl font-bold text-primary">FleetNest</span>
+                <span className="text-2xl font-bold text-primary">{t('common:app.name')}</span>
               </div>
             </div>
             <CardTitle className="text-2xl">
-              {isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}
+              {isLogin ? t('auth:title.login') : t('auth:title.signup')}
             </CardTitle>
             <CardDescription>
               {isLogin 
-                ? 'Accede a tu panel de gestión de flota' 
-                : 'Registra tu empresa y comienza gratis'
+                ? t('auth:description.login')
+                : t('auth:description.signup')
               }
             </CardDescription>
           </CardHeader>
@@ -81,7 +85,7 @@ export default function Auth() {
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">Nombre</Label>
+                      <Label htmlFor="firstName">{t('auth:form.first_name')}</Label>
                       <Input
                         id="firstName"
                         value={formData.firstName}
@@ -91,7 +95,7 @@ export default function Auth() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">Apellido</Label>
+                      <Label htmlFor="lastName">{t('auth:form.last_name')}</Label>
                       <Input
                         id="lastName"
                         value={formData.lastName}
@@ -103,12 +107,12 @@ export default function Auth() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="companyName">Nombre de la Empresa</Label>
+                    <Label htmlFor="companyName">{t('auth:form.company_name')}</Label>
                     <Input
                       id="companyName"
                       value={formData.companyName}
                       onChange={(e) => handleInputChange('companyName', e.target.value)}
-                      placeholder="Transport Solutions LLC"
+                      placeholder={t('auth:form.company_placeholder')}
                       required={!isLogin}
                       disabled={loading}
                     />
@@ -117,26 +121,26 @@ export default function Auth() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('auth:form.email')}</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="admin@tuempresa.com"
+                  placeholder={t('auth:form.email_placeholder')}
                   required
                   disabled={loading}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Contraseña</Label>
+                <Label htmlFor="password">{t('auth:form.password')}</Label>
                 <Input
                   id="password"
                   type="password"
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  placeholder={isLogin ? 'Tu contraseña' : 'Mínimo 8 caracteres'}
+                  placeholder={isLogin ? t('auth:form.password_placeholder_login') : t('auth:form.password_placeholder_signup')}
                   required
                   disabled={loading}
                   minLength={isLogin ? undefined : 8}
@@ -153,10 +157,10 @@ export default function Auth() {
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {isLogin ? 'Iniciando sesión...' : 'Creando cuenta...'}
+                    {isLogin ? t('auth:buttons.logging_in') : t('auth:buttons.creating_account')}
                   </>
                 ) : (
-                  isLogin ? 'Iniciar Sesión' : 'Crear Cuenta Gratis'
+                  isLogin ? t('auth:buttons.login') : t('auth:buttons.signup')
                 )}
               </Button>
             </form>
@@ -178,8 +182,8 @@ export default function Auth() {
                 disabled={loading}
               >
                 {isLogin 
-                  ? '¿No tienes cuenta? Regístrate gratis' 
-                  : '¿Ya tienes cuenta? Inicia sesión'
+                  ? t('auth:toggle.need_account')
+                  : t('auth:toggle.have_account')
                 }
               </button>
             </div>
@@ -187,8 +191,7 @@ export default function Auth() {
             {!isLogin && (
               <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                 <p className="text-xs text-blue-700">
-                  <strong>Incluye:</strong> Dashboard completo, tracking GPS, gestión de conductores, 
-                  reportes avanzados y soporte técnico. Sin compromisos, cancela cuando quieras.
+                  <strong>{t('auth:features.included')}</strong> {t('auth:features.description')}
                 </p>
               </div>
             )}
@@ -197,13 +200,13 @@ export default function Auth() {
 
         <div className="mt-6 text-center text-sm text-muted-foreground">
           <p>
-            Al continuar, aceptas nuestros{' '}
+            {t('common:legal.legal_acceptance')}{' '}
             <a href="#" className="text-primary hover:underline">
-              Términos de Servicio
+              {t('common:legal.terms_of_service')}
             </a>{' '}
             y{' '}
             <a href="#" className="text-primary hover:underline">
-              Política de Privacidad
+              {t('common:legal.privacy_policy')}
             </a>
           </p>
         </div>

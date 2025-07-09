@@ -1,0 +1,93 @@
+{
+  "hero": {
+    "badge": "🚀 #1 Fleet Management Platform",
+    "title": "Manage Your",
+    "title_highlight": "Transportation",
+    "title_end": "Fleet with Intelligence",
+    "subtitle": "FleetNest helps you optimize operations, reduce costs, and maintain regulatory compliance with our all-in-one platform for transportation companies.",
+    "features": {
+      "no_credit_card": "No credit card required",
+      "quick_setup": "5-minute setup",
+      "support_included": "Support included"
+    }
+  },
+  "features": {
+    "title": "Everything You Need to Manage Your Fleet",
+    "subtitle": "Powerful tools designed specifically for transportation companies",
+    "items": {
+      "real_time_tracking": {
+        "title": "Real-Time Tracking",
+        "description": "Monitor your fleet in real-time with integrated GPS and automatic location updates."
+      },
+      "advanced_reports": {
+        "title": "Advanced Reports",
+        "description": "Detailed analysis of performance, operating costs, and key business metrics."
+      },
+      "driver_management": {
+        "title": "Driver Management", 
+        "description": "Manage driver profiles, licenses, certifications, and work schedules."
+      },
+      "comprehensive_safety": {
+        "title": "Comprehensive Safety",
+        "description": "DOT compliance, safety alerts, and driving behavior monitoring."
+      },
+      "route_optimization": {
+        "title": "Route Optimization",
+        "description": "Plan efficient routes, reduce fuel costs, and improve delivery times."
+      },
+      "preventive_maintenance": {
+        "title": "Preventive Maintenance",
+        "description": "Schedule maintenance, track repairs, and keep your fleet in optimal condition."
+      }
+    }
+  },
+  "benefits": {
+    "title": "Why Choose FleetNest?",
+    "subtitle": "Over 500 transportation companies trust FleetNest to optimize their operations and increase profitability.",
+    "items": [
+      "Reduce operating costs up to 25%",
+      "Improve route efficiency",
+      "Automatic DOT/FMCSA compliance",
+      "Real-time reports",
+      "Geotab integration",
+      "24/7 support"
+    ],
+    "stats": {
+      "cost_reduction": "25%",
+      "cost_reduction_label": "Cost Reduction",
+      "cost_reduction_desc": "Average savings reported by our clients",
+      "rating": "4.9/5 - Average rating"
+    }
+  },
+  "cta": {
+    "title": "Ready to Optimize Your Fleet?",
+    "subtitle": "Join hundreds of companies already saving time and money with FleetNest"
+  },
+  "footer": {
+    "description": "The leading platform for transportation fleet management. Optimize, control, and grow your business with our professional tools.",
+    "sections": {
+      "product": {
+        "title": "Product",
+        "links": {
+          "features": "Features",
+          "integrations": "Integrations", 
+          "api": "API",
+          "security": "Security"
+        }
+      },
+      "support": {
+        "title": "Support",
+        "links": {
+          "documentation": "Documentation",
+          "help_center": "Help Center",
+          "contact": "Contact",
+          "system_status": "System Status"
+        }
+      }
+    },
+    "contact": {
+      "phone": "(555) 123-4567",
+      "email": "info@fleetnest.com"
+    }
+  }
+}

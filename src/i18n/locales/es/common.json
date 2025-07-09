@@ -1,0 +1,32 @@
+{
+  "app": {
+    "name": "FleetNest",
+    "tagline": "Centro de Comando para Transporte"
+  },
+  "navigation": {
+    "features": "Características",
+    "benefits": "Beneficios",
+    "contact": "Contacto", 
+    "admin": "Admin",
+    "login": "Iniciar Sesión"
+  },
+  "actions": {
+    "get_started": "Comenzar Gratis",
+    "view_demo": "Ver Demo",
+    "start_now": "Comenzar Ahora - Gratis",
+    "contact_sales": "Contactar Ventas",
+    "back_home": "Volver al inicio",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  },
+  "status": {
+    "free": "Gratis",
+    "included": "Incluido"
+  },
+  "legal": {
+    "terms_of_service": "Términos de Servicio",
+    "privacy_policy": "Política de Privacidad", 
+    "rights_reserved": "Todos los derechos reservados.",
+    "legal_acceptance": "Al continuar, aceptas nuestros"
+  }
+}

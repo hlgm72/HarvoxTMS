@@ -1,0 +1,32 @@
+{
+  "app": {
+    "name": "FleetNest",
+    "tagline": "Command Center for Transportation"
+  },
+  "navigation": {
+    "features": "Features",
+    "benefits": "Benefits", 
+    "contact": "Contact",
+    "admin": "Admin",
+    "login": "Login"
+  },
+  "actions": {
+    "get_started": "Get Started",
+    "view_demo": "View Demo",
+    "start_now": "Start Now - Free",
+    "contact_sales": "Contact Sales",
+    "back_home": "Back to Home",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "status": {
+    "free": "Free",
+    "included": "Included"
+  },
+  "legal": {
+    "terms_of_service": "Terms of Service",
+    "privacy_policy": "Privacy Policy",
+    "rights_reserved": "All rights reserved.",
+    "legal_acceptance": "By continuing, you accept our"
+  }
+}
