@@ -8,7 +8,11 @@
     "benefits": "Benefits", 
     "contact": "Contact",
     "admin": "Admin",
-    "login": "Login"
+    "login": "Login",
+    "dashboard": "Command Center",
+    "drivers": "Drivers",
+    "fleet": "Fleet",
+    "settings": "Settings"
   },
   "actions": {
     "get_started": "Get Started",
@@ -17,11 +21,41 @@
     "contact_sales": "Contact Sales",
     "back_home": "Back to Home",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "assign": "Assign",
+    "sync": "Sync",
+    "export": "Export"
   },
   "status": {
     "free": "Free",
-    "included": "Included"
+    "included": "Included",
+    "active": "Active",
+    "inactive": "Inactive",
+    "pending": "Pending",
+    "completed": "Completed",
+    "loading": "Loading",
+    "available": "Available",
+    "en_route": "En Route",
+    "delivered": "Delivered",
+    "maintenance": "Maintenance",
+    "offline": "Offline"
+  },
+  "messages": {
+    "error": "Error",
+    "success": "Success",
+    "loading": "Loading...",
+    "no_data": "No data",
+    "verifying_auth": "Verifying authentication...",
+    "restricted_access": "Restricted Access",
+    "login_required": "You must log in to access this page.",
+    "insufficient_permissions": "Insufficient Permissions",
+    "insufficient_permissions_desc": "You don't have the necessary permissions to access this page.",
+    "required_role": "Required role:",
+    "current_role": "Your current role:",
+    "loading_vehicles": "Loading vehicles...",
+    "sync_error": "Synchronization Error",
+    "fleet_data_error": "Could not load fleet data",
+    "api_key_required": "Google Maps API key required"
   },
   "legal": {
     "terms_of_service": "Terms of Service",

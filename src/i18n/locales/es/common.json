@@ -8,7 +8,11 @@
     "benefits": "Beneficios",
     "contact": "Contacto", 
     "admin": "Admin",
-    "login": "Iniciar Sesión"
+    "login": "Iniciar Sesión",
+    "dashboard": "Centro de Comando",
+    "drivers": "Conductores",
+    "fleet": "Flota",
+    "settings": "Configuración"
   },
   "actions": {
     "get_started": "Comenzar Gratis",
@@ -17,11 +21,41 @@
     "contact_sales": "Contactar Ventas",
     "back_home": "Volver al inicio",
     "save": "Guardar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "assign": "Asignar",
+    "sync": "Sincronizar",
+    "export": "Exportar"
   },
   "status": {
     "free": "Gratis",
-    "included": "Incluido"
+    "included": "Incluido",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "pending": "Pendiente",
+    "completed": "Completado",
+    "loading": "Cargando",
+    "available": "Disponible",
+    "en_route": "En Ruta",
+    "delivered": "Entregado",
+    "maintenance": "Mantenimiento",
+    "offline": "Desconectado"
+  },
+  "messages": {
+    "error": "Error",
+    "success": "Éxito",
+    "loading": "Cargando...",
+    "no_data": "Sin datos",
+    "verifying_auth": "Verificando autenticación...",
+    "restricted_access": "Acceso Restringido",
+    "login_required": "Debes iniciar sesión para acceder a esta página.",
+    "insufficient_permissions": "Permisos Insuficientes",
+    "insufficient_permissions_desc": "No tienes los permisos necesarios para acceder a esta página.",
+    "required_role": "Rol requerido:",
+    "current_role": "Tu rol actual:",
+    "loading_vehicles": "Cargando vehículos...",
+    "sync_error": "Error de sincronización",
+    "fleet_data_error": "No se pudieron cargar los datos de la flota",
+    "api_key_required": "Se requiere clave API de Google Maps"
   },
   "legal": {
     "terms_of_service": "Términos de Servicio",

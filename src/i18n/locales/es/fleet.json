@@ -1,0 +1,45 @@
+{
+  "titles": {
+    "fleet_overview": "Resumen de Flota",
+    "fleet_status": "Estado de Flota",
+    "vehicle_details": "Detalles del Vehículo",
+    "maintenance_schedule": "Cronograma de Mantenimiento",
+    "dispatch_panel": "Panel de Despacho",
+    "recent_loads": "Cargas Recientes"
+  },
+  "vehicle": {
+    "truck_number": "Número de Camión",
+    "name": "Nombre",
+    "status": "Estado",
+    "location": "Ubicación",
+    "last_update": "Última Actualización",
+    "driver": "Conductor",
+    "load": "Carga"
+  },
+  "metrics": {
+    "total_vehicles": "Total de Vehículos",
+    "active_vehicles": "Vehículos Activos",
+    "available_vehicles": "Disponibles",
+    "maintenance_vehicles": "Mantenimiento",
+    "fleet_utilization": "Utilización de Flota"
+  },
+  "loads": {
+    "pickup": "Recogida",
+    "delivery": "Entrega",
+    "distance": "Distancia",
+    "priority": "Prioridad",
+    "urgent": "URGENTE",
+    "high": "ALTA",
+    "normal": "NORMAL"
+  },
+  "google_maps": {
+    "api_setup": "Configuración API de Google Maps",
+    "enter_key": "Ingresa tu clave API de Google Maps:",
+    "instructions": "Para usar la funcionalidad del mapa:",
+    "step1": "Crea un proyecto en Google Cloud Console",
+    "step2": "Habilita 'Maps JavaScript API'",
+    "step3": "Crea una clave API",
+    "step4": "Agrega la clave aquí",
+    "get_key": "Obtener Clave API"
+  }
+}

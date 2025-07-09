@@ -1,0 +1,45 @@
+{
+  "titles": {
+    "fleet_overview": "Fleet Overview",
+    "fleet_status": "Fleet Status",
+    "vehicle_details": "Vehicle Details",
+    "maintenance_schedule": "Maintenance Schedule",
+    "dispatch_panel": "Dispatch Panel",
+    "recent_loads": "Recent Loads"
+  },
+  "vehicle": {
+    "truck_number": "Truck Number",
+    "name": "Name",
+    "status": "Status",
+    "location": "Location",
+    "last_update": "Last Update",
+    "driver": "Driver",
+    "load": "Load"
+  },
+  "metrics": {
+    "total_vehicles": "Total Vehicles",
+    "active_vehicles": "Active Vehicles",
+    "available_vehicles": "Available",
+    "maintenance_vehicles": "Maintenance",
+    "fleet_utilization": "Fleet Utilization"
+  },
+  "loads": {
+    "pickup": "Pickup",
+    "delivery": "Delivery",
+    "distance": "Distance",
+    "priority": "Priority",
+    "urgent": "URGENT",
+    "high": "HIGH",
+    "normal": "NORMAL"
+  },
+  "google_maps": {
+    "api_setup": "Google Maps API Setup",
+    "enter_key": "Enter your Google Maps API key:",
+    "instructions": "To use the map functionality:",
+    "step1": "Create a project in Google Cloud Console",
+    "step2": "Enable 'Maps JavaScript API'",
+    "step3": "Create an API key",
+    "step4": "Add the key here",
+    "get_key": "Get API Key"
+  }
+}

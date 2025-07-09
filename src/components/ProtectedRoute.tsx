@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Shield, Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -15,6 +16,7 @@ export const ProtectedRoute = ({
   requireAuth = true 
 }: ProtectedRouteProps) => {
   const { user, userRole, loading, isAuthenticated } = useAuth();
+  const { t } = useTranslation('common');
 
   // Show loading spinner while checking authentication
   if (loading) {
@@ -24,7 +26,7 @@ export const ProtectedRoute = ({
           <CardContent className="pt-6">
             <div className="flex flex-col items-center space-y-4">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="text-muted-foreground">Verificando autenticación...</p>
+              <p className="text-muted-foreground">{t('messages.verifying_auth')}</p>
             </div>
           </CardContent>
         </Card>
@@ -41,9 +43,9 @@ export const ProtectedRoute = ({
             <div className="flex flex-col items-center space-y-4">
               <Shield className="h-12 w-12 text-muted-foreground" />
               <div className="text-center">
-                <h2 className="text-lg font-semibold">Acceso Restringido</h2>
+                <h2 className="text-lg font-semibold">{t('messages.restricted_access')}</h2>
                 <p className="text-muted-foreground">
-                  Debes iniciar sesión para acceder a esta página.
+                  {t('messages.login_required')}
                 </p>
               </div>
             </div>
@@ -63,17 +65,17 @@ export const ProtectedRoute = ({
               <Shield className="h-12 w-12 text-destructive" />
               <div className="text-center">
                 <h2 className="text-lg font-semibold text-destructive">
-                  Permisos Insuficientes
+                  {t('messages.insufficient_permissions')}
                 </h2>
                 <p className="text-muted-foreground">
-                  No tienes los permisos necesarios para acceder a esta página.
+                  {t('messages.insufficient_permissions_desc')}
                 </p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Rol requerido: <span className="font-medium">{requiredRole}</span>
+                  {t('messages.required_role')} <span className="font-medium">{requiredRole}</span>
                 </p>
                 {userRole && (
                   <p className="text-sm text-muted-foreground">
-                    Tu rol actual: <span className="font-medium">{userRole.role}</span>
+                    {t('messages.current_role')} <span className="font-medium">{userRole.role}</span>
                   </p>
                 )}
               </div>
