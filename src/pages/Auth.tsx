@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import fleetNestLogo from '@/assets/fleetnest-logo.png';
+const fleetNestLogo = '/auth-bg-fleet.jpg'; // Usar temporalmente hasta que puedas subir tu logo
 
 export default function Auth() {
   const { t } = useTranslation(['auth', 'common']);
