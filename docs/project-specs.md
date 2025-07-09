@@ -123,6 +123,43 @@ user: {
 - **Despliegue único** - Updates instantáneos
 - **Performance** - Optimización global
 
+## 📱 Estrategia PWA (Fase 2+)
+
+### **Enfoque: Una PWA con Experiencias Diferenciadas**
+- **Manifest dinámico** por rol de usuario
+- **Service Workers inteligentes** con caching por contexto
+- **Experiencias optimizadas** según tipo de usuario
+- **Install prompts** contextuales y personalizados
+
+### **PWA Features por Usuario**
+
+#### **Driver PWA Experience**
+- 🔄 **Offline-first** - Funciona sin conexión
+- 📷 **Camera access** - BOL scanning, documentación
+- 📍 **Geolocation** - Live tracking, navegación
+- 🔔 **Push notifications** - Nuevas cargas, alertas
+- 🔄 **Background sync** - Upload automático al reconectar
+- 🎯 **Quick actions** - Shortcuts para tareas frecuentes
+
+#### **Command Center PWA Experience**
+- ⚡ **Real-time updates** - WebSocket connections persistentes
+- 🖥️ **Desktop notifications** - Alertas críticas del sistema
+- 📁 **File handling** - Drag & drop documentos, bulk upload
+- 🖨️ **Print API** - BOLs, reportes, documentación
+- ⚡ **App shortcuts** - Quick dispatch, emergency actions
+- 📊 **Offline dashboard** - KPIs cached para consulta sin conexión
+
+### **Implementación Técnica**
+- **Capacitor opcional** - Para features nativas avanzadas
+- **Una codebase** - Shared components, diferente configuración
+- **Caching estratégico** - Por rol y frecuencia de uso
+- **Update strategy** - Background updates sin interrumpir workflow
+
+### **Timeline PWA**
+- **Fase 1**: Web app responsive, mobile-friendly
+- **Fase 2**: PWA enhancement, service workers, offline support
+- **Fase 3+**: Capacitor integration, native features avanzadas
+
 ## 📱 Tipos de Usuarios por Tamaño
 
 ### Compañía Pequeña (2-10 camiones)
