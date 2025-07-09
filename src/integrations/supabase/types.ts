@@ -504,6 +504,10 @@ export type Database = {
         }
         Returns: Json
       }
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       needs_initial_setup: {
         Args: Record<PropertyKey, never>
         Returns: boolean
