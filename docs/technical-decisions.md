@@ -96,8 +96,16 @@ user_company_roles: {
 ## 🎨 Sistema de Diseño
 
 ### Estructura CSS
+**DECIDIDO: Template Command Center + Transport Orange**
 ```css
-/* index.css - Tokens semánticos */
+/* index.css - Sistema de tipografías seleccionado */
+:root {
+  --font-heading: 'Outfit', system-ui, sans-serif;    /* Headers - Moderno, tech */
+  --font-body: 'Inter', system-ui, sans-serif;        /* Body - Ultra legible */
+  --font-mono: 'JetBrains Mono', 'Consolas', monospace; /* Números, códigos TMS */
+}
+
+/* Paleta Command Center definitiva */
 :root {
   --primary: [color-hsl];
   --secondary: [color-hsl]; 
