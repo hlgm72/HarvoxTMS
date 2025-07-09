@@ -6,7 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Setup from "./pages/Setup";
 import Auth from "./pages/Auth";
+import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import NotFound from "./pages/NotFound";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import './i18n/config';
 
 const queryClient = new QueryClient();
@@ -21,6 +23,14 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/setup" element={<Setup />} />
           <Route path="/auth" element={<Auth />} />
+          <Route 
+            path="/superadmin" 
+            element={
+              <ProtectedRoute requiredRole="superadmin">
+                <SuperAdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
           <Route path="/drivers" element={<div>Drivers page coming soon</div>} />
           <Route path="/loads" element={<div>Loads page coming soon</div>} />
           <Route path="/clients" element={<div>Clients page coming soon</div>} />

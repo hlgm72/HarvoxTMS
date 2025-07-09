@@ -46,11 +46,25 @@ export default function Auth() {
         if (error) throw error;
 
         if (data.user) {
+          // Check user role to determine redirect
+          const { data: roleData } = await supabase
+            .from('user_company_roles')
+            .select('role')
+            .eq('user_id', data.user.id)
+            .eq('is_active', true)
+            .single();
+
           toast({
             title: "Welcome back!",
             description: "You have been successfully logged in.",
           });
-          navigate('/setup');
+
+          // Redirect based on role
+          if (roleData?.role === 'superadmin') {
+            navigate('/superadmin');
+          } else {
+            navigate('/setup');
+          }
         }
       } else {
         // Sign up new user
