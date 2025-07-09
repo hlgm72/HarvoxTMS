@@ -176,10 +176,10 @@ All colors MUST be HSL.
   .auth-background {
     background: 
       linear-gradient(135deg, 
-        rgba(52, 82, 149, 0.8) 0%, 
-        rgba(65, 105, 175, 0.7) 50%, 
-        rgba(32, 67, 133, 0.85) 100%),
-      url('/auth-bg.jpg');
+        rgba(52, 82, 149, 0.7) 0%, 
+        rgba(65, 105, 175, 0.6) 50%, 
+        rgba(32, 67, 133, 0.8) 100%),
+      url('/auth-bg-fleet.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
