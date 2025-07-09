@@ -7,13 +7,18 @@
  * Used in onChange handlers
  */
 export const handleTextInput = (value: string): string => {
-  // Prevent leading spaces
-  if (value.startsWith(' ')) {
+  // If the value is only spaces, return empty string
+  if (value.trim() === '') {
     return '';
   }
   
+  // Prevent leading spaces by removing them
+  let cleanValue = value.replace(/^\s+/, '');
+  
   // Replace multiple consecutive spaces with single space
-  return value.replace(/\s{2,}/g, ' ');
+  cleanValue = cleanValue.replace(/\s{2,}/g, ' ');
+  
+  return cleanValue;
 };
 
 /**
