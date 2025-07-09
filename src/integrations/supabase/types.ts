@@ -107,6 +107,106 @@ export type Database = {
           },
         ]
       }
+      company_broker_dispatchers: {
+        Row: {
+          broker_id: string
+          created_at: string
+          email: string | null
+          extension: string | null
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          phone_mobile: string | null
+          phone_office: string | null
+          updated_at: string
+        }
+        Insert: {
+          broker_id: string
+          created_at?: string
+          email?: string | null
+          extension?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          phone_mobile?: string | null
+          phone_office?: string | null
+          updated_at?: string
+        }
+        Update: {
+          broker_id?: string
+          created_at?: string
+          email?: string | null
+          extension?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          phone_mobile?: string | null
+          phone_office?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_broker_dispatchers_broker_id_fkey"
+            columns: ["broker_id"]
+            isOneToOne: false
+            referencedRelation: "company_brokers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_brokers: {
+        Row: {
+          address: string | null
+          company_id: string
+          contact_person: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          company_id: string
+          contact_person?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          company_id?: string
+          contact_person?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_brokers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_documents: {
         Row: {
           company_id: string
