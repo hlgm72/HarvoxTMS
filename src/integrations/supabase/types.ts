@@ -159,40 +159,31 @@ export type Database = {
       }
       company_drivers: {
         Row: {
-          benefits_eligible: boolean | null
           created_at: string
           id: string
           is_active: boolean
-          sick_days_accrued: number | null
           termination_date: string | null
           termination_reason: string | null
           updated_at: string
           user_id: string
-          vacation_days_accrued: number | null
         }
         Insert: {
-          benefits_eligible?: boolean | null
           created_at?: string
           id?: string
           is_active?: boolean
-          sick_days_accrued?: number | null
           termination_date?: string | null
           termination_reason?: string | null
           updated_at?: string
           user_id: string
-          vacation_days_accrued?: number | null
         }
         Update: {
-          benefits_eligible?: boolean | null
           created_at?: string
           id?: string
           is_active?: boolean
-          sick_days_accrued?: number | null
           termination_date?: string | null
           termination_reason?: string | null
           updated_at?: string
           user_id?: string
-          vacation_days_accrued?: number | null
         }
         Relationships: []
       }
