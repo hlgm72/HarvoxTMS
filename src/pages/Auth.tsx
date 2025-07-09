@@ -212,17 +212,16 @@ export default function Auth() {
           </h1>
           
           <p className="text-xl text-white/90 font-body mb-8 leading-relaxed">
-            Gestiona tu flota de transporte con tecnología de vanguardia. 
-            Tracking GPS en tiempo real, optimización de rutas, y control total de tus operaciones.
+            {t('auth:hero.description')}
           </p>
           
           {/* Features List */}
           <div className="space-y-4 mb-8">
             {[
-              { icon: "🚛", text: "Tracking GPS en tiempo real" },
-              { icon: "📊", text: "Dashboard inteligente y reportes" },
-              { icon: "👥", text: "Gestión completa de conductores" },
-              { icon: "⚡", text: "Optimización automática de rutas" }
+              { icon: "🚛", text: t('auth:hero.features.gps_tracking') },
+              { icon: "📊", text: t('auth:hero.features.dashboard') },
+              { icon: "👥", text: t('auth:hero.features.driver_management') },
+              { icon: "⚡", text: t('auth:hero.features.route_optimization') }
             ].map((feature, index) => (
               <div key={index} className="flex items-center space-x-3 animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
                 <span className="text-2xl">{feature.icon}</span>
@@ -235,15 +234,15 @@ export default function Auth() {
           <div className="grid grid-cols-3 gap-6 p-6 bg-white/10 backdrop-blur-sm rounded-2xl">
             <div className="text-center">
               <div className="text-3xl font-heading font-bold text-white">500+</div>
-              <div className="text-sm text-white/70 font-body">Empresas</div>
+              <div className="text-sm text-white/70 font-body">{t('auth:hero.stats.companies')}</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-heading font-bold text-white">10K+</div>
-              <div className="text-sm text-white/70 font-body">Vehículos</div>
+              <div className="text-sm text-white/70 font-body">{t('auth:hero.stats.vehicles')}</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-heading font-bold text-white">99.9%</div>
-              <div className="text-sm text-white/70 font-body">Uptime</div>
+              <div className="text-sm text-white/70 font-body">{t('auth:hero.stats.uptime')}</div>
             </div>
           </div>
         </div>
