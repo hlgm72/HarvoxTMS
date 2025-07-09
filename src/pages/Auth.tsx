@@ -46,13 +46,17 @@ export default function Auth() {
         if (error) throw error;
 
         if (data.user) {
+          console.log('User logged in:', data.user.id);
+          
           // Check user role to determine redirect
-          const { data: roleData } = await supabase
+          const { data: roleData, error: roleError } = await supabase
             .from('user_company_roles')
             .select('role')
             .eq('user_id', data.user.id)
             .eq('is_active', true)
             .single();
+
+          console.log('Role query result:', { roleData, roleError });
 
           toast({
             title: "Welcome back!",
@@ -61,8 +65,10 @@ export default function Auth() {
 
           // Redirect based on role
           if (roleData?.role === 'superadmin') {
+            console.log('Redirecting to superadmin dashboard');
             navigate('/superadmin');
           } else {
+            console.log('Redirecting to setup page');
             navigate('/setup');
           }
         }
