@@ -179,10 +179,11 @@ All colors MUST be HSL.
         hsla(var(--primary), 0.85) 0%, 
         hsla(var(--primary-glow), 0.75) 50%, 
         hsla(var(--fleet-navy), 0.9) 100%),
-      url('/src/assets/auth-bg-logistics.jpg');
+      url('/auth-bg-logistics.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
+    min-height: 100vh;
   }
   
   .auth-card {
