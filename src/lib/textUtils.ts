@@ -9,7 +9,7 @@
 export const handleTextInput = (value: string): string => {
   // Prevent leading spaces
   if (value.startsWith(' ')) {
-    return value.trimStart();
+    return '';
   }
   
   // Replace multiple consecutive spaces with single space
