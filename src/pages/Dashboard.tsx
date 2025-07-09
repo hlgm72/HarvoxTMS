@@ -6,7 +6,7 @@ import { FleetStatus } from "@/components/dashboard/FleetStatus";
 
 export default function Dashboard() {
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">{/* Removed p-6 since Layout now handles padding */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-fleet bg-clip-text text-transparent mb-2">
