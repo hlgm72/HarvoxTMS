@@ -187,7 +187,7 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen auth-gradient flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen auth-background flex items-center justify-center p-4 relative overflow-hidden">
       {/* Floating Elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-20 left-20 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse"></div>
