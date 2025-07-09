@@ -24,35 +24,35 @@ interface NotificationItemProps {
 const notificationConfig = {
   success: {
     icon: CheckCircle,
-    bgColor: 'bg-gradient-to-r from-fleet-green/90 to-fleet-green',
-    borderColor: 'border-fleet-green/30',
-    iconColor: 'text-white',
-    textColor: 'text-white',
-    shadow: 'shadow-lg shadow-fleet-green/30'
+    bgColor: 'bg-gradient-to-r from-success/90 to-success',
+    borderColor: 'border-success/30',
+    iconColor: 'text-success-foreground',
+    textColor: 'text-success-foreground',
+    shadow: 'shadow-lg shadow-success/30'
   },
   error: {
     icon: XCircle,
-    bgColor: 'bg-gradient-to-r from-fleet-red/90 to-fleet-red',
-    borderColor: 'border-fleet-red/30',
-    iconColor: 'text-white',
-    textColor: 'text-white',
-    shadow: 'shadow-lg shadow-fleet-red/30'
+    bgColor: 'bg-gradient-to-r from-destructive/90 to-destructive',
+    borderColor: 'border-destructive/30',
+    iconColor: 'text-destructive-foreground',
+    textColor: 'text-destructive-foreground',
+    shadow: 'shadow-lg shadow-destructive/30'
   },
   warning: {
     icon: AlertTriangle,
-    bgColor: 'bg-gradient-to-r from-yellow-500/90 to-yellow-600',
-    borderColor: 'border-yellow-500/30',
-    iconColor: 'text-white',
-    textColor: 'text-white',
-    shadow: 'shadow-lg shadow-yellow-500/30'
+    bgColor: 'bg-gradient-to-r from-warning/90 to-warning',
+    borderColor: 'border-warning/30',
+    iconColor: 'text-warning-foreground',
+    textColor: 'text-warning-foreground',
+    shadow: 'shadow-lg shadow-warning/30'
   },
   info: {
     icon: Info,
-    bgColor: 'bg-gradient-to-r from-fleet-blue/90 to-fleet-blue',
-    borderColor: 'border-fleet-blue/30',
-    iconColor: 'text-white',
-    textColor: 'text-white',
-    shadow: 'shadow-lg shadow-fleet-blue/30'
+    bgColor: 'bg-gradient-to-r from-secondary/90 to-secondary',
+    borderColor: 'border-secondary/30',
+    iconColor: 'text-secondary-foreground',
+    textColor: 'text-secondary-foreground',
+    shadow: 'shadow-lg shadow-secondary/30'
   }
 };
 
