@@ -2,10 +2,15 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Building2, Users, Truck, Activity, Plus, Settings } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Building2, Users, Truck, Activity, Plus, Settings, Mail, Phone, User, Briefcase } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Layout } from '@/components/layout/Layout';
+import { useToast } from '@/hooks/use-toast';
 
 interface CompanyStats {
   total_companies: number;
@@ -19,13 +24,21 @@ interface Company {
   name: string;
   email: string;
   phone: string;
-  city_id: string;
-  state_id: string;
+  owner_name: string;
+  owner_email: string;
+  owner_phone: string;
+  owner_title: string;
+  plan_type: string;
+  max_vehicles: number;
+  max_users: number;
+  status: string;
+  contract_start_date: string;
   created_at: string;
 }
 
 export default function SuperAdminDashboard() {
   const { user, isSuperAdmin, loading } = useAuth();
+  const { toast } = useToast();
   const [stats, setStats] = useState<CompanyStats>({
     total_companies: 0,
     total_users: 0,
@@ -34,6 +47,20 @@ export default function SuperAdminDashboard() {
   });
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [isCreatingCompany, setIsCreatingCompany] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [newCompany, setNewCompany] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    owner_name: '',
+    owner_email: '',
+    owner_phone: '',
+    owner_title: '',
+    plan_type: 'basic',
+    max_vehicles: 10,
+    max_users: 5,
+  });
 
   useEffect(() => {
     if (!loading && isSuperAdmin) {
@@ -79,7 +106,12 @@ export default function SuperAdminDashboard() {
     try {
       const { data, error } = await supabase
         .from('companies')
-        .select('*')
+        .select(`
+          id, name, email, phone, 
+          owner_name, owner_email, owner_phone, owner_title,
+          plan_type, max_vehicles, max_users, status, 
+          contract_start_date, created_at
+        `)
         .order('created_at', { ascending: false })
         .limit(10);
 
@@ -89,6 +121,60 @@ export default function SuperAdminDashboard() {
       console.error('Error fetching companies:', error);
     } finally {
       setLoadingData(false);
+    }
+  };
+
+  const handleCreateCompany = async () => {
+    setIsCreatingCompany(true);
+    try {
+      const { data, error } = await supabase
+        .from('companies')
+        .insert([{
+          ...newCompany,
+          // Campos obligatorios temporales para que funcione la inserción
+          street_address: 'To be configured',
+          state_id: 'TX',
+          zip_code: '00000',
+          status: 'active',
+          contract_start_date: new Date().toISOString().split('T')[0],
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast({
+        title: "Company created successfully",
+        description: `${newCompany.name} has been added to the system.`,
+      });
+
+      // Reset form and close dialog
+      setNewCompany({
+        name: '',
+        email: '',
+        phone: '',
+        owner_name: '',
+        owner_email: '',
+        owner_phone: '',
+        owner_title: '',
+        plan_type: 'basic',
+        max_vehicles: 10,
+        max_users: 5,
+      });
+      setShowCreateDialog(false);
+      
+      // Refresh data
+      fetchCompanies();
+      fetchSystemStats();
+    } catch (error: any) {
+      console.error('Error creating company:', error);
+      toast({
+        title: "Error creating company",
+        description: error.message || "An error occurred while creating the company.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingCompany(false);
     }
   };
 
@@ -138,10 +224,198 @@ export default function SuperAdminDashboard() {
               <Settings className="h-4 w-4 mr-2" />
               System Settings
             </Button>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              New Company
-            </Button>
+            <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Company
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Create New Company</DialogTitle>
+                  <DialogDescription>
+                    Add a new transportation company to the FleetNest system.
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <div className="grid grid-cols-2 gap-6 py-4">
+                  {/* Company Information */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                      Company Information
+                    </h3>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="company-name">Company Name *</Label>
+                      <Input
+                        id="company-name"
+                        value={newCompany.name}
+                        onChange={(e) => setNewCompany(prev => ({ ...prev, name: e.target.value }))}
+                        placeholder="Swift Transportation"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="company-email">Company Email *</Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="company-email"
+                          type="email"
+                          value={newCompany.email}
+                          onChange={(e) => setNewCompany(prev => ({ ...prev, email: e.target.value }))}
+                          placeholder="contact@company.com"
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="company-phone">Company Phone *</Label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="company-phone"
+                          value={newCompany.phone}
+                          onChange={(e) => setNewCompany(prev => ({ ...prev, phone: e.target.value }))}
+                          placeholder="(555) 123-4567"
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Owner Information */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                      Owner/Primary Contact
+                    </h3>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="owner-name">Owner Name *</Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="owner-name"
+                          value={newCompany.owner_name}
+                          onChange={(e) => setNewCompany(prev => ({ ...prev, owner_name: e.target.value }))}
+                          placeholder="John Smith"
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="owner-email">Owner Email *</Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="owner-email"
+                          type="email"
+                          value={newCompany.owner_email}
+                          onChange={(e) => setNewCompany(prev => ({ ...prev, owner_email: e.target.value }))}
+                          placeholder="john@company.com"
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="owner-phone">Owner Phone *</Label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="owner-phone"
+                          value={newCompany.owner_phone}
+                          onChange={(e) => setNewCompany(prev => ({ ...prev, owner_phone: e.target.value }))}
+                          placeholder="(555) 987-6543"
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="owner-title">Owner Title</Label>
+                      <div className="relative">
+                        <Briefcase className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="owner-title"
+                          value={newCompany.owner_title}
+                          onChange={(e) => setNewCompany(prev => ({ ...prev, owner_title: e.target.value }))}
+                          placeholder="CEO, President, Fleet Manager..."
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Plan Configuration */}
+                  <div className="col-span-2 space-y-4">
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                      Plan Configuration
+                    </h3>
+                    
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="plan-type">Plan Type</Label>
+                        <Select 
+                          value={newCompany.plan_type} 
+                          onValueChange={(value) => setNewCompany(prev => ({ ...prev, plan_type: value }))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="basic">Basic Plan</SelectItem>
+                            <SelectItem value="professional">Professional Plan</SelectItem>
+                            <SelectItem value="enterprise">Enterprise Plan</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="max-vehicles">Max Vehicles</Label>
+                        <Input
+                          id="max-vehicles"
+                          type="number"
+                          value={newCompany.max_vehicles}
+                          onChange={(e) => setNewCompany(prev => ({ ...prev, max_vehicles: parseInt(e.target.value) }))}
+                          min="1"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="max-users">Max Users</Label>
+                        <Input
+                          id="max-users"
+                          type="number"
+                          value={newCompany.max_users}
+                          onChange={(e) => setNewCompany(prev => ({ ...prev, max_users: parseInt(e.target.value) }))}
+                          min="1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowCreateDialog(false)}
+                    disabled={isCreatingCompany}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleCreateCompany}
+                    disabled={isCreatingCompany || !newCompany.name || !newCompany.email || !newCompany.owner_name || !newCompany.owner_email}
+                  >
+                    {isCreatingCompany ? 'Creating...' : 'Create Company'}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
@@ -214,19 +488,40 @@ export default function SuperAdminDashboard() {
                 {companies.map((company) => (
                   <div
                     key={company.id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
+                    className="flex items-start justify-between p-6 border rounded-lg hover:bg-muted/50 transition-colors"
                   >
-                    <div className="flex-1">
-                      <h3 className="font-medium">{company.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {company.email} • {company.phone}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Created: {new Date(company.created_at).toLocaleDateString()}
-                      </p>
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center gap-3">
+                        <h3 className="font-semibold text-lg">{company.name}</h3>
+                        <Badge 
+                          variant={company.status === 'active' ? 'default' : 'secondary'}
+                          className="capitalize"
+                        >
+                          {company.status}
+                        </Badge>
+                        <Badge variant="outline" className="capitalize">
+                          {company.plan_type}
+                        </Badge>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+                        <div>
+                          <p><strong>Company:</strong> {company.email} • {company.phone}</p>
+                          <p><strong>Owner:</strong> {company.owner_name} ({company.owner_title})</p>
+                          <p><strong>Contact:</strong> {company.owner_email} • {company.owner_phone}</p>
+                        </div>
+                        <div>
+                          <p><strong>Limits:</strong> {company.max_vehicles} vehicles, {company.max_users} users</p>
+                          <p><strong>Contract Start:</strong> {new Date(company.contract_start_date).toLocaleDateString()}</p>
+                          <p><strong>Created:</strong> {new Date(company.created_at).toLocaleDateString()}</p>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Badge variant="secondary">Active</Badge>
+                    
+                    <div className="flex gap-2 ml-4">
+                      <Button variant="outline" size="sm">
+                        View Details
+                      </Button>
                       <Button variant="outline" size="sm">
                         Manage
                       </Button>
