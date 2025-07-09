@@ -47,6 +47,56 @@ export type Database = {
         }
         Relationships: []
       }
+      state_cities: {
+        Row: {
+          county: string | null
+          created_at: string
+          id: string
+          name: string
+          state_id: string
+        }
+        Insert: {
+          county?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          state_id: string
+        }
+        Update: {
+          county?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          state_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "state_cities_state_id_fkey"
+            columns: ["state_id"]
+            isOneToOne: false
+            referencedRelation: "states"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      states: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       vehicle_assignments: {
         Row: {
           assigned_at: string
