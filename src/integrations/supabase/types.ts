@@ -287,8 +287,12 @@ export type Database = {
           business_phone: string | null
           business_type: string | null
           created_at: string
+          dispatching_percentage: number | null
+          factoring_percentage: number | null
           id: string
+          insurance_pay: number | null
           is_active: boolean
+          leasing_percentage: number | null
           tax_id: string | null
           updated_at: string
           user_id: string
@@ -300,8 +304,12 @@ export type Database = {
           business_phone?: string | null
           business_type?: string | null
           created_at?: string
+          dispatching_percentage?: number | null
+          factoring_percentage?: number | null
           id?: string
+          insurance_pay?: number | null
           is_active?: boolean
+          leasing_percentage?: number | null
           tax_id?: string | null
           updated_at?: string
           user_id: string
@@ -313,8 +321,12 @@ export type Database = {
           business_phone?: string | null
           business_type?: string | null
           created_at?: string
+          dispatching_percentage?: number | null
+          factoring_percentage?: number | null
           id?: string
+          insurance_pay?: number | null
           is_active?: boolean
+          leasing_percentage?: number | null
           tax_id?: string | null
           updated_at?: string
           user_id?: string
