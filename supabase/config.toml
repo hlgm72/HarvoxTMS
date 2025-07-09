@@ -2,3 +2,6 @@ project_id = "htaotttcnjxqzpsrqwll"
 
 [functions.geotab-sync]
 verify_jwt = false
+
+[functions.setup-superadmin]
+verify_jwt = false
