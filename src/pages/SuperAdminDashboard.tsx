@@ -305,7 +305,15 @@ export default function SuperAdminDashboard() {
                           id="company-email"
                           type="email"
                           value={newCompany.email}
-                          {...companyEmailHandlers}
+                          onChange={(e) => {
+                            const cleanValue = e.target.value.replace(/\s/g, '');
+                            setNewCompany(prev => ({ ...prev, email: cleanValue }));
+                          }}
+                          onKeyPress={(e) => {
+                            if (e.key === ' ') {
+                              e.preventDefault();
+                            }
+                          }}
                           placeholder="contact@company.com"
                           className="pl-10"
                         />
@@ -355,7 +363,15 @@ export default function SuperAdminDashboard() {
                           id="owner-email"
                           type="email"
                           value={newCompany.owner_email}
-                          {...ownerEmailHandlers}
+                          onChange={(e) => {
+                            const cleanValue = e.target.value.replace(/\s/g, '');
+                            setNewCompany(prev => ({ ...prev, owner_email: cleanValue }));
+                          }}
+                          onKeyPress={(e) => {
+                            if (e.key === ' ') {
+                              e.preventDefault();
+                            }
+                          }}
                           placeholder="john@company.com"
                           className="pl-10"
                         />
