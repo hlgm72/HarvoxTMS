@@ -26,7 +26,10 @@ export const handleTextInput = (value: string): string => {
  * Emails should never have spaces
  */
 export const handleEmailInput = (value: string): string => {
-  return value.replace(/\s/g, '');
+  // Remove all spaces completely and return only valid characters
+  const cleanValue = value.replace(/\s/g, '');
+  console.log('Email input:', value, '→', cleanValue); // Debug
+  return cleanValue;
 };
 
 /**
