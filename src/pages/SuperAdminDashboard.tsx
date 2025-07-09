@@ -82,7 +82,6 @@ export default function SuperAdminDashboard() {
     setNewCompany(prev => ({ ...prev, email: value })), 'email'
   );
   
-  
   const companyPhoneHandlers = createTextHandlers((value) => 
     setNewCompany(prev => ({ ...prev, phone: value })), 'phone'
   );
@@ -94,7 +93,6 @@ export default function SuperAdminDashboard() {
   const ownerEmailHandlers = createTextHandlers((value) => 
     setNewCompany(prev => ({ ...prev, owner_email: value })), 'email'
   );
-  
   
   const ownerPhoneHandlers = createTextHandlers((value) => 
     setNewCompany(prev => ({ ...prev, owner_phone: value })), 'phone'
@@ -254,390 +252,637 @@ export default function SuperAdminDashboard() {
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-subtle">
-        {/* Header Section */}
-        <div className="bg-gradient-fleet text-white shadow-blue">
-          <div className="p-8">
+        {/* Enhanced Header Section */}
+        <div className="bg-gradient-fleet text-white shadow-blue relative overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-32 translate-x-32"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-24 -translate-x-24"></div>
+          </div>
+          
+          <div className="relative p-8">
             <div className="flex justify-between items-start">
-              <div>
-                <h1 className="text-4xl font-heading font-bold mb-2">FleetNest Control Center</h1>
-                <p className="text-white/90 font-body text-lg">Sistema de administración global</p>
-                <div className="mt-4 flex items-center gap-4">
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+              <div className="space-y-4">
+                <div>
+                  <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in">
+                    FleetNest Control Center
+                  </h1>
+                  <p className="text-white/90 font-body text-lg">Sistema de administración global</p>
+                </div>
+                
+                <div className="flex items-center gap-4 animate-fade-in" style={{animationDelay: '0.1s'}}>
+                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30 hover:bg-white/30 transition-colors">
+                    <Shield className="h-3 w-3 mr-1" />
                     System Administrator
                   </Badge>
                   <div className="flex items-center gap-2 text-white/80">
-                    <Activity className="h-4 w-4" />
+                    <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse"></div>
                     <span className="text-sm">System Status: Operational</span>
                   </div>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20">
+              
+              <div className="flex gap-3 animate-fade-in" style={{animationDelay: '0.2s'}}>
+                <Button 
+                  variant="outline" 
+                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all hover:scale-105"
+                >
                   <Settings className="h-4 w-4 mr-2" />
                   System Settings
                 </Button>
                 <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
                   <DialogTrigger asChild>
-                    <Button className="bg-gradient-primary hover:shadow-glow">
+                    <Button className="bg-gradient-primary hover:shadow-glow transition-all hover:scale-105">
                       <Plus className="h-4 w-4 mr-2" />
                       New Company
                     </Button>
                   </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>Create New Company</DialogTitle>
-                  <DialogDescription>
-                    Add a new transportation company to the FleetNest system.
-                  </DialogDescription>
-                </DialogHeader>
-                
-                <div className="grid grid-cols-2 gap-6 py-4">
-                  {/* Company Information */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-                      Company Information
-                    </h3>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-2">
+                        <Building2 className="h-5 w-5 text-primary" />
+                        Create New Company
+                      </DialogTitle>
+                      <DialogDescription>
+                        Add a new transportation company to the FleetNest system.
+                      </DialogDescription>
+                    </DialogHeader>
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="company-name">Company Name *</Label>
-                      <Input
-                        id="company-name"
-                        value={newCompany.name}
-                        {...companyNameHandlers}
-                        placeholder="Swift Transportation"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="company-email">Company Email *</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="company-email"
-                          type="email"
-                          value={newCompany.email}
-                          onChange={(e) => {
-                            const cleanValue = e.target.value.replace(/\s/g, '');
-                            setNewCompany(prev => ({ ...prev, email: cleanValue }));
-                          }}
-                          onKeyPress={(e) => {
-                            if (e.key === ' ') {
-                              e.preventDefault();
-                            }
-                          }}
-                          placeholder="contact@company.com"
-                          className="pl-10"
-                        />
+                    <div className="grid grid-cols-2 gap-6 py-4">
+                      {/* Company Information */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 pb-2 border-b">
+                          <Building2 className="h-4 w-4 text-primary" />
+                          <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
+                            Company Information
+                          </h3>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="company-name">Company Name *</Label>
+                          <Input
+                            id="company-name"
+                            value={newCompany.name}
+                            {...companyNameHandlers}
+                            placeholder="Swift Transportation"
+                            className="transition-all focus:scale-[1.01]"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="company-email">Company Email *</Label>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="company-email"
+                              type="email"
+                              value={newCompany.email}
+                              onChange={(e) => {
+                                const cleanValue = e.target.value.replace(/\s/g, '');
+                                setNewCompany(prev => ({ ...prev, email: cleanValue }));
+                              }}
+                              onKeyPress={(e) => {
+                                if (e.key === ' ') {
+                                  e.preventDefault();
+                                }
+                              }}
+                              placeholder="contact@company.com"
+                              className="pl-10 transition-all focus:scale-[1.01]"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="company-phone">Company Phone *</Label>
+                          <div className="relative">
+                            <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="company-phone"
+                              value={newCompany.phone}
+                              {...companyPhoneHandlers}
+                              placeholder="(555) 123-4567"
+                              className="pl-10 transition-all focus:scale-[1.01]"
+                            />
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="company-phone">Company Phone *</Label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="company-phone"
-                          value={newCompany.phone}
-                          {...companyPhoneHandlers}
-                          placeholder="(555) 123-4567"
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Owner Information */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-                      Owner/Primary Contact
-                    </h3>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="owner-name">Owner Name *</Label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="owner-name"
-                          value={newCompany.owner_name}
-                          {...ownerNameHandlers}
-                          placeholder="John Smith"
-                          className="pl-10"
-                        />
+                      {/* Owner Information */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 pb-2 border-b">
+                          <User className="h-4 w-4 text-primary" />
+                          <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
+                            Owner/Primary Contact
+                          </h3>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="owner-name">Owner Name *</Label>
+                          <div className="relative">
+                            <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="owner-name"
+                              value={newCompany.owner_name}
+                              {...ownerNameHandlers}
+                              placeholder="John Smith"
+                              className="pl-10 transition-all focus:scale-[1.01]"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="owner-email">Owner Email *</Label>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="owner-email"
+                              type="email"
+                              value={newCompany.owner_email}
+                              onChange={(e) => {
+                                const cleanValue = e.target.value.replace(/\s/g, '');
+                                setNewCompany(prev => ({ ...prev, owner_email: cleanValue }));
+                              }}
+                              onKeyPress={(e) => {
+                                if (e.key === ' ') {
+                                  e.preventDefault();
+                                }
+                              }}
+                              placeholder="john@company.com"
+                              className="pl-10 transition-all focus:scale-[1.01]"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="owner-phone">Owner Phone *</Label>
+                          <div className="relative">
+                            <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="owner-phone"
+                              value={newCompany.owner_phone}
+                              {...ownerPhoneHandlers}
+                              placeholder="(555) 987-6543"
+                              className="pl-10 transition-all focus:scale-[1.01]"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="owner-title">Owner Title</Label>
+                          <div className="relative">
+                            <Briefcase className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="owner-title"
+                              value={newCompany.owner_title}
+                              {...ownerTitleHandlers}
+                              placeholder="CEO, President, Fleet Manager..."
+                              className="pl-10 transition-all focus:scale-[1.01]"
+                            />
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="owner-email">Owner Email *</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="owner-email"
-                          type="email"
-                          value={newCompany.owner_email}
-                          onChange={(e) => {
-                            const cleanValue = e.target.value.replace(/\s/g, '');
-                            setNewCompany(prev => ({ ...prev, owner_email: cleanValue }));
-                          }}
-                          onKeyPress={(e) => {
-                            if (e.key === ' ') {
-                              e.preventDefault();
-                            }
-                          }}
-                          placeholder="john@company.com"
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="owner-phone">Owner Phone *</Label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="owner-phone"
-                          value={newCompany.owner_phone}
-                          {...ownerPhoneHandlers}
-                          placeholder="(555) 987-6543"
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="owner-title">Owner Title</Label>
-                      <div className="relative">
-                        <Briefcase className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="owner-title"
-                          value={newCompany.owner_title}
-                          {...ownerTitleHandlers}
-                          placeholder="CEO, President, Fleet Manager..."
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Plan Configuration */}
-                  <div className="col-span-2 space-y-4">
-                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-                      Plan Configuration
-                    </h3>
-                    
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="plan-type">Plan Type</Label>
-                        <Select 
-                          value={newCompany.plan_type} 
-                          onValueChange={(value) => setNewCompany(prev => ({ ...prev, plan_type: value }))}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="basic">Basic Plan</SelectItem>
-                            <SelectItem value="professional">Professional Plan</SelectItem>
-                            <SelectItem value="enterprise">Enterprise Plan</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="max-vehicles">Max Vehicles</Label>
-                        <Input
-                          id="max-vehicles"
-                          type="number"
-                          value={newCompany.max_vehicles}
-                          onChange={(e) => setNewCompany(prev => ({ ...prev, max_vehicles: parseInt(e.target.value) }))}
-                          min="1"
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="max-users">Max Users</Label>
-                        <Input
-                          id="max-users"
-                          type="number"
-                          value={newCompany.max_users}
-                          onChange={(e) => setNewCompany(prev => ({ ...prev, max_users: parseInt(e.target.value) }))}
-                          min="1"
-                        />
+                      {/* Plan Configuration */}
+                      <div className="col-span-2 space-y-4">
+                        <div className="flex items-center gap-2 pb-2 border-b">
+                          <BarChart3 className="h-4 w-4 text-primary" />
+                          <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
+                            Plan Configuration
+                          </h3>
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="plan-type">Plan Type</Label>
+                            <Select 
+                              value={newCompany.plan_type} 
+                              onValueChange={(value) => setNewCompany(prev => ({ ...prev, plan_type: value }))}
+                            >
+                              <SelectTrigger className="transition-all focus:scale-[1.01]">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="basic">
+                                  <div className="flex items-center gap-2">
+                                    <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
+                                    Basic Plan
+                                  </div>
+                                </SelectItem>
+                                <SelectItem value="professional">
+                                  <div className="flex items-center gap-2">
+                                    <div className="h-2 w-2 bg-purple-500 rounded-full"></div>
+                                    Professional Plan
+                                  </div>
+                                </SelectItem>
+                                <SelectItem value="enterprise">
+                                  <div className="flex items-center gap-2">
+                                    <div className="h-2 w-2 bg-orange-500 rounded-full"></div>
+                                    Enterprise Plan
+                                  </div>
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="max-vehicles">Max Vehicles</Label>
+                            <Input
+                              id="max-vehicles"
+                              type="number"
+                              value={newCompany.max_vehicles}
+                              onChange={(e) => setNewCompany(prev => ({ ...prev, max_vehicles: parseInt(e.target.value) }))}
+                              min="1"
+                              className="transition-all focus:scale-[1.01]"
+                            />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="max-users">Max Users</Label>
+                            <Input
+                              id="max-users"
+                              type="number"
+                              value={newCompany.max_users}
+                              onChange={(e) => setNewCompany(prev => ({ ...prev, max_users: parseInt(e.target.value) }))}
+                              min="1"
+                              className="transition-all focus:scale-[1.01]"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
 
-                <div className="flex justify-end gap-2 pt-4">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setShowCreateDialog(false)}
-                    disabled={isCreatingCompany}
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    onClick={handleCreateCompany}
-                    disabled={isCreatingCompany || !newCompany.name || !newCompany.email || !newCompany.owner_name || !newCompany.owner_email}
-                  >
-                    {isCreatingCompany ? 'Creating...' : 'Create Company'}
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+                    <div className="flex justify-end gap-2 pt-4">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setShowCreateDialog(false)}
+                        disabled={isCreatingCompany}
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        onClick={handleCreateCompany}
+                        disabled={isCreatingCompany}
+                        className="bg-gradient-primary hover:shadow-glow"
+                      >
+                        {isCreatingCompany ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Creating...
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Create Company
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Main Content - 2 Column Layout */}
-        <div className="p-8">
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-            {/* Left Column - Stats & System Health */}
-            <div className="space-y-6">
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <Card className="shadow-fleet">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-fleet-navy">Companies</CardTitle>
-                    <Building2 className="h-4 w-4 text-fleet-orange" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-heading font-bold text-fleet-navy">{stats.total_companies}</div>
-                    <p className="text-xs text-muted-foreground">Active companies</p>
-                  </CardContent>
-                </Card>
+        {/* Enhanced Navigation Tabs */}
+        <div className="bg-white border-b shadow-sm">
+          <div className="p-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-4 bg-muted/50 p-1 rounded-xl">
+                <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
+                  <BarChart3 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Overview</span>
+                </TabsTrigger>
+                <TabsTrigger value="companies" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
+                  <Building2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Companies</span>
+                </TabsTrigger>
+                <TabsTrigger value="analytics" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
+                  <TrendingUp className="h-4 w-4" />
+                  <span className="hidden sm:inline">Analytics</span>
+                </TabsTrigger>
+                <TabsTrigger value="system" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
+                  <Database className="h-4 w-4" />
+                  <span className="hidden sm:inline">System</span>
+                </TabsTrigger>
+              </TabsList>
 
-                <Card className="shadow-fleet">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-fleet-navy">System Users</CardTitle>
-                    <Users className="h-4 w-4 text-fleet-orange" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-heading font-bold text-fleet-navy">{stats.total_users}</div>
-                    <p className="text-xs text-muted-foreground">Total users</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="shadow-fleet">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-fleet-navy">Fleet Vehicles</CardTitle>
-                    <Truck className="h-4 w-4 text-fleet-orange" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-heading font-bold text-fleet-navy">{stats.total_vehicles}</div>
-                    <p className="text-xs text-muted-foreground">Being tracked</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="shadow-fleet">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-fleet-navy">Active Drivers</CardTitle>
-                    <Activity className="h-4 w-4 text-fleet-orange" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-heading font-bold text-fleet-navy">{stats.total_drivers}</div>
-                    <p className="text-xs text-muted-foreground">In the system</p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* System Health Card */}
-              <Card className="shadow-fleet">
-                <CardHeader>
-                  <CardTitle className="text-fleet-navy font-heading">System Health</CardTitle>
-                  <CardDescription>Real-time system status and performance</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Database Status</span>
-                    <Badge variant="default" className="bg-fleet-green text-white">
-                      Operational
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">API Response Time</span>
-                    <span className="text-sm text-fleet-green font-medium">~120ms</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Active Connections</span>
-                    <span className="text-sm font-medium">{stats.total_users * 2 + 15}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Uptime</span>
-                    <span className="text-sm text-fleet-green font-medium">99.9%</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Right Column - Companies Management */}
-            <div className="space-y-6">
-              <Card className="shadow-fleet">
-                <CardHeader>
-                  <CardTitle className="text-fleet-navy font-heading">Recent Companies</CardTitle>
-                  <CardDescription>
-                    Latest companies registered in the system
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-            {loadingData ? (
-              <div className="flex items-center justify-center h-32">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-              </div>
-            ) : companies.length === 0 ? (
-              <div className="text-center text-muted-foreground h-32 flex items-center justify-center">
-                No companies found
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {companies.map((company) => (
-                  <div
-                    key={company.id}
-                    className="flex items-start justify-between p-6 border rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-center gap-3">
-                        <h3 className="font-semibold text-lg">{company.name}</h3>
-                        <Badge 
-                          variant={company.status === 'active' ? 'default' : 'secondary'}
-                          className="capitalize"
-                        >
-                          {company.status}
-                        </Badge>
-                        <Badge variant="outline" className="capitalize">
-                          {company.plan_type}
-                        </Badge>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+              {/* Overview Tab */}
+              <TabsContent value="overview" className="mt-6 space-y-6">
+                {/* Enhanced Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <Card className="hover:shadow-lg transition-all duration-300 hover:scale-105 border-l-4 border-l-primary">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
                         <div>
-                          <p><strong>Company:</strong> {company.email} • {company.phone}</p>
-                          <p><strong>Owner:</strong> {company.owner_name} ({company.owner_title})</p>
-                          <p><strong>Contact:</strong> {company.owner_email} • {company.owner_phone}</p>
+                          <p className="text-sm font-medium text-muted-foreground">Total Companies</p>
+                          <p className="text-3xl font-bold text-primary">{stats.total_companies}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            <TrendingUp className="h-3 w-3 inline mr-1" />
+                            +12% from last month
+                          </p>
                         </div>
-                        <div>
-                          <p><strong>Limits:</strong> {company.max_vehicles} vehicles, {company.max_users} users</p>
-                          <p><strong>Contract Start:</strong> {new Date(company.contract_start_date).toLocaleDateString()}</p>
-                          <p><strong>Created:</strong> {new Date(company.created_at).toLocaleDateString()}</p>
+                        <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                          <Building2 className="h-6 w-6 text-primary" />
                         </div>
                       </div>
-                    </div>
-                    
-                    <div className="flex gap-2 ml-4">
-                      <Button variant="outline" size="sm">
-                        View Details
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        Manage
-                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="hover:shadow-lg transition-all duration-300 hover:scale-105 border-l-4 border-l-secondary">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground">Total Users</p>
+                          <p className="text-3xl font-bold text-secondary">{stats.total_users}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            <TrendingUp className="h-3 w-3 inline mr-1" />
+                            +8% from last month
+                          </p>
+                        </div>
+                        <div className="h-12 w-12 bg-secondary/10 rounded-xl flex items-center justify-center">
+                          <Users className="h-6 w-6 text-secondary" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="hover:shadow-lg transition-all duration-300 hover:scale-105 border-l-4 border-l-success">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground">Total Vehicles</p>
+                          <p className="text-3xl font-bold text-success">{stats.total_vehicles}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            <TrendingUp className="h-3 w-3 inline mr-1" />
+                            +15% from last month
+                          </p>
+                        </div>
+                        <div className="h-12 w-12 bg-success/10 rounded-xl flex items-center justify-center">
+                          <Truck className="h-6 w-6 text-success" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="hover:shadow-lg transition-all duration-300 hover:scale-105 border-l-4 border-l-warning">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground">Active Drivers</p>
+                          <p className="text-3xl font-bold text-warning">{stats.total_drivers}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            <TrendingUp className="h-3 w-3 inline mr-1" />
+                            +5% from last month
+                          </p>
+                        </div>
+                        <div className="h-12 w-12 bg-warning/10 rounded-xl flex items-center justify-center">
+                          <Users className="h-6 w-6 text-warning" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* System Status Cards */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <Card className="hover:shadow-lg transition-all duration-300">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <Activity className="h-5 w-5 text-green-500" />
+                        System Health
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Database</span>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <span className="text-sm">Operational</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">API Services</span>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <span className="text-sm">Operational</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">GPS Tracking</span>
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                            <span className="text-sm">Maintenance</span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="hover:shadow-lg transition-all duration-300">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <Globe className="h-5 w-5 text-blue-500" />
+                        Global Activity
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Active Sessions</span>
+                          <span className="text-sm font-medium">1,247</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Vehicles Online</span>
+                          <span className="text-sm font-medium">892</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Data Processed</span>
+                          <span className="text-sm font-medium">45.2 GB</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="hover:shadow-lg transition-all duration-300">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <Clock className="h-5 w-5 text-purple-500" />
+                        Recent Activity
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="text-sm">
+                          <div className="font-medium">New Company Added</div>
+                          <div className="text-muted-foreground">Swift Logistics - 2 min ago</div>
+                        </div>
+                        <div className="text-sm">
+                          <div className="font-medium">System Update</div>
+                          <div className="text-muted-foreground">v2.1.3 deployed - 1 hour ago</div>
+                        </div>
+                        <div className="text-sm">
+                          <div className="font-medium">Backup Completed</div>
+                          <div className="text-muted-foreground">Daily backup - 3 hours ago</div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              {/* Companies Tab */}
+              <TabsContent value="companies" className="mt-6 space-y-6">
+                {/* Search and Filter Bar */}
+                <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                  <div className="relative flex-1 max-w-md">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search companies..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">
+                      <Filter className="h-4 w-4 mr-2" />
+                      Filter
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      Export
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Companies Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {companies
+                    .filter(company => 
+                      company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      company.owner_name.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+                    .map((company) => (
+                    <Card key={company.id} className="hover:shadow-lg transition-all duration-300 hover:scale-105">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <CardTitle className="text-lg">{company.name}</CardTitle>
+                            <CardDescription className="flex items-center gap-1 mt-1">
+                              <User className="h-3 w-3" />
+                              {company.owner_name}
+                            </CardDescription>
+                          </div>
+                          <Badge 
+                            variant={company.status === 'active' ? 'default' : 'secondary'}
+                            className={company.status === 'active' ? 'bg-green-100 text-green-800' : ''}
+                          >
+                            {company.status}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Mail className="h-3 w-3" />
+                            {company.email}
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Phone className="h-3 w-3" />
+                            {company.phone}
+                          </div>
+                          <Separator />
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <span className="text-muted-foreground">Plan:</span>
+                              <div className="font-medium capitalize">{company.plan_type}</div>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Vehicles:</span>
+                              <div className="font-medium">{company.max_vehicles}</div>
+                            </div>
+                          </div>
+                          <Button variant="outline" size="sm" className="w-full">
+                            <Eye className="h-3 w-3 mr-2" />
+                            View Details
+                            <ChevronRight className="h-3 w-3 ml-auto" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Empty State */}
+                {loadingData ? (
+                  <div className="flex items-center justify-center h-64">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                      <p className="mt-2 text-muted-foreground">Loading companies...</p>
                     </div>
                   </div>
-                ))}
-              </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+                ) : companies.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Building2 className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold">No Companies Found</h3>
+                    <p className="text-muted-foreground mb-4">Get started by creating your first company.</p>
+                    <Button onClick={() => setShowCreateDialog(true)}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create First Company
+                    </Button>
+                  </div>
+                ) : null}
+              </TabsContent>
+
+              {/* Analytics Tab */}
+              <TabsContent value="analytics" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5" />
+                      Analytics Dashboard
+                    </CardTitle>
+                    <CardDescription>
+                      Comprehensive system analytics and performance metrics
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-12">
+                      <BarChart3 className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold">Analytics Coming Soon</h3>
+                      <p className="text-muted-foreground">
+                        Advanced analytics and reporting features will be available here.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* System Tab */}
+              <TabsContent value="system" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Database className="h-5 w-5" />
+                      System Management
+                    </CardTitle>
+                    <CardDescription>
+                      System configuration and maintenance tools
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-12">
+                      <Settings className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold">System Tools Coming Soon</h3>
+                      <p className="text-muted-foreground">
+                        Advanced system management features will be available here.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </div>
