@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { createTextHandlers } from '@/lib/textUtils';
 const fleetNestLogo = '/auth-bg-fleet.jpg'; // Usar temporalmente hasta que puedas subir tu logo
 
 export default function Auth() {
@@ -81,6 +82,34 @@ export default function Auth() {
     
     setFieldErrors(errors);
   };
+
+  // Create text handlers for each field type
+  const emailHandlers = createTextHandlers(
+    (value) => {
+      setFormData(prev => ({ ...prev, email: value }));
+      validateField('email', value);
+      if (error) setError(null);
+    },
+    'email'
+  );
+
+  const firstNameHandlers = createTextHandlers((value) => {
+    setFormData(prev => ({ ...prev, firstName: value }));
+    validateField('firstName', value);
+    if (error) setError(null);
+  });
+
+  const lastNameHandlers = createTextHandlers((value) => {
+    setFormData(prev => ({ ...prev, lastName: value }));
+    validateField('lastName', value);
+    if (error) setError(null);
+  });
+
+  const companyNameHandlers = createTextHandlers((value) => {
+    setFormData(prev => ({ ...prev, companyName: value }));
+    validateField('companyName', value);
+    if (error) setError(null);
+  });
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -309,7 +338,7 @@ export default function Auth() {
                         <Input
                           id="firstName"
                           value={formData.firstName}
-                          onChange={(e) => handleInputChange('firstName', e.target.value)}
+                          {...firstNameHandlers}
                           className={`auth-input pl-10 font-body ${fieldErrors.firstName ? 'border-destructive' : ''}`}
                           required={!isLogin}
                           disabled={loading}
@@ -328,7 +357,7 @@ export default function Auth() {
                         <Input
                           id="lastName"
                           value={formData.lastName}
-                          onChange={(e) => handleInputChange('lastName', e.target.value)}
+                          {...lastNameHandlers}
                           className={`auth-input pl-10 font-body ${fieldErrors.lastName ? 'border-destructive' : ''}`}
                           required={!isLogin}
                           disabled={loading}
@@ -349,7 +378,7 @@ export default function Auth() {
                       <Input
                         id="companyName"
                         value={formData.companyName}
-                        onChange={(e) => handleInputChange('companyName', e.target.value)}
+                        {...companyNameHandlers}
                         placeholder={t('auth:form.company_placeholder')}
                         className={`auth-input pl-10 font-body ${fieldErrors.companyName ? 'border-destructive' : ''}`}
                         required={!isLogin}
@@ -373,7 +402,7 @@ export default function Auth() {
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    {...emailHandlers}
                     placeholder={t('auth:form.email_placeholder')}
                     className={`auth-input pl-10 font-body ${fieldErrors.email ? 'border-destructive' : ''}`}
                     required
