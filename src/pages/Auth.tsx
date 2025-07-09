@@ -39,39 +39,39 @@ export default function Auth() {
     switch (field) {
       case 'email':
         if (!value) {
-          errors.email = 'El email es requerido';
+          errors.email = t('auth:validation.email_required');
         } else if (!/\S+@\S+\.\S+/.test(value)) {
-          errors.email = 'Por favor ingresa un email válido';
+          errors.email = t('auth:validation.email_invalid');
         } else {
           delete errors.email;
         }
         break;
       case 'password':
         if (!value) {
-          errors.password = 'La contraseña es requerida';
+          errors.password = t('auth:validation.password_required');
         } else if (!isLogin && value.length < 8) {
-          errors.password = 'La contraseña debe tener al menos 8 caracteres';
+          errors.password = t('auth:validation.password_min_length');
         } else {
           delete errors.password;
         }
         break;
       case 'firstName':
         if (!isLogin && !value) {
-          errors.firstName = 'El nombre es requerido';
+          errors.firstName = t('auth:validation.first_name_required');
         } else {
           delete errors.firstName;
         }
         break;
       case 'lastName':
         if (!isLogin && !value) {
-          errors.lastName = 'El apellido es requerido';
+          errors.lastName = t('auth:validation.last_name_required');
         } else {
           delete errors.lastName;
         }
         break;
       case 'companyName':
         if (!isLogin && !value) {
-          errors.companyName = 'El nombre de la empresa es requerido';
+          errors.companyName = t('auth:validation.company_name_required');
         } else {
           delete errors.companyName;
         }
@@ -372,7 +372,7 @@ export default function Auth() {
                   <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="bg-card px-4 text-muted-foreground font-body">O continúa con</span>
+                  <span className="bg-card px-4 text-muted-foreground font-body">{t('auth:oauth.or_continue')}</span>
                 </div>
               </div>
 
@@ -402,7 +402,7 @@ export default function Auth() {
                     fill="#EA4335"
                   />
                 </svg>
-                <span>Continuar con Google</span>
+                <span>{t('auth:oauth.google_continue')}</span>
               </Button>
             </form>
 
