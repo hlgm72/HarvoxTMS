@@ -491,7 +491,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      assign_first_superadmin: {
+        Args: { target_user_id: string }
+        Returns: Json
+      }
+      create_first_superadmin: {
+        Args: {
+          admin_email: string
+          admin_password: string
+          admin_first_name?: string
+          admin_last_name?: string
+        }
+        Returns: Json
+      }
+      needs_initial_setup: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       user_role:
