@@ -72,8 +72,9 @@ export default function SuperAdminDashboard() {
     setNewCompany(prev => ({ ...prev, email: value })), 'email'
   );
   
+  
   const companyPhoneHandlers = createTextHandlers((value) => 
-    setNewCompany(prev => ({ ...prev, phone: value }))
+    setNewCompany(prev => ({ ...prev, phone: value })), 'phone'
   );
   
   const ownerNameHandlers = createTextHandlers((value) => 
@@ -84,8 +85,9 @@ export default function SuperAdminDashboard() {
     setNewCompany(prev => ({ ...prev, owner_email: value })), 'email'
   );
   
+  
   const ownerPhoneHandlers = createTextHandlers((value) => 
-    setNewCompany(prev => ({ ...prev, owner_phone: value }))
+    setNewCompany(prev => ({ ...prev, owner_phone: value })), 'phone'
   );
   
   const ownerTitleHandlers = createTextHandlers((value) => 
