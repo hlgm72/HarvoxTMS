@@ -4,12 +4,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Truck, ArrowLeft, Mail, Lock, User, Building, Eye, EyeOff } from 'lucide-react';
+import { Loader2, ArrowLeft, Mail, Lock, User, Building, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import fleetNestLogoWhite from '@/assets/fleetnest-logo-white.png';
+import fleetNestLogoMain from '@/assets/fleetnest-logo-main.png';
 
 export default function Auth() {
   const { t } = useTranslation(['auth', 'common']);
@@ -199,9 +201,13 @@ export default function Auth() {
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 xl:px-16 relative z-10">
         <div className="max-w-lg animate-fade-in">
           {/* Logo and Branding */}
-          <div className="flex items-center space-x-3 mb-8">
-            <div className="flex items-center space-x-3 p-4 rounded-2xl bg-white/10 backdrop-blur-sm">
-              <Truck className="h-12 w-12 text-white" />
+          <div className="flex items-center space-x-4 mb-8">
+            <div className="flex items-center space-x-4 p-4 rounded-2xl bg-white/10 backdrop-blur-sm">
+              <img 
+                src={fleetNestLogoWhite} 
+                alt="FleetNest Logo" 
+                className="h-12 w-12 object-contain"
+              />
               <span className="text-3xl font-heading font-bold text-white">{t('common:app.name')}</span>
             </div>
           </div>
@@ -270,7 +276,11 @@ export default function Auth() {
             {/* Logo for Mobile */}
             <div className="flex justify-center mb-6 lg:hidden">
               <div className="flex items-center space-x-3 p-3 rounded-2xl bg-gradient-primary">
-                <Truck className="h-8 w-8 text-white" />
+                <img 
+                  src={fleetNestLogoWhite} 
+                  alt="FleetNest Logo" 
+                  className="h-8 w-8 object-contain"
+                />
                 <span className="text-xl font-heading font-bold text-white">{t('common:app.name')}</span>
               </div>
             </div>
