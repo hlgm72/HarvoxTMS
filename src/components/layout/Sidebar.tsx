@@ -21,6 +21,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
+
 const fleetNestLogo = '/auth-bg-fleet.jpg'; // Usar temporalmente hasta que puedas subir tu logo
 
 // Mock data for companies
@@ -29,7 +31,8 @@ const companies = [
   { id: 2, name: "Prime Inc", role: "dispatcher" },
 ];
 
-const navigationItems = [
+// Navegación para compañías transportistas
+const companyNavigationItems = [
   { title: "Centro de Comando", url: "/", icon: "🎯", badge: "Live" },
   { title: "Conductores", url: "/drivers", icon: "👨‍✈️", badge: "18" },
   { title: "Flota", url: "/equipment", icon: "🚛", badge: "42" },
@@ -41,13 +44,31 @@ const navigationItems = [
   { title: "Documentos", url: "/documents", icon: "📄" },
 ];
 
+// Navegación para Superadmin
+const superAdminNavigationItems = [
+  { title: "Dashboard", url: "/superadmin", icon: "📊", badge: "Admin" },
+  { title: "Companies", url: "/superadmin/companies", icon: "🏢" },
+  { title: "Users", url: "/superadmin/users", icon: "👥" },
+  { title: "System Health", url: "/superadmin/health", icon: "💚", badge: "Live" },
+  { title: "Analytics", url: "/superadmin/analytics", icon: "📈" },
+  { title: "Billing Management", url: "/superadmin/billing", icon: "💳" },
+  { title: "Support Tickets", url: "/superadmin/support", icon: "🎧" },
+  { title: "System Settings", url: "/superadmin/settings", icon: "⚙️" },
+  { title: "API Logs", url: "/superadmin/logs", icon: "📋" },
+  { title: "Backup & Security", url: "/superadmin/security", icon: "🔒" },
+];
+
 export function AppSidebar() {
   const { state } = useSidebar();
+  const { isSuperAdmin } = useAuth();
   const location = useLocation();
   const currentPath = location.pathname;
   const [selectedCompany, setSelectedCompany] = useState(companies[0]);
   
   const collapsed = state === "collapsed";
+  
+  // Usar navegación según el tipo de usuario
+  const navigationItems = isSuperAdmin ? superAdminNavigationItems : companyNavigationItems;
 
   const isActive = (path: string) => currentPath === path;
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
@@ -67,40 +88,54 @@ export function AppSidebar() {
           />
           {!collapsed && (
             <div className="flex-1">
-              <h2 className="font-bold text-lg text-foreground">FleetNest</h2>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="w-full justify-between p-2 h-auto"
-                  >
-                    <div className="text-left">
-                      <p className="text-sm font-medium text-foreground">
-                        {selectedCompany.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {selectedCompany.role}
-                      </p>
-                    </div>
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
-                  {companies.map((company) => (
-                    <DropdownMenuItem
-                      key={company.id}
-                      onClick={() => setSelectedCompany(company)}
-                      className="flex flex-col items-start"
+              <h2 className="font-bold text-lg text-foreground">
+                {isSuperAdmin ? "FleetNest Admin" : "FleetNest"}
+              </h2>
+              
+              {/* Solo mostrar selector de compañía si NO es superadmin */}
+              {!isSuperAdmin && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="w-full justify-between p-2 h-auto"
                     >
-                      <span className="font-medium">{company.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {company.role}
-                      </span>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                      <div className="text-left">
+                        <p className="text-sm font-medium text-foreground">
+                          {selectedCompany.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {selectedCompany.role}
+                        </p>
+                      </div>
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56">
+                    {companies.map((company) => (
+                      <DropdownMenuItem
+                        key={company.id}
+                        onClick={() => setSelectedCompany(company)}
+                        className="flex flex-col items-start"
+                      >
+                        <span className="font-medium">{company.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {company.role}
+                        </span>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              
+              {/* Para superadmin, mostrar información del sistema */}
+              {isSuperAdmin && (
+                <div className="mt-2 p-2 bg-muted/50 rounded-lg">
+                  <p className="text-xs font-medium text-primary">System Administrator</p>
+                  <p className="text-xs text-muted-foreground">Global Access</p>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -108,7 +143,9 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navegación</SidebarGroupLabel>
+          <SidebarGroupLabel>
+            {isSuperAdmin ? "System Management" : "Navegación"}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => (
