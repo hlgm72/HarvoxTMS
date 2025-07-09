@@ -12,6 +12,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import fleetNestLogo from '@/assets/fleetnest-logo.png';
 
+console.log('Logo URL in Auth:', fleetNestLogo);
+
 export default function Auth() {
   const { t } = useTranslation(['auth', 'common']);
   const navigate = useNavigate();
