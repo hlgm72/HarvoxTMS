@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "FleetNest",
-    "tagline": "Centro de Comando para Transporte"
+    "tagline": "Sistema TMS de Gestión de Transporte"
   },
   "navigation": {
     "features": "Características",
