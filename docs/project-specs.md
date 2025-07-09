@@ -103,6 +103,26 @@ user: {
 - **Permisos granulares** por compañía
 - **Breadcrumbs** para contexto
 
+## 📱 Estrategia Mobile/Desktop
+
+### **Command Center (Herramienta Principal)**
+- ✅ **Responsive desde Fase 1** - Una sola codebase
+- **Desktop**: Experiencia completa, multi-panel
+- **Mobile**: UI simplificada, funciones críticas priorizadas
+- **Usuarios**: Dispatchers, Owners, Managers
+
+### **Driver Experience**
+- 🎯 **Mobile-first desde Fase 1** - Optimizado para cabina/movimiento
+- **Desktop**: Disponible Fase 3+ para paperwork en oficina
+- **PWA**: Experiencia nativa con Capacitor (opcional)
+- **Usuarios**: Drivers primariamente móvil
+
+### **Ventajas Arquitectura Única**
+- **Una codebase** - Mantenimiento eficiente
+- **Consistencia** - Misma funcionalidad, UI adaptada
+- **Despliegue único** - Updates instantáneos
+- **Performance** - Optimización global
+
 ## 📱 Tipos de Usuarios por Tamaño
 
 ### Compañía Pequeña (2-10 camiones)
