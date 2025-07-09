@@ -200,7 +200,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className={`${collapsed ? "w-16" : "w-72"} transition-all duration-300 border-r bg-gradient-to-b from-background to-muted/20`}
+      className="border-r bg-gradient-to-b from-background to-muted/20"
       collapsible="icon"
     >
       <SidebarHeader className="border-b border-border/40 p-4 bg-gradient-to-r from-primary/5 to-secondary/5">
