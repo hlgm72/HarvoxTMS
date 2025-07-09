@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import Dashboard from "./Dashboard";
 import templatePreview from "@/assets/template-preview.jpg";
@@ -5,21 +6,25 @@ import templateMinimal from "@/assets/template-minimal.jpg";
 import templateDark from "@/assets/template-dark.jpg";
 import templateEnterprise from "@/assets/template-enterprise.jpg";
 import templateMobile from "@/assets/template-mobile.jpg";
+import templateCommandDark from "@/assets/template-command-dark.jpg";
 
 const Index = () => {
+  const [showDarkPreview, setShowDarkPreview] = useState(false);
   const templates = [
     {
       id: "command-center",
       name: "Command Center",
       image: templatePreview,
+      darkImage: templateCommandDark,
       colors: "Transport Orange + Blue",
       description: "Layout de 3 columnas con panel live de KPIs",
       features: [
+        "✅ Modo claro/oscuro desde el inicio",
         "Layout de 3 columnas: Sidebar + Main + Info Panel",
         "Paleta Transport Orange (#FF6B35) + Blue (#2563EB)", 
         "Mapa central con tracking en tiempo real",
         "Panel derecho con métricas live",
-        "Estilo command center profesional"
+        "Theme toggle automático con persistencia"
       ]
     },
     {
@@ -95,12 +100,20 @@ const Index = () => {
             {templates.map((template, index) => (
               <div key={template.id} className="rounded-xl border bg-card overflow-hidden shadow-lg">
                 <div className="flex flex-col lg:flex-row">
-                  <div className="lg:w-2/3">
+                  <div className="lg:w-2/3 relative">
                     <img 
-                      src={template.image} 
+                      src={template.id === 'command-center' && showDarkPreview ? template.darkImage : template.image} 
                       alt={`${template.name} Template Preview`}
                       className="w-full h-full object-cover"
                     />
+                    {template.id === 'command-center' && template.darkImage && (
+                      <button
+                        onClick={() => setShowDarkPreview(!showDarkPreview)}
+                        className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                      >
+                        {showDarkPreview ? '☀️ Claro' : '🌙 Oscuro'}
+                      </button>
+                    )}
                   </div>
                   <div className="lg:w-1/3 p-6 space-y-4">
                     <div>
