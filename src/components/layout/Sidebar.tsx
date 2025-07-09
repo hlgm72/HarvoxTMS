@@ -181,6 +181,8 @@ export function AppSidebar() {
   
   const collapsed = state === "collapsed";
   
+  console.log("Sidebar state:", { state, collapsed, collapsible: "icon" });
+  
   // Usar navegación según el tipo de usuario
   const navigationItems = isSuperAdmin ? superAdminNavigationItems : companyNavigationItems;
 
