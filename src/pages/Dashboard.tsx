@@ -3,18 +3,21 @@ import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { CommandMap } from "@/components/dashboard/CommandMap";
 import { DispatchPanel } from "@/components/dashboard/DispatchPanel";
 import { FleetStatus } from "@/components/dashboard/FleetStatus";
+import { useTranslation } from 'react-i18next';
 
 export default function Dashboard() {
+  const { t } = useTranslation(['common', 'fleet']);
+  
   return (
     <div className="space-y-6">{/* Removed p-6 since Layout now handles padding */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-fleet bg-clip-text text-transparent mb-2">
-            Centro de Comando FleetNest
+            {t('fleet:titles.command_center')}
           </h1>
           <p className="text-muted-foreground flex items-center gap-2">
             <span className="w-2 h-2 bg-fleet-green rounded-full animate-pulse"></span>
-            Operaciones en tiempo real • Última actualización: hace 30 segundos
+            {t('fleet:states.real_time_operations')} • {t('fleet:states.last_update')}
           </p>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -25,28 +28,28 @@ export default function Dashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
-          title="Cargas en Tránsito"
+          title={t('fleet:loads.in_transit')}
           value={24}
           icon="🚛"
           trend={{ value: 12, isPositive: true }}
           variant="success"
         />
         <StatsCard
-          title="Flota Activa"
+          title={t('fleet:metrics.fleet_utilization')}
           value="85.7%"
           icon="🚛"
           trend={{ value: 3.2, isPositive: true }}
           variant="success"
         />
         <StatsCard
-          title="Ingresos Hoy"
+          title={t('fleet:loads.today_revenue')}
           value="$47,890"
           icon="💰"
           trend={{ value: 15.3, isPositive: true }}
           variant="success"
         />
         <StatsCard
-          title="Entregas Programadas"
+          title={t('fleet:loads.scheduled_deliveries')}
           value={38}
           icon="📦"
           trend={{ value: 8.7, isPositive: true }}

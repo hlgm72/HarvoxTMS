@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader } from "@googlemaps/js-api-loader";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from 'react-i18next';
 
 interface Vehicle {
   id: string;
@@ -39,13 +40,13 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const getStatusText = (status: string) => {
+const getStatusText = (status: string, t: any) => {
   switch (status) {
-    case "en_route": return "En Ruta";
-    case "loading": return "Cargando";
-    case "delivered": return "Entregado";
-    case "maintenance": return "Mantenimiento";
-    case "offline": return "Desconectado";
+    case "en_route": return t('fleet:status.en_route');
+    case "loading": return t('fleet:status.loading');
+    case "delivered": return t('fleet:status.delivered');
+    case "maintenance": return t('fleet:status.maintenance');
+    case "offline": return t('fleet:status.offline');
     default: return status;
   }
 };
@@ -56,6 +57,7 @@ const convertToMph = (speedKmh: number | undefined): number => {
 };
 
 export function CommandMap() {
+  const { t } = useTranslation(['common', 'fleet']);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<google.maps.Map | null>(null);
   const markers = useRef<google.maps.Marker[]>([]);
@@ -135,16 +137,16 @@ export function CommandMap() {
   // Sync data from Geotab
   const syncGeotabData = async (action = 'sync-all') => {
     try {
-      setSyncStatus(`Sincronizando ${action}...`);
+      setSyncStatus(`${t('fleet:sync.syncing')} ${action}...`);
       toast({
-        title: "Sincronizando...",
-        description: `Iniciando sincronización de ${action}`
+        title: t('fleet:sync.syncing'),
+        description: `${t('fleet:sync.sync_started')} ${action}`
       });
       
       // Extended timeout for position sync which is slower
       const timeoutMs = action === 'sync-positions' ? 120000 : 30000; // 2 minutes for positions, 30s for others
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error(`Timeout: Sincronización tardó más de ${timeoutMs/1000} segundos`)), timeoutMs)
+        setTimeout(() => reject(new Error(`${t('fleet:sync.sync_timeout')} ${timeoutMs/1000} ${t('fleet:sync.seconds')}`)), timeoutMs)
       );
       
       const syncPromise = supabase.functions.invoke('geotab-sync', {
@@ -163,8 +165,8 @@ export function CommandMap() {
       setSyncStatus('');
       
       toast({
-        title: "✅ Sincronización exitosa",
-        description: data?.message || `${action} completado correctamente`
+        title: `✅ ${t('fleet:sync.sync_success')}`,
+        description: data?.message || `${action} ${t('fleet:sync.sync_completed')}`
       });
       
       await loadVehicles();
@@ -173,7 +175,7 @@ export function CommandMap() {
       setSyncStatus('');
       
       toast({
-        title: "❌ Error de sincronización",
+        title: `❌ ${t('fleet:sync.sync_error')}`,
         description: error.message,
         variant: "destructive"
       });
@@ -244,10 +246,10 @@ export function CommandMap() {
           content: `
             <div style="padding: 8px; font-family: system-ui;">
               <h4 style="margin: 0 0 8px 0; font-weight: 600;">${vehicle.name}</h4>
-              <p style="margin: 4px 0; font-size: 14px;">Velocidad: ${convertToMph(vehicle.speed)} mph</p>
-              <p style="margin: 4px 0; font-size: 14px;">Odómetro: ${vehicle.odometer || 0} km</p>
+              <p style="margin: 4px 0; font-size: 14px;">${t('fleet:vehicle.speed')}: ${convertToMph(vehicle.speed)} mph</p>
+              <p style="margin: 4px 0; font-size: 14px;">${t('fleet:vehicle.odometer')}: ${vehicle.odometer || 0} km</p>
               <p style="margin: 4px 0; font-size: 12px; color: #666;">
-                ${vehicle.last_update ? new Date(vehicle.last_update).toLocaleString() : 'Sin datos'}
+                ${vehicle.last_update ? new Date(vehicle.last_update).toLocaleString() : t('fleet:vehicle.no_data')}
               </p>
             </div>
           `
@@ -301,17 +303,17 @@ export function CommandMap() {
     return (
       <Card className="h-full">
         <CardHeader className="pb-3">
-          <CardTitle>🗺️ Configuración de Google Maps</CardTitle>
+          <CardTitle>🗺️ {t('fleet:google_maps.api_setup')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Para mostrar el mapa en tiempo real con Google Maps, necesitas una API key:
+              {t('fleet:google_maps.instructions')}
             </p>
             <div className="space-y-2">
               <input
                 type="text"
-                placeholder="Ingresa tu Google Maps API key..."
+                placeholder={t('fleet:google_maps.enter_key')}
                 className="w-full p-2 border rounded"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
@@ -328,17 +330,17 @@ export function CommandMap() {
                 }}
                 className="w-full"
               >
-                Configurar Google Maps
+                {t('fleet:google_maps.setup_button')}
               </Button>
             </div>
             <div className="space-y-2 text-sm">
-              <p className="font-medium">📋 Pasos para obtener tu API key:</p>
+              <p className="font-medium">📋 {t('fleet:google_maps.steps_title')}</p>
               <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
-                <li>Ve a Google Cloud Console</li>
-                <li>Crea un proyecto nuevo o selecciona uno existente</li>
-                <li>Habilita "Maps JavaScript API"</li>
-                <li>Crea credenciales → API key</li>
-                <li>Configura restricciones de dominio (opcional)</li>
+                <li>{t('fleet:google_maps.step1')}</li>
+                <li>{t('fleet:google_maps.step2')}</li>
+                <li>{t('fleet:google_maps.step3')}</li>
+                <li>{t('fleet:google_maps.step4')}</li>
+                <li>{t('fleet:google_maps.step5')}</li>
               </ol>
               <a 
                 href="https://console.cloud.google.com/google/maps-apis/overview" 
@@ -346,12 +348,12 @@ export function CommandMap() {
                 rel="noopener noreferrer"
                 className="inline-block text-blue-600 hover:underline"
               >
-                → Ir a Google Cloud Console
+                → {t('fleet:google_maps.get_key')}
               </a>
             </div>
             <div className="bg-blue-50 p-3 rounded text-sm">
-              <p className="font-medium text-blue-800">💰 Límite gratuito de Google Maps:</p>
-              <p className="text-blue-700">28,000 cargas de mapa por mes gratis</p>
+              <p className="font-medium text-blue-800">💰 {t('fleet:google_maps.free_limit')}</p>
+              <p className="text-blue-700">{t('fleet:google_maps.monthly_limit')}</p>
             </div>
           </div>
         </CardContent>
@@ -364,9 +366,9 @@ export function CommandMap() {
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            🗺️ Mapa de Comando en Tiempo Real
+            🗺️ {t('fleet:titles.command_map')}
             <Badge variant="outline" className="bg-fleet-green/10 text-fleet-green border-fleet-green/20 animate-pulse">
-              LIVE
+              {t('fleet:states.live')}
             </Badge>
           </div>
           <div className="flex gap-2">
@@ -376,7 +378,7 @@ export function CommandMap() {
               onClick={() => syncGeotabData('sync-vehicles')}
               disabled={!!syncStatus}
             >
-              🚛 Sync Vehículos
+              🚛 {t('fleet:sync.sync_vehicles')}
             </Button>
             <Button
               variant="outline"
@@ -384,7 +386,7 @@ export function CommandMap() {
               onClick={() => syncGeotabData('sync-positions')}
               disabled={!!syncStatus}
             >
-              📍 Sync Posiciones
+              📍 {t('fleet:sync.sync_positions')}
             </Button>
           </div>
         </CardTitle>
@@ -398,7 +400,7 @@ export function CommandMap() {
           <div ref={mapContainer} className="w-full h-full" />
           {isLoading && (
             <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
-              <p className="text-sm text-muted-foreground">Cargando vehículos...</p>
+              <p className="text-sm text-muted-foreground">{t('fleet:states.loading_vehicles')}</p>
             </div>
           )}
         </div>
@@ -406,12 +408,12 @@ export function CommandMap() {
         {/* Vehicle List */}
         <div className="space-y-2">
           <h4 className="font-medium text-sm text-muted-foreground mb-3">
-            Vehículos Activos ({vehicles.length})
+            {t('fleet:states.active_vehicles')} ({vehicles.length})
           </h4>
           {vehicles.length === 0 ? (
             <div className="text-center py-4 text-muted-foreground">
-              <p>No hay vehículos sincronizados.</p>
-              <p className="text-xs">Haz clic en "Sync Vehículos" para sincronizar desde Geotab.</p>
+              <p>{t('fleet:states.no_vehicles')}</p>
+              <p className="text-xs">{t('fleet:states.sync_instruction')}</p>
             </div>
           ) : (
             vehicles.map((vehicle) => (
@@ -422,12 +424,12 @@ export function CommandMap() {
                     <span className="text-xs text-muted-foreground">
                       {vehicle.latitude && vehicle.longitude 
                         ? `${vehicle.latitude.toFixed(4)}, ${vehicle.longitude.toFixed(4)}`
-                        : 'Sin ubicación'
+                        : t('fleet:vehicle.no_location')
                       }
                     </span>
                   </div>
                   <Badge variant={getStatusColor(vehicle.status) as any} className="text-xs">
-                    {getStatusText(vehicle.status)}
+                    {getStatusText(vehicle.status, t)}
                   </Badge>
                 </div>
                 <div className="text-right">

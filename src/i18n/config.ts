@@ -6,21 +6,25 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import commonEn from './locales/en/common.json';
 import landingEn from './locales/en/landing.json';
 import authEn from './locales/en/auth.json';
+import fleetEn from './locales/en/fleet.json';
 
 import commonEs from './locales/es/common.json';
 import landingEs from './locales/es/landing.json';
 import authEs from './locales/es/auth.json';
+import fleetEs from './locales/es/fleet.json';
 
 const resources = {
   en: {
     common: commonEn,
     landing: landingEn,
     auth: authEn,
+    fleet: fleetEn,
   },
   es: {
     common: commonEs,
     landing: landingEs,
     auth: authEs,
+    fleet: fleetEs,
   },
 };
 
@@ -33,7 +37,7 @@ i18n
     fallbackLng: 'en',
     
     // Namespaces
-    ns: ['common', 'landing', 'auth'],
+    ns: ['common', 'landing', 'auth', 'fleet'],
     defaultNS: 'common',
     
     // Configuration

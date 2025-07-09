@@ -2,10 +2,12 @@
   "titles": {
     "fleet_overview": "Resumen de Flota",
     "fleet_status": "Estado de Flota",
-    "vehicle_details": "Detalles del Vehículo",
+    "vehicle_details": "Detalles del Vehículo", 
     "maintenance_schedule": "Cronograma de Mantenimiento",
     "dispatch_panel": "Panel de Despacho",
-    "recent_loads": "Cargas Recientes"
+    "recent_loads": "Cargas Recientes",
+    "command_map": "Mapa de Comando en Tiempo Real",
+    "command_center": "Centro de Comando FleetNest"
   },
   "vehicle": {
     "truck_number": "Número de Camión",
@@ -14,7 +16,11 @@
     "location": "Ubicación",
     "last_update": "Última Actualización",
     "driver": "Conductor",
-    "load": "Carga"
+    "load": "Carga",
+    "speed": "Velocidad",
+    "odometer": "Odómetro",
+    "no_location": "Sin ubicación",
+    "no_data": "Sin datos"
   },
   "metrics": {
     "total_vehicles": "Total de Vehículos",
@@ -24,22 +30,67 @@
     "fleet_utilization": "Utilización de Flota"
   },
   "loads": {
-    "pickup": "Recogida",
+    "pickup": "Recolección",
     "delivery": "Entrega",
     "distance": "Distancia",
     "priority": "Prioridad",
     "urgent": "URGENTE",
     "high": "ALTA",
-    "normal": "NORMAL"
+    "normal": "NORMAL",
+    "in_transit": "En Tránsito",
+    "delivered": "Entregado",
+    "scheduled_deliveries": "Entregas Programadas",
+    "today_revenue": "Ingresos Hoy"
+  },
+  "status": {
+    "en_route": "En Ruta",
+    "loading": "Cargando",
+    "delivered": "Entregado",
+    "maintenance": "Mantenimiento",
+    "offline": "Desconectado",
+    "active": "Activos",
+    "available": "Disponibles",
+    "status_distribution": "Distribución por Estado",
+    "system_status": "Estado del Sistema"
+  },
+  "sync": {
+    "syncing": "Sincronizando",
+    "sync_vehicles": "Sync Vehículos",
+    "sync_positions": "Sync Posiciones", 
+    "sync_success": "Sincronización exitosa",
+    "sync_error": "Error de sincronización",
+    "sync_started": "Iniciando sincronización de",
+    "sync_completed": "completado correctamente",
+    "sync_timeout": "Timeout: Sincronización tardó más de",
+    "seconds": "segundos"
+  },
+  "alerts": {
+    "gps_connection": "Verificar conexión con dispositivos GPS",
+    "sync_completed": "Sincronización de datos completada",
+    "all_systems": "Todos los sistemas operativos"
   },
   "google_maps": {
-    "api_setup": "Configuración API de Google Maps",
-    "enter_key": "Ingresa tu clave API de Google Maps:",
-    "instructions": "Para usar la funcionalidad del mapa:",
-    "step1": "Crea un proyecto en Google Cloud Console",
-    "step2": "Habilita 'Maps JavaScript API'",
-    "step3": "Crea una clave API",
-    "step4": "Agrega la clave aquí",
-    "get_key": "Obtener Clave API"
+    "api_setup": "Configuración de Google Maps",
+    "enter_key": "Ingresa tu Google Maps API key...",
+    "instructions": "Para mostrar el mapa en tiempo real con Google Maps, necesitas una API key:",
+    "setup_button": "Configurar Google Maps",
+    "step1": "Ve a Google Cloud Console",
+    "step2": "Crea un proyecto nuevo o selecciona uno existente",
+    "step3": "Habilita \"Maps JavaScript API\"",
+    "step4": "Crea credenciales → API key",
+    "step5": "Configura restricciones de dominio (opcional)",
+    "get_key": "Ir a Google Cloud Console",
+    "free_limit": "Límite gratuito de Google Maps:",
+    "monthly_limit": "28,000 cargas de mapa por mes gratis",
+    "steps_title": "Pasos para obtener tu API key:"
+  },
+  "states": {
+    "no_vehicles": "No hay vehículos sincronizados.",
+    "sync_instruction": "Haz clic en \"Sync Vehículos\" para sincronizar desde Geotab.",
+    "loading_vehicles": "Cargando vehículos...",
+    "active_vehicles": "Vehículos Activos",
+    "live": "LIVE",
+    "last_update": "Última actualización: hace 30 segundos",
+    "real_time_operations": "Operaciones en tiempo real"
   }
 }

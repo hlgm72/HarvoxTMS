@@ -5,7 +5,9 @@
     "vehicle_details": "Vehicle Details",
     "maintenance_schedule": "Maintenance Schedule",
     "dispatch_panel": "Dispatch Panel",
-    "recent_loads": "Recent Loads"
+    "recent_loads": "Recent Loads",
+    "command_map": "Real-Time Command Map",
+    "command_center": "FleetNest Command Center"
   },
   "vehicle": {
     "truck_number": "Truck Number",
@@ -14,7 +16,11 @@
     "location": "Location",
     "last_update": "Last Update",
     "driver": "Driver",
-    "load": "Load"
+    "load": "Load",
+    "speed": "Speed",
+    "odometer": "Odometer",
+    "no_location": "No location",
+    "no_data": "No data"
   },
   "metrics": {
     "total_vehicles": "Total Vehicles",
@@ -30,16 +36,61 @@
     "priority": "Priority",
     "urgent": "URGENT",
     "high": "HIGH",
-    "normal": "NORMAL"
+    "normal": "NORMAL",
+    "in_transit": "In Transit",
+    "delivered": "Delivered",
+    "scheduled_deliveries": "Scheduled Deliveries",
+    "today_revenue": "Today Revenue"
+  },
+  "status": {
+    "en_route": "En Route",
+    "loading": "Loading",
+    "delivered": "Delivered",
+    "maintenance": "Maintenance",
+    "offline": "Offline",
+    "active": "Active",
+    "available": "Available",
+    "status_distribution": "Status Distribution",
+    "system_status": "System Status"
+  },
+  "sync": {
+    "syncing": "Syncing",
+    "sync_vehicles": "Sync Vehicles",
+    "sync_positions": "Sync Positions",
+    "sync_success": "Sync successful",
+    "sync_error": "Sync error",
+    "sync_started": "Starting sync of",
+    "sync_completed": "completed successfully",
+    "sync_timeout": "Timeout: Sync took more than",
+    "seconds": "seconds"
+  },
+  "alerts": {
+    "gps_connection": "Check GPS device connection",
+    "sync_completed": "Data synchronization completed",
+    "all_systems": "All systems operational"
   },
   "google_maps": {
     "api_setup": "Google Maps API Setup",
-    "enter_key": "Enter your Google Maps API key:",
-    "instructions": "To use the map functionality:",
-    "step1": "Create a project in Google Cloud Console",
-    "step2": "Enable 'Maps JavaScript API'",
-    "step3": "Create an API key",
-    "step4": "Add the key here",
-    "get_key": "Get API Key"
+    "enter_key": "Enter your Google Maps API key...",
+    "instructions": "To display the real-time map with Google Maps, you need an API key:",
+    "setup_button": "Setup Google Maps",
+    "step1": "Go to Google Cloud Console",
+    "step2": "Create a new project or select an existing one",
+    "step3": "Enable \"Maps JavaScript API\"",
+    "step4": "Create credentials → API key",
+    "step5": "Configure domain restrictions (optional)",
+    "get_key": "Go to Google Cloud Console",
+    "free_limit": "Google Maps free limit:",
+    "monthly_limit": "28,000 map loads per month free",
+    "steps_title": "Steps to get your API key:"
+  },
+  "states": {
+    "no_vehicles": "No vehicles synced.",
+    "sync_instruction": "Click \"Sync Vehicles\" to sync from Geotab.",
+    "loading_vehicles": "Loading vehicles...",
+    "active_vehicles": "Active Vehicles",
+    "live": "LIVE",
+    "last_update": "Last update: 30 seconds ago",
+    "real_time_operations": "Real-time operations"
   }
 }

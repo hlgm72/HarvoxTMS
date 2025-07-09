@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from 'react-i18next';
 
 interface FleetData {
   active: number;
@@ -12,10 +13,10 @@ interface FleetData {
   utilization: number;
 }
 
-const alerts = [
-  { type: "warning", message: "Verificar conexión con dispositivos GPS" },
-  { type: "info", message: "Sincronización de datos completada" },
-  { type: "success", message: "Todos los sistemas operativos" }
+const getAlerts = (t: any) => [
+  { type: "warning", message: t('fleet:alerts.gps_connection') },
+  { type: "info", message: t('fleet:alerts.sync_completed') },
+  { type: "success", message: t('fleet:alerts.all_systems') }
 ];
 
 const getAlertIcon = (type: string) => {
@@ -28,6 +29,7 @@ const getAlertIcon = (type: string) => {
 };
 
 export function FleetStatus() {
+  const { t } = useTranslation(['common', 'fleet']);
   const [fleetData, setFleetData] = useState<FleetData>({
     active: 0,
     maintenance: 0,
@@ -50,8 +52,8 @@ export function FleetStatus() {
       if (vehiclesError) {
         console.error('Error loading vehicles:', vehiclesError);
         toast({
-          title: "Error",
-          description: "No se pudieron cargar los datos de la flota",
+          title: t('common:messages.error'),
+          description: t('common:messages.fleet_data_error'),
           variant: "destructive"
         });
         return;
@@ -116,8 +118,8 @@ export function FleetStatus() {
     } catch (error) {
       console.error('Error loading fleet data:', error);
       toast({
-        title: "Error",
-        description: "Error al cargar datos de la flota",
+        title: t('common:messages.error'),
+        description: t('common:messages.fleet_data_error'),
         variant: "destructive"
       });
     } finally {
@@ -135,19 +137,19 @@ export function FleetStatus() {
 
   const statusBreakdown = [
     { 
-      status: "Activos", 
+      status: t('fleet:status.active'), 
       count: fleetData.active, 
       color: "bg-success", 
       percentage: fleetData.total > 0 ? Math.round((fleetData.active / fleetData.total) * 100) : 0 
     },
     { 
-      status: "Disponibles", 
+      status: t('fleet:status.available'), 
       count: fleetData.available, 
       color: "bg-primary", 
       percentage: fleetData.total > 0 ? Math.round((fleetData.available / fleetData.total) * 100) : 0 
     },
     { 
-      status: "Mantenimiento", 
+      status: t('fleet:status.maintenance'), 
       count: fleetData.maintenance, 
       color: "bg-destructive", 
       percentage: fleetData.total > 0 ? Math.round((fleetData.maintenance / fleetData.total) * 100) : 0 
@@ -158,7 +160,7 @@ export function FleetStatus() {
     return (
       <Card className="h-full">
         <CardHeader className="pb-3">
-          <CardTitle>🚛 Estado de Flota</CardTitle>
+          <CardTitle>🚛 {t('fleet:titles.fleet_status')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="animate-pulse space-y-4">
@@ -180,9 +182,9 @@ export function FleetStatus() {
     <Card className="h-full">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2">
-          🚛 Estado de Flota
+          🚛 {t('fleet:titles.fleet_status')}
           <Badge variant="outline" className="bg-success/10 text-success border-success/20">
-            {fleetData.utilization}% Activa
+            {fleetData.utilization}% {t('fleet:status.active')}
           </Badge>
         </CardTitle>
       </CardHeader>
@@ -191,17 +193,17 @@ export function FleetStatus() {
         <div className="grid grid-cols-2 gap-3">
           <div className="text-center p-3 bg-gradient-subtle rounded-lg">
             <div className="text-2xl font-bold text-primary">{fleetData.total}</div>
-            <div className="text-xs text-muted-foreground">Total Vehículos</div>
+            <div className="text-xs text-muted-foreground">{t('fleet:metrics.total_vehicles')}</div>
           </div>
           <div className="text-center p-3 bg-gradient-subtle rounded-lg">
             <div className="text-2xl font-bold text-success">{fleetData.active}</div>
-            <div className="text-xs text-muted-foreground">Activos</div>
+            <div className="text-xs text-muted-foreground">{t('fleet:status.active')}</div>
           </div>
         </div>
 
         {/* Status Breakdown */}
         <div className="space-y-2">
-          <h4 className="font-medium text-sm text-muted-foreground">Distribución por Estado</h4>
+          <h4 className="font-medium text-sm text-muted-foreground">{t('fleet:status.status_distribution')}</h4>
           {statusBreakdown.map((item) => (
             <div key={item.status} className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -218,9 +220,9 @@ export function FleetStatus() {
 
         {/* Alerts */}
         <div className="space-y-2">
-          <h4 className="font-medium text-sm text-muted-foreground">Estado del Sistema</h4>
+          <h4 className="font-medium text-sm text-muted-foreground">{t('fleet:status.system_status')}</h4>
           <div className="space-y-1">
-            {alerts.map((alert, index) => (
+            {getAlerts(t).map((alert, index) => (
               <div key={index} className="flex items-start gap-2 p-2 rounded bg-muted/30 text-xs">
                 <span>{getAlertIcon(alert.type)}</span>
                 <span className="flex-1">{alert.message}</span>
@@ -232,7 +234,7 @@ export function FleetStatus() {
         {/* Utilization Bar */}
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Utilización de Flota</span>
+            <span className="text-muted-foreground">{t('fleet:metrics.fleet_utilization')}</span>
             <span className="font-medium">{fleetData.utilization}%</span>
           </div>
           <div className="w-full bg-muted rounded-full h-2">
