@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Layout } from '@/components/layout/Layout';
 import { useToast } from '@/hooks/use-toast';
+import { createTextHandlers } from '@/lib/textUtils';
 
 interface CompanyStats {
   total_companies: number;
@@ -61,6 +62,35 @@ export default function SuperAdminDashboard() {
     max_vehicles: 10,
     max_users: 5,
   });
+
+  // Create text handlers for form fields
+  const companyNameHandlers = createTextHandlers((value) => 
+    setNewCompany(prev => ({ ...prev, name: value }))
+  );
+  
+  const companyEmailHandlers = createTextHandlers((value) => 
+    setNewCompany(prev => ({ ...prev, email: value })), 'email'
+  );
+  
+  const companyPhoneHandlers = createTextHandlers((value) => 
+    setNewCompany(prev => ({ ...prev, phone: value }))
+  );
+  
+  const ownerNameHandlers = createTextHandlers((value) => 
+    setNewCompany(prev => ({ ...prev, owner_name: value }))
+  );
+  
+  const ownerEmailHandlers = createTextHandlers((value) => 
+    setNewCompany(prev => ({ ...prev, owner_email: value })), 'email'
+  );
+  
+  const ownerPhoneHandlers = createTextHandlers((value) => 
+    setNewCompany(prev => ({ ...prev, owner_phone: value }))
+  );
+  
+  const ownerTitleHandlers = createTextHandlers((value) => 
+    setNewCompany(prev => ({ ...prev, owner_title: value }))
+  );
 
   useEffect(() => {
     if (!loading && isSuperAdmin) {
@@ -262,7 +292,7 @@ export default function SuperAdminDashboard() {
                       <Input
                         id="company-name"
                         value={newCompany.name}
-                        onChange={(e) => setNewCompany(prev => ({ ...prev, name: e.target.value }))}
+                        {...companyNameHandlers}
                         placeholder="Swift Transportation"
                       />
                     </div>
@@ -275,7 +305,7 @@ export default function SuperAdminDashboard() {
                           id="company-email"
                           type="email"
                           value={newCompany.email}
-                          onChange={(e) => setNewCompany(prev => ({ ...prev, email: e.target.value }))}
+                          {...companyEmailHandlers}
                           placeholder="contact@company.com"
                           className="pl-10"
                         />
@@ -289,7 +319,7 @@ export default function SuperAdminDashboard() {
                         <Input
                           id="company-phone"
                           value={newCompany.phone}
-                          onChange={(e) => setNewCompany(prev => ({ ...prev, phone: e.target.value }))}
+                          {...companyPhoneHandlers}
                           placeholder="(555) 123-4567"
                           className="pl-10"
                         />
@@ -310,7 +340,7 @@ export default function SuperAdminDashboard() {
                         <Input
                           id="owner-name"
                           value={newCompany.owner_name}
-                          onChange={(e) => setNewCompany(prev => ({ ...prev, owner_name: e.target.value }))}
+                          {...ownerNameHandlers}
                           placeholder="John Smith"
                           className="pl-10"
                         />
@@ -325,7 +355,7 @@ export default function SuperAdminDashboard() {
                           id="owner-email"
                           type="email"
                           value={newCompany.owner_email}
-                          onChange={(e) => setNewCompany(prev => ({ ...prev, owner_email: e.target.value }))}
+                          {...ownerEmailHandlers}
                           placeholder="john@company.com"
                           className="pl-10"
                         />
@@ -339,7 +369,7 @@ export default function SuperAdminDashboard() {
                         <Input
                           id="owner-phone"
                           value={newCompany.owner_phone}
-                          onChange={(e) => setNewCompany(prev => ({ ...prev, owner_phone: e.target.value }))}
+                          {...ownerPhoneHandlers}
                           placeholder="(555) 987-6543"
                           className="pl-10"
                         />
@@ -353,7 +383,7 @@ export default function SuperAdminDashboard() {
                         <Input
                           id="owner-title"
                           value={newCompany.owner_title}
-                          onChange={(e) => setNewCompany(prev => ({ ...prev, owner_title: e.target.value }))}
+                          {...ownerTitleHandlers}
                           placeholder="CEO, President, Fleet Manager..."
                           className="pl-10"
                         />

@@ -117,6 +117,8 @@ export default function Auth() {
     if (error) setError(null);
   };
 
+  // Handler for password (no trimming on change, only validation)
+
   const handleGoogleSignIn = async () => {
     setLoading(true);
     setError(null);

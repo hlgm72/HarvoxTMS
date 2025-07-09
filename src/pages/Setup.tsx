@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Shield, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { createTextHandlers } from '@/lib/textUtils';
 
 export default function Setup() {
   const [needsSetup, setNeedsSetup] = useState<boolean | null>(null);
@@ -82,6 +83,19 @@ export default function Setup() {
       setLoading(false);
     }
   };
+
+  // Create text handlers for form fields
+  const emailHandlers = createTextHandlers((value) => 
+    setFormData(prev => ({ ...prev, email: value })), 'email'
+  );
+  
+  const firstNameHandlers = createTextHandlers((value) => 
+    setFormData(prev => ({ ...prev, firstName: value }))
+  );
+  
+  const lastNameHandlers = createTextHandlers((value) => 
+    setFormData(prev => ({ ...prev, lastName: value }))
+  );
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -163,7 +177,7 @@ export default function Setup() {
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
+                {...emailHandlers}
                 placeholder="admin@fleetnest.com"
                 required
                 disabled={loading}
@@ -190,7 +204,7 @@ export default function Setup() {
                 <Input
                   id="firstName"
                   value={formData.firstName}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  {...firstNameHandlers}
                   disabled={loading}
                 />
               </div>
@@ -200,7 +214,7 @@ export default function Setup() {
                 <Input
                   id="lastName"
                   value={formData.lastName}
-                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  {...lastNameHandlers}
                   disabled={loading}
                 />
               </div>
