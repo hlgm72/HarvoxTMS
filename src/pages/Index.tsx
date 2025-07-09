@@ -7,6 +7,8 @@ import templateDark from "@/assets/template-dark.jpg";
 import templateEnterprise from "@/assets/template-enterprise.jpg";
 import templateMobile from "@/assets/template-mobile.jpg";
 import templateCommandDark from "@/assets/template-command-dark.jpg";
+import mobileDriverApp from "@/assets/mobile-driver-app.jpg";
+import mobileDriverDark from "@/assets/mobile-driver-dark.jpg";
 
 const Index = () => {
   const [showDarkPreview, setShowDarkPreview] = useState(false);
@@ -150,6 +152,64 @@ const Index = () => {
                 </div>
               </div>
             ))}
+          </div>
+          
+          {/* Mobile Driver Experience Section */}
+          <div className="mt-12 p-8 bg-gradient-to-r from-orange-50 to-blue-50 rounded-xl border">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-4">📱 Experiencia Móvil para Drivers</h2>
+              <p className="text-muted-foreground text-lg">
+                Aplicación específica para conductores con tema Command Center
+              </p>
+            </div>
+            
+            <div className="grid lg:grid-cols-2 gap-8 items-center">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">🚛 Diseñada para Conductores</h3>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li>• <strong>Botones grandes</strong> - Touch-friendly para uso en cabina</li>
+                    <li>• <strong>Información esencial</strong> - Solo lo que necesita el driver</li>
+                    <li>• <strong>Modo nocturno</strong> - Optimizado para manejo nocturno</li>
+                    <li>• <strong>Offline-ready</strong> - Funciona sin conexión</li>
+                    <li>• <strong>Cámara integrada</strong> - BOLs y documentos al instante</li>
+                  </ul>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold mb-2">📋 Funcionalidades Driver:</h4>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded">Cargas Asignadas</span>
+                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">Subir BOLs</span>
+                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded">Ver Pagos</span>
+                    <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded">Status Updates</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex gap-4 justify-center">
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <h4 className="font-medium mb-2">Modo Claro</h4>
+                    <img 
+                      src={mobileDriverApp} 
+                      alt="FleetNest Driver App - Light Mode"
+                      className="w-48 rounded-2xl shadow-xl border"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <h4 className="font-medium mb-2">Modo Oscuro</h4>
+                    <img 
+                      src={mobileDriverDark} 
+                      alt="FleetNest Driver App - Dark Mode"
+                      className="w-48 rounded-2xl shadow-xl border"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           
           <div className="mt-8 p-6 bg-muted rounded-xl text-center">
