@@ -160,6 +160,189 @@ user: {
 - **Fase 2**: PWA enhancement, service workers, offline support
 - **Fase 3+**: Capacitor integration, native features avanzadas
 
+## 🧭 Flujo de Navegación Completo
+
+### **Estructura de URLs**
+
+#### **URLs Públicas** (Sin autenticación requerida)
+- `fleetnest.app/` → Landing page principal
+- `fleetnest.app/auth` → Login/Signup flows
+- `fleetnest.app/demo` → Demo del producto (opcional)
+- `fleetnest.app/pricing` → Planes y precios
+- `fleetnest.app/contact` → Contacto y soporte
+
+#### **URLs Protegidas** (Requieren autenticación)
+- `fleetnest.app/dashboard` → Command Center principal
+- `fleetnest.app/drivers` → Gestión de conductores
+- `fleetnest.app/fleet` → Gestión de flota y vehículos
+- `fleetnest.app/loads` → Gestión de cargas y rutas
+- `fleetnest.app/clients` → Gestión de clientes/brokers
+- `fleetnest.app/billing` → Facturación y pagos
+- `fleetnest.app/reports` → Reportes y analytics
+- `fleetnest.app/documents` → Gestión de documentos
+
+### **Flujo de Autenticación**
+
+#### **Landing Page Flow**
+```
+🌐 fleetnest.app → Landing Page
+├── "Comenzar Gratis" → /auth?mode=signup
+├── "Iniciar Sesión" → /auth?mode=login  
+├── "Ver Demo" → /demo
+└── Usuario autenticado → Auto-redirect /dashboard
+```
+
+#### **Authentication Flow**
+```
+📱 /auth
+├── Login Tab:
+│   ├── Email + Password
+│   ├── "¿Olvidaste contraseña?" → Reset flow
+│   └── Success → Company selection logic
+├── Signup Tab:
+│   ├── Personal info (Email, Password, Name)
+│   ├── Company Creation:
+│   │   ├── Company Name (requerido)
+│   │   ├── MC Number (opcional)
+│   │   ├── DOT Number (opcional)
+│   │   └── Phone
+│   └── Success → Auto-login + /dashboard
+└── Post-Auth Logic:
+    ├── Single Company → Auto-select + /dashboard
+    ├── Multiple Companies → Company Switcher
+    └── No Companies → /onboarding
+```
+
+### **Multi-Company Navigation**
+
+#### **Company Selection Logic**
+```
+🏢 Company Context Management
+├── Single Company:
+│   ├── Auto-select company
+│   ├── Set active company context
+│   └── Navigate to /dashboard
+├── Multiple Companies:
+│   ├── Show Company Switcher dropdown
+│   ├── Display role per company
+│   ├── User selects company
+│   ├── Context switch: Data + Permissions
+│   └── Dashboard updates with company data
+└── No Companies:
+    ├── Redirect to /onboarding
+    ├── Company creation wizard
+    └── Complete → /dashboard
+```
+
+#### **Role-Based Navigation**
+```
+👤 Sidebar Navigation by Role
+
+Owner/Senior Dispatcher:
+├── ✅ Dashboard 📊 (KPIs, overview)
+├── ✅ Drivers 👨‍✈️ (Gestión completa)
+├── ✅ Fleet 🚛 (Vehículos, mantenimiento)
+├── ✅ Loads 📦 (Cargas, rutas)
+├── ✅ Clients 🏢 (Brokers, customers)
+├── ✅ Billing 💰 (Facturación, pagos)
+├── ✅ Reports 📋 (Todos los reportes)
+├── ✅ Documents 📄 (BOLs, contratos)
+└── ✅ Settings ⚙️ (Company, users)
+
+Dispatcher:
+├── ✅ Dashboard 📊 (Operativo)
+├── ✅ Drivers 👨‍✈️ (Asignaciones)
+├── ✅ Fleet 🚛 (Status, assignments)
+├── ✅ Loads 📦 (Despacho, tracking)
+├── ✅ Clients 🏢 (Contacto básico)
+├── ❌ Billing 💰 (Acceso restringido)
+├── ✅ Reports 📋 (Operativos únicamente)
+├── ✅ Documents 📄 (Operativos)
+└── ❌ Settings ⚙️ (Solo perfil personal)
+
+Driver:
+├── ✅ My Dashboard 📊 (Personal stats)
+├── ✅ My Loads 📦 (Solo asignadas)
+├── ✅ My Documents 📄 (BOLs, receipts)
+├── ✅ Pay Statements 💰 (Historial pagos)
+├── ❌ Fleet Management
+├── ❌ Other Drivers
+├── ❌ Company Settings
+└── ❌ Financial Reports
+```
+
+### **Layout Structure**
+
+#### **Main App Layout** (Post-Authentication)
+```
+🎯 Command Center Layout
+├── Header (Fixed Top):
+│   ├── Logo + "FleetNest Command Center"
+│   ├── Company Switcher Dropdown
+│   ├── Quick Actions:
+│   │   ├── "Nueva Carga" (Primary)
+│   │   └── "Despacho Rápido" (Emergency)
+│   └── User Menu:
+│       ├── Perfil
+│       ├── Configuración
+│       └── Cerrar Sesión
+├── Sidebar (Collapsible):
+│   ├── Company Info + Logo
+│   ├── Role-based Navigation Menu
+│   ├── Live Status Indicators
+│   └── Collapse/Expand Toggle
+├── Main Content Area:
+│   ├── Breadcrumbs
+│   ├── Page Header + Actions
+│   ├── Content (Responsive)
+│   └── Loading/Error States
+└── Right Panel (Optional):
+    ├── Contextual Information
+    ├── Quick Actions
+    ├── Notifications
+    └── System Alerts
+```
+
+#### **Responsive Behavior**
+```
+📱 Mobile Navigation:
+├── Header: Compact with hamburger menu
+├── Sidebar: Drawer overlay (slide-in)
+├── Company Switcher: Bottom sheet
+├── Quick Actions: Floating action button
+└── Right Panel: Hidden, accessible via menu
+
+🖥️ Desktop Navigation:
+├── Header: Full layout with all elements
+├── Sidebar: Persistent, collapsible to icons
+├── Company Switcher: Dropdown in header
+├── Quick Actions: Header buttons
+└── Right Panel: Contextual, collapsible
+```
+
+### **Navigation State Management**
+
+#### **Route Protection Logic**
+```typescript
+// Authentication Guards
+├── Public Routes: Landing, Auth, Demo
+├── Protected Routes: Dashboard, Management
+├── Role-based Guards: Permission checking
+└── Company Context: Data isolation enforcement
+```
+
+#### **Context Switching**
+```typescript
+// Company Switch Flow
+User selects different company →
+├── Update active company context
+├── Clear cached data
+├── Refresh permissions
+├── Update sidebar navigation
+├── Reload dashboard data
+└── Maintain current route if accessible
+```
+
 ## 📱 Tipos de Usuarios por Tamaño
 
 ### Compañía Pequeña (2-10 camiones)
