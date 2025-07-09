@@ -17,48 +17,75 @@ export type Database = {
       companies: {
         Row: {
           city_id: string | null
+          contract_start_date: string | null
           created_at: string
           dot_number: string | null
           ein: string | null
           email: string | null
           id: string
+          max_users: number | null
+          max_vehicles: number | null
           mc_number: string | null
           name: string
+          owner_email: string | null
+          owner_name: string | null
+          owner_phone: string | null
+          owner_title: string | null
           payment_day: number
           phone: string | null
+          plan_type: string | null
           state_id: string
+          status: string | null
           street_address: string
           updated_at: string
           zip_code: string
         }
         Insert: {
           city_id?: string | null
+          contract_start_date?: string | null
           created_at?: string
           dot_number?: string | null
           ein?: string | null
           email?: string | null
           id?: string
+          max_users?: number | null
+          max_vehicles?: number | null
           mc_number?: string | null
           name: string
+          owner_email?: string | null
+          owner_name?: string | null
+          owner_phone?: string | null
+          owner_title?: string | null
           payment_day?: number
           phone?: string | null
+          plan_type?: string | null
           state_id: string
+          status?: string | null
           street_address: string
           updated_at?: string
           zip_code: string
         }
         Update: {
           city_id?: string | null
+          contract_start_date?: string | null
           created_at?: string
           dot_number?: string | null
           ein?: string | null
           email?: string | null
           id?: string
+          max_users?: number | null
+          max_vehicles?: number | null
           mc_number?: string | null
           name?: string
+          owner_email?: string | null
+          owner_name?: string | null
+          owner_phone?: string | null
+          owner_title?: string | null
           payment_day?: number
           phone?: string | null
+          plan_type?: string | null
           state_id?: string
+          status?: string | null
           street_address?: string
           updated_at?: string
           zip_code?: string
