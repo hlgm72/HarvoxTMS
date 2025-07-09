@@ -1,367 +1,301 @@
-import { useState } from "react";
-import { Layout } from "@/components/layout/Layout";
-import Dashboard from "./Dashboard";
-import templatePreview from "@/assets/template-preview.jpg";
-import templateMinimal from "@/assets/template-minimal.jpg";
-import templateDark from "@/assets/template-dark.jpg";
-import templateEnterprise from "@/assets/template-enterprise.jpg";
-import templateMobile from "@/assets/template-mobile.jpg";
-import templateCommandDark from "@/assets/template-command-dark.jpg";
-import mobileDriverApp from "@/assets/mobile-driver-app.jpg";
-import mobileDriverDark from "@/assets/mobile-driver-dark.jpg";
-import designForms from "@/assets/design-forms.jpg";
-import designTables from "@/assets/design-tables.jpg";
-import designCards from "@/assets/design-cards.jpg";
-import designComponents from "@/assets/design-components.jpg";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Truck, 
+  MapPin, 
+  BarChart3, 
+  Shield, 
+  Clock, 
+  Users,
+  CheckCircle,
+  ArrowRight,
+  Phone,
+  Mail,
+  Star
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
-const Index = () => {
-  const [showDarkPreview, setShowDarkPreview] = useState(false);
-  const templates = [
+export default function Index() {
+  const features = [
     {
-      id: "command-center",
-      name: "Command Center",
-      image: templatePreview,
-      darkImage: templateCommandDark,
-      colors: "Transport Orange + Blue",
-      description: "Layout de 3 columnas con panel live de KPIs",
-      features: [
-        "✅ Modo claro/oscuro desde el inicio",
-        "Layout de 3 columnas: Sidebar + Main + Info Panel",
-        "Paleta Transport Orange (#FF6B35) + Blue (#2563EB)", 
-        "Mapa central con tracking en tiempo real",
-        "Panel derecho con métricas live",
-        "Theme toggle automático con persistencia"
-      ]
+      icon: MapPin,
+      title: "Tracking en Tiempo Real",
+      description: "Monitorea tu flota en tiempo real con GPS integrado y actualizaciones automáticas de ubicación."
     },
     {
-      id: "minimal-clean",
-      name: "Minimal Clean",
-      image: templateMinimal,
-      colors: "Soft Blue",
-      description: "Diseño limpio estilo Apple con cards grandes",
-      features: [
-        "Layout minimalista con mucho espacio blanco",
-        "Cards grandes en grid 2x2",
-        "Paleta azul suave (#3B82F6)",
-        "Navegación simple y clean",
-        "Perfecto para usuarios que prefieren simplicidad"
-      ]
+      icon: BarChart3,
+      title: "Reportes Avanzados", 
+      description: "Análisis detallados de rendimiento, costos operativos y métricas clave para tu negocio."
     },
     {
-      id: "dark-premium",
-      name: "Dark Premium",
-      image: templateDark,
-      colors: "Electric Blue + Purple",
-      description: "Tema oscuro premium con efectos neon",
-      features: [
-        "Tema oscuro con acentos neon",
-        "Efectos de glow y transparencias",
-        "Paleta Electric Blue (#00D4FF) + Purple (#8B5CF6)",
-        "Estética futurista pero profesional",
-        "Ideal para uso nocturno y operaciones 24/7"
-      ]
+      icon: Users,
+      title: "Gestión de Conductores",
+      description: "Administra perfiles de conductores, licencias, certificaciones y horarios de trabajo."
     },
     {
-      id: "enterprise-classic",
-      name: "Enterprise Classic",
-      image: templateEnterprise,
-      colors: "Forest Green",
-      description: "Diseño corporativo tradicional y confiable",
-      features: [
-        "Layout empresarial clásico",
-        "Sidebar expandido con navegación detallada",
-        "Paleta verde corporativo (#059669)",
-        "Tablas y vistas tradicionales",
-        "Familiar para usuarios de software empresarial"
-      ]
+      icon: Shield,
+      title: "Seguridad Integral",
+      description: "Cumplimiento DOT, alertas de seguridad y monitoreo de comportamiento de conducción."
     },
     {
-      id: "mobile-first",
-      name: "Mobile First",
-      image: templateMobile,
-      colors: "Teal + Coral",
-      description: "Optimizado para tablets y móviles",
-      features: [
-        "Cards grandes touch-friendly",
-        "Top navigation bar",
-        "Paleta Teal (#14B8A6) + Coral (#FF6B6B)",
-        "Material Design 3 inspirado",
-        "Perfecto para dispatchers en movimiento"
-      ]
+      icon: Clock,
+      title: "Optimización de Rutas",
+      description: "Planifica rutas eficientes, reduce costos de combustible y mejora tiempos de entrega."
+    },
+    {
+      icon: Truck,
+      title: "Mantenimiento Preventivo",
+      description: "Programa mantenimientos, trackea reparaciones y mantén tu flota en óptimas condiciones."
     }
   ];
 
+  const benefits = [
+    "Reduce costos operativos hasta 25%",
+    "Mejora la eficiencia de rutas",
+    "Cumplimiento automático DOT/FMCSA",
+    "Reportes en tiempo real",
+    "Integración con Geotab",
+    "Soporte 24/7"
+  ];
+
   return (
-    <Layout>
-      <div className="p-6 space-y-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-4">FleetNest TMS - Template Gallery</h1>
-            <p className="text-muted-foreground text-lg">
-              Elige el diseño que mejor represente tu visión para FleetNest
-            </p>
-          </div>
-          
-          <div className="grid gap-8">
-            {templates.map((template, index) => (
-              <div key={template.id} className="rounded-xl border bg-card overflow-hidden shadow-lg">
-                <div className="flex flex-col lg:flex-row">
-                  <div className="lg:w-2/3 relative">
-                    <img 
-                      src={template.id === 'command-center' && showDarkPreview ? template.darkImage : template.image} 
-                      alt={`${template.name} Template Preview`}
-                      className="w-full h-full object-cover"
-                    />
-                    {template.id === 'command-center' && template.darkImage && (
-                      <button
-                        onClick={() => setShowDarkPreview(!showDarkPreview)}
-                        className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
-                      >
-                        {showDarkPreview ? '☀️ Claro' : '🌙 Oscuro'}
-                      </button>
-                    )}
-                  </div>
-                  <div className="lg:w-1/3 p-6 space-y-4">
-                    <div>
-                      <h3 className="text-2xl font-bold">{template.name}</h3>
-                      <p className="text-sm text-muted-foreground font-medium">{template.colors}</p>
-                      <p className="text-muted-foreground mt-2">{template.description}</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold mb-2">Características:</h4>
-                      <ul className="space-y-1 text-sm text-muted-foreground">
-                        {template.features.map((feature, i) => (
-                          <li key={i}>• {feature}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div className="flex gap-2 pt-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        index === 0 ? 'bg-orange-100 text-orange-800' :
-                        index === 1 ? 'bg-blue-100 text-blue-800' :
-                        index === 2 ? 'bg-purple-100 text-purple-800' :
-                        index === 3 ? 'bg-green-100 text-green-800' :
-                        'bg-teal-100 text-teal-800'
-                      }`}>
-                        {template.id === 'command-center' ? 'Recomendado' :
-                         template.id === 'minimal-clean' ? 'Simple' :
-                         template.id === 'dark-premium' ? 'Premium' :
-                         template.id === 'enterprise-classic' ? 'Tradicional' :
-                         'Mobile-Friendly'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          {/* Mobile Driver Experience Section */}
-          <div className="mt-12 p-8 bg-gradient-to-r from-orange-50 to-blue-50 rounded-xl border">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4">📱 Experiencia Móvil para Drivers</h2>
-              <p className="text-muted-foreground text-lg">
-                Aplicación específica para conductores con tema Command Center
-              </p>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Truck className="h-8 w-8 text-primary" />
+              <span className="text-2xl font-bold text-primary">FleetNest</span>
             </div>
             
-            <div className="grid lg:grid-cols-2 gap-8 items-center">
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-semibold mb-3">🚛 Diseñada para Conductores</h3>
-                  <ul className="space-y-2 text-muted-foreground">
-                    <li>• <strong>Botones grandes</strong> - Touch-friendly para uso en cabina</li>
-                    <li>• <strong>Información esencial</strong> - Solo lo que necesita el driver</li>
-                    <li>• <strong>Modo nocturno</strong> - Optimizado para manejo nocturno</li>
-                    <li>• <strong>Offline-ready</strong> - Funciona sin conexión</li>
-                    <li>• <strong>Cámara integrada</strong> - BOLs y documentos al instante</li>
-                  </ul>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold mb-2">📋 Funcionalidades Driver:</h4>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded">Cargas Asignadas</span>
-                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">Subir BOLs</span>
-                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded">Ver Pagos</span>
-                    <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded">Status Updates</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex gap-4 justify-center">
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <h4 className="font-medium mb-2">Modo Claro</h4>
-                    <img 
-                      src={mobileDriverApp} 
-                      alt="FleetNest Driver App - Light Mode"
-                      className="w-48 rounded-2xl shadow-xl border"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <h4 className="font-medium mb-2">Modo Oscuro</h4>
-                    <img 
-                      src={mobileDriverDark} 
-                      alt="FleetNest Driver App - Dark Mode"
-                      className="w-48 rounded-2xl shadow-xl border"
-                    />
-                  </div>
-                </div>
-              </div>
+            <nav className="hidden md:flex items-center space-x-8">
+              <a href="#features" className="text-muted-foreground hover:text-primary transition-colors">
+                Características
+              </a>
+              <a href="#benefits" className="text-muted-foreground hover:text-primary transition-colors">
+                Beneficios
+              </a>
+              <a href="#contact" className="text-muted-foreground hover:text-primary transition-colors">
+                Contacto
+              </a>
+            </nav>
+
+            <div className="flex items-center space-x-4">
+              <Link to="/setup">
+                <Button variant="outline" size="sm">
+                  Admin
+                </Button>
+              </Link>
+              <Link to="/auth">
+                <Button size="sm">
+                  Iniciar Sesión
+                </Button>
+              </Link>
             </div>
-          </div>
-          
-          {/* Design System Components Section */}
-          <div className="mt-12 space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">🎨 Design System - Componentes</h2>
-              <p className="text-muted-foreground text-lg">
-                Vista detallada de formularios, tablas, cards y elementos UI
-              </p>
-            </div>
-            
-            <div className="grid gap-8">
-              {/* Forms Section */}
-              <div className="rounded-xl border bg-card overflow-hidden shadow-lg">
-                <div className="flex flex-col lg:flex-row">
-                  <div className="lg:w-2/3">
-                    <img 
-                      src={designForms} 
-                      alt="FleetNest Forms Design System"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="lg:w-1/3 p-6 space-y-4">
-                    <div>
-                      <h3 className="text-2xl font-bold">📋 Formularios</h3>
-                      <p className="text-sm text-muted-foreground font-medium">Floating Labels + Icons</p>
-                      <p className="text-muted-foreground mt-2">Formularios modernos con iconos contextuales</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold mb-2">Características:</h4>
-                      <ul className="space-y-1 text-sm text-muted-foreground">
-                        <li>• Floating labels con animación suave</li>
-                        <li>• Iconos TMS específicos (truck, user, map-pin)</li>
-                        <li>• Estados de validación visuales</li>
-                        <li>• Focus states con accent orange</li>
-                        <li>• Typography: Inter body + JetBrains Mono datos</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Tables Section */}
-              <div className="rounded-xl border bg-card overflow-hidden shadow-lg">
-                <div className="flex flex-col lg:flex-row">
-                  <div className="lg:w-2/3">
-                    <img 
-                      src={designTables} 
-                      alt="FleetNest Tables Design System"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="lg:w-1/3 p-6 space-y-4">
-                    <div>
-                      <h3 className="text-2xl font-bold">📊 Tablas</h3>
-                      <p className="text-sm text-muted-foreground font-medium">Modern Data Tables</p>
-                      <p className="text-muted-foreground mt-2">Tablas optimizadas para datos de flota</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold mb-2">Características:</h4>
-                      <ul className="space-y-1 text-sm text-muted-foreground">
-                        <li>• Headers con acciones integradas</li>
-                        <li>• Datos monospace para truck numbers</li>
-                        <li>• Status badges coloridos y consistentes</li>
-                        <li>• Hover effects y action dropdowns</li>
-                        <li>• Responsive con opción de densidad</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Cards Section */}
-              <div className="rounded-xl border bg-card overflow-hidden shadow-lg">
-                <div className="flex flex-col lg:flex-row">
-                  <div className="lg:w-2/3">
-                    <img 
-                      src={designCards} 
-                      alt="FleetNest Cards Design System"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="lg:w-1/3 p-6 space-y-4">
-                    <div>
-                      <h3 className="text-2xl font-bold">🎴 Cards</h3>
-                      <p className="text-sm text-muted-foreground font-medium">KPI, Load & Driver Cards</p>
-                      <p className="text-muted-foreground mt-2">Cards específicas para contextos TMS</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold mb-2">Tipos de Cards:</h4>
-                      <ul className="space-y-1 text-sm text-muted-foreground">
-                        <li>• <strong>KPI Cards</strong> - Dashboard con métricas</li>
-                        <li>• <strong>Load Cards</strong> - Detalles de cargas</li>
-                        <li>• <strong>Driver Cards</strong> - Perfiles móviles</li>
-                        <li>• Border-left accent en cards importantes</li>
-                        <li>• Hover effects con shadow elevation</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Components Section */}
-              <div className="rounded-xl border bg-card overflow-hidden shadow-lg">
-                <div className="flex flex-col lg:flex-row">
-                  <div className="lg:w-2/3">
-                    <img 
-                      src={designComponents} 
-                      alt="FleetNest UI Components Design System"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="lg:w-1/3 p-6 space-y-4">
-                    <div>
-                      <h3 className="text-2xl font-bold">🔧 Componentes UI</h3>
-                      <p className="text-sm text-muted-foreground font-medium">Badges, Buttons & States</p>
-                      <p className="text-muted-foreground mt-2">Elementos UI unificados y consistentes</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold mb-2">Elementos:</h4>
-                      <ul className="space-y-1 text-sm text-muted-foreground">
-                        <li>• <strong>Status Badges</strong> - Active, In-Transit, Delivered</li>
-                        <li>• <strong>Buttons</strong> - Primary, Outline, Ghost variants</li>
-                        <li>• <strong>Progress & Loading</strong> - States consistentes</li>
-                        <li>• <strong>Dropdowns & Toggles</strong> - Elementos interactivos</li>
-                        <li>• Palette orange/blue para consistency</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-8 p-6 bg-muted rounded-xl text-center">
-            <h3 className="text-xl font-semibold mb-2">¿Te gusta el Design System Command Center?</h3>
-            <p className="text-muted-foreground">
-              Con todas estas especificaciones visuales, ¿procedo a implementar el template completo?
-            </p>
           </div>
         </div>
-      </div>
-    </Layout>
-  );
-};
+      </header>
 
-export default Index;
+      {/* Hero Section */}
+      <section className="relative py-20 lg:py-32 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center max-w-4xl mx-auto">
+            <Badge variant="secondary" className="mb-6">
+              🚀 Plataforma de Gestión de Flotas #1
+            </Badge>
+            
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-6">
+              Gestiona tu Flota de{" "}
+              <span className="text-primary">Transporte</span>{" "}
+              con Inteligencia
+            </h1>
+            
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              FleetNest te ayuda a optimizar operaciones, reducir costos y mantener el cumplimiento 
+              regulatorio con nuestra plataforma todo-en-uno para empresas de transporte.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/auth">
+                <Button size="lg" className="text-lg px-8 py-4">
+                  Comenzar Gratis
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Button variant="outline" size="lg" className="text-lg px-8 py-4">
+                Ver Demo
+              </Button>
+            </div>
+            
+            <div className="flex items-center justify-center gap-2 mt-8 text-sm text-muted-foreground">
+              <CheckCircle className="h-4 w-4 text-green-500" />
+              <span>Sin tarjeta de crédito</span>
+              <span>•</span>
+              <CheckCircle className="h-4 w-4 text-green-500" />
+              <span>Setup en 5 minutos</span>
+              <span>•</span>
+              <CheckCircle className="h-4 w-4 text-green-500" />
+              <span>Soporte incluido</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-20 bg-muted/50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Todo lo que Necesitas para Gestionar tu Flota
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              Herramientas poderosas diseñadas específicamente para empresas de transporte
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <Card key={index} className="border-none shadow-lg hover:shadow-xl transition-shadow">
+                <CardHeader>
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                    <feature.icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-base leading-relaxed">
+                    {feature.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section id="benefits" className="py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                ¿Por qué Elegir FleetNest?
+              </h2>
+              <p className="text-xl text-muted-foreground mb-8">
+                Más de 500 empresas de transporte confían en FleetNest para optimizar 
+                sus operaciones y aumentar su rentabilidad.
+              </p>
+              
+              <div className="space-y-4">
+                {benefits.map((benefit, index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                    <span className="text-lg">{benefit}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="relative">
+              <div className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl flex items-center justify-center">
+                <div className="text-center p-8">
+                  <div className="text-6xl font-bold text-primary mb-2">25%</div>
+                  <div className="text-xl font-semibold mb-2">Reducción de Costos</div>
+                  <div className="text-muted-foreground">Promedio de ahorro reportado por nuestros clientes</div>
+                  
+                  <div className="flex justify-center mt-6">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star key={star} className="h-6 w-6 text-yellow-400 fill-current" />
+                    ))}
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-2">
+                    4.9/5 - Calificación promedio
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-primary">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-6">
+            ¿Listo para Optimizar tu Flota?
+          </h2>
+          <p className="text-xl text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
+            Únete a cientos de empresas que ya están ahorrando tiempo y dinero con FleetNest
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/auth">
+              <Button size="lg" variant="secondary" className="text-lg px-8 py-4">
+                Comenzar Ahora - Gratis
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+              Contactar Ventas
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer id="contact" className="bg-muted/50 py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div className="md:col-span-2">
+              <div className="flex items-center space-x-2 mb-4">
+                <Truck className="h-8 w-8 text-primary" />
+                <span className="text-2xl font-bold text-primary">FleetNest</span>
+              </div>
+              <p className="text-muted-foreground mb-4">
+                La plataforma líder en gestión de flotas de transporte. 
+                Optimiza, controla y crece tu negocio con nuestras herramientas profesionales.
+              </p>
+              <div className="flex space-x-4">
+                <Button variant="outline" size="sm">
+                  <Phone className="h-4 w-4 mr-2" />
+                  (555) 123-4567
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Mail className="h-4 w-4 mr-2" />
+                  info@fleetnest.com
+                </Button>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold mb-4">Producto</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li><a href="#" className="hover:text-primary transition-colors">Características</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Integraciones</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">API</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Seguridad</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold mb-4">Soporte</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li><a href="#" className="hover:text-primary transition-colors">Documentación</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Centro de Ayuda</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Contacto</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Estado del Sistema</a></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
+            <p>&copy; 2024 FleetNest. Todos los derechos reservados.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
