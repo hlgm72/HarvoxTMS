@@ -13,6 +13,13 @@
 - **Body:** Inter (ultra legible, optimizada UI)
 - **Data/Mono:** JetBrains Mono (números, códigos TMS)
 
+### **Internacionalización (i18n):** Bilingüe desde el Principio
+- **Idiomas:** Inglés (prioritario) + Español
+- **Librería:** react-i18next con namespaces por módulo
+- **Estructura:** Organizada por contexto TMS (fleet, loads, drivers, finance)
+- **Escalable:** Preparado para idiomas futuros (Francés, Portugués)
+- **Automático:** TODA página/componente bilingüe desde implementación inicial
+
 ---
 
 ## 📋 **SISTEMA DE FORMULARIOS**
