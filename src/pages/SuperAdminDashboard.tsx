@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Layout } from '@/components/layout/Layout';
 import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { createTextHandlers } from '@/lib/textUtils';
 
 interface CompanyStats {
@@ -40,6 +41,7 @@ interface Company {
 export default function SuperAdminDashboard() {
   const { user, isSuperAdmin, loading } = useAuth();
   const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const [stats, setStats] = useState<CompanyStats>({
     total_companies: 0,
     total_users: 0,
@@ -175,10 +177,10 @@ export default function SuperAdminDashboard() {
 
       if (error) throw error;
 
-      toast({
-        title: "Company created successfully",
-        description: `${newCompany.name} has been added to the system.`,
-      });
+      showSuccess(
+        "¡Empresa creada exitosamente!",
+        `${newCompany.name} ha sido añadida al sistema FleetNest`
+      );
 
       // Reset form and close dialog
       setNewCompany({
@@ -200,11 +202,10 @@ export default function SuperAdminDashboard() {
       fetchSystemStats();
     } catch (error: any) {
       console.error('Error creating company:', error);
-      toast({
-        title: "Error creating company",
-        description: error.message || "An error occurred while creating the company.",
-        variant: "destructive",
-      });
+      showError(
+        "Error al crear empresa",
+        error.message || "Ocurrió un error al crear la empresa. Por favor intenta de nuevo."
+      );
     } finally {
       setIsCreatingCompany(false);
     }

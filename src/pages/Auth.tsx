@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { createTextHandlers } from '@/lib/textUtils';
 const fleetNestLogo = '/auth-bg-fleet.jpg'; // Usar temporalmente hasta que puedas subir tu logo
 
@@ -17,6 +18,7 @@ export default function Auth() {
   const { t } = useTranslation(['auth', 'common']);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -167,10 +169,10 @@ export default function Auth() {
 
           console.log('Role query result:', { roleData, roleError });
 
-          toast({
-            title: "Welcome back!",
-            description: "You have been successfully logged in.",
-          });
+          showSuccess(
+            "¡Bienvenido de vuelta!",
+            "Has iniciado sesión exitosamente en FleetNest"
+          );
 
           // Redirect based on role
           if (roleData?.role === 'superadmin') {
@@ -199,16 +201,19 @@ export default function Auth() {
         if (error) throw error;
 
         if (data.user) {
-          toast({
-            title: "Account created!",
-            description: "Please check your email to verify your account.",
-          });
+          showSuccess(
+            "¡Cuenta creada exitosamente!",
+            "Por favor revisa tu email para verificar tu cuenta"
+          );
           // Don't navigate yet - wait for email verification
         }
       }
     } catch (err: any) {
       console.error('Authentication error:', err);
-      setError(err.message || 'Authentication error occurred');
+      showError(
+        "Error de autenticación",
+        err.message || "Ocurrió un error durante la autenticación"
+      );
     } finally {
       setLoading(false);
     }
