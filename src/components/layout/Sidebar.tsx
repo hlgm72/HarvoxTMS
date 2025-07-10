@@ -212,6 +212,7 @@ export function AppSidebar() {
       className="border-r bg-gradient-to-b from-background to-muted/20"
       collapsible="icon"
       variant="sidebar"
+      side="left"
     >
       <SidebarHeader className="border-b border-border/40 p-4 bg-gradient-to-r from-primary/5 to-secondary/5">
         <div className="flex items-center gap-3">
