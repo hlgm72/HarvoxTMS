@@ -211,6 +211,7 @@ export function AppSidebar() {
     <Sidebar
       className="border-r bg-gradient-to-b from-background to-muted/20"
       collapsible="icon"
+      variant="sidebar"
     >
       <SidebarHeader className="border-b border-border/40 p-4 bg-gradient-to-r from-primary/5 to-secondary/5">
         <div className="flex items-center gap-3">
@@ -311,16 +312,20 @@ export function AppSidebar() {
                 
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <NavLink 
-                        to={item.url} 
-                        end 
-                        className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
-                          active 
-                            ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
-                            : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
-                        }`}
-                      >
+                     <SidebarMenuButton 
+                       asChild 
+                       isActive={active}
+                       tooltip={collapsed ? item.title : undefined}
+                     >
+                       <NavLink 
+                         to={item.url} 
+                         end 
+                         className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
+                           active 
+                             ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
+                             : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
+                         }`}
+                       >
                         <div className={`p-2 rounded-lg transition-all duration-200 ${
                           active 
                             ? "bg-white/20" 
