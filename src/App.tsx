@@ -10,7 +10,13 @@ import AuthCallback from "./pages/AuthCallback";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import PaymentSystem from "./pages/PaymentSystem";
 import NotFound from "./pages/NotFound";
+import OwnerDashboard from "./pages/dashboard/OwnerDashboard";
+import OperationsManagerDashboard from "./pages/dashboard/OperationsManagerDashboard";
+import DispatcherDashboard from "./pages/dashboard/DispatcherDashboard";
+import DriverDashboard from "./pages/dashboard/DriverDashboard";
+import Landing from "./pages/Landing";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Layout } from "./components/layout/Layout";
 import { NotificationProvider } from "./components/notifications";
 import './i18n/config';
 
@@ -24,10 +30,74 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/setup" element={<Setup />} />
+          {/* Public routes */}
+          <Route path="/landing" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+          
+          {/* Protected routes with Layout */}
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Index />
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/setup" 
+            element={
+              <ProtectedRoute>
+                <Setup />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Dashboard routes by role */}
+          <Route 
+            path="/dashboard/owner" 
+            element={
+              <ProtectedRoute requiredRole="company_owner">
+                <Layout>
+                  <OwnerDashboard />
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/dashboard/operations" 
+            element={
+              <ProtectedRoute requiredRole="operations_manager">
+                <Layout>
+                  <OperationsManagerDashboard />
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/dashboard/dispatch" 
+            element={
+              <ProtectedRoute requiredRole="dispatcher">
+                <Layout>
+                  <DispatcherDashboard />
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/dashboard/driver" 
+            element={
+              <ProtectedRoute requiredRole="driver">
+                <Layout>
+                  <DriverDashboard />
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* SuperAdmin route */}
           <Route 
             path="/superadmin" 
             element={
@@ -36,15 +106,90 @@ const App = () => (
               </ProtectedRoute>
             } 
           />
-          <Route path="/drivers" element={<div>Drivers page coming soon</div>} />
-          <Route path="/loads" element={<div>Loads page coming soon</div>} />
-          <Route path="/clients" element={<div>Clients page coming soon</div>} />
-          <Route path="/equipment" element={<div>Equipment page coming soon</div>} />
-          <Route path="/billing" element={<div>Billing page coming soon</div>} />
-          <Route path="/reports" element={<div>Reports page coming soon</div>} />
-          <Route path="/documents" element={<div>Documents page coming soon</div>} />
-          <Route path="/payment-system" element={<PaymentSystem />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          
+          {/* Other protected routes */}
+          <Route 
+            path="/drivers" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <div>Drivers page coming soon</div>
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/loads" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <div>Loads page coming soon</div>
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/clients" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <div>Clients page coming soon</div>
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/equipment" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <div>Equipment page coming soon</div>
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/billing" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <div>Billing page coming soon</div>
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/reports" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <div>Reports page coming soon</div>
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/documents" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <div>Documents page coming soon</div>
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/payment-system" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <PaymentSystem />
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Catch-all route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
