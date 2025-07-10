@@ -529,6 +529,144 @@ export type Database = {
         }
         Relationships: []
       }
+      fuel_expenses: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          driver_user_id: string
+          fuel_card_number: string | null
+          fuel_type: string
+          gallons_purchased: number
+          id: string
+          is_verified: boolean
+          notes: string | null
+          odometer_reading: number | null
+          payment_period_id: string
+          price_per_gallon: number
+          receipt_url: string | null
+          station_address: string | null
+          station_name: string | null
+          status: string
+          total_amount: number
+          transaction_date: string
+          updated_at: string
+          vehicle_id: string | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          driver_user_id: string
+          fuel_card_number?: string | null
+          fuel_type?: string
+          gallons_purchased: number
+          id?: string
+          is_verified?: boolean
+          notes?: string | null
+          odometer_reading?: number | null
+          payment_period_id: string
+          price_per_gallon: number
+          receipt_url?: string | null
+          station_address?: string | null
+          station_name?: string | null
+          status?: string
+          total_amount: number
+          transaction_date: string
+          updated_at?: string
+          vehicle_id?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          driver_user_id?: string
+          fuel_card_number?: string | null
+          fuel_type?: string
+          gallons_purchased?: number
+          id?: string
+          is_verified?: boolean
+          notes?: string | null
+          odometer_reading?: number | null
+          payment_period_id?: string
+          price_per_gallon?: number
+          receipt_url?: string | null
+          station_address?: string | null
+          station_name?: string | null
+          status?: string
+          total_amount?: number
+          transaction_date?: string
+          updated_at?: string
+          vehicle_id?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fuel_expenses_payment_period_id_fkey"
+            columns: ["payment_period_id"]
+            isOneToOne: false
+            referencedRelation: "payment_periods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fuel_expenses_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fuel_limits: {
+        Row: {
+          alert_at_percentage: number | null
+          created_at: string
+          created_by: string | null
+          daily_dollar_limit: number | null
+          daily_gallon_limit: number | null
+          driver_user_id: string
+          effective_from: string
+          effective_until: string | null
+          id: string
+          is_active: boolean
+          updated_at: string
+          weekly_dollar_limit: number | null
+          weekly_gallon_limit: number | null
+        }
+        Insert: {
+          alert_at_percentage?: number | null
+          created_at?: string
+          created_by?: string | null
+          daily_dollar_limit?: number | null
+          daily_gallon_limit?: number | null
+          driver_user_id: string
+          effective_from?: string
+          effective_until?: string | null
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          weekly_dollar_limit?: number | null
+          weekly_gallon_limit?: number | null
+        }
+        Update: {
+          alert_at_percentage?: number | null
+          created_at?: string
+          created_by?: string | null
+          daily_dollar_limit?: number | null
+          daily_gallon_limit?: number | null
+          driver_user_id?: string
+          effective_from?: string
+          effective_until?: string | null
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          weekly_dollar_limit?: number | null
+          weekly_gallon_limit?: number | null
+        }
+        Relationships: []
+      }
       owner_operators: {
         Row: {
           business_address: string | null
@@ -1035,6 +1173,17 @@ export type Database = {
       assign_first_superadmin: {
         Args: { target_user_id: string }
         Returns: Json
+      }
+      calculate_fuel_summary_for_period: {
+        Args: { period_id: string }
+        Returns: {
+          total_gallons: number
+          total_amount: number
+          average_price_per_gallon: number
+          transaction_count: number
+          pending_amount: number
+          approved_amount: number
+        }[]
       }
       create_first_superadmin: {
         Args: {
