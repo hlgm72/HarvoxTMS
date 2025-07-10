@@ -19,6 +19,7 @@ export type Database = {
           city_id: string | null
           contract_start_date: string | null
           created_at: string
+          default_payment_frequency: string | null
           dot_number: string | null
           ein: string | null
           email: string | null
@@ -31,6 +32,7 @@ export type Database = {
           owner_name: string | null
           owner_phone: string | null
           owner_title: string | null
+          payment_cycle_start_day: number | null
           payment_day: number
           phone: string | null
           plan_type: string | null
@@ -44,6 +46,7 @@ export type Database = {
           city_id?: string | null
           contract_start_date?: string | null
           created_at?: string
+          default_payment_frequency?: string | null
           dot_number?: string | null
           ein?: string | null
           email?: string | null
@@ -56,6 +59,7 @@ export type Database = {
           owner_name?: string | null
           owner_phone?: string | null
           owner_title?: string | null
+          payment_cycle_start_day?: number | null
           payment_day?: number
           phone?: string | null
           plan_type?: string | null
@@ -69,6 +73,7 @@ export type Database = {
           city_id?: string | null
           contract_start_date?: string | null
           created_at?: string
+          default_payment_frequency?: string | null
           dot_number?: string | null
           ein?: string | null
           email?: string | null
@@ -81,6 +86,7 @@ export type Database = {
           owner_name?: string | null
           owner_phone?: string | null
           owner_title?: string | null
+          payment_cycle_start_day?: number | null
           payment_day?: number
           phone?: string | null
           plan_type?: string | null
@@ -731,14 +737,16 @@ export type Database = {
           id: string
           net_payment: number
           other_income: number
+          period_end_date: string
+          period_frequency: string | null
+          period_start_date: string
+          period_type: string | null
           processed_at: string | null
           processed_by: string | null
           status: string
           total_deductions: number
           total_income: number
           updated_at: string
-          week_end_date: string
-          week_start_date: string
         }
         Insert: {
           balance_alert_message?: string | null
@@ -749,14 +757,16 @@ export type Database = {
           id?: string
           net_payment?: number
           other_income?: number
+          period_end_date: string
+          period_frequency?: string | null
+          period_start_date: string
+          period_type?: string | null
           processed_at?: string | null
           processed_by?: string | null
           status?: string
           total_deductions?: number
           total_income?: number
           updated_at?: string
-          week_end_date: string
-          week_start_date: string
         }
         Update: {
           balance_alert_message?: string | null
@@ -767,14 +777,16 @@ export type Database = {
           id?: string
           net_payment?: number
           other_income?: number
+          period_end_date?: string
+          period_frequency?: string | null
+          period_start_date?: string
+          period_type?: string | null
           processed_at?: string | null
           processed_by?: string | null
           status?: string
           total_deductions?: number
           total_income?: number
           updated_at?: string
-          week_end_date?: string
-          week_start_date?: string
         }
         Relationships: []
       }
