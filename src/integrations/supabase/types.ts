@@ -800,8 +800,13 @@ export type Database = {
           gross_earnings: number
           has_negative_balance: boolean
           id: string
+          is_locked: boolean
+          locked_at: string | null
+          locked_by: string | null
           net_payment: number
           other_income: number
+          payment_method: string | null
+          payment_reference: string | null
           period_end_date: string
           period_frequency: string | null
           period_start_date: string
@@ -820,8 +825,13 @@ export type Database = {
           gross_earnings?: number
           has_negative_balance?: boolean
           id?: string
+          is_locked?: boolean
+          locked_at?: string | null
+          locked_by?: string | null
           net_payment?: number
           other_income?: number
+          payment_method?: string | null
+          payment_reference?: string | null
           period_end_date: string
           period_frequency?: string | null
           period_start_date: string
@@ -840,8 +850,13 @@ export type Database = {
           gross_earnings?: number
           has_negative_balance?: boolean
           id?: string
+          is_locked?: boolean
+          locked_at?: string | null
+          locked_by?: string | null
           net_payment?: number
           other_income?: number
+          payment_method?: string | null
+          payment_reference?: string | null
           period_end_date?: string
           period_frequency?: string | null
           period_start_date?: string
@@ -1274,6 +1289,18 @@ export type Database = {
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      is_period_locked: {
+        Args: { period_id: string }
+        Returns: boolean
+      }
+      lock_payment_period: {
+        Args: {
+          period_id: string
+          payment_method_used?: string
+          payment_ref?: string
+        }
+        Returns: Json
       }
       needs_initial_setup: {
         Args: Record<PropertyKey, never>
