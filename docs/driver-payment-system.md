@@ -123,12 +123,57 @@ Historial de cambios en montos de plantillas recurrentes.
 - Company members pueden gestionar datos de su compañía
 - Historial completo de cambios y aprobaciones
 
+## Estructura Actualizada de Base de Datos (2025-01-10)
+
+### Cambios Implementados en payment_periods:
+- **Renombrado**: `week_start_date` → `period_start_date`, `week_end_date` → `period_end_date`
+- **Nuevos campos**:
+  - `period_type`: 'regular', 'special', 'bonus' (permite períodos eventuales)
+  - `period_frequency`: 'weekly', 'biweekly', 'monthly', 'custom'
+
+### Configuración por Compañía (companies):
+- **`default_payment_frequency`**: Configuración base de la compañía
+- **`payment_cycle_start_day`**: Día de inicio del ciclo (1=Lunes, 2=Martes, etc.)
+
 ## Próximos Pasos de Implementación
 
-1. **Interfaz de usuario**: Pantallas para gestión de plantillas y períodos de pago
-2. **Motor de cálculo**: Algoritmo para aplicación automática de gastos
-3. **Sistema de alertas**: Componentes de notificación para balances negativos
-4. **Reportes**: Dashboards para análisis de pagos y gastos
+### Fase 1: Configuración de Períodos por Compañía (1-2 horas)
+1. **Pantalla de Configuración**: 
+   - Formulario para establecer `default_payment_frequency`
+   - Selector de `payment_cycle_start_day`
+   - Validaciones y preview de períodos
+
+2. **Hook de Configuración**:
+   ```typescript
+   useCompanyPaymentConfig() // Gestiona configuración de períodos
+   ```
+
+### Fase 2: Gestión de Períodos Flexibles (2-3 horas)
+1. **Componente PaymentPeriodManager**:
+   - Lista de períodos regulares y especiales
+   - Botón "Crear Período Especial" para bonos/ajustes
+   - Indicadores visuales por tipo de período
+
+2. **Modal de Período Especial**:
+   - Fechas customizables
+   - Tipo: special/bonus
+   - Razón del período especial
+
+### Fase 3: Motor de Cálculo Automático (3-4 horas)
+1. **Función de Generación Automática**:
+   ```typescript
+   generatePaymentPeriods(companyId, fromDate, toDate)
+   ```
+
+2. **Aplicación de Gastos por Prioridad**:
+   - Gastos críticos primero
+   - Manejo de balance negativo
+   - Diferimiento automático de gastos no críticos
+
+### Fase 4: Interfaz de Usuario Completa (2-3 horas)
+1. **Dashboard de Períodos**: Vista general con alertas
+2. **Sistema de Alertas**: Notificaciones para balances negativos
+3. **Reportes**: Análisis de pagos y gastos por período
 
 ## Casos de Uso Principales
 
