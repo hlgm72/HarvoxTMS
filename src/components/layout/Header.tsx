@@ -11,8 +11,17 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function Header() {
+  const { state } = useSidebar();
+  
   return (
-    <header className="h-16 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40">
+    <header 
+      className="h-16 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 transition-all duration-200 ease-linear"
+      style={{
+        left: state === "collapsed" ? "56px" : "18rem",
+        right: "0",
+        width: state === "collapsed" ? "calc(100vw - 56px)" : "calc(100vw - 18rem)"
+      }}
+    >
       <div className="flex h-full items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <SidebarTrigger className="p-2" />
