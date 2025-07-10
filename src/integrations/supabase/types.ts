@@ -1601,6 +1601,10 @@ export type Database = {
           approved_amount: number
         }[]
       }
+      can_delete_test_company: {
+        Args: { company_id_param: string }
+        Returns: Json
+      }
       create_first_superadmin: {
         Args: {
           admin_email: string
@@ -1608,6 +1612,10 @@ export type Database = {
           admin_first_name?: string
           admin_last_name?: string
         }
+        Returns: Json
+      }
+      delete_test_company: {
+        Args: { company_id_param: string }
         Returns: Json
       }
       get_current_user_role: {

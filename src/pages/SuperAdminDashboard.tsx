@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Building2, Users, Truck, Activity, Plus, Settings, Mail, Phone, User, Briefcase,
   BarChart3, Shield, Database, Globe, ChevronRight, Search, Filter,
-  TrendingUp, AlertTriangle, CheckCircle, Clock, Eye
+  TrendingUp, AlertTriangle, CheckCircle, Clock, Eye, Trash2
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -72,6 +73,10 @@ export default function SuperAdminDashboard() {
     max_vehicles: 10,
     max_users: 5,
   });
+  
+  const [companyToDelete, setCompanyToDelete] = useState<Company | null>(null);
+  const [deleteValidation, setDeleteValidation] = useState<any>(null);
+  const [isDeletingCompany, setIsDeletingCompany] = useState(false);
 
   // Create text handlers for form fields
   const companyNameHandlers = createTextHandlers((value) => 
@@ -214,6 +219,61 @@ export default function SuperAdminDashboard() {
       );
     } finally {
       setIsCreatingCompany(false);
+    }
+  };
+
+  const validateCompanyDeletion = async (company: Company) => {
+    try {
+      const { data, error } = await supabase.rpc('can_delete_test_company', {
+        company_id_param: company.id
+      });
+
+      if (error) throw error;
+      
+      setDeleteValidation(data);
+      setCompanyToDelete(company);
+    } catch (error: any) {
+      console.error('Error validating company deletion:', error);
+      showError(
+        "Error validating deletion",
+        error.message || "Could not validate if company can be deleted"
+      );
+    }
+  };
+
+  const handleDeleteCompany = async () => {
+    if (!companyToDelete) return;
+    
+    setIsDeletingCompany(true);
+    try {
+      const { data, error } = await supabase.rpc('delete_test_company', {
+        company_id_param: companyToDelete.id
+      });
+
+      if (error) throw error;
+
+      if ((data as any)?.success) {
+        showSuccess(
+          "Company deleted successfully",
+          `${(data as any).company_name} and all related data has been permanently removed`
+        );
+        
+        // Refresh data
+        fetchCompanies();
+        fetchSystemStats();
+      } else {
+        showError("Deletion failed", (data as any)?.message || "Unknown error occurred");
+      }
+    } catch (error: any) {
+      console.error('Error deleting company:', error);
+      showError(
+        "Error deleting company",
+        error.message || "An error occurred while deleting the company"
+      );
+    } finally {
+      setIsDeletingCompany(false);
+      setCompanyToDelete(null);
+      setDeleteValidation(null);
     }
   };
 
@@ -803,11 +863,115 @@ export default function SuperAdminDashboard() {
                               <div className="font-medium">{company.max_vehicles}</div>
                             </div>
                           </div>
-                          <Button variant="outline" size="sm" className="w-full">
-                            <Eye className="h-3 w-3 mr-2" />
-                            View Details
-                            <ChevronRight className="h-3 w-3 ml-auto" />
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm" className="flex-1">
+                              <Eye className="h-3 w-3 mr-2" />
+                              View Details
+                            </Button>
+                            {(company.plan_type === 'demo' || company.plan_type === 'trial' || company.plan_type === 'test') && 
+                             company.name !== 'SYSTEM_SUPERADMIN' && (
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    onClick={() => validateCompanyDeletion(company)}
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+                                      <Trash2 className="h-5 w-5" />
+                                      Delete Test Company
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription className="space-y-3">
+                                      {deleteValidation ? (
+                                        deleteValidation.can_delete ? (
+                                          <div className="space-y-3">
+                                            <p>You are about to permanently delete the test company:</p>
+                                            <div className="bg-muted p-3 rounded-lg">
+                                              <p className="font-semibold">{deleteValidation.company_name}</p>
+                                              <p className="text-sm text-muted-foreground">
+                                                Plan: {deleteValidation.plan_type} | Created: {new Date(deleteValidation.created_at).toLocaleDateString()}
+                                              </p>
+                                            </div>
+                                            <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
+                                              <p className="text-sm text-red-800 font-medium mb-2">This will permanently delete:</p>
+                                              <ul className="text-sm text-red-700 space-y-1">
+                                                <li>• {deleteValidation.data_summary.loads} loads</li>
+                                                <li>• {deleteValidation.data_summary.drivers} drivers</li>
+                                                <li>• {deleteValidation.data_summary.payment_periods} payment periods</li>
+                                                <li>• {deleteValidation.data_summary.fuel_expenses} fuel expenses</li>
+                                                <li>• All company documents and settings</li>
+                                                <li>• All user accounts associated with this company</li>
+                                              </ul>
+                                            </div>
+                                            <p className="text-sm font-medium text-destructive">
+                                              This action cannot be undone!
+                                            </p>
+                                          </div>
+                                        ) : (
+                                          <div className="space-y-3">
+                                            <p className="text-destructive">This company cannot be deleted:</p>
+                                            <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
+                                              <p className="text-sm text-red-800 font-medium">
+                                                {deleteValidation.reason}
+                                              </p>
+                                              {deleteValidation.details && (
+                                                <div className="mt-2 text-sm text-red-700">
+                                                  <p>Company has operational data:</p>
+                                                  <ul className="mt-1 space-y-1">
+                                                    <li>• {deleteValidation.details.loads} loads</li>
+                                                    <li>• {deleteValidation.details.drivers} drivers</li>
+                                                    <li>• {deleteValidation.details.payment_periods} payment periods</li>
+                                                    <li>• {deleteValidation.details.fuel_expenses} fuel expenses</li>
+                                                  </ul>
+                                                </div>
+                                              )}
+                                            </div>
+                                          </div>
+                                        )
+                                      ) : (
+                                        <p>Validating company deletion...</p>
+                                      )}
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel 
+                                      onClick={() => {
+                                        setCompanyToDelete(null);
+                                        setDeleteValidation(null);
+                                      }}
+                                    >
+                                      Cancel
+                                    </AlertDialogCancel>
+                                    {deleteValidation?.can_delete && (
+                                      <AlertDialogAction
+                                        onClick={handleDeleteCompany}
+                                        disabled={isDeletingCompany}
+                                        className="bg-destructive hover:bg-destructive/90"
+                                      >
+                                        {isDeletingCompany ? (
+                                          <>
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                            Deleting...
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Trash2 className="h-4 w-4 mr-2" />
+                                            Delete Company
+                                          </>
+                                        )}
+                                      </AlertDialogAction>
+                                    )}
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            )}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
