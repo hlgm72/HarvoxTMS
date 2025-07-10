@@ -413,7 +413,6 @@ export default function Auth() {
                       const inputValue = e.target.value;
                       const cleanValue = inputValue.replace(/\s/g, '');
                       setFormData(prev => ({ ...prev, email: cleanValue }));
-                      validateField('email', cleanValue);
                       if (error) setError(null);
                     }}
                     onKeyPress={(e) => {
@@ -425,6 +424,7 @@ export default function Auth() {
                     onBlur={(e) => {
                       const trimmedValue = e.target.value.trim();
                       setFormData(prev => ({ ...prev, email: trimmedValue }));
+                      validateField('email', trimmedValue);
                     }}
                     placeholder={t('auth:form.email_placeholder')}
                     className={`auth-input pl-10 font-body ${fieldErrors.email ? 'border-destructive' : ''}`}
