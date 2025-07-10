@@ -38,15 +38,87 @@ const companies = [
   { id: 2, name: "Prime Inc", role: "dispatcher", avatar: "PI" },
 ];
 
-// Navegación para compañías transportistas
-const companyNavigationItems = [
+// Navegación para Company Owner
+const companyOwnerNavigationItems = [
   { 
-    title: "Centro de Comando", 
-    url: "/", 
+    title: "Dashboard Ejecutivo", 
+    url: "/dashboard/owner", 
     icon: Target, 
     badge: "Live",
     badgeVariant: "live" as const,
-    description: "Panel principal"
+    description: "Panel ejecutivo"
+  },
+  { 
+    title: "Gestión de Usuarios", 
+    url: "/users", 
+    icon: Users, 
+    description: "Usuarios y roles"
+  },
+  { 
+    title: "Configuración", 
+    url: "/settings", 
+    icon: Settings,
+    description: "Configuración de empresa"
+  },
+  { 
+    title: "Reportes Financieros", 
+    url: "/reports/financial", 
+    icon: BarChart3,
+    description: "Análisis financiero"
+  },
+  { 
+    title: "Conductores", 
+    url: "/drivers", 
+    icon: Users, 
+    badge: "18",
+    badgeVariant: "count" as const,
+    description: "Gestión de conductores"
+  },
+  { 
+    title: "Flota", 
+    url: "/equipment", 
+    icon: Truck, 
+    badge: "42",
+    badgeVariant: "count" as const,
+    description: "Vehículos y equipos"
+  },
+  { 
+    title: "Cargas", 
+    url: "/loads", 
+    icon: Package, 
+    badge: "24",
+    badgeVariant: "count" as const,
+    description: "Gestión de cargas"
+  },
+  { 
+    title: "Clientes", 
+    url: "/clients", 
+    icon: Building2,
+    description: "Base de clientes"
+  },
+  { 
+    title: "Facturación", 
+    url: "/billing", 
+    icon: CreditCard,
+    description: "Facturación y pagos"
+  },
+];
+
+// Navegación para Operations Manager  
+const operationsManagerNavigationItems = [
+  { 
+    title: "Dashboard Operacional", 
+    url: "/dashboard/operations", 
+    icon: Target, 
+    badge: "Live",
+    badgeVariant: "live" as const,
+    description: "Panel operacional"
+  },
+  { 
+    title: "Supervisión", 
+    url: "/supervision", 
+    icon: Activity, 
+    description: "Supervisión de equipos"
   },
   { 
     title: "Conductores", 
@@ -79,28 +151,92 @@ const companyNavigationItems = [
     description: "Planificación de rutas"
   },
   { 
-    title: "Clientes", 
-    url: "/clients", 
-    icon: Building2,
-    description: "Base de clientes"
-  },
-  { 
-    title: "Facturación", 
-    url: "/billing", 
-    icon: CreditCard,
-    description: "Facturación y pagos"
-  },
-  { 
     title: "Reportes", 
     url: "/reports", 
     icon: BarChart3,
-    description: "Análisis y reportes"
+    description: "Reportes operacionales"
+  },
+];
+
+// Navegación para Dispatcher
+const dispatcherNavigationItems = [
+  { 
+    title: "Dashboard", 
+    url: "/dashboard/dispatch", 
+    icon: Target, 
+    badge: "Live",
+    badgeVariant: "live" as const,
+    description: "Panel de despacho"
+  },
+  { 
+    title: "Cargas Activas", 
+    url: "/loads/active", 
+    icon: Package, 
+    badge: "12",
+    badgeVariant: "count" as const,
+    description: "Cargas en progreso"
+  },
+  { 
+    title: "Asignar Cargas", 
+    url: "/loads/assign", 
+    icon: Navigation,
+    description: "Asignación de cargas"
+  },
+  { 
+    title: "Conductores", 
+    url: "/drivers", 
+    icon: Users, 
+    badge: "18",
+    badgeVariant: "count" as const,
+    description: "Estado de conductores"
+  },
+  { 
+    title: "Seguimiento", 
+    url: "/tracking", 
+    icon: MapPin,
+    description: "Seguimiento en tiempo real"
   },
   { 
     title: "Documentos", 
     url: "/documents", 
     icon: FileText,
     description: "Documentación"
+  },
+];
+
+// Navegación para Driver
+const driverNavigationItems = [
+  { 
+    title: "Mi Dashboard", 
+    url: "/dashboard/driver", 
+    icon: Home, 
+    description: "Panel personal"
+  },
+  { 
+    title: "Mis Cargas", 
+    url: "/my-loads", 
+    icon: Package, 
+    badge: "3",
+    badgeVariant: "count" as const,
+    description: "Cargas asignadas"
+  },
+  { 
+    title: "Mis Documentos", 
+    url: "/my-documents", 
+    icon: FileText,
+    description: "Documentos personales"
+  },
+  { 
+    title: "Pagos", 
+    url: "/payments", 
+    icon: CreditCard,
+    description: "Historial de pagos"
+  },
+  { 
+    title: "Perfil", 
+    url: "/profile", 
+    icon: Users,
+    description: "Mi perfil"
   },
 ];
 
@@ -174,7 +310,13 @@ const superAdminNavigationItems = [
 
 export function AppSidebar() {
   const { state } = useSidebar();
-  const { isSuperAdmin } = useAuth();
+  const { 
+    isSuperAdmin, 
+    isCompanyOwner, 
+    isOperationsManager, 
+    isDispatcher, 
+    isDriver 
+  } = useAuth();
   const location = useLocation();
   const currentPath = location.pathname;
   const [selectedCompany, setSelectedCompany] = useState(companies[0]);
@@ -189,8 +331,19 @@ export function AppSidebar() {
     shouldApplyCss: state === "collapsed"
   });
   
-  // Usar navegación según el tipo de usuario
-  const navigationItems = isSuperAdmin ? superAdminNavigationItems : companyNavigationItems;
+  // Determinar navegación según el rol del usuario
+  const getNavigationItems = () => {
+    if (isSuperAdmin) return superAdminNavigationItems;
+    if (isCompanyOwner) return companyOwnerNavigationItems;
+    if (isOperationsManager) return operationsManagerNavigationItems;
+    if (isDispatcher) return dispatcherNavigationItems;
+    if (isDriver) return driverNavigationItems;
+    
+    // Fallback para usuarios sin rol específico
+    return dispatcherNavigationItems;
+  };
+  
+  const navigationItems = getNavigationItems();
 
   const isActive = (path: string) => currentPath === path;
   

@@ -115,5 +115,8 @@ export const useAuth = () => {
     isAuthenticated: !!authState.user,
     isSuperAdmin: authState.userRole?.role === 'superadmin',
     isCompanyOwner: authState.userRole?.role === 'company_owner',
+    isOperationsManager: authState.userRole?.role === 'operations_manager',
+    isDispatcher: authState.userRole?.role === 'dispatcher',
+    isDriver: authState.userRole?.role === 'driver',
   };
 };
