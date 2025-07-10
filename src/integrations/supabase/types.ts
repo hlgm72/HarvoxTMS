@@ -673,6 +673,190 @@ export type Database = {
         }
         Relationships: []
       }
+      load_documents: {
+        Row: {
+          content_type: string | null
+          created_at: string
+          document_type: string
+          file_name: string
+          file_size: number | null
+          file_url: string
+          id: string
+          load_id: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          content_type?: string | null
+          created_at?: string
+          document_type: string
+          file_name: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          load_id: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          content_type?: string | null
+          created_at?: string
+          document_type?: string
+          file_name?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          load_id?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "load_documents_load_id_fkey"
+            columns: ["load_id"]
+            isOneToOne: false
+            referencedRelation: "loads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      load_stops: {
+        Row: {
+          actual_date: string | null
+          actual_time: string | null
+          address: string
+          city: string
+          company_name: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string
+          id: string
+          load_id: string
+          reference_number: string | null
+          scheduled_date: string | null
+          scheduled_time: string | null
+          special_instructions: string | null
+          state: string
+          stop_number: number
+          stop_type: string
+          updated_at: string
+          zip_code: string | null
+        }
+        Insert: {
+          actual_date?: string | null
+          actual_time?: string | null
+          address: string
+          city: string
+          company_name?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          load_id: string
+          reference_number?: string | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
+          special_instructions?: string | null
+          state: string
+          stop_number: number
+          stop_type: string
+          updated_at?: string
+          zip_code?: string | null
+        }
+        Update: {
+          actual_date?: string | null
+          actual_time?: string | null
+          address?: string
+          city?: string
+          company_name?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          load_id?: string
+          reference_number?: string | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
+          special_instructions?: string | null
+          state?: string
+          stop_number?: number
+          stop_type?: string
+          updated_at?: string
+          zip_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "load_stops_load_id_fkey"
+            columns: ["load_id"]
+            isOneToOne: false
+            referencedRelation: "loads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loads: {
+        Row: {
+          broker_id: string | null
+          commodity: string | null
+          created_at: string
+          created_by: string | null
+          currency: string
+          customer_name: string | null
+          delivery_date: string | null
+          dispatching_percentage: number | null
+          driver_user_id: string
+          factoring_percentage: number | null
+          id: string
+          leasing_percentage: number | null
+          load_number: string
+          notes: string | null
+          pickup_date: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+          weight_lbs: number | null
+        }
+        Insert: {
+          broker_id?: string | null
+          commodity?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          customer_name?: string | null
+          delivery_date?: string | null
+          dispatching_percentage?: number | null
+          driver_user_id: string
+          factoring_percentage?: number | null
+          id?: string
+          leasing_percentage?: number | null
+          load_number: string
+          notes?: string | null
+          pickup_date?: string | null
+          status?: string
+          total_amount: number
+          updated_at?: string
+          weight_lbs?: number | null
+        }
+        Update: {
+          broker_id?: string | null
+          commodity?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          customer_name?: string | null
+          delivery_date?: string | null
+          dispatching_percentage?: number | null
+          driver_user_id?: string
+          factoring_percentage?: number | null
+          id?: string
+          leasing_percentage?: number | null
+          load_number?: string
+          notes?: string | null
+          pickup_date?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          weight_lbs?: number | null
+        }
+        Relationships: []
+      }
       other_income: {
         Row: {
           amount: number
