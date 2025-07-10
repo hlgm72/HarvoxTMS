@@ -673,6 +673,71 @@ export type Database = {
         }
         Relationships: []
       }
+      other_income: {
+        Row: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          driver_user_id: string
+          id: string
+          income_date: string
+          income_type: string
+          notes: string | null
+          payment_period_id: string
+          receipt_url: string | null
+          reference_number: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          description: string
+          driver_user_id: string
+          id?: string
+          income_date: string
+          income_type: string
+          notes?: string | null
+          payment_period_id: string
+          receipt_url?: string | null
+          reference_number?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          driver_user_id?: string
+          id?: string
+          income_date?: string
+          income_type?: string
+          notes?: string | null
+          payment_period_id?: string
+          receipt_url?: string | null
+          reference_number?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "other_income_payment_period_id_fkey"
+            columns: ["payment_period_id"]
+            isOneToOne: false
+            referencedRelation: "payment_periods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       owner_operators: {
         Row: {
           business_address: string | null
