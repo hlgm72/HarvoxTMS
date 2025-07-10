@@ -379,6 +379,156 @@ export type Database = {
         }
         Relationships: []
       }
+      expense_instances: {
+        Row: {
+          amount: number
+          applied_at: string | null
+          applied_by: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          expense_date: string | null
+          expense_type_id: string
+          id: string
+          is_critical: boolean
+          notes: string | null
+          payment_period_id: string
+          priority: number
+          recurring_template_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          applied_at?: string | null
+          applied_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          expense_date?: string | null
+          expense_type_id: string
+          id?: string
+          is_critical?: boolean
+          notes?: string | null
+          payment_period_id: string
+          priority?: number
+          recurring_template_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          applied_at?: string | null
+          applied_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          expense_date?: string | null
+          expense_type_id?: string
+          id?: string
+          is_critical?: boolean
+          notes?: string | null
+          payment_period_id?: string
+          priority?: number
+          recurring_template_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_instances_expense_type_id_fkey"
+            columns: ["expense_type_id"]
+            isOneToOne: false
+            referencedRelation: "expense_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expense_instances_payment_period_id_fkey"
+            columns: ["payment_period_id"]
+            isOneToOne: false
+            referencedRelation: "payment_periods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expense_instances_recurring_template_id_fkey"
+            columns: ["recurring_template_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_expense_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expense_template_history: {
+        Row: {
+          change_reason: string | null
+          changed_by: string | null
+          created_at: string
+          effective_from: string
+          id: string
+          new_amount: number
+          previous_amount: number
+          template_id: string
+        }
+        Insert: {
+          change_reason?: string | null
+          changed_by?: string | null
+          created_at?: string
+          effective_from: string
+          id?: string
+          new_amount: number
+          previous_amount: number
+          template_id: string
+        }
+        Update: {
+          change_reason?: string | null
+          changed_by?: string | null
+          created_at?: string
+          effective_from?: string
+          id?: string
+          new_amount?: number
+          previous_amount?: number
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_template_history_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_expense_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expense_types: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       owner_operators: {
         Row: {
           business_address: string | null
@@ -433,6 +583,127 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_periods: {
+        Row: {
+          balance_alert_message: string | null
+          created_at: string
+          driver_user_id: string
+          gross_earnings: number
+          has_negative_balance: boolean
+          id: string
+          net_payment: number
+          other_income: number
+          processed_at: string | null
+          processed_by: string | null
+          status: string
+          total_deductions: number
+          total_income: number
+          updated_at: string
+          week_end_date: string
+          week_start_date: string
+        }
+        Insert: {
+          balance_alert_message?: string | null
+          created_at?: string
+          driver_user_id: string
+          gross_earnings?: number
+          has_negative_balance?: boolean
+          id?: string
+          net_payment?: number
+          other_income?: number
+          processed_at?: string | null
+          processed_by?: string | null
+          status?: string
+          total_deductions?: number
+          total_income?: number
+          updated_at?: string
+          week_end_date: string
+          week_start_date: string
+        }
+        Update: {
+          balance_alert_message?: string | null
+          created_at?: string
+          driver_user_id?: string
+          gross_earnings?: number
+          has_negative_balance?: boolean
+          id?: string
+          net_payment?: number
+          other_income?: number
+          processed_at?: string | null
+          processed_by?: string | null
+          status?: string
+          total_deductions?: number
+          total_income?: number
+          updated_at?: string
+          week_end_date?: string
+          week_start_date?: string
+        }
+        Relationships: []
+      }
+      pending_expenses: {
+        Row: {
+          amount: number
+          applied_to_period_id: string | null
+          created_at: string
+          driver_user_id: string
+          expense_instance_id: string
+          id: string
+          original_period_id: string
+          reason_deferred: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+        }
+        Insert: {
+          amount: number
+          applied_to_period_id?: string | null
+          created_at?: string
+          driver_user_id: string
+          expense_instance_id: string
+          id?: string
+          original_period_id: string
+          reason_deferred?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Update: {
+          amount?: number
+          applied_to_period_id?: string | null
+          created_at?: string
+          driver_user_id?: string
+          expense_instance_id?: string
+          id?: string
+          original_period_id?: string
+          reason_deferred?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pending_expenses_applied_to_period_id_fkey"
+            columns: ["applied_to_period_id"]
+            isOneToOne: false
+            referencedRelation: "payment_periods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_expenses_expense_instance_id_fkey"
+            columns: ["expense_instance_id"]
+            isOneToOne: false
+            referencedRelation: "expense_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_expenses_original_period_id_fkey"
+            columns: ["original_period_id"]
+            isOneToOne: false
+            referencedRelation: "payment_periods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -471,6 +742,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      recurring_expense_templates: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          driver_user_id: string
+          end_date: string | null
+          expense_type_id: string
+          frequency: string
+          id: string
+          is_active: boolean
+          month_week: number | null
+          notes: string | null
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          driver_user_id: string
+          end_date?: string | null
+          expense_type_id: string
+          frequency: string
+          id?: string
+          is_active?: boolean
+          month_week?: number | null
+          notes?: string | null
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          driver_user_id?: string
+          end_date?: string | null
+          expense_type_id?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          month_week?: number | null
+          notes?: string | null
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_expense_templates_expense_type_id_fkey"
+            columns: ["expense_type_id"]
+            isOneToOne: false
+            referencedRelation: "expense_types"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       state_cities: {
         Row: {
