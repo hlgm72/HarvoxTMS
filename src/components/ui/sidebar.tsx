@@ -222,9 +222,11 @@ const Sidebar = React.forwardRef<
         {/* This is what handles the sidebar gap on desktop */}
         <div
           className={cn(
-            "duration-200 relative h-svh bg-transparent transition-[width] ease-linear",
+            "duration-200 relative h-svh transition-[width] ease-linear",
             "group-data-[collapsible=offcanvas]:w-0",
-            "group-data-[side=right]:rotate-180"
+            "group-data-[side=right]:rotate-180",
+            // Debug color para ver el spacer
+            "bg-red-200 opacity-50"
           )}
           style={{
             width: state === "collapsed" && collapsible === "icon" 
