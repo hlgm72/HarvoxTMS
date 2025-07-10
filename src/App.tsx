@@ -15,6 +15,7 @@ import OperationsManagerDashboard from "./pages/dashboard/OperationsManagerDashb
 import DispatcherDashboard from "./pages/dashboard/DispatcherDashboard";
 import DriverDashboard from "./pages/dashboard/DriverDashboard";
 import Landing from "./pages/Landing";
+import Drivers from "./pages/Drivers";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/layout/Layout";
 import { NotificationProvider } from "./components/notifications";
@@ -112,9 +113,7 @@ const App = () => (
             path="/drivers" 
             element={
               <ProtectedRoute>
-                <Layout>
-                  <div>Drivers page coming soon</div>
-                </Layout>
+                <Drivers />
               </ProtectedRoute>
             } 
           />
