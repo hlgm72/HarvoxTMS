@@ -792,6 +792,53 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_methods: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          method_type: string
+          name: string
+          requires_reference: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          method_type?: string
+          name: string
+          requires_reference?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          method_type?: string
+          name?: string
+          requires_reference?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_methods_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_periods: {
         Row: {
           balance_alert_message: string | null
@@ -869,6 +916,75 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      payment_reports: {
+        Row: {
+          amount: number
+          attachments: Json | null
+          created_at: string
+          id: string
+          notes: string | null
+          payment_method_id: string
+          payment_period_id: string
+          reference_number: string | null
+          reported_at: string
+          reported_by: string
+          status: string
+          transaction_date: string
+          updated_at: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          amount: number
+          attachments?: Json | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_method_id: string
+          payment_period_id: string
+          reference_number?: string | null
+          reported_at?: string
+          reported_by: string
+          status?: string
+          transaction_date?: string
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          amount?: number
+          attachments?: Json | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_method_id?: string
+          payment_period_id?: string
+          reference_number?: string | null
+          reported_at?: string
+          reported_by?: string
+          status?: string
+          transaction_date?: string
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_reports_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_reports_payment_period_id_fkey"
+            columns: ["payment_period_id"]
+            isOneToOne: false
+            referencedRelation: "payment_periods"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pending_expenses: {
         Row: {
@@ -1305,6 +1421,16 @@ export type Database = {
       needs_initial_setup: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      report_payment_and_lock: {
+        Args: {
+          period_id: string
+          method_id: string
+          amount_paid: number
+          reference_num?: string
+          payment_notes?: string
+        }
+        Returns: Json
       }
     }
     Enums: {

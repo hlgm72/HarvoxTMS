@@ -8,6 +8,7 @@ import Setup from "./pages/Setup";
 import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
+import PaymentSystem from "./pages/PaymentSystem";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { NotificationProvider } from "./components/notifications";
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/billing" element={<div>Billing page coming soon</div>} />
           <Route path="/reports" element={<div>Reports page coming soon</div>} />
           <Route path="/documents" element={<div>Documents page coming soon</div>} />
+          <Route path="/payment-system" element={<PaymentSystem />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
