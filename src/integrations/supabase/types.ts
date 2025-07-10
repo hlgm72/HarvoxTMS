@@ -1379,6 +1379,30 @@ export type Database = {
         }
         Relationships: []
       }
+      system_stats: {
+        Row: {
+          created_at: string | null
+          id: string
+          stat_type: string
+          stat_value: Json
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          stat_type: string
+          stat_value: Json
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          stat_type?: string
+          stat_value?: Json
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       user_company_roles: {
         Row: {
           company_id: string
@@ -1590,8 +1614,18 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_real_companies: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+        }[]
+      }
       is_period_locked: {
         Args: { period_id: string }
+        Returns: boolean
+      }
+      is_superadmin: {
+        Args: { user_id_param?: string }
         Returns: boolean
       }
       lock_payment_period: {
