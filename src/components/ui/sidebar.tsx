@@ -224,10 +224,10 @@ const Sidebar = React.forwardRef<
           className="duration-200 relative h-svh transition-[width] ease-linear bg-transparent"
           style={{
             width: state === "collapsed" && collapsible === "icon" 
-              ? "64px" 
+              ? "56px" 
               : "18rem",
             minWidth: state === "collapsed" && collapsible === "icon" 
-              ? "64px" 
+              ? "56px" 
               : "18rem"
           }}
           data-state={state}
