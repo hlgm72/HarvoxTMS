@@ -226,11 +226,12 @@ const Sidebar = React.forwardRef<
             "w-[--sidebar-width]",
             "group-data-[collapsible=offcanvas]:w-0",
             "group-data-[side=right]:rotate-180",
-            // Forzar el ancho cuando está colapsado
+            // Cuando está colapsado, usar el ancho del ícono
             "group-data-[state=collapsed]:w-[--sidebar-width-icon]",
+            // Para variant floating/inset, agregar padding
             variant === "floating" || variant === "inset"
-              ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
-              : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
+              ? "group-data-[state=collapsed]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
+              : ""
           )}
         />
         <div
