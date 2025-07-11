@@ -36,11 +36,15 @@ export const useAuth = () => {
     }
 
     try {
+      console.log('Fetching roles for user:', userId);
+      
       const { data, error } = await supabase
         .from('user_company_roles')
         .select('id, role, company_id, is_active')
         .eq('user_id', userId)
         .eq('is_active', true);
+
+      console.log('User roles query result:', { data, error });
 
       if (error) {
         console.error('Error fetching user roles:', error);
