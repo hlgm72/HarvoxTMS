@@ -53,8 +53,8 @@ export default function AuthCallback() {
             console.log('OAuth: Redirecting to dashboard');
             navigate('/dashboard');
           } else {
-            console.log('OAuth: No role found, redirecting to setup');
-            navigate('/setup');
+            console.log('OAuth: No role found, redirecting to main page');
+            navigate('/');
           }
         } else {
           // No session found, redirect to auth

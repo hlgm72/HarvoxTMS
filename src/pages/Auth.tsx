@@ -351,8 +351,8 @@ export default function Auth() {
             console.log('Redirecting to superadmin dashboard');
             navigate('/superadmin');
           } else {
-            console.log('Redirecting to setup page');
-            navigate('/setup');
+            console.log('Redirecting to main dashboard');
+            navigate('/');
           }
         }
       } else {
@@ -361,7 +361,7 @@ export default function Auth() {
           email: formData.email,
           password: formData.password,
           options: {
-            emailRedirectTo: `${window.location.origin}/setup`,
+            emailRedirectTo: `${window.location.origin}/`,
             data: {
               first_name: formData.firstName,
               last_name: formData.lastName,

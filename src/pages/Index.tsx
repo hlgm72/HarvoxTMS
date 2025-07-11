@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
 import Dashboard from './Dashboard';
 
@@ -42,26 +41,6 @@ export default function Index() {
     }
   }, [loading, user, userRole, navigate, isSuperAdmin, isCompanyOwner, isOperationsManager, isDispatcher, isDriver]);
 
-  const checkIfNeedsSetup = async () => {
-    try {
-      const { data, error } = await supabase.rpc('needs_initial_setup');
-      
-      if (error) {
-        console.error('Error checking setup status:', error);
-        return;
-      }
-      
-      // Solo redirigir a setup si realmente necesita configuración inicial
-      if (data === true) {
-        navigate('/setup');
-      } else {
-        // Si no necesita setup pero no tiene rol, mostrar error o redirigir a perfil
-        navigate('/profile');
-      }
-    } catch (err) {
-      console.error('Setup check error:', err);
-    }
-  };
 
   // Show loading while determining user role
   if (loading) {
