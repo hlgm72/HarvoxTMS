@@ -158,6 +158,13 @@ export function CompanyLogoUpload({
                 src={currentLogoUrl} 
                 alt={`Logo de ${companyName}`}
                 className="w-full h-full object-contain"
+                onError={(e) => {
+                  console.error('Error loading logo image:', currentLogoUrl);
+                  console.error('Image error event:', e);
+                }}
+                onLoad={() => {
+                  console.log('Logo image loaded successfully:', currentLogoUrl);
+                }}
               />
             ) : (
               <Building className="h-8 w-8 text-gray-400" />
