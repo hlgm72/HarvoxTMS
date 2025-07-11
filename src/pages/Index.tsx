@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
 import Dashboard from './Dashboard';
 
@@ -18,8 +19,15 @@ export default function Index() {
   } = useAuth();
 
   useEffect(() => {
-    if (!loading && user && userRole) {
-      // Redirect to appropriate dashboard based on role
+    if (!loading && user) {
+      // Si el usuario está autenticado pero no tiene rol asignado
+      if (!userRole) {
+        // Verificar si el sistema necesita setup inicial
+        checkIfNeedsSetup();
+        return;
+      }
+      
+      // Redirigir según el rol del usuario
       if (isSuperAdmin) {
         navigate('/superadmin');
       } else if (isCompanyOwner) {
@@ -30,12 +38,30 @@ export default function Index() {
         navigate('/dashboard/dispatch');
       } else if (isDriver) {
         navigate('/dashboard/driver');
-      } else {
-        // No role assigned, redirect to setup
-        navigate('/setup');
       }
     }
   }, [loading, user, userRole, navigate, isSuperAdmin, isCompanyOwner, isOperationsManager, isDispatcher, isDriver]);
+
+  const checkIfNeedsSetup = async () => {
+    try {
+      const { data, error } = await supabase.rpc('needs_initial_setup');
+      
+      if (error) {
+        console.error('Error checking setup status:', error);
+        return;
+      }
+      
+      // Solo redirigir a setup si realmente necesita configuración inicial
+      if (data === true) {
+        navigate('/setup');
+      } else {
+        // Si no necesita setup pero no tiene rol, mostrar error o redirigir a perfil
+        navigate('/profile');
+      }
+    } catch (err) {
+      console.error('Setup check error:', err);
+    }
+  };
 
   // Show loading while determining user role
   if (loading) {
