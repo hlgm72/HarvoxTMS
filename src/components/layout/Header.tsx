@@ -33,12 +33,6 @@ export function Header() {
 
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
-          <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-            + {t('fleet:loads.new_load', '+ Nueva Carga')}
-          </Button>
-          <Button size="sm" className="bg-gradient-fleet text-white shadow-fleet">
-            🚨 {t('fleet:actions.quick_dispatch', 'Despacho Rápido')}
-          </Button>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
