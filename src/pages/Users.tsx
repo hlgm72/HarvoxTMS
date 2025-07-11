@@ -31,7 +31,10 @@ import {
 import { UserPlus, Mail, Shield, Edit, Trash2, Users as UsersIcon, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
+
+type UserRole = Database["public"]["Enums"]["user_role"];
 
 interface User {
   id: string;
@@ -53,8 +56,10 @@ interface InviteUserForm {
 const ROLE_OPTIONS = [
   { value: 'driver', label: 'Conductor' },
   { value: 'dispatcher', label: 'Despachador' },
-  { value: 'operations_manager', label: 'Gerente de Operaciones' },
+  { value: 'senior_dispatcher', label: 'Despachador Senior' },
   { value: 'safety_manager', label: 'Gerente de Seguridad' },
+  { value: 'operations_manager', label: 'Gerente de Operaciones' },
+  { value: 'general_manager', label: 'Gerente General' },
 ];
 
 export default function Users() {
@@ -72,6 +77,8 @@ export default function Users() {
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [editingRoles, setEditingRoles] = useState<string[]>([]);
+  const [updatingRoles, setUpdatingRoles] = useState(false);
 
   // Cargar usuarios al montar el componente
   useEffect(() => {
@@ -263,7 +270,95 @@ export default function Users() {
 
   const handleEditUser = (user: User) => {
     setSelectedUser(user);
+    // Extraer roles actuales del usuario
+    const currentRoles = user.role.split(', ').map((roleLabel) => {
+      const originalRole = Object.entries({
+        'superadmin': 'Super Admin',
+        'company_owner': 'Propietario',
+        'general_manager': 'Gerente General', 
+        'operations_manager': 'Gerente de Operaciones',
+        'safety_manager': 'Gerente de Seguridad',
+        'senior_dispatcher': 'Despachador Senior',
+        'dispatcher': 'Despachador',
+        'driver': 'Conductor',
+      }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+      
+      return originalRole;
+    });
+    setEditingRoles(currentRoles);
     setEditDialogOpen(true);
+  };
+
+  const handleRoleToggle = (roleValue: string) => {
+    setEditingRoles(prev => 
+      prev.includes(roleValue) 
+        ? prev.filter(r => r !== roleValue)
+        : [...prev, roleValue]
+    );
+  };
+
+  const handleSaveRoles = async () => {
+    if (!selectedUser || !userRole?.company_id) return;
+    
+    setUpdatingRoles(true);
+    try {
+      // Obtener roles actuales del usuario
+      const { data: currentRoles, error: fetchError } = await supabase
+        .from('user_company_roles')
+        .select('role')
+        .eq('user_id', selectedUser.id)
+        .eq('company_id', userRole.company_id)
+        .eq('is_active', true);
+
+      if (fetchError) throw fetchError;
+
+      const currentRoleValues = currentRoles?.map(r => r.role) || [];
+      
+      // Identificar roles a remover y agregar
+      const rolesToRemove = currentRoleValues.filter(role => !editingRoles.includes(role));
+      const rolesToAdd = editingRoles.filter(role => !currentRoleValues.includes(role as UserRole));
+
+      // Remover roles
+      if (rolesToRemove.length > 0) {
+        const { error: removeError } = await supabase
+          .from('user_company_roles')
+          .update({ is_active: false })
+          .eq('user_id', selectedUser.id)
+          .eq('company_id', userRole.company_id)
+          .in('role', rolesToRemove);
+
+        if (removeError) throw removeError;
+      }
+
+      // Agregar nuevos roles
+      if (rolesToAdd.length > 0) {
+        const newRoles = rolesToAdd.map(role => ({
+          user_id: selectedUser.id,
+          company_id: userRole.company_id,
+          role: role as UserRole,
+          is_active: true
+        }));
+
+        const { error: insertError } = await supabase
+          .from('user_company_roles')
+          .upsert(newRoles, {
+            onConflict: 'user_id,company_id,role',
+            ignoreDuplicates: false
+          });
+
+        if (insertError) throw insertError;
+      }
+
+      toast.success('Roles actualizados exitosamente');
+      setEditDialogOpen(false);
+      fetchUsers(); // Recargar la lista
+      
+    } catch (error: any) {
+      console.error('Error updating roles:', error);
+      toast.error(error.message || 'Error al actualizar roles');
+    } finally {
+      setUpdatingRoles(false);
+    }
   };
 
   return (
@@ -465,35 +560,48 @@ export default function Users() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="edit_first_name">Nombre</Label>
-                  <Input
-                    id="edit_first_name"
-                    defaultValue={selectedUser.first_name || ''}
-                    placeholder="Nombre"
-                  />
+                  <Label>Nombre</Label>
+                  <p className="text-sm font-medium">{selectedUser.first_name || 'N/A'}</p>
                 </div>
                 <div>
-                  <Label htmlFor="edit_last_name">Apellido</Label>
-                  <Input
-                    id="edit_last_name"
-                    defaultValue={selectedUser.last_name || ''}
-                    placeholder="Apellido"
-                  />
+                  <Label>Apellido</Label>
+                  <p className="text-sm font-medium">{selectedUser.last_name || 'N/A'}</p>
                 </div>
               </div>
               
               <div>
-                <Label htmlFor="edit_email">Email</Label>
-                <Input
-                  id="edit_email"
-                  type="email"
-                  defaultValue={selectedUser.email}
-                  placeholder="usuario@ejemplo.com"
-                  disabled
-                  className="bg-muted"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  El email no se puede modificar desde aquí
+                <Label>Email</Label>
+                <p className="text-sm font-medium">{selectedUser.email}</p>
+              </div>
+              
+              <div>
+                <Label>Roles Asignados</Label>
+                <div className="space-y-2 mt-2">
+                  {ROLE_OPTIONS.map((roleOption) => (
+                    <div key={roleOption.value} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={`role-${roleOption.value}`}
+                        checked={editingRoles.includes(roleOption.value)}
+                        onChange={() => handleRoleToggle(roleOption.value)}
+                        className="rounded border-border"
+                        disabled={updatingRoles}
+                      />
+                      <Label 
+                        htmlFor={`role-${roleOption.value}`}
+                        className="text-sm font-normal cursor-pointer"
+                      >
+                        <Badge 
+                          className={`text-xs ${getRoleBadgeColor(roleOption.value)} ml-2`}
+                        >
+                          {roleOption.label}
+                        </Badge>
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Selecciona los roles que deseas asignar a este usuario
                 </p>
               </div>
               
@@ -503,13 +611,18 @@ export default function Users() {
               </div>
               
               <div className="flex gap-2 pt-4">
-                <Button className="flex-1">
-                  Guardar Cambios
+                <Button 
+                  onClick={handleSaveRoles}
+                  disabled={updatingRoles || editingRoles.length === 0}
+                  className="flex-1"
+                >
+                  {updatingRoles ? 'Guardando...' : 'Guardar Roles'}
                 </Button>
                 <Button 
                   type="button" 
                   variant="outline" 
                   onClick={() => setEditDialogOpen(false)}
+                  disabled={updatingRoles}
                 >
                   Cancelar
                 </Button>
