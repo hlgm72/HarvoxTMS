@@ -153,27 +153,45 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-6 bg-white shadow-sm border">
-          <TabsTrigger value="company" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="company" 
+            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+          >
             <Building className="h-4 w-4" />
             Empresa
           </TabsTrigger>
-          <TabsTrigger value="documentation" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="documentation" 
+            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+          >
             <FileText className="h-4 w-4" />
             Documentación
           </TabsTrigger>
-          <TabsTrigger value="contact" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="contact" 
+            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+          >
             <MapPin className="h-4 w-4" />
             Ubicación
           </TabsTrigger>
-          <TabsTrigger value="owner" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="owner" 
+            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+          >
             <User className="h-4 w-4" />
             Propietario
           </TabsTrigger>
-          <TabsTrigger value="payments" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="payments" 
+            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+          >
             <CreditCard className="h-4 w-4" />
             Pagos
           </TabsTrigger>
-          <TabsTrigger value="system" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="system" 
+            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+          >
             <Settings className="h-4 w-4" />
             Sistema
           </TabsTrigger>
