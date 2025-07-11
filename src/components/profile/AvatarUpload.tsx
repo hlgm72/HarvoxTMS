@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Camera, Loader2, User, X } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications/NotificationProvider';
 
 interface AvatarUploadProps {
   currentAvatarUrl?: string | null;
@@ -16,7 +16,7 @@ interface AvatarUploadProps {
 export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: AvatarUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [removing, setRemoving] = useState(false);
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
 
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -27,21 +27,13 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
 
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        toast({
-          title: 'Error',
-          description: 'Por favor selecciona un archivo de imagen válido',
-          variant: 'destructive',
-        });
+        showError('Error', 'Por favor selecciona un archivo de imagen válido');
         return;
       }
 
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: 'Error',
-          description: 'El archivo es demasiado grande. Máximo 5MB',
-          variant: 'destructive',
-        });
+        showError('Error', 'El archivo es demasiado grande. Máximo 5MB');
         return;
       }
 
@@ -83,18 +75,11 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
 
       onAvatarUpdate(publicUrl);
       
-      toast({
-        title: 'Éxito',
-        description: 'Avatar actualizado correctamente',
-      });
+      showSuccess('Éxito', 'Avatar actualizado correctamente');
 
     } catch (error: any) {
       console.error('Error uploading avatar:', error);
-      toast({
-        title: 'Error',
-        description: 'Error al subir el avatar: ' + error.message,
-        variant: 'destructive',
-      });
+      showError('Error', 'Error al subir el avatar: ' + error.message);
     } finally {
       setUploading(false);
       // Reset input
@@ -129,18 +114,11 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
 
       onAvatarUpdate(null);
       
-      toast({
-        title: 'Éxito',
-        description: 'Avatar eliminado correctamente',
-      });
+      showSuccess('Éxito', 'Avatar eliminado correctamente');
 
     } catch (error: any) {
       console.error('Error removing avatar:', error);
-      toast({
-        title: 'Error',
-        description: 'Error al eliminar el avatar: ' + error.message,
-        variant: 'destructive',
-      });
+      showError('Error', 'Error al eliminar el avatar: ' + error.message);
     } finally {
       setRemoving(false);
     }
