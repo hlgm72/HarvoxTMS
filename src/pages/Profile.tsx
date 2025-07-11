@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
-import { User, Settings, Save, KeyRound } from 'lucide-react';
+import { User, Settings, Save, KeyRound, CheckCircle, AlertCircle, RotateCcw, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { createTextHandlers } from '@/lib/textUtils';
 
@@ -117,12 +117,13 @@ export default function Profile() {
       await refreshProfile();
 
       toast({
-        title: "Perfil actualizado exitosamente",
+        title: "✅ Perfil actualizado exitosamente",
         description: "Su información personal ha sido guardada correctamente.",
+        variant: "success",
       });
     } catch (error: any) {
       toast({
-        title: "Error en la actualización",
+        title: "❌ Error en la actualización",
         description: error.message || "No se ha podido completar la actualización del perfil. Por favor, inténtelo nuevamente.",
         variant: "destructive",
       });
@@ -141,7 +142,7 @@ export default function Profile() {
         timezone: profile.timezone || 'America/New_York',
       });
       toast({
-        title: "Cambios descartados",
+        title: "🔄 Cambios descartados",
         description: "Los valores originales han sido restaurados correctamente.",
       });
     }
@@ -154,7 +155,7 @@ export default function Profile() {
       confirmPassword: '',
     });
     toast({
-      title: "Campos limpiados",
+      title: "🗑️ Campos limpiados",
       description: "Los campos de contraseña han sido reiniciados correctamente.",
     });
   };
@@ -180,14 +181,15 @@ export default function Profile() {
       if (updateError) throw updateError;
 
       toast({
-        title: "Contraseña actualizada exitosamente",
+        title: "🔐 Contraseña actualizada exitosamente",
         description: "Su contraseña ha sido modificada de manera segura.",
+        variant: "success",
       });
 
       passwordForm.reset();
     } catch (error: any) {
       toast({
-        title: "Error al cambiar contraseña",
+        title: "❌ Error al cambiar contraseña",
         description: error.message || "No se ha podido completar el cambio de contraseña. Por favor, verifique la información e inténtelo nuevamente.",
         variant: "destructive",
       });
