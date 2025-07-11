@@ -132,7 +132,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           </TabsTrigger>
           <TabsTrigger value="contact" className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />
-            Contacto
+            Ubicación
           </TabsTrigger>
           <TabsTrigger value="owner" className="flex items-center gap-2">
             <User className="h-4 w-4" />
@@ -176,6 +176,27 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     placeholder="Ingresa el nombre de la empresa"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email || ''}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    placeholder="empresa@ejemplo.com"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Teléfono</Label>
+                  <Input
+                    id="phone"
+                    value={formData.phone || ''}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    placeholder="(XXX) XXX-XXXX"
                   />
                 </div>
               </div>
@@ -228,47 +249,16 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           </Card>
         </TabsContent>
 
-        {/* Información de Contacto y Ubicación */}
+        {/* Ubicación */}
         <TabsContent value="contact">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-primary" />
-                Contacto y Ubicación
+                Ubicación
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <h4 className="font-semibold flex items-center gap-2">
-                  <Phone className="h-4 w-4" />
-                  Información de Contacto
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email || ''}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      placeholder="empresa@ejemplo.com"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Teléfono</Label>
-                    <Input
-                      id="phone"
-                      value={formData.phone || ''}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                      placeholder="(XXX) XXX-XXXX"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
               <div className="space-y-4">
                 <h4 className="font-semibold flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
