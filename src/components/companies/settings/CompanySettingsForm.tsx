@@ -29,6 +29,11 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
   const [activeTab, setActiveTab] = useState('company');
   const { showSuccess, showError } = useFleetNotifications();
 
+  // Sync formData with company prop changes (e.g., logo updates)
+  useEffect(() => {
+    setFormData(company);
+  }, [company]);
+
   // Create text handlers for all company fields
   const companyNameHandlers = createTextHandlers((value: string) => handleInputChange('name', value));
   const companyEmailHandlers = createTextHandlers((value: string) => handleInputChange('email', value), 'email');
