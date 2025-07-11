@@ -10,7 +10,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
+
+import { useFleetNotifications } from '@/components/notifications';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Settings, Save, KeyRound, CheckCircle, AlertCircle, RotateCcw, Trash2 } from 'lucide-react';
@@ -39,7 +40,7 @@ type PasswordFormData = z.infer<typeof passwordSchema>;
 
 export default function Profile() {
   const { t, i18n } = useTranslation(['common']);
-  const { toast } = useToast();
+  const { showSuccess, showError, showInfo } = useFleetNotifications();
   const { profile, loading, user, getUserInitials, refreshProfile } = useUserProfile();
   const [updating, setUpdating] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
@@ -116,17 +117,15 @@ export default function Profile() {
       // Refresh profile data to update the UI
       await refreshProfile();
 
-      toast({
-        title: "✅ Perfil actualizado exitosamente",
-        description: "Su información personal ha sido guardada correctamente.",
-        variant: "success",
-      });
+      showSuccess(
+        "Perfil actualizado exitosamente",
+        "Su información personal ha sido guardada correctamente."
+      );
     } catch (error: any) {
-      toast({
-        title: "❌ Error en la actualización",
-        description: error.message || "No se ha podido completar la actualización del perfil. Por favor, inténtelo nuevamente.",
-        variant: "destructive",
-      });
+      showError(
+        "Error en la actualización",
+        error.message || "No se ha podido completar la actualización del perfil. Por favor, inténtelo nuevamente."
+      );
     } finally {
       setUpdating(false);
     }
@@ -141,10 +140,10 @@ export default function Profile() {
         preferred_language: profile.preferred_language || 'en',
         timezone: profile.timezone || 'America/New_York',
       });
-      toast({
-        title: "🔄 Cambios descartados",
-        description: "Los valores originales han sido restaurados correctamente.",
-      });
+      showInfo(
+        "Cambios descartados",
+        "Los valores originales han sido restaurados correctamente."
+      );
     }
   };
 
@@ -154,10 +153,10 @@ export default function Profile() {
       newPassword: '',
       confirmPassword: '',
     });
-    toast({
-      title: "🗑️ Campos limpiados",
-      description: "Los campos de contraseña han sido reiniciados correctamente.",
-    });
+    showInfo(
+      "Campos limpiados",
+      "Los campos de contraseña han sido reiniciados correctamente."
+    );
   };
 
   const onSubmitPassword = async (data: PasswordFormData) => {
@@ -180,19 +179,17 @@ export default function Profile() {
 
       if (updateError) throw updateError;
 
-      toast({
-        title: "🔐 Contraseña actualizada exitosamente",
-        description: "Su contraseña ha sido modificada de manera segura.",
-        variant: "success",
-      });
+      showSuccess(
+        "Contraseña actualizada exitosamente",
+        "Su contraseña ha sido modificada de manera segura."
+      );
 
       passwordForm.reset();
     } catch (error: any) {
-      toast({
-        title: "❌ Error al cambiar contraseña",
-        description: error.message || "No se ha podido completar el cambio de contraseña. Por favor, verifique la información e inténtelo nuevamente.",
-        variant: "destructive",
-      });
+      showError(
+        "Error al cambiar contraseña",
+        error.message || "No se ha podido completar el cambio de contraseña. Por favor, verifique la información e inténtelo nuevamente."
+      );
     } finally {
       setChangingPassword(false);
     }
