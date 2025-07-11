@@ -13,6 +13,7 @@ import PaymentSystem from "./pages/PaymentSystem";
 import Invitation from "./pages/Invitation";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
+import Users from "./pages/Users";
 import OwnerDashboard from "./pages/dashboard/OwnerDashboard";
 import OperationsManagerDashboard from "./pages/dashboard/OperationsManagerDashboard";
 import DispatcherDashboard from "./pages/dashboard/DispatcherDashboard";
@@ -212,6 +213,17 @@ function AppContent() {
             <ProtectedRoute>
               <Layout>
                 <PaymentSystem />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/users" 
+          element={
+            <ProtectedRoute requiredRole="company_owner">
+              <Layout>
+                <Users />
               </Layout>
             </ProtectedRoute>
           } 
