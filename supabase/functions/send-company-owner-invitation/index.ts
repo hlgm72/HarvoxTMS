@@ -95,7 +95,13 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send invitation email using Resend
     const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-    const invitationUrl = `https://fleetnest-dev-app.lovable.app/invitation/${invitationToken}`;
+    
+    // Get the frontend URL from environment or use the referer header
+    const refererHeader = req.headers.get("referer") || "";
+    const frontendUrl = Deno.env.get("FRONTEND_URL") || 
+                       (refererHeader ? new URL(refererHeader).origin : "http://localhost:3000");
+    
+    const invitationUrl = `${frontendUrl}/invitation/${invitationToken}`;
     
     try {
       const emailResponse = await resend.emails.send({
