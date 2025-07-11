@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useFleetNotifications } from '@/components/notifications';
 import { CompanySettingsForm } from '@/components/companies/settings/CompanySettingsForm';
+import { SelfRoleManager } from '@/components/owner/SelfRoleManager';
 import { Company } from '@/types/company';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
@@ -289,7 +290,11 @@ export default function Settings() {
 
           {/* Mi Perfil */}
           <TabsContent value="profile">
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-6">
+              {/* Self Role Manager - Only for Company Owners */}
+              <SelfRoleManager />
+              
+              <div className="grid gap-6 md:grid-cols-3">
               {/* Profile Summary Card */}
               <Card className="md:col-span-1">
                 <CardHeader className="text-center">
@@ -582,6 +587,7 @@ export default function Settings() {
                   </CardContent>
                 </Tabs>
               </Card>
+              </div>
             </div>
           </TabsContent>
 

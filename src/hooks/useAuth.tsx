@@ -6,12 +6,14 @@ interface UserRole {
   role: string;
   company_id: string;
   is_active: boolean;
+  id: string;
 }
 
 interface AuthState {
   user: User | null;
   session: Session | null;
-  userRole: UserRole | null;
+  userRoles: UserRole[];
+  currentRole: UserRole | null;
   loading: boolean;
 }
 
@@ -19,41 +21,71 @@ export const useAuth = () => {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     session: null,
-    userRole: null,
+    userRoles: [],
+    currentRole: null,
     loading: true,
   });
 
   // Cache for user roles to avoid redundant queries
-  const roleCache = new Map<string, UserRole | null>();
+  const rolesCache = new Map<string, UserRole[]>();
 
-  const fetchUserRole = async (userId: string) => {
+  const fetchUserRoles = async (userId: string) => {
     // Check cache first
-    if (roleCache.has(userId)) {
-      return roleCache.get(userId);
+    if (rolesCache.has(userId)) {
+      return rolesCache.get(userId) || [];
     }
 
     try {
       const { data, error } = await supabase
         .from('user_company_roles')
-        .select('role, company_id, is_active')
+        .select('id, role, company_id, is_active')
         .eq('user_id', userId)
-        .eq('is_active', true)
-        .single();
+        .eq('is_active', true);
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching user role:', error);
-        roleCache.set(userId, null);
-        return null;
+      if (error) {
+        console.error('Error fetching user roles:', error);
+        rolesCache.set(userId, []);
+        return [];
       }
 
       // Cache the result
-      roleCache.set(userId, data);
-      return data;
+      const roles = data || [];
+      rolesCache.set(userId, roles);
+      return roles;
     } catch (error) {
-      console.error('Error fetching user role:', error);
-      roleCache.set(userId, null);
-      return null;
+      console.error('Error fetching user roles:', error);
+      rolesCache.set(userId, []);
+      return [];
     }
+  };
+
+  const switchRole = (role: UserRole) => {
+    setAuthState(prev => ({
+      ...prev,
+      currentRole: role,
+    }));
+    
+    // Store current role in localStorage for persistence
+    localStorage.setItem('currentRole', JSON.stringify(role));
+  };
+
+  const getCurrentRoleFromStorage = (roles: UserRole[]): UserRole | null => {
+    try {
+      const stored = localStorage.getItem('currentRole');
+      if (stored) {
+        const storedRole = JSON.parse(stored);
+        // Verify the stored role is still valid
+        const validRole = roles.find(r => 
+          r.id === storedRole.id && 
+          r.role === storedRole.role && 
+          r.company_id === storedRole.company_id
+        );
+        return validRole || null;
+      }
+    } catch (error) {
+      console.error('Error reading stored role:', error);
+    }
+    return null;
   };
 
   useEffect(() => {
@@ -69,21 +101,35 @@ export const useAuth = () => {
       }));
 
       if (session?.user) {
-        const role = await fetchUserRole(session.user.id);
+        const roles = await fetchUserRoles(session.user.id);
         if (isMounted) {
+          // Try to get current role from storage first
+          const storedRole = getCurrentRoleFromStorage(roles);
+          // If no stored role or stored role is invalid, use first available role
+          const currentRole = storedRole || (roles.length > 0 ? roles[0] : null);
+          
           setAuthState(prev => ({
             ...prev,
-            userRole: role,
+            userRoles: roles,
+            currentRole,
             loading: false,
           }));
+
+          // Update stored role if we selected a different one
+          if (currentRole && (!storedRole || storedRole.id !== currentRole.id)) {
+            localStorage.setItem('currentRole', JSON.stringify(currentRole));
+          }
         }
       } else {
         if (isMounted) {
           setAuthState(prev => ({
             ...prev,
-            userRole: null,
+            userRoles: [],
+            currentRole: null,
             loading: false,
           }));
+          // Clear stored role
+          localStorage.removeItem('currentRole');
         }
       }
     };
@@ -109,6 +155,7 @@ export const useAuth = () => {
 
   const signOut = async () => {
     try {
+      localStorage.removeItem('currentRole');
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (error) {
@@ -116,14 +163,39 @@ export const useAuth = () => {
     }
   };
 
+  const refreshRoles = async () => {
+    if (authState.user) {
+      const roles = await fetchUserRoles(authState.user.id);
+      const currentRole = getCurrentRoleFromStorage(roles) || (roles.length > 0 ? roles[0] : null);
+      
+      setAuthState(prev => ({
+        ...prev,
+        userRoles: roles,
+        currentRole,
+      }));
+    }
+  };
+
   return {
     ...authState,
     signOut,
+    switchRole,
+    refreshRoles,
+    // Backwards compatibility
+    userRole: authState.currentRole,
+    // New properties
     isAuthenticated: !!authState.user,
-    isSuperAdmin: authState.userRole?.role === 'superadmin',
-    isCompanyOwner: authState.userRole?.role === 'company_owner',
-    isOperationsManager: authState.userRole?.role === 'operations_manager',
-    isDispatcher: authState.userRole?.role === 'dispatcher',
-    isDriver: authState.userRole?.role === 'driver',
+    isSuperAdmin: authState.currentRole?.role === 'superadmin',
+    isCompanyOwner: authState.currentRole?.role === 'company_owner',
+    isOperationsManager: authState.currentRole?.role === 'operations_manager',
+    isDispatcher: authState.currentRole?.role === 'dispatcher',
+    isDriver: authState.currentRole?.role === 'driver',
+    isSafetyManager: authState.currentRole?.role === 'safety_manager',
+    isGeneralManager: authState.currentRole?.role === 'general_manager',
+    isSeniorDispatcher: authState.currentRole?.role === 'senior_dispatcher',
+    // Helper functions
+    hasRole: (role: string) => authState.userRoles.some(r => r.role === role),
+    hasMultipleRoles: authState.userRoles.length > 1,
+    availableRoles: authState.userRoles,
   };
 };
