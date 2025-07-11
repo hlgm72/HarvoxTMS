@@ -144,12 +144,26 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
           </AvatarFallback>
         </Avatar>
         
-        {/* Upload overlay - now clickeable */}
-        <Label htmlFor="avatar-upload" className="cursor-pointer">
-          <div className="absolute inset-0 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <Camera className="h-6 w-6 text-white" />
+        {/* Loading overlay when processing */}
+        {(uploading || removing) && (
+          <div className="absolute inset-0 bg-black/80 rounded-full flex items-center justify-center">
+            <div className="flex flex-col items-center space-y-2">
+              <Loader2 className="h-6 w-6 text-white animate-spin" />
+              <span className="text-xs text-white font-medium">
+                {uploading ? 'Subiendo...' : 'Eliminando...'}
+              </span>
+            </div>
           </div>
-        </Label>
+        )}
+        
+        {/* Upload overlay - only show when not processing */}
+        {!uploading && !removing && (
+          <Label htmlFor="avatar-upload" className="cursor-pointer">
+            <div className="absolute inset-0 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <Camera className="h-6 w-6 text-white" />
+            </div>
+          </Label>
+        )}
       </div>
 
       <div className="flex flex-col space-y-2">
