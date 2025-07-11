@@ -237,69 +237,86 @@ const driverNavigationItems = [
 
 // Función para obtener navegación traducida del superadmin
 const getSuperAdminNavigationItems = (t: any) => [
+  // Sección Principal
   { 
     title: t('admin:navigation.dashboard'), 
     url: "/superadmin", 
     icon: Command, 
     badge: "Admin",
     badgeVariant: "admin" as const,
-    description: t('admin:navigation.admin_panel')
+    description: t('admin:navigation.admin_panel'),
+    section: "main"
   },
   { 
     title: t('admin:navigation.companies'), 
     url: "/superadmin/companies", 
     icon: Building2,
-    description: t('admin:navigation.company_management')
+    description: t('admin:navigation.company_management'),
+    section: "main"
   },
   { 
     title: t('admin:navigation.users'), 
     url: "/superadmin/users", 
     icon: Users,
-    description: t('admin:navigation.system_users')
+    description: t('admin:navigation.system_users'),
+    section: "main"
   },
+  
+  // Sección Monitoreo
   { 
     title: t('admin:navigation.system_health'), 
     url: "/superadmin/health", 
     icon: Heart, 
     badge: "Live",
     badgeVariant: "live" as const,
-    description: t('admin:navigation.system_status')
+    description: t('admin:navigation.system_status'),
+    section: "monitoring"
   },
   { 
     title: t('admin:navigation.analytics'), 
     url: "/superadmin/analytics", 
     icon: TrendingUp,
-    description: t('admin:navigation.system_analytics')
-  },
-  { 
-    title: t('admin:navigation.billing_management'), 
-    url: "/superadmin/billing", 
-    icon: CreditCard,
-    description: t('admin:navigation.billing_management_desc')
-  },
-  { 
-    title: t('admin:navigation.support_tickets'), 
-    url: "/superadmin/support", 
-    icon: Headphones,
-    description: t('admin:navigation.support_management')
-  },
-  { 
-    title: t('admin:navigation.system_settings'), 
-    url: "/superadmin/settings", 
-    icon: Settings,
-    description: t('admin:navigation.system_configuration')
+    description: t('admin:navigation.system_analytics'),
+    section: "monitoring"
   },
   { 
     title: t('admin:navigation.api_logs'), 
     url: "/superadmin/logs", 
     icon: FileBarChart,
-    description: t('admin:navigation.api_logs_desc')
+    description: t('admin:navigation.api_logs_desc'),
+    section: "monitoring"
+  },
+  
+  // Sección Facturación y Soporte
+  { 
+    title: t('admin:navigation.billing_management'), 
+    url: "/superadmin/billing", 
+    icon: CreditCard,
+    description: t('admin:navigation.billing_management_desc'),
+    section: "business"
+  },
+  { 
+    title: t('admin:navigation.support_tickets'), 
+    url: "/superadmin/support", 
+    icon: Headphones,
+    description: t('admin:navigation.support_management'),
+    section: "business"
+  },
+  
+  // Sección Configuración y Seguridad
+  { 
+    title: t('admin:navigation.system_settings'), 
+    url: "/superadmin/settings", 
+    icon: Settings,
+    description: t('admin:navigation.system_configuration'),
+    section: "settings"
   },
   { 
     title: t('admin:navigation.backup_security'), 
     url: "/superadmin/security", 
     icon: Lock,
-    description: t('admin:navigation.security_backups')
+    description: t('admin:navigation.security_backups'),
+    section: "settings"
   },
 ];
 
@@ -442,85 +459,415 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="p-2">
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            {isSuperAdmin ? t('admin:navigation.system_management') : t('admin:navigation.navigation')}
-          </SidebarGroupLabel>
-          <Separator className="my-2 opacity-50" />
-          <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
-              {navigationItems.map((item) => {
-                const active = isActive(item.url);
-                const IconComponent = item.icon;
-                
-                return (
-                  <SidebarMenuItem key={item.title}>
-                     <SidebarMenuButton 
-                       asChild 
-                       isActive={active}
-                       tooltip={collapsed ? item.title : undefined}
-                     >
-                       <NavLink 
-                         to={item.url} 
-                         end 
-                         className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
-                           active 
-                             ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
-                             : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
-                         }`}
+        {isSuperAdmin ? (
+          // Para SuperAdmin: Renderizar por secciones con separadores
+          <>
+            {/* Sección Principal */}
+            <SidebarGroup>
+              <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                {t('admin:navigation.main_management')}
+              </SidebarGroupLabel>
+              <Separator className="my-2 opacity-50" />
+              <SidebarGroupContent>
+                <SidebarMenu className="space-y-1">
+                  {navigationItems.filter((item: any) => item.section === "main").map((item: any) => {
+                    const active = isActive(item.url);
+                    const IconComponent = item.icon;
+                    
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={active}
+                          tooltip={collapsed ? item.title : undefined}
+                        >
+                          <NavLink 
+                            to={item.url} 
+                            end 
+                            className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
+                              active 
+                                ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
+                                : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
+                            }`}
+                          >
+                           <div className={`p-2 rounded-lg transition-all duration-200 ${
+                             active 
+                               ? "bg-white/20" 
+                               : "bg-accent/30 group-hover:bg-accent/50"
+                           }`}>
+                             <IconComponent className={`h-4 w-4 ${
+                               active ? "text-white" : "text-foreground"
+                             }`} />
+                           </div>
+                           
+                           {!collapsed && (
+                             <div className="flex items-center justify-between flex-1 min-w-0">
+                               <div className="min-w-0">
+                                 <span className={`font-medium ${
+                                   active ? "text-white" : "text-foreground"
+                                 }`}>
+                                   {item.title}
+                                 </span>
+                                 <p className={`text-xs truncate ${
+                                   active ? "text-white/70" : "text-muted-foreground"
+                                 }`}>
+                                   {item.description}
+                                 </p>
+                               </div>
+                               
+                               {item.badge && (
+                                 <Badge 
+                                   variant="secondary" 
+                                   className={`text-xs font-medium ${
+                                     active 
+                                       ? "bg-white/20 text-white border-white/30" 
+                                       : getBadgeStyles(item.badgeVariant)
+                                   }`}
+                                 >
+                                   {item.badge}
+                                 </Badge>
+                               )}
+                             </div>
+                           )}
+                           
+                           {/* Active indicator */}
+                           {active && (
+                             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
+                           )}
+                         </NavLink>
+                       </SidebarMenuButton>
+                     </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+
+            {/* Sección Monitoreo */}
+            <SidebarGroup className="mt-4">
+              <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                {t('admin:navigation.monitoring')}
+              </SidebarGroupLabel>
+              <Separator className="my-2 opacity-50" />
+              <SidebarGroupContent>
+                <SidebarMenu className="space-y-1">
+                  {navigationItems.filter((item: any) => item.section === "monitoring").map((item: any) => {
+                    const active = isActive(item.url);
+                    const IconComponent = item.icon;
+                    
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={active}
+                          tooltip={collapsed ? item.title : undefined}
+                        >
+                          <NavLink 
+                            to={item.url} 
+                            end 
+                            className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
+                              active 
+                                ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
+                                : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
+                            }`}
+                          >
+                           <div className={`p-2 rounded-lg transition-all duration-200 ${
+                             active 
+                               ? "bg-white/20" 
+                               : "bg-accent/30 group-hover:bg-accent/50"
+                           }`}>
+                             <IconComponent className={`h-4 w-4 ${
+                               active ? "text-white" : "text-foreground"
+                             }`} />
+                           </div>
+                           
+                           {!collapsed && (
+                             <div className="flex items-center justify-between flex-1 min-w-0">
+                               <div className="min-w-0">
+                                 <span className={`font-medium ${
+                                   active ? "text-white" : "text-foreground"
+                                 }`}>
+                                   {item.title}
+                                 </span>
+                                 <p className={`text-xs truncate ${
+                                   active ? "text-white/70" : "text-muted-foreground"
+                                 }`}>
+                                   {item.description}
+                                 </p>
+                               </div>
+                               
+                               {item.badge && (
+                                 <Badge 
+                                   variant="secondary" 
+                                   className={`text-xs font-medium ${
+                                     active 
+                                       ? "bg-white/20 text-white border-white/30" 
+                                       : getBadgeStyles(item.badgeVariant)
+                                   }`}
+                                 >
+                                   {item.badge}
+                                 </Badge>
+                               )}
+                             </div>
+                           )}
+                           
+                           {/* Active indicator */}
+                           {active && (
+                             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
+                           )}
+                         </NavLink>
+                       </SidebarMenuButton>
+                     </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+
+            {/* Sección Facturación y Soporte */}
+            <SidebarGroup className="mt-4">
+              <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                {t('admin:navigation.business')}
+              </SidebarGroupLabel>
+              <Separator className="my-2 opacity-50" />
+              <SidebarGroupContent>
+                <SidebarMenu className="space-y-1">
+                  {navigationItems.filter((item: any) => item.section === "business").map((item: any) => {
+                    const active = isActive(item.url);
+                    const IconComponent = item.icon;
+                    
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={active}
+                          tooltip={collapsed ? item.title : undefined}
+                        >
+                          <NavLink 
+                            to={item.url} 
+                            end 
+                            className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
+                              active 
+                                ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
+                                : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
+                            }`}
+                          >
+                           <div className={`p-2 rounded-lg transition-all duration-200 ${
+                             active 
+                               ? "bg-white/20" 
+                               : "bg-accent/30 group-hover:bg-accent/50"
+                           }`}>
+                             <IconComponent className={`h-4 w-4 ${
+                               active ? "text-white" : "text-foreground"
+                             }`} />
+                           </div>
+                           
+                           {!collapsed && (
+                             <div className="flex items-center justify-between flex-1 min-w-0">
+                               <div className="min-w-0">
+                                 <span className={`font-medium ${
+                                   active ? "text-white" : "text-foreground"
+                                 }`}>
+                                   {item.title}
+                                 </span>
+                                 <p className={`text-xs truncate ${
+                                   active ? "text-white/70" : "text-muted-foreground"
+                                 }`}>
+                                   {item.description}
+                                 </p>
+                               </div>
+                               
+                               {item.badge && (
+                                 <Badge 
+                                   variant="secondary" 
+                                   className={`text-xs font-medium ${
+                                     active 
+                                       ? "bg-white/20 text-white border-white/30" 
+                                       : getBadgeStyles(item.badgeVariant)
+                                   }`}
+                                 >
+                                   {item.badge}
+                                 </Badge>
+                               )}
+                             </div>
+                           )}
+                           
+                           {/* Active indicator */}
+                           {active && (
+                             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
+                           )}
+                         </NavLink>
+                       </SidebarMenuButton>
+                     </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+
+            {/* Sección Configuración y Seguridad */}
+            <SidebarGroup className="mt-4">
+              <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                {t('admin:navigation.settings')}
+              </SidebarGroupLabel>
+              <Separator className="my-2 opacity-50" />
+              <SidebarGroupContent>
+                <SidebarMenu className="space-y-1">
+                  {navigationItems.filter((item: any) => item.section === "settings").map((item: any) => {
+                    const active = isActive(item.url);
+                    const IconComponent = item.icon;
+                    
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={active}
+                          tooltip={collapsed ? item.title : undefined}
+                        >
+                          <NavLink 
+                            to={item.url} 
+                            end 
+                            className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
+                              active 
+                                ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
+                                : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
+                            }`}
+                          >
+                           <div className={`p-2 rounded-lg transition-all duration-200 ${
+                             active 
+                               ? "bg-white/20" 
+                               : "bg-accent/30 group-hover:bg-accent/50"
+                           }`}>
+                             <IconComponent className={`h-4 w-4 ${
+                               active ? "text-white" : "text-foreground"
+                             }`} />
+                           </div>
+                           
+                           {!collapsed && (
+                             <div className="flex items-center justify-between flex-1 min-w-0">
+                               <div className="min-w-0">
+                                 <span className={`font-medium ${
+                                   active ? "text-white" : "text-foreground"
+                                 }`}>
+                                   {item.title}
+                                 </span>
+                                 <p className={`text-xs truncate ${
+                                   active ? "text-white/70" : "text-muted-foreground"
+                                 }`}>
+                                   {item.description}
+                                 </p>
+                               </div>
+                               
+                               {item.badge && (
+                                 <Badge 
+                                   variant="secondary" 
+                                   className={`text-xs font-medium ${
+                                     active 
+                                       ? "bg-white/20 text-white border-white/30" 
+                                       : getBadgeStyles(item.badgeVariant)
+                                   }`}
+                                 >
+                                   {item.badge}
+                                 </Badge>
+                               )}
+                             </div>
+                           )}
+                           
+                           {/* Active indicator */}
+                           {active && (
+                             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
+                           )}
+                         </NavLink>
+                       </SidebarMenuButton>
+                     </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </>
+        ) : (
+          // Para otros roles: Renderizar sin secciones (como antes)
+          <SidebarGroup>
+            <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              {t('admin:navigation.navigation')}
+            </SidebarGroupLabel>
+            <Separator className="my-2 opacity-50" />
+            <SidebarGroupContent>
+              <SidebarMenu className="space-y-1">
+                {navigationItems.map((item: any) => {
+                  const active = isActive(item.url);
+                  const IconComponent = item.icon;
+                  
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                       <SidebarMenuButton 
+                         asChild 
+                         isActive={active}
+                         tooltip={collapsed ? item.title : undefined}
                        >
-                        <div className={`p-2 rounded-lg transition-all duration-200 ${
-                          active 
-                            ? "bg-white/20" 
-                            : "bg-accent/30 group-hover:bg-accent/50"
-                        }`}>
-                          <IconComponent className={`h-4 w-4 ${
-                            active ? "text-white" : "text-foreground"
-                          }`} />
-                        </div>
-                        
-                        {!collapsed && (
-                          <div className="flex items-center justify-between flex-1 min-w-0">
-                            <div className="min-w-0">
-                              <span className={`font-medium ${
-                                active ? "text-white" : "text-foreground"
-                              }`}>
-                                {item.title}
-                              </span>
-                              <p className={`text-xs truncate ${
-                                active ? "text-white/70" : "text-muted-foreground"
-                              }`}>
-                                {item.description}
-                              </p>
-                            </div>
-                            
-                            {item.badge && (
-                              <Badge 
-                                variant="secondary" 
-                                className={`text-xs font-medium ${
-                                  active 
-                                    ? "bg-white/20 text-white border-white/30" 
-                                    : getBadgeStyles(item.badgeVariant)
-                                }`}
-                              >
-                                {item.badge}
-                              </Badge>
-                            )}
+                         <NavLink 
+                           to={item.url} 
+                           end 
+                           className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
+                             active 
+                               ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
+                               : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
+                           }`}
+                         >
+                          <div className={`p-2 rounded-lg transition-all duration-200 ${
+                            active 
+                              ? "bg-white/20" 
+                              : "bg-accent/30 group-hover:bg-accent/50"
+                          }`}>
+                            <IconComponent className={`h-4 w-4 ${
+                              active ? "text-white" : "text-foreground"
+                            }`} />
                           </div>
-                        )}
-                        
-                        {/* Active indicator */}
-                        {active && (
-                          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
-                        )}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+                          
+                          {!collapsed && (
+                            <div className="flex items-center justify-between flex-1 min-w-0">
+                              <div className="min-w-0">
+                                <span className={`font-medium ${
+                                  active ? "text-white" : "text-foreground"
+                                }`}>
+                                  {item.title}
+                                </span>
+                                <p className={`text-xs truncate ${
+                                  active ? "text-white/70" : "text-muted-foreground"
+                                }`}>
+                                  {item.description}
+                                </p>
+                              </div>
+                              
+                              {item.badge && (
+                                <Badge 
+                                  variant="secondary" 
+                                  className={`text-xs font-medium ${
+                                    active 
+                                      ? "bg-white/20 text-white border-white/30" 
+                                      : getBadgeStyles(item.badgeVariant)
+                                  }`}
+                                >
+                                  {item.badge}
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Active indicator */}
+                          {active && (
+                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
+                          )}
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         {/* Quick Actions Section */}
         {!collapsed && (

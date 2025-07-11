@@ -24,7 +24,10 @@
   "admin_panel": "Control panel",
   "system_administrator": "System Administrator",
   "quick_actions": "Quick Actions",
-  "system_status": "System Status", 
   "online": "Online",
-  "quick_settings": "Quick Settings"
+  "quick_settings": "Quick Settings",
+  "main_management": "Main Management",
+  "monitoring": "Monitoring",
+  "business": "Business",
+  "settings": "Settings"
 }
