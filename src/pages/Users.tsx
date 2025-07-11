@@ -576,7 +576,7 @@ export default function Users() {
               
               <div>
                 <Label>Roles Asignados</Label>
-                <div className="space-y-2 mt-2">
+                <div className="grid grid-cols-2 gap-2 mt-2">
                   {ROLE_OPTIONS.map((roleOption) => (
                     <div key={roleOption.value} className="flex items-center space-x-2">
                       <input
