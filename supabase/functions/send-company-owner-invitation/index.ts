@@ -75,14 +75,20 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Validate input
     if (!companyId || !email || !companyName) {
+      console.error("Missing required fields:", { companyId: !!companyId, email: !!email, companyName: !!companyName });
       throw new Error("Missing required fields: companyId, email, companyName");
     }
 
+    console.log("Input validation passed");
+
     // Check if company already has an owner
+    console.log("Checking if company has owner...");
     const { data: hasOwner, error: ownerCheckError } = await supabase.rpc(
       "company_has_owner",
       { company_id_param: companyId }
     );
+
+    console.log("Company owner check result:", { hasOwner, ownerCheckError });
 
     if (ownerCheckError) {
       throw new Error(`Error checking company owner: ${ownerCheckError.message}`);
