@@ -41,21 +41,26 @@ const companies = [
 
 // Navegación para Company Owner
 const companyOwnerNavigationItems = [
+  // Dashboard
   { 
     title: "Dashboard Ejecutivo", 
     url: "/dashboard/owner", 
     icon: Target, 
     badge: "Live",
     badgeVariant: "live" as const,
-    description: "Panel ejecutivo"
+    description: "Panel ejecutivo",
+    section: "dashboard"
   },
+  
+  // Gestión Operacional
   { 
     title: "Conductores", 
     url: "/drivers", 
     icon: Users, 
     badge: "18",
     badgeVariant: "count" as const,
-    description: "Gestión de conductores"
+    description: "Gestión de conductores",
+    section: "operations"
   },
   { 
     title: "Flota", 
@@ -63,7 +68,8 @@ const companyOwnerNavigationItems = [
     icon: Truck, 
     badge: "42",
     badgeVariant: "count" as const,
-    description: "Vehículos y equipos"
+    description: "Vehículos y equipos",
+    section: "operations"
   },
   { 
     title: "Cargas", 
@@ -71,63 +77,81 @@ const companyOwnerNavigationItems = [
     icon: Package, 
     badge: "24",
     badgeVariant: "count" as const,
-    description: "Gestión de cargas"
+    description: "Gestión de cargas",
+    section: "operations"
   },
+  
+  // Gestión Comercial
   { 
     title: "Clientes", 
     url: "/clients", 
     icon: Building2,
-    description: "Base de clientes"
+    description: "Base de clientes",
+    section: "commercial"
   },
   { 
     title: "Facturación", 
     url: "/billing", 
     icon: CreditCard,
-    description: "Facturación y pagos"
+    description: "Facturación y pagos",
+    section: "commercial"
   },
+  
+  // Reportes y Análisis
   { 
     title: "Reportes Financieros", 
     url: "/reports/financial", 
     icon: BarChart3,
-    description: "Análisis financiero"
+    description: "Análisis financiero",
+    section: "reports"
   },
+  
+  // Administración
   { 
     title: "Gestión de Usuarios", 
     url: "/users", 
     icon: Users, 
-    description: "Usuarios y roles"
+    description: "Usuarios y roles",
+    section: "admin"
   },
   { 
     title: "Configuración", 
     url: "/settings", 
     icon: Settings,
-    description: "Configuración de empresa"
+    description: "Configuración de empresa",
+    section: "admin"
   },
 ];
 
 // Navegación para Operations Manager  
 const operationsManagerNavigationItems = [
+  // Dashboard y Supervisión
   { 
     title: "Dashboard Operacional", 
     url: "/dashboard/operations", 
     icon: Target, 
     badge: "Live",
     badgeVariant: "live" as const,
-    description: "Panel operacional"
+    description: "Panel operacional",
+    section: "dashboard"
   },
   { 
     title: "Supervisión", 
     url: "/supervision", 
     icon: Activity, 
-    description: "Supervisión de equipos"
+    description: "Supervisión de equipos",
+    section: "dashboard"
   },
+  
+  // Gestión Operacional
   { 
     title: "Conductores", 
     url: "/drivers", 
     icon: Users, 
     badge: "18",
     badgeVariant: "count" as const,
-    description: "Gestión de conductores"
+    description: "Gestión de conductores",
+    section: "operations"
   },
   { 
     title: "Flota", 
@@ -135,7 +159,8 @@ const operationsManagerNavigationItems = [
     icon: Truck, 
     badge: "42",
     badgeVariant: "count" as const,
-    description: "Vehículos y equipos"
+    description: "Vehículos y equipos",
+    section: "operations"
   },
   { 
     title: "Cargas", 
@@ -143,95 +168,120 @@ const operationsManagerNavigationItems = [
     icon: Package, 
     badge: "24",
     badgeVariant: "count" as const,
-    description: "Gestión de cargas"
+    description: "Gestión de cargas",
+    section: "operations"
   },
   { 
     title: "Rutas", 
     url: "/routes", 
     icon: Navigation,
-    description: "Planificación de rutas"
+    description: "Planificación de rutas",
+    section: "operations"
   },
+  
+  // Reportes
   { 
     title: "Reportes", 
     url: "/reports", 
     icon: BarChart3,
-    description: "Reportes operacionales"
+    description: "Reportes operacionales",
+    section: "reports"
   },
 ];
 
 // Navegación para Dispatcher
 const dispatcherNavigationItems = [
+  // Dashboard y Seguimiento
   { 
     title: "Dashboard", 
     url: "/dashboard/dispatch", 
     icon: Target, 
     badge: "Live",
     badgeVariant: "live" as const,
-    description: "Panel de despacho"
+    description: "Panel de despacho",
+    section: "dashboard"
   },
+  { 
+    title: "Seguimiento", 
+    url: "/tracking", 
+    icon: MapPin,
+    description: "Seguimiento en tiempo real",
+    section: "dashboard"
+  },
+  
+  // Gestión de Cargas
   { 
     title: "Cargas Activas", 
     url: "/loads/active", 
     icon: Package, 
     badge: "12",
     badgeVariant: "count" as const,
-    description: "Cargas en progreso"
+    description: "Cargas en progreso",
+    section: "loads"
   },
   { 
     title: "Asignar Cargas", 
     url: "/loads/assign", 
     icon: Navigation,
-    description: "Asignación de cargas"
+    description: "Asignación de cargas",
+    section: "loads"
   },
+  
+  // Recursos
   { 
     title: "Conductores", 
     url: "/drivers", 
     icon: Users, 
     badge: "18",
     badgeVariant: "count" as const,
-    description: "Estado de conductores"
-  },
-  { 
-    title: "Seguimiento", 
-    url: "/tracking", 
-    icon: MapPin,
-    description: "Seguimiento en tiempo real"
+    description: "Estado de conductores",
+    section: "resources"
   },
   { 
     title: "Documentos", 
     url: "/documents", 
     icon: FileText,
-    description: "Documentación"
+    description: "Documentación",
+    section: "resources"
   },
 ];
 
 // Navegación para Driver
 const driverNavigationItems = [
+  // Panel Personal
   { 
     title: "Mi Dashboard", 
     url: "/dashboard/driver", 
     icon: Home, 
-    description: "Panel personal"
+    description: "Panel personal",
+    section: "dashboard"
   },
+  
+  // Mis Tareas
   { 
     title: "Mis Cargas", 
     url: "/my-loads", 
     icon: Package, 
     badge: "3",
     badgeVariant: "count" as const,
-    description: "Cargas asignadas"
+    description: "Cargas asignadas",
+    section: "tasks"
   },
   { 
     title: "Mis Documentos", 
     url: "/my-documents", 
     icon: FileText,
-    description: "Documentos personales"
+    description: "Documentos personales",
+    section: "tasks"
   },
+  
+  // Financiero
   { 
     title: "Pagos", 
     url: "/payments", 
     icon: CreditCard,
-    description: "Historial de pagos"
+    description: "Historial de pagos",
+    section: "financial"
   },
 ];
 
@@ -364,6 +414,129 @@ export function AppSidebar() {
       default:
         return "bg-muted text-muted-foreground";
     }
+  };
+
+  // Función para obtener mapeo de secciones según el rol
+  const getSectionLabels = () => {
+    if (isCompanyOwner) {
+      return {
+        dashboard: "Dashboard",
+        operations: "Gestión Operacional", 
+        commercial: "Gestión Comercial",
+        reports: "Reportes y Análisis",
+        admin: "Administración"
+      };
+    }
+    if (isOperationsManager) {
+      return {
+        dashboard: "Dashboard y Supervisión",
+        operations: "Gestión Operacional",
+        reports: "Reportes"
+      };
+    }
+    if (isDispatcher) {
+      return {
+        dashboard: "Dashboard y Seguimiento",
+        loads: "Gestión de Cargas",
+        resources: "Recursos"
+      };
+    }
+    if (isDriver) {
+      return {
+        dashboard: "Panel Personal",
+        tasks: "Mis Tareas",
+        financial: "Financiero"
+      };
+    }
+    return {};
+  };
+
+  // Función para renderizar una sección específica
+  const renderSection = (sectionName: string, sectionLabel: string) => {
+    const sectionItems = navigationItems.filter((item: any) => item.section === sectionName);
+    if (sectionItems.length === 0) return null;
+
+    return (
+      <SidebarGroup key={sectionName} className={sectionName !== 'dashboard' ? 'mt-4' : ''}>
+        <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          {sectionLabel}
+        </SidebarGroupLabel>
+        <Separator className="my-2 opacity-50" />
+        <SidebarGroupContent>
+          <SidebarMenu className="space-y-1">
+            {sectionItems.map((item: any) => {
+              const active = isActive(item.url);
+              const IconComponent = item.icon;
+              
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={active}
+                    tooltip={collapsed ? item.title : undefined}
+                  >
+                    <NavLink 
+                      to={item.url} 
+                      end 
+                      className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
+                        active 
+                          ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
+                          : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
+                      }`}
+                    >
+                     <div className={`p-2 rounded-lg transition-all duration-200 ${
+                       active 
+                         ? "bg-white/20" 
+                         : "bg-accent/30 group-hover:bg-accent/50"
+                     }`}>
+                       <IconComponent className={`h-4 w-4 ${
+                         active ? "text-white" : "text-foreground"
+                       }`} />
+                     </div>
+                     
+                     {!collapsed && (
+                       <div className="flex items-center justify-between flex-1 min-w-0">
+                         <div className="min-w-0">
+                           <span className={`font-medium ${
+                             active ? "text-white" : "text-foreground"
+                           }`}>
+                             {item.title}
+                           </span>
+                           <p className={`text-xs truncate ${
+                             active ? "text-white/70" : "text-muted-foreground"
+                           }`}>
+                             {item.description}
+                           </p>
+                         </div>
+                         
+                         {item.badge && (
+                           <Badge 
+                             variant="secondary" 
+                             className={`text-xs font-medium ${
+                               active 
+                                 ? "bg-white/20 text-white border-white/30" 
+                                 : getBadgeStyles(item.badgeVariant)
+                             }`}
+                           >
+                             {item.badge}
+                           </Badge>
+                         )}
+                       </div>
+                     )}
+                     
+                     {/* Active indicator */}
+                     {active && (
+                       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
+                     )}
+                   </NavLink>
+                 </SidebarMenuButton>
+               </SidebarMenuItem>
+              );
+            })}
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    );
   };
 
   return (
@@ -787,86 +960,12 @@ export function AppSidebar() {
             </SidebarGroup>
           </>
         ) : (
-          // Para otros roles: Renderizar sin secciones (como antes)
-          <SidebarGroup>
-            <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              {t('admin:navigation.navigation')}
-            </SidebarGroupLabel>
-            <Separator className="my-2 opacity-50" />
-            <SidebarGroupContent>
-              <SidebarMenu className="space-y-1">
-                {navigationItems.map((item: any) => {
-                  const active = isActive(item.url);
-                  const IconComponent = item.icon;
-                  
-                  return (
-                    <SidebarMenuItem key={item.title}>
-                       <SidebarMenuButton 
-                         asChild 
-                         isActive={active}
-                         tooltip={collapsed ? item.title : undefined}
-                       >
-                         <NavLink 
-                           to={item.url} 
-                           end 
-                           className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
-                             active 
-                               ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
-                               : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
-                           }`}
-                         >
-                          <div className={`p-2 rounded-lg transition-all duration-200 ${
-                            active 
-                              ? "bg-white/20" 
-                              : "bg-accent/30 group-hover:bg-accent/50"
-                          }`}>
-                            <IconComponent className={`h-4 w-4 ${
-                              active ? "text-white" : "text-foreground"
-                            }`} />
-                          </div>
-                          
-                          {!collapsed && (
-                            <div className="flex items-center justify-between flex-1 min-w-0">
-                              <div className="min-w-0">
-                                <span className={`font-medium ${
-                                  active ? "text-white" : "text-foreground"
-                                }`}>
-                                  {item.title}
-                                </span>
-                                <p className={`text-xs truncate ${
-                                  active ? "text-white/70" : "text-muted-foreground"
-                                }`}>
-                                  {item.description}
-                                </p>
-                              </div>
-                              
-                              {item.badge && (
-                                <Badge 
-                                  variant="secondary" 
-                                  className={`text-xs font-medium ${
-                                    active 
-                                      ? "bg-white/20 text-white border-white/30" 
-                                      : getBadgeStyles(item.badgeVariant)
-                                  }`}
-                                >
-                                  {item.badge}
-                                </Badge>
-                              )}
-                            </div>
-                          )}
-                          
-                          {/* Active indicator */}
-                          {active && (
-                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
-                          )}
-                        </NavLink>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+          // Para otros roles: Renderizar por secciones con separadores
+          <>
+            {Object.entries(getSectionLabels()).map(([sectionName, sectionLabel]) => 
+              renderSection(sectionName, sectionLabel)
+            )}
+          </>
         )}
 
         {/* Quick Actions Section */}
