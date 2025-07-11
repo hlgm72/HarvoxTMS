@@ -21,6 +21,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useFleetNotifications } from '@/components/notifications';
 import { createTextHandlers, handlePhoneInput } from '@/lib/textUtils';
 import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 interface CompanyStats {
   total_companies: number;
@@ -434,6 +435,7 @@ export default function SuperAdminDashboard() {
               </div>
               
               <div className="flex gap-3 animate-fade-in" style={{animationDelay: '0.2s'}}>
+                <LanguageSwitcher />
                 <Button 
                   variant="outline" 
                   className="bg-white/10 border-white text-white hover:bg-white hover:text-primary transition-all hover:scale-105 font-medium"
