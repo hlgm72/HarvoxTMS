@@ -19,6 +19,7 @@ import { z } from 'zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { createTextHandlers, createPhoneHandlers } from '@/lib/textUtils';
 
 // Schema para perfil
 const profileSchema = z.object({
@@ -74,6 +75,25 @@ export default function Settings() {
       confirmPassword: '',
     },
   });
+
+  // Helper functions to integrate textUtils with react-hook-form
+  const createFormTextHandler = (fieldOnChange: (value: string) => void, type: 'text' | 'email' | 'phone' = 'text') => {
+    const handlers = type === 'phone' 
+      ? createPhoneHandlers(fieldOnChange)
+      : createTextHandlers(fieldOnChange, type);
+    
+    return {
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+        handlers.onChange(e);
+      },
+      onBlur: (e: React.FocusEvent<HTMLInputElement>) => {
+        if ('onBlur' in handlers) {
+          handlers.onBlur(e);
+        }
+      },
+      onKeyPress: 'onKeyPress' in handlers ? handlers.onKeyPress : undefined
+    };
+  };
 
   useEffect(() => {
     if (user && userRole?.company_id) {
@@ -336,51 +356,71 @@ export default function Settings() {
                             <FormField
                               control={profileForm.control}
                               name="first_name"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Nombre</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Tu nombre" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                              render={({ field }) => {
+                                const textHandlers = createFormTextHandler(field.onChange);
+                                return (
+                                  <FormItem>
+                                    <FormLabel>Nombre</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        placeholder="Tu nombre" 
+                                        value={field.value}
+                                        onChange={textHandlers.onChange}
+                                        onBlur={textHandlers.onBlur}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                );
+                              }}
                             />
 
                             <FormField
                               control={profileForm.control}
                               name="last_name"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Apellido</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Tu apellido" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                              render={({ field }) => {
+                                const textHandlers = createFormTextHandler(field.onChange);
+                                return (
+                                  <FormItem>
+                                    <FormLabel>Apellido</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        placeholder="Tu apellido" 
+                                        value={field.value}
+                                        onChange={textHandlers.onChange}
+                                        onBlur={textHandlers.onBlur}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                );
+                              }}
                             />
                           </div>
 
                           <FormField
                             control={profileForm.control}
                             name="phone"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Teléfono</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    placeholder="(555) 123-4567" 
-                                    value={field.value || ''} 
-                                    onChange={field.onChange}
-                                  />
-                                </FormControl>
-                                <FormDescription>
-                                  Número de teléfono para contacto (opcional)
-                                </FormDescription>
-                                <FormMessage />
-                              </FormItem>
-                            )}
+                            render={({ field }) => {
+                              const phoneHandlers = createFormTextHandler(field.onChange, 'phone');
+                              return (
+                                <FormItem>
+                                  <FormLabel>Teléfono</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      placeholder="(555) 123-4567" 
+                                      value={field.value || ''} 
+                                      onChange={phoneHandlers.onChange}
+                                      onKeyPress={phoneHandlers.onKeyPress}
+                                    />
+                                  </FormControl>
+                                  <FormDescription>
+                                    Número de teléfono para contacto (opcional)
+                                  </FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              );
+                            }}
                           />
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
