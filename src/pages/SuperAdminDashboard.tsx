@@ -84,6 +84,9 @@ export default function SuperAdminDashboard() {
   const [companyToEdit, setCompanyToEdit] = useState<Company | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [isUpdatingCompany, setIsUpdatingCompany] = useState(false);
+  
+  const [companyToView, setCompanyToView] = useState<Company | null>(null);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
   // Create text handlers for form fields
   const companyNameHandlers = createTextHandlers((value) => 
@@ -287,6 +290,11 @@ export default function SuperAdminDashboard() {
   const handleEditCompany = (company: Company) => {
     setCompanyToEdit(company);
     setShowEditDialog(true);
+  };
+
+  const handleViewDetails = (company: Company) => {
+    setCompanyToView(company);
+    setShowDetailsDialog(true);
   };
 
   const handleUpdateCompany = async () => {
@@ -923,7 +931,12 @@ export default function SuperAdminDashboard() {
                             </div>
                           </div>
                           <div className="flex gap-2">
-                            <Button variant="outline" size="sm" className="flex-1">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex-1"
+                              onClick={() => handleViewDetails(company)}
+                            >
                               <Eye className="h-3 w-3 mr-2" />
                               View Details
                             </Button>
@@ -1065,6 +1078,238 @@ export default function SuperAdminDashboard() {
                   </div>
                 ) : null}
               </TabsContent>
+
+              {/* View Details Dialog */}
+              <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <Eye className="h-5 w-5 text-primary" />
+                      Company Details: {companyToView?.name}
+                    </DialogTitle>
+                    <DialogDescription>
+                      Complete information about this company in the FleetNest system.
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  {companyToView && (
+                    <div className="grid grid-cols-2 gap-6 py-4">
+                      {/* Left Column - Company & Contact Info */}
+                      <div className="space-y-6">
+                        {/* Basic Company Information */}
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 pb-2 border-b">
+                            <Building2 className="h-4 w-4 text-primary" />
+                            <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
+                              Company Information
+                            </h3>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                Company Name
+                              </Label>
+                              <p className="font-semibold">{companyToView.name}</p>
+                            </div>
+                            <div>
+                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                Status
+                              </Label>
+                              <Badge 
+                                variant={
+                                  companyToView.status === 'active' ? 'default' : 
+                                  companyToView.status === 'suspended' ? 'destructive' : 'secondary'
+                                }
+                                className="mt-1"
+                              >
+                                {companyToView.status}
+                              </Badge>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 gap-4">
+                            <div>
+                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                Email
+                              </Label>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Mail className="h-4 w-4 text-muted-foreground" />
+                                <p>{companyToView.email || 'Not provided'}</p>
+                              </div>
+                            </div>
+                            <div>
+                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                Phone
+                              </Label>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Phone className="h-4 w-4 text-muted-foreground" />
+                                <p>{companyToView.phone || 'Not provided'}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Owner Information */}
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 pb-2 border-b">
+                            <User className="h-4 w-4 text-primary" />
+                            <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
+                              Owner Information
+                            </h3>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                Name
+                              </Label>
+                              <p className="font-medium">{companyToView.owner_name || 'Not provided'}</p>
+                            </div>
+                            <div>
+                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                Title
+                              </Label>
+                              <p className="font-medium">{companyToView.owner_title || 'Not provided'}</p>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 gap-4">
+                            <div>
+                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                Email
+                              </Label>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Mail className="h-4 w-4 text-muted-foreground" />
+                                <p>{companyToView.owner_email || 'Not provided'}</p>
+                              </div>
+                            </div>
+                            <div>
+                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                Phone
+                              </Label>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Phone className="h-4 w-4 text-muted-foreground" />
+                                <p>{companyToView.owner_phone || 'Not provided'}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right Column - Plan & System Info */}
+                      <div className="space-y-6">
+                        {/* Plan & Limits */}
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 pb-2 border-b">
+                            <Briefcase className="h-4 w-4 text-primary" />
+                            <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
+                              Plan & Limits
+                            </h3>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 gap-4">
+                            <div>
+                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                Plan Type
+                              </Label>
+                              <Badge 
+                                variant={companyToView.plan_type === 'enterprise' ? 'default' : 'secondary'}
+                                className="mt-1 capitalize"
+                              >
+                                {companyToView.plan_type}
+                              </Badge>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                  Max Vehicles
+                                </Label>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Truck className="h-4 w-4 text-muted-foreground" />
+                                  <p className="font-semibold text-lg">{companyToView.max_vehicles}</p>
+                                </div>
+                              </div>
+                              <div>
+                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                  Max Users
+                                </Label>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Users className="h-4 w-4 text-muted-foreground" />
+                                  <p className="font-semibold text-lg">{companyToView.max_users}</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* System Information */}
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 pb-2 border-b">
+                            <Database className="h-4 w-4 text-primary" />
+                            <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
+                              System Information
+                            </h3>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 gap-4">
+                            <div>
+                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                Company ID
+                              </Label>
+                              <p className="font-mono text-sm bg-muted p-2 rounded border">{companyToView.id}</p>
+                            </div>
+                            <div>
+                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                Created Date
+                              </Label>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Clock className="h-4 w-4 text-muted-foreground" />
+                                <p>{new Date(companyToView.created_at).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}</p>
+                              </div>
+                            </div>
+                            {companyToView.contract_start_date && (
+                              <div>
+                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                  Contract Start
+                                </Label>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <CheckCircle className="h-4 w-4 text-green-600" />
+                                  <p>{new Date(companyToView.contract_start_date).toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                  })}</p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Protected Information Notice */}
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                          <div className="flex items-start gap-2">
+                            <Shield className="h-4 w-4 text-amber-600 mt-0.5" />
+                            <div>
+                              <h4 className="text-sm font-medium text-amber-800">Protected Information</h4>
+                              <p className="text-sm text-amber-700 mt-1">
+                                Payment settings, regulatory data (DOT, MC, EIN), and address information 
+                                are protected and only visible to authorized personnel.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </DialogContent>
+              </Dialog>
 
               {/* Edit Company Dialog */}
               <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
