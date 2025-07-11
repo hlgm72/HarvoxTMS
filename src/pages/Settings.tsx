@@ -4,26 +4,71 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { 
   Settings as SettingsIcon, Building, User, Moon, Sun, Bell, Shield, 
-  Globe, Palette, Monitor, Database
+  Globe, Palette, Monitor, Database, Save, RotateCcw
 } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { CompanySettingsForm } from '@/components/companies/settings/CompanySettingsForm';
 import { Company } from '@/types/company';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { AvatarUpload } from '@/components/profile/AvatarUpload';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+// Schema para perfil
+const profileSchema = z.object({
+  first_name: z.string().min(1, 'El nombre es requerido'),
+  last_name: z.string().min(1, 'El apellido es requerido'),
+  phone: z.string().optional(),
+  preferred_language: z.string().optional(),
+  timezone: z.string().optional(),
+});
+
+type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function Settings() {
   const { user, userRole } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('company');
+  const { profile, loading: profileLoading, refreshProfile } = useUserProfile();
+  const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(true);
   const [companyInfo, setCompanyInfo] = useState<Company | null>(null);
+  const [updatingProfile, setUpdatingProfile] = useState(false);
+
+  // Form para perfil
+  const profileForm = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      first_name: '',
+      last_name: '',
+      phone: '',
+      preferred_language: 'en',
+      timezone: 'America/New_York',
+    },
+  });
 
   useEffect(() => {
     if (user && userRole?.company_id) {
       fetchCompanyData();
     }
   }, [user, userRole]);
+
+  useEffect(() => {
+    if (profile) {
+      profileForm.reset({
+        first_name: profile.first_name || '',
+        last_name: profile.last_name || '',
+        phone: profile.phone || '',
+        preferred_language: profile.preferred_language || 'en',
+        timezone: profile.timezone || 'America/New_York',
+      });
+    }
+  }, [profile, profileForm]);
 
   const fetchCompanyData = async () => {
     if (!userRole?.company_id) return;
@@ -49,7 +94,43 @@ export default function Settings() {
     }
   };
 
-  if (loading) {
+  const onSubmitProfile = async (data: ProfileFormData) => {
+    if (!user) return;
+
+    setUpdatingProfile(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          first_name: data.first_name,
+          last_name: data.last_name,
+          phone: data.phone || null,
+          preferred_language: data.preferred_language || 'en',
+          timezone: data.timezone || 'America/New_York',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      await refreshProfile();
+
+      toast({
+        title: "Perfil actualizado",
+        description: "Su información personal ha sido guardada correctamente.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo actualizar el perfil.",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingProfile(false);
+    }
+  };
+
+  if (loading || profileLoading) {
     return (
       <div className="p-6">
         <div className="flex items-center justify-center h-64">
@@ -91,7 +172,11 @@ export default function Settings() {
       {/* Content */}
       <div className="p-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm border">
+          <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm border">
+            <TabsTrigger value="profile" className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              Mi Perfil
+            </TabsTrigger>
             <TabsTrigger value="company" className="flex items-center gap-2">
               <Building className="h-4 w-4" />
               Empresa
@@ -109,6 +194,179 @@ export default function Settings() {
               Notificaciones
             </TabsTrigger>
           </TabsList>
+
+          {/* Mi Perfil */}
+          <TabsContent value="profile">
+            <div className="grid gap-6 md:grid-cols-3">
+              {/* Profile Summary Card */}
+              <Card className="md:col-span-1">
+                <CardHeader className="text-center">
+                  <AvatarUpload 
+                    currentAvatarUrl={profile?.avatar_url}
+                    userName={`${profile?.first_name || ''} ${profile?.last_name || ''}`.trim()}
+                    onAvatarUpdate={async (avatarUrl) => {
+                      await refreshProfile();
+                    }}
+                  />
+                  <CardTitle className="text-xl">{profile?.first_name} {profile?.last_name}</CardTitle>
+                  <p className="text-muted-foreground">{user?.email}</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Teléfono:</span>
+                      <span>{profile?.phone || 'No especificado'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Idioma:</span>
+                      <span>{profile?.preferred_language === 'es' ? 'Español' : 'English'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Zona horaria:</span>
+                      <span>{profile?.timezone || 'America/New_York'}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Profile Form */}
+              <Card className="md:col-span-2">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5 text-primary" />
+                    Información Personal
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Actualiza tu información personal y preferencias
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <Form {...profileForm}>
+                    <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={profileForm.control}
+                          name="first_name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Nombre</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Tu nombre" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={profileForm.control}
+                          name="last_name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Apellido</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Tu apellido" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <FormField
+                        control={profileForm.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Teléfono</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="(555) 123-4567" 
+                                value={field.value || ''} 
+                                onChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Número de teléfono para contacto (opcional)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={profileForm.control}
+                          name="preferred_language"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Idioma Preferido</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Selecciona un idioma" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="en">English</SelectItem>
+                                  <SelectItem value="es">Español</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={profileForm.control}
+                          name="timezone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Zona Horaria</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Selecciona zona horaria" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="America/New_York">Este (Nueva York)</SelectItem>
+                                  <SelectItem value="America/Chicago">Central (Chicago)</SelectItem>
+                                  <SelectItem value="America/Denver">Montaña (Denver)</SelectItem>
+                                  <SelectItem value="America/Los_Angeles">Pacífico (Los Ángeles)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="flex justify-end gap-2">
+                        <Button type="button" variant="outline" onClick={() => profileForm.reset()}>
+                          <RotateCcw className="mr-2 h-4 w-4" />
+                          Resetear
+                        </Button>
+                        <Button type="submit" disabled={updatingProfile}>
+                          {updatingProfile ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                              Actualizando...
+                            </>
+                          ) : (
+                            <>
+                              <Save className="mr-2 h-4 w-4" />
+                              Guardar Cambios
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
           {/* Configuración de Empresa */}
           <TabsContent value="company">
