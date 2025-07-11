@@ -310,7 +310,13 @@ const getSuperAdminNavigationItems = (t: any) => [
 ];
 
 export function AppSidebar() {
-  const { t } = useTranslation(['admin', 'common']);
+  const { t, i18n } = useTranslation(['admin', 'common']);
+  
+  // Debug logs para ver qué está pasando con las traducciones
+  console.log('Sidebar Debug - Current language:', i18n.language);
+  console.log('Sidebar Debug - Dashboard translation:', t('admin:navigation.dashboard'));
+  console.log('Sidebar Debug - System Management translation:', t('admin:navigation.system_management'));
+  console.log('Sidebar Debug - i18n resources admin:', i18n.getDataByLanguage(i18n.language)?.admin);
   const { state } = useSidebar();
   const { 
     isSuperAdmin, 
@@ -335,7 +341,12 @@ export function AppSidebar() {
   
   // Determinar navegación según el rol del usuario
   const getNavigationItems = () => {
-    if (isSuperAdmin) return getSuperAdminNavigationItems(t);
+    console.log('getNavigationItems - isSuperAdmin:', isSuperAdmin);
+    if (isSuperAdmin) {
+      const items = getSuperAdminNavigationItems(t);
+      console.log('SuperAdmin items:', items);
+      return items;
+    }
     if (isCompanyOwner) return companyOwnerNavigationItems;
     if (isOperationsManager) return operationsManagerNavigationItems;
     if (isDispatcher) return dispatcherNavigationItems;
