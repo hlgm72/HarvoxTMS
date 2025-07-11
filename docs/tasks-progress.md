@@ -87,6 +87,18 @@
 
 ---
 
+## 🔮 **TAREAS FUTURAS - MEJORAS AVANZADAS**
+
+### Integración de Email Marketing
+- [ ] **Integración Resend-Supabase** - SMTP personalizado para emails de autenticación
+  - Emails de confirmación branded y profesionales  
+  - Mejor deliverability para invitaciones de usuarios
+  - Analytics detallados de emails (entregados, abiertos, clicks)
+  - Templates personalizados para magic links y password reset
+  - **Beneficios:** Reduce emails en spam, mejor experiencia de usuario, métricas profesionales
+
+---
+
 ## 📈 **Métricas de Progreso**
 
 | Fase | Progreso | Tareas Completadas | Tareas Totales | ETA |
