@@ -118,42 +118,15 @@ Deno.serve(async (req) => {
         console.log('🔍 Sample source city structure:', JSON.stringify(sourceCities[0], null, 2))
       }
 
-      // Get all existing cities for this batch's states to check duplicates efficiently
-      const statesInBatch = [...new Set(sourceCities.map((city: SourceCity) => city.state_code))]
-      const { data: existingCities, error: existingError } = await destSupabase
-        .from('state_cities')
-        .select('name, state_id')
-        .in('state_id', statesInBatch)
-
-      if (existingError) {
-        console.error(`❌ Failed to fetch existing cities:`, existingError.message)
-        totalErrors += sourceCities.length
-        offset += batchSize
-        continue
-      }
-
-      // Create a Set for fast duplicate checking
-      const existingCitiesSet = new Set(
-        existingCities?.map(city => `${city.name}|${city.state_id}`) || []
-      )
-
-      // Transform and filter cities for destination
+      // Transform cities for destination (no duplicate checking needed since table is clean)
       const citiesToInsert: TargetCity[] = []
       const invalidCities: string[] = []
-      let batchSkipped = 0
 
       sourceCities.forEach((city: SourceCity) => {
         // Check if state_code exists in our mapping
         if (!stateMapping[city.state_code]) {
           invalidCities.push(`${city.city_name}, ${city.state_code}`)
           return
-        }
-
-        // Check for existing city using the Set (much faster)
-        const cityKey = `${city.city_name}|${city.state_code}`
-        if (existingCitiesSet.has(cityKey)) {
-          batchSkipped++
-          return // Skip if city already exists in this state
         }
 
         citiesToInsert.push({
@@ -168,11 +141,6 @@ Deno.serve(async (req) => {
         totalSkipped += invalidCities.length
       }
 
-      if (batchSkipped > 0) {
-        console.log(`📋 Skipped ${batchSkipped} duplicate cities in this batch`)
-        totalSkipped += batchSkipped
-      }
-
       if (citiesToInsert.length > 0) {
         // Insert batch into destination
         const { data: insertResult, error: insertError } = await destSupabase
@@ -181,14 +149,14 @@ Deno.serve(async (req) => {
           .select('id')
 
         if (insertError) {
-          console.error(`❌ Failed to insert batch:`, insertError.message)
+          console.error(`❌ Failed to insert batch:`, insertError.message, insertError.details)
           totalErrors += citiesToInsert.length
         } else {
           totalMigrated += insertResult?.length || citiesToInsert.length
           console.log(`✅ Successfully inserted ${insertResult?.length || citiesToInsert.length} cities`)
         }
       } else {
-        console.log(`📝 No new cities to insert in this batch`)
+        console.log(`📝 No cities to insert in this batch`)
       }
 
       offset += batchSize
