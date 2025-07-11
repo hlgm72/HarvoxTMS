@@ -95,7 +95,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send invitation email using Resend
     const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-    const invitationUrl = `${Deno.env.get("SUPABASE_URL")}/invitation?token=${invitationToken}`;
+    const invitationUrl = `https://fleetnest-dev-app.lovable.app/invitation/${invitationToken}`;
     
     try {
       const emailResponse = await resend.emails.send({
