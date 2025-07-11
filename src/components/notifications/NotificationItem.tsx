@@ -24,27 +24,27 @@ interface NotificationItemProps {
 const notificationConfig = {
   success: {
     icon: CheckCircle,
-    bgColor: 'bg-gradient-to-r from-success/90 to-success',
-    borderColor: 'border-success/30',
-    iconColor: 'text-success-foreground',
-    textColor: 'text-success-foreground',
-    shadow: 'shadow-lg shadow-success/30'
+    bgColor: 'bg-gradient-to-r from-emerald-500/90 to-emerald-600',
+    borderColor: 'border-emerald-500/30',
+    iconColor: 'text-white',
+    textColor: 'text-white',
+    shadow: 'shadow-lg shadow-emerald-500/30'
   },
   error: {
     icon: XCircle,
-    bgColor: 'bg-gradient-to-r from-destructive/90 to-destructive',
-    borderColor: 'border-destructive/30',
-    iconColor: 'text-destructive-foreground',
-    textColor: 'text-destructive-foreground',
-    shadow: 'shadow-lg shadow-destructive/30'
+    bgColor: 'bg-gradient-to-r from-red-500/90 to-red-600',
+    borderColor: 'border-red-500/30',
+    iconColor: 'text-white',
+    textColor: 'text-white',
+    shadow: 'shadow-lg shadow-red-500/30'
   },
   warning: {
     icon: AlertTriangle,
-    bgColor: 'bg-gradient-to-r from-warning/90 to-warning',
-    borderColor: 'border-warning/30',
-    iconColor: 'text-warning-foreground',
-    textColor: 'text-warning-foreground',
-    shadow: 'shadow-lg shadow-warning/30'
+    bgColor: 'bg-gradient-to-r from-amber-500/90 to-amber-600',
+    borderColor: 'border-amber-500/30',
+    iconColor: 'text-white',
+    textColor: 'text-white',
+    shadow: 'shadow-lg shadow-amber-500/30'
   },
   info: {
     icon: Info,
