@@ -144,10 +144,12 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
           </AvatarFallback>
         </Avatar>
         
-        {/* Upload overlay */}
-        <div className="absolute inset-0 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <Camera className="h-6 w-6 text-white" />
-        </div>
+        {/* Upload overlay - now clickeable */}
+        <Label htmlFor="avatar-upload" className="cursor-pointer">
+          <div className="absolute inset-0 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <Camera className="h-6 w-6 text-white" />
+          </div>
+        </Label>
       </div>
 
       <div className="flex flex-col space-y-2">
