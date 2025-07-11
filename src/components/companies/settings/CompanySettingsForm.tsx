@@ -541,9 +541,9 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                         step="0.01"
                         min="0"
                         max="100"
-                        value={formData.default_leasing_percentage || 25.00}
+                        value={formData.default_leasing_percentage || 5.00}
                         onChange={(e) => handleInputChange('default_leasing_percentage', parseFloat(e.target.value) || 0)}
-                        placeholder="25.00"
+                        placeholder="5.00"
                         className="pl-10"
                       />
                     </div>
