@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Building2, Users, Truck, Activity, Plus, Settings, Mail, Phone, User, Briefcase,
   BarChart3, Shield, Database, Globe, ChevronRight, Search, Filter,
-  TrendingUp, AlertTriangle, CheckCircle, Clock, Eye, Trash2
+  TrendingUp, AlertTriangle, CheckCircle, Clock, Eye, Trash2, Edit
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -33,6 +33,9 @@ interface Company {
   name: string;
   email: string;
   phone: string;
+  street_address?: string;
+  state_id?: string;
+  zip_code?: string;
   owner_name: string;
   owner_email: string;
   owner_phone: string;
@@ -77,6 +80,10 @@ export default function SuperAdminDashboard() {
   const [companyToDelete, setCompanyToDelete] = useState<Company | null>(null);
   const [deleteValidation, setDeleteValidation] = useState<any>(null);
   const [isDeletingCompany, setIsDeletingCompany] = useState(false);
+  
+  const [companyToEdit, setCompanyToEdit] = useState<Company | null>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [isUpdatingCompany, setIsUpdatingCompany] = useState(false);
 
   // Create text handlers for form fields
   const companyNameHandlers = createTextHandlers((value) => 
@@ -274,6 +281,58 @@ export default function SuperAdminDashboard() {
       setIsDeletingCompany(false);
       setCompanyToDelete(null);
       setDeleteValidation(null);
+    }
+  };
+
+  const handleEditCompany = (company: Company) => {
+    setCompanyToEdit(company);
+    setShowEditDialog(true);
+  };
+
+  const handleUpdateCompany = async () => {
+    if (!companyToEdit) return;
+    
+    setIsUpdatingCompany(true);
+    try {
+      const { error } = await supabase
+        .from('companies')
+        .update({
+          name: companyToEdit.name,
+          email: companyToEdit.email,
+          phone: companyToEdit.phone,
+          street_address: companyToEdit.street_address || 'To be configured',
+          state_id: companyToEdit.state_id || 'TX',
+          zip_code: companyToEdit.zip_code || '00000',
+          owner_name: companyToEdit.owner_name,
+          owner_email: companyToEdit.owner_email,
+          owner_phone: companyToEdit.owner_phone,
+          owner_title: companyToEdit.owner_title,
+          plan_type: companyToEdit.plan_type,
+          max_vehicles: companyToEdit.max_vehicles,
+          max_users: companyToEdit.max_users,
+          status: companyToEdit.status,
+        })
+        .eq('id', companyToEdit.id);
+
+      if (error) throw error;
+
+      showSuccess(
+        "Company updated successfully",
+        `${companyToEdit.name} has been updated in the system`
+      );
+      
+      // Refresh data and close dialog
+      fetchCompanies();
+      setShowEditDialog(false);
+      setCompanyToEdit(null);
+    } catch (error: any) {
+      console.error('Error updating company:', error);
+      showError(
+        "Error updating company",
+        error.message || "An error occurred while updating the company"
+      );
+    } finally {
+      setIsUpdatingCompany(false);
     }
   };
 
@@ -868,6 +927,14 @@ export default function SuperAdminDashboard() {
                               <Eye className="h-3 w-3 mr-2" />
                               View Details
                             </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleEditCompany(company)}
+                              className="text-blue-600 hover:text-blue-600 hover:bg-blue-50"
+                            >
+                              <Edit className="h-3 w-3" />
+                            </Button>
                             {(company.plan_type === 'demo' || company.plan_type === 'trial' || company.plan_type === 'test') && 
                              company.name !== 'SYSTEM_SUPERADMIN' && (
                               <AlertDialog>
@@ -998,6 +1065,222 @@ export default function SuperAdminDashboard() {
                   </div>
                 ) : null}
               </TabsContent>
+
+              {/* Edit Company Dialog */}
+              <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <Edit className="h-5 w-5 text-blue-600" />
+                      Edit Company: {companyToEdit?.name}
+                    </DialogTitle>
+                    <DialogDescription>
+                      Modify company information. Payment and regulatory data cannot be changed.
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  {companyToEdit && (
+                    <div className="grid grid-cols-2 gap-6 py-4">
+                      {/* Left Column - Basic Info */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 pb-2 border-b">
+                          <Building2 className="h-4 w-4 text-primary" />
+                          <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
+                            Company Information
+                          </h3>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-company-name">Company Name *</Label>
+                          <Input
+                            id="edit-company-name"
+                            value={companyToEdit.name}
+                            onChange={(e) => setCompanyToEdit(prev => prev ? {...prev, name: e.target.value} : null)}
+                            placeholder="Company name"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-company-email">Company Email</Label>
+                          <Input
+                            id="edit-company-email"
+                            type="email"
+                            value={companyToEdit.email || ''}
+                            onChange={(e) => setCompanyToEdit(prev => prev ? {...prev, email: e.target.value} : null)}
+                            placeholder="contact@company.com"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-company-phone">Company Phone</Label>
+                          <Input
+                            id="edit-company-phone"
+                            value={companyToEdit.phone || ''}
+                            onChange={(e) => setCompanyToEdit(prev => prev ? {...prev, phone: e.target.value} : null)}
+                            placeholder="(555) 123-4567"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-plan-type">Plan Type</Label>
+                          <Select 
+                            value={companyToEdit.plan_type} 
+                            onValueChange={(value) => setCompanyToEdit(prev => prev ? {...prev, plan_type: value} : null)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select plan type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="basic">Basic</SelectItem>
+                              <SelectItem value="premium">Premium</SelectItem>
+                              <SelectItem value="enterprise">Enterprise</SelectItem>
+                              <SelectItem value="demo">Demo</SelectItem>
+                              <SelectItem value="trial">Trial</SelectItem>
+                              <SelectItem value="test">Test</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-2">
+                            <Label htmlFor="edit-max-vehicles">Max Vehicles</Label>
+                            <Input
+                              id="edit-max-vehicles"
+                              type="number"
+                              value={companyToEdit.max_vehicles}
+                              onChange={(e) => setCompanyToEdit(prev => prev ? {...prev, max_vehicles: parseInt(e.target.value) || 0} : null)}
+                              min="1"
+                              max="1000"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="edit-max-users">Max Users</Label>
+                            <Input
+                              id="edit-max-users"
+                              type="number"
+                              value={companyToEdit.max_users}
+                              onChange={(e) => setCompanyToEdit(prev => prev ? {...prev, max_users: parseInt(e.target.value) || 0} : null)}
+                              min="1"
+                              max="100"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-status">Status</Label>
+                          <Select 
+                            value={companyToEdit.status} 
+                            onValueChange={(value) => setCompanyToEdit(prev => prev ? {...prev, status: value} : null)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="active">Active</SelectItem>
+                              <SelectItem value="inactive">Inactive</SelectItem>
+                              <SelectItem value="suspended">Suspended</SelectItem>
+                              <SelectItem value="archived">Archived</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      {/* Right Column - Owner Info */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 pb-2 border-b">
+                          <User className="h-4 w-4 text-primary" />
+                          <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
+                            Owner Information
+                          </h3>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-owner-name">Owner Name</Label>
+                          <Input
+                            id="edit-owner-name"
+                            value={companyToEdit.owner_name || ''}
+                            onChange={(e) => setCompanyToEdit(prev => prev ? {...prev, owner_name: e.target.value} : null)}
+                            placeholder="John Smith"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-owner-email">Owner Email</Label>
+                          <Input
+                            id="edit-owner-email"
+                            type="email"
+                            value={companyToEdit.owner_email || ''}
+                            onChange={(e) => setCompanyToEdit(prev => prev ? {...prev, owner_email: e.target.value} : null)}
+                            placeholder="john@company.com"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-owner-phone">Owner Phone</Label>
+                          <Input
+                            id="edit-owner-phone"
+                            value={companyToEdit.owner_phone || ''}
+                            onChange={(e) => setCompanyToEdit(prev => prev ? {...prev, owner_phone: e.target.value} : null)}
+                            placeholder="(555) 987-6543"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="edit-owner-title">Owner Title</Label>
+                          <Input
+                            id="edit-owner-title"
+                            value={companyToEdit.owner_title || ''}
+                            onChange={(e) => setCompanyToEdit(prev => prev ? {...prev, owner_title: e.target.value} : null)}
+                            placeholder="CEO, President, etc."
+                          />
+                        </div>
+
+                        {/* Protected Information Notice */}
+                        <div className="bg-muted p-4 rounded-lg">
+                          <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                            <Shield className="h-4 w-4 text-orange-500" />
+                            Protected Information
+                          </h4>
+                          <div className="text-sm text-muted-foreground space-y-1">
+                            <p><strong>Payment Configuration:</strong> Cannot be modified by SuperAdmin</p>
+                            <p><strong>Regulatory Data:</strong> DOT, MC, EIN numbers are protected</p>
+                            <p><strong>System Fields:</strong> ID, creation dates are immutable</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-end gap-3 pt-4 border-t">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setShowEditDialog(false);
+                        setCompanyToEdit(null);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={handleUpdateCompany}
+                      disabled={isUpdatingCompany}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      {isUpdatingCompany ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Updating...
+                        </>
+                      ) : (
+                        <>
+                          <Edit className="h-4 w-4 mr-2" />
+                          Update Company
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
 
               {/* Analytics Tab */}
               <TabsContent value="analytics" className="mt-6">
