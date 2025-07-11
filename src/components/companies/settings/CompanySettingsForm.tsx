@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { 
   Building, User, CreditCard, Settings, 
   Save, RotateCcw, AlertCircle, FileText, 
-  MapPin, Phone 
+  MapPin, Phone, Truck, Percent
 } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from '@/integrations/supabase/client';
@@ -92,6 +92,9 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           max_users: formData.max_users,
           max_vehicles: formData.max_vehicles,
           logo_url: formData.logo_url,
+          default_factoring_percentage: formData.default_factoring_percentage,
+          default_dispatching_percentage: formData.default_dispatching_percentage,
+          default_leasing_percentage: formData.default_leasing_percentage,
           updated_at: new Date().toISOString()
         })
         .eq('id', company.id)
@@ -476,6 +479,75 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                       <SelectItem value="7">Domingo</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+
+              {/* Owner Operator Default Settings */}
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mt-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Truck className="h-5 w-5 text-amber-600" />
+                  <div>
+                    <h4 className="font-semibold text-amber-900">Configuración por Defecto - Owner Operators</h4>
+                    <p className="text-sm text-amber-700">
+                      Estos porcentajes se aplicarán automáticamente a nuevos Owner Operators. Pueden ser modificados individualmente después.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="default_factoring_percentage">Factoring (%)</Label>
+                    <div className="relative">
+                      <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="default_factoring_percentage"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="100"
+                        value={formData.default_factoring_percentage || 3.00}
+                        onChange={(e) => handleInputChange('default_factoring_percentage', parseFloat(e.target.value) || 0)}
+                        placeholder="3.00"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="default_dispatching_percentage">Dispatching (%)</Label>
+                    <div className="relative">
+                      <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="default_dispatching_percentage"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="100"
+                        value={formData.default_dispatching_percentage || 5.00}
+                        onChange={(e) => handleInputChange('default_dispatching_percentage', parseFloat(e.target.value) || 0)}
+                        placeholder="5.00"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="default_leasing_percentage">Leasing (%)</Label>
+                    <div className="relative">
+                      <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="default_leasing_percentage"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="100"
+                        value={formData.default_leasing_percentage || 25.00}
+                        onChange={(e) => handleInputChange('default_leasing_percentage', parseFloat(e.target.value) || 0)}
+                        placeholder="25.00"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>

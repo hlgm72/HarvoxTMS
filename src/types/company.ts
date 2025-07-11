@@ -25,4 +25,7 @@ export interface Company {
   default_payment_frequency?: string;
   payment_cycle_start_day?: number;
   logo_url?: string;
+  default_factoring_percentage?: number;
+  default_dispatching_percentage?: number;
+  default_leasing_percentage?: number;
 }

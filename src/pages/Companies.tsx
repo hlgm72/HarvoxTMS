@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building2, Plus, Phone, Mail, User, MapPin, Search, Edit, Trash2, Users, Truck, Percent } from "lucide-react";
+import { Building2, Plus, Phone, Mail, User, MapPin, Search, Edit, Trash2, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
 import { createTextHandlers } from "@/lib/textUtils";
@@ -40,9 +40,6 @@ interface CompanyFormData {
   owner_title: string;
   max_users: number;
   max_vehicles: number;
-  default_factoring_percentage: number;
-  default_dispatching_percentage: number;
-  default_leasing_percentage: number;
 }
 
 type SortField = 'name' | 'owner_name' | 'plan_type' | 'status' | 'created_at';
@@ -71,9 +68,6 @@ export default function Companies() {
     owner_title: "",
     max_users: 5,
     max_vehicles: 10,
-    default_factoring_percentage: 3.00,
-    default_dispatching_percentage: 5.00,
-    default_leasing_percentage: 25.00,
   });
 
   // New state for enhanced functionality
@@ -309,9 +303,6 @@ export default function Companies() {
       owner_title: "",
       max_users: 5,
       max_vehicles: 10,
-      default_factoring_percentage: 3.00,
-      default_dispatching_percentage: 5.00,
-      default_leasing_percentage: 25.00,
     });
   };
 
@@ -331,9 +322,6 @@ export default function Companies() {
       owner_title: company.owner_title || "",
       max_users: company.max_users || 5,
       max_vehicles: company.max_vehicles || 10,
-      default_factoring_percentage: (company as any).default_factoring_percentage || 3.00,
-      default_dispatching_percentage: (company as any).default_dispatching_percentage || 5.00,
-      default_leasing_percentage: (company as any).default_leasing_percentage || 25.00,
     });
     setIsEditDialogOpen(true);
   };
@@ -588,82 +576,6 @@ export default function Companies() {
                         value={formData.max_vehicles}
                         onChange={(e) => setFormData(prev => ({ ...prev, max_vehicles: parseInt(e.target.value) || 10 }))}
                       />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Owner Operator Default Settings */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Truck className="h-5 w-5 text-primary" />
-                    <h3 className="font-semibold">Configuración por Defecto - Owner Operators</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Estos porcentajes se aplicarán automáticamente a nuevos Owner Operators. Pueden ser modificados individualmente después.
-                  </p>
-                  
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="default_factoring_percentage">Factoring (%)</Label>
-                      <div className="relative">
-                        <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="default_factoring_percentage"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          max="100"
-                          value={formData.default_factoring_percentage}
-                          onChange={(e) => setFormData(prev => ({ 
-                            ...prev, 
-                            default_factoring_percentage: parseFloat(e.target.value) || 0 
-                          }))}
-                          placeholder="3.00"
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="default_dispatching_percentage">Dispatching (%)</Label>
-                      <div className="relative">
-                        <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="default_dispatching_percentage"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          max="100"
-                          value={formData.default_dispatching_percentage}
-                          onChange={(e) => setFormData(prev => ({ 
-                            ...prev, 
-                            default_dispatching_percentage: parseFloat(e.target.value) || 0 
-                          }))}
-                          placeholder="5.00"
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="default_leasing_percentage">Leasing (%)</Label>
-                      <div className="relative">
-                        <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="default_leasing_percentage"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          max="100"
-                          value={formData.default_leasing_percentage}
-                          onChange={(e) => setFormData(prev => ({ 
-                            ...prev, 
-                            default_leasing_percentage: parseFloat(e.target.value) || 0 
-                          }))}
-                          placeholder="25.00"
-                          className="pl-10"
-                        />
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -964,82 +876,6 @@ export default function Companies() {
                     value={formData.max_vehicles}
                     onChange={(e) => setFormData(prev => ({ ...prev, max_vehicles: parseInt(e.target.value) || 10 }))}
                   />
-                </div>
-              </div>
-
-              {/* Owner Operator Default Settings - Edit Mode */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Truck className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold">Configuración por Defecto - Owner Operators</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Estos porcentajes se aplicarán automáticamente a nuevos Owner Operators. Pueden ser modificados individualmente después.
-                </p>
-                
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="edit_default_factoring_percentage">Factoring (%)</Label>
-                    <div className="relative">
-                      <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="edit_default_factoring_percentage"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max="100"
-                        value={formData.default_factoring_percentage}
-                        onChange={(e) => setFormData(prev => ({ 
-                          ...prev, 
-                          default_factoring_percentage: parseFloat(e.target.value) || 0 
-                        }))}
-                        placeholder="3.00"
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="edit_default_dispatching_percentage">Dispatching (%)</Label>
-                    <div className="relative">
-                      <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="edit_default_dispatching_percentage"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max="100"
-                        value={formData.default_dispatching_percentage}
-                        onChange={(e) => setFormData(prev => ({ 
-                          ...prev, 
-                          default_dispatching_percentage: parseFloat(e.target.value) || 0 
-                        }))}
-                        placeholder="5.00"
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="edit_default_leasing_percentage">Leasing (%)</Label>
-                    <div className="relative">
-                      <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="edit_default_leasing_percentage"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max="100"
-                        value={formData.default_leasing_percentage}
-                        onChange={(e) => setFormData(prev => ({ 
-                          ...prev, 
-                          default_leasing_percentage: parseFloat(e.target.value) || 0 
-                        }))}
-                        placeholder="25.00"
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
