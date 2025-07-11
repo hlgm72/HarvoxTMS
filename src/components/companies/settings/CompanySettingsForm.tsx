@@ -31,12 +31,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
 
   // Sync formData with company prop changes (e.g., logo updates)
   useEffect(() => {
-    console.log('CompanySettingsForm - company prop:', company);
-    console.log('CompanySettingsForm - company.logo_url:', company?.logo_url);
     setFormData(company);
   }, [company]);
-
-  console.log('CompanySettingsForm - formData.logo_url:', formData.logo_url);
 
   // Create text handlers for all company fields
   const companyNameHandlers = createTextHandlers((value: string) => handleInputChange('name', value));

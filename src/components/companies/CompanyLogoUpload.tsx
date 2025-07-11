@@ -58,21 +58,21 @@ export function CompanyLogoUpload({
         const oldPath = currentLogoUrl.split('/').pop();
         if (oldPath) {
           await supabase.storage
-            .from('company-documents')
+            .from('company-logos')
             .remove([`${companyId}/${oldPath}`]);
         }
       }
 
-      // Upload new logo
+      // Upload new logo to public bucket
       const { error: uploadError } = await supabase.storage
-        .from('company-documents')
+        .from('company-logos')
         .upload(fileName, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('company-documents')
+        .from('company-logos')
         .getPublicUrl(fileName);
 
       // Update company with new logo URL
@@ -113,7 +113,7 @@ export function CompanyLogoUpload({
         const fileName = currentLogoUrl.split('/').pop();
         if (fileName) {
           await supabase.storage
-            .from('company-documents')
+            .from('company-logos')
             .remove([`${companyId}/${fileName}`]);
         }
       }
@@ -158,13 +158,6 @@ export function CompanyLogoUpload({
                 src={currentLogoUrl} 
                 alt={`Logo de ${companyName}`}
                 className="w-full h-full object-contain"
-                onError={(e) => {
-                  console.error('Error loading logo image:', currentLogoUrl);
-                  console.error('Image error event:', e);
-                }}
-                onLoad={() => {
-                  console.log('Logo image loaded successfully:', currentLogoUrl);
-                }}
               />
             ) : (
               <Building className="h-8 w-8 text-gray-400" />
