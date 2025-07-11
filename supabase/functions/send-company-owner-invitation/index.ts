@@ -117,41 +117,61 @@ const handler = async (req: Request): Promise<Response> => {
       to: [email],
       subject: `You've been invited to manage ${companyName} on FleetNest`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #2563eb;">Welcome to FleetNest!</h1>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #2563eb; margin: 0;">FleetNest</h1>
+            <p style="color: #666; margin: 5px 0;">Fleet Management Platform</p>
+          </div>
+          
+          <h2 style="color: #2563eb;">Welcome to FleetNest!</h2>
           
           <p>You have been invited to become the Company Owner for <strong>${companyName}</strong>.</p>
           
           <p>As a Company Owner, you will be able to:</p>
-          <ul>
+          <ul style="color: #444; line-height: 1.6;">
             <li>Manage your company's fleet operations</li>
             <li>Add and manage drivers</li>
             <li>Track loads and manage payments</li>
             <li>Access comprehensive reporting tools</li>
           </ul>
           
-          <div style="text-align: center; margin: 30px 0;">
+          <div style="text-align: center; margin: 40px 0;">
             <a href="${invitationUrl}" 
-               style="background-color: #2563eb; color: white; padding: 12px 24px; 
-                      text-decoration: none; border-radius: 6px; display: inline-block;">
+               style="background-color: #2563eb; color: white; padding: 15px 30px; 
+                      text-decoration: none; border-radius: 8px; display: inline-block;
+                      font-weight: bold; font-size: 16px;">
               Accept Invitation & Set Password
             </a>
           </div>
           
-          <p style="color: #666; font-size: 14px;">
-            This invitation will expire in 7 days. If you didn't expect this invitation, 
-            you can safely ignore this email.
-          </p>
+          <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0;">
+            <p style="color: #666; font-size: 14px; margin: 0;">
+              <strong>⏰ Important:</strong> This invitation will expire in 7 days. 
+              If you didn't expect this invitation, you can safely ignore this email.
+            </p>
+          </div>
           
           <p style="color: #666; font-size: 14px;">
             If the button doesn't work, copy and paste this link into your browser:<br>
-            <a href="${invitationUrl}">${invitationUrl}</a>
+            <a href="${invitationUrl}" style="color: #2563eb; word-break: break-all;">${invitationUrl}</a>
+          </p>
+          
+          <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+          <p style="color: #999; font-size: 12px; text-align: center;">
+            FleetNest - Professional Fleet Management Platform<br>
+            This is an automated message, please do not reply.
           </p>
         </div>
       `,
     });
 
-    console.log("Invitation email sent:", emailResponse);
+    console.log("Resend API response:", {
+      success: !!emailResponse.data,
+      messageId: emailResponse.data?.id,
+      error: emailResponse.error,
+      to: email,
+      company: companyName
+    });
 
     return new Response(
       JSON.stringify({
