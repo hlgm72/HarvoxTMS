@@ -219,7 +219,7 @@ export default function SuperAdminDashboard() {
         .insert([{
           ...newCompany,
           // Campos obligatorios temporales para que funcione la inserción
-          street_address: 'To be configured',
+          street_address: 'Por configurar',
           state_id: 'TX',
           zip_code: '00000',
           status: 'active',
@@ -340,7 +340,7 @@ export default function SuperAdminDashboard() {
           name: companyToEdit.name,
           email: companyToEdit.email,
           phone: companyToEdit.phone,
-          street_address: companyToEdit.street_address || 'To be configured',
+          street_address: companyToEdit.street_address || 'Por configurar',
           state_id: companyToEdit.state_id || 'TX',
           zip_code: companyToEdit.zip_code || '00000',
           owner_name: companyToEdit.owner_name,
