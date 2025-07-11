@@ -29,6 +29,16 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
   const [activeTab, setActiveTab] = useState('company');
   const { toast } = useToast();
 
+  // Create text handlers for all company fields
+  const companyNameHandlers = createTextHandlers((value: string) => handleInputChange('name', value));
+  const companyEmailHandlers = createTextHandlers((value: string) => handleInputChange('email', value), 'email');
+  const companyPhoneHandlers = createPhoneHandlers((value: string) => handleInputChange('phone', value));
+  
+  // Documentation field handlers
+  const einHandlers = createTextHandlers((value: string) => handleInputChange('ein', value));
+  const mcNumberHandlers = createTextHandlers((value: string) => handleInputChange('mc_number', value));
+  const dotNumberHandlers = createTextHandlers((value: string) => handleInputChange('dot_number', value));
+  
   // Create text handlers for owner fields
   const ownerNameHandlers = createTextHandlers((value: string) => handleInputChange('owner_name', value));
   const ownerTitleHandlers = createTextHandlers((value: string) => handleInputChange('owner_title', value));
@@ -191,7 +201,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    onChange={companyNameHandlers.onChange}
+                    onBlur={companyNameHandlers.onBlur}
                     placeholder="Ingresa el nombre de la empresa"
                   />
                 </div>
@@ -202,7 +213,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                     id="email"
                     type="email"
                     value={formData.email || ''}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    onChange={companyEmailHandlers.onChange}
+                    onBlur={companyEmailHandlers.onBlur}
                     placeholder="empresa@ejemplo.com"
                   />
                 </div>
@@ -212,7 +224,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   <Input
                     id="phone"
                     value={formData.phone || ''}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    onChange={companyPhoneHandlers.onChange}
+                    onKeyPress={companyPhoneHandlers.onKeyPress}
                     placeholder="(XXX) XXX-XXXX"
                   />
                 </div>
@@ -237,7 +250,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   <Input
                     id="ein"
                     value={formData.ein || ''}
-                    onChange={(e) => handleInputChange('ein', e.target.value)}
+                    onChange={einHandlers.onChange}
+                    onBlur={einHandlers.onBlur}
                     placeholder="XX-XXXXXXX"
                   />
                 </div>
@@ -247,7 +261,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   <Input
                     id="mc_number"
                     value={formData.mc_number || ''}
-                    onChange={(e) => handleInputChange('mc_number', e.target.value)}
+                    onChange={mcNumberHandlers.onChange}
+                    onBlur={mcNumberHandlers.onBlur}
                     placeholder="MC-XXXXXX"
                   />
                 </div>
@@ -257,7 +272,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   <Input
                     id="dot_number"
                     value={formData.dot_number || ''}
-                    onChange={(e) => handleInputChange('dot_number', e.target.value)}
+                    onChange={dotNumberHandlers.onChange}
+                    onBlur={dotNumberHandlers.onBlur}
                     placeholder="XXXXXXX"
                   />
                 </div>
