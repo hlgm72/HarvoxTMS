@@ -28,17 +28,25 @@ type AuthAction =
   | { type: 'FORCE_UPDATE' };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
+  console.log('🔧 Reducer called:', action.type, action);
+  
   switch (action.type) {
     case 'SET_SESSION':
       return { ...state, session: action.session, user: action.user };
     case 'SET_ROLES':
-      return { 
+      const newState = { 
         ...state, 
         userRoles: [...action.userRoles], 
         currentRole: action.currentRole ? { ...action.currentRole } : null,
         loading: false,
         forceUpdate: Date.now()
       };
+      console.log('🔧 Reducer SET_ROLES:', {
+        before: state.userRoles.length,
+        after: newState.userRoles.length,
+        forceUpdate: newState.forceUpdate
+      });
+      return newState;
     case 'SET_LOADING':
       return { ...state, loading: action.loading };
     case 'FORCE_UPDATE':
