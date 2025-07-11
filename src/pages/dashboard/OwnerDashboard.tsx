@@ -377,10 +377,10 @@ export default function OwnerDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Button className="h-20 flex-col gap-2 bg-gradient-primary hover:opacity-90">
-                    <User className="h-6 w-6" />
-                    Nuevo Conductor
-                  </Button>
+                   <Button className="h-20 flex-col gap-2">
+                     <User className="h-6 w-6" />
+                     Nuevo Conductor
+                   </Button>
                   <Button variant="outline" className="h-20 flex-col gap-2">
                     <Truck className="h-6 w-6" />
                     Nuevo Vehículo
@@ -401,10 +401,10 @@ export default function OwnerDashboard() {
                 <h2 className="text-2xl font-bold">Gestión de Conductores</h2>
                 <p className="text-muted-foreground">Administra tu equipo de conductores</p>
               </div>
-              <Button className="bg-gradient-primary hover:opacity-90">
-                <Plus className="h-4 w-4 mr-2" />
-                Nuevo Conductor
-              </Button>
+               <Button>
+                 <Plus className="h-4 w-4 mr-2" />
+                 Nuevo Conductor
+               </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -544,11 +544,11 @@ export default function Auth() {
                 
                 {!resetSuccess && (
                   <div className="flex gap-2">
-                    <Button
-                      type="submit"
-                      className="flex-1 font-body font-medium bg-gradient-primary"
-                      disabled={loading || !resetEmail}
-                    >
+                     <Button
+                       type="submit"
+                       className="flex-1 font-body font-medium"
+                       disabled={loading || !resetEmail}
+                     >
                       {loading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -648,11 +648,11 @@ export default function Auth() {
                   </Alert>
                 )}
                 
-                <Button
-                  type="submit"
-                  className="w-full font-body font-medium bg-gradient-primary"
-                  disabled={loading || !newPassword || !confirmPassword}
-                >
+                 <Button
+                   type="submit"
+                   className="w-full font-body font-medium"
+                   disabled={loading || !newPassword || !confirmPassword}
+                 >
                   {loading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -824,11 +824,11 @@ export default function Auth() {
                     </Alert>
                   )}
 
-                  <Button 
-                    type="submit" 
-                    className="w-full h-12 font-body font-medium text-base bg-gradient-primary hover:shadow-glow transition-all duration-300 hover:transform hover:translate-y-[-1px]" 
-                    disabled={loading || Object.keys(fieldErrors).length > 0}
-                  >
+                   <Button 
+                     type="submit" 
+                     className="w-full h-12 font-body font-medium text-base" 
+                     disabled={loading || Object.keys(fieldErrors).length > 0}
+                   >
                     {loading ? (
                       <>
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
