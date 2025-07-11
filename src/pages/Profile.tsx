@@ -40,7 +40,7 @@ type PasswordFormData = z.infer<typeof passwordSchema>;
 export default function Profile() {
   const { t, i18n } = useTranslation(['common']);
   const { toast } = useToast();
-  const { profile, loading, user, getUserInitials } = useUserProfile();
+  const { profile, loading, user, getUserInitials, refreshProfile } = useUserProfile();
   const [updating, setUpdating] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
 
@@ -112,6 +112,9 @@ export default function Profile() {
       if (data.preferred_language && data.preferred_language !== i18n.language) {
         i18n.changeLanguage(data.preferred_language);
       }
+
+      // Refresh profile data to update the UI
+      await refreshProfile();
 
       toast({
         title: "Perfil actualizado",

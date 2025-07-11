@@ -107,11 +107,36 @@ export const useUserProfile = () => {
     return user?.email || 'Usuario';
   };
 
+  // Función para refrescar el perfil después de actualizaciones
+  const refreshProfile = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error refreshing profile:', error);
+      } else {
+        setProfile(data);
+      }
+    } catch (error) {
+      console.error('Error refreshing profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     profile,
     loading,
     getUserInitials,
     getFullName,
+    refreshProfile,
     user
   };
 };
