@@ -55,14 +55,13 @@ export default function SuperAdminDashboard() {
   const { toast } = useToast();
   const { showSuccess, showError } = useFleetNotifications();
 
-  // Debug logs for translation
-  console.log('Translation DEBUG:', {
-    currentLanguage: i18n.language,
-    loadedNamespaces: i18n.options.ns,
-    isReady: i18n.isInitialized,
-    testTranslation: t('admin:pages.companies.title'),
-    testCommon: t('admin:common.loading')
-  });
+  // AGGRESSIVE Debug logs for translation
+  console.log('=== TRANSLATION DEBUG START ===');
+  console.log('Current language:', i18n.language);
+  console.log('Admin bundle:', i18n.getResourceBundle('en', 'admin'));
+  console.log('Companies title test:', t('admin:pages.companies.title'));
+  console.log('Navigation companies test:', t('admin:navigation.companies'));
+  console.log('=== TRANSLATION DEBUG END ===');
   const [activeTab, setActiveTab] = useState('overview');
   const [stats, setStats] = useState<CompanyStats>({
     total_companies: 0,
@@ -1108,13 +1107,13 @@ export default function SuperAdminDashboard() {
                   <div className="flex items-center justify-center h-64">
                     <div className="text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                      <p className="mt-2 text-muted-foreground">{t('common.loading')}</p>
+                      <p className="mt-2 text-muted-foreground">{t('admin:common.loading')}</p>
                     </div>
                   </div>
                 ) : companies.length === 0 ? (
                   <div className="text-center py-12">
                     <Building2 className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold">{t('common.no_companies')}</h3>
+                    <h3 className="text-lg font-semibold">{t('admin:common.no_companies')}</h3>
                     <p className="text-muted-foreground mb-4">Get started by creating your first company.</p>
                     <Button onClick={() => setShowCreateDialog(true)}>
                       <Plus className="h-4 w-4 mr-2" />
@@ -1159,7 +1158,7 @@ export default function SuperAdminDashboard() {
                             </div>
                             <div>
                               <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                {t('common.status')}
+                                {t('admin:common.status')}
                               </Label>
                               <Badge 
                                 variant={
@@ -1362,7 +1361,7 @@ export default function SuperAdminDashboard() {
                   <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                       <Edit className="h-5 w-5 text-blue-600" />
-                      {t('common.edit_company')}: {companyToEdit?.name}
+                      {t('admin:common.edit_company')}: {companyToEdit?.name}
                     </DialogTitle>
                     <DialogDescription>
                       Modify company information. Payment and regulatory data cannot be changed.
