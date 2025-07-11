@@ -15,6 +15,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 export function Header() {
   const { t } = useTranslation(['common', 'fleet']);
@@ -75,7 +76,11 @@ export function Header() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>{t('common:navigation.profile', 'Perfil')}</DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/profile" className="w-full">
+                  {t('common:navigation.profile', 'Perfil')}
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem>{t('common:navigation.settings', 'Configuración')}</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 

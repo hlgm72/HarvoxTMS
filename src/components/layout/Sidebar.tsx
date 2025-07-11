@@ -103,6 +103,12 @@ const companyOwnerNavigationItems = [
     icon: CreditCard,
     description: "Facturación y pagos"
   },
+  { 
+    title: "Mi Perfil", 
+    url: "/profile", 
+    icon: Users,
+    description: "Configuración personal"
+  },
 ];
 
 // Navegación para Operations Manager  
@@ -157,6 +163,12 @@ const operationsManagerNavigationItems = [
     icon: BarChart3,
     description: "Reportes operacionales"
   },
+  { 
+    title: "Mi Perfil", 
+    url: "/profile", 
+    icon: Users,
+    description: "Configuración personal"
+  },
 ];
 
 // Navegación para Dispatcher
@@ -202,6 +214,12 @@ const dispatcherNavigationItems = [
     url: "/documents", 
     icon: FileText,
     description: "Documentación"
+  },
+  { 
+    title: "Mi Perfil", 
+    url: "/profile", 
+    icon: Users,
+    description: "Configuración personal"
   },
 ];
 
@@ -306,6 +324,12 @@ const getSuperAdminNavigationItems = (t: any) => [
     url: "/superadmin/security", 
     icon: Lock,
     description: t('admin:navigation.security_backups')
+  },
+  { 
+    title: "Mi Perfil", 
+    url: "/profile", 
+    icon: Users,
+    description: "Configuración personal"
   },
 ];
 

@@ -12,6 +12,7 @@ import Companies from "./pages/Companies";
 import PaymentSystem from "./pages/PaymentSystem";
 import Invitation from "./pages/Invitation";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
 import OwnerDashboard from "./pages/dashboard/OwnerDashboard";
 import OperationsManagerDashboard from "./pages/dashboard/OperationsManagerDashboard";
 import DispatcherDashboard from "./pages/dashboard/DispatcherDashboard";
@@ -116,6 +117,18 @@ const App = () => (
               <ProtectedRoute requiredRole="superadmin">
                 <Layout>
                   <Companies />
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Profile route - available to all authenticated users */}
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Profile />
                 </Layout>
               </ProtectedRoute>
             } 
