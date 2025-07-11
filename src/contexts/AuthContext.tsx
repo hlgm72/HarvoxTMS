@@ -99,14 +99,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
+      // Clear any potential cache issues by creating a fresh query
       const { data, error } = await supabase
         .from('user_company_roles')
         .select('id, role, company_id, is_active')
         .eq('user_id', userId)
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching user roles:', error);
+        
+        // If we get a 406 error, it might be a cache issue, try a different approach
+        if (error.message.includes('406') || error.message.includes('Not Acceptable')) {
+          console.log('Retrying with RPC function...');
+          try {
+            const { data: rpcData, error: rpcError } = await supabase
+              .rpc('get_user_company_roles', { user_id_param: userId });
+            
+            if (rpcError) throw rpcError;
+            
+            const roles = rpcData.map((item: any) => ({
+              id: `${userId}-${item.company_id}-${item.role}`,
+              role: item.role,
+              company_id: item.company_id,
+              is_active: true
+            }));
+            
+            rolesCache.set(userId, roles);
+            return roles;
+          } catch (rpcError) {
+            console.error('RPC fallback also failed:', rpcError);
+            rolesCache.set(userId, []);
+            return [];
+          }
+        }
+        
         rolesCache.set(userId, []);
         return [];
       }
