@@ -54,12 +54,12 @@ interface InviteUserForm {
 }
 
 const ROLE_OPTIONS = [
-  { value: 'driver', label: 'Conductor' },
-  { value: 'dispatcher', label: 'Despachador' },
-  { value: 'senior_dispatcher', label: 'Despachador Senior' },
-  { value: 'safety_manager', label: 'Gerente de Seguridad' },
-  { value: 'operations_manager', label: 'Gerente de Operaciones' },
   { value: 'general_manager', label: 'Gerente General' },
+  { value: 'operations_manager', label: 'Gerente de Operaciones' },
+  { value: 'safety_manager', label: 'Gerente de Seguridad' },
+  { value: 'senior_dispatcher', label: 'Despachador Senior' },
+  { value: 'dispatcher', label: 'Despachador' },
+  { value: 'driver', label: 'Conductor' },
 ];
 
 export default function Users() {
