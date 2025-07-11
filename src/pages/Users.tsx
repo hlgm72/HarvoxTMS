@@ -69,6 +69,9 @@ export default function Users() {
     first_name: '',
     last_name: ''
   });
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   // Cargar usuarios al montar el componente
   useEffect(() => {
@@ -253,6 +256,16 @@ export default function Users() {
     });
   };
 
+  const handleViewUser = (user: User) => {
+    setSelectedUser(user);
+    setViewDialogOpen(true);
+  };
+
+  const handleEditUser = (user: User) => {
+    setSelectedUser(user);
+    setEditDialogOpen(true);
+  };
+
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -354,6 +367,157 @@ export default function Users() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Dialog para Ver Usuario */}
+      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Información del Usuario
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedUser && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Nombre</Label>
+                  <p className="text-sm font-medium">{selectedUser.first_name || 'N/A'}</p>
+                </div>
+                <div>
+                  <Label>Apellido</Label>
+                  <p className="text-sm font-medium">{selectedUser.last_name || 'N/A'}</p>
+                </div>
+              </div>
+              
+              <div>
+                <Label>Email</Label>
+                <p className="text-sm font-medium">{selectedUser.email}</p>
+              </div>
+              
+              <div>
+                <Label>Roles</Label>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {sortRolesByHierarchy(selectedUser.role.split(', ').map((roleLabel) => {
+                    const originalRole = Object.entries({
+                      'superadmin': 'Super Admin',
+                      'company_owner': 'Propietario',
+                      'general_manager': 'Gerente General', 
+                      'operations_manager': 'Gerente de Operaciones',
+                      'safety_manager': 'Gerente de Seguridad',
+                      'senior_dispatcher': 'Despachador Senior',
+                      'dispatcher': 'Despachador',
+                      'driver': 'Conductor',
+                    }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+                    
+                    return originalRole;
+                  })).map((originalRole, index) => (
+                    <Badge 
+                      key={index} 
+                      className={`text-xs ${getRoleBadgeColor(originalRole)}`}
+                    >
+                      {getRoleLabel(originalRole)}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <Label>Estado</Label>
+                <div className="mt-1">{getStatusBadge(selectedUser.status)}</div>
+              </div>
+              
+              <div>
+                <Label>Fecha de Registro</Label>
+                <p className="text-sm font-medium">
+                  {new Date(selectedUser.created_at).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </p>
+              </div>
+              
+              <div>
+                <Label>ID de Usuario</Label>
+                <p className="text-sm font-mono text-muted-foreground">{selectedUser.id}</p>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog para Editar Usuario */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Edit className="h-5 w-5" />
+              Editar Usuario
+            </DialogTitle>
+            <DialogDescription>
+              Modifica la información del usuario seleccionado.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedUser && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit_first_name">Nombre</Label>
+                  <Input
+                    id="edit_first_name"
+                    defaultValue={selectedUser.first_name || ''}
+                    placeholder="Nombre"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit_last_name">Apellido</Label>
+                  <Input
+                    id="edit_last_name"
+                    defaultValue={selectedUser.last_name || ''}
+                    placeholder="Apellido"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="edit_email">Email</Label>
+                <Input
+                  id="edit_email"
+                  type="email"
+                  defaultValue={selectedUser.email}
+                  placeholder="usuario@ejemplo.com"
+                  disabled
+                  className="bg-muted"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  El email no se puede modificar desde aquí
+                </p>
+              </div>
+              
+              <div>
+                <Label>Estado Actual</Label>
+                <div className="mt-1">{getStatusBadge(selectedUser.status)}</div>
+              </div>
+              
+              <div className="flex gap-2 pt-4">
+                <Button className="flex-1">
+                  Guardar Cambios
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setEditDialogOpen(false)}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Card>
         <CardHeader>
@@ -470,10 +634,20 @@ export default function Users() {
                     <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleViewUser(user)}
+                          title="Ver usuario"
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleEditUser(user)}
+                          title="Editar usuario"
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
                       </div>
