@@ -28,6 +28,9 @@ export const useAuth = () => {
     currentRole: null,
     loading: true,
   });
+  
+  // Force re-render counter
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   const fetchUserRoles = async (userId: string) => {
     // Check cache first
@@ -176,6 +179,8 @@ export const useAuth = () => {
       const currentRole = getCurrentRoleFromStorage(roles) || (roles.length > 0 ? roles[0] : null);
       
       console.log('📊 Setting new roles state:', { roles, currentRole });
+      console.log('📊 Roles count before:', authState.userRoles.length, 'after:', roles.length);
+      
       // Force a complete state refresh with new object references
       setAuthState(prev => ({
         user: prev.user,
@@ -185,12 +190,17 @@ export const useAuth = () => {
         loading: false,
       }));
       
+      // Force re-render
+      setForceUpdate(prev => prev + 1);
+      
       // Update stored role if current role changed
       if (currentRole) {
         localStorage.setItem('currentRole', JSON.stringify(currentRole));
       } else {
         localStorage.removeItem('currentRole');
       }
+      
+      console.log('🎯 Force update triggered, counter:', forceUpdate + 1);
     }
   };
 
@@ -215,5 +225,11 @@ export const useAuth = () => {
     hasRole: (role: string) => authState.userRoles.some(r => r.role === role),
     hasMultipleRoles: authState.userRoles.length > 1,
     availableRoles: authState.userRoles,
+    // Debug info
+    _forceUpdate: forceUpdate,
+    _debug: {
+      rolesCount: authState.userRoles.length,
+      currentRoleId: authState.currentRole?.id,
+    }
   };
 };
