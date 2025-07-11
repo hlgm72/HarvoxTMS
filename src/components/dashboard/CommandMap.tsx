@@ -274,8 +274,13 @@ export function CommandMap() {
     }
   }, [vehicles]);
 
-  // Real-time position updates
+  // Real-time position updates - only connect if we have vehicles to track
   useEffect(() => {
+    // Only establish realtime connection if we have vehicles and Google Maps is loaded
+    if (vehicles.length === 0 || !googleApiKey || !window.google) {
+      return;
+    }
+
     const channel = supabase
       .channel('vehicle-positions')
       .on('postgres_changes', 
@@ -287,7 +292,7 @@ export function CommandMap() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [vehicles.length, googleApiKey]);
 
   // Load initial data
   useEffect(() => {
