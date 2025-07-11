@@ -57,11 +57,13 @@ export function InviteCompanyOwnerDialog({
       });
 
       if (functionError) {
+        console.error('Function error:', functionError);
         throw new Error(functionError.message || 'Error sending invitation');
       }
 
-      if (!result.success) {
-        throw new Error(result.error || 'Error sending invitation');
+      if (!result || !result.success) {
+        console.error('Function result error:', result);
+        throw new Error(result?.error || 'Error sending invitation');
       }
 
       toast({
