@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { Resend } from "npm:resend@4.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -91,6 +92,53 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     console.log("Invitation created successfully:", invitation.id);
+
+    // Send invitation email using Resend
+    const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+    const invitationUrl = `${Deno.env.get("SUPABASE_URL")}/invitation?token=${invitationToken}`;
+    
+    try {
+      const emailResponse = await resend.emails.send({
+        from: "FleetNest <noreply@fleetnest.app>",
+        to: [email],
+        subject: `Invitation to manage ${companyName} - FleetNest`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h1 style="color: #2563eb; margin-bottom: 24px;">Company Owner Invitation</h1>
+            
+            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">
+              You have been invited to become the Company Owner for <strong>${companyName}</strong> on FleetNest.
+            </p>
+            
+            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 24px;">
+              Click the button below to set up your account and start managing your fleet:
+            </p>
+            
+            <div style="text-align: center; margin: 32px 0;">
+              <a href="${invitationUrl}" 
+                 style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; display: inline-block;">
+                Accept Invitation
+              </a>
+            </div>
+            
+            <p style="font-size: 14px; color: #6b7280; margin-top: 32px;">
+              This invitation will expire in 7 days. If you didn't expect this invitation, you can safely ignore this email.
+            </p>
+            
+            <hr style="margin: 32px 0; border: none; border-top: 1px solid #e5e7eb;">
+            
+            <p style="font-size: 12px; color: #9ca3af; text-align: center;">
+              FleetNest - Professional Fleet Management Platform
+            </p>
+          </div>
+        `,
+      });
+
+      console.log("Email sent successfully:", emailResponse);
+    } catch (emailError) {
+      console.error("Error sending email:", emailError);
+      // Don't fail the whole operation if email fails
+    }
 
     return new Response(
       JSON.stringify({
