@@ -20,24 +20,34 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    console.log("Starting invitation process...");
+    
     // Initialize Supabase client with service role
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    console.log("Supabase client initialized");
+
     // Get the authorization header
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
+      console.error("No authorization header found");
       throw new Error("No authorization header");
     }
+
+    console.log("Authorization header found");
 
     // Verify the user is authenticated and is a superadmin
     const token = authHeader.replace("Bearer ", "");
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
     if (userError || !user) {
+      console.error("Authentication failed:", userError);
       throw new Error("Invalid authentication");
     }
+
+    console.log("User authenticated:", user.id);
 
     // Check if user is superadmin
     const { data: isSuperAdmin, error: roleError } = await supabase.rpc(
@@ -45,7 +55,10 @@ const handler = async (req: Request): Promise<Response> => {
       { user_id_param: user.id }
     );
 
+    console.log("Superadmin check result:", { isSuperAdmin, roleError });
+
     if (roleError || !isSuperAdmin) {
+      console.error("Access denied. User is not superadmin:", { roleError, isSuperAdmin });
       throw new Error("Access denied. Superadmin role required.");
     }
 
