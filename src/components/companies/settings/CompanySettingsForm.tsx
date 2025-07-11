@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,18 @@ import { supabase } from '@/integrations/supabase/client';
 import { Company } from '@/types/company';
 import { CompanyLogoUpload } from '../CompanyLogoUpload';
 
+interface State {
+  id: string;
+  name: string;
+}
+
+interface City {
+  id: string;
+  name: string;
+  state_id: string;
+  county?: string;
+}
+
 interface CompanySettingsFormProps {
   company: Company;
   onUpdate: (updatedCompany: Company) => void;
@@ -25,13 +37,84 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
   const [formData, setFormData] = useState<Company>(company);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('company');
+  const [states, setStates] = useState<State[]>([]);
+  const [cities, setCities] = useState<City[]>([]);
+  const [loadingStates, setLoadingStates] = useState(false);
+  const [loadingCities, setLoadingCities] = useState(false);
   const { toast } = useToast();
 
+  // Load states and cities data
+  useEffect(() => {
+    loadStates();
+  }, []);
+
+  useEffect(() => {
+    if (formData.state_id) {
+      loadCities(formData.state_id);
+    } else {
+      setCities([]);
+    }
+  }, [formData.state_id]);
+
+  const loadStates = async () => {
+    setLoadingStates(true);
+    try {
+      const { data, error } = await supabase
+        .from('states')
+        .select('id, name')
+        .order('name');
+
+      if (error) throw error;
+      setStates(data || []);
+    } catch (error) {
+      console.error('Error loading states:', error);
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar los estados",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingStates(false);
+    }
+  };
+
+  const loadCities = async (stateId: string) => {
+    setLoadingCities(true);
+    try {
+      const { data, error } = await supabase
+        .from('state_cities')
+        .select('id, name, county, state_id')
+        .eq('state_id', stateId)
+        .order('name');
+
+      if (error) throw error;
+      setCities(data || []);
+    } catch (error) {
+      console.error('Error loading cities:', error);
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar las ciudades",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingCities(false);
+    }
+  };
+
   const handleInputChange = (field: keyof Company, value: string | number) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setFormData(prev => {
+      const updated = {
+        ...prev,
+        [field]: value
+      };
+      
+      // If state changes, reset city
+      if (field === 'state_id') {
+        updated.city_id = undefined;
+      }
+      
+      return updated;
+    });
   };
 
   const handleSave = async () => {
@@ -276,22 +359,6 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="state_id">Estado *</Label>
-                    <Select value={formData.state_id} onValueChange={(value) => handleInputChange('state_id', value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona estado" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="TX">Texas</SelectItem>
-                        <SelectItem value="CA">California</SelectItem>
-                        <SelectItem value="FL">Florida</SelectItem>
-                        <SelectItem value="NY">New York</SelectItem>
-                        {/* Add more states as needed */}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
                     <Label htmlFor="zip_code">Código Postal *</Label>
                     <Input
                       id="zip_code"
@@ -299,6 +366,53 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                       onChange={(e) => handleInputChange('zip_code', e.target.value)}
                       placeholder="12345"
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="state_id">Estado *</Label>
+                    <Select 
+                      value={formData.state_id} 
+                      onValueChange={(value) => handleInputChange('state_id', value)}
+                      disabled={loadingStates}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={loadingStates ? "Cargando estados..." : "Selecciona estado"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {states.map((state) => (
+                          <SelectItem key={state.id} value={state.id}>
+                            {state.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="city_id">Ciudad</Label>
+                    <Select 
+                      value={formData.city_id || ''} 
+                      onValueChange={(value) => handleInputChange('city_id', value)}
+                      disabled={loadingCities || !formData.state_id}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={
+                          loadingCities 
+                            ? "Cargando ciudades..." 
+                            : !formData.state_id 
+                              ? "Primero selecciona un estado"
+                              : "Selecciona ciudad (opcional)"
+                        } />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Sin especificar</SelectItem>
+                        {cities.map((city) => (
+                          <SelectItem key={city.id} value={city.id}>
+                            {city.name} {city.county && `(${city.county})`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
