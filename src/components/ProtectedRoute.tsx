@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Shield, Loader2 } from 'lucide-react';
@@ -36,23 +37,7 @@ export const ProtectedRoute = ({
 
   // Check authentication requirement
   if (requireAuth && !isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center space-y-4">
-              <Shield className="h-12 w-12 text-muted-foreground" />
-              <div className="text-center">
-                <h2 className="text-lg font-semibold">{t('messages.restricted_access')}</h2>
-                <p className="text-muted-foreground">
-                  {t('messages.login_required')}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <Navigate to="/auth" replace />;
   }
 
   // Check role requirement
