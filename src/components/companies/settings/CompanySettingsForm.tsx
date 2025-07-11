@@ -16,6 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Company } from '@/types/company';
 import { CompanyLogoUpload } from '../CompanyLogoUpload';
 import { AddressForm } from '@/components/ui/AddressForm';
+import { createTextHandlers, createPhoneHandlers } from '@/lib/textUtils';
 
 interface CompanySettingsFormProps {
   company: Company;
@@ -27,6 +28,12 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('company');
   const { toast } = useToast();
+
+  // Create text handlers for owner fields
+  const ownerNameHandlers = createTextHandlers((value: string) => handleInputChange('owner_name', value));
+  const ownerTitleHandlers = createTextHandlers((value: string) => handleInputChange('owner_title', value));
+  const ownerEmailHandlers = createTextHandlers((value: string) => handleInputChange('owner_email', value), 'email');
+  const ownerPhoneHandlers = createPhoneHandlers((value: string) => handleInputChange('owner_phone', value));
 
   const handleInputChange = (field: keyof Company, value: string | number) => {
     setFormData(prev => {
@@ -305,7 +312,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   <Input
                     id="owner_name"
                     value={formData.owner_name || ''}
-                    onChange={(e) => handleInputChange('owner_name', e.target.value)}
+                    onChange={ownerNameHandlers.onChange}
+                    onBlur={ownerNameHandlers.onBlur}
                     placeholder="Juan Pérez"
                   />
                 </div>
@@ -315,7 +323,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   <Input
                     id="owner_title"
                     value={formData.owner_title || ''}
-                    onChange={(e) => handleInputChange('owner_title', e.target.value)}
+                    onChange={ownerTitleHandlers.onChange}
+                    onBlur={ownerTitleHandlers.onBlur}
                     placeholder="CEO, Presidente, etc."
                   />
                 </div>
@@ -326,7 +335,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                     id="owner_email"
                     type="email"
                     value={formData.owner_email || ''}
-                    onChange={(e) => handleInputChange('owner_email', e.target.value)}
+                    onChange={ownerEmailHandlers.onChange}
+                    onBlur={ownerEmailHandlers.onBlur}
                     placeholder="propietario@empresa.com"
                   />
                 </div>
@@ -336,7 +346,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   <Input
                     id="owner_phone"
                     value={formData.owner_phone || ''}
-                    onChange={(e) => handleInputChange('owner_phone', e.target.value)}
+                    onChange={ownerPhoneHandlers.onChange}
+                    onKeyPress={ownerPhoneHandlers.onKeyPress}
                     placeholder="(XXX) XXX-XXXX"
                   />
                 </div>
