@@ -15,7 +15,12 @@ interface InvitationRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  console.log("=== INVITATION HANDLER STARTED ===");
+  console.log("Method:", req.method);
+  console.log("URL:", req.url);
+  
   if (req.method === "OPTIONS") {
+    console.log("Handling CORS preflight");
     return new Response(null, { headers: corsHeaders });
   }
 
