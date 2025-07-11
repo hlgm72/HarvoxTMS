@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UserPlus, Mail, Shield, Edit, Trash2 } from "lucide-react";
+import { UserPlus, Mail, Shield, Edit, Trash2, Users as UsersIcon } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -248,10 +248,41 @@ export default function Users() {
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                  No hay usuarios registrados aún.
-                  <br />
-                  <span className="text-sm">Utiliza el botón "Invitar Usuario" para comenzar.</span>
+                <TableCell colSpan={6} className="text-center py-16">
+                  <div className="flex flex-col items-center space-y-6 animate-fade-in">
+                    <div className="relative">
+                      <img 
+                        src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=300&fit=crop&auto=format" 
+                        alt="Equipo colaborando"
+                        className="w-64 h-48 object-cover rounded-lg shadow-lg opacity-90"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent rounded-lg"></div>
+                    </div>
+                    
+                    <div className="space-y-3 max-w-sm">
+                      <div className="flex items-center justify-center space-x-2">
+                        <UsersIcon className="h-6 w-6 text-primary animate-pulse" />
+                        <h3 className="text-xl font-semibold text-foreground">
+                          Tu equipo está esperando
+                        </h3>
+                      </div>
+                      
+                      <p className="text-muted-foreground text-center leading-relaxed">
+                        No hay usuarios registrados aún. Comienza a construir tu equipo 
+                        invitando a tus primeros colaboradores.
+                      </p>
+                      
+                      <div className="pt-4">
+                        <Button 
+                          onClick={() => setInviteDialogOpen(true)}
+                          className="hover-scale gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg"
+                        >
+                          <UserPlus className="h-4 w-4" />
+                          Invitar mi primer usuario
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </TableCell>
               </TableRow>
             </TableBody>
