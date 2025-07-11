@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -17,6 +18,8 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Settings, Save, KeyRound, CheckCircle, AlertCircle, RotateCcw, Trash2, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import { createTextHandlers } from '@/lib/textUtils';
 
 const profileSchema = z.object({
@@ -41,10 +44,14 @@ type PasswordFormData = z.infer<typeof passwordSchema>;
 
 export default function Profile() {
   const { t, i18n } = useTranslation(['common']);
+  const navigate = useNavigate();
+  const { isSuperAdmin, isCompanyOwner, isOperationsManager, isDispatcher, isDriver } = useAuth();
   const { showSuccess, showError, showInfo } = useFleetNotifications();
   const { profile, loading, user, getUserInitials, refreshProfile } = useUserProfile();
   const [updating, setUpdating] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [pendingCancelAction, setPendingCancelAction] = useState<'profile' | 'password' | null>(null);
 
   // Create handlers for text inputs
   const nameHandlers = createTextHandlers((value) => 
@@ -132,32 +139,54 @@ export default function Profile() {
     }
   };
 
-  const onCancelProfile = () => {
-    if (profile) {
-      profileForm.reset({
-        first_name: profile.first_name || '',
-        last_name: profile.last_name || '',
-        phone: profile.phone || '',
-        preferred_language: profile.preferred_language || 'en',
-        timezone: profile.timezone || 'America/New_York',
+  // Función para obtener la ruta del dashboard según el rol del usuario
+  const getDashboardRoute = () => {
+    if (isSuperAdmin) return '/superadmin';
+    if (isCompanyOwner) return '/dashboard/owner';
+    if (isOperationsManager) return '/dashboard/operations';
+    if (isDispatcher) return '/dashboard/dispatch';
+    if (isDriver) return '/dashboard/driver';
+    return '/'; // Fallback
+  };
+
+  // Función para manejar la confirmación de cancelar
+  const handleCancelConfirmation = () => {
+    if (pendingCancelAction === 'profile') {
+      // Resetear formulario de perfil
+      if (profile) {
+        profileForm.reset({
+          first_name: profile.first_name || '',
+          last_name: profile.last_name || '',
+          phone: profile.phone || '',
+          preferred_language: profile.preferred_language || 'en',
+          timezone: profile.timezone || 'America/New_York',
+        });
+      }
+    } else if (pendingCancelAction === 'password') {
+      // Resetear formulario de contraseña
+      passwordForm.reset({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
       });
-      showInfo(
-        "Cambios descartados",
-        "Los valores originales han sido restaurados correctamente."
-      );
     }
+    
+    // Navegar al dashboard
+    navigate(getDashboardRoute());
+    
+    // Limpiar estados
+    setShowCancelModal(false);
+    setPendingCancelAction(null);
+  };
+
+  const onCancelProfile = () => {
+    setPendingCancelAction('profile');
+    setShowCancelModal(true);
   };
 
   const onCancelPassword = () => {
-    passwordForm.reset({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    });
-    showInfo(
-      "Campos limpiados",
-      "Los campos de contraseña han sido reiniciados correctamente."
-    );
+    setPendingCancelAction('password');
+    setShowCancelModal(true);
   };
 
   const onSubmitPassword = async (data: PasswordFormData) => {
@@ -478,6 +507,29 @@ export default function Profile() {
           </Tabs>
         </Card>
       </div>
+
+      {/* Modal de confirmación para cancelar */}
+      <AlertDialog open={showCancelModal} onOpenChange={setShowCancelModal}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Descartar cambios?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingCancelAction === 'profile' 
+                ? "Se perderán todos los cambios no guardados en tu información personal y serás redirigido a tu dashboard."
+                : "Se limpiarán todos los campos de contraseña y serás redirigido a tu dashboard."
+              }
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowCancelModal(false)}>
+              Continuar editando
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleCancelConfirmation} className="bg-destructive hover:bg-destructive/90">
+              Sí, descartar y salir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
