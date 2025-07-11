@@ -173,31 +173,27 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
             accept="image/*"
             onChange={uploadAvatar}
             disabled={uploading || removing}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            className="hidden"
             id="avatar-upload"
           />
-          <Label htmlFor="avatar-upload" className="cursor-pointer">
-            <Button 
-              variant="outline" 
-              disabled={uploading || removing}
-              className="w-full"
-              asChild
-            >
-              <span>
-                {uploading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Subiendo...
-                  </>
-                ) : (
-                  <>
-                    <Camera className="h-4 w-4 mr-2" />
-                    Cambiar foto
-                  </>
-                )}
-              </span>
-            </Button>
-          </Label>
+          <Button 
+            variant="outline" 
+            disabled={uploading || removing}
+            className="w-full"
+            onClick={() => document.getElementById('avatar-upload')?.click()}
+          >
+            {uploading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Subiendo...
+              </>
+            ) : (
+              <>
+                <Camera className="h-4 w-4 mr-2" />
+                Cambiar foto
+              </>
+            )}
+          </Button>
         </div>
 
         {currentAvatarUrl && (
