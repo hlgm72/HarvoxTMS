@@ -176,11 +176,21 @@ export const useAuth = () => {
       const currentRole = getCurrentRoleFromStorage(roles) || (roles.length > 0 ? roles[0] : null);
       
       console.log('📊 Setting new roles state:', { roles, currentRole });
+      // Force a complete state refresh with new object references
       setAuthState(prev => ({
-        ...prev,
-        userRoles: roles,
-        currentRole,
+        user: prev.user,
+        session: prev.session,
+        userRoles: [...roles], // New array reference
+        currentRole: currentRole ? { ...currentRole } : null, // New object reference
+        loading: false,
       }));
+      
+      // Update stored role if current role changed
+      if (currentRole) {
+        localStorage.setItem('currentRole', JSON.stringify(currentRole));
+      } else {
+        localStorage.removeItem('currentRole');
+      }
     }
   };
 
