@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { createTextHandlers } from "@/lib/textUtils";
 import { useTranslation } from 'react-i18next';
+import { Company } from '@/types/company';
 
 // Import new components
 import { CompanyStats } from "@/components/companies/CompanyStats";
@@ -22,24 +23,7 @@ import { CompanyDashboardView } from "@/components/companies/CompanyDashboardVie
 import { CompanyActions } from "@/components/companies/CompanyActions";
 import { CompanyPagination } from "@/components/companies/CompanyPagination";
 
-interface Company {
-  id: string;
-  name: string;
-  phone?: string;
-  email?: string;
-  street_address: string;
-  state_id: string;
-  zip_code: string;
-  plan_type?: string;
-  status?: string;
-  owner_name?: string;
-  owner_phone?: string;
-  owner_email?: string;
-  owner_title?: string;
-  max_users?: number;
-  max_vehicles?: number;
-  created_at: string;
-}
+// Using the Company interface from types/company.ts
 
 interface CompanyFormData {
   name: string;

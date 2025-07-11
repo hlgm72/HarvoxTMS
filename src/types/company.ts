@@ -1,18 +1,27 @@
 export interface Company {
   id: string;
   name: string;
-  phone?: string;
-  email?: string;
+  ein?: string;
+  mc_number?: string;
+  dot_number?: string;
   street_address: string;
   state_id: string;
+  city_id?: string;
   zip_code: string;
-  plan_type?: string;
-  status?: string;
-  owner_name?: string;
-  owner_phone?: string;
-  owner_email?: string;
-  owner_title?: string;
-  max_users?: number;
-  max_vehicles?: number;
+  phone?: string;
+  email?: string;
+  payment_day: number;
   created_at: string;
+  updated_at: string;
+  owner_name?: string;
+  owner_email?: string;
+  owner_phone?: string;
+  owner_title?: string;
+  plan_type?: string;
+  max_vehicles?: number;
+  max_users?: number;
+  status?: string;
+  contract_start_date?: string;
+  default_payment_frequency?: string;
+  payment_cycle_start_day?: number;
 }

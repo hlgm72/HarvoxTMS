@@ -13,6 +13,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useFleetNotifications } from '@/components/notifications';
+import { CompanySettingsForm } from '@/components/companies/settings/CompanySettingsForm';
+import { Company } from '@/types/company';
 
 // Types
 interface CompanyStats {
@@ -36,17 +38,7 @@ interface Driver {
   created_at: string;
 }
 
-interface CompanyInfo {
-  id: string;
-  name: string;
-  email: string | null;
-  phone: string | null;
-  owner_name: string | null;
-  owner_email: string | null;
-  max_users: number | null;
-  max_vehicles: number | null;
-  status: string | null;
-}
+// Using Company interface from types
 
 export default function OwnerDashboard() {
   const { user, userRole, loading } = useAuth();
@@ -64,7 +56,7 @@ export default function OwnerDashboard() {
     pending_payments: 0,
   });
   const [drivers, setDrivers] = useState<Driver[]>([]);
-  const [companyInfo, setCompanyInfo] = useState<CompanyInfo | null>(null);
+  const [companyInfo, setCompanyInfo] = useState<Company | null>(null);
 
   useEffect(() => {
     if (!loading && user && userRole?.company_id) {
@@ -498,42 +490,10 @@ export default function OwnerDashboard() {
 
           {/* Settings */}
           <TabsContent value="settings" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building className="h-5 w-5 text-primary" />
-                  Información de la Empresa
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {companyInfo && (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Nombre de la Empresa</label>
-                        <p className="font-semibold">{companyInfo.name}</p>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Email</label>
-                        <p className="font-semibold">{companyInfo.email || 'No configurado'}</p>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Teléfono</label>
-                        <p className="font-semibold">{companyInfo.phone || 'No configurado'}</p>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Propietario</label>
-                        <p className="font-semibold">{companyInfo.owner_name || 'No configurado'}</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" className="mt-4">
-                      <Edit className="h-4 w-4 mr-2" />
-                      Editar Información
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <CompanySettingsForm 
+              company={companyInfo as Company} 
+              onUpdate={setCompanyInfo}
+            />
           </TabsContent>
         </Tabs>
       </div>
