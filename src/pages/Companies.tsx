@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building2, Plus, Phone, Mail, User, MapPin, Search, Edit, Trash2, Users, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useFleetNotifications } from "@/components/notifications";
 import { createTextHandlers } from "@/lib/textUtils";
 import { useTranslation } from 'react-i18next';
 import { Company } from '@/types/company';
@@ -81,7 +81,7 @@ export default function Companies() {
   const [sortField, setSortField] = useState<SortField>('created_at');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
 
   // Text handlers for phone formatting
   const phoneHandlers = createTextHandlers((value) =>
@@ -162,11 +162,10 @@ export default function Companies() {
       setCompanies(data || []);
     } catch (error) {
       console.error('Error fetching companies:', error);
-      toast({
-        title: t('admin:common.error'),
-        description: t('admin:pages.companies.messages.load_error', { defaultValue: "Could not load companies" }),
-        variant: "destructive",
-      });
+      showError(
+        t('admin:common.error'),
+        t('admin:pages.companies.messages.load_error', { defaultValue: "Could not load companies" })
+      );
     } finally {
       setLoading(false);
     }
@@ -180,21 +179,20 @@ export default function Companies() {
 
       if (error) throw error;
 
-      toast({
-        title: t('admin:pages.companies.messages.company_created_success'),
-        description: t('admin:pages.companies.messages.company_created_desc'),
-      });
+      showSuccess(
+        t('admin:pages.companies.messages.company_created_success'),
+        t('admin:pages.companies.messages.company_created_desc')
+      );
 
       setIsCreateDialogOpen(false);
       resetForm();
       fetchCompanies();
     } catch (error) {
       console.error('Error creating company:', error);
-      toast({
-        title: t('admin:pages.companies.messages.company_creation_error'),
-        description: t('admin:pages.companies.messages.company_creation_error_desc'),
-        variant: "destructive",
-      });
+      showError(
+        t('admin:pages.companies.messages.company_creation_error'),
+        t('admin:pages.companies.messages.company_creation_error_desc')
+      );
     }
   };
 
@@ -209,10 +207,10 @@ export default function Companies() {
 
       if (error) throw error;
 
-      toast({
-        title: t('admin:common.company_updated'),
-        description: t('admin:pages.companies.messages.company_updated_desc', { defaultValue: "Company updated successfully" }),
-      });
+      showSuccess(
+        t('admin:common.company_updated'),
+        t('admin:pages.companies.messages.company_updated_desc', { defaultValue: "Company updated successfully" })
+      );
 
       setIsEditDialogOpen(false);
       setCompanyToEdit(null);
@@ -220,11 +218,10 @@ export default function Companies() {
       fetchCompanies();
     } catch (error) {
       console.error('Error updating company:', error);
-      toast({
-        title: t('admin:common.error'),
-        description: t('admin:pages.companies.messages.company_update_error', { defaultValue: "Could not update company" }),
-        variant: "destructive",
-      });
+      showError(
+        t('admin:common.error'),
+        t('admin:pages.companies.messages.company_update_error', { defaultValue: "Could not update company" })
+      );
     }
   };
 
@@ -238,11 +235,10 @@ export default function Companies() {
 
       const result = canDeleteResult as any;
       if (!result?.can_delete) {
-        toast({
-          title: t('admin:common.cannot_delete'),
-          description: result?.reason || t('admin:pages.companies.messages.cannot_delete_desc', { defaultValue: "This company cannot be deleted" }),
-          variant: "destructive",
-        });
+        showError(
+          t('admin:common.cannot_delete'),
+          result?.reason || t('admin:pages.companies.messages.cannot_delete_desc', { defaultValue: "This company cannot be deleted" })
+        );
         return;
       }
 
@@ -252,19 +248,18 @@ export default function Companies() {
 
       if (error) throw error;
 
-      toast({
-        title: t('admin:common.success', { defaultValue: "Success" }),
-        description: t('admin:pages.companies.messages.company_deleted_success', { companyName, defaultValue: `Company "${companyName}" deleted successfully` }),
-      });
+      showSuccess(
+        t('admin:common.success', { defaultValue: "Success" }),
+        t('admin:pages.companies.messages.company_deleted_success', { companyName, defaultValue: `Company "${companyName}" deleted successfully` })
+      );
 
       fetchCompanies();
     } catch (error) {
       console.error('Error deleting company:', error);
-      toast({
-        title: t('admin:common.error'),
-        description: t('admin:pages.companies.messages.company_delete_error', { defaultValue: "Could not delete company" }),
-        variant: "destructive",
-      });
+      showError(
+        t('admin:common.error'),
+        t('admin:pages.companies.messages.company_delete_error', { defaultValue: "Could not delete company" })
+      );
     }
   };
 
@@ -277,19 +272,18 @@ export default function Companies() {
 
       if (error) throw error;
 
-      toast({
-        title: t('admin:common.success', { defaultValue: "Success" }),
-        description: t('admin:pages.companies.messages.bulk_status_updated', { count: selectedCompanies.length, defaultValue: `Status updated for ${selectedCompanies.length} companies` }),
-      });
+      showSuccess(
+        t('admin:common.success', { defaultValue: "Success" }),
+        t('admin:pages.companies.messages.bulk_status_updated', { count: selectedCompanies.length, defaultValue: `Status updated for ${selectedCompanies.length} companies` })
+      );
 
       fetchCompanies();
     } catch (error) {
       console.error('Error updating company status:', error);
-      toast({
-        title: t('admin:common.error'),
-        description: t('admin:pages.companies.messages.bulk_status_error', { defaultValue: "Could not update company status" }),
-        variant: "destructive",
-      });
+      showError(
+        t('admin:common.error'),
+        t('admin:pages.companies.messages.bulk_status_error', { defaultValue: "Could not update company status" })
+      );
     }
   };
 

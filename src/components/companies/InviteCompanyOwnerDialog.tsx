@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, Building2, UserPlus } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { supabase } from '@/integrations/supabase/client';
 
 interface InviteCompanyOwnerDialogProps {
@@ -22,7 +22,7 @@ export function InviteCompanyOwnerDialog({
   onOpenChange, 
   company 
 }: InviteCompanyOwnerDialogProps) {
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -71,10 +71,10 @@ export function InviteCompanyOwnerDialog({
         throw new Error(result?.error || 'Error sending invitation');
       }
 
-      toast({
-        title: "Invitation Sent!",
-        description: `Company Owner invitation has been sent to ${email}. They will receive an email with instructions to set up their account.`,
-      });
+      showSuccess(
+        "Invitation Sent!",
+        `Company Owner invitation has been sent to ${email}. They will receive an email with instructions to set up their account.`
+      );
 
       // Reset form and close dialog
       setEmail('');

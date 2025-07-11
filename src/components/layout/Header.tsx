@@ -14,30 +14,29 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { LogOut } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useFleetNotifications } from '@/components/notifications';
 import { Link, useNavigate } from "react-router-dom";
 
 export function Header() {
   const { t } = useTranslation(['common', 'fleet']);
   const { signOut } = useAuth();
   const { getUserInitials, getFullName, user, profile } = useUserProfile();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       await signOut();
-      toast({
-        title: "Sesión cerrada",
-        description: "Has cerrado sesión exitosamente.",
-      });
+      showSuccess(
+        "Sesión cerrada",
+        "Has cerrado sesión exitosamente."
+      );
       navigate('/auth');
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo cerrar la sesión. Inténtalo de nuevo.",
-        variant: "destructive",
-      });
+      showError(
+        "Error",
+        "No se pudo cerrar la sesión. Inténtalo de nuevo."
+      );
     }
   };
   

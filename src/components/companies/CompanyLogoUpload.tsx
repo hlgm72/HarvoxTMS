@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Camera, Loader2, Building, X } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 
 interface CompanyLogoUploadProps {
   companyId: string;
@@ -21,7 +21,7 @@ export function CompanyLogoUpload({
 }: CompanyLogoUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [removing, setRemoving] = useState(false);
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
 
   const uploadLogo = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -32,21 +32,19 @@ export function CompanyLogoUpload({
 
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        toast({
-          title: "Error",
-          description: "Por favor selecciona un archivo de imagen válido",
-          variant: "destructive",
-        });
+        showError(
+          "Error",
+          "Por favor selecciona un archivo de imagen válido"
+        );
         return;
       }
 
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "Error",
-          description: "El archivo es demasiado grande. Máximo 5MB",
-          variant: "destructive",
-        });
+        showError(
+          "Error",
+          "El archivo es demasiado grande. Máximo 5MB"
+        );
         return;
       }
 
@@ -85,18 +83,17 @@ export function CompanyLogoUpload({
 
       onLogoUpdate(publicUrl);
       
-      toast({
-        title: "Éxito",
-        description: "Logo de la empresa actualizado correctamente",
-      });
+      showSuccess(
+        "Éxito",
+        "Logo de la empresa actualizado correctamente"
+      );
 
     } catch (error: any) {
       console.error('Error uploading logo:', error);
-      toast({
-        title: "Error",
-        description: "Error al subir el logo: " + error.message,
-        variant: "destructive",
-      });
+      showError(
+        "Error",
+        "Error al subir el logo: " + error.message
+      );
     } finally {
       setUploading(false);
       // Reset input
@@ -128,18 +125,17 @@ export function CompanyLogoUpload({
 
       onLogoUpdate(null);
       
-      toast({
-        title: "Éxito",
-        description: "Logo de la empresa eliminado correctamente",
-      });
+      showSuccess(
+        "Éxito",
+        "Logo de la empresa eliminado correctamente"
+      );
 
     } catch (error: any) {
       console.error('Error removing logo:', error);
-      toast({
-        title: "Error",
-        description: "Error al eliminar el logo: " + error.message,
-        variant: "destructive",
-      });
+      showError(
+        "Error",
+        "Error al eliminar el logo: " + error.message
+      );
     } finally {
       setRemoving(false);
     }
