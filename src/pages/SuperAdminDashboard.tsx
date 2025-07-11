@@ -727,7 +727,7 @@ export default function SuperAdminDashboard() {
                 </TabsTrigger>
                 <TabsTrigger value="companies" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <Building2 className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('navigation.companies')}</span>
+                  <span className="hidden sm:inline">{t('admin:navigation.companies')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="analytics" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <TrendingUp className="h-4 w-4" />
