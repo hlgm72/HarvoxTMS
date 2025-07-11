@@ -113,30 +113,42 @@ Deno.serve(async (req) => {
         break
       }
 
+      // Get all existing cities for this batch's states to check duplicates efficiently
+      const statesInBatch = [...new Set(sourceCities.map((city: SourceCity) => city.state_code))]
+      const { data: existingCities, error: existingError } = await destSupabase
+        .from('state_cities')
+        .select('name, state_id')
+        .in('state_id', statesInBatch)
+
+      if (existingError) {
+        console.error(`❌ Failed to fetch existing cities:`, existingError.message)
+        totalErrors += sourceCities.length
+        offset += batchSize
+        continue
+      }
+
+      // Create a Set for fast duplicate checking
+      const existingCitiesSet = new Set(
+        existingCities?.map(city => `${city.name}|${city.state_id}`) || []
+      )
+
       // Transform and filter cities for destination
       const citiesToInsert: TargetCity[] = []
       const invalidCities: string[] = []
       let batchSkipped = 0
 
-      // Process each city individually to check for duplicates correctly
-      for (const city of sourceCities) {
+      sourceCities.forEach((city: SourceCity) => {
         // Check if state_code exists in our mapping
         if (!stateMapping[city.state_code]) {
           invalidCities.push(`${city.city_name}, ${city.state_code}`)
-          continue
+          return
         }
 
-        // Check for existing city in destination (by name + state combination)
-        const { data: existingCity } = await destSupabase
-          .from('state_cities')
-          .select('id')
-          .eq('name', city.city_name)
-          .eq('state_id', city.state_code)
-          .maybeSingle()
-
-        if (existingCity) {
+        // Check for existing city using the Set (much faster)
+        const cityKey = `${city.city_name}|${city.state_code}`
+        if (existingCitiesSet.has(cityKey)) {
           batchSkipped++
-          continue // Skip if city already exists in this state
+          return // Skip if city already exists in this state
         }
 
         citiesToInsert.push({
@@ -144,7 +156,7 @@ Deno.serve(async (req) => {
           state_id: city.state_code, // Use state_code directly as state_id
           county: null
         })
-      }
+      })
 
       if (invalidCities.length > 0) {
         console.warn(`⚠️ Skipping ${invalidCities.length} cities with invalid state codes:`, invalidCities.slice(0, 5))
