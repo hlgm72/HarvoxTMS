@@ -349,13 +349,6 @@ export function AppSidebar() {
   
   const collapsed = state === "collapsed";
   
-  console.log("Sidebar DEBUG:", { 
-    state, 
-    collapsed, 
-    collapsible: "icon",
-    dataCollapsible: state === "collapsed" ? "icon" : "",
-    shouldApplyCss: state === "collapsed"
-  });
   
   // Determinar navegación según el rol del usuario
   const getNavigationItems = () => {
