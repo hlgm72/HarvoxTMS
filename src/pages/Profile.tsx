@@ -128,6 +128,34 @@ export default function Profile() {
     }
   };
 
+  const onCancelProfile = () => {
+    if (profile) {
+      profileForm.reset({
+        first_name: profile.first_name || '',
+        last_name: profile.last_name || '',
+        phone: profile.phone || '',
+        preferred_language: profile.preferred_language || 'en',
+        timezone: profile.timezone || 'America/New_York',
+      });
+      toast({
+        title: "Cambios cancelados",
+        description: "Se han restaurado los valores originales.",
+      });
+    }
+  };
+
+  const onCancelPassword = () => {
+    passwordForm.reset({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    });
+    toast({
+      title: "Cambios cancelados",
+      description: "Se han limpiado los campos de contraseña.",
+    });
+  };
+
   const onSubmitPassword = async (data: PasswordFormData) => {
     setChangingPassword(true);
     try {
@@ -330,7 +358,10 @@ export default function Profile() {
                   />
                 </div>
 
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-2">
+                  <Button type="button" variant="outline" onClick={onCancelProfile}>
+                    Cancelar
+                  </Button>
                   <Button type="submit" disabled={updating}>
                     {updating ? (
                       <>
@@ -409,7 +440,10 @@ export default function Profile() {
                   )}
                 />
 
-                <div className="flex justify-start">
+                <div className="flex justify-start gap-2">
+                  <Button type="button" variant="outline" onClick={onCancelPassword}>
+                    Cancelar
+                  </Button>
                   <Button type="submit" disabled={changingPassword} variant="secondary">
                     {changingPassword ? (
                       <>
