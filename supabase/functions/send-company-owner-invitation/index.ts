@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Resend } from "npm:resend@2.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -16,143 +15,92 @@ interface InvitationRequest {
 
 const handler = async (req: Request): Promise<Response> => {
   console.log("=== INVITATION HANDLER STARTED ===");
-  console.log("Method:", req.method);
-  console.log("URL:", req.url);
   
   if (req.method === "OPTIONS") {
-    console.log("Handling CORS preflight");
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     console.log("Starting invitation process...");
     
-    // Initialize Supabase clients
+    // Initialize Supabase client with service role (admin access)
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    
-    // Use anon client for auth verification
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
-    // Use admin client for database operations that require elevated permissions
-    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    console.log("Supabase clients initialized");
+    console.log("Supabase client initialized");
 
-    // Get the authorization header
+    // Get the authorization header for user verification
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
-      console.error("No authorization header found");
       throw new Error("No authorization header");
     }
 
-    console.log("Authorization header found");
+    // Parse request body
+    const requestBody = await req.json();
+    const { companyId, email, companyName } = requestBody as InvitationRequest;
 
-    // Verify the user is authenticated and is a superadmin
+    console.log("Request data:", { companyId, email, companyName });
+
+    // Validate input
+    if (!companyId || !email || !companyName) {
+      throw new Error("Missing required fields: companyId, email, companyName");
+    }
+
+    // Verify the user token (but use service role for database operations)
     const token = authHeader.replace("Bearer ", "");
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
     if (userError || !user) {
-      console.error("Authentication failed:", userError);
       throw new Error("Invalid authentication");
     }
 
     console.log("User authenticated:", user.id);
 
-    // Check if user is superadmin using admin client
-    const { data: isSuperAdmin, error: roleError } = await supabaseAdmin.rpc(
+    // Check if user is superadmin
+    const { data: isSuperAdmin, error: roleError } = await supabase.rpc(
       "is_superadmin",
       { user_id_param: user.id }
     );
 
-    console.log("Superadmin check result:", { isSuperAdmin, roleError });
-
     if (roleError || !isSuperAdmin) {
-      console.error("Access denied. User is not superadmin:", { roleError, isSuperAdmin });
       throw new Error("Access denied. Superadmin role required.");
     }
 
-    console.log("Superadmin validation passed!");
-
-    // Parse request body
-    console.log("Parsing request body...");
-    const requestBody = await req.json();
-    console.log("Raw request body:", requestBody);
-    
-    const { companyId, email, companyName } = requestBody as InvitationRequest;
-    console.log("Parsed data:", { companyId, email, companyName });
-
-    // Validate input
-    if (!companyId || !email || !companyName) {
-      console.error("Missing required fields:", { companyId: !!companyId, email: !!email, companyName: !!companyName });
-      throw new Error("Missing required fields: companyId, email, companyName");
-    }
-
-    console.log("Input validation passed");
-
-    // Test the actual insertion
-    console.log("Testing invitation creation...");
-    
-    const { data: existingInvitations, error: invitationCheckError } = await supabaseAdmin
-      .from('user_invitations')
-      .select('id, expires_at, accepted_at')
-      .eq('company_id', companyId)
-      .eq('email', email.toLowerCase())
-      .eq('role', 'company_owner');
-
-    console.log("Invitation check result:", { existingInvitations, invitationCheckError });
-
-    if (invitationCheckError) {
-      console.error("Error checking existing invitations:", invitationCheckError);
-      throw new Error(`Database error: ${invitationCheckError.message}`);
-    }
-
-    // Check for active invitations
-    const activeInvitations = existingInvitations?.filter(inv => 
-      !inv.accepted_at && new Date(inv.expires_at) > new Date()
-    ) || [];
-
-    if (activeInvitations.length > 0) {
-      console.error("Active invitation already exists");
-      throw new Error("An active invitation already exists for this email and company");
-    }
+    console.log("Superadmin validation passed");
 
     // Generate invitation token
     const invitationToken = crypto.randomUUID();
-    console.log("Generated invitation token");
 
-    // Try to create invitation record using admin client
-    console.log("Creating invitation record...");
-    const { data: invitation, error: invitationError } = await supabaseAdmin
+    // Create invitation record (using service role, so no RLS restrictions)
+    const { data: invitation, error: invitationError } = await supabase
       .from('user_invitations')
       .insert({
         company_id: companyId,
         email: email.toLowerCase(),
         invitation_token: invitationToken,
         role: 'company_owner',
-        invited_by: user.id,
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
+        invited_by: user.id
       })
       .select('id')
-      .maybeSingle(); // Use maybeSingle instead of single to avoid errors
-
-    console.log("Invitation creation result:", { invitation, invitationError });
+      .single();
 
     if (invitationError) {
       console.error("Error creating invitation:", invitationError);
       throw new Error(`Failed to create invitation: ${invitationError.message}`);
     }
 
+    console.log("Invitation created successfully:", invitation.id);
+
     return new Response(
       JSON.stringify({
         success: true,
         message: "Company Owner invitation created successfully",
         data: { 
-          invitationId: invitation?.id,
+          invitationId: invitation.id,
           companyId, 
           email, 
-          companyName,
-          note: "Email sending is disabled for testing."
+          companyName
         }
       }),
       {
@@ -166,14 +114,11 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (error: any) {
     console.error("Error in send-company-owner-invitation:", error);
-    console.error("Error stack:", error.stack);
-    console.error("Error message:", error.message);
     
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message || "Internal server error",
-        details: error.stack || "No stack trace available"
+        error: error.message || "Internal server error"
       }),
       {
         status: 400,
