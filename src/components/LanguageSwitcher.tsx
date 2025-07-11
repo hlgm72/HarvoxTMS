@@ -21,7 +21,7 @@ export const LanguageSwitcher = () => {
         <Button 
           variant="outline" 
           size="sm" 
-          className="gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm"
+          className="gap-2"
         >
           <Globe className="h-4 w-4" />
           <span className="font-mono text-xs font-medium">
@@ -31,7 +31,7 @@ export const LanguageSwitcher = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         align="end" 
-        className="bg-white/95 backdrop-blur-sm border border-white/20"
+        className="z-50"
       >
         <DropdownMenuItem 
           onClick={() => changeLanguage('en')}
