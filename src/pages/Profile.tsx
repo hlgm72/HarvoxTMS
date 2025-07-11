@@ -15,6 +15,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Settings, Save, KeyRound } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { createTextHandlers } from '@/lib/textUtils';
 
 const profileSchema = z.object({
   first_name: z.string().min(1, 'El nombre es requerido'),
@@ -42,6 +43,19 @@ export default function Profile() {
   const { profile, loading, user, getUserInitials } = useUserProfile();
   const [updating, setUpdating] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
+
+  // Create handlers for text inputs
+  const nameHandlers = createTextHandlers((value) => 
+    profileForm.setValue('first_name', value)
+  );
+  
+  const lastNameHandlers = createTextHandlers((value) => 
+    profileForm.setValue('last_name', value)
+  );
+  
+  const phoneHandlers = createTextHandlers((value) => 
+    profileForm.setValue('phone', value), 'phone'
+  );
 
   const profileForm = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -254,7 +268,11 @@ export default function Profile() {
                     <FormItem>
                       <FormLabel>Teléfono</FormLabel>
                       <FormControl>
-                        <Input placeholder="+1 (555) 123-4567" {...field} />
+                        <Input 
+                          placeholder="(555) 123-4567" 
+                          value={field.value || ''} 
+                          {...phoneHandlers}
+                        />
                       </FormControl>
                       <FormDescription>
                         Número de teléfono para contacto (opcional)
