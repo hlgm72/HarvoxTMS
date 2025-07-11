@@ -8,6 +8,7 @@ import Setup from "./pages/Setup";
 import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
+import Companies from "./pages/Companies";
 import PaymentSystem from "./pages/PaymentSystem";
 import NotFound from "./pages/NotFound";
 import OwnerDashboard from "./pages/dashboard/OwnerDashboard";
@@ -98,12 +99,22 @@ const App = () => (
             } 
           />
           
-          {/* SuperAdmin route */}
+          {/* SuperAdmin routes */}
           <Route 
             path="/superadmin" 
             element={
               <ProtectedRoute requiredRole="superadmin">
                 <SuperAdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/superadmin/companies" 
+            element={
+              <ProtectedRoute requiredRole="superadmin">
+                <Layout>
+                  <Companies />
+                </Layout>
               </ProtectedRoute>
             } 
           />
