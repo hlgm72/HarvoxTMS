@@ -33,7 +33,12 @@ export default function Auth() {
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [resetEmailFromUrl, setResetEmailFromUrl] = useState('');
+  const [resetToken, setResetToken] = useState('');
+  const [tokenValidation, setTokenValidation] = useState<{
+    isValid: boolean;
+    userEmail: string;
+    error?: string;
+  } | null>(null);
   
   const [formData, setFormData] = useState({
     email: '',
@@ -47,14 +52,48 @@ export default function Auth() {
   useEffect(() => {
     setMounted(true);
     
-    // Check for reset password parameters
-    const reset = searchParams.get('reset');
-    const email = searchParams.get('email');
+    // Check for reset password token
+    const token = searchParams.get('token');
     
-    if (reset === 'true' && email) {
+    if (token) {
+      setResetToken(token);
       setShowResetPassword(true);
-      setResetEmailFromUrl(email);
       setShowForgotPassword(false);
+      
+      // Validate token
+      const validateToken = async () => {
+        try {
+          const { data, error } = await supabase.rpc('validate_reset_token', {
+            token_param: token
+          });
+          
+          if (error) throw error;
+          
+          if (data && data.length > 0) {
+            const tokenData = data[0];
+            setTokenValidation({
+              isValid: tokenData.is_valid,
+              userEmail: tokenData.user_email,
+              error: tokenData.is_valid ? undefined : 'Token inválido o expirado'
+            });
+          } else {
+            setTokenValidation({
+              isValid: false,
+              userEmail: '',
+              error: 'Token no encontrado'
+            });
+          }
+        } catch (err: any) {
+          console.error('Error validating token:', err);
+          setTokenValidation({
+            isValid: false,
+            userEmail: '',
+            error: 'Error al validar el token'
+          });
+        }
+      };
+      
+      validateToken();
     }
   }, [searchParams]);
 
@@ -153,12 +192,9 @@ export default function Auth() {
       }
 
       // Usar directamente nuestra función personalizada con Resend (igual que las invitaciones)
-      const resetUrl = `${window.location.origin}/auth?reset=true&email=${encodeURIComponent(resetEmail)}`;
-      
       const { error: customError } = await supabase.functions.invoke('send-reset-email', {
         body: {
           email: resetEmail,
-          resetUrl: resetUrl,
           lang: i18n.language
         }
       });
@@ -191,6 +227,13 @@ export default function Auth() {
     setError(null);
 
     try {
+      // Check token validation first
+      if (!tokenValidation?.isValid) {
+        setError(tokenValidation?.error || 'Token inválido');
+        setLoading(false);
+        return;
+      }
+
       if (!newPassword || newPassword.length < 8) {
         setError('La contraseña debe tener al menos 8 caracteres');
         setLoading(false);
@@ -203,26 +246,42 @@ export default function Auth() {
         return;
       }
 
-      // For now, redirect to Supabase's built-in reset flow
-      // We'll need to implement a proper token-based reset later
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmailFromUrl, {
-        redirectTo: `${window.location.origin}/auth?reset=true&email=${encodeURIComponent(resetEmailFromUrl)}`,
+      // Use our secure password reset function
+      const { data: resetResult, error: resetError } = await supabase.functions.invoke('reset-password', {
+        body: {
+          token: resetToken,
+          newPassword: newPassword
+        }
       });
 
-      if (error) {
-        console.log('Using Supabase built-in reset flow...');
-        // The user will receive another email from Supabase with the proper reset link
-        showSuccess(
-          'Nuevo enlace enviado',
-          'Se ha enviado un nuevo enlace de reset a tu email'
-        );
+      if (resetError) {
+        console.error('Error calling reset function:', resetError);
+        setError('Error al procesar el reset de contraseña');
+        setLoading(false);
+        return;
       }
 
-      // Clear the current form and show login
+      // Parse the result
+      const result = resetResult as { success: boolean; message?: string; error?: string };
+      
+      if (!result?.success) {
+        setError(result?.error || 'Error al cambiar la contraseña');
+        setLoading(false);
+        return;
+      }
+
+      showSuccess(
+        'Contraseña actualizada',
+        'Tu contraseña ha sido actualizada exitosamente'
+      );
+
+      // Clear the form and redirect to login
       setShowResetPassword(false);
       setNewPassword('');
       setConfirmPassword('');
-      setResetEmailFromUrl('');
+      setResetToken('');
+      setTokenValidation(null);
+      navigate('/auth');
       
     } catch (err: any) {
       console.error('Password reset error:', err);
@@ -438,9 +497,9 @@ export default function Auth() {
                showForgotPassword ? t('auth:forgot_password.title') : 
                (isLogin ? t('auth:title.login') : t('auth:title.signup'))}
             </CardTitle>
-            <CardDescription className="font-body text-muted-foreground">
-              {showResetPassword 
-                ? `Establece tu nueva contraseña para ${resetEmailFromUrl}`
+             <CardDescription className="font-body text-muted-foreground">
+               {showResetPassword 
+                 ? `Establece tu nueva contraseña para ${tokenValidation?.userEmail || 'tu cuenta'}`
                 : showForgotPassword 
                   ? t('auth:forgot_password.description')
                   : (isLogin 

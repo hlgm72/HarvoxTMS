@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend@2.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
@@ -10,7 +11,6 @@ const corsHeaders = {
 
 interface ResetEmailRequest {
   email: string;
-  resetUrl: string;
   lang?: string;
 }
 
@@ -21,10 +21,63 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, resetUrl, lang = 'es' }: ResetEmailRequest = await req.json();
+    const { email, lang = 'es' }: ResetEmailRequest = await req.json();
 
     console.log('Sending reset email to:', email);
-    console.log('Reset URL:', resetUrl);
+
+    // Initialize Supabase client with service role
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Verify user exists
+    const { data: users, error: userError } = await supabase.auth.admin.listUsers();
+    if (userError) {
+      console.error('Error checking users:', userError);
+      throw new Error('Error checking user existence');
+    }
+
+    const userExists = users.users.some(user => user.email === email.toLowerCase());
+    if (!userExists) {
+      console.log('User not found, but returning success for security');
+      // Return success anyway to prevent email enumeration
+      return new Response(JSON.stringify({ 
+        success: true, 
+        message: "Reset email sent successfully if user exists"
+      }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      });
+    }
+
+    // Generate secure token
+    const resetToken = crypto.randomUUID() + '-' + crypto.randomUUID();
+    
+    // Store token in database
+    const { error: tokenError } = await supabase
+      .from('password_reset_tokens')
+      .insert({
+        user_email: email.toLowerCase(),
+        token: resetToken,
+        expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString() // 1 hour
+      });
+
+    if (tokenError) {
+      console.error('Error storing reset token:', tokenError);
+      throw new Error('Error creating reset token');
+    }
+
+    console.log('Reset token created successfully');
+
+    // Generate reset URL with token
+    const refererHeader = req.headers.get("referer") || "";
+    const frontendUrl = Deno.env.get("FRONTEND_URL") || 
+                       (refererHeader ? new URL(refererHeader).origin : "http://localhost:3000");
+    
+    const resetUrl = `${frontendUrl}/auth?token=${resetToken}`;
 
     // Email templates based on language
     const templates = {

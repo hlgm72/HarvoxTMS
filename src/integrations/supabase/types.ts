@@ -976,6 +976,36 @@ export type Database = {
         }
         Relationships: []
       }
+      password_reset_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          is_used: boolean
+          token: string
+          used_at: string | null
+          user_email: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_used?: boolean
+          token: string
+          used_at?: string | null
+          user_email: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_used?: boolean
+          token?: string
+          used_at?: string | null
+          user_email?: string
+        }
+        Relationships: []
+      }
       payment_methods: {
         Row: {
           company_id: string
@@ -1652,6 +1682,10 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: Json
       }
+      cleanup_expired_reset_tokens: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       company_has_owner: {
         Args: { company_id_param: string }
         Returns: boolean
@@ -1709,6 +1743,10 @@ export type Database = {
         }
         Returns: Json
       }
+      use_reset_token: {
+        Args: { token_param: string }
+        Returns: Json
+      }
       validate_invitation_token: {
         Args: { token_param: string }
         Returns: {
@@ -1717,6 +1755,15 @@ export type Database = {
           email: string
           role: Database["public"]["Enums"]["user_role"]
           is_valid: boolean
+        }[]
+      }
+      validate_reset_token: {
+        Args: { token_param: string }
+        Returns: {
+          id: string
+          user_email: string
+          is_valid: boolean
+          expires_at: string
         }[]
       }
     }
