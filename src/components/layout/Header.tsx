@@ -15,13 +15,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export function Header() {
   const { t } = useTranslation(['common', 'fleet']);
   const { signOut } = useAuth();
   const { getUserInitials, getFullName, user } = useUserProfile();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
@@ -30,6 +31,7 @@ export function Header() {
         title: "Sesión cerrada",
         description: "Has cerrado sesión exitosamente.",
       });
+      navigate('/auth');
     } catch (error) {
       toast({
         title: "Error",
