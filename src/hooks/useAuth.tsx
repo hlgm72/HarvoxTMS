@@ -188,17 +188,28 @@ export const useAuth = () => {
         localStorage.removeItem('currentRole');
       }
 
-      // Use a single setState call to update everything at once
+      // Force update counter first
       const updateCounter = Date.now();
-      setAuthState({
-        user: authState.user,
-        session: authState.session,
-        userRoles: roles.map(r => ({ ...r })), // Deep copy each role
-        currentRole: currentRole ? { ...currentRole } : null,
-        loading: false,
+      setForceUpdate(updateCounter);
+      
+      // Then update the main state
+      setAuthState(prevState => {
+        const newState = {
+          user: prevState.user,
+          session: prevState.session,
+          userRoles: roles.map(r => ({ ...r })), // Deep copy each role
+          currentRole: currentRole ? { ...currentRole } : null,
+          loading: false,
+        };
+        console.log('🔄 setState called with new roles:', newState.userRoles.length);
+        return newState;
       });
       
-      setForceUpdate(updateCounter);
+      // Force another update after a micro-task
+      setTimeout(() => {
+        setForceUpdate(Date.now());
+        console.log('🎯 Secondary force update triggered');
+      }, 0);
       
       console.log('🎯 Force update triggered, counter:', updateCounter);
       console.log('🎯 New state roles:', roles.length);
