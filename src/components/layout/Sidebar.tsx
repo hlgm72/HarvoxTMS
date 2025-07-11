@@ -50,24 +50,6 @@ const companyOwnerNavigationItems = [
     description: "Panel ejecutivo"
   },
   { 
-    title: "Gestión de Usuarios", 
-    url: "/users", 
-    icon: Users, 
-    description: "Usuarios y roles"
-  },
-  { 
-    title: "Configuración", 
-    url: "/settings", 
-    icon: Settings,
-    description: "Configuración de empresa"
-  },
-  { 
-    title: "Reportes Financieros", 
-    url: "/reports/financial", 
-    icon: BarChart3,
-    description: "Análisis financiero"
-  },
-  { 
     title: "Conductores", 
     url: "/drivers", 
     icon: Users, 
@@ -104,10 +86,28 @@ const companyOwnerNavigationItems = [
     description: "Facturación y pagos"
   },
   { 
+    title: "Reportes Financieros", 
+    url: "/reports/financial", 
+    icon: BarChart3,
+    description: "Análisis financiero"
+  },
+  { 
+    title: "Gestión de Usuarios", 
+    url: "/users", 
+    icon: Users, 
+    description: "Usuarios y roles"
+  },
+  { 
     title: "Mi Perfil", 
     url: "/profile", 
     icon: Users,
     description: "Configuración personal"
+  },
+  { 
+    title: "Configuración", 
+    url: "/settings", 
+    icon: Settings,
+    description: "Configuración de empresa"
   },
 ];
 

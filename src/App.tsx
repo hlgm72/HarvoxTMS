@@ -19,6 +19,7 @@ import DispatcherDashboard from "./pages/dashboard/DispatcherDashboard";
 import DriverDashboard from "./pages/dashboard/DriverDashboard";
 import Landing from "./pages/Landing";
 import Drivers from "./pages/Drivers";
+import Settings from "./pages/Settings";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/layout/Layout";
 import { NotificationProvider } from "./components/notifications";
@@ -210,6 +211,17 @@ function AppContent() {
             <ProtectedRoute>
               <Layout>
                 <PaymentSystem />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/settings" 
+          element={
+            <ProtectedRoute requiredRole="company_owner">
+              <Layout>
+                <Settings />
               </Layout>
             </ProtectedRoute>
           } 
