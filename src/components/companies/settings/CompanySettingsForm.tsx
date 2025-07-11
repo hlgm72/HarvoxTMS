@@ -11,7 +11,7 @@ import {
   Save, RotateCcw, AlertCircle, FileText, 
   MapPin, Phone 
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from '@/integrations/supabase/client';
 import { Company } from '@/types/company';
 import { CompanyLogoUpload } from '../CompanyLogoUpload';
@@ -27,7 +27,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
   const [formData, setFormData] = useState<Company>(company);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('company');
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
 
   // Create text handlers for all company fields
   const companyNameHandlers = createTextHandlers((value: string) => handleInputChange('name', value));
@@ -96,17 +96,16 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
       if (error) throw error;
 
       onUpdate(data);
-      toast({
-        title: "Configuración actualizada",
-        description: "Los cambios se han guardado exitosamente.",
-      });
+      showSuccess(
+        "Configuración actualizada",
+        "Los cambios se han guardado exitosamente."
+      );
     } catch (error) {
       console.error('Error updating company:', error);
-      toast({
-        title: "Error",
-        description: "No se pudieron guardar los cambios. Intenta nuevamente.",
-        variant: "destructive",
-      });
+      showError(
+        "Error",
+        "No se pudieron guardar los cambios. Intenta nuevamente."
+      );
     } finally {
       setLoading(false);
     }
@@ -114,10 +113,10 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
 
   const handleReset = () => {
     setFormData(company);
-    toast({
-      title: "Formulario restaurado",
-      description: "Se han restaurado los valores originales.",
-    });
+    showSuccess(
+      "Formulario restaurado",
+      "Se han restaurado los valores originales."
+    );
   };
 
   const hasChanges = JSON.stringify(formData) !== JSON.stringify(company);
