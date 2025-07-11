@@ -181,17 +181,20 @@ export const useAuth = () => {
       console.log('📊 Setting new roles state:', { roles, currentRole });
       console.log('📊 Roles count before:', authState.userRoles.length, 'after:', roles.length);
       
-      // Force a complete state refresh with new object references
-      setAuthState(prev => ({
-        user: prev.user,
-        session: prev.session,
-        userRoles: [...roles], // New array reference
-        currentRole: currentRole ? { ...currentRole } : null, // New object reference
+      // Create completely new state object
+      const newState = {
+        user: authState.user,
+        session: authState.session,
+        userRoles: roles.map(r => ({ ...r })), // Deep copy each role
+        currentRole: currentRole ? { ...currentRole } : null,
         loading: false,
-      }));
+      };
       
-      // Force re-render
-      setForceUpdate(prev => prev + 1);
+      setAuthState(newState);
+      
+      // Force re-render with current timestamp
+      const updateCounter = Date.now();
+      setForceUpdate(updateCounter);
       
       // Update stored role if current role changed
       if (currentRole) {
@@ -200,7 +203,8 @@ export const useAuth = () => {
         localStorage.removeItem('currentRole');
       }
       
-      console.log('🎯 Force update triggered, counter:', forceUpdate + 1);
+      console.log('🎯 Force update triggered, counter:', updateCounter);
+      console.log('🎯 New state roles:', newState.userRoles.length);
     }
   };
 
