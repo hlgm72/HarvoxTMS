@@ -249,6 +249,19 @@
     "update": "Actualizar",
     "system_health": "Salud del Sistema",
     "operational": "Operacional", 
-    "all_systems_normal": "Todos los sistemas funcionando normalmente"
+    "all_systems_normal": "Todos los sistemas funcionando normalmente",
+    "global_activity": "Actividad Global",
+    "active_sessions": "Sesiones Activas",
+    "vehicles_online": "Vehículos en Línea",
+    "data_processed": "Datos Procesados", 
+    "recent_activity": "Actividad Reciente",
+    "new_company_added": "Nueva Empresa Agregada",
+    "min_ago": "min atrás",
+    "hour_ago": "hora atrás",
+    "hours_ago": "horas atrás",
+    "system_update": "Actualización del Sistema",
+    "deployed": "desplegado",
+    "backup_completed": "Respaldo Completado",
+    "daily_backup": "Respaldo diario"
   }
 }

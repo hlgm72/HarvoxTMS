@@ -249,6 +249,19 @@
     "update": "Update",
     "system_health": "System Health",
     "operational": "Operational",
-    "all_systems_normal": "All systems running normally"
+    "all_systems_normal": "All systems running normally",
+    "global_activity": "Global Activity",
+    "active_sessions": "Active Sessions",
+    "vehicles_online": "Vehicles Online", 
+    "data_processed": "Data Processed",
+    "recent_activity": "Recent Activity",
+    "new_company_added": "New Company Added",
+    "min_ago": "min ago",
+    "hour_ago": "hour ago",
+    "hours_ago": "hours ago",
+    "system_update": "System Update",
+    "deployed": "deployed",
+    "backup_completed": "Backup Completed",
+    "daily_backup": "Daily backup"
   }
 }

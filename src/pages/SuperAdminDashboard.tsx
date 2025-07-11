@@ -847,21 +847,21 @@ export default function SuperAdminDashboard() {
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-lg">
                         <Globe className="h-5 w-5 text-blue-500" />
-                        Global Activity
+                        {t('common.global_activity')}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground">Active Sessions</span>
+                          <span className="text-sm text-muted-foreground">{t('common.active_sessions')}</span>
                           <span className="text-sm font-medium">1,247</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground">Vehicles Online</span>
+                          <span className="text-sm text-muted-foreground">{t('common.vehicles_online')}</span>
                           <span className="text-sm font-medium">892</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground">Data Processed</span>
+                          <span className="text-sm text-muted-foreground">{t('common.data_processed')}</span>
                           <span className="text-sm font-medium">45.2 GB</span>
                         </div>
                       </div>
@@ -872,22 +872,22 @@ export default function SuperAdminDashboard() {
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-lg">
                         <Clock className="h-5 w-5 text-purple-500" />
-                        Recent Activity
+                        {t('common.recent_activity')}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
                         <div className="text-sm">
-                          <div className="font-medium">New Company Added</div>
-                          <div className="text-muted-foreground">Swift Logistics - 2 min ago</div>
+                          <div className="font-medium">{t('common.new_company_added')}</div>
+                          <div className="text-muted-foreground">Swift Logistics - 2 {t('common.min_ago')}</div>
                         </div>
                         <div className="text-sm">
-                          <div className="font-medium">System Update</div>
-                          <div className="text-muted-foreground">v2.1.3 deployed - 1 hour ago</div>
+                          <div className="font-medium">{t('common.system_update')}</div>
+                          <div className="text-muted-foreground">v2.1.3 {t('common.deployed')} - 1 {t('common.hour_ago')}</div>
                         </div>
                         <div className="text-sm">
-                          <div className="font-medium">Backup Completed</div>
-                          <div className="text-muted-foreground">Daily backup - 3 hours ago</div>
+                          <div className="font-medium">{t('common.backup_completed')}</div>
+                          <div className="text-muted-foreground">{t('common.daily_backup')} - 3 {t('common.hours_ago')}</div>
                         </div>
                       </div>
                     </CardContent>
