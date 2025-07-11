@@ -82,6 +82,41 @@
         "enterprise": "Enterprise",
         "trial": "Trial",
         "demo": "Demo"
+      },
+      "form_labels": {
+        "company_information": "Company Information",
+        "owner_primary_contact": "Owner/Primary Contact", 
+        "plan_configuration": "Plan Configuration",
+        "company_name": "Company Name",
+        "company_email": "Company Email",
+        "company_phone": "Company Phone",
+        "owner_name": "Owner Name",
+        "owner_email": "Owner Email", 
+        "owner_phone": "Owner Phone",
+        "owner_title": "Owner Title",
+        "plan_type": "Plan Type",
+        "max_vehicles": "Max Vehicles",
+        "max_users": "Max Users"
+      },
+      "placeholders": {
+        "company_name": "Acme Transportation LLC",
+        "company_email": "contact@company.com",
+        "company_phone": "(555) 123-4567",
+        "owner_name": "John Smith",
+        "owner_email": "john@company.com",
+        "owner_phone": "(555) 987-6543",
+        "owner_title": "CEO, President, Fleet Manager..."
+      },
+      "buttons": {
+        "create_company": "Create Company",
+        "creating": "Creating...",
+        "cancel": "Cancel"
+      },
+      "messages": {
+        "company_created_success": "Company created successfully!",
+        "company_created_desc": "has been added to the FleetNest system",
+        "company_creation_error": "Error creating company",
+        "company_creation_error_desc": "An error occurred while creating the company. Please try again."
       }
     },
     "superadmin": {

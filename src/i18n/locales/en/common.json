@@ -12,7 +12,10 @@
     "dashboard": "Command Center",
     "drivers": "Drivers",
     "fleet": "Fleet",
-    "settings": "Settings"
+    "settings": "Settings",
+    "account": "My Account",
+    "profile": "Profile",
+    "logout": "Sign Out"
   },
   "actions": {
     "get_started": "Get Started",

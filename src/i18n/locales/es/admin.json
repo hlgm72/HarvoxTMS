@@ -82,6 +82,41 @@
         "enterprise": "Enterprise",
         "trial": "Prueba",
         "demo": "Demo"
+      },
+      "form_labels": {
+        "company_information": "Información de la Empresa",
+        "owner_primary_contact": "Propietario/Contacto Principal",
+        "plan_configuration": "Configuración del Plan",
+        "company_name": "Nombre de la Empresa",
+        "company_email": "Email de la Empresa", 
+        "company_phone": "Teléfono de la Empresa",
+        "owner_name": "Nombre del Propietario",
+        "owner_email": "Email del Propietario",
+        "owner_phone": "Teléfono del Propietario",
+        "owner_title": "Título del Propietario",
+        "plan_type": "Tipo de Plan",
+        "max_vehicles": "Máximo de Vehículos",
+        "max_users": "Máximo de Usuarios"
+      },
+      "placeholders": {
+        "company_name": "Transportes Acme S.A.",
+        "company_email": "contacto@empresa.com",
+        "company_phone": "(555) 123-4567",
+        "owner_name": "Juan Pérez",
+        "owner_email": "juan@empresa.com",
+        "owner_phone": "(555) 987-6543",
+        "owner_title": "CEO, Presidente, Gerente de Flota..."
+      },
+      "buttons": {
+        "create_company": "Crear Empresa",
+        "creating": "Creando...",
+        "cancel": "Cancelar"
+      },
+      "messages": {
+        "company_created_success": "¡Empresa creada exitosamente!",
+        "company_created_desc": "ha sido añadida al sistema FleetNest",
+        "company_creation_error": "Error al crear empresa",
+        "company_creation_error_desc": "Ocurrió un error al crear la empresa. Por favor intenta de nuevo."
       }
     },
     "superadmin": {

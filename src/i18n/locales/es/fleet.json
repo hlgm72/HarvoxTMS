@@ -1,4 +1,27 @@
 {
+  "loads": {
+    "pickup": "Recolección",
+    "delivery": "Entrega",
+    "distance": "Distancia",
+    "priority": "Prioridad",
+    "urgent": "URGENTE",
+    "high": "ALTA",
+    "normal": "NORMAL",
+    "in_transit": "En Tránsito",
+    "delivered": "Entregado",
+    "scheduled_deliveries": "Entregas Programadas",
+    "today_revenue": "Ingresos Hoy",
+    "new_load": "+ Nueva Carga"
+  },
+  "actions": {
+    "quick_dispatch": "Despacho Rápido",
+    "dispatch": "Despachar",
+    "assign": "Asignar",
+    "sync": "Sincronizar",
+    "export": "Exportar",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  },
   "titles": {
     "fleet_overview": "Resumen de Flota",
     "fleet_status": "Estado de Flota",
@@ -28,19 +51,6 @@
     "available_vehicles": "Disponibles",
     "maintenance_vehicles": "Mantenimiento",
     "fleet_utilization": "Utilización de Flota"
-  },
-  "loads": {
-    "pickup": "Recolección",
-    "delivery": "Entrega",
-    "distance": "Distancia",
-    "priority": "Prioridad",
-    "urgent": "URGENTE",
-    "high": "ALTA",
-    "normal": "NORMAL",
-    "in_transit": "En Tránsito",
-    "delivered": "Entregado",
-    "scheduled_deliveries": "Entregas Programadas",
-    "today_revenue": "Ingresos Hoy"
   },
   "status": {
     "en_route": "En Ruta",

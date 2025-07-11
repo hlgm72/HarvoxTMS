@@ -12,7 +12,10 @@
     "dashboard": "Centro de Comando",
     "drivers": "Conductores",
     "fleet": "Flota",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "account": "Mi Cuenta",
+    "profile": "Perfil", 
+    "logout": "Cerrar Sesión"
   },
   "actions": {
     "get_started": "Comenzar Gratis",

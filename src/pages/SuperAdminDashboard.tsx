@@ -20,6 +20,7 @@ import { Layout } from '@/components/layout/Layout';
 import { useToast } from '@/hooks/use-toast';
 import { useFleetNotifications } from '@/components/notifications';
 import { createTextHandlers, handlePhoneInput } from '@/lib/textUtils';
+import { useTranslation } from 'react-i18next';
 
 interface CompanyStats {
   total_companies: number;
@@ -49,6 +50,7 @@ interface Company {
 }
 
 export default function SuperAdminDashboard() {
+  const { t } = useTranslation('admin');
   const { user, isSuperAdmin, loading } = useAuth();
   const { toast } = useToast();
   const { showSuccess, showError } = useFleetNotifications();
@@ -221,8 +223,8 @@ export default function SuperAdminDashboard() {
       if (error) throw error;
 
       showSuccess(
-        "¡Empresa creada exitosamente!",
-        `${newCompany.name} ha sido añadida al sistema FleetNest`
+        t('pages.companies.messages.company_created_success'),
+        `${newCompany.name} ${t('pages.companies.messages.company_created_desc')}`
       );
 
       // Reset form and close dialog
@@ -246,8 +248,8 @@ export default function SuperAdminDashboard() {
     } catch (error: any) {
       console.error('Error creating company:', error);
       showError(
-        "Error al crear empresa",
-        error.message || "Ocurrió un error al crear la empresa. Por favor intenta de nuevo."
+        t('pages.companies.messages.company_creation_error'),
+        error.message || t('pages.companies.messages.company_creation_error_desc')
       );
     } finally {
       setIsCreatingCompany(false);
@@ -463,12 +465,12 @@ export default function SuperAdminDashboard() {
                         <div className="flex items-center gap-2 pb-2 border-b">
                           <Building2 className="h-4 w-4 text-primary" />
                           <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
-                            Company Information
+                            {t('pages.companies.form_labels.company_information')}
                           </h3>
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="company-name">Company Name *</Label>
+                          <Label htmlFor="company-name">{t('pages.companies.form_labels.company_name')} *</Label>
                           <Input
                             id="company-name"
                             value={newCompany.name}

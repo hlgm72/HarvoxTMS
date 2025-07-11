@@ -34,10 +34,10 @@ export function Header() {
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
           <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-            + Nueva Carga
+            + {t('fleet:loads.new_load', '+ Nueva Carga')}
           </Button>
           <Button size="sm" className="bg-gradient-fleet text-white shadow-fleet">
-            🚨 Despacho Rápido
+            🚨 {t('fleet:actions.quick_dispatch', 'Despacho Rápido')}
           </Button>
           
           <DropdownMenu>
@@ -51,12 +51,12 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end">
-              <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('common:navigation.account', 'Mi Cuenta')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Perfil</DropdownMenuItem>
-              <DropdownMenuItem>Configuración</DropdownMenuItem>
+              <DropdownMenuItem>{t('common:navigation.profile', 'Perfil')}</DropdownMenuItem>
+              <DropdownMenuItem>{t('common:navigation.settings', 'Configuración')}</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Cerrar Sesión</DropdownMenuItem>
+              <DropdownMenuItem>{t('common:navigation.logout', 'Cerrar Sesión')}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
