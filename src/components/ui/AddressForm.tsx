@@ -2,6 +2,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { StateCombobox } from '@/components/ui/StateCombobox';
 import { CityCombobox } from '@/components/ui/CityCombobox';
+import { createTextHandlers } from '@/lib/textUtils';
 
 interface AddressFormProps {
   streetAddress: string;
@@ -36,6 +37,32 @@ export function AddressForm({
   cityLabel = "Ciudad",
   zipCodeLabel = "Código Postal"
 }: AddressFormProps) {
+  // Create handlers for street address with proper text control
+  const streetAddressHandlers = createTextHandlers(onStreetAddressChange);
+  
+  // Create handlers for zip code with numeric input control
+  const handleZipCodeInput = (value: string): string => {
+    // Remove all non-numeric characters and limit to 5 digits
+    const numbers = value.replace(/\D/g, '');
+    return numbers.slice(0, 5);
+  };
+  
+  const zipCodeHandlers = {
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      const formattedValue = handleZipCodeInput(e.target.value);
+      onZipCodeChange(formattedValue);
+    },
+    onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => {
+      // Allow only numbers, backspace, delete, arrows
+      const allowedKeys = /[0-9]/;
+      const specialKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
+      
+      if (!allowedKeys.test(e.key) && !specialKeys.includes(e.key)) {
+        e.preventDefault();
+      }
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 gap-4">
       <div className="space-y-2">
@@ -46,7 +73,8 @@ export function AddressForm({
         <Input
           id="street-address"
           value={streetAddress}
-          onChange={(e) => onStreetAddressChange(e.target.value)}
+          onChange={streetAddressHandlers.onChange}
+          onBlur={streetAddressHandlers.onBlur}
           placeholder="123 Calle Principal"
           disabled={disabled}
         />
@@ -87,9 +115,11 @@ export function AddressForm({
           <Input
             id="zip-code"
             value={zipCode}
-            onChange={(e) => onZipCodeChange(e.target.value)}
+            onChange={zipCodeHandlers.onChange}
+            onKeyPress={zipCodeHandlers.onKeyPress}
             placeholder="12345"
             disabled={disabled}
+            maxLength={5}
           />
         </div>
       </div>
