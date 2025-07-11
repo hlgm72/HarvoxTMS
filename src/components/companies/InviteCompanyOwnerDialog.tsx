@@ -41,9 +41,14 @@ export function InviteCompanyOwnerDialog({
     try {
       const { data: session } = await supabase.auth.getSession();
       
+      console.log("Current session:", session);
+      
       if (!session.session) {
         throw new Error('Not authenticated');
       }
+
+      console.log("User ID:", session.session.user.id);
+      console.log("Access token length:", session.session.access_token.length);
 
       const { data: result, error: functionError } = await supabase.functions.invoke('send-company-owner-invitation', {
         body: {
