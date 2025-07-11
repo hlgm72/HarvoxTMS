@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Users, TrendingUp, AlertTriangle } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 interface Company {
   id: string;
@@ -14,6 +15,8 @@ interface CompanyStatsProps {
 }
 
 export function CompanyStats({ companies }: CompanyStatsProps) {
+  const { t } = useTranslation('admin');
+  
   const totalCompanies = companies.length;
   const activeCompanies = companies.filter(c => c.status === 'active').length;
   const planCounts = companies.reduce((acc, company) => {
@@ -31,28 +34,28 @@ export function CompanyStats({ companies }: CompanyStatsProps) {
 
   const stats = [
     {
-      title: "Total Empresas",
+      title: t('pages.companies.stats.total_companies'),
       value: totalCompanies,
       icon: Building2,
-      description: "Empresas registradas",
+      description: t('pages.companies.stats.total_companies_desc', { defaultValue: "Registered companies" }),
     },
     {
-      title: "Empresas Activas",
+      title: t('pages.companies.stats.active_companies'),
       value: activeCompanies,
       icon: Users,
-      description: `${Math.round((activeCompanies / totalCompanies) * 100)}% del total`,
+      description: `${Math.round((activeCompanies / totalCompanies) * 100)}% ${t('pages.companies.stats.of_total', { defaultValue: "of total" })}`,
     },
     {
-      title: "Nuevas (30 días)",
+      title: t('pages.companies.stats.new_this_month'),
       value: recentCompanies,
       icon: TrendingUp,
-      description: "Empresas recientes",
+      description: t('pages.companies.stats.recent_companies_desc', { defaultValue: "Recent companies" }),
     },
     {
-      title: "Premium/Enterprise",
+      title: t('pages.companies.stats.premium_enterprise', { defaultValue: "Premium/Enterprise" }),
       value: (planCounts.premium || 0) + (planCounts.enterprise || 0),
       icon: AlertTriangle,
-      description: "Planes pagos",
+      description: t('pages.companies.stats.paid_plans', { defaultValue: "Paid plans" }),
     },
   ];
 

@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Edit, Trash2, Users, Truck, Phone, Mail, ArrowUpDown } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 interface Company {
   id: string;
@@ -43,33 +44,35 @@ export function CompanyTableView({
   sortDirection, 
   onSort 
 }: CompanyTableViewProps) {
+  const { t } = useTranslation('admin');
+  
   const getStatusBadge = (status?: string) => {
     switch (status) {
       case 'active':
-        return <Badge variant="default" className="bg-green-500">Activa</Badge>;
+        return <Badge variant="default" className="bg-green-500">{t('pages.companies.status.active')}</Badge>;
       case 'inactive':
-        return <Badge variant="secondary">Inactiva</Badge>;
+        return <Badge variant="secondary">{t('pages.companies.status.inactive')}</Badge>;
       case 'suspended':
-        return <Badge variant="destructive">Suspendida</Badge>;
+        return <Badge variant="destructive">{t('pages.companies.status.suspended')}</Badge>;
       default:
-        return <Badge variant="outline">Desconocido</Badge>;
+        return <Badge variant="outline">{t('pages.companies.status.unknown', { defaultValue: "Unknown" })}</Badge>;
     }
   };
 
   const getPlanBadge = (planType?: string) => {
     switch (planType) {
       case 'basic':
-        return <Badge variant="outline">Básico</Badge>;
+        return <Badge variant="outline">{t('pages.companies.plans.basic')}</Badge>;
       case 'premium':
-        return <Badge variant="default" className="bg-blue-500">Premium</Badge>;
+        return <Badge variant="default" className="bg-blue-500">{t('pages.companies.plans.premium')}</Badge>;
       case 'enterprise':
-        return <Badge variant="default" className="bg-purple-500">Enterprise</Badge>;
+        return <Badge variant="default" className="bg-purple-500">{t('pages.companies.plans.enterprise')}</Badge>;
       case 'trial':
-        return <Badge variant="secondary">Prueba</Badge>;
+        return <Badge variant="secondary">{t('pages.companies.plans.trial')}</Badge>;
       case 'demo':
-        return <Badge variant="secondary">Demo</Badge>;
+        return <Badge variant="secondary">{t('pages.companies.plans.demo')}</Badge>;
       default:
-        return <Badge variant="outline">Básico</Badge>;
+        return <Badge variant="outline">{t('pages.companies.plans.basic')}</Badge>;
     }
   };
 
@@ -89,14 +92,14 @@ export function CompanyTableView({
     <Table>
       <TableHeader>
         <TableRow>
-          <SortableHeader field="name">Empresa</SortableHeader>
-          <SortableHeader field="owner_name">Propietario</SortableHeader>
-          <TableHead>Contacto</TableHead>
-          <SortableHeader field="plan_type">Plan</SortableHeader>
-          <SortableHeader field="status">Estado</SortableHeader>
-          <TableHead>Límites</TableHead>
-          <SortableHeader field="created_at">Fecha</SortableHeader>
-          <TableHead>Acciones</TableHead>
+          <SortableHeader field="name">{t('pages.companies.table.company', { defaultValue: "Company" })}</SortableHeader>
+          <SortableHeader field="owner_name">{t('pages.companies.table.owner', { defaultValue: "Owner" })}</SortableHeader>
+          <TableHead>{t('pages.companies.table.contact', { defaultValue: "Contact" })}</TableHead>
+          <SortableHeader field="plan_type">{t('common.plan')}</SortableHeader>
+          <SortableHeader field="status">{t('common.status')}</SortableHeader>
+          <TableHead>{t('pages.companies.table.limits', { defaultValue: "Limits" })}</TableHead>
+          <SortableHeader field="created_at">{t('pages.companies.table.date', { defaultValue: "Date" })}</SortableHeader>
+          <TableHead>{t('common.actions')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -112,7 +115,7 @@ export function CompanyTableView({
             </TableCell>
             <TableCell>
               <div>
-                <div className="font-medium">{company.owner_name || "No especificado"}</div>
+                <div className="font-medium">{company.owner_name || t('pages.companies.table.not_specified', { defaultValue: "Not specified" })}</div>
                 <div className="text-sm text-muted-foreground">
                   {company.owner_title || ""}
                 </div>
@@ -150,7 +153,7 @@ export function CompanyTableView({
             </TableCell>
             <TableCell>
               <div className="text-sm">
-                {new Date(company.created_at).toLocaleDateString('es-ES')}
+                {new Date(company.created_at).toLocaleDateString()}
               </div>
             </TableCell>
             <TableCell>
@@ -171,19 +174,21 @@ export function CompanyTableView({
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>¿Eliminar empresa?</AlertDialogTitle>
+                        <AlertDialogTitle>{t('pages.companies.actions.delete_company_title', { defaultValue: "Delete company?" })}</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Esta acción eliminará permanentemente la empresa "{company.name}" y todos sus datos asociados.
-                          Esta acción no se puede deshacer.
+                          {t('pages.companies.actions.delete_company_description', {
+                            companyName: company.name,
+                            defaultValue: `This action will permanently delete the company "${company.name}" and all its associated data. This action cannot be undone.`
+                          })}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogCancel>{t('pages.companies.buttons.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => onDelete(company.id, company.name)}
                           className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
-                          Eliminar
+                          {t('pages.companies.actions.delete_company')}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

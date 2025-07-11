@@ -263,6 +263,8 @@
     "deployed": "deployed",
     "backup_completed": "Backup Completed",
     "daily_backup": "Daily backup",
-    "archived": "Archived"
+    "archived": "Archived",
+    "error": "Error",
+    "success": "Success"
   }
 }

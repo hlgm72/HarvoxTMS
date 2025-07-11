@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Checkbox } from "@/components/ui/checkbox";
 import { MoreHorizontal, Download, CheckSquare, XSquare, AlertTriangle } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 
 interface Company {
   id: string;
@@ -37,6 +38,7 @@ export function CompanyActions({
   onSelectedCompaniesChange,
   onBulkStatusChange 
 }: CompanyActionsProps) {
+  const { t } = useTranslation('admin');
   const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<string>('');
 
@@ -55,7 +57,9 @@ export function CompanyActions({
 
     const csvContent = [
       // Header
-      'Nombre,Email,Teléfono,Dirección,Estado,Código Postal,Plan,Estado,Propietario,Fecha Creación',
+      t('pages.companies.export.headers', { 
+        defaultValue: 'Name,Email,Phone,Address,State,ZIP Code,Plan,Status,Owner,Creation Date' 
+      }),
       // Data
       ...dataToExport.map(company => [
         company.name,
@@ -67,7 +71,7 @@ export function CompanyActions({
         company.plan_type || 'basic',
         company.status || 'unknown',
         company.owner_name || '',
-        new Date(company.created_at).toLocaleDateString('es-ES')
+        new Date(company.created_at).toLocaleDateString()
       ].join(','))
     ].join('\n');
 
@@ -76,7 +80,7 @@ export function CompanyActions({
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
-      link.setAttribute('download', `empresas_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', `companies_${new Date().toISOString().split('T')[0]}.csv`);
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
@@ -98,10 +102,10 @@ export function CompanyActions({
 
   const getActionText = (action: string) => {
     switch (action) {
-      case 'active': return 'activar';
-      case 'inactive': return 'desactivar';
-      case 'suspended': return 'suspender';
-      default: return 'modificar';
+      case 'active': return t('pages.companies.actions.activate', { defaultValue: 'activate' });
+      case 'inactive': return t('pages.companies.actions.deactivate', { defaultValue: 'deactivate' });
+      case 'suspended': return t('pages.companies.actions.suspend', { defaultValue: 'suspend' });
+      default: return t('pages.companies.actions.modify', { defaultValue: 'modify' });
     }
   };
 
@@ -116,7 +120,11 @@ export function CompanyActions({
             onCheckedChange={handleSelectAll}
           />
           <label htmlFor="select-all" className="text-sm font-medium">
-            Seleccionar todo ({selectedCompanies.length}/{companies.length})
+            {t('pages.companies.actions.select_all', { 
+              selected: selectedCompanies.length, 
+              total: companies.length,
+              defaultValue: `Select all (${selectedCompanies.length}/${companies.length})`
+            })}
           </label>
         </div>
 
@@ -124,7 +132,7 @@ export function CompanyActions({
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleExport}>
             <Download className="h-4 w-4 mr-2" />
-            Exportar {selectedCompanies.length > 0 ? `(${selectedCompanies.length})` : 'Todo'}
+            {t('pages.companies.actions.export_data')} {selectedCompanies.length > 0 ? `(${selectedCompanies.length})` : t('pages.companies.actions.export_all', { defaultValue: 'All' })}
           </Button>
 
           {selectedCompanies.length > 0 && (
@@ -132,21 +140,21 @@ export function CompanyActions({
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
                   <MoreHorizontal className="h-4 w-4 mr-2" />
-                  Acciones ({selectedCompanies.length})
+                  {t('pages.companies.actions.bulk_actions')} ({selectedCompanies.length})
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-background border shadow-md z-50">
                 <DropdownMenuItem onClick={() => handleBulkAction('active')}>
                   <CheckSquare className="h-4 w-4 mr-2" />
-                  Activar empresas
+                  {t('pages.companies.actions.activate_companies', { defaultValue: 'Activate companies' })}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleBulkAction('inactive')}>
                   <XSquare className="h-4 w-4 mr-2" />
-                  Desactivar empresas
+                  {t('pages.companies.actions.deactivate_companies', { defaultValue: 'Deactivate companies' })}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleBulkAction('suspended')}>
                   <AlertTriangle className="h-4 w-4 mr-2" />
-                  Suspender empresas
+                  {t('pages.companies.actions.suspend_companies', { defaultValue: 'Suspend companies' })}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -158,18 +166,21 @@ export function CompanyActions({
       <Dialog open={isBulkDialogOpen} onOpenChange={setIsBulkDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirmar Acción Masiva</DialogTitle>
+            <DialogTitle>{t('pages.companies.actions.confirm_bulk_action', { defaultValue: 'Confirm Bulk Action' })}</DialogTitle>
             <DialogDescription>
-              ¿Estás seguro de que quieres {getActionText(pendingAction)} {selectedCompanies.length} empresas seleccionadas?
-              Esta acción se aplicará a todas las empresas seleccionadas.
+              {t('pages.companies.actions.bulk_action_confirmation', {
+                action: getActionText(pendingAction),
+                count: selectedCompanies.length,
+                defaultValue: `Are you sure you want to ${getActionText(pendingAction)} ${selectedCompanies.length} selected companies? This action will be applied to all selected companies.`
+              })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsBulkDialogOpen(false)}>
-              Cancelar
+              {t('pages.companies.buttons.cancel')}
             </Button>
             <Button onClick={confirmBulkAction}>
-              Confirmar
+              {t('pages.companies.actions.confirm', { defaultValue: 'Confirm' })}
             </Button>
           </DialogFooter>
         </DialogContent>
