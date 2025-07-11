@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 import { useFleetNotifications } from '@/components/notifications';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Settings, Save, KeyRound, CheckCircle, AlertCircle, RotateCcw, Trash2, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -249,13 +250,14 @@ export default function Profile() {
         {/* Profile Summary Card */}
         <Card className="md:col-span-1">
           <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <Avatar className="h-20 w-20">
-                <AvatarFallback className="bg-primary text-primary-foreground text-lg">
-                  {getUserInitials()}
-                </AvatarFallback>
-              </Avatar>
-            </div>
+            <AvatarUpload 
+              currentAvatarUrl={profile?.avatar_url}
+              userName={`${profile?.first_name || ''} ${profile?.last_name || ''}`.trim()}
+              onAvatarUpdate={(avatarUrl) => {
+                // Refresh profile to get updated data
+                refreshProfile();
+              }}
+            />
             <CardTitle className="text-xl">{profile?.first_name} {profile?.last_name}</CardTitle>
             <CardDescription>{user?.email}</CardDescription>
           </CardHeader>

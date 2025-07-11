@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "@/hooks/useAuth";
@@ -20,7 +20,7 @@ import { Link, useNavigate } from "react-router-dom";
 export function Header() {
   const { t } = useTranslation(['common', 'fleet']);
   const { signOut } = useAuth();
-  const { getUserInitials, getFullName, user } = useUserProfile();
+  const { getUserInitials, getFullName, user, profile } = useUserProfile();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -64,6 +64,7 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                 <Avatar className="h-10 w-10">
+                  <AvatarImage src={profile?.avatar_url || undefined} alt="Avatar" />
                   <AvatarFallback className="bg-primary text-primary-foreground">
                     {getUserInitials()}
                   </AvatarFallback>
