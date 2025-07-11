@@ -121,6 +121,10 @@ export default function SuperAdminDashboard() {
   const editOwnerPhoneHandlers = createTextHandlers((value) => 
     setCompanyToEdit(prev => prev ? {...prev, owner_phone: value} : null), 'phone'
   );
+  
+  const editCompanyPhoneHandlers = createTextHandlers((value) => 
+    setCompanyToEdit(prev => prev ? {...prev, phone: value} : null), 'phone'
+  );
 
   // Handler for auto-fill format detection
   const handleAutoFillFormat = (
@@ -1388,12 +1392,22 @@ export default function SuperAdminDashboard() {
                         
                         <div className="space-y-2">
                           <Label htmlFor="edit-company-phone">Company Phone</Label>
-                          <Input
-                            id="edit-company-phone"
-                            value={companyToEdit.phone || ''}
-                            onChange={(e) => setCompanyToEdit(prev => prev ? {...prev, phone: e.target.value} : null)}
-                            placeholder="(555) 123-4567"
-                          />
+                          <div className="relative">
+                            <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="edit-company-phone"
+                              value={companyToEdit.phone || ''}
+                              {...editCompanyPhoneHandlers}
+                              onBlur={(e) => {
+                                editCompanyPhoneHandlers.onBlur?.(e);
+                                handleAutoFillFormat(e.target.value, (value) => 
+                                  setCompanyToEdit(prev => prev ? {...prev, phone: value} : null), 'phone'
+                                );
+                              }}
+                              placeholder="(555) 123-4567"
+                              className="pl-10"
+                            />
+                          </div>
                         </div>
 
                         <div className="space-y-2">
