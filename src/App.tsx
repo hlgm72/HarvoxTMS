@@ -22,6 +22,7 @@ import Drivers from "./pages/Drivers";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/layout/Layout";
 import { NotificationProvider } from "./components/notifications";
+import { UserProfileProvider } from "./contexts/UserProfileContext";
 import { useLanguageSync } from "./hooks/useLanguageSync";
 import './i18n/config';
 
@@ -223,13 +224,15 @@ function AppContent() {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <NotificationProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <AppContent />
-      </TooltipProvider>
-    </NotificationProvider>
+    <UserProfileProvider>
+      <NotificationProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <AppContent />
+        </TooltipProvider>
+      </NotificationProvider>
+    </UserProfileProvider>
   </QueryClientProvider>
 );
 
