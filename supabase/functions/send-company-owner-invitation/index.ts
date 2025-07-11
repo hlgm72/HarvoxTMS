@@ -113,7 +113,7 @@ const handler = async (req: Request): Promise<Response> => {
     const invitationUrl = `${req.headers.get("origin")}/invitation/${invitationToken}`;
 
     const emailResponse = await resend.emails.send({
-      from: "FleetNest <noreply@tudominio.com>", // Cambia 'tudominio.com' por tu dominio verificado
+      from: "FleetNest <noreply@fleetnest.app>",
       to: [email],
       subject: `You've been invited to manage ${companyName} on FleetNest`,
       html: `
