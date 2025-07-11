@@ -1716,6 +1716,13 @@ export type Database = {
           id: string
         }[]
       }
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["user_role"]
+        }
+        Returns: boolean
+      }
       is_period_locked: {
         Args: { period_id: string }
         Returns: boolean
@@ -1731,6 +1738,10 @@ export type Database = {
           payment_ref?: string
         }
         Returns: Json
+      }
+      maintenance_cleanup: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       needs_initial_setup: {
         Args: Record<PropertyKey, never>
