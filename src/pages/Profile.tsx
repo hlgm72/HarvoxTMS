@@ -8,13 +8,14 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import { useFleetNotifications } from '@/components/notifications';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
-import { User, Settings, Save, KeyRound, CheckCircle, AlertCircle, RotateCcw, Trash2 } from 'lucide-react';
+import { User, Settings, Save, KeyRound, CheckCircle, AlertCircle, RotateCcw, Trash2, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { createTextHandlers } from '@/lib/textUtils';
 
@@ -247,222 +248,234 @@ export default function Profile() {
           </CardContent>
         </Card>
 
-        {/* Profile Information Form */}
+        {/* Tabs for Profile Information and Security */}
         <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              Información Personal
-            </CardTitle>
-            <CardDescription>
-              Actualiza tu información personal y preferencias
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...profileForm}>
-              <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={profileForm.control}
-                    name="first_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nombre</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Tu nombre" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+          <Tabs defaultValue="profile" className="w-full">
+            <CardHeader>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="profile" className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Información Personal
+                </TabsTrigger>
+                <TabsTrigger value="security" className="flex items-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  Seguridad
+                </TabsTrigger>
+              </TabsList>
+            </CardHeader>
 
-                  <FormField
-                    control={profileForm.control}
-                    name="last_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Apellido</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Tu apellido" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            <CardContent>
+              <TabsContent value="profile" className="space-y-4">
+                <div className="mb-4">
+                  <h3 className="text-lg font-medium">Información Personal</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Actualiza tu información personal y preferencias
+                  </p>
                 </div>
+                
+                <Form {...profileForm}>
+                  <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={profileForm.control}
+                        name="first_name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nombre</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Tu nombre" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                <FormField
-                  control={profileForm.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Teléfono</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="(555) 123-4567" 
-                          value={field.value || ''} 
-                          {...phoneHandlers}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Número de teléfono para contacto (opcional)
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                      <FormField
+                        control={profileForm.control}
+                        name="last_name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Apellido</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Tu apellido" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={profileForm.control}
-                    name="preferred_language"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Idioma Preferido</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                    <FormField
+                      control={profileForm.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Teléfono</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecciona un idioma" />
-                            </SelectTrigger>
+                            <Input 
+                              placeholder="(555) 123-4567" 
+                              value={field.value || ''} 
+                              {...phoneHandlers}
+                            />
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="en">English</SelectItem>
-                            <SelectItem value="es">Español</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <FormDescription>
+                            Número de teléfono para contacto (opcional)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={profileForm.control}
-                    name="timezone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Zona Horaria</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={profileForm.control}
+                        name="preferred_language"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Idioma Preferido</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Selecciona un idioma" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="en">English</SelectItem>
+                                <SelectItem value="es">Español</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={profileForm.control}
+                        name="timezone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Zona Horaria</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Selecciona zona horaria" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="America/New_York">Este (Nueva York)</SelectItem>
+                                <SelectItem value="America/Chicago">Central (Chicago)</SelectItem>
+                                <SelectItem value="America/Denver">Montaña (Denver)</SelectItem>
+                                <SelectItem value="America/Los_Angeles">Pacífico (Los Ángeles)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="flex justify-end gap-2">
+                      <Button type="button" variant="outline" onClick={onCancelProfile}>
+                        <RotateCcw className="mr-2 h-4 w-4" />
+                        Cancelar
+                      </Button>
+                      <Button type="submit" disabled={updating}>
+                        {updating ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                            Actualizando...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="mr-2 h-4 w-4" />
+                            Guardar Cambios
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </TabsContent>
+
+              <TabsContent value="security" className="space-y-4">
+                <div className="mb-4">
+                  <h3 className="text-lg font-medium">Seguridad de la Cuenta</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Actualiza tu contraseña para mantener tu cuenta segura
+                  </p>
+                </div>
+
+                <Form {...passwordForm}>
+                  <form onSubmit={passwordForm.handleSubmit(onSubmitPassword)} className="space-y-4 max-w-md">
+                    <FormField
+                      control={passwordForm.control}
+                      name="currentPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Contraseña Actual</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecciona zona horaria" />
-                            </SelectTrigger>
+                            <Input type="password" placeholder="Tu contraseña actual" {...field} />
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="America/New_York">Este (Nueva York)</SelectItem>
-                            <SelectItem value="America/Chicago">Central (Chicago)</SelectItem>
-                            <SelectItem value="America/Denver">Montaña (Denver)</SelectItem>
-                            <SelectItem value="America/Los_Angeles">Pacífico (Los Ángeles)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <div className="flex justify-end gap-2">
-                  <Button type="button" variant="outline" onClick={onCancelProfile}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit" disabled={updating}>
-                    {updating ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                        Actualizando...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="mr-2 h-4 w-4" />
-                        Guardar Cambios
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+                    <FormField
+                      control={passwordForm.control}
+                      name="newPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nueva Contraseña</FormLabel>
+                          <FormControl>
+                            <Input type="password" placeholder="Nueva contraseña" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Debe tener al menos 6 caracteres
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-        {/* Password Change Form */}
-        <Card className="md:col-span-3">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <KeyRound className="h-5 w-5" />
-              Cambiar Contraseña
-            </CardTitle>
-            <CardDescription>
-              Actualiza tu contraseña para mantener tu cuenta segura
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...passwordForm}>
-              <form onSubmit={passwordForm.handleSubmit(onSubmitPassword)} className="space-y-4 max-w-md">
-                <FormField
-                  control={passwordForm.control}
-                  name="currentPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contraseña Actual</FormLabel>
-                      <FormControl>
-                        <Input type="password" placeholder="Tu contraseña actual" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={passwordForm.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Confirmar Nueva Contraseña</FormLabel>
+                          <FormControl>
+                            <Input type="password" placeholder="Confirma la nueva contraseña" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={passwordForm.control}
-                  name="newPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nueva Contraseña</FormLabel>
-                      <FormControl>
-                        <Input type="password" placeholder="Nueva contraseña" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Debe tener al menos 6 caracteres
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={passwordForm.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Confirmar Nueva Contraseña</FormLabel>
-                      <FormControl>
-                        <Input type="password" placeholder="Confirma la nueva contraseña" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex justify-start gap-2">
-                  <Button type="button" variant="outline" onClick={onCancelPassword}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit" disabled={changingPassword} variant="secondary">
-                    {changingPassword ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                        Cambiando...
-                      </>
-                    ) : (
-                      <>
-                        <KeyRound className="mr-2 h-4 w-4" />
-                        Cambiar Contraseña
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
+                    <div className="flex justify-start gap-2">
+                      <Button type="button" variant="outline" onClick={onCancelPassword}>
+                        <RotateCcw className="mr-2 h-4 w-4" />
+                        Cancelar
+                      </Button>
+                      <Button type="submit" disabled={changingPassword} variant="secondary">
+                        {changingPassword ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                            Cambiando...
+                          </>
+                        ) : (
+                          <>
+                            <KeyRound className="mr-2 h-4 w-4" />
+                            Cambiar Contraseña
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </TabsContent>
+            </CardContent>
+          </Tabs>
         </Card>
       </div>
     </div>
