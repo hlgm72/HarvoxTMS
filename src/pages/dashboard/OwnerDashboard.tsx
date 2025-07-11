@@ -161,32 +161,66 @@ export default function OwnerDashboard() {
     if (!userRole?.company_id) return;
     
     try {
-      const { data, error } = await supabase
+      // First get the driver user IDs from user_company_roles
+      const { data: driverRoles, error: rolesError } = await supabase
         .from('user_company_roles')
-        .select(`
-          user_id,
-          profiles!inner(first_name, last_name, phone),
-          driver_profiles(license_number, license_expiry_date),
-          company_drivers(is_active, created_at)
-        `)
+        .select('user_id')
         .eq('company_id', userRole.company_id)
         .eq('role', 'driver')
         .eq('is_active', true)
         .limit(10);
 
-      if (error) throw error;
+      if (rolesError) throw rolesError;
 
-      const formattedDrivers = data?.map((item: any) => ({
-        id: item.user_id,
-        user_id: item.user_id,
-        first_name: item.profiles?.first_name || 'N/A',
-        last_name: item.profiles?.last_name || 'N/A',
-        phone: item.profiles?.phone || 'N/A',
-        license_number: item.driver_profiles?.license_number || 'N/A',
-        license_expiry_date: item.driver_profiles?.license_expiry_date || 'N/A',
-        is_active: item.company_drivers?.is_active || false,
-        created_at: item.company_drivers?.created_at || new Date().toISOString(),
-      })) || [];
+      if (!driverRoles || driverRoles.length === 0) {
+        setDrivers([]);
+        return;
+      }
+
+      const driverUserIds = driverRoles.map(role => role.user_id);
+
+      // Get profiles for these users
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, first_name, last_name, phone')
+        .in('user_id', driverUserIds);
+
+      if (profilesError) throw profilesError;
+
+      // Get driver profiles
+      const { data: driverProfilesData, error: driverProfilesError } = await supabase
+        .from('driver_profiles')
+        .select('user_id, license_number, license_expiry_date')
+        .in('user_id', driverUserIds);
+
+      if (driverProfilesError) throw driverProfilesError;
+
+      // Get company drivers data
+      const { data: companyDriversData, error: companyDriversError } = await supabase
+        .from('company_drivers')
+        .select('user_id, is_active, created_at')
+        .in('user_id', driverUserIds);
+
+      if (companyDriversError) throw companyDriversError;
+
+      // Combine all data
+      const formattedDrivers = driverUserIds.map(userId => {
+        const profile = profilesData?.find(p => p.user_id === userId);
+        const driverProfile = driverProfilesData?.find(dp => dp.user_id === userId);
+        const companyDriver = companyDriversData?.find(cd => cd.user_id === userId);
+
+        return {
+          id: userId,
+          user_id: userId,
+          first_name: profile?.first_name || 'N/A',
+          last_name: profile?.last_name || 'N/A',
+          phone: profile?.phone || 'N/A',
+          license_number: driverProfile?.license_number || 'N/A',
+          license_expiry_date: driverProfile?.license_expiry_date || 'N/A',
+          is_active: companyDriver?.is_active || false,
+          created_at: companyDriver?.created_at || new Date().toISOString(),
+        };
+      });
 
       setDrivers(formattedDrivers);
     } catch (error) {
