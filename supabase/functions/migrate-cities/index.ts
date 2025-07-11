@@ -113,15 +113,30 @@ Deno.serve(async (req) => {
         break
       }
 
-      // Transform cities for destination
+      // Transform and filter cities for destination
       const citiesToInsert: TargetCity[] = []
       const invalidCities: string[] = []
+      let batchSkipped = 0
 
-      sourceCities.forEach((city: SourceCity) => {
+      // Process each city individually to check for duplicates correctly
+      for (const city of sourceCities) {
         // Check if state_code exists in our mapping
         if (!stateMapping[city.state_code]) {
           invalidCities.push(`${city.city_name}, ${city.state_code}`)
-          return
+          continue
+        }
+
+        // Check for existing city in destination (by name + state combination)
+        const { data: existingCity } = await destSupabase
+          .from('state_cities')
+          .select('id')
+          .eq('name', city.city_name)
+          .eq('state_id', city.state_code)
+          .maybeSingle()
+
+        if (existingCity) {
+          batchSkipped++
+          continue // Skip if city already exists in this state
         }
 
         citiesToInsert.push({
@@ -129,11 +144,16 @@ Deno.serve(async (req) => {
           state_id: city.state_code, // Use state_code directly as state_id
           county: null
         })
-      })
+      }
 
       if (invalidCities.length > 0) {
         console.warn(`⚠️ Skipping ${invalidCities.length} cities with invalid state codes:`, invalidCities.slice(0, 5))
         totalSkipped += invalidCities.length
+      }
+
+      if (batchSkipped > 0) {
+        console.log(`📋 Skipped ${batchSkipped} duplicate cities in this batch`)
+        totalSkipped += batchSkipped
       }
 
       if (citiesToInsert.length > 0) {
@@ -145,16 +165,13 @@ Deno.serve(async (req) => {
 
         if (insertError) {
           console.error(`❌ Failed to insert batch:`, insertError.message)
-          // If it's a duplicate error, count as skipped, otherwise as error
-          if (insertError.message.includes('duplicate') || insertError.message.includes('unique')) {
-            totalSkipped += citiesToInsert.length
-          } else {
-            totalErrors += citiesToInsert.length
-          }
+          totalErrors += citiesToInsert.length
         } else {
           totalMigrated += insertResult?.length || citiesToInsert.length
           console.log(`✅ Successfully inserted ${insertResult?.length || citiesToInsert.length} cities`)
         }
+      } else {
+        console.log(`📝 No new cities to insert in this batch`)
       }
 
       offset += batchSize
