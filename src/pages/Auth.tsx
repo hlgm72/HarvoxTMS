@@ -24,6 +24,9 @@ export default function Auth() {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetSuccess, setResetSuccess] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -137,6 +140,41 @@ export default function Auth() {
     } catch (err: any) {
       console.error('Google sign-in error:', err);
       setError(err.message || 'Error signing in with Google');
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      if (!resetEmail || !/\S+@\S+\.\S+/.test(resetEmail)) {
+        setError(t('auth:validation.email_invalid'));
+        setLoading(false);
+        return;
+      }
+
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      });
+
+      if (error) throw error;
+
+      setResetSuccess(true);
+      showSuccess(
+        t('auth:forgot_password.success_message'),
+        t('auth:forgot_password.check_email')
+      );
+    } catch (err: any) {
+      console.error('Password reset error:', err);
+      if (err.message.includes('user_not_found')) {
+        setError(t('auth:errors.reset_email_not_found'));
+      } else {
+        setError(err.message || t('auth:errors.unknown_error'));
+      }
+    } finally {
       setLoading(false);
     }
   };
@@ -463,16 +501,117 @@ export default function Auth() {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                {fieldErrors.password && (
-                  <p className="text-sm text-destructive font-body">{fieldErrors.password}</p>
-                )}
-              </div>
+                 {fieldErrors.password && (
+                   <p className="text-sm text-destructive font-body">{fieldErrors.password}</p>
+                 )}
+                 
+                 {/* Forgot Password Link - Only show in login mode */}
+                 {isLogin && !showForgotPassword && (
+                   <div className="text-right">
+                     <button
+                       type="button"
+                       onClick={() => setShowForgotPassword(true)}
+                       className="text-sm font-body text-primary hover:text-primary/80 transition-colors"
+                       disabled={loading}
+                     >
+                       ¿Olvidaste tu contraseña?
+                     </button>
+                   </div>
+                 )}
+               </div>
 
-              {error && (
-                <Alert variant="destructive" className="animate-fade-in">
-                  <AlertDescription className="font-body">{error}</AlertDescription>
-                </Alert>
-              )}
+               {/* Forgot Password Form */}
+               {showForgotPassword && (
+                 <div className="space-y-4 p-4 bg-muted/30 rounded-lg border animate-fade-in">
+                   <div className="text-center">
+                     <h3 className="text-lg font-heading font-semibold text-foreground mb-2">
+                       {t('auth:forgot_password.title')}
+                     </h3>
+                     <p className="text-sm text-muted-foreground font-body">
+                       {t('auth:forgot_password.description')}
+                     </p>
+                   </div>
+                   
+                   <form onSubmit={handleForgotPassword} className="space-y-4">
+                     <div className="space-y-2">
+                       <Label htmlFor="resetEmail" className="font-body font-medium text-foreground">
+                         {t('auth:forgot_password.email_label')}
+                       </Label>
+                       <div className="relative">
+                         <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                         <Input
+                           id="resetEmail"
+                           type="email"
+                           value={resetEmail}
+                           onChange={(e) => {
+                             setResetEmail(e.target.value);
+                             if (error) setError(null);
+                           }}
+                           placeholder={t('auth:form.email_placeholder')}
+                           className="auth-input pl-10 font-body"
+                           required
+                           disabled={loading || resetSuccess}
+                         />
+                       </div>
+                     </div>
+                     
+                     {!resetSuccess && (
+                       <div className="flex gap-2">
+                         <Button
+                           type="submit"
+                           className="flex-1 font-body font-medium bg-gradient-primary"
+                           disabled={loading || !resetEmail}
+                         >
+                           {loading ? (
+                             <>
+                               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                               {t('auth:forgot_password.sending')}
+                             </>
+                           ) : (
+                             t('auth:forgot_password.send_reset')
+                           )}
+                         </Button>
+                         <Button
+                           type="button"
+                           variant="outline"
+                           onClick={() => {
+                             setShowForgotPassword(false);
+                             setResetEmail('');
+                             setError(null);
+                             setResetSuccess(false);
+                           }}
+                           className="font-body"
+                           disabled={loading}
+                         >
+                           {t('auth:forgot_password.back_to_login')}
+                         </Button>
+                       </div>
+                     )}
+                     
+                     {resetSuccess && (
+                       <Button
+                         type="button"
+                         variant="outline"
+                         onClick={() => {
+                           setShowForgotPassword(false);
+                           setResetEmail('');
+                           setError(null);
+                           setResetSuccess(false);
+                         }}
+                         className="w-full font-body"
+                       >
+                         {t('auth:forgot_password.back_to_login')}
+                       </Button>
+                     )}
+                   </form>
+                 </div>
+               )}
+
+               {error && (
+                 <Alert variant="destructive" className="animate-fade-in">
+                   <AlertDescription className="font-body">{error}</AlertDescription>
+                 </Alert>
+               )}
 
               <Button 
                 type="submit" 
