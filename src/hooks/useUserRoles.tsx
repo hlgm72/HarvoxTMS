@@ -59,6 +59,9 @@ export const useUserRoles = (): UseUserRolesReturn => {
         return { success: false, error: 'Error al asignar el rol' };
       }
 
+      // Refresh roles to update the UI immediately
+      await refreshRoles();
+
       return { success: true };
     } catch (error) {
       console.error('Error assigning role:', error);
@@ -96,6 +99,9 @@ export const useUserRoles = (): UseUserRolesReturn => {
         console.error('Error removing role:', error);
         return { success: false, error: 'Error al remover el rol' };
       }
+
+      // Refresh roles to update the UI immediately
+      await refreshRoles();
 
       return { success: true };
     } catch (error) {

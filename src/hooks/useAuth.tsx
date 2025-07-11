@@ -169,6 +169,8 @@ export const useAuth = () => {
 
   const refreshRoles = async () => {
     if (authState.user) {
+      // Clear cache to force fresh data
+      rolesCache.delete(authState.user.id);
       const roles = await fetchUserRoles(authState.user.id);
       const currentRole = getCurrentRoleFromStorage(roles) || (roles.length > 0 ? roles[0] : null);
       
