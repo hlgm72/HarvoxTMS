@@ -45,37 +45,11 @@ export const useAuth = () => {
   };
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setAuthState(prev => ({
-          ...prev,
-          session,
-          user: session?.user ?? null,
-        }));
+    let isMounted = true;
 
-        if (session?.user) {
-          // Fetch user role with a small delay to avoid potential issues
-          setTimeout(async () => {
-            const role = await fetchUserRole(session.user.id);
-            setAuthState(prev => ({
-              ...prev,
-              userRole: role,
-              loading: false,
-            }));
-          }, 100);
-        } else {
-          setAuthState(prev => ({
-            ...prev,
-            userRole: null,
-            loading: false,
-          }));
-        }
-      }
-    );
+    const handleSession = async (session: Session | null) => {
+      if (!isMounted) return;
 
-    // Check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setAuthState(prev => ({
         ...prev,
         session,
@@ -84,20 +58,41 @@ export const useAuth = () => {
 
       if (session?.user) {
         const role = await fetchUserRole(session.user.id);
-        setAuthState(prev => ({
-          ...prev,
-          userRole: role,
-          loading: false,
-        }));
+        if (isMounted) {
+          setAuthState(prev => ({
+            ...prev,
+            userRole: role,
+            loading: false,
+          }));
+        }
       } else {
-        setAuthState(prev => ({
-          ...prev,
-          loading: false,
-        }));
+        if (isMounted) {
+          setAuthState(prev => ({
+            ...prev,
+            userRole: null,
+            loading: false,
+          }));
+        }
       }
+    };
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        // No usar async directamente en el callback
+        handleSession(session);
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleSession(session);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {
