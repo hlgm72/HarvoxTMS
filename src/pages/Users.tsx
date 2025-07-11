@@ -218,6 +218,36 @@ export default function Users() {
     return roleLabels[role] || role;
   };
 
+  const getRoleBadgeVariant = (role: string) => {
+    const roleVariants: Record<string, string> = {
+      'company_owner': 'default', // Azul - rol principal
+      'driver': 'secondary', // Gris - rol operativo
+      'dispatcher': 'outline', // Borde - rol de coordinación
+      'operations_manager': 'default', // Azul - rol de gestión
+      'safety_manager': 'destructive', // Rojo - seguridad crítica
+      'senior_dispatcher': 'outline', // Borde oscuro - coordinación senior
+      'general_manager': 'default', // Azul - alta gestión
+      'superadmin': 'destructive' // Rojo - máximo nivel
+    };
+    
+    return roleVariants[role] || 'outline';
+  };
+
+  const getRoleBadgeColor = (role: string) => {
+    const roleColors: Record<string, string> = {
+      'company_owner': 'bg-blue-500 text-white hover:bg-blue-600',
+      'driver': 'bg-green-500 text-white hover:bg-green-600', 
+      'dispatcher': 'bg-orange-500 text-white hover:bg-orange-600',
+      'operations_manager': 'bg-purple-500 text-white hover:bg-purple-600',
+      'safety_manager': 'bg-red-500 text-white hover:bg-red-600',
+      'senior_dispatcher': 'bg-amber-600 text-white hover:bg-amber-700',
+      'general_manager': 'bg-indigo-500 text-white hover:bg-indigo-600',
+      'superadmin': 'bg-rose-600 text-white hover:bg-rose-700'
+    };
+    
+    return roleColors[role] || 'bg-gray-500 text-white hover:bg-gray-600';
+  };
+
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -407,11 +437,28 @@ export default function Users() {
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        {user.role.split(', ').map((role, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {role}
-                          </Badge>
-                        ))}
+                        {user.role.split(', ').map((roleLabel, index) => {
+                          // Obtener el rol original desde el label
+                          const originalRole = Object.entries({
+                            'company_owner': 'Propietario',
+                            'driver': 'Conductor', 
+                            'dispatcher': 'Despachador',
+                            'operations_manager': 'Gerente de Operaciones',
+                            'safety_manager': 'Gerente de Seguridad',
+                            'senior_dispatcher': 'Despachador Senior',
+                            'general_manager': 'Gerente General',
+                            'superadmin': 'Super Admin'
+                          }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+                          
+                          return (
+                            <Badge 
+                              key={index} 
+                              className={`text-xs ${getRoleBadgeColor(originalRole)}`}
+                            >
+                              {roleLabel}
+                            </Badge>
+                          );
+                        })}
                       </div>
                     </TableCell>
                     <TableCell>{getStatusBadge(user.status)}</TableCell>
