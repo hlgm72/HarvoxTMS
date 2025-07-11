@@ -67,6 +67,24 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Access denied. Superadmin role required.");
     }
 
+    console.log("Superadmin validation passed!");
+
+    // TEMPORARY: Return early to test if problem is before email sending
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Validation passed - email sending temporarily disabled for testing",
+        userId: user.id
+      }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      }
+    );
+
     const { companyId, email, companyName }: InvitationRequest = await req.json();
 
     // Validate input
