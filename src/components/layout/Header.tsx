@@ -85,7 +85,11 @@ export function Header() {
                   {t('common:navigation.profile', 'Perfil')}
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>{t('common:navigation.settings', 'Configuración')}</DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/settings" className="w-full">
+                  {t('common:navigation.settings', 'Configuración')}
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
                 onClick={handleLogout}
