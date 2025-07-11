@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UserPlus, Mail, Shield, Edit, Trash2, Users as UsersIcon } from "lucide-react";
+import { UserPlus, Mail, Shield, Edit, Trash2, Users as UsersIcon, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -59,9 +59,9 @@ const ROLE_OPTIONS = [
 
 export default function Users() {
   const { t } = useTranslation(['common']);
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [inviteForm, setInviteForm] = useState<InviteUserForm>({
     email: '',
@@ -69,6 +69,88 @@ export default function Users() {
     first_name: '',
     last_name: ''
   });
+
+  // Cargar usuarios al montar el componente
+  useEffect(() => {
+    if (userRole?.company_id) {
+      fetchUsers();
+    }
+  }, [userRole]);
+
+  const fetchUsers = async () => {
+    if (!userRole?.company_id) return;
+    
+    setLoading(true);
+    try {
+      // Obtener usuarios de la empresa con sus roles
+      const { data: companyUsers, error } = await supabase
+        .from('user_company_roles')
+        .select(`
+          user_id,
+          role,
+          is_active,
+          created_at
+        `)
+        .eq('company_id', userRole.company_id)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (!companyUsers || companyUsers.length === 0) {
+        setUsers([]);
+        setLoading(false);
+        return;
+      }
+
+      // Obtener perfiles de usuarios
+      const userIds = [...new Set(companyUsers.map(u => u.user_id))];
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, first_name, last_name')
+        .in('user_id', userIds);
+
+      if (profilesError) throw profilesError;
+
+      // Agrupar por usuario para manejar múltiples roles
+      const usersMap = new Map<string, User>();
+      
+      companyUsers.forEach(userRole => {
+        const userId = userRole.user_id;
+        const profile = profiles?.find(p => p.user_id === userId);
+        
+        if (usersMap.has(userId)) {
+          // Usuario ya existe, agregar rol adicional
+          const existingUser = usersMap.get(userId)!;
+          existingUser.role = existingUser.role + ', ' + getRoleLabel(userRole.role);
+        } else {
+          // Nuevo usuario
+          usersMap.set(userId, {
+            id: userId,
+            email: 'N/A', // Se actualizará después si es posible
+            role: getRoleLabel(userRole.role),
+            status: userRole.is_active ? 'active' : 'inactive',
+            first_name: profile?.first_name || '',
+            last_name: profile?.last_name || '',
+            created_at: userRole.created_at
+          });
+        }
+      });
+
+      // Intentar obtener emails desde auth si es el usuario actual
+      if (user?.id && usersMap.has(user.id)) {
+        const currentUser = usersMap.get(user.id)!;
+        currentUser.email = user.email || 'N/A';
+      }
+
+      setUsers(Array.from(usersMap.values()));
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      toast.error('Error al cargar usuarios');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInviteUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,7 +179,8 @@ export default function Users() {
       setInviteDialogOpen(false);
       setInviteForm({ email: '', role: '', first_name: '', last_name: '' });
       
-      // Aquí podrías recargar la lista de usuarios pendientes
+      // Recargar la lista de usuarios
+      fetchUsers();
       
     } catch (error: any) {
       console.error('Error inviting user:', error);
@@ -121,8 +204,18 @@ export default function Users() {
   };
 
   const getRoleLabel = (role: string) => {
-    const roleOption = ROLE_OPTIONS.find(option => option.value === role);
-    return roleOption ? roleOption.label : role;
+    const roleLabels: Record<string, string> = {
+      'company_owner': 'Propietario',
+      'driver': 'Conductor',
+      'dispatcher': 'Despachador',
+      'operations_manager': 'Gerente de Operaciones',
+      'safety_manager': 'Gerente de Seguridad',
+      'senior_dispatcher': 'Despachador Senior',
+      'general_manager': 'Gerente General',
+      'superadmin': 'Super Admin'
+    };
+    
+    return roleLabels[role] || role;
   };
 
   return (
@@ -247,37 +340,95 @@ export default function Users() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell colSpan={6} className="text-center py-16">
-                  <div className="flex flex-col items-center space-y-6 animate-fade-in">
-                    <div className="relative">
-                      <div className="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center">
-                        <UsersIcon className="h-12 w-12 text-muted-foreground/60" />
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mr-2"></div>
+                      Cargando usuarios...
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : users.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-16">
+                    <div className="flex flex-col items-center space-y-6 animate-fade-in">
+                      <div className="relative">
+                        <div className="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center">
+                          <UsersIcon className="h-12 w-12 text-muted-foreground/60" />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3 max-w-sm">
+                        <h3 className="text-xl font-semibold text-foreground">
+                          No hay usuarios registrados aún
+                        </h3>
+                        
+                        <p className="text-muted-foreground text-center leading-relaxed">
+                          Utiliza el botón "Invitar Usuario" para comenzar.
+                        </p>
+                        
+                        <div className="pt-4">
+                          <Button 
+                            onClick={() => setInviteDialogOpen(true)}
+                            className="gap-2"
+                          >
+                            <UserPlus className="h-4 w-4" />
+                            Invitar Usuario
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="space-y-3 max-w-sm">
-                      <h3 className="text-xl font-semibold text-foreground">
-                        No hay usuarios registrados aún
-                      </h3>
-                      
-                      <p className="text-muted-foreground text-center leading-relaxed">
-                        Utiliza el botón "Invitar Usuario" para comenzar.
-                      </p>
-                      
-                      <div className="pt-4">
-                        <Button 
-                          onClick={() => setInviteDialogOpen(true)}
-                          className="gap-2"
-                        >
-                          <UserPlus className="h-4 w-4" />
-                          Invitar Usuario
+                  </TableCell>
+                </TableRow>
+              ) : (
+                users.map((user) => (
+                  <TableRow key={user.id} className="hover:bg-muted/50">
+                    <TableCell>
+                      <div className="flex items-center space-x-3">
+                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <span className="text-sm font-medium text-primary">
+                            {user.first_name ? user.first_name[0].toUpperCase() : user.email[0].toUpperCase()}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="font-medium">
+                            {user.first_name && user.last_name 
+                              ? `${user.first_name} ${user.last_name}`
+                              : 'Sin nombre'
+                            }
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            ID: {user.id.substring(0, 8)}...
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {user.role.split(', ').map((role, index) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {role}
+                          </Badge>
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell>{getStatusBadge(user.status)}</TableCell>
+                    <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end space-x-2">
+                        <Button variant="ghost" size="sm">
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
                         </Button>
                       </div>
-                    </div>
-                  </div>
-                </TableCell>
-              </TableRow>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
