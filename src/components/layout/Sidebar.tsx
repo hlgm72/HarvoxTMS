@@ -244,68 +244,68 @@ const driverNavigationItems = [
 // Función para obtener navegación traducida del superadmin
 const getSuperAdminNavigationItems = (t: any) => [
   { 
-    title: t('navigation.dashboard'), 
+    title: t('admin:navigation.dashboard'), 
     url: "/superadmin", 
     icon: Command, 
     badge: "Admin",
     badgeVariant: "admin" as const,
-    description: t('navigation.admin_panel')
+    description: t('admin:navigation.admin_panel')
   },
   { 
-    title: t('navigation.companies'), 
+    title: t('admin:navigation.companies'), 
     url: "/superadmin/companies", 
     icon: Building2,
-    description: t('navigation.company_management')
+    description: t('admin:navigation.company_management')
   },
   { 
-    title: t('navigation.users'), 
+    title: t('admin:navigation.users'), 
     url: "/superadmin/users", 
     icon: Users,
-    description: t('navigation.system_users')
+    description: t('admin:navigation.system_users')
   },
   { 
-    title: t('navigation.system_health'), 
+    title: t('admin:navigation.system_health'), 
     url: "/superadmin/health", 
     icon: Heart, 
     badge: "Live",
     badgeVariant: "live" as const,
-    description: t('navigation.system_status')
+    description: t('admin:navigation.system_status')
   },
   { 
-    title: t('navigation.analytics'), 
+    title: t('admin:navigation.analytics'), 
     url: "/superadmin/analytics", 
     icon: TrendingUp,
-    description: t('navigation.system_analytics')
+    description: t('admin:navigation.system_analytics')
   },
   { 
-    title: t('navigation.billing_management'), 
+    title: t('admin:navigation.billing_management'), 
     url: "/superadmin/billing", 
     icon: CreditCard,
-    description: t('navigation.billing_management_desc')
+    description: t('admin:navigation.billing_management_desc')
   },
   { 
-    title: t('navigation.support_tickets'), 
+    title: t('admin:navigation.support_tickets'), 
     url: "/superadmin/support", 
     icon: Headphones,
-    description: t('navigation.support_management')
+    description: t('admin:navigation.support_management')
   },
   { 
-    title: t('navigation.system_settings'), 
+    title: t('admin:navigation.system_settings'), 
     url: "/superadmin/settings", 
     icon: Settings,
-    description: t('navigation.system_configuration')
+    description: t('admin:navigation.system_configuration')
   },
   { 
-    title: t('navigation.api_logs'), 
+    title: t('admin:navigation.api_logs'), 
     url: "/superadmin/logs", 
     icon: FileBarChart,
-    description: t('navigation.api_logs_desc')
+    description: t('admin:navigation.api_logs_desc')
   },
   { 
-    title: t('navigation.backup_security'), 
+    title: t('admin:navigation.backup_security'), 
     url: "/superadmin/security", 
     icon: Lock,
-    description: t('navigation.security_backups')
+    description: t('admin:navigation.security_backups')
   },
 ];
 
@@ -443,8 +443,8 @@ export function AppSidebar() {
                   <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4 text-primary" />
                     <div>
-                      <p className="text-sm font-medium text-primary">{t('navigation.system_administrator')}</p>
-                      <p className="text-xs text-muted-foreground">{t('navigation.global_access')}</p>
+                      <p className="text-sm font-medium text-primary">{t('admin:navigation.system_administrator')}</p>
+                      <p className="text-xs text-muted-foreground">{t('admin:navigation.global_access')}</p>
                     </div>
                   </div>
                 </div>
@@ -457,7 +457,7 @@ export function AppSidebar() {
       <SidebarContent className="p-2">
         <SidebarGroup>
           <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            {isSuperAdmin ? t('navigation.system_management') : t('navigation.navigation')}
+            {isSuperAdmin ? t('admin:navigation.system_management') : t('admin:navigation.navigation')}
           </SidebarGroupLabel>
           <Separator className="my-2 opacity-50" />
           <SidebarGroupContent>
