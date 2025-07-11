@@ -24,6 +24,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/layout/Layout";
 import { NotificationProvider } from "./components/notifications";
 import { UserProfileProvider } from "./contexts/UserProfileContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import { useLanguageSync } from "./hooks/useLanguageSync";
 import './i18n/config';
 
@@ -236,15 +237,17 @@ function AppContent() {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <UserProfileProvider>
-      <NotificationProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <AppContent />
-        </TooltipProvider>
-      </NotificationProvider>
-    </UserProfileProvider>
+    <AuthProvider>
+      <UserProfileProvider>
+        <NotificationProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <AppContent />
+          </TooltipProvider>
+        </NotificationProvider>
+      </UserProfileProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
