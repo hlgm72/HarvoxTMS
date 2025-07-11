@@ -117,6 +117,11 @@ export default function SuperAdminDashboard() {
     setNewCompany(prev => ({ ...prev, owner_title: value }))
   );
 
+  // Create text handlers for edit form fields
+  const editOwnerPhoneHandlers = createTextHandlers((value) => 
+    setCompanyToEdit(prev => prev ? {...prev, owner_phone: value} : null), 'phone'
+  );
+
   useEffect(() => {
     if (!loading && isSuperAdmin) {
       fetchSystemStats();
@@ -1462,12 +1467,16 @@ export default function SuperAdminDashboard() {
                         
                         <div className="space-y-2">
                           <Label htmlFor="edit-owner-phone">Owner Phone</Label>
-                          <Input
-                            id="edit-owner-phone"
-                            value={companyToEdit.owner_phone || ''}
-                            onChange={(e) => setCompanyToEdit(prev => prev ? {...prev, owner_phone: e.target.value} : null)}
-                            placeholder="(555) 987-6543"
-                          />
+                          <div className="relative">
+                            <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="edit-owner-phone"
+                              value={companyToEdit.owner_phone || ''}
+                              {...editOwnerPhoneHandlers}
+                              placeholder="(555) 987-6543"
+                              className="pl-10"
+                            />
+                          </div>
                         </div>
                         
                         <div className="space-y-2">
