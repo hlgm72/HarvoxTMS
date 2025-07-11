@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
+// Cache for user roles to avoid redundant queries - moved outside component
+const rolesCache = new Map<string, UserRole[]>();
+
 interface UserRole {
   role: string;
   company_id: string;
@@ -25,9 +28,6 @@ export const useAuth = () => {
     currentRole: null,
     loading: true,
   });
-
-  // Cache for user roles to avoid redundant queries
-  const rolesCache = new Map<string, UserRole[]>();
 
   const fetchUserRoles = async (userId: string) => {
     // Check cache first
@@ -169,11 +169,13 @@ export const useAuth = () => {
 
   const refreshRoles = async () => {
     if (authState.user) {
+      console.log('🔄 Refreshing roles for user:', authState.user.id);
       // Clear cache to force fresh data
       rolesCache.delete(authState.user.id);
       const roles = await fetchUserRoles(authState.user.id);
       const currentRole = getCurrentRoleFromStorage(roles) || (roles.length > 0 ? roles[0] : null);
       
+      console.log('📊 Setting new roles state:', { roles, currentRole });
       setAuthState(prev => ({
         ...prev,
         userRoles: roles,

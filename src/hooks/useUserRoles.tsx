@@ -129,6 +129,7 @@ export const useUserRoles = (): UseUserRolesReturn => {
         return { success: false, error: 'Error al remover el rol' };
       }
 
+      console.log('✅ Role removed successfully, refreshing roles...');
       // Refresh roles to update the UI immediately
       await refreshRoles();
 
