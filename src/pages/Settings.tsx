@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { CompanySettingsForm } from '@/components/companies/settings/CompanySettingsForm';
 import { Company } from '@/types/company';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -45,7 +45,7 @@ type PasswordFormData = z.infer<typeof passwordSchema>;
 
 export default function Settings() {
   const { user, userRole } = useAuth();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const { profile, loading: profileLoading, refreshProfile } = useUserProfile();
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(true);
@@ -127,11 +127,10 @@ export default function Settings() {
       setCompanyInfo(data);
     } catch (error) {
       console.error('Error fetching company data:', error);
-      toast({
-        title: "Error",
-        description: "No se pudo cargar la información de la empresa.",
-        variant: "destructive",
-      });
+      showError(
+        "Error",
+        "No se pudo cargar la información de la empresa."
+      );
     } finally {
       setLoading(false);
     }
@@ -158,16 +157,15 @@ export default function Settings() {
 
       await refreshProfile();
 
-      toast({
-        title: "Perfil actualizado",
-        description: "Su información personal ha sido guardada correctamente.",
-      });
+      showSuccess(
+        "Perfil actualizado",
+        "Su información personal ha sido guardada correctamente."
+      );
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo actualizar el perfil.",
-        variant: "destructive",
-      });
+      showError(
+        "Error",
+        error.message || "No se pudo actualizar el perfil."
+      );
     } finally {
       setUpdatingProfile(false);
     }
@@ -193,18 +191,17 @@ export default function Settings() {
 
       if (updateError) throw updateError;
 
-      toast({
-        title: "Contraseña actualizada",
-        description: "Su contraseña ha sido modificada de manera segura.",
-      });
+      showSuccess(
+        "Contraseña actualizada",
+        "Su contraseña ha sido modificada de manera segura."
+      );
 
       passwordForm.reset();
     } catch (error: any) {
-      toast({
-        title: "Error al cambiar contraseña",
-        description: error.message || "No se pudo cambiar la contraseña.",
-        variant: "destructive",
-      });
+      showError(
+        "Error al cambiar contraseña",
+        error.message || "No se pudo cambiar la contraseña."
+      );
     } finally {
       setChangingPassword(false);
     }
