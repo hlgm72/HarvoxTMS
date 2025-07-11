@@ -24,6 +24,7 @@ export type Database = {
           ein: string | null
           email: string | null
           id: string
+          logo_url: string | null
           max_users: number | null
           max_vehicles: number | null
           mc_number: string | null
@@ -51,6 +52,7 @@ export type Database = {
           ein?: string | null
           email?: string | null
           id?: string
+          logo_url?: string | null
           max_users?: number | null
           max_vehicles?: number | null
           mc_number?: string | null
@@ -78,6 +80,7 @@ export type Database = {
           ein?: string | null
           email?: string | null
           id?: string
+          logo_url?: string | null
           max_users?: number | null
           max_vehicles?: number | null
           mc_number?: string | null
