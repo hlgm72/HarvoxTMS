@@ -54,7 +54,16 @@ export const useUserProfile = () => {
   const getUserInitials = (): string => {
     // Primero intentamos usar los datos del perfil
     if (profile?.first_name && profile?.last_name) {
-      return `${profile.first_name.charAt(0)}${profile.last_name.charAt(0)}`.toUpperCase();
+      // Validar que last_name no sea un email (error de datos)
+      const lastName = profile.last_name.includes('@') ? '' : profile.last_name;
+      if (lastName) {
+        return `${profile.first_name.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+      } else {
+        // Si last_name es un email o está vacío, usar las dos primeras letras del first_name
+        return profile.first_name.length >= 2 
+          ? `${profile.first_name.charAt(0)}${profile.first_name.charAt(1)}`.toUpperCase()
+          : profile.first_name.charAt(0).toUpperCase();
+      }
     }
     
     // Si no hay perfil, intentamos usar los metadatos del usuario
@@ -84,7 +93,9 @@ export const useUserProfile = () => {
   const getFullName = (): string => {
     // Primero intentamos usar los datos del perfil
     if (profile?.first_name || profile?.last_name) {
-      return `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
+      // Validar que last_name no sea un email (error de datos)
+      const lastName = profile?.last_name?.includes('@') ? '' : profile?.last_name;
+      return `${profile?.first_name || ''} ${lastName || ''}`.trim();
     }
     
     // Si no hay perfil, intentamos usar los metadatos del usuario
