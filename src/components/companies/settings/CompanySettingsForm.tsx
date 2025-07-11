@@ -16,7 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Company } from '@/types/company';
 import { CompanyLogoUpload } from '../CompanyLogoUpload';
 import { AddressForm } from '@/components/ui/AddressForm';
-import { createTextHandlers, createPhoneHandlers } from '@/lib/textUtils';
+import { createTextHandlers, createPhoneHandlers, createEINHandlers } from '@/lib/textUtils';
 
 interface CompanySettingsFormProps {
   company: Company;
@@ -40,7 +40,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
   const companyPhoneHandlers = createPhoneHandlers((value: string) => handleInputChange('phone', value));
   
   // Documentation field handlers
-  const einHandlers = createTextHandlers((value: string) => handleInputChange('ein', value));
+  const einHandlers = createEINHandlers((value: string) => handleInputChange('ein', value));
   const mcNumberHandlers = createTextHandlers((value: string) => handleInputChange('mc_number', value));
   const dotNumberHandlers = createTextHandlers((value: string) => handleInputChange('dot_number', value));
   
@@ -255,8 +255,9 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                     id="ein"
                     value={formData.ein || ''}
                     onChange={einHandlers.onChange}
-                    onBlur={einHandlers.onBlur}
+                    onKeyPress={einHandlers.onKeyPress}
                     placeholder="XX-XXXXXXX"
+                    maxLength={10}
                   />
                 </div>
 

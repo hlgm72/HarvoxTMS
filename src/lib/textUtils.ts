@@ -93,6 +93,44 @@ export const createTextHandlers = (
 };
 
 /**
+ * Formats EIN input to XX-XXXXXXX format
+ * Used for Employer Identification Number fields
+ */
+export const handleEINInput = (value: string): string => {
+  // Remove all non-numeric characters
+  const numbers = value.replace(/\D/g, '');
+  
+  // Limit to 9 digits
+  const limitedNumbers = numbers.slice(0, 9);
+  
+  // Format based on length
+  if (limitedNumbers.length === 0) return '';
+  if (limitedNumbers.length <= 2) return limitedNumbers;
+  return `${limitedNumbers.slice(0, 2)}-${limitedNumbers.slice(2)}`;
+};
+
+/**
+ * Creates EIN-specific handlers with formatting
+ */
+export const createEINHandlers = (setValue: (value: string) => void) => {
+  return {
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      const formattedValue = handleEINInput(e.target.value);
+      setValue(formattedValue);
+    },
+    onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => {
+      // Allow only numbers, backspace, delete, arrows, and dashes
+      const allowedKeys = /[0-9\-]/;
+      const specialKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
+      
+      if (!allowedKeys.test(e.key) && !specialKeys.includes(e.key)) {
+        e.preventDefault();
+      }
+    }
+  };
+};
+
+/**
  * Creates phone-specific handlers with formatting
  * Alternative to createTextHandlers for phone fields
  */
