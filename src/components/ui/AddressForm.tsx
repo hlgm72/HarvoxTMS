@@ -37,8 +37,8 @@ export function AddressForm({
   zipCodeLabel = "Código Postal"
 }: AddressFormProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div className="md:col-span-2 space-y-2">
+    <div className="grid grid-cols-1 gap-4">
+      <div className="space-y-2">
         <Label htmlFor="street-address">
           {streetAddressLabel}
           {required && " *"}
@@ -48,20 +48,6 @@ export function AddressForm({
           value={streetAddress}
           onChange={(e) => onStreetAddressChange(e.target.value)}
           placeholder="123 Calle Principal"
-          disabled={disabled}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="zip-code">
-          {zipCodeLabel}
-          {required && " *"}
-        </Label>
-        <Input
-          id="zip-code"
-          value={zipCode}
-          onChange={(e) => onZipCodeChange(e.target.value)}
-          placeholder="12345"
           disabled={disabled}
         />
       </div>
@@ -79,17 +65,33 @@ export function AddressForm({
         />
       </div>
 
-      <div className="space-y-2">
-        <Label>
-          {cityLabel}
-        </Label>
-        <CityCombobox
-          value={cityId}
-          onValueChange={onCityChange}
-          stateId={stateId}
-          disabled={disabled}
-          placeholder="Buscar ciudad (opcional)..."
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>
+            {cityLabel}
+          </Label>
+          <CityCombobox
+            value={cityId}
+            onValueChange={onCityChange}
+            stateId={stateId}
+            disabled={disabled}
+            placeholder="Buscar ciudad (opcional)..."
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="zip-code">
+            {zipCodeLabel}
+            {required && " *"}
+          </Label>
+          <Input
+            id="zip-code"
+            value={zipCode}
+            onChange={(e) => onZipCodeChange(e.target.value)}
+            placeholder="12345"
+            disabled={disabled}
+          />
+        </div>
       </div>
     </div>
   );
