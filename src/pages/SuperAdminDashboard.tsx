@@ -49,107 +49,6 @@ interface Company {
   created_at: string;
 }
 
-// City Migration Component
-function CityMigrationComponent() {
-  const [isMigrating, setIsMigrating] = useState(false);
-  const [migrationResult, setMigrationResult] = useState<any>(null);
-  const { showSuccess, showError } = useFleetNotifications();
-
-  const handleMigrateCities = async () => {
-    setIsMigrating(true);
-    setMigrationResult(null);
-
-    try {
-      console.log('🚀 Starting city migration...');
-      
-      const { data, error } = await supabase.functions.invoke('migrate-cities');
-
-      if (error) {
-        throw new Error(`Edge function error: ${error.message}`);
-      }
-
-      setMigrationResult(data);
-
-      if (data.success) {
-        showSuccess(
-          'Migración completada exitosamente',
-          `${data.cities_migrated} ciudades migradas, ${data.cities_skipped} omitidas`
-        );
-      } else {
-        showError('Error en la migración', data.message || 'Error desconocido');
-      }
-
-    } catch (error: any) {
-      console.error('❌ Migration failed:', error);
-      showError(
-        'Error en la migración', 
-        error.message || 'Error al ejecutar la migración de ciudades'
-      );
-      setMigrationResult({
-        success: false,
-        error: error.message
-      });
-    } finally {
-      setIsMigrating(false);
-    }
-  };
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Button
-          onClick={handleMigrateCities}
-          disabled={isMigrating}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
-          {isMigrating ? (
-            <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              Migrando ciudades...
-            </>
-          ) : (
-            <>
-              <Database className="h-4 w-4 mr-2" />
-              Migrar 30,912 Ciudades
-            </>
-          )}
-        </Button>
-      </div>
-
-      {migrationResult && (
-        <div className={`border rounded-lg p-4 ${migrationResult.success ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-          <h4 className={`font-semibold mb-2 ${migrationResult.success ? 'text-green-800' : 'text-red-800'}`}>
-            Resultado de la Migración
-          </h4>
-          {migrationResult.success ? (
-            <div className="space-y-2 text-sm text-green-700">
-              <p><strong>✅ Total migradas:</strong> {migrationResult.cities_migrated}</p>
-              <p><strong>⏭️ Ciudades omitidas:</strong> {migrationResult.cities_skipped}</p>
-              <p><strong>❌ Errores:</strong> {migrationResult.cities_with_errors}</p>
-              <p><strong>📊 Total en origen:</strong> {migrationResult.total_source_cities}</p>
-              <p className="text-green-600 font-semibold">{migrationResult.message}</p>
-            </div>
-          ) : (
-            <div className="text-sm text-red-700">
-              <p><strong>Error:</strong> {migrationResult.error}</p>
-              <p>{migrationResult.message}</p>
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="text-sm text-muted-foreground">
-        <p><strong>Nota:</strong> Esta operación:</p>
-        <ul className="list-disc list-inside space-y-1 mt-2">
-          <li>Migra ciudades desde el proyecto origen configurado</li>
-          <li>Mapea automáticamente códigos de estado (TX → TX)</li>
-          <li>Omite ciudades duplicadas automáticamente</li>
-          <li>Puede tomar varios minutos completarse</li>
-        </ul>
-      </div>
-    </div>
-  );
-}
 
 export default function SuperAdminDashboard() {
   const { t, i18n } = useTranslation(['admin', 'common']);
@@ -1731,21 +1630,7 @@ export default function SuperAdminDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-6">
-                      {/* City Migration Section */}
-                      <div className="border rounded-lg p-6">
-                        <div className="flex items-center gap-2 mb-4">
-                          <Globe className="h-5 w-5 text-blue-600" />
-                          <h3 className="text-lg font-semibold">Migración de Ciudades</h3>
-                        </div>
-                        <p className="text-muted-foreground mb-4">
-                          Migra ciudades desde otro proyecto de Supabase a este proyecto. 
-                          Esta operación puede tardar varios minutos en completarse.
-                        </p>
-                        
-                        <CityMigrationComponent />
-                      </div>
-
-                      {/* Placeholder for other system tools */}
+                      {/* Placeholder for system tools */}
                       <div className="border rounded-lg p-6 opacity-50">
                         <div className="flex items-center gap-2 mb-4">
                           <Settings className="h-5 w-5 text-muted-foreground" />
