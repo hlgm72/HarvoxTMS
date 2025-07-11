@@ -111,7 +111,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
       {children}
       
       {/* Notification Container */}
-      <div className="fixed top-4 right-4 z-50 space-y-3 pointer-events-none">
+      <div className="fixed bottom-4 right-4 z-50 space-y-3 pointer-events-none">
         {notifications.map((notification) => (
           <div key={notification.id} className="pointer-events-auto">
             <NotificationItem
