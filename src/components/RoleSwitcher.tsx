@@ -34,7 +34,17 @@ const roleColors = {
 };
 
 export const RoleSwitcher = () => {
-  const { currentRole, availableRoles, switchRole, hasMultipleRoles } = useAuth();
+  const { currentRole, availableRoles, switchRole, hasMultipleRoles, _forceUpdate, _debug } = useAuth();
+
+  // Debug logging
+  console.log('🔧 RoleSwitcher render:', {
+    currentRoleId: currentRole?.id,
+    availableRolesCount: availableRoles.length,
+    hasMultipleRoles,
+    forceUpdate: _forceUpdate,
+    debug: _debug,
+    availableRoles: availableRoles.map(r => ({ id: r.id, role: r.role }))
+  });
 
   // Don't render if no current role
   if (!currentRole) {
