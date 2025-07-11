@@ -85,8 +85,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Input validation passed");
 
-    // TEMP: Test just the invitation check query
-    console.log("Testing invitation check query...");
+    // Test the actual insertion
+    console.log("Testing invitation creation...");
     
     const { data: existingInvitations, error: invitationCheckError } = await supabase
       .from('user_invitations')
@@ -102,11 +102,53 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error(`Database error: ${invitationCheckError.message}`);
     }
 
+    // Check for active invitations
+    const activeInvitations = existingInvitations?.filter(inv => 
+      !inv.accepted_at && new Date(inv.expires_at) > new Date()
+    ) || [];
+
+    if (activeInvitations.length > 0) {
+      console.error("Active invitation already exists");
+      throw new Error("An active invitation already exists for this email and company");
+    }
+
+    // Generate invitation token
+    const invitationToken = crypto.randomUUID();
+    console.log("Generated invitation token");
+
+    // Try to create invitation record
+    console.log("Creating invitation record...");
+    const { data: invitation, error: invitationError } = await supabase
+      .from('user_invitations')
+      .insert({
+        company_id: companyId,
+        email: email.toLowerCase(),
+        invitation_token: invitationToken,
+        role: 'company_owner',
+        invited_by: user.id,
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
+      })
+      .select('id')
+      .maybeSingle(); // Use maybeSingle instead of single to avoid errors
+
+    console.log("Invitation creation result:", { invitation, invitationError });
+
+    if (invitationError) {
+      console.error("Error creating invitation:", invitationError);
+      throw new Error(`Failed to create invitation: ${invitationError.message}`);
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
-        message: "DEBUG: Invitation check query passed",
-        data: { companyId, email, companyName, userId: user.id, existingInvitations }
+        message: "Company Owner invitation created successfully",
+        data: { 
+          invitationId: invitation?.id,
+          companyId, 
+          email, 
+          companyName,
+          note: "Email sending is disabled for testing."
+        }
       }),
       {
         status: 200,
