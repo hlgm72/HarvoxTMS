@@ -246,6 +246,9 @@
     "update_company": "Actualizar Empresa",
     "company_updated": "Empresa actualizada exitosamente",
     "updating": "Actualizando...",
-    "update": "Actualizar"
+    "update": "Actualizar",
+    "system_health": "Salud del Sistema",
+    "operational": "Operacional", 
+    "all_systems_normal": "Todos los sistemas funcionando normalmente"
   }
 }

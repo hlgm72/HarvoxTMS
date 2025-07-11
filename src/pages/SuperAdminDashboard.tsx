@@ -813,7 +813,7 @@ export default function SuperAdminDashboard() {
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-lg">
                         <Activity className="h-5 w-5 text-green-500" />
-                        System Health
+                        {t('common.system_health')}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -822,7 +822,7 @@ export default function SuperAdminDashboard() {
                           <span className="text-sm text-muted-foreground">Database</span>
                           <div className="flex items-center gap-2">
                             <CheckCircle className="h-4 w-4 text-green-500" />
-                            <span className="text-sm">Operational</span>
+                            <span className="text-sm">{t('common.operational')}</span>
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
