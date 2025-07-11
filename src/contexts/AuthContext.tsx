@@ -28,25 +28,17 @@ type AuthAction =
   | { type: 'FORCE_UPDATE' };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
-  console.log('🔧 AuthContext Reducer called:', action.type);
-  
   switch (action.type) {
     case 'SET_SESSION':
       return { ...state, session: action.session, user: action.user };
     case 'SET_ROLES':
-      const newState = { 
+      return { 
         ...state, 
         userRoles: [...action.userRoles], 
         currentRole: action.currentRole ? { ...action.currentRole } : null,
         loading: false,
         forceUpdate: Date.now()
       };
-      console.log('🔧 AuthContext SET_ROLES:', {
-        before: state.userRoles.length,
-        after: newState.userRoles.length,
-        forceUpdate: newState.forceUpdate
-      });
-      return newState;
     case 'SET_LOADING':
       return { ...state, loading: action.loading };
     case 'FORCE_UPDATE':
@@ -107,15 +99,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      console.log('Fetching roles for user:', userId);
-      
       const { data, error } = await supabase
         .from('user_company_roles')
         .select('id, role, company_id, is_active')
         .eq('user_id', userId)
         .eq('is_active', true);
-
-      console.log('User roles query result:', { data, error });
 
       if (error) {
         console.error('Error fetching user roles:', error);
@@ -160,14 +148,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshRoles = async () => {
     if (authState.user) {
-      console.log('🔄 AuthContext refreshing roles for user:', authState.user.id);
       // Clear cache to force fresh data
       rolesCache.delete(authState.user.id);
       const roles = await fetchUserRoles(authState.user.id);
       const currentRole = getCurrentRoleFromStorage(roles) || (roles.length > 0 ? roles[0] : null);
-      
-      console.log('📊 AuthContext setting new roles state:', { roles, currentRole });
-      console.log('📊 AuthContext roles count before:', authState.userRoles.length, 'after:', roles.length);
       
       // Update stored role first
       if (currentRole) {
@@ -182,8 +166,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         userRoles: roles, 
         currentRole 
       });
-      
-      console.log('🎯 AuthContext reducer dispatch called with roles:', roles.length);
     }
   };
 

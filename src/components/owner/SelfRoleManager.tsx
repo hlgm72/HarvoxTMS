@@ -77,17 +77,9 @@ const roleColors = {
 export const SelfRoleManager = () => {
   const [selectedRole, setSelectedRole] = useState<UserRole | ''>('');
   const [dialogOpen, setDialogOpen] = useState(false);
-  const { availableRoles: userRoles, isCompanyOwner, hasMultipleRoles, _forceUpdate, _debug } = useAuth();
+  const { availableRoles: userRoles, isCompanyOwner, hasMultipleRoles } = useAuth();
   const { assignSelfRole, removeSelfRole, loading } = useUserRoles();
   const { showSuccess, showError } = useFleetNotifications();
-
-  // Debug logging
-  console.log('🔧 SelfRoleManager render:', {
-    userRolesCount: userRoles.length,
-    forceUpdate: _forceUpdate,
-    debug: _debug,
-    userRoles: userRoles.map(r => ({ id: r.id, role: r.role }))
-  });
 
   if (!isCompanyOwner) {
     return null;
