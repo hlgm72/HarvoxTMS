@@ -8,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { 
   Building, User, CreditCard, Settings, 
-  Save, RotateCcw, AlertCircle 
+  Save, RotateCcw, AlertCircle, FileText, 
+  MapPin, Phone 
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from '@/integrations/supabase/client';
@@ -120,10 +121,18 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm border">
+        <TabsList className="grid w-full grid-cols-6 bg-white shadow-sm border">
           <TabsTrigger value="company" className="flex items-center gap-2">
             <Building className="h-4 w-4" />
             Empresa
+          </TabsTrigger>
+          <TabsTrigger value="documentation" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            Documentación
+          </TabsTrigger>
+          <TabsTrigger value="contact" className="flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            Contacto
           </TabsTrigger>
           <TabsTrigger value="owner" className="flex items-center gap-2">
             <User className="h-4 w-4" />
@@ -139,13 +148,13 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           </TabsTrigger>
         </TabsList>
 
-        {/* Información de la Empresa */}
+        {/* Información Básica de la Empresa */}
         <TabsContent value="company">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Building className="h-5 w-5 text-primary" />
-                Información de la Empresa
+                Información Básica de la Empresa
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -160,7 +169,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
               <Separator />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+                <div className="md:col-span-2 space-y-2">
                   <Label htmlFor="name">Nombre de la Empresa *</Label>
                   <Input
                     id="name"
@@ -169,7 +178,22 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                     placeholder="Ingresa el nombre de la empresa"
                   />
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
+        {/* Documentación Regulatoria */}
+        <TabsContent value="documentation">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                Documentación y Números Regulatorios
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="ein">EIN (Tax ID)</Label>
                   <Input
@@ -200,11 +224,25 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   />
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-              <Separator />
-
+        {/* Información de Contacto y Ubicación */}
+        <TabsContent value="contact">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-primary" />
+                Contacto y Ubicación
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
               <div className="space-y-4">
-                <h4 className="font-semibold">Información de Contacto</h4>
+                <h4 className="font-semibold flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  Información de Contacto
+                </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
@@ -232,7 +270,10 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
               <Separator />
 
               <div className="space-y-4">
-                <h4 className="font-semibold">Dirección</h4>
+                <h4 className="font-semibold flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  Dirección
+                </h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="md:col-span-2 space-y-2">
                     <Label htmlFor="street_address">Dirección *</Label>
