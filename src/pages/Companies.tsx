@@ -179,8 +179,8 @@ export default function Companies() {
     } catch (error) {
       console.error('Error fetching companies:', error);
       toast({
-        title: "Error",
-        description: "No se pudieron cargar las empresas",
+        title: t('admin:common.error'),
+        description: t('admin:pages.companies.messages.load_error', { defaultValue: "Could not load companies" }),
         variant: "destructive",
       });
     } finally {
@@ -197,8 +197,8 @@ export default function Companies() {
       if (error) throw error;
 
       toast({
-        title: "Éxito",
-        description: "Empresa creada exitosamente",
+        title: t('admin:pages.companies.messages.company_created_success'),
+        description: t('admin:pages.companies.messages.company_created_desc'),
       });
 
       setIsCreateDialogOpen(false);
@@ -207,8 +207,8 @@ export default function Companies() {
     } catch (error) {
       console.error('Error creating company:', error);
       toast({
-        title: "Error",
-        description: "No se pudo crear la empresa",
+        title: t('admin:pages.companies.messages.company_creation_error'),
+        description: t('admin:pages.companies.messages.company_creation_error_desc'),
         variant: "destructive",
       });
     }
@@ -226,8 +226,8 @@ export default function Companies() {
       if (error) throw error;
 
       toast({
-        title: "Éxito",
-        description: "Empresa actualizada exitosamente",
+        title: t('admin:common.company_updated'),
+        description: t('admin:pages.companies.messages.company_updated_desc', { defaultValue: "Company updated successfully" }),
       });
 
       setIsEditDialogOpen(false);
@@ -237,8 +237,8 @@ export default function Companies() {
     } catch (error) {
       console.error('Error updating company:', error);
       toast({
-        title: "Error",
-        description: "No se pudo actualizar la empresa",
+        title: t('admin:common.error'),
+        description: t('admin:pages.companies.messages.company_update_error', { defaultValue: "Could not update company" }),
         variant: "destructive",
       });
     }
@@ -255,8 +255,8 @@ export default function Companies() {
       const result = canDeleteResult as any;
       if (!result?.can_delete) {
         toast({
-          title: "No se puede eliminar",
-          description: result?.reason || "Esta empresa no puede ser eliminada",
+          title: t('admin:common.cannot_delete'),
+          description: result?.reason || t('admin:pages.companies.messages.cannot_delete_desc', { defaultValue: "This company cannot be deleted" }),
           variant: "destructive",
         });
         return;
@@ -269,16 +269,16 @@ export default function Companies() {
       if (error) throw error;
 
       toast({
-        title: "Éxito",
-        description: `Empresa "${companyName}" eliminada exitosamente`,
+        title: t('admin:common.success', { defaultValue: "Success" }),
+        description: t('admin:pages.companies.messages.company_deleted_success', { companyName, defaultValue: `Company "${companyName}" deleted successfully` }),
       });
 
       fetchCompanies();
     } catch (error) {
       console.error('Error deleting company:', error);
       toast({
-        title: "Error",
-        description: "No se pudo eliminar la empresa",
+        title: t('admin:common.error'),
+        description: t('admin:pages.companies.messages.company_delete_error', { defaultValue: "Could not delete company" }),
         variant: "destructive",
       });
     }
@@ -294,16 +294,16 @@ export default function Companies() {
       if (error) throw error;
 
       toast({
-        title: "Éxito",
-        description: `Estado actualizado para ${selectedCompanies.length} empresas`,
+        title: t('admin:common.success', { defaultValue: "Success" }),
+        description: t('admin:pages.companies.messages.bulk_status_updated', { count: selectedCompanies.length, defaultValue: `Status updated for ${selectedCompanies.length} companies` }),
       });
 
       fetchCompanies();
     } catch (error) {
       console.error('Error updating company status:', error);
       toast({
-        title: "Error",
-        description: "No se pudo actualizar el estado de las empresas",
+        title: t('admin:common.error'),
+        description: t('admin:pages.companies.messages.bulk_status_error', { defaultValue: "Could not update company status" }),
         variant: "destructive",
       });
     }
@@ -410,29 +410,29 @@ export default function Companies() {
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Crear Nueva Empresa</DialogTitle>
+                <DialogTitle>{t('admin:pages.superadmin.dialogs.create_company')}</DialogTitle>
                 <DialogDescription>
-                  Completa la información para crear una nueva empresa en el sistema.
+                  {t('admin:pages.superadmin.dialogs.create_company_desc')}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Company Information */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold">Información de la Empresa</h3>
+                  <h3 className="font-semibold">{t('admin:pages.companies.form_labels.company_information')}</h3>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="name">Nombre de la Empresa *</Label>
+                    <Label htmlFor="name">{t('admin:pages.companies.form_labels.company_name')} *</Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                      placeholder="Ej: Swift Transportation"
+                      placeholder={t('admin:pages.companies.placeholders.company_name')}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Teléfono de la Empresa</Label>
+                    <Label htmlFor="phone">{t('admin:pages.companies.form_labels.company_phone')}</Label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -444,14 +444,14 @@ export default function Companies() {
                             setFormData(prev => ({ ...prev, phone: value })), 'phone'
                           );
                         }}
-                        placeholder="(555) 123-4567"
+                        placeholder={t('admin:pages.companies.placeholders.company_phone')}
                         className="pl-10"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email de la Empresa</Label>
+                    <Label htmlFor="email">{t('admin:pages.companies.form_labels.company_email')}</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -459,14 +459,14 @@ export default function Companies() {
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                        placeholder="contact@company.com"
+                        placeholder={t('admin:pages.companies.placeholders.company_email')}
                         className="pl-10"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="street_address">Dirección *</Label>
+                    <Label htmlFor="street_address">{t('admin:common.address')} *</Label>
                     <div className="relative">
                       <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -481,7 +481,7 @@ export default function Companies() {
 
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-2">
-                      <Label htmlFor="state_id">Estado *</Label>
+                      <Label htmlFor="state_id">{t('admin:pages.companies.form.state')} *</Label>
                       <Select value={formData.state_id} onValueChange={(value) => setFormData(prev => ({ ...prev, state_id: value }))}>
                         <SelectTrigger>
                           <SelectValue />
@@ -495,7 +495,7 @@ export default function Companies() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="zip_code">Código Postal *</Label>
+                      <Label htmlFor="zip_code">{t('admin:pages.companies.form.zip_code')} *</Label>
                       <Input
                         id="zip_code"
                         value={formData.zip_code}
@@ -506,16 +506,16 @@ export default function Companies() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="plan_type">Tipo de Plan</Label>
+                    <Label htmlFor="plan_type">{t('admin:pages.companies.form_labels.plan_type')}</Label>
                     <Select value={formData.plan_type} onValueChange={(value) => setFormData(prev => ({ ...prev, plan_type: value }))}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="trial">Prueba</SelectItem>
-                        <SelectItem value="basic">Básico</SelectItem>
-                        <SelectItem value="premium">Premium</SelectItem>
-                        <SelectItem value="enterprise">Enterprise</SelectItem>
+                        <SelectItem value="trial">{t('admin:pages.companies.plans.trial')}</SelectItem>
+                        <SelectItem value="basic">{t('admin:pages.companies.plans.basic')}</SelectItem>
+                        <SelectItem value="premium">{t('admin:pages.companies.plans.premium')}</SelectItem>
+                        <SelectItem value="enterprise">{t('admin:pages.companies.plans.enterprise')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -523,24 +523,24 @@ export default function Companies() {
 
                 {/* Owner Information */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold">Información del Propietario</h3>
+                  <h3 className="font-semibold">{t('admin:pages.companies.form_labels.owner_primary_contact')}</h3>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="owner_name">Nombre del Propietario</Label>
+                    <Label htmlFor="owner_name">{t('admin:pages.companies.form_labels.owner_name')}</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="owner_name"
                         value={formData.owner_name}
                         onChange={(e) => setFormData(prev => ({ ...prev, owner_name: e.target.value }))}
-                        placeholder="John Doe"
+                        placeholder={t('admin:pages.companies.placeholders.owner_name')}
                         className="pl-10"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="owner_phone">Teléfono del Propietario</Label>
+                    <Label htmlFor="owner_phone">{t('admin:pages.companies.form_labels.owner_phone')}</Label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -552,14 +552,14 @@ export default function Companies() {
                             setFormData(prev => ({ ...prev, owner_phone: value })), 'phone'
                           );
                         }}
-                        placeholder="(555) 123-4567"
+                        placeholder={t('admin:pages.companies.placeholders.owner_phone')}
                         className="pl-10"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="owner_email">Email del Propietario</Label>
+                    <Label htmlFor="owner_email">{t('admin:pages.companies.form_labels.owner_email')}</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -567,25 +567,25 @@ export default function Companies() {
                         type="email"
                         value={formData.owner_email}
                         onChange={(e) => setFormData(prev => ({ ...prev, owner_email: e.target.value }))}
-                        placeholder="owner@company.com"
+                        placeholder={t('admin:pages.companies.placeholders.owner_email')}
                         className="pl-10"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="owner_title">Cargo del Propietario</Label>
+                    <Label htmlFor="owner_title">{t('admin:pages.companies.form_labels.owner_title')}</Label>
                     <Input
                       id="owner_title"
                       value={formData.owner_title}
                       onChange={(e) => setFormData(prev => ({ ...prev, owner_title: e.target.value }))}
-                      placeholder="CEO, Presidente, etc."
+                      placeholder={t('admin:pages.companies.placeholders.owner_title')}
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-2">
-                      <Label htmlFor="max_users">Máx. Usuarios</Label>
+                      <Label htmlFor="max_users">{t('admin:pages.companies.form_labels.max_users')}</Label>
                       <Input
                         id="max_users"
                         type="number"
@@ -595,7 +595,7 @@ export default function Companies() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="max_vehicles">Máx. Vehículos</Label>
+                      <Label htmlFor="max_vehicles">{t('admin:pages.companies.form_labels.max_vehicles')}</Label>
                       <Input
                         id="max_vehicles"
                         type="number"
@@ -609,10 +609,10 @@ export default function Companies() {
 
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                  Cancelar
+                  {t('admin:pages.companies.buttons.cancel')}
                 </Button>
                 <Button onClick={handleCreateCompany}>
-                  Crear Empresa
+                  {t('admin:pages.companies.buttons.create_company')}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -651,11 +651,11 @@ export default function Companies() {
       <Card>
         <CardHeader>
           <CardTitle>
-            Empresas ({processedCompanies.length})
-            {hasActiveFilters && <span className="text-muted-foreground text-sm ml-2">(filtradas de {companies.length})</span>}
+            {t('admin:pages.companies.title')} ({processedCompanies.length})
+            {hasActiveFilters && <span className="text-muted-foreground text-sm ml-2">({t('admin:pages.companies.filters.filtered_from', { total: companies.length, defaultValue: `filtered from ${companies.length}` })})</span>}
           </CardTitle>
           <CardDescription>
-            {viewMode === 'dashboard' ? 'Vista analítica de empresas' : 'Lista de empresas registradas en el sistema'}
+            {viewMode === 'dashboard' ? t('admin:pages.companies.descriptions.dashboard_view', { defaultValue: 'Analytical view of companies' }) : t('admin:pages.companies.descriptions.list_view', { defaultValue: 'List of companies registered in the system' })}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -692,7 +692,7 @@ export default function Companies() {
 
           {processedCompanies.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
-              {hasActiveFilters ? "No se encontraron empresas con los filtros aplicados" : "No hay empresas registradas"}
+              {hasActiveFilters ? t('admin:pages.companies.messages.no_companies_filtered', { defaultValue: "No companies found with applied filters" }) : t('admin:common.no_companies')}
             </div>
           )}
         </CardContent>
@@ -717,28 +717,28 @@ export default function Companies() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Editar Empresa</DialogTitle>
+            <DialogTitle>{t('admin:common.edit_company')}</DialogTitle>
             <DialogDescription>
-              Actualiza la información de la empresa.
+              {t('admin:pages.companies.descriptions.edit_company', { defaultValue: "Update company information." })}
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-4">
-              <h3 className="font-semibold">Información de la Empresa</h3>
+              <h3 className="font-semibold">{t('admin:pages.companies.form_labels.company_information')}</h3>
               
               <div className="space-y-2">
-                <Label htmlFor="edit-name">Nombre de la Empresa *</Label>
+                <Label htmlFor="edit-name">{t('admin:pages.companies.form_labels.company_name')} *</Label>
                 <Input
                   id="edit-name"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Ej: Swift Transportation"
+                  placeholder={t('admin:pages.companies.placeholders.company_name')}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit-phone">Teléfono de la Empresa</Label>
+                <Label htmlFor="edit-phone">{t('admin:pages.companies.form_labels.company_phone')}</Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -750,14 +750,14 @@ export default function Companies() {
                         setFormData(prev => ({ ...prev, phone: value })), 'phone'
                       );
                     }}
-                    placeholder="(555) 123-4567"
+                    placeholder={t('admin:pages.companies.placeholders.company_phone')}
                     className="pl-10"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit-email">Email de la Empresa</Label>
+                <Label htmlFor="edit-email">{t('admin:pages.companies.form_labels.company_email')}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -765,14 +765,14 @@ export default function Companies() {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    placeholder="contact@company.com"
+                    placeholder={t('admin:pages.companies.placeholders.company_email')}
                     className="pl-10"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit-street_address">Dirección *</Label>
+                <Label htmlFor="edit-street_address">{t('admin:common.address')} *</Label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -787,7 +787,7 @@ export default function Companies() {
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-2">
-                  <Label htmlFor="edit-state_id">Estado *</Label>
+                  <Label htmlFor="edit-state_id">{t('admin:pages.companies.form.state')} *</Label>
                   <Select value={formData.state_id} onValueChange={(value) => setFormData(prev => ({ ...prev, state_id: value }))}>
                     <SelectTrigger>
                       <SelectValue />
@@ -801,7 +801,7 @@ export default function Companies() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="edit-zip_code">Código Postal *</Label>
+                  <Label htmlFor="edit-zip_code">{t('admin:pages.companies.form.zip_code')} *</Label>
                   <Input
                     id="edit-zip_code"
                     value={formData.zip_code}
@@ -812,40 +812,40 @@ export default function Companies() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit-plan_type">Tipo de Plan</Label>
+                <Label htmlFor="edit-plan_type">{t('admin:pages.companies.form_labels.plan_type')}</Label>
                 <Select value={formData.plan_type} onValueChange={(value) => setFormData(prev => ({ ...prev, plan_type: value }))}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="trial">Prueba</SelectItem>
-                    <SelectItem value="basic">Básico</SelectItem>
-                    <SelectItem value="premium">Premium</SelectItem>
-                    <SelectItem value="enterprise">Enterprise</SelectItem>
+                    <SelectItem value="trial">{t('admin:pages.companies.plans.trial')}</SelectItem>
+                    <SelectItem value="basic">{t('admin:pages.companies.plans.basic')}</SelectItem>
+                    <SelectItem value="premium">{t('admin:pages.companies.plans.premium')}</SelectItem>
+                    <SelectItem value="enterprise">{t('admin:pages.companies.plans.enterprise')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             <div className="space-y-4">
-              <h3 className="font-semibold">Información del Propietario</h3>
+              <h3 className="font-semibold">{t('admin:pages.companies.form_labels.owner_primary_contact')}</h3>
               
               <div className="space-y-2">
-                <Label htmlFor="edit-owner_name">Nombre del Propietario</Label>
+                <Label htmlFor="edit-owner_name">{t('admin:pages.companies.form_labels.owner_name')}</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="edit-owner_name"
                     value={formData.owner_name}
                     onChange={(e) => setFormData(prev => ({ ...prev, owner_name: e.target.value }))}
-                    placeholder="John Doe"
+                    placeholder={t('admin:pages.companies.placeholders.owner_name')}
                     className="pl-10"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit-owner_phone">Teléfono del Propietario</Label>
+                <Label htmlFor="edit-owner_phone">{t('admin:pages.companies.form_labels.owner_phone')}</Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -857,14 +857,14 @@ export default function Companies() {
                         setFormData(prev => ({ ...prev, owner_phone: value })), 'phone'
                       );
                     }}
-                    placeholder="(555) 123-4567"
+                    placeholder={t('admin:pages.companies.placeholders.owner_phone')}
                     className="pl-10"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit-owner_email">Email del Propietario</Label>
+                <Label htmlFor="edit-owner_email">{t('admin:pages.companies.form_labels.owner_email')}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -872,25 +872,25 @@ export default function Companies() {
                     type="email"
                     value={formData.owner_email}
                     onChange={(e) => setFormData(prev => ({ ...prev, owner_email: e.target.value }))}
-                    placeholder="owner@company.com"
+                    placeholder={t('admin:pages.companies.placeholders.owner_email')}
                     className="pl-10"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit-owner_title">Cargo del Propietario</Label>
+                <Label htmlFor="edit-owner_title">{t('admin:pages.companies.form_labels.owner_title')}</Label>
                 <Input
                   id="edit-owner_title"
                   value={formData.owner_title}
                   onChange={(e) => setFormData(prev => ({ ...prev, owner_title: e.target.value }))}
-                  placeholder="CEO, Presidente, etc."
+                  placeholder={t('admin:pages.companies.placeholders.owner_title')}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-2">
-                  <Label htmlFor="edit-max_users">Máx. Usuarios</Label>
+                  <Label htmlFor="edit-max_users">{t('admin:pages.companies.form_labels.max_users')}</Label>
                   <Input
                     id="edit-max_users"
                     type="number"
@@ -900,7 +900,7 @@ export default function Companies() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="edit-max_vehicles">Máx. Vehículos</Label>
+                  <Label htmlFor="edit-max_vehicles">{t('admin:pages.companies.form_labels.max_vehicles')}</Label>
                   <Input
                     id="edit-max_vehicles"
                     type="number"
@@ -914,10 +914,10 @@ export default function Companies() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-              Cancelar
+              {t('admin:pages.companies.buttons.cancel')}
             </Button>
             <Button onClick={handleEditCompany}>
-              Actualizar Empresa
+              {t('admin:common.update_company')}
             </Button>
           </DialogFooter>
         </DialogContent>
