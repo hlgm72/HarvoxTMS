@@ -117,13 +117,13 @@ export default function Profile() {
       await refreshProfile();
 
       toast({
-        title: "Perfil actualizado",
-        description: "Tu información personal ha sido actualizada exitosamente.",
+        title: "Perfil actualizado exitosamente",
+        description: "Su información personal ha sido guardada correctamente.",
       });
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "No se pudo actualizar el perfil",
+        title: "Error en la actualización",
+        description: error.message || "No se ha podido completar la actualización del perfil. Por favor, inténtelo nuevamente.",
         variant: "destructive",
       });
     } finally {
@@ -141,8 +141,8 @@ export default function Profile() {
         timezone: profile.timezone || 'America/New_York',
       });
       toast({
-        title: "Cambios cancelados",
-        description: "Se han restaurado los valores originales.",
+        title: "Cambios descartados",
+        description: "Los valores originales han sido restaurados correctamente.",
       });
     }
   };
@@ -154,8 +154,8 @@ export default function Profile() {
       confirmPassword: '',
     });
     toast({
-      title: "Cambios cancelados",
-      description: "Se han limpiado los campos de contraseña.",
+      title: "Campos limpiados",
+      description: "Los campos de contraseña han sido reiniciados correctamente.",
     });
   };
 
@@ -169,7 +169,7 @@ export default function Profile() {
       });
 
       if (signInError) {
-        throw new Error('La contraseña actual es incorrecta');
+        throw new Error('La contraseña actual ingresada es incorrecta. Por favor, verifíquela.');
       }
 
       // Update password
@@ -180,15 +180,15 @@ export default function Profile() {
       if (updateError) throw updateError;
 
       toast({
-        title: "Contraseña actualizada",
-        description: "Tu contraseña ha sido cambiada exitosamente.",
+        title: "Contraseña actualizada exitosamente",
+        description: "Su contraseña ha sido modificada de manera segura.",
       });
 
       passwordForm.reset();
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "No se pudo cambiar la contraseña",
+        title: "Error al cambiar contraseña",
+        description: error.message || "No se ha podido completar el cambio de contraseña. Por favor, verifique la información e inténtelo nuevamente.",
         variant: "destructive",
       });
     } finally {
