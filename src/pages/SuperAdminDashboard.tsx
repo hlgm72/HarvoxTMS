@@ -19,7 +19,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Layout } from '@/components/layout/Layout';
 import { useToast } from '@/hooks/use-toast';
 import { useFleetNotifications } from '@/components/notifications';
-import { createTextHandlers } from '@/lib/textUtils';
+import { createTextHandlers, handlePhoneInput } from '@/lib/textUtils';
 
 interface CompanyStats {
   total_companies: number;
@@ -121,6 +121,19 @@ export default function SuperAdminDashboard() {
   const editOwnerPhoneHandlers = createTextHandlers((value) => 
     setCompanyToEdit(prev => prev ? {...prev, owner_phone: value} : null), 'phone'
   );
+
+  // Handler for auto-fill format detection
+  const handleAutoFillFormat = (
+    currentValue: string, 
+    setValue: (value: string) => void,
+    type: 'phone' | 'email' = 'phone'
+  ) => {
+    if (type === 'phone' && currentValue && !currentValue.includes('(')) {
+      // If it's a phone number without formatting, apply formatting
+      const formattedValue = handlePhoneInput(currentValue);
+      setValue(formattedValue);
+    }
+  };
 
   useEffect(() => {
     if (!loading && isSuperAdmin) {
@@ -492,6 +505,12 @@ export default function SuperAdminDashboard() {
                               id="company-phone"
                               value={newCompany.phone}
                               {...companyPhoneHandlers}
+                              onBlur={(e) => {
+                                companyPhoneHandlers.onBlur?.(e);
+                                handleAutoFillFormat(e.target.value, (value) => 
+                                  setNewCompany(prev => ({ ...prev, phone: value })), 'phone'
+                                );
+                              }}
                               placeholder="(555) 123-4567"
                               className="pl-10 transition-all focus:scale-[1.01]"
                             />
@@ -553,6 +572,12 @@ export default function SuperAdminDashboard() {
                               id="owner-phone"
                               value={newCompany.owner_phone}
                               {...ownerPhoneHandlers}
+                              onBlur={(e) => {
+                                ownerPhoneHandlers.onBlur?.(e);
+                                handleAutoFillFormat(e.target.value, (value) => 
+                                  setNewCompany(prev => ({ ...prev, owner_phone: value })), 'phone'
+                                );
+                              }}
                               placeholder="(555) 987-6543"
                               className="pl-10 transition-all focus:scale-[1.01]"
                             />
@@ -1473,6 +1498,12 @@ export default function SuperAdminDashboard() {
                               id="edit-owner-phone"
                               value={companyToEdit.owner_phone || ''}
                               {...editOwnerPhoneHandlers}
+                              onBlur={(e) => {
+                                editOwnerPhoneHandlers.onBlur?.(e);
+                                handleAutoFillFormat(e.target.value, (value) => 
+                                  setCompanyToEdit(prev => prev ? {...prev, owner_phone: value} : null), 'phone'
+                                );
+                              }}
                               placeholder="(555) 987-6543"
                               className="pl-10"
                             />
