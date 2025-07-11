@@ -203,49 +203,54 @@ export default function Users() {
     }
   };
 
+  // Jerarquía de roles según importancia organizacional (misma que RoleSwitcher)
   const getRoleLabel = (role: string) => {
     const roleLabels: Record<string, string> = {
+      'superadmin': 'Super Admin',
       'company_owner': 'Propietario',
-      'driver': 'Conductor',
-      'dispatcher': 'Despachador',
+      'general_manager': 'Gerente General', 
       'operations_manager': 'Gerente de Operaciones',
       'safety_manager': 'Gerente de Seguridad',
       'senior_dispatcher': 'Despachador Senior',
-      'general_manager': 'Gerente General',
-      'superadmin': 'Super Admin'
+      'dispatcher': 'Despachador',
+      'driver': 'Conductor',
     };
     
     return roleLabels[role] || role;
   };
 
-  const getRoleBadgeVariant = (role: string) => {
-    const roleVariants: Record<string, string> = {
-      'company_owner': 'default', // Azul - rol principal
-      'driver': 'secondary', // Gris - rol operativo
-      'dispatcher': 'outline', // Borde - rol de coordinación
-      'operations_manager': 'default', // Azul - rol de gestión
-      'safety_manager': 'destructive', // Rojo - seguridad crítica
-      'senior_dispatcher': 'outline', // Borde oscuro - coordinación senior
-      'general_manager': 'default', // Azul - alta gestión
-      'superadmin': 'destructive' // Rojo - máximo nivel
-    };
-    
-    return roleVariants[role] || 'outline';
-  };
-
   const getRoleBadgeColor = (role: string) => {
     const roleColors: Record<string, string> = {
+      'superadmin': 'bg-rose-500 text-white hover:bg-rose-600',
       'company_owner': 'bg-blue-500 text-white hover:bg-blue-600',
-      'driver': 'bg-green-500 text-white hover:bg-green-600', 
-      'dispatcher': 'bg-orange-500 text-white hover:bg-orange-600',
+      'general_manager': 'bg-indigo-500 text-white hover:bg-indigo-600',
       'operations_manager': 'bg-purple-500 text-white hover:bg-purple-600',
       'safety_manager': 'bg-red-500 text-white hover:bg-red-600',
       'senior_dispatcher': 'bg-amber-600 text-white hover:bg-amber-700',
-      'general_manager': 'bg-indigo-500 text-white hover:bg-indigo-600',
-      'superadmin': 'bg-rose-600 text-white hover:bg-rose-700'
+      'dispatcher': 'bg-orange-500 text-white hover:bg-orange-600',
+      'driver': 'bg-green-500 text-white hover:bg-green-600',
     };
     
     return roleColors[role] || 'bg-gray-500 text-white hover:bg-gray-600';
+  };
+
+  const sortRolesByHierarchy = (roles: string[]) => {
+    const roleHierarchy = [
+      'superadmin',
+      'company_owner', 
+      'general_manager',
+      'operations_manager',
+      'safety_manager',
+      'senior_dispatcher',
+      'dispatcher',
+      'driver'
+    ];
+    
+    return roles.sort((a, b) => {
+      const aIndex = roleHierarchy.indexOf(a);
+      const bIndex = roleHierarchy.indexOf(b);
+      return aIndex - bIndex;
+    });
   };
 
   return (
@@ -437,28 +442,28 @@ export default function Users() {
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        {user.role.split(', ').map((roleLabel, index) => {
+                        {sortRolesByHierarchy(user.role.split(', ').map((roleLabel) => {
                           // Obtener el rol original desde el label
                           const originalRole = Object.entries({
+                            'superadmin': 'Super Admin',
                             'company_owner': 'Propietario',
-                            'driver': 'Conductor', 
-                            'dispatcher': 'Despachador',
+                            'general_manager': 'Gerente General', 
                             'operations_manager': 'Gerente de Operaciones',
                             'safety_manager': 'Gerente de Seguridad',
                             'senior_dispatcher': 'Despachador Senior',
-                            'general_manager': 'Gerente General',
-                            'superadmin': 'Super Admin'
+                            'dispatcher': 'Despachador',
+                            'driver': 'Conductor',
                           }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
                           
-                          return (
-                            <Badge 
-                              key={index} 
-                              className={`text-xs ${getRoleBadgeColor(originalRole)}`}
-                            >
-                              {roleLabel}
-                            </Badge>
-                          );
-                        })}
+                          return originalRole;
+                        })).map((originalRole, index) => (
+                          <Badge 
+                            key={index} 
+                            className={`text-xs ${getRoleBadgeColor(originalRole)}`}
+                          >
+                            {getRoleLabel(originalRole)}
+                          </Badge>
+                        ))}
                       </div>
                     </TableCell>
                     <TableCell>{getStatusBadge(user.status)}</TableCell>

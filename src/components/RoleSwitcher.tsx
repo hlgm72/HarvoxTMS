@@ -11,26 +11,27 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
+// Jerarquía de roles según importancia organizacional
 const roleLabels = {
-  superadmin: 'Super Administrador',
+  superadmin: 'Super Admin',
   company_owner: 'Propietario',
-  general_manager: 'Gerente General',
+  general_manager: 'Gerente General', 
   operations_manager: 'Gerente de Operaciones',
-  senior_dispatcher: 'Dispatcher Senior',
-  dispatcher: 'Dispatcher',
-  driver: 'Conductor',
   safety_manager: 'Gerente de Seguridad',
+  senior_dispatcher: 'Despachador Senior',
+  dispatcher: 'Despachador',
+  driver: 'Conductor',
 };
 
 const roleColors = {
-  superadmin: 'bg-purple-100 text-purple-800 hover:bg-purple-200',
-  company_owner: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
-  general_manager: 'bg-green-100 text-green-800 hover:bg-green-200',
-  operations_manager: 'bg-orange-100 text-orange-800 hover:bg-orange-200',
-  senior_dispatcher: 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200',
-  dispatcher: 'bg-cyan-100 text-cyan-800 hover:bg-cyan-200',
-  driver: 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200',
-  safety_manager: 'bg-red-100 text-red-800 hover:bg-red-200',
+  superadmin: 'bg-rose-500 text-white hover:bg-rose-600',
+  company_owner: 'bg-blue-500 text-white hover:bg-blue-600',
+  general_manager: 'bg-indigo-500 text-white hover:bg-indigo-600',
+  operations_manager: 'bg-purple-500 text-white hover:bg-purple-600',
+  safety_manager: 'bg-red-500 text-white hover:bg-red-600',
+  senior_dispatcher: 'bg-amber-600 text-white hover:bg-amber-700',
+  dispatcher: 'bg-orange-500 text-white hover:bg-orange-600',
+  driver: 'bg-green-500 text-white hover:bg-green-600',
 };
 
 export const RoleSwitcher = () => {
@@ -77,7 +78,24 @@ export const RoleSwitcher = () => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         
-        {availableRoles.map((role) => (
+        {availableRoles
+          .sort((a, b) => {
+            // Ordenar por jerarquía de roles
+            const roleHierarchy = [
+              'superadmin',
+              'company_owner', 
+              'general_manager',
+              'operations_manager',
+              'safety_manager',
+              'senior_dispatcher',
+              'dispatcher',
+              'driver'
+            ];
+            const aIndex = roleHierarchy.indexOf(a.role);
+            const bIndex = roleHierarchy.indexOf(b.role);
+            return aIndex - bIndex;
+          })
+          .map((role) => (
           <DropdownMenuItem
             key={role.id}
             onClick={() => switchRole(role)}
@@ -93,8 +111,7 @@ export const RoleSwitcher = () => {
               </span>
               {currentRole.id === role.id && (
                 <Badge 
-                  variant="secondary" 
-                  className={`text-xs ${roleColors[role.role as keyof typeof roleColors] || ''}`}
+                  className={`text-xs ${roleColors[role.role as keyof typeof roleColors] || 'bg-gray-500 text-white'}`}
                 >
                   Activo
                 </Badge>
