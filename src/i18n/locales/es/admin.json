@@ -179,6 +179,10 @@
     "security_backups": "Seguridad y respaldos",
     "global_access": "Control de Acceso Global",
     "admin_panel": "Panel de control",
-    "system_administrator": "Administrador del Sistema"
+    "system_administrator": "Administrador del Sistema",
+    "quick_actions": "Acciones Rápidas",
+    "system_status": "Estado del Sistema",
+    "online": "En Línea", 
+    "quick_settings": "Configuración Rápida"
   }
 }

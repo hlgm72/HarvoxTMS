@@ -179,6 +179,10 @@
     "security_backups": "Security and backups",
     "global_access": "Global Access Control",
     "admin_panel": "Control panel",
-    "system_administrator": "System Administrator"
+    "system_administrator": "System Administrator",
+    "quick_actions": "Quick Actions",
+    "system_status": "System Status", 
+    "online": "Online",
+    "quick_settings": "Quick Settings"
   }
 }

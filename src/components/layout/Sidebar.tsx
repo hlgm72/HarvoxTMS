@@ -539,7 +539,7 @@ export function AppSidebar() {
         {!collapsed && (
           <SidebarGroup className="mt-6">
             <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Quick Actions
+              {t('admin:navigation.quick_actions')}
             </SidebarGroupLabel>
             <Separator className="my-2 opacity-50" />
             <SidebarGroupContent>
@@ -550,9 +550,9 @@ export function AppSidebar() {
                   className="w-full justify-start gap-2 hover:bg-accent/50 transition-all"
                 >
                   <Activity className="h-4 w-4" />
-                  <span className="text-sm">System Status</span>
+                  <span className="text-sm">{t('admin:navigation.system_status')}</span>
                   <Badge variant="outline" className="ml-auto bg-green-50 text-green-700 border-green-200">
-                    Online
+                    {t('admin:navigation.online')}
                   </Badge>
                 </Button>
                 
@@ -563,7 +563,7 @@ export function AppSidebar() {
                     className="w-full justify-start gap-2 hover:bg-accent/50 transition-all"
                   >
                     <Settings className="h-4 w-4" />
-                    <span className="text-sm">Quick Settings</span>
+                    <span className="text-sm">{t('admin:navigation.quick_settings')}</span>
                   </Button>
                 )}
               </div>
