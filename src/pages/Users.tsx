@@ -78,6 +78,7 @@ export default function Users() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [editingRoles, setEditingRoles] = useState<string[]>([]);
+  const [editingStatus, setEditingStatus] = useState<string>('');
   const [updatingRoles, setUpdatingRoles] = useState(false);
 
   // Cargar usuarios al montar el componente
@@ -286,6 +287,7 @@ export default function Users() {
       return originalRole;
     });
     setEditingRoles(currentRoles);
+    setEditingStatus(user.status); // Inicializar el estado en edición
     setEditDialogOpen(true);
   };
 
@@ -318,8 +320,22 @@ export default function Users() {
       const rolesToRemove = currentRoleValues.filter(role => !editingRoles.includes(role));
       const rolesToAdd = editingRoles.filter(role => !currentRoleValues.includes(role as UserRole));
 
-      // Remover roles
-      if (rolesToRemove.length > 0) {
+      // Actualizar estado si cambió
+      const newIsActive = editingStatus === 'active';
+      
+      // Actualizar estado de todos los roles existentes
+      if (editingStatus !== selectedUser.status) {
+        const { error: statusError } = await supabase
+          .from('user_company_roles')
+          .update({ is_active: newIsActive })
+          .eq('user_id', selectedUser.id)
+          .eq('company_id', userRole.company_id);
+
+        if (statusError) throw statusError;
+      }
+
+      // Remover roles (solo si el usuario está activo)
+      if (rolesToRemove.length > 0 && newIsActive) {
         const { error: removeError } = await supabase
           .from('user_company_roles')
           .update({ is_active: false })
@@ -330,8 +346,8 @@ export default function Users() {
         if (removeError) throw removeError;
       }
 
-      // Agregar nuevos roles
-      if (rolesToAdd.length > 0) {
+      // Agregar nuevos roles (solo si el usuario está activo)
+      if (rolesToAdd.length > 0 && newIsActive) {
         const newRoles = rolesToAdd.map(role => ({
           user_id: selectedUser.id,
           company_id: userRole.company_id,
@@ -349,13 +365,13 @@ export default function Users() {
         if (insertError) throw insertError;
       }
 
-      toast.success('Roles actualizados exitosamente');
+      toast.success('Usuario actualizado exitosamente');
       setEditDialogOpen(false);
       fetchUsers(); // Recargar la lista
       
     } catch (error: any) {
-      console.error('Error updating roles:', error);
-      toast.error(error.message || 'Error al actualizar roles');
+      console.error('Error updating user:', error);
+      toast.error(error.message || 'Error al actualizar usuario');
     } finally {
       setUpdatingRoles(false);
     }
@@ -606,8 +622,26 @@ export default function Users() {
               </div>
               
               <div>
-                <Label>Estado Actual</Label>
-                <div className="mt-1">{getStatusBadge(selectedUser.status)}</div>
+                <Label htmlFor="status">Estado</Label>
+                <Select 
+                  value={editingStatus} 
+                  onValueChange={setEditingStatus}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona un estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">
+                      <Badge variant="default" className="bg-green-100 text-green-800">Activo</Badge>
+                    </SelectItem>
+                    <SelectItem value="inactive">
+                      <Badge variant="destructive">Inactivo</Badge>
+                    </SelectItem>
+                    <SelectItem value="pending">
+                      <Badge variant="secondary">Pendiente</Badge>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div className="flex gap-2 pt-4">
