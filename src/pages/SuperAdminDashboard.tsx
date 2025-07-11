@@ -1413,20 +1413,20 @@ export default function SuperAdminDashboard() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="edit-plan-type">Plan Type</Label>
+                          <Label htmlFor="edit-plan-type">{t('common.plan_type')}</Label>
                           <Select 
                             value={companyToEdit.plan_type} 
                             onValueChange={(value) => setCompanyToEdit(prev => prev ? {...prev, plan_type: value} : null)}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Select plan type" />
+                              <SelectValue placeholder={t('pages.companies.form.plan_type')} />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="basic">Basic</SelectItem>
-                              <SelectItem value="premium">Premium</SelectItem>
-                              <SelectItem value="enterprise">Enterprise</SelectItem>
-                              <SelectItem value="demo">Demo</SelectItem>
-                              <SelectItem value="trial">Trial</SelectItem>
+                              <SelectItem value="basic">{t('pages.companies.plans.basic')}</SelectItem>
+                              <SelectItem value="premium">{t('pages.companies.plans.premium')}</SelectItem>
+                              <SelectItem value="enterprise">{t('pages.companies.plans.enterprise')}</SelectItem>
+                              <SelectItem value="demo">{t('pages.companies.plans.demo')}</SelectItem>
+                              <SelectItem value="trial">{t('pages.companies.plans.trial')}</SelectItem>
                               <SelectItem value="test">Test</SelectItem>
                             </SelectContent>
                           </Select>
@@ -1434,7 +1434,7 @@ export default function SuperAdminDashboard() {
 
                         <div className="grid grid-cols-2 gap-3">
                           <div className="space-y-2">
-                            <Label htmlFor="edit-max-vehicles">Max Vehicles</Label>
+                            <Label htmlFor="edit-max-vehicles">{t('common.max_vehicles')}</Label>
                             <Input
                               id="edit-max-vehicles"
                               type="number"
@@ -1445,7 +1445,7 @@ export default function SuperAdminDashboard() {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="edit-max-users">Max Users</Label>
+                            <Label htmlFor="edit-max-users">{t('common.max_users')}</Label>
                             <Input
                               id="edit-max-users"
                               type="number"
@@ -1458,18 +1458,18 @@ export default function SuperAdminDashboard() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="edit-status">Status</Label>
+                          <Label htmlFor="edit-status">{t('common.status')}</Label>
                           <Select 
                             value={companyToEdit.status} 
                             onValueChange={(value) => setCompanyToEdit(prev => prev ? {...prev, status: value} : null)}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Select status" />
+                              <SelectValue placeholder={t('pages.companies.form.status')} />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="active">Active</SelectItem>
-                              <SelectItem value="inactive">Inactive</SelectItem>
-                              <SelectItem value="suspended">Suspended</SelectItem>
+                              <SelectItem value="active">{t('pages.companies.status.active')}</SelectItem>
+                              <SelectItem value="inactive">{t('pages.companies.status.inactive')}</SelectItem>
+                              <SelectItem value="suspended">{t('pages.companies.status.suspended')}</SelectItem>
                               <SelectItem value="archived">Archived</SelectItem>
                             </SelectContent>
                           </Select>
@@ -1481,12 +1481,12 @@ export default function SuperAdminDashboard() {
                         <div className="flex items-center gap-2 pb-2 border-b">
                           <User className="h-4 w-4 text-primary" />
                           <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
-                            Owner Information
+                            {t('common.owner_primary_contact')}
                           </h3>
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="edit-owner-name">Owner Name</Label>
+                          <Label htmlFor="edit-owner-name">{t('common.owner_name')}</Label>
                           <Input
                             id="edit-owner-name"
                             value={companyToEdit.owner_name || ''}
@@ -1496,7 +1496,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="edit-owner-email">Owner Email</Label>
+                          <Label htmlFor="edit-owner-email">{t('common.owner_email')}</Label>
                           <Input
                             id="edit-owner-email"
                             type="email"
@@ -1507,7 +1507,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="edit-owner-phone">Owner Phone</Label>
+                          <Label htmlFor="edit-owner-phone">{t('common.owner_phone')}</Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -1527,7 +1527,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="edit-owner-title">Owner Title</Label>
+                          <Label htmlFor="edit-owner-title">{t('common.owner_title')}</Label>
                           <Input
                             id="edit-owner-title"
                             value={companyToEdit.owner_title || ''}
@@ -1560,7 +1560,7 @@ export default function SuperAdminDashboard() {
                         setCompanyToEdit(null);
                       }}
                     >
-                      Cancel
+                      {t('common.cancel')}
                     </Button>
                     <Button 
                       onClick={handleUpdateCompany}
@@ -1570,12 +1570,12 @@ export default function SuperAdminDashboard() {
                       {isUpdatingCompany ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Updating...
+                          {t('common.updating')}
                         </>
                       ) : (
                         <>
                           <Edit className="h-4 w-4 mr-2" />
-                          Update Company
+                          {t('common.update_company')}
                         </>
                       )}
                     </Button>

@@ -262,6 +262,7 @@
     "system_update": "Actualización del Sistema",
     "deployed": "desplegado",
     "backup_completed": "Respaldo Completado",
-    "daily_backup": "Respaldo diario"
+    "daily_backup": "Respaldo diario",
+    "archived": "Archivado"
   }
 }

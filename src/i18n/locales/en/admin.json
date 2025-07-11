@@ -262,6 +262,7 @@
     "system_update": "System Update",
     "deployed": "deployed",
     "backup_completed": "Backup Completed",
-    "daily_backup": "Daily backup"
+    "daily_backup": "Daily backup",
+    "archived": "Archived"
   }
 }
