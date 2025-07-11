@@ -221,7 +221,7 @@ export default function SuperAdminDashboard() {
           // Campos obligatorios temporales para que funcione la inserción
           street_address: '',
           state_id: 'TX',
-          zip_code: '00000',
+          zip_code: '',
           status: 'active',
           contract_start_date: new Date().toISOString().split('T')[0],
         }])
@@ -342,7 +342,7 @@ export default function SuperAdminDashboard() {
           phone: companyToEdit.phone,
           street_address: companyToEdit.street_address || '',
           state_id: companyToEdit.state_id || 'TX',
-          zip_code: companyToEdit.zip_code || '00000',
+          zip_code: companyToEdit.zip_code || '',
           owner_name: companyToEdit.owner_name,
           owner_email: companyToEdit.owner_email,
           owner_phone: companyToEdit.owner_phone,
