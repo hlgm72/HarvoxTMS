@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useReducer } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -18,19 +18,45 @@ interface AuthState {
   userRoles: UserRole[];
   currentRole: UserRole | null;
   loading: boolean;
+  forceUpdate: number;
 }
 
+type AuthAction = 
+  | { type: 'SET_SESSION'; session: Session | null; user: User | null }
+  | { type: 'SET_ROLES'; userRoles: UserRole[]; currentRole: UserRole | null }
+  | { type: 'SET_LOADING'; loading: boolean }
+  | { type: 'FORCE_UPDATE' };
+
+const authReducer = (state: AuthState, action: AuthAction): AuthState => {
+  switch (action.type) {
+    case 'SET_SESSION':
+      return { ...state, session: action.session, user: action.user };
+    case 'SET_ROLES':
+      return { 
+        ...state, 
+        userRoles: [...action.userRoles], 
+        currentRole: action.currentRole ? { ...action.currentRole } : null,
+        loading: false,
+        forceUpdate: Date.now()
+      };
+    case 'SET_LOADING':
+      return { ...state, loading: action.loading };
+    case 'FORCE_UPDATE':
+      return { ...state, forceUpdate: Date.now() };
+    default:
+      return state;
+  }
+};
+
 export const useAuth = () => {
-  const [authState, setAuthState] = useState<AuthState>({
+  const [authState, dispatch] = useReducer(authReducer, {
     user: null,
     session: null,
     userRoles: [],
     currentRole: null,
     loading: true,
+    forceUpdate: 0,
   });
-  
-  // Force re-render counter
-  const [forceUpdate, setForceUpdate] = useState(0);
 
   const fetchUserRoles = async (userId: string) => {
     // Check cache first
@@ -67,11 +93,7 @@ export const useAuth = () => {
   };
 
   const switchRole = (role: UserRole) => {
-    setAuthState(prev => ({
-      ...prev,
-      currentRole: role,
-    }));
-    
+    dispatch({ type: 'SET_ROLES', userRoles: authState.userRoles, currentRole: role });
     // Store current role in localStorage for persistence
     localStorage.setItem('currentRole', JSON.stringify(role));
   };
@@ -101,11 +123,7 @@ export const useAuth = () => {
     const handleSession = async (session: Session | null) => {
       if (!isMounted) return;
 
-      setAuthState(prev => ({
-        ...prev,
-        session,
-        user: session?.user ?? null,
-      }));
+      dispatch({ type: 'SET_SESSION', session, user: session?.user ?? null });
 
       if (session?.user) {
         const roles = await fetchUserRoles(session.user.id);
@@ -115,12 +133,11 @@ export const useAuth = () => {
           // If no stored role or stored role is invalid, use first available role
           const currentRole = storedRole || (roles.length > 0 ? roles[0] : null);
           
-          setAuthState(prev => ({
-            ...prev,
-            userRoles: roles,
-            currentRole,
-            loading: false,
-          }));
+          dispatch({ 
+            type: 'SET_ROLES', 
+            userRoles: roles, 
+            currentRole 
+          });
 
           // Update stored role if we selected a different one
           if (currentRole && (!storedRole || storedRole.id !== currentRole.id)) {
@@ -129,12 +146,11 @@ export const useAuth = () => {
         }
       } else {
         if (isMounted) {
-          setAuthState(prev => ({
-            ...prev,
-            userRoles: [],
-            currentRole: null,
-            loading: false,
-          }));
+          dispatch({ 
+            type: 'SET_ROLES', 
+            userRoles: [], 
+            currentRole: null 
+          });
           // Clear stored role
           localStorage.removeItem('currentRole');
         }
@@ -188,31 +204,14 @@ export const useAuth = () => {
         localStorage.removeItem('currentRole');
       }
 
-      // Force update counter first
-      const updateCounter = Date.now();
-      setForceUpdate(updateCounter);
-      
-      // Then update the main state
-      setAuthState(prevState => {
-        const newState = {
-          user: prevState.user,
-          session: prevState.session,
-          userRoles: roles.map(r => ({ ...r })), // Deep copy each role
-          currentRole: currentRole ? { ...currentRole } : null,
-          loading: false,
-        };
-        console.log('🔄 setState called with new roles:', newState.userRoles.length);
-        return newState;
+      // Use reducer to update state
+      dispatch({ 
+        type: 'SET_ROLES', 
+        userRoles: roles, 
+        currentRole 
       });
       
-      // Force another update after a micro-task
-      setTimeout(() => {
-        setForceUpdate(Date.now());
-        console.log('🎯 Secondary force update triggered');
-      }, 0);
-      
-      console.log('🎯 Force update triggered, counter:', updateCounter);
-      console.log('🎯 New state roles:', roles.length);
+      console.log('🎯 Reducer dispatch called with roles:', roles.length);
     }
   };
 
@@ -238,7 +237,7 @@ export const useAuth = () => {
     hasMultipleRoles: authState.userRoles.length > 1,
     availableRoles: authState.userRoles,
     // Debug info
-    _forceUpdate: forceUpdate,
+    _forceUpdate: authState.forceUpdate,
     _debug: {
       rolesCount: authState.userRoles.length,
       currentRoleId: authState.currentRole?.id,
