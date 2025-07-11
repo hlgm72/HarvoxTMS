@@ -10,6 +10,7 @@ import AuthCallback from "./pages/AuthCallback";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import Companies from "./pages/Companies";
 import PaymentSystem from "./pages/PaymentSystem";
+import Invitation from "./pages/Invitation";
 import NotFound from "./pages/NotFound";
 import OwnerDashboard from "./pages/dashboard/OwnerDashboard";
 import OperationsManagerDashboard from "./pages/dashboard/OperationsManagerDashboard";
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/landing" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/invitation/:token" element={<Invitation />} />
           
           {/* Protected routes with Layout */}
           <Route 

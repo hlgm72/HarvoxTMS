@@ -17,7 +17,8 @@
       "delete_company": "Delete Company",
       "view_details": "View Details",
       "export_data": "Export Data",
-      "bulk_actions": "Bulk Actions"
+      "bulk_actions": "Bulk Actions",
+      "invite_owner": "Invite Company Owner"
     },
     "form": {
       "company_name": "Company Name",

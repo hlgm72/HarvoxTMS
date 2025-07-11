@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Edit, Trash2, Users, Truck, Phone, Mail, ArrowUpDown } from "lucide-react";
+import { Edit, Trash2, Users, Truck, Phone, Mail, ArrowUpDown, UserPlus } from "lucide-react";
 import { useTranslation } from 'react-i18next';
+import { InviteCompanyOwnerDialog } from "./InviteCompanyOwnerDialog";
 
 interface Company {
   id: string;
@@ -45,6 +47,13 @@ export function CompanyTableView({
   onSort 
 }: CompanyTableViewProps) {
   const { t } = useTranslation('admin');
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+
+  const handleInviteOwner = (company: Company) => {
+    setSelectedCompany(company);
+    setInviteDialogOpen(true);
+  };
   
   const getStatusBadge = (status?: string) => {
     switch (status) {
@@ -89,6 +98,7 @@ export function CompanyTableView({
   );
 
   return (
+    <>
     <Table>
       <TableHeader>
         <TableRow>
@@ -161,6 +171,14 @@ export function CompanyTableView({
                 <Button
                   variant="outline"
                   size="sm"
+                  onClick={() => handleInviteOwner(company)}
+                  title={t('pages.companies.actions.invite_owner', { defaultValue: 'Invite Company Owner' })}
+                >
+                  <UserPlus className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => onEdit(company)}
                 >
                   <Edit className="h-4 w-4" />
@@ -200,5 +218,12 @@ export function CompanyTableView({
         ))}
       </TableBody>
     </Table>
+    
+    <InviteCompanyOwnerDialog
+      open={inviteDialogOpen}
+      onOpenChange={setInviteDialogOpen}
+      company={selectedCompany}
+    />
+    </>
   );
 }

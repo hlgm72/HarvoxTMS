@@ -1450,6 +1450,53 @@ export type Database = {
           },
         ]
       }
+      user_invitations: {
+        Row: {
+          accepted_at: string | null
+          company_id: string
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invitation_token: string
+          invited_by: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          company_id: string
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invitation_token: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          company_id?: string
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invitation_token?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_invitations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vehicle_assignments: {
         Row: {
           assigned_at: string
@@ -1605,6 +1652,10 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: Json
       }
+      company_has_owner: {
+        Args: { company_id_param: string }
+        Returns: boolean
+      }
       create_first_superadmin: {
         Args: {
           admin_email: string
@@ -1657,6 +1708,16 @@ export type Database = {
           payment_notes?: string
         }
         Returns: Json
+      }
+      validate_invitation_token: {
+        Args: { token_param: string }
+        Returns: {
+          invitation_id: string
+          company_id: string
+          email: string
+          role: Database["public"]["Enums"]["user_role"]
+          is_valid: boolean
+        }[]
       }
     }
     Enums: {
