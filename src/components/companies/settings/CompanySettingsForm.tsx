@@ -13,6 +13,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from '@/integrations/supabase/client';
 import { Company } from '@/types/company';
+import { CompanyLogoUpload } from '../CompanyLogoUpload';
 
 interface CompanySettingsFormProps {
   company: Company;
@@ -57,6 +58,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           payment_cycle_start_day: formData.payment_cycle_start_day,
           max_users: formData.max_users,
           max_vehicles: formData.max_vehicles,
+          logo_url: formData.logo_url,
           updated_at: new Date().toISOString()
         })
         .eq('id', company.id)
@@ -147,6 +149,16 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Logo Upload Section */}
+              <CompanyLogoUpload
+                companyId={company.id}
+                currentLogoUrl={formData.logo_url}
+                companyName={formData.name}
+                onLogoUpdate={(logoUrl) => handleInputChange('logo_url', logoUrl || '')}
+              />
+
+              <Separator />
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Nombre de la Empresa *</Label>

@@ -24,4 +24,5 @@ export interface Company {
   contract_start_date?: string;
   default_payment_frequency?: string;
   payment_cycle_start_day?: number;
+  logo_url?: string;
 }
