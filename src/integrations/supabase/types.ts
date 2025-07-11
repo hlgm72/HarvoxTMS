@@ -19,6 +19,9 @@ export type Database = {
           city_id: string | null
           contract_start_date: string | null
           created_at: string
+          default_dispatching_percentage: number | null
+          default_factoring_percentage: number | null
+          default_leasing_percentage: number | null
           default_payment_frequency: string | null
           dot_number: string | null
           ein: string | null
@@ -47,6 +50,9 @@ export type Database = {
           city_id?: string | null
           contract_start_date?: string | null
           created_at?: string
+          default_dispatching_percentage?: number | null
+          default_factoring_percentage?: number | null
+          default_leasing_percentage?: number | null
           default_payment_frequency?: string | null
           dot_number?: string | null
           ein?: string | null
@@ -75,6 +81,9 @@ export type Database = {
           city_id?: string | null
           contract_start_date?: string | null
           created_at?: string
+          default_dispatching_percentage?: number | null
+          default_factoring_percentage?: number | null
+          default_leasing_percentage?: number | null
           default_payment_frequency?: string | null
           dot_number?: string | null
           ein?: string | null
