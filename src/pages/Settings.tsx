@@ -326,11 +326,17 @@ export default function Settings() {
                 <Tabs value={profileSubTab} onValueChange={setProfileSubTab} className="w-full">
                   <CardHeader>
                     <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="info" className="flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-md">
+                      <TabsTrigger 
+                        value="info" 
+                        className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+                      >
                         <User className="h-4 w-4" />
                         Información Personal
                       </TabsTrigger>
-                      <TabsTrigger value="security" className="flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-md">
+                      <TabsTrigger 
+                        value="security" 
+                        className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+                      >
                         <Shield className="h-4 w-4" />
                         Seguridad
                       </TabsTrigger>
