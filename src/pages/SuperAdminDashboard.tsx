@@ -50,7 +50,7 @@ interface Company {
 }
 
 export default function SuperAdminDashboard() {
-  const { t } = useTranslation('admin');
+  const { t } = useTranslation(['admin', 'common']);
   const { user, isSuperAdmin, loading } = useAuth();
   const { toast } = useToast();
   const { showSuccess, showError } = useFleetNotifications();
@@ -375,7 +375,7 @@ export default function SuperAdminDashboard() {
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-2 text-muted-foreground">{t('common.loading')}</p>
+              <p className="mt-2 text-muted-foreground">{t('admin:common.loading')}</p>
             </div>
           </div>
         </div>
@@ -390,8 +390,8 @@ export default function SuperAdminDashboard() {
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
-                <h2 className="text-lg font-semibold text-destructive">{t('common.access_denied')}</h2>
-                <p className="text-muted-foreground">{t('common.access_denied_message')}</p>
+                <h2 className="text-lg font-semibold text-destructive">{t('admin:common.access_denied')}</h2>
+                <p className="text-muted-foreground">{t('admin:common.access_denied_message')}</p>
               </div>
             </CardContent>
           </Card>
@@ -714,7 +714,7 @@ export default function SuperAdminDashboard() {
               <TabsList className="grid w-full grid-cols-4 bg-muted/50 p-1 rounded-xl">
                 <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <BarChart3 className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('common.overview')}</span>
+                  <span className="hidden sm:inline">{t('admin:common.overview')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="companies" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <Building2 className="h-4 w-4" />
@@ -722,11 +722,11 @@ export default function SuperAdminDashboard() {
                 </TabsTrigger>
                 <TabsTrigger value="analytics" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <TrendingUp className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('common.analytics')}</span>
+                  <span className="hidden sm:inline">{t('admin:common.analytics')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="system" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <Database className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('common.system')}</span>
+                  <span className="hidden sm:inline">{t('admin:common.system')}</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -1137,14 +1137,14 @@ export default function SuperAdminDashboard() {
                           <div className="flex items-center gap-2 pb-2 border-b">
                             <Building2 className="h-4 w-4 text-primary" />
                             <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
-                              Company Information
+                              {t('pages.companies.form_labels.company_information')}
                             </h3>
                           </div>
                           
                           <div className="grid grid-cols-2 gap-4">
                             <div>
                               <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                Company Name
+                                {t('pages.companies.form_labels.company_name')}
                               </Label>
                               <p className="font-semibold">{companyToView.name}</p>
                             </div>
@@ -1353,7 +1353,7 @@ export default function SuperAdminDashboard() {
                   <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                       <Edit className="h-5 w-5 text-blue-600" />
-                      Edit Company: {companyToEdit?.name}
+                      {t('common.edit_company')}: {companyToEdit?.name}
                     </DialogTitle>
                     <DialogDescription>
                       Modify company information. Payment and regulatory data cannot be changed.
@@ -1367,12 +1367,12 @@ export default function SuperAdminDashboard() {
                         <div className="flex items-center gap-2 pb-2 border-b">
                           <Building2 className="h-4 w-4 text-primary" />
                           <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
-                            Company Information
+                            {t('pages.companies.form_labels.company_information')}
                           </h3>
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="edit-company-name">Company Name *</Label>
+                          <Label htmlFor="edit-company-name">{t('pages.companies.form_labels.company_name')} *</Label>
                           <Input
                             id="edit-company-name"
                             value={companyToEdit.name}
@@ -1382,7 +1382,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="edit-company-email">Company Email</Label>
+                          <Label htmlFor="edit-company-email">{t('pages.companies.form_labels.company_email')}</Label>
                           <Input
                             id="edit-company-email"
                             type="email"
@@ -1393,7 +1393,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="edit-company-phone">Company Phone</Label>
+                          <Label htmlFor="edit-company-phone">{t('pages.companies.form_labels.company_phone')}</Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
