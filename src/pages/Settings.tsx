@@ -476,7 +476,11 @@ export default function Settings() {
                               <RotateCcw className="mr-2 h-4 w-4" />
                               Resetear
                             </Button>
-                            <Button type="submit" disabled={updatingProfile}>
+                            <Button 
+                              type="submit" 
+                              disabled={updatingProfile}
+                              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-colors"
+                            >
                               {updatingProfile ? (
                                 <>
                                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>

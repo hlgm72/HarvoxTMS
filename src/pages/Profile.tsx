@@ -422,7 +422,11 @@ export default function Profile() {
                         <RotateCcw className="mr-2 h-4 w-4" />
                         Cancelar
                       </Button>
-                      <Button type="submit" disabled={updating}>
+                      <Button 
+                        type="submit" 
+                        disabled={updating}
+                        className="bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-colors"
+                      >
                         {updating ? (
                           <>
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
