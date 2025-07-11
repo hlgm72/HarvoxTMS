@@ -416,19 +416,19 @@ export default function SuperAdminDashboard() {
               <div className="space-y-4">
                 <div>
                   <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in text-white">
-                    {t('admin:pages.superadmin.header.control_center')}
+                    {t('pages.superadmin.header.control_center')}
                   </h1>
-                  <p className="text-white font-body text-lg">{t('admin:pages.superadmin.header.global_admin')}</p>
+                  <p className="text-white font-body text-lg">{t('pages.superadmin.header.global_admin')}</p>
                 </div>
                 
                 <div className="flex items-center gap-4 animate-fade-in" style={{animationDelay: '0.1s'}}>
                   <Badge variant="secondary" className="bg-white text-primary border-0 hover:bg-white/90 transition-colors font-semibold">
                     <Shield className="h-3 w-3 mr-1" />
-                    {t('admin:pages.superadmin.header.system_administrator')}
+                    {t('pages.superadmin.header.system_administrator')}
                   </Badge>
                   <div className="flex items-center gap-2 text-white">
                     <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-medium">{t('admin:pages.superadmin.header.system_status')}</span>
+                    <span className="text-sm font-medium">{t('pages.superadmin.header.system_status')}</span>
                   </div>
                 </div>
               </div>
@@ -439,23 +439,23 @@ export default function SuperAdminDashboard() {
                   className="bg-white/10 border-white text-white hover:bg-white hover:text-primary transition-all hover:scale-105 font-medium"
                 >
                   <Settings className="h-4 w-4 mr-2" />
-                  {t('admin:pages.superadmin.header.system_settings')}
+                  {t('pages.superadmin.header.system_settings')}
                 </Button>
                 <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
                   <DialogTrigger asChild>
                     <Button className="bg-gradient-primary hover:shadow-glow transition-all hover:scale-105">
                       <Plus className="h-4 w-4 mr-2" />
-                      {t('admin:pages.superadmin.header.new_company')}
+                      {t('pages.superadmin.header.new_company')}
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl">
                     <DialogHeader>
                       <DialogTitle className="flex items-center gap-2">
                         <Building2 className="h-5 w-5 text-primary" />
-                        {t('admin:pages.superadmin.dialogs.create_company')}
+                        {t('pages.superadmin.dialogs.create_company')}
                       </DialogTitle>
                       <DialogDescription>
-                        {t('admin:pages.superadmin.dialogs.create_company_desc')}
+                        {t('pages.superadmin.dialogs.create_company_desc')}
                       </DialogDescription>
                     </DialogHeader>
                     
