@@ -375,7 +375,7 @@ export default function SuperAdminDashboard() {
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-2 text-muted-foreground">Loading...</p>
+              <p className="mt-2 text-muted-foreground">{t('common.loading')}</p>
             </div>
           </div>
         </div>
@@ -390,8 +390,8 @@ export default function SuperAdminDashboard() {
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
-                <h2 className="text-lg font-semibold text-destructive">Access Denied</h2>
-                <p className="text-muted-foreground">You don't have permission to access this page.</p>
+                <h2 className="text-lg font-semibold text-destructive">{t('common.access_denied')}</h2>
+                <p className="text-muted-foreground">{t('common.access_denied_message')}</p>
               </div>
             </CardContent>
           </Card>
@@ -481,7 +481,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="company-email">Company Email *</Label>
+                          <Label htmlFor="company-email">{t('common.company_email')} *</Label>
                           <div className="relative">
                             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -504,7 +504,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="company-phone">Company Phone *</Label>
+                          <Label htmlFor="company-phone">{t('common.company_phone')} *</Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -529,12 +529,12 @@ export default function SuperAdminDashboard() {
                         <div className="flex items-center gap-2 pb-2 border-b">
                           <User className="h-4 w-4 text-primary" />
                           <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
-                            Owner/Primary Contact
+                            {t('common.owner_primary_contact')}
                           </h3>
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="owner-name">Owner Name *</Label>
+                          <Label htmlFor="owner-name">{t('common.owner_name')} *</Label>
                           <div className="relative">
                             <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -548,7 +548,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="owner-email">Owner Email *</Label>
+                          <Label htmlFor="owner-email">{t('common.owner_email')} *</Label>
                           <div className="relative">
                             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -571,7 +571,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="owner-phone">Owner Phone *</Label>
+                          <Label htmlFor="owner-phone">{t('common.owner_phone')} *</Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -591,7 +591,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="owner-title">Owner Title</Label>
+                          <Label htmlFor="owner-title">{t('common.owner_title')}</Label>
                           <div className="relative">
                             <Briefcase className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -680,7 +680,7 @@ export default function SuperAdminDashboard() {
                         onClick={() => setShowCreateDialog(false)}
                         disabled={isCreatingCompany}
                       >
-                        Cancel
+                        {t('common.cancel')}
                       </Button>
                       <Button 
                         onClick={handleCreateCompany}
@@ -690,12 +690,12 @@ export default function SuperAdminDashboard() {
                         {isCreatingCompany ? (
                           <>
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                            Creating...
+                            {t('common.creating')}
                           </>
                         ) : (
                           <>
                             <Plus className="h-4 w-4 mr-2" />
-                            Create Company
+                            {t('pages.companies.buttons.create_company')}
                           </>
                         )}
                       </Button>
@@ -714,19 +714,19 @@ export default function SuperAdminDashboard() {
               <TabsList className="grid w-full grid-cols-4 bg-muted/50 p-1 rounded-xl">
                 <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <BarChart3 className="h-4 w-4" />
-                  <span className="hidden sm:inline">Overview</span>
+                  <span className="hidden sm:inline">{t('common.overview')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="companies" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <Building2 className="h-4 w-4" />
-                  <span className="hidden sm:inline">Companies</span>
+                  <span className="hidden sm:inline">{t('navigation.companies')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="analytics" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <TrendingUp className="h-4 w-4" />
-                  <span className="hidden sm:inline">Analytics</span>
+                  <span className="hidden sm:inline">{t('common.analytics')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="system" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <Database className="h-4 w-4" />
-                  <span className="hidden sm:inline">System</span>
+                  <span className="hidden sm:inline">{t('common.system')}</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -738,11 +738,11 @@ export default function SuperAdminDashboard() {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-muted-foreground">Total Companies</p>
+                          <p className="text-sm font-medium text-muted-foreground">{t('common.total_companies')}</p>
                           <p className="text-3xl font-bold text-primary">{stats.total_companies}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             <TrendingUp className="h-3 w-3 inline mr-1" />
-                            +12% from last month
+                            {t('common.from_last_month')}
                           </p>
                         </div>
                         <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -756,7 +756,7 @@ export default function SuperAdminDashboard() {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-muted-foreground">Total Users</p>
+                          <p className="text-sm font-medium text-muted-foreground">{t('common.total_users')}</p>
                           <p className="text-3xl font-bold text-secondary">{stats.total_users}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             <TrendingUp className="h-3 w-3 inline mr-1" />
@@ -774,7 +774,7 @@ export default function SuperAdminDashboard() {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-muted-foreground">Total Vehicles</p>
+                          <p className="text-sm font-medium text-muted-foreground">{t('common.total_vehicles')}</p>
                           <p className="text-3xl font-bold text-success">{stats.total_vehicles}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             <TrendingUp className="h-3 w-3 inline mr-1" />
@@ -792,7 +792,7 @@ export default function SuperAdminDashboard() {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-muted-foreground">Active Drivers</p>
+                          <p className="text-sm font-medium text-muted-foreground">{t('common.total_drivers')}</p>
                           <p className="text-3xl font-bold text-warning">{stats.total_drivers}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             <TrendingUp className="h-3 w-3 inline mr-1" />
@@ -902,7 +902,7 @@ export default function SuperAdminDashboard() {
                   <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search companies..."
+                      placeholder={t('common.search_companies')}
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"
@@ -958,11 +958,11 @@ export default function SuperAdminDashboard() {
                           <Separator />
                           <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                              <span className="text-muted-foreground">Plan:</span>
+                              <span className="text-muted-foreground">{t('common.plan')}:</span>
                               <div className="font-medium capitalize">{company.plan_type}</div>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">Vehicles:</span>
+                              <span className="text-muted-foreground">{t('common.vehicles')}:</span>
                               <div className="font-medium">{company.max_vehicles}</div>
                             </div>
                           </div>
@@ -974,7 +974,7 @@ export default function SuperAdminDashboard() {
                               onClick={() => handleViewDetails(company)}
                             >
                               <Eye className="h-3 w-3 mr-2" />
-                              View Details
+                              {t('common.view_details')}
                             </Button>
                             <Button 
                               variant="outline" 
@@ -1001,49 +1001,49 @@ export default function SuperAdminDashboard() {
                                   <AlertDialogHeader>
                                     <AlertDialogTitle className="flex items-center gap-2 text-destructive">
                                       <Trash2 className="h-5 w-5" />
-                                      Delete Test Company
+                                      {t('common.delete_test_company')}
                                     </AlertDialogTitle>
                                     <AlertDialogDescription className="space-y-3">
                                       {deleteValidation ? (
                                         deleteValidation.can_delete ? (
                                           <div className="space-y-3">
-                                            <p>You are about to permanently delete the test company:</p>
+                                            <p>{t('common.permanently_delete')}</p>
                                             <div className="bg-muted p-3 rounded-lg">
                                               <p className="font-semibold">{deleteValidation.company_name}</p>
                                               <p className="text-sm text-muted-foreground">
-                                                Plan: {deleteValidation.plan_type} | Created: {new Date(deleteValidation.created_at).toLocaleDateString()}
+                                                {t('common.plan')}: {deleteValidation.plan_type} | {t('common.created')}: {new Date(deleteValidation.created_at).toLocaleDateString()}
                                               </p>
                                             </div>
                                             <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
-                                              <p className="text-sm text-red-800 font-medium mb-2">This will permanently delete:</p>
+                                              <p className="text-sm text-red-800 font-medium mb-2">{t('common.permanently_delete_warning')}</p>
                                               <ul className="text-sm text-red-700 space-y-1">
-                                                <li>• {deleteValidation.data_summary.loads} loads</li>
-                                                <li>• {deleteValidation.data_summary.drivers} drivers</li>
-                                                <li>• {deleteValidation.data_summary.payment_periods} payment periods</li>
-                                                <li>• {deleteValidation.data_summary.fuel_expenses} fuel expenses</li>
-                                                <li>• All company documents and settings</li>
-                                                <li>• All user accounts associated with this company</li>
+                                                <li>• {deleteValidation.data_summary.loads} {t('common.loads')}</li>
+                                                <li>• {deleteValidation.data_summary.drivers} {t('common.drivers')}</li>
+                                                <li>• {deleteValidation.data_summary.payment_periods} {t('common.payment_periods')}</li>
+                                                <li>• {deleteValidation.data_summary.fuel_expenses} {t('common.fuel_expenses')}</li>
+                                                <li>• {t('common.company_documents')}</li>
+                                                <li>• {t('common.user_accounts')}</li>
                                               </ul>
                                             </div>
                                             <p className="text-sm font-medium text-destructive">
-                                              This action cannot be undone!
+                                              {t('common.action_cannot_undone')}
                                             </p>
                                           </div>
                                         ) : (
                                           <div className="space-y-3">
-                                            <p className="text-destructive">This company cannot be deleted:</p>
+                                            <p className="text-destructive">{t('common.cannot_delete')}</p>
                                             <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
                                               <p className="text-sm text-red-800 font-medium">
                                                 {deleteValidation.reason}
                                               </p>
                                               {deleteValidation.details && (
                                                 <div className="mt-2 text-sm text-red-700">
-                                                  <p>Company has operational data:</p>
+                                                  <p>{t('common.operational_data')}</p>
                                                   <ul className="mt-1 space-y-1">
-                                                    <li>• {deleteValidation.details.loads} loads</li>
-                                                    <li>• {deleteValidation.details.drivers} drivers</li>
-                                                    <li>• {deleteValidation.details.payment_periods} payment periods</li>
-                                                    <li>• {deleteValidation.details.fuel_expenses} fuel expenses</li>
+                                                    <li>• {deleteValidation.details.loads} {t('common.loads')}</li>
+                                                    <li>• {deleteValidation.details.drivers} {t('common.drivers')}</li>
+                                                    <li>• {deleteValidation.details.payment_periods} {t('common.payment_periods')}</li>
+                                                    <li>• {deleteValidation.details.fuel_expenses} {t('common.fuel_expenses')}</li>
                                                   </ul>
                                                 </div>
                                               )}
@@ -1062,7 +1062,7 @@ export default function SuperAdminDashboard() {
                                         setDeleteValidation(null);
                                       }}
                                     >
-                                      Cancel
+                                      {t('common.cancel')}
                                     </AlertDialogCancel>
                                     {deleteValidation?.can_delete && (
                                       <AlertDialogAction
@@ -1073,12 +1073,12 @@ export default function SuperAdminDashboard() {
                                         {isDeletingCompany ? (
                                           <>
                                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                            Deleting...
+                                            {t('common.delete')}...
                                           </>
                                         ) : (
                                           <>
                                             <Trash2 className="h-4 w-4 mr-2" />
-                                            Delete Company
+                                            {t('common.permanently_delete_button')}
                                           </>
                                         )}
                                       </AlertDialogAction>
@@ -1099,17 +1099,17 @@ export default function SuperAdminDashboard() {
                   <div className="flex items-center justify-center h-64">
                     <div className="text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                      <p className="mt-2 text-muted-foreground">Loading companies...</p>
+                      <p className="mt-2 text-muted-foreground">{t('common.loading')}</p>
                     </div>
                   </div>
                 ) : companies.length === 0 ? (
                   <div className="text-center py-12">
                     <Building2 className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold">No Companies Found</h3>
+                    <h3 className="text-lg font-semibold">{t('common.no_companies')}</h3>
                     <p className="text-muted-foreground mb-4">Get started by creating your first company.</p>
                     <Button onClick={() => setShowCreateDialog(true)}>
                       <Plus className="h-4 w-4 mr-2" />
-                      Create First Company
+                      {t('pages.companies.buttons.create_company')}
                     </Button>
                   </div>
                 ) : null}
@@ -1150,7 +1150,7 @@ export default function SuperAdminDashboard() {
                             </div>
                             <div>
                               <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                Status
+                                {t('common.status')}
                               </Label>
                               <Badge 
                                 variant={
@@ -1198,35 +1198,35 @@ export default function SuperAdminDashboard() {
                           <div className="grid grid-cols-2 gap-4">
                             <div>
                               <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                Name
+                                {t('common.name')}
                               </Label>
-                              <p className="font-medium">{companyToView.owner_name || 'Not provided'}</p>
+                              <p className="font-medium">{companyToView.owner_name || t('common.not_provided')}</p>
                             </div>
                             <div>
                               <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                Title
+                                {t('common.title')}
                               </Label>
-                              <p className="font-medium">{companyToView.owner_title || 'Not provided'}</p>
+                              <p className="font-medium">{companyToView.owner_title || t('common.not_provided')}</p>
                             </div>
                           </div>
 
                           <div className="grid grid-cols-1 gap-4">
                             <div>
                               <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                Email
+                                {t('common.email')}
                               </Label>
                               <div className="flex items-center gap-2 mt-1">
                                 <Mail className="h-4 w-4 text-muted-foreground" />
-                                <p>{companyToView.owner_email || 'Not provided'}</p>
+                                <p>{companyToView.owner_email || t('common.not_provided')}</p>
                               </div>
                             </div>
                             <div>
                               <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                Phone
+                                {t('common.phone')}
                               </Label>
                               <div className="flex items-center gap-2 mt-1">
                                 <Phone className="h-4 w-4 text-muted-foreground" />
-                                <p>{companyToView.owner_phone || 'Not provided'}</p>
+                                <p>{companyToView.owner_phone || t('common.not_provided')}</p>
                               </div>
                             </div>
                           </div>
@@ -1240,14 +1240,14 @@ export default function SuperAdminDashboard() {
                           <div className="flex items-center gap-2 pb-2 border-b">
                             <Briefcase className="h-4 w-4 text-primary" />
                             <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
-                              Plan & Limits
+                              {t('common.plan_configuration')}
                             </h3>
                           </div>
                           
                           <div className="grid grid-cols-1 gap-4">
                             <div>
                               <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                Plan Type
+                                {t('common.plan_type')}
                               </Label>
                               <Badge 
                                 variant={companyToView.plan_type === 'enterprise' ? 'default' : 'secondary'}
@@ -1259,7 +1259,7 @@ export default function SuperAdminDashboard() {
                             <div className="grid grid-cols-2 gap-4">
                               <div>
                                 <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                  Max Vehicles
+                                  {t('common.max_vehicles')}
                                 </Label>
                                 <div className="flex items-center gap-2 mt-1">
                                   <Truck className="h-4 w-4 text-muted-foreground" />
@@ -1268,7 +1268,7 @@ export default function SuperAdminDashboard() {
                               </div>
                               <div>
                                 <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                  Max Users
+                                  {t('common.max_users')}
                                 </Label>
                                 <div className="flex items-center gap-2 mt-1">
                                   <Users className="h-4 w-4 text-muted-foreground" />
@@ -1297,7 +1297,7 @@ export default function SuperAdminDashboard() {
                             </div>
                             <div>
                               <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                Created Date
+                                {t('common.company_created')}
                               </Label>
                               <div className="flex items-center gap-2 mt-1">
                                 <Clock className="h-4 w-4 text-muted-foreground" />
@@ -1313,7 +1313,7 @@ export default function SuperAdminDashboard() {
                             {companyToView.contract_start_date && (
                               <div>
                                 <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                  Contract Start
+                                  {t('common.contract_start')}
                                 </Label>
                                 <div className="flex items-center gap-2 mt-1">
                                   <CheckCircle className="h-4 w-4 text-green-600" />
