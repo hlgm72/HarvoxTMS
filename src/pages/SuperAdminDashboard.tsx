@@ -481,7 +481,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="company-email">{t('common.company_email')} *</Label>
+                          <Label htmlFor="company-email">{t('admin:common.company_email')} *</Label>
                           <div className="relative">
                             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -504,7 +504,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="company-phone">{t('common.company_phone')} *</Label>
+                          <Label htmlFor="company-phone">{t('admin:common.company_phone')} *</Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -529,12 +529,12 @@ export default function SuperAdminDashboard() {
                         <div className="flex items-center gap-2 pb-2 border-b">
                           <User className="h-4 w-4 text-primary" />
                           <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
-                            {t('common.owner_primary_contact')}
+                            {t('admin:common.owner_primary_contact')}
                           </h3>
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="owner-name">{t('common.owner_name')} *</Label>
+                          <Label htmlFor="owner-name">{t('admin:common.owner_name')} *</Label>
                           <div className="relative">
                             <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -548,7 +548,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="owner-email">{t('common.owner_email')} *</Label>
+                          <Label htmlFor="owner-email">{t('admin:common.owner_email')} *</Label>
                           <div className="relative">
                             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -571,7 +571,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="owner-phone">{t('common.owner_phone')} *</Label>
+                          <Label htmlFor="owner-phone">{t('admin:common.owner_phone')} *</Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -591,7 +591,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="owner-title">{t('common.owner_title')}</Label>
+                          <Label htmlFor="owner-title">{t('admin:common.owner_title')}</Label>
                           <div className="relative">
                             <Briefcase className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -680,7 +680,7 @@ export default function SuperAdminDashboard() {
                         onClick={() => setShowCreateDialog(false)}
                         disabled={isCreatingCompany}
                       >
-                        {t('common.cancel')}
+                        {t('admin:common.cancel')}
                       </Button>
                       <Button 
                         onClick={handleCreateCompany}
@@ -690,7 +690,7 @@ export default function SuperAdminDashboard() {
                         {isCreatingCompany ? (
                           <>
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                            {t('common.creating')}
+                            {t('admin:common.creating')}
                           </>
                         ) : (
                           <>
@@ -738,11 +738,11 @@ export default function SuperAdminDashboard() {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-muted-foreground">{t('common.total_companies')}</p>
+                          <p className="text-sm font-medium text-muted-foreground">{t('admin:common.total_companies')}</p>
                           <p className="text-3xl font-bold text-primary">{stats.total_companies}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             <TrendingUp className="h-3 w-3 inline mr-1" />
-                            {t('common.from_last_month')}
+                            {t('admin:common.from_last_month')}
                           </p>
                         </div>
                         <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -756,7 +756,7 @@ export default function SuperAdminDashboard() {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-muted-foreground">{t('common.total_users')}</p>
+                          <p className="text-sm font-medium text-muted-foreground">{t('admin:common.total_users')}</p>
                           <p className="text-3xl font-bold text-secondary">{stats.total_users}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             <TrendingUp className="h-3 w-3 inline mr-1" />
@@ -774,7 +774,7 @@ export default function SuperAdminDashboard() {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-muted-foreground">{t('common.total_vehicles')}</p>
+                          <p className="text-sm font-medium text-muted-foreground">{t('admin:common.total_vehicles')}</p>
                           <p className="text-3xl font-bold text-success">{stats.total_vehicles}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             <TrendingUp className="h-3 w-3 inline mr-1" />
@@ -792,7 +792,7 @@ export default function SuperAdminDashboard() {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-muted-foreground">{t('common.total_drivers')}</p>
+                          <p className="text-sm font-medium text-muted-foreground">{t('admin:common.total_drivers')}</p>
                           <p className="text-3xl font-bold text-warning">{stats.total_drivers}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             <TrendingUp className="h-3 w-3 inline mr-1" />
@@ -813,7 +813,7 @@ export default function SuperAdminDashboard() {
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-lg">
                         <Activity className="h-5 w-5 text-green-500" />
-                        {t('common.system_health')}
+                        {t('admin:common.system_health')}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -822,7 +822,7 @@ export default function SuperAdminDashboard() {
                           <span className="text-sm text-muted-foreground">Database</span>
                           <div className="flex items-center gap-2">
                             <CheckCircle className="h-4 w-4 text-green-500" />
-                            <span className="text-sm">{t('common.operational')}</span>
+                            <span className="text-sm">{t('admin:common.operational')}</span>
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
@@ -847,21 +847,21 @@ export default function SuperAdminDashboard() {
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-lg">
                         <Globe className="h-5 w-5 text-blue-500" />
-                        {t('common.global_activity')}
+                        {t('admin:common.global_activity')}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground">{t('common.active_sessions')}</span>
+                          <span className="text-sm text-muted-foreground">{t('admin:common.active_sessions')}</span>
                           <span className="text-sm font-medium">1,247</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground">{t('common.vehicles_online')}</span>
+                          <span className="text-sm text-muted-foreground">{t('admin:common.vehicles_online')}</span>
                           <span className="text-sm font-medium">892</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground">{t('common.data_processed')}</span>
+                          <span className="text-sm text-muted-foreground">{t('admin:common.data_processed')}</span>
                           <span className="text-sm font-medium">45.2 GB</span>
                         </div>
                       </div>
@@ -872,7 +872,7 @@ export default function SuperAdminDashboard() {
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-lg">
                         <Clock className="h-5 w-5 text-purple-500" />
-                        {t('common.recent_activity')}
+                        {t('admin:common.recent_activity')}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -902,7 +902,7 @@ export default function SuperAdminDashboard() {
                   <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder={t('common.search_companies')}
+                      placeholder={t('admin:common.search_companies')}
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"
@@ -958,11 +958,11 @@ export default function SuperAdminDashboard() {
                           <Separator />
                           <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                              <span className="text-muted-foreground">{t('common.plan')}:</span>
+                              <span className="text-muted-foreground">{t('admin:common.plan')}:</span>
                               <div className="font-medium capitalize">{company.plan_type}</div>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">{t('common.vehicles')}:</span>
+                              <span className="text-muted-foreground">{t('admin:common.vehicles')}:</span>
                               <div className="font-medium">{company.max_vehicles}</div>
                             </div>
                           </div>
@@ -974,7 +974,7 @@ export default function SuperAdminDashboard() {
                               onClick={() => handleViewDetails(company)}
                             >
                               <Eye className="h-3 w-3 mr-2" />
-                              {t('common.view_details')}
+                              {t('admin:common.view_details')}
                             </Button>
                             <Button 
                               variant="outline" 
@@ -1001,49 +1001,49 @@ export default function SuperAdminDashboard() {
                                   <AlertDialogHeader>
                                     <AlertDialogTitle className="flex items-center gap-2 text-destructive">
                                       <Trash2 className="h-5 w-5" />
-                                      {t('common.delete_test_company')}
+                                      {t('admin:common.delete_test_company')}
                                     </AlertDialogTitle>
                                     <AlertDialogDescription className="space-y-3">
                                       {deleteValidation ? (
                                         deleteValidation.can_delete ? (
                                           <div className="space-y-3">
-                                            <p>{t('common.permanently_delete')}</p>
-                                            <div className="bg-muted p-3 rounded-lg">
-                                              <p className="font-semibold">{deleteValidation.company_name}</p>
-                                              <p className="text-sm text-muted-foreground">
-                                                {t('common.plan')}: {deleteValidation.plan_type} | {t('common.created')}: {new Date(deleteValidation.created_at).toLocaleDateString()}
-                                              </p>
-                                            </div>
-                                            <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
-                                              <p className="text-sm text-red-800 font-medium mb-2">{t('common.permanently_delete_warning')}</p>
-                                              <ul className="text-sm text-red-700 space-y-1">
-                                                <li>• {deleteValidation.data_summary.loads} {t('common.loads')}</li>
-                                                <li>• {deleteValidation.data_summary.drivers} {t('common.drivers')}</li>
-                                                <li>• {deleteValidation.data_summary.payment_periods} {t('common.payment_periods')}</li>
-                                                <li>• {deleteValidation.data_summary.fuel_expenses} {t('common.fuel_expenses')}</li>
-                                                <li>• {t('common.company_documents')}</li>
-                                                <li>• {t('common.user_accounts')}</li>
-                                              </ul>
-                                            </div>
-                                            <p className="text-sm font-medium text-destructive">
-                                              {t('common.action_cannot_undone')}
+                                             <p>{t('admin:common.permanently_delete')}</p>
+                                             <div className="bg-muted p-3 rounded-lg">
+                                               <p className="font-semibold">{deleteValidation.company_name}</p>
+                                               <p className="text-sm text-muted-foreground">
+                                                 {t('admin:common.plan')}: {deleteValidation.plan_type} | {t('admin:common.created')}: {new Date(deleteValidation.created_at).toLocaleDateString()}
+                                               </p>
+                                             </div>
+                                             <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
+                                               <p className="text-sm text-red-800 font-medium mb-2">{t('admin:common.permanently_delete_warning')}</p>
+                                               <ul className="text-sm text-red-700 space-y-1">
+                                                 <li>• {deleteValidation.data_summary.loads} {t('admin:common.loads')}</li>
+                                                 <li>• {deleteValidation.data_summary.drivers} {t('admin:common.drivers')}</li>
+                                                 <li>• {deleteValidation.data_summary.payment_periods} {t('admin:common.payment_periods')}</li>
+                                                 <li>• {deleteValidation.data_summary.fuel_expenses} {t('admin:common.fuel_expenses')}</li>
+                                                 <li>• {t('admin:common.company_documents')}</li>
+                                                 <li>• {t('admin:common.user_accounts')}</li>
+                                               </ul>
+                                             </div>
+                                             <p className="text-sm font-medium text-destructive">
+                                               {t('admin:common.action_cannot_undone')}
                                             </p>
                                           </div>
                                         ) : (
                                           <div className="space-y-3">
-                                            <p className="text-destructive">{t('common.cannot_delete')}</p>
-                                            <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
-                                              <p className="text-sm text-red-800 font-medium">
-                                                {deleteValidation.reason}
-                                              </p>
-                                              {deleteValidation.details && (
-                                                <div className="mt-2 text-sm text-red-700">
-                                                  <p>{t('common.operational_data')}</p>
-                                                  <ul className="mt-1 space-y-1">
-                                                    <li>• {deleteValidation.details.loads} {t('common.loads')}</li>
-                                                    <li>• {deleteValidation.details.drivers} {t('common.drivers')}</li>
-                                                    <li>• {deleteValidation.details.payment_periods} {t('common.payment_periods')}</li>
-                                                    <li>• {deleteValidation.details.fuel_expenses} {t('common.fuel_expenses')}</li>
+                                             <p className="text-destructive">{t('admin:common.cannot_delete')}</p>
+                                             <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
+                                               <p className="text-sm text-red-800 font-medium">
+                                                 {deleteValidation.reason}
+                                               </p>
+                                               {deleteValidation.details && (
+                                                 <div className="mt-2 text-sm text-red-700">
+                                                   <p>{t('admin:common.operational_data')}</p>
+                                                   <ul className="mt-1 space-y-1">
+                                                     <li>• {deleteValidation.details.loads} {t('admin:common.loads')}</li>
+                                                     <li>• {deleteValidation.details.drivers} {t('admin:common.drivers')}</li>
+                                                     <li>• {deleteValidation.details.payment_periods} {t('admin:common.payment_periods')}</li>
+                                                     <li>• {deleteValidation.details.fuel_expenses} {t('admin:common.fuel_expenses')}</li>
                                                   </ul>
                                                 </div>
                                               )}
@@ -1062,7 +1062,7 @@ export default function SuperAdminDashboard() {
                                         setDeleteValidation(null);
                                       }}
                                     >
-                                      {t('common.cancel')}
+                                     {t('admin:common.cancel')}
                                     </AlertDialogCancel>
                                     {deleteValidation?.can_delete && (
                                       <AlertDialogAction
@@ -1073,12 +1073,12 @@ export default function SuperAdminDashboard() {
                                         {isDeletingCompany ? (
                                           <>
                                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                            {t('common.delete')}...
+                                            {t('admin:common.delete')}...
                                           </>
                                         ) : (
                                           <>
                                             <Trash2 className="h-4 w-4 mr-2" />
-                                            {t('common.permanently_delete_button')}
+                                            {t('admin:common.permanently_delete_button')}
                                           </>
                                         )}
                                       </AlertDialogAction>
