@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-// Temporarily simplified dashboard without charts
+// Dashboard view with statistical cards instead of charts
 
 interface Company {
   id: string;
@@ -143,24 +143,14 @@ export function CompanyDashboardView({ companies }: CompanyDashboardViewProps) {
             <CardDescription>Distribución por estado de actividad</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={chartData.statusChartData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, value }) => `${name}: ${value}`}
-                >
-                  {chartData.statusChartData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="grid grid-cols-2 gap-4">
+              {chartData.statusChartData.map((status, index) => (
+                <div key={status.name} className="p-4 border rounded-lg">
+                  <div className="font-medium">{status.name}</div>
+                  <div className="text-2xl font-bold">{status.value}</div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
 
@@ -171,15 +161,14 @@ export function CompanyDashboardView({ companies }: CompanyDashboardViewProps) {
             <CardDescription>Empresas por estado</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={chartData.stateChartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="state" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="empresas" fill="hsl(var(--primary))" />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+              {chartData.stateChartData.map((item) => (
+                <div key={item.state} className="flex justify-between items-center p-2 bg-muted rounded">
+                  <span className="font-medium">{item.state}</span>
+                  <span className="text-lg font-bold">{item.empresas}</span>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
 
@@ -190,15 +179,14 @@ export function CompanyDashboardView({ companies }: CompanyDashboardViewProps) {
             <CardDescription>Nuevas empresas por mes (últimos 12 meses)</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={chartData.monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="empresas" fill="hsl(var(--primary))" />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+              {chartData.monthlyData.map((item) => (
+                <div key={item.month} className="flex justify-between items-center p-2 bg-muted rounded">
+                  <span className="font-medium">{item.month}</span>
+                  <span className="text-lg font-bold">{item.empresas}</span>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
