@@ -45,20 +45,20 @@ export function InviteCompanyOwnerDialog({
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch('/functions/v1/send-company-owner-invitation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.session.access_token}`
-        },
-        body: JSON.stringify({
+      const { data: result, error: functionError } = await supabase.functions.invoke('send-company-owner-invitation', {
+        body: {
           companyId: company.id,
           email: email.trim(),
           companyName: company.name
-        })
+        },
+        headers: {
+          'Authorization': `Bearer ${session.session.access_token}`
+        }
       });
 
-      const result = await response.json();
+      if (functionError) {
+        throw new Error(functionError.message || 'Error sending invitation');
+      }
 
       if (!result.success) {
         throw new Error(result.error || 'Error sending invitation');

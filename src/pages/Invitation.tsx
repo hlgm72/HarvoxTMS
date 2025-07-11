@@ -89,20 +89,18 @@ export default function Invitation() {
     setError('');
 
     try {
-      const response = await fetch('/functions/v1/accept-invitation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { data: result, error: functionError } = await supabase.functions.invoke('accept-invitation', {
+        body: {
           invitationToken: token,
           password: formData.password,
           firstName: formData.firstName,
           lastName: formData.lastName
-        })
+        }
       });
 
-      const result = await response.json();
+      if (functionError) {
+        throw new Error(functionError.message || 'Error accepting invitation');
+      }
 
       if (!result.success) {
         throw new Error(result.error || 'Error accepting invitation');
