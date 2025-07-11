@@ -122,28 +122,6 @@ export default function Auth() {
     if (error) setError(null);
   };
 
-  // Handler for password (no trimming on change, only validation)
-
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        }
-      });
-
-      if (error) throw error;
-    } catch (err: any) {
-      console.error('Google sign-in error:', err);
-      setError(err.message || 'Error signing in with Google');
-      setLoading(false);
-    }
-  };
-
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -192,6 +170,28 @@ export default function Auth() {
         setError(err.message || t('auth:errors.unknown_error'));
       }
     } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handler for password (no trimming on change, only validation)
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        }
+      });
+
+      if (error) throw error;
+    } catch (err: any) {
+      console.error('Google sign-in error:', err);
+      setError(err.message || 'Error signing in with Google');
       setLoading(false);
     }
   };
@@ -376,346 +376,349 @@ export default function Auth() {
             </div>
             
             <CardTitle className="text-2xl lg:text-3xl font-heading font-bold text-foreground mb-2">
-              {isLogin ? t('auth:title.login') : t('auth:title.signup')}
+              {showForgotPassword ? t('auth:forgot_password.title') : (isLogin ? t('auth:title.login') : t('auth:title.signup'))}
             </CardTitle>
             <CardDescription className="font-body text-muted-foreground">
-              {isLogin 
-                ? t('auth:description.login')
-                : t('auth:description.signup')
+              {showForgotPassword 
+                ? t('auth:forgot_password.description')
+                : (isLogin 
+                  ? t('auth:description.login')
+                  : t('auth:description.signup')
+                )
               }
             </CardDescription>
           </CardHeader>
           
           <CardContent className="pt-0">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {!isLogin && (
-                <div className="space-y-4 animate-fade-in">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName" className="font-body font-medium text-foreground">
-                        {t('auth:form.first_name')}
-                      </Label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="firstName"
-                          value={formData.firstName}
-                          {...firstNameHandlers}
-                          className={`auth-input pl-10 font-body ${fieldErrors.firstName ? 'border-destructive' : ''}`}
-                          required={!isLogin}
-                          disabled={loading}
-                        />
-                      </div>
-                      {fieldErrors.firstName && (
-                        <p className="text-sm text-destructive font-body">{fieldErrors.firstName}</p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName" className="font-body font-medium text-foreground">
-                        {t('auth:form.last_name')}
-                      </Label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="lastName"
-                          value={formData.lastName}
-                          {...lastNameHandlers}
-                          className={`auth-input pl-10 font-body ${fieldErrors.lastName ? 'border-destructive' : ''}`}
-                          required={!isLogin}
-                          disabled={loading}
-                        />
-                      </div>
-                      {fieldErrors.lastName && (
-                        <p className="text-sm text-destructive font-body">{fieldErrors.lastName}</p>
-                      )}
-                    </div>
+            {/* Forgot Password Form */}
+            {showForgotPassword && (
+              <form onSubmit={handleForgotPassword} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="resetEmail" className="font-body font-medium text-foreground">
+                    {t('auth:forgot_password.email_label')}
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="resetEmail"
+                      type="email"
+                      value={resetEmail}
+                      onChange={(e) => {
+                        setResetEmail(e.target.value);
+                        if (error) setError(null);
+                      }}
+                      placeholder={t('auth:form.email_placeholder')}
+                      className="auth-input pl-10 font-body"
+                      required
+                      disabled={loading || resetSuccess}
+                    />
                   </div>
+                </div>
+                
+                {error && (
+                  <Alert variant="destructive" className="animate-fade-in">
+                    <AlertDescription className="font-body">{error}</AlertDescription>
+                  </Alert>
+                )}
+                
+                {!resetSuccess && (
+                  <div className="flex gap-2">
+                    <Button
+                      type="submit"
+                      className="flex-1 font-body font-medium bg-gradient-primary"
+                      disabled={loading || !resetEmail}
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          {t('auth:forgot_password.sending')}
+                        </>
+                      ) : (
+                        t('auth:forgot_password.send_reset')
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setShowForgotPassword(false);
+                        setResetEmail('');
+                        setError(null);
+                        setResetSuccess(false);
+                      }}
+                      className="font-body"
+                      disabled={loading}
+                    >
+                      {t('auth:forgot_password.back_to_login')}
+                    </Button>
+                  </div>
+                )}
+                
+                {resetSuccess && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShowForgotPassword(false);
+                      setResetEmail('');
+                      setError(null);
+                      setResetSuccess(false);
+                    }}
+                    className="w-full font-body"
+                  >
+                    {t('auth:forgot_password.back_to_login')}
+                  </Button>
+                )}
+              </form>
+            )}
+
+            {/* Main Login/Signup Form */}
+            {!showForgotPassword && (
+              <>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {!isLogin && (
+                    <div className="space-y-4 animate-fade-in">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="firstName" className="font-body font-medium text-foreground">
+                            {t('auth:form.first_name')}
+                          </Label>
+                          <div className="relative">
+                            <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="firstName"
+                              value={formData.firstName}
+                              {...firstNameHandlers}
+                              className={`auth-input pl-10 font-body ${fieldErrors.firstName ? 'border-destructive' : ''}`}
+                              required={!isLogin}
+                              disabled={loading}
+                            />
+                          </div>
+                          {fieldErrors.firstName && (
+                            <p className="text-sm text-destructive font-body">{fieldErrors.firstName}</p>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="lastName" className="font-body font-medium text-foreground">
+                            {t('auth:form.last_name')}
+                          </Label>
+                          <div className="relative">
+                            <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="lastName"
+                              value={formData.lastName}
+                              {...lastNameHandlers}
+                              className={`auth-input pl-10 font-body ${fieldErrors.lastName ? 'border-destructive' : ''}`}
+                              required={!isLogin}
+                              disabled={loading}
+                            />
+                          </div>
+                          {fieldErrors.lastName && (
+                            <p className="text-sm text-destructive font-body">{fieldErrors.lastName}</p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="companyName" className="font-body font-medium text-foreground">
+                          {t('auth:form.company_name')}
+                        </Label>
+                        <div className="relative">
+                          <Building className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="companyName"
+                            value={formData.companyName}
+                            {...companyNameHandlers}
+                            placeholder={t('auth:form.company_placeholder')}
+                            className={`auth-input pl-10 font-body ${fieldErrors.companyName ? 'border-destructive' : ''}`}
+                            required={!isLogin}
+                            disabled={loading}
+                          />
+                        </div>
+                        {fieldErrors.companyName && (
+                          <p className="text-sm text-destructive font-body">{fieldErrors.companyName}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="space-y-2">
-                    <Label htmlFor="companyName" className="font-body font-medium text-foreground">
-                      {t('auth:form.company_name')}
+                    <Label htmlFor="email" className="font-body font-medium text-foreground">
+                      {t('auth:form.email')}
                     </Label>
                     <div className="relative">
-                      <Building className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
-                        id="companyName"
-                        value={formData.companyName}
-                        {...companyNameHandlers}
-                        placeholder={t('auth:form.company_placeholder')}
-                        className={`auth-input pl-10 font-body ${fieldErrors.companyName ? 'border-destructive' : ''}`}
-                        required={!isLogin}
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => {
+                          const inputValue = e.target.value;
+                          const cleanValue = inputValue.replace(/\s/g, '');
+                          setFormData(prev => ({ ...prev, email: cleanValue }));
+                          if (error) setError(null);
+                        }}
+                        onKeyPress={(e) => {
+                          // Prevent spaces from being typed
+                          if (e.key === ' ') {
+                            e.preventDefault();
+                          }
+                        }}
+                        onBlur={(e) => {
+                          const trimmedValue = e.target.value.trim();
+                          setFormData(prev => ({ ...prev, email: trimmedValue }));
+                          validateField('email', trimmedValue);
+                        }}
+                        placeholder={t('auth:form.email_placeholder')}
+                        className={`auth-input pl-10 font-body ${fieldErrors.email ? 'border-destructive' : ''}`}
+                        required
                         disabled={loading}
                       />
                     </div>
-                    {fieldErrors.companyName && (
-                      <p className="text-sm text-destructive font-body">{fieldErrors.companyName}</p>
+                    {fieldErrors.email && (
+                      <p className="text-sm text-destructive font-body">{fieldErrors.email}</p>
                     )}
                   </div>
-                </div>
-              )}
 
-              <div className="space-y-2">
-                <Label htmlFor="email" className="font-body font-medium text-foreground">
-                  {t('auth:form.email')}
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => {
-                      const inputValue = e.target.value;
-                      const cleanValue = inputValue.replace(/\s/g, '');
-                      setFormData(prev => ({ ...prev, email: cleanValue }));
-                      if (error) setError(null);
-                    }}
-                    onKeyPress={(e) => {
-                      // Prevent spaces from being typed
-                      if (e.key === ' ') {
-                        e.preventDefault();
-                      }
-                    }}
-                    onBlur={(e) => {
-                      const trimmedValue = e.target.value.trim();
-                      setFormData(prev => ({ ...prev, email: trimmedValue }));
-                      validateField('email', trimmedValue);
-                    }}
-                    placeholder={t('auth:form.email_placeholder')}
-                    className={`auth-input pl-10 font-body ${fieldErrors.email ? 'border-destructive' : ''}`}
-                    required
-                    disabled={loading}
-                  />
-                </div>
-                {fieldErrors.email && (
-                  <p className="text-sm text-destructive font-body">{fieldErrors.email}</p>
-                )}
-              </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="font-body font-medium text-foreground">
+                      {t('auth:form.password')}
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        value={formData.password}
+                        onChange={(e) => handleInputChange('password', e.target.value)}
+                        placeholder={isLogin ? t('auth:form.password_placeholder_login') : t('auth:form.password_placeholder_signup')}
+                        className={`auth-input pl-10 pr-10 font-body ${fieldErrors.password ? 'border-destructive' : ''}`}
+                        required
+                        disabled={loading}
+                        minLength={isLogin ? undefined : 8}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3 h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"
+                        disabled={loading}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    {fieldErrors.password && (
+                      <p className="text-sm text-destructive font-body">{fieldErrors.password}</p>
+                    )}
+                    
+                    {/* Forgot Password Link - Only show in login mode */}
+                    {isLogin && (
+                      <div className="text-right">
+                        <button
+                          type="button"
+                          onClick={() => setShowForgotPassword(true)}
+                          className="text-sm font-body text-primary hover:text-primary/80 transition-colors"
+                          disabled={loading}
+                        >
+                          ¿Olvidaste tu contraseña?
+                        </button>
+                      </div>
+                    )}
+                  </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password" className="font-body font-medium text-foreground">
-                  {t('auth:form.password')}
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    placeholder={isLogin ? t('auth:form.password_placeholder_login') : t('auth:form.password_placeholder_signup')}
-                    className={`auth-input pl-10 pr-10 font-body ${fieldErrors.password ? 'border-destructive' : ''}`}
-                    required
-                    disabled={loading}
-                    minLength={isLogin ? undefined : 8}
-                  />
-                  <button
+                  {error && (
+                    <Alert variant="destructive" className="animate-fade-in">
+                      <AlertDescription className="font-body">{error}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <Button 
+                    type="submit" 
+                    className="w-full h-12 font-body font-medium text-base bg-gradient-primary hover:shadow-glow transition-all duration-300 hover:transform hover:translate-y-[-1px]" 
+                    disabled={loading || Object.keys(fieldErrors).length > 0}
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        <span>{isLogin ? t('auth:buttons.logging_in') : t('auth:buttons.creating_account')}</span>
+                      </>
+                    ) : (
+                      <span>{isLogin ? t('auth:buttons.login') : t('auth:buttons.signup')}</span>
+                    )}
+                  </Button>
+
+                  {/* Google OAuth Separator */}
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-border" />
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="bg-card px-4 text-muted-foreground font-body">{t('auth:oauth.or_continue')}</span>
+                    </div>
+                  </div>
+
+                  {/* Google Sign In Button */}
+                  <Button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"
+                    variant="outline"
+                    className="w-full h-12 google-button font-body font-medium border-2 hover:border-primary/50"
+                    onClick={handleGoogleSignIn}
                     disabled={loading}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    <svg className="mr-3 h-5 w-5" viewBox="0 0 24 24">
+                      <path
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                        fill="#4285F4"
+                      />
+                      <path
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                        fill="#34A853"
+                      />
+                      <path
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                        fill="#FBBC05"
+                      />
+                      <path
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                        fill="#EA4335"
+                      />
+                    </svg>
+                    <span>{t('auth:oauth.google_continue')}</span>
+                  </Button>
+                </form>
+
+                <div className="mt-8 text-center">
+                  <button
+                    onClick={() => {
+                      setIsLogin(!isLogin);
+                      setError(null);
+                      setFieldErrors({});
+                      setFormData({
+                        email: '',
+                        password: '',
+                        firstName: '',
+                        lastName: '',
+                        companyName: ''
+                      });
+                    }}
+                    className="text-sm font-body text-muted-foreground hover:text-primary transition-all duration-300 hover:transform hover:scale-105"
+                    disabled={loading}
+                  >
+                    {isLogin 
+                      ? t('auth:toggle.need_account')
+                      : t('auth:toggle.have_account')
+                    }
                   </button>
                 </div>
-                 {fieldErrors.password && (
-                   <p className="text-sm text-destructive font-body">{fieldErrors.password}</p>
-                 )}
-                 
-                 {/* Forgot Password Link - Only show in login mode */}
-                 {isLogin && !showForgotPassword && (
-                   <div className="text-right">
-                     <button
-                       type="button"
-                       onClick={() => setShowForgotPassword(true)}
-                       className="text-sm font-body text-primary hover:text-primary/80 transition-colors"
-                       disabled={loading}
-                     >
-                       ¿Olvidaste tu contraseña?
-                     </button>
-                   </div>
-                 )}
-               </div>
 
-               {/* Forgot Password Form */}
-               {showForgotPassword && (
-                 <div className="space-y-4 p-4 bg-muted/30 rounded-lg border animate-fade-in">
-                   <div className="text-center">
-                     <h3 className="text-lg font-heading font-semibold text-foreground mb-2">
-                       {t('auth:forgot_password.title')}
-                     </h3>
-                     <p className="text-sm text-muted-foreground font-body">
-                       {t('auth:forgot_password.description')}
-                     </p>
-                   </div>
-                   
-                   <form onSubmit={handleForgotPassword} className="space-y-4">
-                     <div className="space-y-2">
-                       <Label htmlFor="resetEmail" className="font-body font-medium text-foreground">
-                         {t('auth:forgot_password.email_label')}
-                       </Label>
-                       <div className="relative">
-                         <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                         <Input
-                           id="resetEmail"
-                           type="email"
-                           value={resetEmail}
-                           onChange={(e) => {
-                             setResetEmail(e.target.value);
-                             if (error) setError(null);
-                           }}
-                           placeholder={t('auth:form.email_placeholder')}
-                           className="auth-input pl-10 font-body"
-                           required
-                           disabled={loading || resetSuccess}
-                         />
-                       </div>
-                     </div>
-                     
-                     {!resetSuccess && (
-                       <div className="flex gap-2">
-                         <Button
-                           type="submit"
-                           className="flex-1 font-body font-medium bg-gradient-primary"
-                           disabled={loading || !resetEmail}
-                         >
-                           {loading ? (
-                             <>
-                               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                               {t('auth:forgot_password.sending')}
-                             </>
-                           ) : (
-                             t('auth:forgot_password.send_reset')
-                           )}
-                         </Button>
-                         <Button
-                           type="button"
-                           variant="outline"
-                           onClick={() => {
-                             setShowForgotPassword(false);
-                             setResetEmail('');
-                             setError(null);
-                             setResetSuccess(false);
-                           }}
-                           className="font-body"
-                           disabled={loading}
-                         >
-                           {t('auth:forgot_password.back_to_login')}
-                         </Button>
-                       </div>
-                     )}
-                     
-                     {resetSuccess && (
-                       <Button
-                         type="button"
-                         variant="outline"
-                         onClick={() => {
-                           setShowForgotPassword(false);
-                           setResetEmail('');
-                           setError(null);
-                           setResetSuccess(false);
-                         }}
-                         className="w-full font-body"
-                       >
-                         {t('auth:forgot_password.back_to_login')}
-                       </Button>
-                     )}
-                   </form>
-                 </div>
-               )}
-
-               {error && (
-                 <Alert variant="destructive" className="animate-fade-in">
-                   <AlertDescription className="font-body">{error}</AlertDescription>
-                 </Alert>
-               )}
-
-              <Button 
-                type="submit" 
-                className="w-full h-12 font-body font-medium text-base bg-gradient-primary hover:shadow-glow transition-all duration-300 hover:transform hover:translate-y-[-1px]" 
-                disabled={loading || Object.keys(fieldErrors).length > 0}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    <span>{isLogin ? t('auth:buttons.logging_in') : t('auth:buttons.creating_account')}</span>
-                  </>
-                ) : (
-                  <span>{isLogin ? t('auth:buttons.login') : t('auth:buttons.signup')}</span>
+                {!isLogin && (
+                  <div className="mt-6 p-4 bg-gradient-subtle rounded-xl border border-primary/10 animate-fade-in">
+                    <p className="text-sm font-body text-primary/80">
+                      <strong className="font-heading font-semibold">{t('auth:features.included')}</strong><br />
+                      <span className="text-muted-foreground">{t('auth:features.description')}</span>
+                    </p>
+                  </div>
                 )}
-              </Button>
-
-              {/* Google OAuth Separator */}
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="bg-card px-4 text-muted-foreground font-body">{t('auth:oauth.or_continue')}</span>
-                </div>
-              </div>
-
-              {/* Google Sign In Button */}
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full h-12 google-button font-body font-medium border-2 hover:border-primary/50"
-                onClick={handleGoogleSignIn}
-                disabled={loading}
-              >
-                <svg className="mr-3 h-5 w-5" viewBox="0 0 24 24">
-                  <path
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    fill="#4285F4"
-                  />
-                  <path
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    fill="#34A853"
-                  />
-                  <path
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                    fill="#FBBC05"
-                  />
-                  <path
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    fill="#EA4335"
-                  />
-                </svg>
-                <span>{t('auth:oauth.google_continue')}</span>
-              </Button>
-            </form>
-
-            <div className="mt-8 text-center">
-              <button
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setError(null);
-                  setFieldErrors({});
-                  setFormData({
-                    email: '',
-                    password: '',
-                    firstName: '',
-                    lastName: '',
-                    companyName: ''
-                  });
-                }}
-                className="text-sm font-body text-muted-foreground hover:text-primary transition-all duration-300 hover:transform hover:scale-105"
-                disabled={loading}
-              >
-                {isLogin 
-                  ? t('auth:toggle.need_account')
-                  : t('auth:toggle.have_account')
-                }
-              </button>
-            </div>
-
-            {!isLogin && (
-              <div className="mt-6 p-4 bg-gradient-subtle rounded-xl border border-primary/10 animate-fade-in">
-                <p className="text-sm font-body text-primary/80">
-                  <strong className="font-heading font-semibold">{t('auth:features.included')}</strong><br />
-                  <span className="text-muted-foreground">{t('auth:features.description')}</span>
-                </p>
-              </div>
+              </>
             )}
           </CardContent>
         </Card>
