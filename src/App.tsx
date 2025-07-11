@@ -22,9 +22,204 @@ import Drivers from "./pages/Drivers";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/layout/Layout";
 import { NotificationProvider } from "./components/notifications";
+import { useLanguageSync } from "./hooks/useLanguageSync";
 import './i18n/config';
 
 const queryClient = new QueryClient();
+
+function AppContent() {
+  // Sincronizar idioma del perfil con i18n
+  useLanguageSync();
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/landing" element={<Landing />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/invitation/:token" element={<Invitation />} />
+        
+        {/* Protected routes with Layout */}
+        <Route 
+          path="/" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Index />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/setup" 
+          element={
+            <ProtectedRoute>
+              <Setup />
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Dashboard routes by role */}
+        <Route 
+          path="/dashboard/owner" 
+          element={
+            <ProtectedRoute requiredRole="company_owner">
+              <Layout>
+                <OwnerDashboard />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/dashboard/operations" 
+          element={
+            <ProtectedRoute requiredRole="operations_manager">
+              <Layout>
+                <OperationsManagerDashboard />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/dashboard/dispatch" 
+          element={
+            <ProtectedRoute requiredRole="dispatcher">
+              <Layout>
+                <DispatcherDashboard />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/dashboard/driver" 
+          element={
+            <ProtectedRoute requiredRole="driver">
+              <Layout>
+                <DriverDashboard />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* SuperAdmin routes */}
+        <Route 
+          path="/superadmin" 
+          element={
+            <ProtectedRoute requiredRole="superadmin">
+              <SuperAdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/superadmin/companies" 
+          element={
+            <ProtectedRoute requiredRole="superadmin">
+              <Layout>
+                <Companies />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Profile route - available to all authenticated users */}
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Profile />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Other protected routes */}
+        <Route 
+          path="/drivers" 
+          element={
+            <ProtectedRoute>
+              <Drivers />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/loads" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <div>Loads page coming soon</div>
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/clients" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <div>Clients page coming soon</div>
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/equipment" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <div>Equipment page coming soon</div>
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/billing" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <div>Billing page coming soon</div>
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/reports" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <div>Reports page coming soon</div>
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/documents" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <div>Documents page coming soon</div>
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/payment-system" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <PaymentSystem />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Catch-all route */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -32,194 +227,9 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/landing" element={<Landing />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="/invitation/:token" element={<Invitation />} />
-          
-          {/* Protected routes with Layout */}
-          <Route 
-            path="/" 
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Index />
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/setup" 
-            element={
-              <ProtectedRoute>
-                <Setup />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Dashboard routes by role */}
-          <Route 
-            path="/dashboard/owner" 
-            element={
-              <ProtectedRoute requiredRole="company_owner">
-                <Layout>
-                  <OwnerDashboard />
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/dashboard/operations" 
-            element={
-              <ProtectedRoute requiredRole="operations_manager">
-                <Layout>
-                  <OperationsManagerDashboard />
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/dashboard/dispatch" 
-            element={
-              <ProtectedRoute requiredRole="dispatcher">
-                <Layout>
-                  <DispatcherDashboard />
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/dashboard/driver" 
-            element={
-              <ProtectedRoute requiredRole="driver">
-                <Layout>
-                  <DriverDashboard />
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* SuperAdmin routes */}
-          <Route 
-            path="/superadmin" 
-            element={
-              <ProtectedRoute requiredRole="superadmin">
-                <SuperAdminDashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/superadmin/companies" 
-            element={
-              <ProtectedRoute requiredRole="superadmin">
-                <Layout>
-                  <Companies />
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Profile route - available to all authenticated users */}
-          <Route 
-            path="/profile" 
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Profile />
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Other protected routes */}
-          <Route 
-            path="/drivers" 
-            element={
-              <ProtectedRoute>
-                <Drivers />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/loads" 
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <div>Loads page coming soon</div>
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/clients" 
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <div>Clients page coming soon</div>
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/equipment" 
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <div>Equipment page coming soon</div>
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/billing" 
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <div>Billing page coming soon</div>
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/reports" 
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <div>Reports page coming soon</div>
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/documents" 
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <div>Documents page coming soon</div>
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/payment-system" 
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <PaymentSystem />
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Catch-all route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </NotificationProvider>
+        <AppContent />
+      </TooltipProvider>
+    </NotificationProvider>
   </QueryClientProvider>
 );
 

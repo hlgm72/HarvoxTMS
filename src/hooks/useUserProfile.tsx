@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
 
 interface UserProfile {
   id: string;
@@ -15,8 +16,16 @@ interface UserProfile {
 
 export const useUserProfile = () => {
   const { user } = useAuth();
+  const { i18n } = useTranslation();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Efecto para sincronizar el idioma del perfil con i18n
+  useEffect(() => {
+    if (profile?.preferred_language && profile.preferred_language !== i18n.language) {
+      i18n.changeLanguage(profile.preferred_language);
+    }
+  }, [profile?.preferred_language, i18n]);
 
   useEffect(() => {
     const fetchProfile = async () => {

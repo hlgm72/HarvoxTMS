@@ -57,8 +57,11 @@ i18n
     },
     
     detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'],
+      order: ['localStorage', 'querystring', 'navigator'],
+      lookupQuerystring: 'lng',
+      lookupLocalStorage: 'i18nextLng',
       caches: ['localStorage'],
+      excludeCacheFor: ['cimode'],
     },
   });
 
