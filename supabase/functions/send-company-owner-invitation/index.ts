@@ -85,77 +85,14 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Input validation passed");
 
-    // TEMP: Skip owner check to isolate the issue
-    console.log("Skipping owner check for debugging...");
+    // TEMP: Skip all database operations to isolate the issue
+    console.log("Skipping all database operations for debugging...");
 
-    // Check if invitation already exists for this email/company
-    console.log("Checking for existing invitation...");
-    const { data: existingInvitations, error: invitationCheckError } = await supabase
-      .from('user_invitations')
-      .select('id, expires_at, accepted_at')
-      .eq('company_id', companyId)
-      .eq('email', email.toLowerCase())
-      .eq('role', 'company_owner');
-
-    console.log("Invitation check result:", { existingInvitations, invitationCheckError });
-
-    if (invitationCheckError) {
-      console.error("Error checking existing invitations:", invitationCheckError);
-      throw new Error(`Database error: ${invitationCheckError.message}`);
-    }
-
-    // Check for active (non-expired, non-accepted) invitations
-    const activeInvitations = existingInvitations?.filter(inv => 
-      !inv.accepted_at && new Date(inv.expires_at) > new Date()
-    ) || [];
-
-    if (activeInvitations.length > 0) {
-      console.error("Active invitation already exists");
-      throw new Error("An active invitation already exists for this email and company");
-    }
-
-    console.log("No conflicting invitations found");
-
-    // Generate invitation token
-    const invitationToken = crypto.randomUUID();
-    console.log("Generated invitation token");
-
-    // Create invitation record
-    console.log("Creating invitation record...");
-    const { data: invitation, error: invitationError } = await supabase
-      .from('user_invitations')
-      .insert({
-        company_id: companyId,
-        email: email.toLowerCase(),
-        invitation_token: invitationToken,
-        role: 'company_owner',
-        invited_by: user.id,
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
-      })
-      .select('id')
-      .single();
-
-    console.log("Invitation creation result:", { invitation, invitationError });
-
-    if (invitationError) {
-      console.error("Error creating invitation:", invitationError);
-      throw new Error(`Failed to create invitation: ${invitationError.message}`);
-    }
-
-    console.log("Invitation record created successfully");
-
-    // For now, return success without sending email (since RESEND_API_KEY might not be configured)
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Company Owner invitation created successfully",
-        data: { 
-          invitationId: invitation.id,
-          companyId, 
-          email, 
-          companyName,
-          note: "Email sending is disabled for testing. Enable RESEND_API_KEY to send emails."
-        }
+        message: "DEBUG: All validations passed, database operations skipped",
+        data: { companyId, email, companyName, userId: user.id }
       }),
       {
         status: 200,
