@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { 
   Settings as SettingsIcon, Building, User, Moon, Sun, Bell, Shield, 
-  Globe, Palette, Monitor, Database, Save, RotateCcw
+  Globe, Palette, Monitor, Database, Save, RotateCcw, KeyRound
 } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -29,7 +29,18 @@ const profileSchema = z.object({
   timezone: z.string().optional(),
 });
 
+// Schema para contraseña
+const passwordSchema = z.object({
+  currentPassword: z.string().min(1, 'La contraseña actual es requerida'),
+  newPassword: z.string().min(6, 'La nueva contraseña debe tener al menos 6 caracteres'),
+  confirmPassword: z.string().min(1, 'Confirma la nueva contraseña'),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Las contraseñas no coinciden",
+  path: ["confirmPassword"],
+});
+
 type ProfileFormData = z.infer<typeof profileSchema>;
+type PasswordFormData = z.infer<typeof passwordSchema>;
 
 export default function Settings() {
   const { user, userRole } = useAuth();
@@ -39,6 +50,8 @@ export default function Settings() {
   const [loading, setLoading] = useState(true);
   const [companyInfo, setCompanyInfo] = useState<Company | null>(null);
   const [updatingProfile, setUpdatingProfile] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [profileSubTab, setProfileSubTab] = useState('info');
 
   // Form para perfil
   const profileForm = useForm<ProfileFormData>({
@@ -49,6 +62,16 @@ export default function Settings() {
       phone: '',
       preferred_language: 'en',
       timezone: 'America/New_York',
+    },
+  });
+
+  // Form para contraseña
+  const passwordForm = useForm<PasswordFormData>({
+    resolver: zodResolver(passwordSchema),
+    defaultValues: {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
     },
   });
 
@@ -127,6 +150,43 @@ export default function Settings() {
       });
     } finally {
       setUpdatingProfile(false);
+    }
+  };
+
+  const onSubmitPassword = async (data: PasswordFormData) => {
+    setChangingPassword(true);
+    try {
+      // First verify current password by trying to sign in
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user?.email || '',
+        password: data.currentPassword,
+      });
+
+      if (signInError) {
+        throw new Error('La contraseña actual ingresada es incorrecta. Por favor, verifíquela.');
+      }
+
+      // Update password
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: data.newPassword,
+      });
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "Contraseña actualizada",
+        description: "Su contraseña ha sido modificada de manera segura.",
+      });
+
+      passwordForm.reset();
+    } catch (error: any) {
+      toast({
+        title: "Error al cambiar contraseña",
+        description: error.message || "No se pudo cambiar la contraseña.",
+        variant: "destructive",
+      });
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -229,141 +289,236 @@ export default function Settings() {
                 </CardContent>
               </Card>
 
-              {/* Profile Form */}
+              {/* Profile Forms */}
               <Card className="md:col-span-2">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="h-5 w-5 text-primary" />
-                    Información Personal
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground">
-                    Actualiza tu información personal y preferencias
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <Form {...profileForm}>
-                    <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={profileForm.control}
-                          name="first_name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Nombre</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Tu nombre" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                <Tabs value={profileSubTab} onValueChange={setProfileSubTab} className="w-full">
+                  <CardHeader>
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="info" className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        Información Personal
+                      </TabsTrigger>
+                      <TabsTrigger value="security" className="flex items-center gap-2">
+                        <Shield className="h-4 w-4" />
+                        Seguridad
+                      </TabsTrigger>
+                    </TabsList>
+                  </CardHeader>
 
-                        <FormField
-                          control={profileForm.control}
-                          name="last_name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Apellido</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Tu apellido" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                  <CardContent>
+                    {/* Información Personal */}
+                    <TabsContent value="info" className="space-y-4">
+                      <div className="mb-4">
+                        <h3 className="text-lg font-medium">Información Personal</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Actualiza tu información personal y preferencias
+                        </p>
                       </div>
+                      
+                      <Form {...profileForm}>
+                        <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                              control={profileForm.control}
+                              name="first_name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Nombre</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Tu nombre" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
 
-                      <FormField
-                        control={profileForm.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Teléfono</FormLabel>
-                            <FormControl>
-                              <Input 
-                                placeholder="(555) 123-4567" 
-                                value={field.value || ''} 
-                                onChange={field.onChange}
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Número de teléfono para contacto (opcional)
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                            <FormField
+                              control={profileForm.control}
+                              name="last_name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Apellido</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Tu apellido" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={profileForm.control}
-                          name="preferred_language"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Idioma Preferido</FormLabel>
-                              <Select onValueChange={field.onChange} value={field.value}>
+                          <FormField
+                            control={profileForm.control}
+                            name="phone"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Teléfono</FormLabel>
                                 <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Selecciona un idioma" />
-                                  </SelectTrigger>
+                                  <Input 
+                                    placeholder="(555) 123-4567" 
+                                    value={field.value || ''} 
+                                    onChange={field.onChange}
+                                  />
                                 </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="en">English</SelectItem>
-                                  <SelectItem value="es">Español</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                                <FormDescription>
+                                  Número de teléfono para contacto (opcional)
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                        <FormField
-                          control={profileForm.control}
-                          name="timezone"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Zona Horaria</FormLabel>
-                              <Select onValueChange={field.onChange} value={field.value}>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                              control={profileForm.control}
+                              name="preferred_language"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Idioma Preferido</FormLabel>
+                                  <Select onValueChange={field.onChange} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Selecciona un idioma" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="en">English</SelectItem>
+                                      <SelectItem value="es">Español</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={profileForm.control}
+                              name="timezone"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Zona Horaria</FormLabel>
+                                  <Select onValueChange={field.onChange} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Selecciona zona horaria" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="America/New_York">Este (Nueva York)</SelectItem>
+                                      <SelectItem value="America/Chicago">Central (Chicago)</SelectItem>
+                                      <SelectItem value="America/Denver">Montaña (Denver)</SelectItem>
+                                      <SelectItem value="America/Los_Angeles">Pacífico (Los Ángeles)</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="flex justify-end gap-2">
+                            <Button type="button" variant="outline" onClick={() => profileForm.reset()}>
+                              <RotateCcw className="mr-2 h-4 w-4" />
+                              Resetear
+                            </Button>
+                            <Button type="submit" disabled={updatingProfile}>
+                              {updatingProfile ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                                  Actualizando...
+                                </>
+                              ) : (
+                                <>
+                                  <Save className="mr-2 h-4 w-4" />
+                                  Guardar Cambios
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </form>
+                      </Form>
+                    </TabsContent>
+
+                    {/* Seguridad */}
+                    <TabsContent value="security" className="space-y-4">
+                      <div className="mb-4">
+                        <h3 className="text-lg font-medium">Seguridad de la Cuenta</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Actualiza tu contraseña para mantener tu cuenta segura
+                        </p>
+                      </div>
+
+                      <Form {...passwordForm}>
+                        <form onSubmit={passwordForm.handleSubmit(onSubmitPassword)} className="space-y-4 max-w-md">
+                          <FormField
+                            control={passwordForm.control}
+                            name="currentPassword"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Contraseña Actual</FormLabel>
                                 <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Selecciona zona horaria" />
-                                  </SelectTrigger>
+                                  <Input type="password" placeholder="Tu contraseña actual" {...field} />
                                 </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="America/New_York">Este (Nueva York)</SelectItem>
-                                  <SelectItem value="America/Chicago">Central (Chicago)</SelectItem>
-                                  <SelectItem value="America/Denver">Montaña (Denver)</SelectItem>
-                                  <SelectItem value="America/Los_Angeles">Pacífico (Los Ángeles)</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                      <div className="flex justify-end gap-2">
-                        <Button type="button" variant="outline" onClick={() => profileForm.reset()}>
-                          <RotateCcw className="mr-2 h-4 w-4" />
-                          Resetear
-                        </Button>
-                        <Button type="submit" disabled={updatingProfile}>
-                          {updatingProfile ? (
-                            <>
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                              Actualizando...
-                            </>
-                          ) : (
-                            <>
-                              <Save className="mr-2 h-4 w-4" />
-                              Guardar Cambios
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    </form>
-                  </Form>
-                </CardContent>
+                          <FormField
+                            control={passwordForm.control}
+                            name="newPassword"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Nueva Contraseña</FormLabel>
+                                <FormControl>
+                                  <Input type="password" placeholder="Nueva contraseña" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                  Debe tener al menos 6 caracteres
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={passwordForm.control}
+                            name="confirmPassword"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Confirmar Nueva Contraseña</FormLabel>
+                                <FormControl>
+                                  <Input type="password" placeholder="Confirma la nueva contraseña" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <div className="flex justify-start gap-2">
+                            <Button type="button" variant="outline" onClick={() => passwordForm.reset()}>
+                              <RotateCcw className="mr-2 h-4 w-4" />
+                              Limpiar
+                            </Button>
+                            <Button type="submit" disabled={changingPassword} variant="secondary">
+                              {changingPassword ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                                  Cambiando...
+                                </>
+                              ) : (
+                                <>
+                                  <KeyRound className="mr-2 h-4 w-4" />
+                                  Cambiar Contraseña
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </form>
+                      </Form>
+                    </TabsContent>
+                  </CardContent>
+                </Tabs>
               </Card>
             </div>
           </TabsContent>
