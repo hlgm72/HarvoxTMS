@@ -85,26 +85,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Input validation passed");
 
-    // Check if company already has an owner
-    console.log("Checking if company has owner...");
-    const { data: hasOwner, error: ownerCheckError } = await supabase.rpc(
-      "company_has_owner", 
-      { company_id_param: companyId }
-    );
-
-    console.log("Owner check result:", { hasOwner, ownerCheckError });
-
-    if (ownerCheckError) {
-      console.error("Error checking company owner:", ownerCheckError);
-      throw new Error(`Database error: ${ownerCheckError.message}`);
-    }
-
-    if (hasOwner) {
-      console.error("Company already has owner");
-      throw new Error("This company already has a Company Owner");
-    }
-
-    console.log("Company owner check passed");
+    // TEMP: Skip owner check to isolate the issue
+    console.log("Skipping owner check for debugging...");
 
     // Check if invitation already exists for this email/company
     console.log("Checking for existing invitation...");
