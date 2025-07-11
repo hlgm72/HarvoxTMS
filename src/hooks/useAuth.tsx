@@ -23,7 +23,15 @@ export const useAuth = () => {
     loading: true,
   });
 
+  // Cache for user roles to avoid redundant queries
+  const roleCache = new Map<string, UserRole | null>();
+
   const fetchUserRole = async (userId: string) => {
+    // Check cache first
+    if (roleCache.has(userId)) {
+      return roleCache.get(userId);
+    }
+
     try {
       const { data, error } = await supabase
         .from('user_company_roles')
@@ -34,12 +42,16 @@ export const useAuth = () => {
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching user role:', error);
+        roleCache.set(userId, null);
         return null;
       }
 
+      // Cache the result
+      roleCache.set(userId, data);
       return data;
     } catch (error) {
       console.error('Error fetching user role:', error);
+      roleCache.set(userId, null);
       return null;
     }
   };

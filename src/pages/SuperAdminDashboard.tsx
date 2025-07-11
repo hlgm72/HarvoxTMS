@@ -21,6 +21,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useFleetNotifications } from '@/components/notifications';
 import { createTextHandlers, handlePhoneInput } from '@/lib/textUtils';
 import { useTranslation } from 'react-i18next';
+import { useSuperAdminDashboard } from '@/hooks/useSuperAdminDashboard';
 
 interface CompanyStats {
   total_companies: number;
@@ -56,22 +57,18 @@ export default function SuperAdminDashboard() {
   const { toast } = useToast();
   const { showSuccess, showError } = useFleetNotifications();
 
-  // AGGRESSIVE Debug logs for translation
-  console.log('=== TRANSLATION DEBUG START ===');
-  console.log('Current language:', i18n.language);
-  console.log('Admin bundle:', i18n.getResourceBundle('en', 'admin'));
-  console.log('Companies title test:', t('admin:pages.companies.title'));
-  console.log('Navigation companies test:', t('admin:navigation.companies'));
-  console.log('=== TRANSLATION DEBUG END ===');
+  // Debug logs removed for performance optimization
   const [activeTab, setActiveTab] = useState('overview');
-  const [stats, setStats] = useState<CompanyStats>({
-    total_companies: 0,
-    total_users: 0,
-    total_vehicles: 0,
-    total_drivers: 0,
-  });
-  const [companies, setCompanies] = useState<Company[]>([]);
-  const [loadingData, setLoadingData] = useState(true);
+  
+  // Use optimized dashboard hook
+  const { 
+    stats, 
+    companies, 
+    loadingData, 
+    fetchSystemStats, 
+    fetchCompanies, 
+    initializeDashboard 
+  } = useSuperAdminDashboard();
   const [isCreatingCompany, setIsCreatingCompany] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -152,65 +149,9 @@ export default function SuperAdminDashboard() {
 
   useEffect(() => {
     if (!loading && isSuperAdmin) {
-      fetchSystemStats();
-      fetchCompanies();
+      initializeDashboard();
     }
-  }, [loading, isSuperAdmin]);
-
-  const fetchSystemStats = async () => {
-    try {
-      // Fetch companies count
-      const { count: companiesCount } = await supabase
-        .from('companies')
-        .select('*', { count: 'exact', head: true });
-
-      // Fetch users count
-      const { count: usersCount } = await supabase
-        .from('profiles')
-        .select('*', { count: 'exact', head: true });
-
-      // Fetch vehicles count
-      const { count: vehiclesCount } = await supabase
-        .from('vehicles')
-        .select('*', { count: 'exact', head: true });
-
-      // Fetch drivers count
-      const { count: driversCount } = await supabase
-        .from('drivers')
-        .select('*', { count: 'exact', head: true });
-
-      setStats({
-        total_companies: companiesCount || 0,
-        total_users: usersCount || 0,
-        total_vehicles: vehiclesCount || 0,
-        total_drivers: driversCount || 0,
-      });
-    } catch (error) {
-      console.error('Error fetching system stats:', error);
-    }
-  };
-
-  const fetchCompanies = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('companies')
-        .select(`
-          id, name, email, phone, 
-          owner_name, owner_email, owner_phone, owner_title,
-          plan_type, max_vehicles, max_users, status, 
-          contract_start_date, created_at
-        `)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (error) throw error;
-      setCompanies(data || []);
-    } catch (error) {
-      console.error('Error fetching companies:', error);
-    } finally {
-      setLoadingData(false);
-    }
-  };
+  }, [loading, isSuperAdmin, initializeDashboard]);
 
   const handleCreateCompany = async () => {
     setIsCreatingCompany(true);
@@ -251,9 +192,8 @@ export default function SuperAdminDashboard() {
       });
       setShowCreateDialog(false);
       
-      // Refresh data
-      fetchCompanies();
-      fetchSystemStats();
+        // Refresh data
+        initializeDashboard();
     } catch (error: any) {
       console.error('Error creating company:', error);
       showError(
@@ -302,8 +242,7 @@ export default function SuperAdminDashboard() {
         );
         
         // Refresh data
-        fetchCompanies();
-        fetchSystemStats();
+        initializeDashboard();
       } else {
         showError("Deletion failed", (data as any)?.message || "Unknown error occurred");
       }
