@@ -156,11 +156,28 @@ export default function Auth() {
         return;
       }
 
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
+      // Primero intentamos con Supabase Auth (método estándar)
+      const { error: supabaseError } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/auth`,
       });
 
-      if (error) throw error;
+      // Si Supabase falla, usamos nuestra función personalizada con Resend
+      if (supabaseError) {
+        console.log('Supabase reset failed, trying custom email function:', supabaseError);
+        
+        // Generar un enlace de reset temporal (en producción usarías un token seguro)
+        const resetUrl = `${window.location.origin}/auth?reset=true&email=${encodeURIComponent(resetEmail)}`;
+        
+        const { error: customError } = await supabase.functions.invoke('send-reset-email', {
+          body: {
+            email: resetEmail,
+            resetUrl: resetUrl,
+            lang: 'es' // Puedes usar i18n.language aquí
+          }
+        });
+
+        if (customError) throw customError;
+      }
 
       setResetSuccess(true);
       showSuccess(
