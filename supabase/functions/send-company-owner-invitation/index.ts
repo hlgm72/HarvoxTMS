@@ -69,9 +69,17 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Superadmin validation passed!");
 
-    const { companyId, email, companyName }: InvitationRequest = await req.json();
-
-    console.log("Parsed request data:", { companyId, email, companyName });
+    console.log("Parsing request body...");
+    let companyId: string, email: string, companyName: string;
+    
+    try {
+      const requestBody = await req.json();
+      console.log("Raw request body:", requestBody);
+      ({ companyId, email, companyName } = requestBody as InvitationRequest);
+    } catch (parseError) {
+      console.error("Error parsing request body:", parseError);
+      throw new Error("Invalid JSON in request body");
+    }
 
     // Validate input
     if (!companyId || !email || !companyName) {
