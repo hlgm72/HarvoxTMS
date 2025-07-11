@@ -135,7 +135,49 @@
         "total_drivers": "Total de Conductores",
         "active_sessions": "Sesiones Activas",
         "system_health": "Salud del Sistema"
+      },
+      "header": {
+        "control_center": "Centro de Control FleetNest",
+        "global_admin": "Sistema de administración global",
+        "system_administrator": "Administrador del Sistema",
+        "system_status": "Estado del Sistema: Operacional",
+        "system_settings": "Configuración del Sistema",
+        "new_company": "Nueva Empresa"
+      },
+      "dialogs": {
+        "create_company": "Crear Nueva Empresa",
+        "create_company_desc": "Agregar una nueva empresa de transporte al sistema FleetNest",
+        "company_email": "Email de la Empresa",
+        "owner_title_label": "Título del Propietario",
+        "plan_type_label": "Tipo de Plan",
+        "max_vehicles_label": "Máximo de Vehículos",
+        "max_users_label": "Máximo de Usuarios"
       }
+    },
+    "navigation": {
+      "system_management": "Gestión del Sistema",
+      "navigation": "Navegación",
+      "dashboard": "Dashboard",
+      "companies": "Empresas",
+      "users": "Usuarios",
+      "system_health": "Salud del Sistema",
+      "analytics": "Analíticas",
+      "billing_management": "Gestión de Facturación",
+      "support_tickets": "Tickets de Soporte",
+      "system_settings": "Configuración del Sistema",
+      "api_logs": "Registros de API",
+      "backup_security": "Respaldos y Seguridad",
+      "company_management": "Gestión de empresas",
+      "system_users": "Usuarios del sistema",
+      "system_status": "Estado del sistema",
+      "system_analytics": "Análisis del sistema",
+      "billing_management_desc": "Gestión de facturación",
+      "support_management": "Gestión de soporte",
+      "system_configuration": "Configuración del sistema",
+      "api_logs_desc": "Registros de API",
+      "security_backups": "Seguridad y respaldos",
+      "global_access": "Control de Acceso Global",
+      "admin_panel": "Panel de control"
     }
   }
 }

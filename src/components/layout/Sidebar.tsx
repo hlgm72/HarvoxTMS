@@ -31,6 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from 'react-i18next';
 
 // Mock data for companies
 const companies = [
@@ -240,75 +241,76 @@ const driverNavigationItems = [
   },
 ];
 
-// Navegación para Superadmin
-const superAdminNavigationItems = [
+// Función para obtener navegación traducida del superadmin
+const getSuperAdminNavigationItems = (t: any) => [
   { 
-    title: "Dashboard", 
+    title: t('admin:navigation.dashboard'), 
     url: "/superadmin", 
     icon: Command, 
     badge: "Admin",
     badgeVariant: "admin" as const,
-    description: "Panel de control"
+    description: t('admin:navigation.admin_panel')
   },
   { 
-    title: "Companies", 
+    title: t('admin:navigation.companies'), 
     url: "/superadmin/companies", 
     icon: Building2,
-    description: "Gestión de empresas"
+    description: t('admin:navigation.company_management')
   },
   { 
-    title: "Users", 
+    title: t('admin:navigation.users'), 
     url: "/superadmin/users", 
     icon: Users,
-    description: "Usuarios del sistema"
+    description: t('admin:navigation.system_users')
   },
   { 
-    title: "System Health", 
+    title: t('admin:navigation.system_health'), 
     url: "/superadmin/health", 
     icon: Heart, 
     badge: "Live",
     badgeVariant: "live" as const,
-    description: "Estado del sistema"
+    description: t('admin:navigation.system_status')
   },
   { 
-    title: "Analytics", 
+    title: t('admin:navigation.analytics'), 
     url: "/superadmin/analytics", 
     icon: TrendingUp,
-    description: "Análisis del sistema"
+    description: t('admin:navigation.system_analytics')
   },
   { 
-    title: "Billing Management", 
+    title: t('admin:navigation.billing_management'), 
     url: "/superadmin/billing", 
     icon: CreditCard,
-    description: "Gestión de facturación"
+    description: t('admin:navigation.billing_management_desc')
   },
   { 
-    title: "Support Tickets", 
+    title: t('admin:navigation.support_tickets'), 
     url: "/superadmin/support", 
     icon: Headphones,
-    description: "Tickets de soporte"
+    description: t('admin:navigation.support_management')
   },
   { 
-    title: "System Settings", 
+    title: t('admin:navigation.system_settings'), 
     url: "/superadmin/settings", 
     icon: Settings,
-    description: "Configuración"
+    description: t('admin:navigation.system_configuration')
   },
   { 
-    title: "API Logs", 
+    title: t('admin:navigation.api_logs'), 
     url: "/superadmin/logs", 
     icon: FileBarChart,
-    description: "Registros de API"
+    description: t('admin:navigation.api_logs_desc')
   },
   { 
-    title: "Backup & Security", 
+    title: t('admin:navigation.backup_security'), 
     url: "/superadmin/security", 
     icon: Lock,
-    description: "Seguridad y respaldos"
+    description: t('admin:navigation.security_backups')
   },
 ];
 
 export function AppSidebar() {
+  const { t } = useTranslation(['admin', 'common']);
   const { state } = useSidebar();
   const { 
     isSuperAdmin, 
@@ -333,7 +335,7 @@ export function AppSidebar() {
   
   // Determinar navegación según el rol del usuario
   const getNavigationItems = () => {
-    if (isSuperAdmin) return superAdminNavigationItems;
+    if (isSuperAdmin) return getSuperAdminNavigationItems(t);
     if (isCompanyOwner) return companyOwnerNavigationItems;
     if (isOperationsManager) return operationsManagerNavigationItems;
     if (isDispatcher) return dispatcherNavigationItems;
@@ -441,8 +443,8 @@ export function AppSidebar() {
                   <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4 text-primary" />
                     <div>
-                      <p className="text-sm font-medium text-primary">System Administrator</p>
-                      <p className="text-xs text-muted-foreground">Global Access Control</p>
+                      <p className="text-sm font-medium text-primary">{t('admin:navigation.system_administrator')}</p>
+                      <p className="text-xs text-muted-foreground">{t('admin:navigation.global_access')}</p>
                     </div>
                   </div>
                 </div>
@@ -455,7 +457,7 @@ export function AppSidebar() {
       <SidebarContent className="p-2">
         <SidebarGroup>
           <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            {isSuperAdmin ? "System Management" : "Navigation"}
+            {isSuperAdmin ? t('admin:navigation.system_management') : t('admin:navigation.navigation')}
           </SidebarGroupLabel>
           <Separator className="my-2 opacity-50" />
           <SidebarGroupContent>
