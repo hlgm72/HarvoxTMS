@@ -181,13 +181,25 @@ export default function Profile() {
   };
 
   const onCancelProfile = () => {
-    setPendingCancelAction('profile');
-    setShowCancelModal(true);
+    // Solo mostrar modal de confirmación si hay cambios sin guardar
+    if (profileForm.formState.isDirty) {
+      setPendingCancelAction('profile');
+      setShowCancelModal(true);
+    } else {
+      // Si no hay cambios, ir directamente al dashboard
+      navigate(getDashboardRoute());
+    }
   };
 
   const onCancelPassword = () => {
-    setPendingCancelAction('password');
-    setShowCancelModal(true);
+    // Solo mostrar modal de confirmación si hay cambios sin guardar
+    if (passwordForm.formState.isDirty) {
+      setPendingCancelAction('password');
+      setShowCancelModal(true);
+    } else {
+      // Si no hay cambios, ir directamente al dashboard
+      navigate(getDashboardRoute());
+    }
   };
 
   const onSubmitPassword = async (data: PasswordFormData) => {
