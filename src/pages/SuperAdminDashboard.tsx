@@ -232,8 +232,8 @@ export default function SuperAdminDashboard() {
       if (error) throw error;
 
       showSuccess(
-        t('pages.companies.messages.company_created_success'),
-        `${newCompany.name} ${t('pages.companies.messages.company_created_desc')}`
+        t('admin:pages.companies.messages.company_created_success'),
+        `${newCompany.name} ${t('admin:pages.companies.messages.company_created_desc')}`
       );
 
       // Reset form and close dialog
@@ -257,8 +257,8 @@ export default function SuperAdminDashboard() {
     } catch (error: any) {
       console.error('Error creating company:', error);
       showError(
-        t('pages.companies.messages.company_creation_error'),
-        error.message || t('pages.companies.messages.company_creation_error_desc')
+        t('admin:pages.companies.messages.company_creation_error'),
+        error.message || t('admin:pages.companies.messages.company_creation_error_desc')
       );
     } finally {
       setIsCreatingCompany(false);
@@ -474,12 +474,12 @@ export default function SuperAdminDashboard() {
                         <div className="flex items-center gap-2 pb-2 border-b">
                           <Building2 className="h-4 w-4 text-primary" />
                           <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
-                            {t('pages.companies.form_labels.company_information')}
+                            {t('admin:pages.companies.form_labels.company_information')}
                           </h3>
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="company-name">{t('pages.companies.form_labels.company_name')} *</Label>
+                          <Label htmlFor="company-name">{t('admin:pages.companies.form_labels.company_name')} *</Label>
                           <Input
                             id="company-name"
                             value={newCompany.name}
@@ -704,7 +704,7 @@ export default function SuperAdminDashboard() {
                         ) : (
                           <>
                             <Plus className="h-4 w-4 mr-2" />
-                            {t('pages.companies.buttons.create_company')}
+                            {t('admin:pages.companies.buttons.create_company')}
                           </>
                         )}
                       </Button>
@@ -727,7 +727,7 @@ export default function SuperAdminDashboard() {
                 </TabsTrigger>
                 <TabsTrigger value="companies" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <Building2 className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('admin:navigation.companies')}</span>
+                  <span className="hidden sm:inline">{t('admin:navigation.companies')} {/* DEBUG: companies tab */}</span>
                 </TabsTrigger>
                 <TabsTrigger value="analytics" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <TrendingUp className="h-4 w-4" />
@@ -1118,7 +1118,7 @@ export default function SuperAdminDashboard() {
                     <p className="text-muted-foreground mb-4">Get started by creating your first company.</p>
                     <Button onClick={() => setShowCreateDialog(true)}>
                       <Plus className="h-4 w-4 mr-2" />
-                      {t('pages.companies.buttons.create_company')}
+                      {t('admin:pages.companies.buttons.create_company')}
                     </Button>
                   </div>
                 ) : null}
@@ -1146,14 +1146,14 @@ export default function SuperAdminDashboard() {
                           <div className="flex items-center gap-2 pb-2 border-b">
                             <Building2 className="h-4 w-4 text-primary" />
                             <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
-                              {t('pages.companies.form_labels.company_information')}
+                              {t('admin:pages.companies.form_labels.company_information')}
                             </h3>
                           </div>
                           
                           <div className="grid grid-cols-2 gap-4">
                             <div>
                               <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                {t('pages.companies.form_labels.company_name')}
+                                {t('admin:pages.companies.form_labels.company_name')}
                               </Label>
                               <p className="font-semibold">{companyToView.name}</p>
                             </div>
@@ -1376,12 +1376,12 @@ export default function SuperAdminDashboard() {
                         <div className="flex items-center gap-2 pb-2 border-b">
                           <Building2 className="h-4 w-4 text-primary" />
                           <h3 className="font-semibold text-sm text-primary uppercase tracking-wide">
-                            {t('pages.companies.form_labels.company_information')}
+                            {t('admin:pages.companies.form_labels.company_information')}
                           </h3>
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="edit-company-name">{t('pages.companies.form_labels.company_name')} *</Label>
+                          <Label htmlFor="edit-company-name">{t('admin:pages.companies.form_labels.company_name')} *</Label>
                           <Input
                             id="edit-company-name"
                             value={companyToEdit.name}
@@ -1391,7 +1391,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="edit-company-email">{t('pages.companies.form_labels.company_email')}</Label>
+                          <Label htmlFor="edit-company-email">{t('admin:pages.companies.form_labels.company_email')}</Label>
                           <Input
                             id="edit-company-email"
                             type="email"
@@ -1402,7 +1402,7 @@ export default function SuperAdminDashboard() {
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="edit-company-phone">{t('pages.companies.form_labels.company_phone')}</Label>
+                          <Label htmlFor="edit-company-phone">{t('admin:pages.companies.form_labels.company_phone')}</Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -1428,14 +1428,14 @@ export default function SuperAdminDashboard() {
                             onValueChange={(value) => setCompanyToEdit(prev => prev ? {...prev, plan_type: value} : null)}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder={t('pages.companies.form.plan_type')} />
+                              <SelectValue placeholder={t('admin:pages.companies.form.plan_type')} />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="basic">{t('pages.companies.plans.basic')}</SelectItem>
-                              <SelectItem value="premium">{t('pages.companies.plans.premium')}</SelectItem>
-                              <SelectItem value="enterprise">{t('pages.companies.plans.enterprise')}</SelectItem>
-                              <SelectItem value="demo">{t('pages.companies.plans.demo')}</SelectItem>
-                              <SelectItem value="trial">{t('pages.companies.plans.trial')}</SelectItem>
+                              <SelectItem value="basic">{t('admin:pages.companies.plans.basic')}</SelectItem>
+                              <SelectItem value="premium">{t('admin:pages.companies.plans.premium')}</SelectItem>
+                              <SelectItem value="enterprise">{t('admin:pages.companies.plans.enterprise')}</SelectItem>
+                              <SelectItem value="demo">{t('admin:pages.companies.plans.demo')}</SelectItem>
+                              <SelectItem value="trial">{t('admin:pages.companies.plans.trial')}</SelectItem>
                               <SelectItem value="test">Test</SelectItem>
                             </SelectContent>
                           </Select>
@@ -1473,12 +1473,12 @@ export default function SuperAdminDashboard() {
                             onValueChange={(value) => setCompanyToEdit(prev => prev ? {...prev, status: value} : null)}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder={t('pages.companies.form.status')} />
+                              <SelectValue placeholder={t('admin:pages.companies.form.status')} />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="active">{t('pages.companies.status.active')}</SelectItem>
-                              <SelectItem value="inactive">{t('pages.companies.status.inactive')}</SelectItem>
-                              <SelectItem value="suspended">{t('pages.companies.status.suspended')}</SelectItem>
+                              <SelectItem value="active">{t('admin:pages.companies.status.active')}</SelectItem>
+                              <SelectItem value="inactive">{t('admin:pages.companies.status.inactive')}</SelectItem>
+                              <SelectItem value="suspended">{t('admin:pages.companies.status.suspended')}</SelectItem>
                               <SelectItem value="archived">Archived</SelectItem>
                             </SelectContent>
                           </Select>
