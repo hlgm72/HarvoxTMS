@@ -27,12 +27,17 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     console.log("Starting invitation process...");
     
-    // Initialize Supabase client with service role
+    // Initialize Supabase clients
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    
+    // Use anon client for auth verification
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    // Use admin client for database operations that require elevated permissions
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-    console.log("Supabase client initialized");
+    console.log("Supabase clients initialized");
 
     // Get the authorization header
     const authHeader = req.headers.get("authorization");
@@ -54,8 +59,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("User authenticated:", user.id);
 
-    // Check if user is superadmin
-    const { data: isSuperAdmin, error: roleError } = await supabase.rpc(
+    // Check if user is superadmin using admin client
+    const { data: isSuperAdmin, error: roleError } = await supabaseAdmin.rpc(
       "is_superadmin",
       { user_id_param: user.id }
     );
@@ -88,7 +93,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Test the actual insertion
     console.log("Testing invitation creation...");
     
-    const { data: existingInvitations, error: invitationCheckError } = await supabase
+    const { data: existingInvitations, error: invitationCheckError } = await supabaseAdmin
       .from('user_invitations')
       .select('id, expires_at, accepted_at')
       .eq('company_id', companyId)
@@ -116,9 +121,9 @@ const handler = async (req: Request): Promise<Response> => {
     const invitationToken = crypto.randomUUID();
     console.log("Generated invitation token");
 
-    // Try to create invitation record
+    // Try to create invitation record using admin client
     console.log("Creating invitation record...");
-    const { data: invitation, error: invitationError } = await supabase
+    const { data: invitation, error: invitationError } = await supabaseAdmin
       .from('user_invitations')
       .insert({
         company_id: companyId,
