@@ -391,8 +391,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   <div className="space-y-2">
                     <Label htmlFor="city_id">Ciudad</Label>
                     <Select 
-                      value={formData.city_id || ''} 
-                      onValueChange={(value) => handleInputChange('city_id', value)}
+                      value={formData.city_id || 'unspecified'} 
+                      onValueChange={(value) => handleInputChange('city_id', value === 'unspecified' ? undefined : value)}
                       disabled={loadingCities || !formData.state_id}
                     >
                       <SelectTrigger>
@@ -405,7 +405,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                         } />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Sin especificar</SelectItem>
+                        <SelectItem value="unspecified">Sin especificar</SelectItem>
                         {cities.map((city) => (
                           <SelectItem key={city.id} value={city.id}>
                             {city.name} {city.county && `(${city.county})`}
