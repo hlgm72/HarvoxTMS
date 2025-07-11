@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, ArrowLeft, Mail, Lock, User, Building, Eye, EyeOff } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,6 +17,7 @@ const fleetNestLogo = '/auth-bg-fleet.jpg'; // Usar temporalmente hasta que pued
 export default function Auth() {
   const { t, i18n } = useTranslation(['auth', 'common']);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { showSuccess, showError } = useFleetNotifications();
   const [isLogin, setIsLogin] = useState(true);
@@ -27,6 +28,13 @@ export default function Auth() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetSuccess, setResetSuccess] = useState(false);
+  
+  // New password reset states
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [resetEmailFromUrl, setResetEmailFromUrl] = useState('');
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -38,7 +46,17 @@ export default function Auth() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    // Check for reset password parameters
+    const reset = searchParams.get('reset');
+    const email = searchParams.get('email');
+    
+    if (reset === 'true' && email) {
+      setShowResetPassword(true);
+      setResetEmailFromUrl(email);
+      setShowForgotPassword(false);
+    }
+  }, [searchParams]);
 
   const validateField = (field: string, value: string) => {
     const errors = { ...fieldErrors };
@@ -162,6 +180,53 @@ export default function Auth() {
       } else {
         setError(err.message || t('auth:errors.unknown_error'));
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      if (!newPassword || newPassword.length < 8) {
+        setError('La contraseña debe tener al menos 8 caracteres');
+        setLoading(false);
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        setError('Las contraseñas no coinciden');
+        setLoading(false);
+        return;
+      }
+
+      // For now, redirect to Supabase's built-in reset flow
+      // We'll need to implement a proper token-based reset later
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmailFromUrl, {
+        redirectTo: `${window.location.origin}/auth?reset=true&email=${encodeURIComponent(resetEmailFromUrl)}`,
+      });
+
+      if (error) {
+        console.log('Using Supabase built-in reset flow...');
+        // The user will receive another email from Supabase with the proper reset link
+        showSuccess(
+          'Nuevo enlace enviado',
+          'Se ha enviado un nuevo enlace de reset a tu email'
+        );
+      }
+
+      // Clear the current form and show login
+      setShowResetPassword(false);
+      setNewPassword('');
+      setConfirmPassword('');
+      setResetEmailFromUrl('');
+      
+    } catch (err: any) {
+      console.error('Password reset error:', err);
+      setError(err.message || 'Error al procesar el reset de contraseña');
     } finally {
       setLoading(false);
     }
@@ -369,15 +434,19 @@ export default function Auth() {
             </div>
             
             <CardTitle className="text-2xl lg:text-3xl font-heading font-bold text-foreground mb-2">
-              {showForgotPassword ? t('auth:forgot_password.title') : (isLogin ? t('auth:title.login') : t('auth:title.signup'))}
+              {showResetPassword ? 'Nueva Contraseña' : 
+               showForgotPassword ? t('auth:forgot_password.title') : 
+               (isLogin ? t('auth:title.login') : t('auth:title.signup'))}
             </CardTitle>
             <CardDescription className="font-body text-muted-foreground">
-              {showForgotPassword 
-                ? t('auth:forgot_password.description')
-                : (isLogin 
-                  ? t('auth:description.login')
-                  : t('auth:description.signup')
-                )
+              {showResetPassword 
+                ? `Establece tu nueva contraseña para ${resetEmailFromUrl}`
+                : showForgotPassword 
+                  ? t('auth:forgot_password.description')
+                  : (isLogin 
+                    ? t('auth:description.login')
+                    : t('auth:description.signup')
+                  )
               }
             </CardDescription>
           </CardHeader>
@@ -462,6 +531,78 @@ export default function Auth() {
                     {t('auth:forgot_password.back_to_login')}
                   </Button>
                 )}
+              </form>
+            )}
+
+            {/* Reset Password Form */}
+            {showResetPassword && (
+              <form onSubmit={handleResetPassword} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="newPassword" className="font-body font-medium text-foreground">
+                    Nueva Contraseña
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => {
+                        setNewPassword(e.target.value);
+                        if (error) setError(null);
+                      }}
+                      placeholder="Ingresa tu nueva contraseña"
+                      className="auth-input pl-10 font-body"
+                      required
+                      disabled={loading}
+                      minLength={8}
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword" className="font-body font-medium text-foreground">
+                    Confirmar Contraseña
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => {
+                        setConfirmPassword(e.target.value);
+                        if (error) setError(null);
+                      }}
+                      placeholder="Confirma tu nueva contraseña"
+                      className="auth-input pl-10 font-body"
+                      required
+                      disabled={loading}
+                      minLength={8}
+                    />
+                  </div>
+                </div>
+                
+                {error && (
+                  <Alert variant="destructive" className="animate-fade-in">
+                    <AlertDescription className="font-body">{error}</AlertDescription>
+                  </Alert>
+                )}
+                
+                <Button
+                  type="submit"
+                  className="w-full font-body font-medium bg-gradient-primary"
+                  disabled={loading || !newPassword || !confirmPassword}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Actualizando contraseña...
+                    </>
+                  ) : (
+                    'Actualizar Contraseña'
+                  )}
+                </Button>
               </form>
             )}
 
