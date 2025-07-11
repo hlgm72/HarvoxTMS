@@ -211,10 +211,14 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (error: any) {
     console.error("Error in send-company-owner-invitation:", error);
+    console.error("Error stack:", error.stack);
+    console.error("Error message:", error.message);
+    
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message || "Internal server error" 
+        error: error.message || "Internal server error",
+        details: error.stack || "No stack trace available"
       }),
       {
         status: 400,
