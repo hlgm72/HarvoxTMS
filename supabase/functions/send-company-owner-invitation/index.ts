@@ -169,9 +169,14 @@ const handler = async (req: Request): Promise<Response> => {
       success: !!emailResponse.data,
       messageId: emailResponse.data?.id,
       error: emailResponse.error,
+      errorDetails: emailResponse.error ? JSON.stringify(emailResponse.error) : null,
       to: email,
       company: companyName
     });
+
+    if (emailResponse.error) {
+      throw new Error(`Email sending failed: ${emailResponse.error.message || JSON.stringify(emailResponse.error)}`);
+    }
 
     return new Response(
       JSON.stringify({
