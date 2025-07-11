@@ -50,10 +50,19 @@ interface Company {
 }
 
 export default function SuperAdminDashboard() {
-  const { t } = useTranslation(['admin', 'common']);
+  const { t, i18n } = useTranslation(['admin', 'common']);
   const { user, isSuperAdmin, loading } = useAuth();
   const { toast } = useToast();
   const { showSuccess, showError } = useFleetNotifications();
+
+  // Debug logs for translation
+  console.log('Translation DEBUG:', {
+    currentLanguage: i18n.language,
+    loadedNamespaces: i18n.options.ns,
+    isReady: i18n.isInitialized,
+    testTranslation: t('admin:pages.companies.title'),
+    testCommon: t('admin:common.loading')
+  });
   const [activeTab, setActiveTab] = useState('overview');
   const [stats, setStats] = useState<CompanyStats>({
     total_companies: 0,
