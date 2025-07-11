@@ -6,7 +6,11 @@ import commonEn from './locales/en/common.json';
 import landingEn from './locales/en/landing.json';
 import authEn from './locales/en/auth.json';
 import fleetEn from './locales/en/fleet.json';
-import adminEn from './locales/en/admin.json';
+
+// Import admin sub-modules
+import adminPagesEn from './locales/en/admin/pages.json';
+import adminNavigationEn from './locales/en/admin/navigation.json';
+import adminCommonEn from './locales/en/admin/common.json';
 
 import commonEs from './locales/es/common.json';
 import landingEs from './locales/es/landing.json';
@@ -20,7 +24,11 @@ const resources = {
     landing: landingEn,
     auth: authEn,
     fleet: fleetEn,
-    admin: adminEn,
+    admin: {
+      pages: adminPagesEn,
+      navigation: adminNavigationEn,
+      common: adminCommonEn,
+    },
   },
   es: {
     common: commonEs,
