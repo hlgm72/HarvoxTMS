@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,7 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
   const [uploading, setUploading] = useState(false);
   const [removing, setRemoving] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
+  const { refreshProfile } = useUserProfile();
 
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -73,7 +75,11 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
 
       if (updateError) throw updateError;
 
+      // Actualizar el estado local primero
       onAvatarUpdate(publicUrl);
+      
+      // Refrescar el perfil para actualizar todos los componentes que usan useUserProfile
+      await refreshProfile();
       
       showSuccess('Éxito', 'Avatar actualizado correctamente');
 
@@ -112,7 +118,11 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
 
       if (error) throw error;
 
+      // Actualizar el estado local primero
       onAvatarUpdate(null);
+      
+      // Refrescar el perfil para actualizar todos los componentes que usan useUserProfile
+      await refreshProfile();
       
       showSuccess('Éxito', 'Avatar eliminado correctamente');
 

@@ -265,9 +265,9 @@ export default function Profile() {
             <AvatarUpload 
               currentAvatarUrl={profile?.avatar_url}
               userName={`${profile?.first_name || ''} ${profile?.last_name || ''}`.trim()}
-              onAvatarUpdate={(avatarUrl) => {
+              onAvatarUpdate={async (avatarUrl) => {
                 // Refresh profile to get updated data
-                refreshProfile();
+                await refreshProfile();
               }}
             />
             <CardTitle className="text-xl">{profile?.first_name} {profile?.last_name}</CardTitle>
