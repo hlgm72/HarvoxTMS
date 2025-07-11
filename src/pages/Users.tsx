@@ -251,34 +251,27 @@ export default function Users() {
                 <TableCell colSpan={6} className="text-center py-16">
                   <div className="flex flex-col items-center space-y-6 animate-fade-in">
                     <div className="relative">
-                      <img 
-                        src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=300&fit=crop&auto=format" 
-                        alt="Equipo colaborando"
-                        className="w-64 h-48 object-cover rounded-lg shadow-lg opacity-90"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent rounded-lg"></div>
+                      <div className="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center">
+                        <UsersIcon className="h-12 w-12 text-muted-foreground/60" />
+                      </div>
                     </div>
                     
                     <div className="space-y-3 max-w-sm">
-                      <div className="flex items-center justify-center space-x-2">
-                        <UsersIcon className="h-6 w-6 text-primary animate-pulse" />
-                        <h3 className="text-xl font-semibold text-foreground">
-                          Tu equipo está esperando
-                        </h3>
-                      </div>
+                      <h3 className="text-xl font-semibold text-foreground">
+                        No hay usuarios registrados aún
+                      </h3>
                       
                       <p className="text-muted-foreground text-center leading-relaxed">
-                        No hay usuarios registrados aún. Comienza a construir tu equipo 
-                        invitando a tus primeros colaboradores.
+                        Utiliza el botón "Invitar Usuario" para comenzar.
                       </p>
                       
                       <div className="pt-4">
                         <Button 
                           onClick={() => setInviteDialogOpen(true)}
-                          className="hover-scale gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg"
+                          className="gap-2"
                         >
                           <UserPlus className="h-4 w-4" />
-                          Invitar mi primer usuario
+                          Invitar Usuario
                         </Button>
                       </div>
                     </div>
