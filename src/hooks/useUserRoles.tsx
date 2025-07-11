@@ -30,14 +30,19 @@ export const useUserRoles = (): UseUserRolesReturn => {
     setLoading(true);
     try {
       // Check if role already exists
-      const { data: existingRole } = await supabase
+      const { data: existingRole, error: checkError } = await supabase
         .from('user_company_roles')
         .select('id')
         .eq('user_id', userId)
         .eq('company_id', companyId)
         .eq('role', role)
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
+
+      // If there's an error checking, still continue but log it
+      if (checkError) {
+        console.warn('Error checking existing role, proceeding with caution:', checkError);
+      }
 
       if (existingRole) {
         return { success: false, error: 'El usuario ya tiene este rol asignado' };
@@ -56,6 +61,10 @@ export const useUserRoles = (): UseUserRolesReturn => {
 
       if (error) {
         console.error('Error assigning role:', error);
+        // Handle duplicate key error specifically
+        if (error.code === '23505') {
+          return { success: false, error: 'El usuario ya tiene este rol asignado' };
+        }
         return { success: false, error: 'Error al asignar el rol' };
       }
 
