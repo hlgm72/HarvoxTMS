@@ -29,14 +29,13 @@ export const useUserRoles = (): UseUserRolesReturn => {
 
     setLoading(true);
     try {
-      // Check if role already exists
+      // Check if role already exists (active or inactive)
       const { data: existingRole, error: checkError } = await supabase
         .from('user_company_roles')
-        .select('id')
+        .select('id, is_active')
         .eq('user_id', userId)
         .eq('company_id', companyId)
         .eq('role', role)
-        .eq('is_active', true)
         .maybeSingle();
 
       // If there's an error checking, still continue but log it
@@ -45,7 +44,28 @@ export const useUserRoles = (): UseUserRolesReturn => {
       }
 
       if (existingRole) {
-        return { success: false, error: 'El usuario ya tiene este rol asignado' };
+        if (existingRole.is_active) {
+          return { success: false, error: 'El usuario ya tiene este rol asignado' };
+        } else {
+          // Reactivate existing inactive role
+          const { error: updateError } = await supabase
+            .from('user_company_roles')
+            .update({ 
+              is_active: true,
+              delegated_by: user.id,
+              delegated_at: new Date().toISOString(),
+            })
+            .eq('id', existingRole.id);
+
+          if (updateError) {
+            console.error('Error reactivating role:', updateError);
+            return { success: false, error: 'Error al reactivar el rol' };
+          }
+
+          // Refresh roles to update the UI immediately
+          await refreshRoles();
+          return { success: true };
+        }
       }
 
       const { error } = await supabase
