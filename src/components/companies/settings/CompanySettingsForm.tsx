@@ -16,7 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Company } from '@/types/company';
 import { CompanyLogoUpload } from '../CompanyLogoUpload';
 import { AddressForm } from '@/components/ui/AddressForm';
-import { createTextHandlers, createPhoneHandlers, createEINHandlers } from '@/lib/textUtils';
+import { createTextHandlers, createPhoneHandlers, createEINHandlers, createMCHandlers, createDOTHandlers } from '@/lib/textUtils';
 
 interface CompanySettingsFormProps {
   company: Company;
@@ -41,8 +41,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
   
   // Documentation field handlers
   const einHandlers = createEINHandlers((value: string) => handleInputChange('ein', value));
-  const mcNumberHandlers = createTextHandlers((value: string) => handleInputChange('mc_number', value));
-  const dotNumberHandlers = createTextHandlers((value: string) => handleInputChange('dot_number', value));
+  const mcNumberHandlers = createMCHandlers((value: string) => handleInputChange('mc_number', value));
+  const dotNumberHandlers = createDOTHandlers((value: string) => handleInputChange('dot_number', value));
   
   // Create text handlers for owner fields
   const ownerNameHandlers = createTextHandlers((value: string) => handleInputChange('owner_name', value));
@@ -285,8 +285,9 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                     id="mc_number"
                     value={formData.mc_number || ''}
                     onChange={mcNumberHandlers.onChange}
-                    onBlur={mcNumberHandlers.onBlur}
-                    placeholder="MC-XXXXXX"
+                    onKeyPress={mcNumberHandlers.onKeyPress}
+                    placeholder="MC-XXXXXXX"
+                    maxLength={10}
                   />
                 </div>
 
@@ -296,8 +297,9 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                     id="dot_number"
                     value={formData.dot_number || ''}
                     onChange={dotNumberHandlers.onChange}
-                    onBlur={dotNumberHandlers.onBlur}
-                    placeholder="XXXXXXX"
+                    onKeyPress={dotNumberHandlers.onKeyPress}
+                    placeholder="XXXXXXXX"
+                    maxLength={8}
                   />
                 </div>
               </div>

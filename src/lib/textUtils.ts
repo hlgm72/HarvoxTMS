@@ -151,3 +151,83 @@ export const createPhoneHandlers = (setValue: (value: string) => void) => {
     }
   };
 };
+
+/**
+ * Formats MC number input to MC-XXXXXXX format
+ * Used for Motor Carrier Number fields
+ */
+export const handleMCInput = (value: string): string => {
+  // Remove all non-alphanumeric characters except dashes
+  const clean = value.replace(/[^a-zA-Z0-9]/g, '');
+  
+  // If it starts with MC, preserve it, otherwise add MC prefix
+  let numbers = '';
+  if (clean.toLowerCase().startsWith('mc')) {
+    numbers = clean.slice(2).replace(/\D/g, '');
+  } else {
+    numbers = clean.replace(/\D/g, '');
+  }
+  
+  // Limit to 7 digits
+  const limitedNumbers = numbers.slice(0, 7);
+  
+  // Format based on length
+  if (limitedNumbers.length === 0) return '';
+  return `MC-${limitedNumbers}`;
+};
+
+/**
+ * Formats DOT number input - numbers only
+ * Used for Department of Transportation Number fields
+ */
+export const handleDOTInput = (value: string): string => {
+  // Remove all non-numeric characters
+  const numbers = value.replace(/\D/g, '');
+  
+  // Limit to 8 digits (DOT numbers can be up to 8 digits)
+  const limitedNumbers = numbers.slice(0, 8);
+  
+  return limitedNumbers;
+};
+
+/**
+ * Creates MC-specific handlers with formatting
+ */
+export const createMCHandlers = (setValue: (value: string) => void) => {
+  return {
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      const formattedValue = handleMCInput(e.target.value);
+      setValue(formattedValue);
+    },
+    onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => {
+      // Allow only numbers, letters (for MC), backspace, delete, arrows, and dashes
+      const allowedKeys = /[0-9a-zA-Z\-]/;
+      const specialKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
+      
+      if (!allowedKeys.test(e.key) && !specialKeys.includes(e.key)) {
+        e.preventDefault();
+      }
+    }
+  };
+};
+
+/**
+ * Creates DOT-specific handlers with formatting
+ */
+export const createDOTHandlers = (setValue: (value: string) => void) => {
+  return {
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      const formattedValue = handleDOTInput(e.target.value);
+      setValue(formattedValue);
+    },
+    onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => {
+      // Allow only numbers, backspace, delete, arrows
+      const allowedKeys = /[0-9]/;
+      const specialKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
+      
+      if (!allowedKeys.test(e.key) && !specialKeys.includes(e.key)) {
+        e.preventDefault();
+      }
+    }
+  };
+};
