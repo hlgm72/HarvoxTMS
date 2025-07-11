@@ -153,10 +153,7 @@ export const useUserRoles = (): UseUserRolesReturn => {
 
     const result = await assignRole(user.id, currentRole.company_id, role);
     
-    if (result.success) {
-      // Refresh roles to update the UI
-      await refreshRoles();
-    }
+    // assignRole already calls refreshRoles(), so we don't need to call it again
     
     return result;
   };
@@ -173,10 +170,7 @@ export const useUserRoles = (): UseUserRolesReturn => {
 
     const result = await removeRole(user.id, currentRole.company_id, role);
     
-    if (result.success) {
-      // Refresh roles to update the UI
-      await refreshRoles();
-    }
+    // removeRole already calls refreshRoles(), so we don't need to call it again
     
     return result;
   };
