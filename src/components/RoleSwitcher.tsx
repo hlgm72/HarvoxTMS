@@ -36,8 +36,21 @@ const roleColors = {
 export const RoleSwitcher = () => {
   const { currentRole, availableRoles, switchRole, hasMultipleRoles } = useAuth();
 
-  if (!currentRole || !hasMultipleRoles) {
+  // Don't render if no current role
+  if (!currentRole) {
     return null;
+  }
+
+  // If user has only one role, show it as read-only
+  if (!hasMultipleRoles) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-2 rounded-md border bg-muted/50">
+        <User className="h-4 w-4" />
+        <span className="text-sm font-medium">
+          {roleLabels[currentRole.role as keyof typeof roleLabels] || currentRole.role}
+        </span>
+      </div>
+    );
   }
 
   return (
