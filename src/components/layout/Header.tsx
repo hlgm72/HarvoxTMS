@@ -12,12 +12,14 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "@/hooks/useAuth";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import { LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export function Header() {
   const { t } = useTranslation(['common', 'fleet']);
-  const { signOut, user } = useAuth();
+  const { signOut } = useAuth();
+  const { getUserInitials, getFullName, user } = useUserProfile();
   const { toast } = useToast();
 
   const handleLogout = async () => {
@@ -60,7 +62,7 @@ export function Header() {
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-primary text-primary-foreground">
-                    {user?.email?.charAt(0).toUpperCase() || 'U'}
+                    {getUserInitials()}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -68,7 +70,7 @@ export function Header() {
             <DropdownMenuContent className="w-56" align="end">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{t('common:navigation.account', 'Mi Cuenta')}</p>
+                  <p className="text-sm font-medium leading-none">{getFullName()}</p>
                   <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
                 </div>
               </DropdownMenuLabel>
