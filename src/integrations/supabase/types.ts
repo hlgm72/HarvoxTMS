@@ -1716,6 +1716,13 @@ export type Database = {
           id: string
         }[]
       }
+      get_user_company_roles: {
+        Args: { user_id_param: string }
+        Returns: {
+          company_id: string
+          role: Database["public"]["Enums"]["user_role"]
+        }[]
+      }
       has_role: {
         Args: {
           _user_id: string
