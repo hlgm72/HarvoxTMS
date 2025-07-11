@@ -125,7 +125,7 @@ const handler = async (req: Request): Promise<Response> => {
     const template = templates[lang as keyof typeof templates] || templates.es;
 
     const emailResponse = await resend.emails.send({
-      from: "FleetNest <noreply@tudominio.com>", // Cambia "tudominio.com" por tu dominio verificado
+      from: "FleetNest <noreply@fleetnest.app>",
       to: [email],
       subject: template.subject,
       html: template.html,
