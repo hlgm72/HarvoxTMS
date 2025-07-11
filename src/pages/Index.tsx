@@ -22,17 +22,9 @@ export default function Index() {
     if (!loading && user) {
       // Si el usuario está autenticado pero no tiene rol asignado
       if (!userRole) {
-        // Dar más tiempo para que el rol se cargue antes de verificar setup
-        // Solo verificar setup después de un delay para evitar condiciones de carrera
-        const timeoutId = setTimeout(async () => {
-          // Volver a verificar si ya se cargó el rol
-          if (userRole) return;
-          
-          // Verificar si el sistema necesita setup inicial
-          await checkIfNeedsSetup();
-        }, 1000); // Esperar 1 segundo antes de verificar setup
-        
-        return () => clearTimeout(timeoutId);
+        // Redirigir a perfil para que el usuario complete su información
+        navigate('/profile');
+        return;
       }
       
       // Redirigir según el rol del usuario
