@@ -9,6 +9,7 @@ import { Building2, Plus, Phone, Mail, User, MapPin, Search, Edit, Trash2, Users
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { createTextHandlers } from "@/lib/textUtils";
+import { useTranslation } from 'react-i18next';
 
 // Import new components
 import { CompanyStats } from "@/components/companies/CompanyStats";
@@ -60,6 +61,8 @@ type SortField = 'name' | 'owner_name' | 'plan_type' | 'status' | 'created_at';
 type SortDirection = 'asc' | 'desc';
 
 export default function Companies() {
+  const { t } = useTranslation(['admin', 'common']);
+  
   // Basic state
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
@@ -385,10 +388,10 @@ export default function Companies() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
             <Building2 className="h-8 w-8" />
-            Gestión de Empresas
+            {t('admin:pages.companies.title')}
           </h1>
           <p className="text-muted-foreground">
-            Administra todas las empresas del sistema
+            {t('admin:pages.companies.description')}
           </p>
         </div>
 
@@ -402,7 +405,7 @@ export default function Companies() {
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                Crear Empresa
+                {t('admin:pages.companies.actions.add_company')}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
