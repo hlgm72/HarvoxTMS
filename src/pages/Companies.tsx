@@ -11,6 +11,7 @@ import { useFleetNotifications } from "@/components/notifications";
 import { createTextHandlers } from "@/lib/textUtils";
 import { useTranslation } from 'react-i18next';
 import { Company } from '@/types/company';
+import { StateCombobox } from "@/components/ui/StateCombobox";
 
 // Import new components
 import { CompanyStats } from "@/components/companies/CompanyStats";
@@ -58,7 +59,7 @@ export default function Companies() {
     phone: "",
     email: "",
     street_address: "",
-    state_id: "TX",
+    state_id: "",
     zip_code: "",
     plan_type: "basic",
     owner_name: "",
@@ -293,7 +294,7 @@ export default function Companies() {
       phone: "",
       email: "",
       street_address: "",
-      state_id: "TX",
+      state_id: "",
       zip_code: "",
       plan_type: "basic",
       owner_name: "",
@@ -460,16 +461,11 @@ export default function Companies() {
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-2">
                       <Label htmlFor="state_id">{t('admin:pages.companies.form.state')} *</Label>
-                      <Select value={formData.state_id} onValueChange={(value) => setFormData(prev => ({ ...prev, state_id: value }))}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="TX">Texas</SelectItem>
-                          <SelectItem value="CA">California</SelectItem>
-                          <SelectItem value="FL">Florida</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <StateCombobox
+                        value={formData.state_id}
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, state_id: value || '' }))}
+                        placeholder="Selecciona estado..."
+                      />
                     </div>
 
                     <div className="space-y-2">
@@ -766,16 +762,11 @@ export default function Companies() {
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-2">
                   <Label htmlFor="edit-state_id">{t('admin:pages.companies.form.state')} *</Label>
-                  <Select value={formData.state_id} onValueChange={(value) => setFormData(prev => ({ ...prev, state_id: value }))}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="TX">Texas</SelectItem>
-                      <SelectItem value="CA">California</SelectItem>
-                      <SelectItem value="FL">Florida</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <StateCombobox
+                    value={formData.state_id}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, state_id: value || '' }))}
+                    placeholder="Selecciona estado..."
+                  />
                 </div>
 
                 <div className="space-y-2">
