@@ -22,6 +22,7 @@ import { useFleetNotifications } from '@/components/notifications';
 import { createTextHandlers, handlePhoneInput } from '@/lib/textUtils';
 import { useTranslation } from 'react-i18next';
 import { useSuperAdminDashboard } from '@/hooks/useSuperAdminDashboard';
+import { refreshAuthSession, forceReauth } from '@/lib/authUtils';
 
 interface CompanyStats {
   total_companies: number;
@@ -382,6 +383,27 @@ export default function SuperAdminDashboard() {
               </div>
               
               <div className="flex gap-3 animate-fade-in" style={{animationDelay: '0.2s'}}>
+                <Button 
+                  variant="outline" 
+                  onClick={async () => {
+                    try {
+                      const success = await refreshAuthSession();
+                      if (success) {
+                        showSuccess("Session refreshed", "Your authentication session has been refreshed");
+                        window.location.reload();
+                      } else {
+                        showError("Session refresh failed", "Could not refresh session, please re-login");
+                      }
+                    } catch (error) {
+                      console.error('Error refreshing session:', error);
+                      showError("Authentication error", "Please sign out and sign in again");
+                    }
+                  }}
+                  className="bg-white/10 border-white text-white hover:bg-white hover:text-primary transition-all hover:scale-105 font-medium"
+                >
+                  <Activity className="h-4 w-4 mr-2" />
+                  Fix Auth Issues
+                </Button>
                 <Button 
                   variant="outline" 
                   className="bg-white/10 border-white text-white hover:bg-white hover:text-primary transition-all hover:scale-105 font-medium"
