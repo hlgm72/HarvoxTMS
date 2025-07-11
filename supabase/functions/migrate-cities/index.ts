@@ -86,7 +86,7 @@ Deno.serve(async (req) => {
     console.log(`📋 Existing cities in destination: ${existingCities}`)
 
     // Migrate cities in batches
-    const batchSize = 1000
+    const batchSize = 500
     let offset = 0
     let totalMigrated = 0
     let totalSkipped = 0
@@ -111,6 +111,11 @@ Deno.serve(async (req) => {
       if (!sourceCities || sourceCities.length === 0) {
         console.log('✅ No more cities to process')
         break
+      }
+
+      // Log first city structure to debug
+      if (offset === 0 && sourceCities.length > 0) {
+        console.log('🔍 Sample source city structure:', JSON.stringify(sourceCities[0], null, 2))
       }
 
       // Get all existing cities for this batch's states to check duplicates efficiently
