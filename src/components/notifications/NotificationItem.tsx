@@ -48,11 +48,11 @@ const notificationConfig = {
   },
   info: {
     icon: Info,
-    bgColor: 'bg-gradient-to-r from-secondary/90 to-secondary',
-    borderColor: 'border-secondary/30',
-    iconColor: 'text-secondary-foreground',
-    textColor: 'text-secondary-foreground',
-    shadow: 'shadow-lg shadow-secondary/30'
+    bgColor: 'bg-gradient-to-r from-blue-500/90 to-blue-600',
+    borderColor: 'border-blue-500/30',
+    iconColor: 'text-white',
+    textColor: 'text-white',
+    shadow: 'shadow-lg shadow-blue-500/30'
   }
 };
 
