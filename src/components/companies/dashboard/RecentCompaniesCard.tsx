@@ -1,17 +1,20 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Company } from "@/types/company";
 import { PlanBadge } from "../PlanBadge";
+import { useTranslation } from 'react-i18next';
 
 interface RecentCompaniesCardProps {
   companies: Company[];
 }
 
 export function RecentCompaniesCard({ companies }: RecentCompaniesCardProps) {
+  const { t } = useTranslation('admin');
+  
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Empresas Recientes</CardTitle>
-        <CardDescription>Últimas 5 empresas registradas (30 días)</CardDescription>
+        <CardTitle>{t('pages.companies.stats.recent_companies')}</CardTitle>
+        <CardDescription>{t('pages.companies.stats.recent_companies_desc')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -35,7 +38,7 @@ export function RecentCompaniesCard({ companies }: RecentCompaniesCardProps) {
           ))}
           {companies.length === 0 && (
             <div className="text-center py-4 text-muted-foreground">
-              No hay empresas recientes
+              {t('pages.companies.stats.no_recent_companies')}
             </div>
           )}
         </div>

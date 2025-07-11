@@ -1,0 +1,106 @@
+{
+  "pages": {
+    "not_found": {
+      "title": "Oops! Page not found",
+      "description": "The page you are looking for does not exist or has been moved. Don't worry, we help you find what you need.",
+      "buttons": {
+        "home": "Go to Home",
+        "dashboard": "Dashboard"
+      },
+      "search_suggestion": "Looking for something specific? Try from the main menu"
+    },
+    "companies": {
+      "title": "Companies",
+      "description": "Manage companies and their information",
+      "actions": {
+        "add_company": "Add Company",
+        "edit_company": "Edit Company",
+        "delete_company": "Delete Company",
+        "view_details": "View Details",
+        "export_data": "Export Data",
+        "bulk_actions": "Bulk Actions"
+      },
+      "form": {
+        "company_name": "Company Name",
+        "company_name_placeholder": "Enter company name",
+        "email": "Email",
+        "email_placeholder": "company@example.com", 
+        "phone": "Phone",
+        "phone_placeholder": "(555) 123-4567",
+        "address": "Address",
+        "address_placeholder": "123 Main St",
+        "state": "State",
+        "zip_code": "ZIP Code",
+        "zip_placeholder": "12345",
+        "plan_type": "Plan Type",
+        "status": "Status",
+        "owner_name": "Owner Name",
+        "owner_email": "Owner Email",
+        "owner_phone": "Owner Phone",
+        "owner_title": "Owner Title",
+        "max_users": "Max Users",
+        "max_vehicles": "Max Vehicles"
+      },
+      "filters": {
+        "all_companies": "All Companies",
+        "search_placeholder": "Search companies...",
+        "filter_by_status": "Filter by Status",
+        "filter_by_plan": "Filter by Plan",
+        "filter_by_state": "Filter by State"
+      },
+      "views": {
+        "table": "Table",
+        "cards": "Cards", 
+        "list": "List",
+        "dashboard": "Dashboard"
+      },
+      "stats": {
+        "total_companies": "Total Companies",
+        "active_companies": "Active Companies",
+        "new_this_month": "New This Month",
+        "plan_distribution": "Plan Distribution",
+        "plan_distribution_desc": "Number of companies by plan type",
+        "geographic_distribution": "Geographic Distribution", 
+        "geographic_distribution_desc": "Companies by state",
+        "status_distribution": "Company Status",
+        "status_distribution_desc": "Distribution by activity status",
+        "monthly_growth": "Monthly Growth",
+        "monthly_growth_desc": "New companies per month (last 12 months)",
+        "recent_companies": "Recent Companies",
+        "recent_companies_desc": "Last 5 registered companies (30 days)",
+        "no_recent_companies": "No recent companies"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "pending": "Pending",
+        "suspended": "Suspended"
+      },
+      "plans": {
+        "basic": "Basic",
+        "premium": "Premium", 
+        "enterprise": "Enterprise",
+        "trial": "Trial",
+        "demo": "Demo"
+      }
+    },
+    "superadmin": {
+      "title": "Super Admin Dashboard",
+      "description": "System administration and oversight",
+      "tabs": {
+        "overview": "Overview",
+        "companies": "Companies",
+        "users": "Users",
+        "system": "System"
+      },
+      "metrics": {
+        "total_companies": "Total Companies",
+        "total_users": "Total Users", 
+        "total_vehicles": "Total Vehicles",
+        "total_drivers": "Total Drivers",
+        "active_sessions": "Active Sessions",
+        "system_health": "System Health"
+      }
+    }
+  }
+}

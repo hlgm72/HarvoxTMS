@@ -1,15 +1,18 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslation } from 'react-i18next';
 
 interface MonthlyGrowthCardProps {
   data: Array<{ month: string; empresas: number }>;
 }
 
 export function MonthlyGrowthCard({ data }: MonthlyGrowthCardProps) {
+  const { t } = useTranslation('admin');
+  
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Crecimiento Mensual</CardTitle>
-        <CardDescription>Nuevas empresas por mes (últimos 12 meses)</CardDescription>
+        <CardTitle>{t('pages.companies.stats.monthly_growth')}</CardTitle>
+        <CardDescription>{t('pages.companies.stats.monthly_growth_desc')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-2 max-h-48 overflow-y-auto">

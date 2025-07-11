@@ -1,0 +1,106 @@
+{
+  "pages": {
+    "not_found": {
+      "title": "¡Oops! Página no encontrada",
+      "description": "La página que buscas no existe o ha sido movida. No te preocupes, te ayudamos a encontrar lo que necesitas.",
+      "buttons": {
+        "home": "Ir al Inicio",
+        "dashboard": "Dashboard"
+      },
+      "search_suggestion": "¿Buscabas algo específico? Intenta desde el menú principal"
+    },
+    "companies": {
+      "title": "Empresas",
+      "description": "Gestionar empresas y su información",
+      "actions": {
+        "add_company": "Agregar Empresa",
+        "edit_company": "Editar Empresa",
+        "delete_company": "Eliminar Empresa",
+        "view_details": "Ver Detalles",
+        "export_data": "Exportar Datos",
+        "bulk_actions": "Acciones Masivas"
+      },
+      "form": {
+        "company_name": "Nombre de la Empresa",
+        "company_name_placeholder": "Ingresa el nombre de la empresa",
+        "email": "Email",
+        "email_placeholder": "empresa@ejemplo.com",
+        "phone": "Teléfono",
+        "phone_placeholder": "(555) 123-4567",
+        "address": "Dirección",
+        "address_placeholder": "123 Calle Principal",
+        "state": "Estado",
+        "zip_code": "Código Postal",
+        "zip_placeholder": "12345",
+        "plan_type": "Tipo de Plan",
+        "status": "Estado",
+        "owner_name": "Nombre del Propietario",
+        "owner_email": "Email del Propietario",
+        "owner_phone": "Teléfono del Propietario",
+        "owner_title": "Título del Propietario",
+        "max_users": "Máximo de Usuarios",
+        "max_vehicles": "Máximo de Vehículos"
+      },
+      "filters": {
+        "all_companies": "Todas las Empresas",
+        "search_placeholder": "Buscar empresas...",
+        "filter_by_status": "Filtrar por Estado",
+        "filter_by_plan": "Filtrar por Plan",
+        "filter_by_state": "Filtrar por Estado"
+      },
+      "views": {
+        "table": "Tabla",
+        "cards": "Tarjetas",
+        "list": "Lista",
+        "dashboard": "Dashboard"
+      },
+      "stats": {
+        "total_companies": "Total de Empresas",
+        "active_companies": "Empresas Activas",
+        "new_this_month": "Nuevas este Mes",
+        "plan_distribution": "Distribución por Plan",
+        "plan_distribution_desc": "Número de empresas por tipo de plan",
+        "geographic_distribution": "Distribución Geográfica",
+        "geographic_distribution_desc": "Empresas por estado",
+        "status_distribution": "Estado de las Empresas",
+        "status_distribution_desc": "Distribución por estado de actividad",
+        "monthly_growth": "Crecimiento Mensual",
+        "monthly_growth_desc": "Nuevas empresas por mes (últimos 12 meses)",
+        "recent_companies": "Empresas Recientes",
+        "recent_companies_desc": "Últimas 5 empresas registradas (30 días)",
+        "no_recent_companies": "No hay empresas recientes"
+      },
+      "status": {
+        "active": "Activo",
+        "inactive": "Inactivo",
+        "pending": "Pendiente",
+        "suspended": "Suspendido"
+      },
+      "plans": {
+        "basic": "Básico",
+        "premium": "Premium",
+        "enterprise": "Enterprise",
+        "trial": "Prueba",
+        "demo": "Demo"
+      }
+    },
+    "superadmin": {
+      "title": "Dashboard Super Admin",
+      "description": "Administración y supervisión del sistema",
+      "tabs": {
+        "overview": "Resumen",
+        "companies": "Empresas",
+        "users": "Usuarios",
+        "system": "Sistema"
+      },
+      "metrics": {
+        "total_companies": "Total de Empresas",
+        "total_users": "Total de Usuarios",
+        "total_vehicles": "Total de Vehículos", 
+        "total_drivers": "Total de Conductores",
+        "active_sessions": "Sesiones Activas",
+        "system_health": "Salud del Sistema"
+      }
+    }
+  }
+}

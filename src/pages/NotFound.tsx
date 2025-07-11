@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Home, ArrowLeft, Search, Compass } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 export default function NotFound() {
+  const { t } = useTranslation('admin');
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -60,12 +62,11 @@ export default function NotFound() {
                 </div>
                 
                 <h2 className="text-2xl md:text-3xl font-semibold text-foreground">
-                  ¡Oops! Página no encontrada
+                  {t('pages.not_found.title')}
                 </h2>
                 
                 <p className="text-lg text-muted-foreground max-w-md mx-auto leading-relaxed">
-                  La página que buscas no existe o ha sido movida. No te preocupes, 
-                  te ayudamos a encontrar lo que necesitas.
+                  {t('pages.not_found.description')}
                 </p>
               </div>
 
@@ -74,14 +75,14 @@ export default function NotFound() {
                 <Button asChild size="lg" className="min-w-40 group">
                   <Link to="/">
                     <Home className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                    Ir al Inicio
+                    {t('pages.not_found.buttons.home')}
                   </Link>
                 </Button>
                 
                 <Button asChild variant="outline" size="lg" className="min-w-40 group">
                   <Link to="/superadmin">
                     <ArrowLeft className="mr-2 h-5 w-5 group-hover:-translate-x-1 transition-transform" />
-                    Dashboard
+                    {t('pages.not_found.buttons.dashboard')}
                   </Link>
                 </Button>
               </div>
@@ -90,7 +91,7 @@ export default function NotFound() {
               <div className="pt-6 border-t border-border/50">
                 <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                   <Search className="h-4 w-4" />
-                  <span>¿Buscabas algo específico? Intenta desde el menú principal</span>
+                  <span>{t('pages.not_found.search_suggestion')}</span>
                 </div>
               </div>
             </CardContent>

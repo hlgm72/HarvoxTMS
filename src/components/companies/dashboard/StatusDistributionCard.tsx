@@ -1,15 +1,18 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslation } from 'react-i18next';
 
 interface StatusDistributionCardProps {
   data: Array<{ name: string; value: number }>;
 }
 
 export function StatusDistributionCard({ data }: StatusDistributionCardProps) {
+  const { t } = useTranslation('admin');
+  
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Estado de las Empresas</CardTitle>
-        <CardDescription>Distribución por estado de actividad</CardDescription>
+        <CardTitle>{t('pages.companies.stats.status_distribution')}</CardTitle>
+        <CardDescription>{t('pages.companies.stats.status_distribution_desc')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 gap-4">
