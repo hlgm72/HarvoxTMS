@@ -252,35 +252,35 @@ export default function Settings() {
           <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm border">
             <TabsTrigger 
               value="profile" 
-              className="flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:bg-primary/10 hover:-translate-y-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:scale-105"
+              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
               <User className="h-4 w-4" />
               Mi Perfil
             </TabsTrigger>
             <TabsTrigger 
               value="company" 
-              className="flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:bg-primary/10 hover:-translate-y-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:scale-105"
+              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
               <Building className="h-4 w-4" />
               Empresa
             </TabsTrigger>
             <TabsTrigger 
               value="system" 
-              className="flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:bg-primary/10 hover:-translate-y-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:scale-105"
+              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
               <Database className="h-4 w-4" />
               Sistema
             </TabsTrigger>
             <TabsTrigger 
               value="interface" 
-              className="flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:bg-primary/10 hover:-translate-y-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:scale-105"
+              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
               <Palette className="h-4 w-4" />
               Interfaz
             </TabsTrigger>
             <TabsTrigger 
               value="notifications" 
-              className="flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:bg-primary/10 hover:-translate-y-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:scale-105"
+              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
               <Bell className="h-4 w-4" />
               Notificaciones
