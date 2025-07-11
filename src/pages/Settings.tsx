@@ -233,23 +233,23 @@ export default function Settings() {
       <div className="p-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm border">
-            <TabsTrigger value="profile" className="flex items-center gap-2">
+            <TabsTrigger value="profile" className="flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-md">
               <User className="h-4 w-4" />
               Mi Perfil
             </TabsTrigger>
-            <TabsTrigger value="company" className="flex items-center gap-2">
+            <TabsTrigger value="company" className="flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-md">
               <Building className="h-4 w-4" />
               Empresa
             </TabsTrigger>
-            <TabsTrigger value="system" className="flex items-center gap-2">
+            <TabsTrigger value="system" className="flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-md">
               <Database className="h-4 w-4" />
               Sistema
             </TabsTrigger>
-            <TabsTrigger value="interface" className="flex items-center gap-2">
+            <TabsTrigger value="interface" className="flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-md">
               <Palette className="h-4 w-4" />
               Interfaz
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center gap-2">
+            <TabsTrigger value="notifications" className="flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-md">
               <Bell className="h-4 w-4" />
               Notificaciones
             </TabsTrigger>
@@ -294,11 +294,11 @@ export default function Settings() {
                 <Tabs value={profileSubTab} onValueChange={setProfileSubTab} className="w-full">
                   <CardHeader>
                     <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="info" className="flex items-center gap-2">
+                      <TabsTrigger value="info" className="flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-md">
                         <User className="h-4 w-4" />
                         Información Personal
                       </TabsTrigger>
-                      <TabsTrigger value="security" className="flex items-center gap-2">
+                      <TabsTrigger value="security" className="flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-md">
                         <Shield className="h-4 w-4" />
                         Seguridad
                       </TabsTrigger>
