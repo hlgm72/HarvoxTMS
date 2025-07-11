@@ -85,14 +85,28 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Input validation passed");
 
-    // TEMP: Skip all database operations to isolate the issue
-    console.log("Skipping all database operations for debugging...");
+    // TEMP: Test just the invitation check query
+    console.log("Testing invitation check query...");
+    
+    const { data: existingInvitations, error: invitationCheckError } = await supabase
+      .from('user_invitations')
+      .select('id, expires_at, accepted_at')
+      .eq('company_id', companyId)
+      .eq('email', email.toLowerCase())
+      .eq('role', 'company_owner');
+
+    console.log("Invitation check result:", { existingInvitations, invitationCheckError });
+
+    if (invitationCheckError) {
+      console.error("Error checking existing invitations:", invitationCheckError);
+      throw new Error(`Database error: ${invitationCheckError.message}`);
+    }
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: "DEBUG: All validations passed, database operations skipped",
-        data: { companyId, email, companyName, userId: user.id }
+        message: "DEBUG: Invitation check query passed",
+        data: { companyId, email, companyName, userId: user.id, existingInvitations }
       }),
       {
         status: 200,
