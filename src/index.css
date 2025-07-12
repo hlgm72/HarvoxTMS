@@ -79,24 +79,24 @@ All colors MUST be HSL.
 
     --radius: 0.5rem;
 
-    /* Limitless Style Sidebar - COLORES EXACTOS DEL SCREENSHOT */
-    --limitless-dark: 217 24% 14%;          /* #1f2937 - Color exacto del sidebar Limitless */
-    --limitless-darker: 217 24% 11%;        /* #1a202c - Header más oscuro */
-    --limitless-light: 217 24% 20%;         /* #374151 - Hover states */
-    --limitless-accent: 217 91% 60%;        /* #3B82F6 - Azul exacto de Limitless */
-    --limitless-text: 210 40% 98%;          /* #f8fafc - Texto blanco */
-    --limitless-text-muted: 215 20% 65%;    /* #9ca3af - Texto gris */
-    --limitless-border: 217 24% 16%;        /* #374151 - Bordes */
+    /* FleetNest Style Sidebar - Using primary blue colors */
+    --fleet-sidebar-dark: 214 88% 54%;      /* Fleet blue primary */
+    --fleet-sidebar-darker: 214 95% 20%;    /* Fleet navy for header */
+    --fleet-sidebar-light: 214 88% 64%;     /* Lighter blue for hover */
+    --fleet-sidebar-accent: 214 88% 70%;    /* Even lighter blue for accents */
+    --fleet-sidebar-text: 210 40% 98%;      /* White text */
+    --fleet-sidebar-text-muted: 215 20% 85%; /* Light grey text */
+    --fleet-sidebar-border: 214 88% 40%;    /* Darker blue for borders */
     
-    /* Sidebar mapping to Limitless exact colors */
-    --sidebar-background: var(--limitless-dark);
-    --sidebar-foreground: var(--limitless-text);
-    --sidebar-primary: var(--limitless-accent);
-    --sidebar-primary-foreground: var(--limitless-text);
-    --sidebar-accent: var(--limitless-light);
-    --sidebar-accent-foreground: var(--limitless-text);
-    --sidebar-border: var(--limitless-border);
-    --sidebar-ring: var(--limitless-accent);
+    /* Sidebar mapping to FleetNest colors */
+    --sidebar-background: var(--fleet-sidebar-dark);
+    --sidebar-foreground: var(--fleet-sidebar-text);
+    --sidebar-primary: var(--fleet-sidebar-accent);
+    --sidebar-primary-foreground: var(--fleet-sidebar-text);
+    --sidebar-accent: var(--fleet-sidebar-light);
+    --sidebar-accent-foreground: var(--fleet-sidebar-text);
+    --sidebar-border: var(--fleet-sidebar-border);
+    --sidebar-ring: var(--fleet-sidebar-accent);
 
     /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
