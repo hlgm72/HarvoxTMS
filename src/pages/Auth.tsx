@@ -332,18 +332,12 @@ export default function Auth() {
         if (data.user) {
           console.log('User logged in:', data.user.id);
           
-          // Clear any stored role to force fresh role selection
-          localStorage.removeItem('currentRole');
-          localStorage.removeItem('lastActiveRole');
-          sessionStorage.removeItem('activeRole');
-
-          // Check user roles to determine redirect - get all roles and prioritize company_owner
+          // Get all user roles first
           const { data: roleData, error: roleError } = await supabase
             .from('user_company_roles')
-            .select('role')
+            .select('role, id, company_id')
             .eq('user_id', data.user.id)
-            .eq('is_active', true)
-            .order('role'); // This will help ensure consistent ordering
+            .eq('is_active', true);
 
           console.log('Role query result:', { roleData, roleError });
 
@@ -352,23 +346,57 @@ export default function Auth() {
             "Has iniciado sesión exitosamente en FleetNest"
           );
 
-          // Determine redirect based on role priority: superadmin > company_owner > operations_manager > dispatcher > driver
           const roles = roleData || [];
-          const hasRole = (role: string) => roles.some(r => r.role === role);
           
-          if (hasRole('superadmin')) {
+          // Check if there's a previously stored role that's still valid
+          const storedRoleString = localStorage.getItem('currentRole') || localStorage.getItem('lastActiveRole');
+          let targetRole = null;
+          
+          if (storedRoleString) {
+            try {
+              const storedRole = JSON.parse(storedRoleString);
+              // Verify the stored role is still valid (user still has this role)
+              const isStillValid = roles.some(r => r.role === storedRole.role && r.company_id === storedRole.company_id);
+              if (isStillValid) {
+                targetRole = storedRole.role;
+                console.log('Using previously active role:', targetRole);
+              }
+            } catch (e) {
+              console.warn('Error parsing stored role:', e);
+            }
+          }
+          
+          // If no valid stored role, use priority hierarchy
+          if (!targetRole && roles.length > 0) {
+            const hasRole = (role: string) => roles.some(r => r.role === role);
+            if (hasRole('superadmin')) {
+              targetRole = 'superadmin';
+            } else if (hasRole('company_owner')) {
+              targetRole = 'company_owner';
+            } else if (hasRole('operations_manager')) {
+              targetRole = 'operations_manager';
+            } else if (hasRole('dispatcher')) {
+              targetRole = 'dispatcher';
+            } else if (hasRole('driver')) {
+              targetRole = 'driver';
+            }
+            console.log('Using role from hierarchy:', targetRole);
+          }
+
+          // Redirect based on determined role
+          if (targetRole === 'superadmin') {
             console.log('Redirecting to superadmin dashboard');
             navigate('/superadmin');
-          } else if (hasRole('company_owner')) {
+          } else if (targetRole === 'company_owner') {
             console.log('Redirecting to owner dashboard');
             navigate('/dashboard/owner');
-          } else if (hasRole('operations_manager')) {
+          } else if (targetRole === 'operations_manager') {
             console.log('Redirecting to operations dashboard');
             navigate('/dashboard/operations');
-          } else if (hasRole('dispatcher')) {
+          } else if (targetRole === 'dispatcher') {
             console.log('Redirecting to dispatcher dashboard');
             navigate('/dashboard/dispatch');
-          } else if (hasRole('driver')) {
+          } else if (targetRole === 'driver') {
             console.log('Redirecting to driver dashboard');
             navigate('/dashboard/driver');
           } else {
