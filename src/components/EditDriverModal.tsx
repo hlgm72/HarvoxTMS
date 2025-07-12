@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,8 +11,6 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Dialog,
   DialogContent,
@@ -259,36 +258,19 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                   </div>
                   <div className="space-y-2">
                     <Label>Fecha de Contratación</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !driverData.hire_date && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {driverData.hire_date ? (
-                            format(driverData.hire_date, "PPP", { locale: es })
-                          ) : (
-                            <span>Seleccionar fecha</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={driverData.hire_date || undefined}
-                          onSelect={(date) => updateDriverData('hire_date', date)}
-                          initialFocus
-                          captionLayout="dropdown"
-                          fromYear={1970}
-                          toYear={new Date().getFullYear()}
-                          className={cn("p-3 pointer-events-auto")}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <DatePicker
+                      selected={driverData.hire_date}
+                      onChange={(date: Date | null) => updateDriverData('hire_date', date)}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="Seleccionar fecha"
+                      showYearDropdown
+                      showMonthDropdown
+                      dropdownMode="select"
+                      yearDropdownItemNumber={100}
+                      scrollableYearDropdown
+                      locale={es}
+                      className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md"
+                    />
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label htmlFor="is_active">Estado del Empleado</Label>
@@ -308,36 +290,19 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                     <>
                       <div className="space-y-2">
                         <Label>Fecha de Terminación</Label>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "w-full justify-start text-left font-normal",
-                                !driverData.termination_date && "text-muted-foreground"
-                              )}
-                            >
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {driverData.termination_date ? (
-                                format(driverData.termination_date, "PPP", { locale: es })
-                              ) : (
-                                <span>Seleccionar fecha</span>
-                              )}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={driverData.termination_date || undefined}
-                              onSelect={(date) => updateDriverData('termination_date', date)}
-                              initialFocus
-                              captionLayout="dropdown"
-                              fromYear={1970}
-                              toYear={new Date().getFullYear()}
-                              className={cn("p-3 pointer-events-auto")}
-                            />
-                          </PopoverContent>
-                        </Popover>
+                        <DatePicker
+                          selected={driverData.termination_date}
+                          onChange={(date: Date | null) => updateDriverData('termination_date', date)}
+                          dateFormat="dd/MM/yyyy"
+                          placeholderText="Seleccionar fecha"
+                          showYearDropdown
+                          showMonthDropdown
+                          dropdownMode="select"
+                          yearDropdownItemNumber={100}
+                          scrollableYearDropdown
+                          locale={es}
+                          className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md"
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="termination_reason">Razón de Terminación</Label>
