@@ -142,25 +142,25 @@ export default function Users() {
       // Agrupar por usuario para manejar múltiples roles
       const usersMap = new Map<string, User>();
       
-      companyUsers.forEach(userRole => {
-        const userId = userRole.user_id;
+      companyUsers.forEach(companyUserRole => {
+        const userId = companyUserRole.user_id;
         const profile = profiles?.find(p => p.user_id === userId);
         
         if (usersMap.has(userId)) {
           // Usuario ya existe, agregar rol adicional
           const existingUser = usersMap.get(userId)!;
-          existingUser.role = existingUser.role + ', ' + getRoleLabel(userRole.role);
+          existingUser.role = existingUser.role + ', ' + getRoleLabel(companyUserRole.role);
         } else {
           // Nuevo usuario
           usersMap.set(userId, {
             id: userId,
             email: 'N/A', // Se actualizará después si es posible
-            role: getRoleLabel(userRole.role),
-            status: userRole.is_active ? 'active' : 'inactive',
+            role: getRoleLabel(companyUserRole.role),
+            status: companyUserRole.is_active ? 'active' : 'inactive',
             first_name: profile?.first_name || '',
             last_name: profile?.last_name || '',
             avatar_url: profile?.avatar_url || '',
-            created_at: userRole.created_at
+            created_at: companyUserRole.created_at
           });
         }
       });
