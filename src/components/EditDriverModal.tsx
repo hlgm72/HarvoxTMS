@@ -271,6 +271,7 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                         yearDropdownItemNumber={100}
                         scrollableYearDropdown
                         locale={es}
+                        withPortal
                         className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
                       />
                     </div>
@@ -304,6 +305,7 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                           yearDropdownItemNumber={100}
                           scrollableYearDropdown
                           locale={es}
+                          withPortal
                           className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md"
                         />
                       </div>
