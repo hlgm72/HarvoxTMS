@@ -275,6 +275,22 @@ export default function Users() {
     });
   };
 
+  // Función para obtener las iniciales del usuario
+  const getUserInitials = (user: User) => {
+    const firstName = user.first_name?.trim();
+    const lastName = user.last_name?.trim();
+    
+    if (firstName && lastName) {
+      return `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`;
+    } else if (firstName) {
+      return firstName[0].toUpperCase();
+    } else if (user.email) {
+      return user.email[0].toUpperCase();
+    } else {
+      return 'U';
+    }
+  };
+
   const handleViewUser = (user: User) => {
     setSelectedUser(user);
     setViewDialogOpen(true);
@@ -745,7 +761,7 @@ export default function Users() {
                       <div className="flex items-center space-x-3">
                         <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                           <span className="text-sm font-medium text-primary">
-                            {user.first_name ? user.first_name[0].toUpperCase() : user.email[0].toUpperCase()}
+                            {getUserInitials(user)}
                           </span>
                         </div>
                         <div>
