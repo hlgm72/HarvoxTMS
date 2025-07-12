@@ -168,8 +168,16 @@ export default function Users() {
   const handleInviteUser = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!inviteForm.email || !inviteForm.role) {
-      toast.error('Email y rol son requeridos');
+    // Limpiar espacios innecesarios de los campos de texto
+    const cleanedForm = {
+      email: inviteForm.email.trim(),
+      role: inviteForm.role,
+      first_name: inviteForm.first_name.trim(),
+      last_name: inviteForm.last_name.trim()
+    };
+    
+    if (!cleanedForm.email || !cleanedForm.role) {
+      showError('Email y rol son requeridos');
       return;
     }
 
@@ -179,16 +187,16 @@ export default function Users() {
       // Llamar a la función edge para enviar invitación
       const { data, error } = await supabase.functions.invoke('send-company-owner-invitation', {
         body: {
-          email: inviteForm.email,
-          role: inviteForm.role,
-          first_name: inviteForm.first_name,
-          last_name: inviteForm.last_name,
+          email: cleanedForm.email,
+          role: cleanedForm.role,
+          first_name: cleanedForm.first_name,
+          last_name: cleanedForm.last_name,
         }
       });
 
       if (error) throw error;
 
-      toast.success('Invitación enviada exitosamente');
+      showSuccess('Invitación enviada exitosamente');
       setInviteDialogOpen(false);
       setInviteForm({ email: '', role: '', first_name: '', last_name: '' });
       
@@ -197,7 +205,7 @@ export default function Users() {
       
     } catch (error: any) {
       console.error('Error inviting user:', error);
-      toast.error(error.message || 'Error al enviar la invitación');
+      showError(error.message || 'Error al enviar la invitación');
     } finally {
       setLoading(false);
     }
