@@ -28,7 +28,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UserPlus, Mail, Shield, Edit, Trash2, Users as UsersIcon, Eye } from "lucide-react";
+import { 
+  UserPlus, Mail, Shield, Edit, Trash2, Users as UsersIcon, Eye,
+  Activity, Clock, AlertCircle, TrendingUp
+} from "lucide-react";
 import { toast } from "sonner";
 import { useFleetNotifications } from "@/components/notifications";
 import { handleTextBlur, createTextHandlers } from "@/lib/textUtils";
@@ -84,6 +87,15 @@ export default function Users() {
   const [editingRoles, setEditingRoles] = useState<string[]>([]);
   const [editingStatus, setEditingStatus] = useState<string>('');
   const [updatingRoles, setUpdatingRoles] = useState(false);
+  
+  // Estados para estadísticas del dashboard
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeUsers: 0,
+    pendingInvitations: 0,
+    usersByRole: {} as Record<string, number>,
+    recentUsers: 0
+  });
 
   // Cargar usuarios al montar el componente
   useEffect(() => {
@@ -209,12 +221,74 @@ export default function Users() {
         }
       }
 
-      setUsers(Array.from(usersMap.values()));
+      const usersList = Array.from(usersMap.values());
+      setUsers(usersList);
+      
+      // Calcular estadísticas después de obtener los usuarios
+      calculateStats(usersList, userRole?.company_id);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast.error('Error al cargar usuarios');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const calculateStats = async (usersList: User[], companyId?: string) => {
+    if (!companyId) return;
+
+    try {
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+      // Calcular estadísticas básicas de usuarios
+      const totalUsers = usersList.length;
+      const activeUsers = usersList.filter(u => u.status === 'active').length;
+      
+      // Contar usuarios recientes (registrados en la última semana)
+      const recentUsers = usersList.filter(u => 
+        new Date(u.created_at) >= oneWeekAgo
+      ).length;
+
+      // Contar usuarios por rol
+      const usersByRole: Record<string, number> = {};
+      usersList.forEach(user => {
+        const userRoles = user.role.split(', ');
+        userRoles.forEach(roleLabel => {
+          // Obtener el rol original desde el label
+          const originalRole = Object.entries({
+            'superadmin': 'Super Admin',
+            'company_owner': 'Propietario',
+            'general_manager': 'Gerente General', 
+            'operations_manager': 'Gerente de Operaciones',
+            'safety_manager': 'Gerente de Seguridad',
+            'senior_dispatcher': 'Despachador Senior',
+            'dispatcher': 'Despachador',
+            'driver': 'Conductor',
+          }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+          
+          usersByRole[originalRole] = (usersByRole[originalRole] || 0) + 1;
+        });
+      });
+
+      // Obtener invitaciones pendientes
+      const { count: pendingInvitations } = await supabase
+        .from('user_invitations')
+        .select('*', { count: 'exact', head: true })
+        .eq('company_id', companyId)
+        .is('accepted_at', null)
+        .gt('expires_at', new Date().toISOString());
+
+      setStats({
+        totalUsers,
+        activeUsers,
+        pendingInvitations: pendingInvitations || 0,
+        usersByRole,
+        recentUsers
+      });
+
+    } catch (error) {
+      console.error('Error calculating stats:', error);
     }
   };
 
@@ -610,6 +684,103 @@ export default function Users() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Dashboard de Estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Total de Usuarios</p>
+                <p className="text-3xl font-bold text-blue-600">{stats.totalUsers}</p>
+              </div>
+              <div className="p-3 bg-blue-100 rounded-full">
+                <UsersIcon className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Usuarios Activos</p>
+                <p className="text-3xl font-bold text-green-600">{stats.activeUsers}</p>
+                <p className="text-xs text-muted-foreground">
+                  {stats.totalUsers > 0 ? `${Math.round((stats.activeUsers / stats.totalUsers) * 100)}%` : '0%'} del total
+                </p>
+              </div>
+              <div className="p-3 bg-green-100 rounded-full">
+                <Activity className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Invitaciones Pendientes</p>
+                <p className="text-3xl font-bold text-orange-600">{stats.pendingInvitations}</p>
+              </div>
+              <div className="p-3 bg-orange-100 rounded-full">
+                <AlertCircle className="h-6 w-6 text-orange-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Nuevos (7 días)</p>
+                <p className="text-3xl font-bold text-purple-600">{stats.recentUsers}</p>
+              </div>
+              <div className="p-3 bg-purple-100 rounded-full">
+                <TrendingUp className="h-6 w-6 text-purple-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Distribución por Roles */}
+      {Object.keys(stats.usersByRole).length > 0 && (
+        <Card className="animate-fade-in">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary" />
+              Distribución por Roles
+            </CardTitle>
+            <CardDescription>
+              Cantidad de usuarios asignados a cada rol en tu empresa
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {Object.entries(stats.usersByRole)
+                .sort(([a], [b]) => {
+                  const hierarchy = [
+                    'superadmin', 'company_owner', 'general_manager', 'operations_manager',
+                    'safety_manager', 'senior_dispatcher', 'dispatcher', 'driver'
+                  ];
+                  return hierarchy.indexOf(a) - hierarchy.indexOf(b);
+                })
+                .map(([role, count]) => (
+                  <div key={role} className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
+                    <Badge className={`text-xs ${getRoleBadgeColor(role)}`}>
+                      {getRoleLabel(role)}
+                    </Badge>
+                    <span className="font-semibold text-lg">{count}</span>
+                  </div>
+                ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Dialog para Ver Usuario */}
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
