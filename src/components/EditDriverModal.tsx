@@ -258,20 +258,22 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="hire_date">Fecha de Contratación</Label>
-                    <DatePicker
-                      id="hire_date"
-                      selected={driverData.hire_date}
-                      onChange={(date: Date | null) => updateDriverData('hire_date', date)}
-                      dateFormat="dd/MM/yyyy"
-                      placeholderText="Seleccionar fecha"
-                      showYearDropdown
-                      showMonthDropdown
-                      dropdownMode="select"
-                      yearDropdownItemNumber={100}
-                      scrollableYearDropdown
-                      locale={es}
-                      className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md"
-                    />
+                    <div>
+                      <DatePicker
+                        id="hire_date"
+                        selected={driverData.hire_date}
+                        onChange={(date: Date | null) => updateDriverData('hire_date', date)}
+                        dateFormat="dd/MM/yyyy"
+                        placeholderText="Seleccionar fecha"
+                        showYearDropdown
+                        showMonthDropdown
+                        dropdownMode="select"
+                        yearDropdownItemNumber={100}
+                        scrollableYearDropdown
+                        locale={es}
+                        className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label htmlFor="is_active">Estado del Empleado</Label>
