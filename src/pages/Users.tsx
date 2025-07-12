@@ -683,6 +683,27 @@ export default function Users() {
           });
 
         if (insertError) throw insertError;
+
+        // Activar automáticamente cuando se asigna rol de conductor
+        const driverRoles = newRoles.filter(role => role.role === 'driver');
+        if (driverRoles.length > 0) {
+          const driverActivations = driverRoles.map(driverRole => ({
+            user_id: driverRole.user_id,
+            is_active: true
+          }));
+
+          const { error: driverActivationError } = await supabase
+            .from('company_drivers')
+            .upsert(driverActivations, {
+              onConflict: 'user_id',
+              ignoreDuplicates: false
+            });
+
+          if (driverActivationError) {
+            console.warn('Error activating driver status:', driverActivationError);
+            // No lanzamos error para no bloquear la asignación de roles
+          }
+        }
       }
 
       showSuccess('Usuario actualizado exitosamente');

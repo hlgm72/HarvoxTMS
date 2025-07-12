@@ -23,11 +23,6 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 interface DriverData {
-  // Employee data
-  is_active: boolean;
-  termination_date?: Date | null;
-  termination_reason: string;
-  
   // Driver profile data
   driver_id: string;
   hire_date?: Date | null;
@@ -62,9 +57,6 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
   const [saving, setSaving] = useState(false);
   
   const [driverData, setDriverData] = useState<DriverData>({
-    is_active: true,
-    termination_date: null,
-    termination_reason: '',
     driver_id: '',
     hire_date: null,
     is_owner_operator: false,
@@ -127,9 +119,6 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
       const hasExistingOO = ownerOperator && ownerOperator.is_active;
 
       setDriverData({
-        is_active: companyDriver?.is_active ?? true,
-        termination_date: companyDriver?.termination_date ? new Date(companyDriver.termination_date) : null,
-        termination_reason: companyDriver?.termination_reason || '',
         driver_id: driverProfile?.driver_id || '',
         hire_date: driverProfile?.hire_date ? new Date(driverProfile.hire_date) : null,
         is_owner_operator: hasExistingOO,
@@ -240,20 +229,6 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
 
       if (driverError) throw driverError;
 
-      // Actualizar información de empleado (administrativa)
-      const { error: companyDriverError } = await supabase
-        .from('company_drivers')
-        .upsert({
-          user_id: userId,
-          is_active: driverData.is_active,
-          termination_date: driverData.termination_date?.toISOString().split('T')[0] || null,
-          termination_reason: driverData.termination_reason,
-        }, {
-          onConflict: 'user_id'
-        });
-
-      if (companyDriverError) throw companyDriverError;
-
       // Gestionar datos de owner operator basándose en el switch
       if (driverData.is_owner_operator) {
         // Crear/actualizar registro de owner operator
@@ -353,49 +328,6 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                     />
                   </div>
                 </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="is_active">Estado del Empleado</Label>
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="is_active"
-                      checked={driverData.is_active}
-                      onCheckedChange={(checked) => updateDriverData('is_active', checked)}
-                    />
-                    <span className="text-sm">
-                      {driverData.is_active ? 'Activo' : 'Inactivo'}
-                    </span>
-                  </div>
-                </div>
-
-                {!driverData.is_active && (
-                  <>
-                    <div className="space-y-2">
-                      <Label>Fecha de Terminación</Label>
-                      <DatePicker
-                        selected={driverData.termination_date}
-                        onChange={(date: Date | null) => updateDriverData('termination_date', date)}
-                        dateFormat="dd/MM/yyyy"
-                        placeholderText="Seleccionar fecha"
-                        showYearDropdown
-                        showMonthDropdown
-                        dropdownMode="select"
-                        yearDropdownItemNumber={100}
-                        scrollableYearDropdown
-                        locale={es}
-                        className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="termination_reason">Razón de Terminación</Label>
-                      <Input
-                        id="termination_reason"
-                        value={driverData.termination_reason}
-                        onChange={(e) => updateDriverData('termination_reason', e.target.value)}
-                        placeholder="Motivo de la terminación del contrato"
-                      />
-                    </div>
-                  </>
-                )}
               </div>
             </div>
 
