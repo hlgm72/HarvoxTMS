@@ -33,6 +33,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from 'react-i18next';
 import { useDriversCount } from "@/hooks/useDriversCount";
+import { useUserCompanies } from "@/hooks/useUserCompanies";
 
 // Mock data for companies
 const companies = [
@@ -383,7 +384,7 @@ export function AppSidebar() {
   } = useAuth();
   const location = useLocation();
   const currentPath = location.pathname;
-  const [selectedCompany, setSelectedCompany] = useState(companies[0]);
+  const { companies, selectedCompany, setSelectedCompany, loading } = useUserCompanies();
   const { driversCount } = useDriversCount();
   
   const collapsed = state === "collapsed";
@@ -566,7 +567,7 @@ export function AppSidebar() {
               </h2>
               
               {/* Solo mostrar selector de compañía si NO es superadmin */}
-              {!isSuperAdmin && (
+              {!isSuperAdmin && !loading && selectedCompany && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button 
@@ -576,9 +577,13 @@ export function AppSidebar() {
                     >
                       <div className="flex items-center gap-3">
                         <Avatar className="h-6 w-6">
-                          <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                            {selectedCompany.avatar}
-                          </AvatarFallback>
+                          {selectedCompany.logo_url ? (
+                            <AvatarImage src={selectedCompany.logo_url} alt={selectedCompany.name} />
+                          ) : (
+                            <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                              {selectedCompany.avatar}
+                            </AvatarFallback>
+                          )}
                         </Avatar>
                         <div className="text-left">
                           <p className="text-sm font-medium text-foreground">
@@ -600,9 +605,13 @@ export function AppSidebar() {
                         className="flex items-center gap-3 p-3"
                       >
                         <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-primary/10 text-primary">
-                            {company.avatar}
-                          </AvatarFallback>
+                          {company.logo_url ? (
+                            <AvatarImage src={company.logo_url} alt={company.name} />
+                          ) : (
+                            <AvatarFallback className="bg-primary/10 text-primary">
+                              {company.avatar}
+                            </AvatarFallback>
+                          )}
                         </Avatar>
                         <div className="flex flex-col">
                           <span className="font-medium">{company.name}</span>
