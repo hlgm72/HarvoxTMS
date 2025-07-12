@@ -240,18 +240,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isInitialized = useRef(false);
-  const isHandlingSession = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
 
     const handleSession = async (session: Session | null) => {
-      if (!isMounted || isHandlingSession.current) {
-        console.log('🚫 HandleSession blocked - isMounted:', isMounted, 'isHandling:', isHandlingSession.current);
-        return;
-      }
-      
-      isHandlingSession.current = true;
+      if (!isMounted) return;
       
       console.log('🚀 HandleSession called for user:', session?.user?.id);
       console.log('🚀 Session exists:', !!session);
@@ -307,9 +301,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           currentRole: null 
         });
         dispatch({ type: 'SET_LOADING', loading: false });
-      } finally {
-        isHandlingSession.current = false;
-        console.log('🔓 Released session handling lock');
       }
     };
 
