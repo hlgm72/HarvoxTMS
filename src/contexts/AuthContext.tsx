@@ -276,6 +276,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       console.log('🚀 HandleSession called for user:', session?.user?.id);
       console.log('🚀 Session exists:', !!session);
+      console.log('🚀 isInitialized.current:', isInitialized.current);
+      
+      // Si ya está inicializado, no hacer nada
+      if (isInitialized.current) {
+        console.log('⏭️ Already initialized, skipping handleSession');
+        return;
+      }
       
       try {
         dispatch({ type: 'SET_SESSION', session, user: session?.user ?? null });
