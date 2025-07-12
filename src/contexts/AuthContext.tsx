@@ -168,6 +168,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('🔍 Current timestamp:', new Date().toISOString());
     
     try {
+      // Obtener timestamp de último cambio para evitar condiciones de carrera
+      const lastChangeTimestamp = localStorage.getItem('roleChangeTimestamp');
+      console.log('🔍 Last role change timestamp:', lastChangeTimestamp);
+      
       // Intentar múltiples fuentes de persistencia en orden de prioridad
       const sources = [
         { name: 'localStorage:currentRole', value: localStorage.getItem('currentRole') },
@@ -178,6 +182,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('🔍 Buscando rol activo en múltiples fuentes...');
       console.log('🔍 Storage values:', sources.map(s => ({ name: s.name, hasValue: !!s.value, value: s.value ? s.value.substring(0, 50) + '...' : null })));
       
+      // Buscar el rol más reciente basado en timestamp
+      let mostRecentRole = null;
+      let mostRecentTimestamp = 0;
+      
       for (const source of sources) {
         if (source.value) {
           console.log(`✅ Encontrado en ${source.name}:`, source.value);
@@ -185,6 +193,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           try {
             const storedRole = JSON.parse(source.value);
             console.log('🔍 Parsed stored role:', storedRole);
+            
+            // Verificar si tiene timestamp (nuevo formato)
+            const roleTimestamp = storedRole._timestamp || 0;
             
             // Buscar por ID exacto primero
             let validRole = roles.find(r => r.id === storedRole.id);
@@ -199,19 +210,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               console.log('🔍 Searching by role+company:', storedRole.role, storedRole.company_id, 'found:', validRole);
             }
             
-            if (validRole) {
-              console.log(`🎯 ROL VÁLIDO ENCONTRADO EN ${source.name}:`, validRole);
-              console.log('🎯 RETORNANDO ESTE ROL COMO ACTIVO');
-              
-              // Asegurar que el rol encontrado se guarde en todas las fuentes para sincronización
-              const roleString = JSON.stringify(validRole);
-              localStorage.setItem('currentRole', roleString);
-              localStorage.setItem('lastActiveRole', roleString);
-              sessionStorage.setItem('activeRole', roleString);
-              console.log('🔒 Rol válido re-guardado en todas las fuentes para sincronización');
-              
-              return validRole;
-            } else {
+            // Si es válido y más reciente, actualizar
+            if (validRole && roleTimestamp >= mostRecentTimestamp) {
+              mostRecentRole = validRole;
+              mostRecentTimestamp = roleTimestamp;
+              console.log(`🎯 ROL MÁS RECIENTE ENCONTRADO EN ${source.name}:`, validRole, 'timestamp:', roleTimestamp);
+            } else if (!validRole) {
               console.log(`⚠️ Rol en ${source.name} no es válido para roles disponibles`);
               console.log('⚠️ Available roles:', roles.map(r => ({ id: r.id, role: r.role })));
               console.log('⚠️ Stored role details:', { id: storedRole.id, role: storedRole.role, company_id: storedRole.company_id });
@@ -222,6 +226,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           console.log(`❌ No encontrado en ${source.name}`);
         }
+      }
+      
+      // Si encontramos un rol más reciente válido, retornarlo
+      if (mostRecentRole) {
+        console.log('🎯 RETORNANDO ROL MÁS RECIENTE:', mostRecentRole, 'timestamp:', mostRecentTimestamp);
+        
+        // Asegurar que el rol encontrado se guarde en todas las fuentes para sincronización
+        const roleString = JSON.stringify({ ...mostRecentRole, _timestamp: mostRecentTimestamp });
+        localStorage.setItem('currentRole', roleString);
+        localStorage.setItem('lastActiveRole', roleString);
+        sessionStorage.setItem('activeRole', roleString);
+        console.log('🔒 Rol más reciente re-guardado en todas las fuentes para sincronización');
+        
+        return mostRecentRole;
       }
       
       console.log('🔄 No se encontró rol activo válido, usando rol con jerarquía más alta');
