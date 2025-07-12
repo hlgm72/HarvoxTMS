@@ -495,7 +495,7 @@ export default function Users() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div>
       {/* Page Toolbar */}
       <PageToolbar
         breadcrumbs={[
@@ -607,7 +607,7 @@ export default function Users() {
         }
       />
 
-      <div className="p-8">
+      <div className="p-6 space-y-6">
         {/* Dashboard de Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
