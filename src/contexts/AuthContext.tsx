@@ -103,6 +103,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Temporary hard-coded roles for user 087a825c-94ea-42d9-8388-5087a19d776f
     if (userId === '087a825c-94ea-42d9-8388-5087a19d776f') {
       console.log('🎯 Using hard-coded roles for user');
+      console.log('🔍 Pestaña:', window.location.href);
+      console.log('🔍 Timestamp:', new Date().toISOString());
+      
       const hardCodedRoles = [
         {
           id: 'e81bbb5d-2e79-48b5-835b-f8b03edb0dd1', // Driver PRIMERO
@@ -123,7 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           is_active: true
         }
       ];
-      console.log('✅ Returning hard-coded roles:', hardCodedRoles);
+      console.log('✅ Returning hard-coded roles en orden:', hardCodedRoles.map(r => `${r.role} (${r.id})`));
       return hardCodedRoles;
     }
     
@@ -304,21 +307,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Usar una clave única para evitar conflictos entre pestañas
   const initKey = 'auth_initialized_' + Date.now();
 
-  // Listener para detectar cambios en localStorage
+  // Listener para detectar cambios en localStorage y sincronizar entre pestañas
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'currentRole') {
-        console.log('🔄 localStorage currentRole cambió externamente:');
+      if (e.key === 'currentRole' || e.key === 'lastActiveRole') {
+        console.log('🔄 localStorage rol cambió externamente:');
+        console.log('  - Clave:', e.key);
         console.log('  - Valor anterior:', e.oldValue);
         console.log('  - Valor nuevo:', e.newValue);
         console.log('  - URL que hizo el cambio:', window.location.href);
-        console.log('  - Stack trace:', new Error().stack);
+        
+        // Si hay un nuevo valor y tenemos roles disponibles, sincronizar
+        if (e.newValue && authState.userRoles.length > 0) {
+          try {
+            const newRole = JSON.parse(e.newValue);
+            const validRole = authState.userRoles.find(r => 
+              r.id === newRole.id || 
+              (r.role === newRole.role && r.company_id === newRole.company_id)
+            );
+            
+            if (validRole && authState.currentRole?.id !== validRole.id) {
+              console.log('🔄 Sincronizando rol desde otra pestaña:', validRole.role);
+              dispatch({ type: 'SET_ROLES', userRoles: authState.userRoles, currentRole: validRole });
+            }
+          } catch (error) {
+            console.error('Error sincronizando rol:', error);
+          }
+        }
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  }, [authState.userRoles, authState.currentRole]);
 
   useEffect(() => {
     let isMounted = true;
