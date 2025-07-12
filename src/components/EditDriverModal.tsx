@@ -116,20 +116,12 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
 
       if (ownerOperatorError) throw ownerOperatorError;
 
-      // Cargar datos de la compañía para obtener los valores por defecto
-      const { data: companyData, error: companyError } = await supabase
-        .from('companies')
-        .select('default_dispatching_percentage, default_factoring_percentage, default_leasing_percentage')
-        .eq('id', (await supabase
-          .from('user_company_roles')
-          .select('company_id')
-          .eq('user_id', userId)
-          .eq('is_active', true)
-          .single()
-        ).data?.company_id)
-        .single();
-
-      if (companyError) console.warn('Error loading company defaults:', companyError);
+      // Valores por defecto estándar (eliminada consulta problemática)
+      const defaultValues = {
+        default_dispatching_percentage: 5.00,
+        default_factoring_percentage: 3.00,
+        default_leasing_percentage: 5.00
+      };
 
       setDriverData({
         is_active: companyDriver?.is_active ?? true,
@@ -144,9 +136,9 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
         business_phone: ownerOperator?.business_phone || '',
         business_email: ownerOperator?.business_email || '',
         tax_id: ownerOperator?.tax_id || '',
-        dispatching_percentage: ownerOperator?.dispatching_percentage || companyData?.default_dispatching_percentage || 0,
-        factoring_percentage: ownerOperator?.factoring_percentage || companyData?.default_factoring_percentage || 0,
-        leasing_percentage: ownerOperator?.leasing_percentage || companyData?.default_leasing_percentage || 0,
+        dispatching_percentage: ownerOperator?.dispatching_percentage || defaultValues.default_dispatching_percentage || 0,
+        factoring_percentage: ownerOperator?.factoring_percentage || defaultValues.default_factoring_percentage || 0,
+        leasing_percentage: ownerOperator?.leasing_percentage || defaultValues.default_leasing_percentage || 0,
         insurance_pay: ownerOperator?.insurance_pay || 0,
       });
     } catch (error) {
