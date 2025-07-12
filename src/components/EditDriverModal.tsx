@@ -169,16 +169,15 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
           .select('company_id')
           .eq('user_id', userId)
           .eq('is_active', true)
-          .limit(1)
-          .single();
+          .limit(1);
 
         if (rolesError) throw rolesError;
 
-        if (userRoles?.company_id) {
+        if (userRoles && userRoles.length > 0) {
           const { data: companyData, error: companyError } = await supabase
             .from('companies')
             .select('default_dispatching_percentage, default_factoring_percentage, default_leasing_percentage')
-            .eq('id', userRoles.company_id)
+            .eq('id', userRoles[0].company_id)
             .single();
 
           if (!companyError && companyData) {
