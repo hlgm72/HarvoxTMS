@@ -332,13 +332,18 @@ export default function Auth() {
         if (data.user) {
           console.log('User logged in:', data.user.id);
           
-          // Check user role to determine redirect
+          // Clear any stored role to force fresh role selection
+          localStorage.removeItem('currentRole');
+          localStorage.removeItem('lastActiveRole');
+          sessionStorage.removeItem('activeRole');
+
+          // Check user roles to determine redirect - get all roles and prioritize company_owner
           const { data: roleData, error: roleError } = await supabase
             .from('user_company_roles')
             .select('role')
             .eq('user_id', data.user.id)
             .eq('is_active', true)
-            .limit(1);
+            .order('role'); // This will help ensure consistent ordering
 
           console.log('Role query result:', { roleData, roleError });
 
@@ -347,20 +352,23 @@ export default function Auth() {
             "Has iniciado sesión exitosamente en FleetNest"
           );
 
-          // Redirect based on role
-          if (roleData?.[0]?.role === 'superadmin') {
+          // Determine redirect based on role priority: superadmin > company_owner > operations_manager > dispatcher > driver
+          const roles = roleData || [];
+          const hasRole = (role: string) => roles.some(r => r.role === role);
+          
+          if (hasRole('superadmin')) {
             console.log('Redirecting to superadmin dashboard');
             navigate('/superadmin');
-          } else if (roleData?.[0]?.role === 'company_owner') {
+          } else if (hasRole('company_owner')) {
             console.log('Redirecting to owner dashboard');
             navigate('/dashboard/owner');
-          } else if (roleData?.[0]?.role === 'operations_manager') {
+          } else if (hasRole('operations_manager')) {
             console.log('Redirecting to operations dashboard');
             navigate('/dashboard/operations');
-          } else if (roleData?.[0]?.role === 'dispatcher') {
+          } else if (hasRole('dispatcher')) {
             console.log('Redirecting to dispatcher dashboard');
             navigate('/dashboard/dispatch');
-          } else if (roleData?.[0]?.role === 'driver') {
+          } else if (hasRole('driver')) {
             console.log('Redirecting to driver dashboard');
             navigate('/dashboard/driver');
           } else {
