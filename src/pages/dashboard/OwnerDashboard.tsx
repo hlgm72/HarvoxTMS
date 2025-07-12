@@ -247,11 +247,26 @@ export default function OwnerDashboard() {
         <div className="relative p-8">
           <div className="flex justify-between items-start">
             <div className="space-y-4">
-              <div>
-                <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in text-white">
-                  {companyInfo?.name || 'Mi Empresa'}
-                </h1>
-                <p className="text-white font-body text-lg">Dashboard Ejecutivo</p>
+              <div className="flex items-center gap-4">
+                {companyInfo?.logo_url ? (
+                  <div className="h-16 w-16 rounded-full overflow-hidden bg-white/10 flex-shrink-0 border-2 border-white/20">
+                    <img 
+                      src={companyInfo.logo_url} 
+                      alt={`Logo de ${companyInfo.name || 'la empresa'}`}
+                      className="h-full w-full object-cover object-center"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-16 w-16 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 border-2 border-white/20">
+                    <Building className="h-8 w-8 text-white" />
+                  </div>
+                )}
+                <div>
+                  <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in text-white">
+                    {companyInfo?.name || 'Mi Empresa'}
+                  </h1>
+                  <p className="text-white font-body text-lg">Dashboard Ejecutivo</p>
+                </div>
               </div>
               
               <div className="flex items-center gap-4 animate-fade-in" style={{animationDelay: '0.1s'}}>
