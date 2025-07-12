@@ -79,24 +79,24 @@ All colors MUST be HSL.
 
     --radius: 0.5rem;
 
-    /* FleetNest Style Sidebar - Using primary blue colors */
-    --fleet-sidebar-dark: 214 88% 54%;      /* Fleet blue primary */
-    --fleet-sidebar-darker: 214 95% 20%;    /* Fleet navy for header */
-    --fleet-sidebar-light: 214 88% 64%;     /* Lighter blue for hover */
-    --fleet-sidebar-accent: 214 88% 70%;    /* Even lighter blue for accents */
-    --fleet-sidebar-text: 210 40% 98%;      /* White text */
-    --fleet-sidebar-text-muted: 215 20% 85%; /* Light grey text */
-    --fleet-sidebar-border: 214 88% 40%;    /* Darker blue for borders */
+    /* FleetNest Style Sidebar - Using primary blue as background */
+    --fleet-sidebar-primary: 214 88% 54%;    /* Fleet blue primary - main background */
+    --fleet-sidebar-darker: 214 88% 45%;     /* Darker blue for header */
+    --fleet-sidebar-hover: 214 88% 60%;      /* Lighter blue for hover */
+    --fleet-sidebar-active: 214 88% 70%;     /* Active state */
+    --fleet-sidebar-text: 0 0% 100%;         /* Pure white text */
+    --fleet-sidebar-text-muted: 214 20% 85%; /* Light blue-grey text */
+    --fleet-sidebar-border: 214 88% 40%;     /* Darker blue for borders */
     
-    /* Sidebar mapping to FleetNest colors */
-    --sidebar-background: var(--fleet-sidebar-dark);
+    /* Sidebar mapping to FleetNest blue theme */
+    --sidebar-background: var(--fleet-sidebar-primary);
     --sidebar-foreground: var(--fleet-sidebar-text);
-    --sidebar-primary: var(--fleet-sidebar-accent);
+    --sidebar-primary: var(--fleet-sidebar-active);
     --sidebar-primary-foreground: var(--fleet-sidebar-text);
-    --sidebar-accent: var(--fleet-sidebar-light);
+    --sidebar-accent: var(--fleet-sidebar-hover);
     --sidebar-accent-foreground: var(--fleet-sidebar-text);
     --sidebar-border: var(--fleet-sidebar-border);
-    --sidebar-ring: var(--fleet-sidebar-accent);
+    --sidebar-ring: var(--fleet-sidebar-active);
 
     /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
