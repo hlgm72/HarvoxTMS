@@ -282,7 +282,9 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                           selected={driverData.hire_date || undefined}
                           onSelect={(date) => updateDriverData('hire_date', date)}
                           initialFocus
-                          captionLayout="buttons"
+                          captionLayout="dropdown"
+                          fromYear={1970}
+                          toYear={new Date().getFullYear()}
                           className={cn("p-3 pointer-events-auto")}
                         />
                       </PopoverContent>
@@ -329,7 +331,9 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                               selected={driverData.termination_date || undefined}
                               onSelect={(date) => updateDriverData('termination_date', date)}
                               initialFocus
-                              captionLayout="buttons"
+                              captionLayout="dropdown"
+                              fromYear={1970}
+                              toYear={new Date().getFullYear()}
                               className={cn("p-3 pointer-events-auto")}
                             />
                           </PopoverContent>
