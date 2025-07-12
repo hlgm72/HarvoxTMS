@@ -28,16 +28,16 @@ export default function Index() {
         return;
       }
       
-      // Redirigir según el rol del usuario
+      // Redirigir según el rol activo del usuario (no por jerarquía)
       if (isSuperAdmin) {
         navigate('/superadmin');
-      } else if (isCompanyOwner) {
+      } else if (userRole?.role === 'company_owner') {
         navigate('/dashboard/owner');
-      } else if (isOperationsManager) {
+      } else if (userRole?.role === 'operations_manager') {
         navigate('/dashboard/operations');
-      } else if (isDispatcher) {
+      } else if (userRole?.role === 'dispatcher') {
         navigate('/dashboard/dispatch');
-      } else if (isDriver) {
+      } else if (userRole?.role === 'driver') {
         navigate('/dashboard/driver');
       }
     }
