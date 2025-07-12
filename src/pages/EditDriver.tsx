@@ -244,7 +244,20 @@ export default function EditDriver() {
     
     setSaving(true);
     try {
-      // Solo actualizar información de empleado (administrativa)
+      // Actualizar campos administrativos del conductor (driver_id y hire_date)
+      const { error: driverError } = await supabase
+        .from('driver_profiles')
+        .upsert({
+          user_id: userId,
+          driver_id: driverData.driver_id,
+          hire_date: driverData.hire_date?.toISOString().split('T')[0] || null,
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (driverError) throw driverError;
+
+      // Actualizar información de empleado (administrativa)
       const { error: companyDriverError } = await supabase
         .from('company_drivers')
         .upsert({
@@ -368,6 +381,45 @@ export default function EditDriver() {
             <TabsContent value="employee" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
+                  <Label htmlFor="driver_id">ID del Conductor</Label>
+                  <Input
+                    id="driver_id"
+                    value={driverData.driver_id}
+                    onChange={(e) => updateDriverData('driver_id', e.target.value)}
+                    placeholder="ID único asignado por la empresa"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Fecha de Contratación</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !driverData.hire_date && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {driverData.hire_date ? (
+                          format(driverData.hire_date, "PPP", { locale: es })
+                        ) : (
+                          <span>Seleccionar fecha</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={driverData.hire_date || undefined}
+                        onSelect={(date) => updateDriverData('hire_date', date)}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="is_active">Estado del Empleado</Label>
                   <div className="flex items-center space-x-2">
                     <Switch
@@ -408,12 +460,12 @@ export default function EditDriver() {
                             selected={driverData.termination_date || undefined}
                             onSelect={(date) => updateDriverData('termination_date', date)}
                             initialFocus
-                            className="pointer-events-auto"
+                            className={cn("p-3 pointer-events-auto")}
                           />
                         </PopoverContent>
                       </Popover>
                     </div>
-                    <div className="space-y-2 md:col-span-2">
+                    <div className="space-y-2">
                       <Label htmlFor="termination_reason">Razón de Terminación</Label>
                       <Input
                         id="termination_reason"
