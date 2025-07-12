@@ -496,6 +496,21 @@ export default function Users() {
     return roleColors[role] || 'bg-gray-500 text-white hover:bg-gray-600';
   };
 
+  const getRoleIconColor = (role: string) => {
+    const iconColors: Record<string, string> = {
+      'superadmin': 'text-rose-500',
+      'company_owner': 'text-blue-500',
+      'general_manager': 'text-indigo-500',
+      'operations_manager': 'text-purple-500',
+      'safety_manager': 'text-red-500',
+      'senior_dispatcher': 'text-amber-600',
+      'dispatcher': 'text-orange-500',
+      'driver': 'text-green-500',
+    };
+    
+    return iconColors[role] || 'text-gray-500';
+  };
+
   const sortRolesByHierarchy = (roles: string[]) => {
     const roleHierarchy = [
       'superadmin',
@@ -910,16 +925,16 @@ export default function Users() {
                        <SelectTrigger>
                          <SelectValue placeholder="Selecciona un rol" />
                        </SelectTrigger>
-                       <SelectContent>
-                         {ROLE_OPTIONS.map((option) => (
-                           <SelectItem key={option.value} value={option.value}>
-                             <div className="flex items-center gap-2">
-                               <Shield className="h-4 w-4" />
-                               {option.label}
-                             </div>
-                           </SelectItem>
-                         ))}
-                       </SelectContent>
+                        <SelectContent>
+                          {ROLE_OPTIONS.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              <div className="flex items-center gap-2">
+                                <Shield className={`h-4 w-4 ${getRoleIconColor(option.value)}`} />
+                                {option.label}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
                      </Select>
                    </div>
                    
