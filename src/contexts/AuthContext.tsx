@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -264,47 +264,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const isInitialized = useRef(false);
+  const isHandlingSession = useRef(false);
+
   useEffect(() => {
     let isMounted = true;
-    let isInitialized = false; // Prevent multiple initializations
 
     const handleSession = async (session: Session | null) => {
-      if (!isMounted || isInitialized) return;
-
+      if (!isMounted || isHandlingSession.current) return;
+      
+      isHandlingSession.current = true;
       console.log('🚀 HandleSession called for user:', session?.user?.id);
-      dispatch({ type: 'SET_SESSION', session, user: session?.user ?? null });
+      
+      try {
+        dispatch({ type: 'SET_SESSION', session, user: session?.user ?? null });
 
-      if (session?.user) {
-        const roles = await fetchUserRoles(session.user.id);
-        console.log('Fetched roles for session:', roles);
-        
-        if (isMounted && roles.length > 0) {
-          // CRITICAL: Always prioritize stored role from localStorage first
-          const storedRole = getCurrentRoleFromStorage(roles);
-          console.log('Stored role from localStorage:', storedRole);
+        if (session?.user) {
+          const roles = await fetchUserRoles(session.user.id);
+          console.log('Fetched roles for session:', roles);
           
-          let selectedRole: UserRole | null = null;
-          
-          if (storedRole) {
-            // Use stored role - this should be the primary path
-            selectedRole = storedRole;
-            console.log('Using stored role (primary path):', selectedRole);
-          } else {
-            // Only use first role if absolutely no stored role exists
-            console.log('No stored role found, using first available role as fallback');
-            selectedRole = roles[0];
-            console.log('Fallback to first role:', selectedRole);
-          }
-          
-          if (selectedRole) {
+          if (roles && roles.length > 0) {
+            const storedRole = getCurrentRoleFromStorage(roles);
+            console.log('Stored role from localStorage:', storedRole);
+            
+            let selectedRole: UserRole | null = null;
+            
+            if (storedRole) {
+              selectedRole = storedRole;
+              console.log('Using stored role (primary path):', selectedRole);
+            } else {
+              selectedRole = roles[0];
+              console.log('Using first available role (fallback):', selectedRole);
+            }
+            
             console.log('Final role selection:', selectedRole);
             
-            // Store in sessionStorage (per-tab) and localStorage (global preference)
+            // Store in both sessionStorage and localStorage
             sessionStorage.setItem('currentRole', JSON.stringify(selectedRole));
             localStorage.setItem('currentRole', JSON.stringify(selectedRole));
             console.log('Stored role in both storages:', JSON.stringify(selectedRole));
             
-            // Then update state
             dispatch({ 
               type: 'SET_ROLES', 
               userRoles: roles, 
@@ -312,75 +311,60 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
             
             console.log('State updated with role:', selectedRole.role);
-            isInitialized = true; // Mark as initialized
+            isInitialized.current = true;
           } else {
             console.log('No role could be selected');
           }
-        } else if (isMounted) {
-          console.log('No roles available or component unmounted');
-        }
-      } else {
-        if (isMounted) {
-          console.log('No session user, clearing roles');
+        } else {
+          // Clear stored roles when signing out
+          cleanupAuthStorage();
           dispatch({ 
             type: 'SET_ROLES', 
             userRoles: [], 
             currentRole: null 
           });
-          // Clear stored role from both storages
-          localStorage.removeItem('currentRole');
-          sessionStorage.removeItem('currentRole');
+          isInitialized.current = false;
         }
+      } catch (error) {
+        console.error('Error in handleSession:', error);
+        dispatch({ 
+          type: 'SET_ROLES', 
+          userRoles: [], 
+          currentRole: null 
+        });
+      } finally {
+        isHandlingSession.current = false;
       }
     };
 
-    // Set up auth state listener with debouncing
-    let timeoutId: NodeJS.Timeout;
+    // Set up auth state listener - simplified without debouncing
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state change:', event, session?.user?.id);
         
-        // Clear any pending timeouts
-        if (timeoutId) clearTimeout(timeoutId);
-        
-        // Debounce the session handling to prevent multiple rapid calls
-        timeoutId = setTimeout(() => {
-          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-            // Reset initialization flag for new sign-ins
-            if (event === 'SIGNED_IN') {
-              isInitialized = false;
-            }
-            handleSession(session);
-          } else if (event === 'INITIAL_SESSION') {
-            // Only handle initial session if not already initialized
-            if (!isInitialized) {
-              handleSession(session);
-            }
-          } else {
-            handleSession(session);
-          }
-        }, 100); // 100ms debounce
-      }
-    );
-
-    // Check for existing session immediately, but only once
-    const initializeSession = async () => {
-      if (!isInitialized) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session && isMounted) {
+        if (event === 'SIGNED_OUT') {
+          isInitialized.current = false;
+          await handleSession(null);
+        } else if (!isInitialized.current && session) {
           await handleSession(session);
         }
       }
-    };
+    );
 
-    initializeSession();
+    // Check for existing session only if not initialized
+    if (!isInitialized.current) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session && isMounted && !isInitialized.current) {
+          handleSession(session);
+        }
+      });
+    }
 
     return () => {
       isMounted = false;
-      if (timeoutId) clearTimeout(timeoutId);
       subscription.unsubscribe();
     };
-  }, []); // Empty dependency array to run only once
+  }, []);
 
   const contextValue: AuthContextType = {
     ...authState,
