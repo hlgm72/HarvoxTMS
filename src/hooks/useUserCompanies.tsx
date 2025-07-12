@@ -14,7 +14,7 @@ export const useUserCompanies = () => {
   const [companies, setCompanies] = useState<UserCompany[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<UserCompany | null>(null);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, switchRole, userRoles } = useAuth();
 
   useEffect(() => {
     const fetchUserCompanies = async () => {
@@ -107,10 +107,24 @@ export const useUserCompanies = () => {
     fetchUserCompanies();
   }, [user]);
 
+  // Custom setSelectedCompany that also updates the auth context role
+  const handleSetSelectedCompany = (company: UserCompany) => {
+    setSelectedCompany(company);
+    
+    // Find the corresponding role in the auth context and switch to it
+    const correspondingRole = userRoles.find(role => 
+      role.company_id === company.id && role.role === company.role
+    );
+    
+    if (correspondingRole) {
+      switchRole(correspondingRole);
+    }
+  };
+
   return { 
     companies, 
     selectedCompany, 
-    setSelectedCompany, 
+    setSelectedCompany: handleSetSelectedCompany, 
     loading 
   };
 };
