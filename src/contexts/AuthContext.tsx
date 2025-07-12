@@ -157,8 +157,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const getCurrentRoleFromStorage = (roles: UserRole[]): UserRole | null => {
     try {
-      const stored = localStorage.getItem('currentRole');
-      console.log('Reading stored role from localStorage:', stored);
+      // Try sessionStorage first (per-tab), then localStorage (global fallback)
+      let stored = sessionStorage.getItem('currentRole');
+      let storageType = 'sessionStorage';
+      
+      if (!stored) {
+        stored = localStorage.getItem('currentRole');
+        storageType = 'localStorage';
+      }
+      
+      console.log(`Reading stored role from ${storageType}:`, stored);
       
       if (stored) {
         const storedRole = JSON.parse(stored);
@@ -184,8 +192,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const cleanupAuthStorage = () => {
-    // Remove standard auth keys
+    // Remove standard auth keys from both storages
     localStorage.removeItem('currentRole');
+    sessionStorage.removeItem('currentRole');
     
     // Remove any potentially conflicting Supabase auth keys
     Object.keys(localStorage).forEach((key) => {
@@ -202,8 +211,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('🔄 SWITCHING ROLE FROM:', authState.currentRole?.role, 'TO:', role.role);
     console.log('🔄 Switch role called with:', role);
     dispatch({ type: 'SET_ROLES', userRoles: authState.userRoles, currentRole: role });
+    
+    // Store in both sessionStorage (for this tab) and localStorage (global preference)
+    sessionStorage.setItem('currentRole', JSON.stringify(role));
     localStorage.setItem('currentRole', JSON.stringify(role));
-    console.log('🔄 Role switched and stored in localStorage:', role.role);
+    console.log('🔄 Role switched and stored in both storages:', role.role);
     
     // Force an update to trigger re-renders
     dispatch({ type: 'FORCE_UPDATE' });
@@ -285,9 +297,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (selectedRole) {
             console.log('Final role selection:', selectedRole);
             
-            // Update localStorage BEFORE dispatching to state to ensure consistency
+            // Store in sessionStorage (per-tab) and localStorage (global preference)
+            sessionStorage.setItem('currentRole', JSON.stringify(selectedRole));
             localStorage.setItem('currentRole', JSON.stringify(selectedRole));
-            console.log('Stored role in localStorage:', JSON.stringify(selectedRole));
+            console.log('Stored role in both storages:', JSON.stringify(selectedRole));
             
             // Then update state
             dispatch({ 
@@ -311,8 +324,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             userRoles: [], 
             currentRole: null 
           });
-          // Clear stored role
+          // Clear stored role from both storages
           localStorage.removeItem('currentRole');
+          sessionStorage.removeItem('currentRole');
         }
       }
     };
