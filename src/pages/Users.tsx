@@ -38,7 +38,8 @@ import {
 } from "@/components/ui/select";
 import { 
   UserPlus, Mail, Shield, Edit, Trash2, Users as UsersIcon, Eye,
-  Activity, Clock, AlertCircle, TrendingUp, Search, Filter, X, Grid, List
+  Activity, Clock, AlertCircle, TrendingUp, Search, Filter, X, Grid, List,
+  Truck
 } from "lucide-react";
 import { toast } from "sonner";
 import { useFleetNotifications } from "@/components/notifications";
@@ -46,6 +47,7 @@ import { handleTextBlur, createTextHandlers } from "@/lib/textUtils";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 type UserRole = Database["public"]["Enums"]["user_role"];
 
@@ -81,6 +83,7 @@ export default function Users() {
   const { t } = useTranslation(['common']);
   const { user, userRole } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
+  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -576,6 +579,27 @@ export default function Users() {
     setEditingRoles(currentRoles);
     setEditingStatus(user.status); // Inicializar el estado en edición
     setEditDialogOpen(true);
+  };
+
+  const handleEditDriver = (user: User) => {
+    navigate(`/edit-driver/${user.id}`);
+  };
+
+  const isUserDriver = (user: User) => {
+    const userRoles = user.role.split(', ').map((roleLabel) => {
+      const originalRole = Object.entries({
+        'superadmin': 'Super Admin',
+        'company_owner': 'Propietario',
+        'general_manager': 'Gerente General', 
+        'operations_manager': 'Gerente de Operaciones',
+        'safety_manager': 'Gerente de Seguridad',
+        'senior_dispatcher': 'Despachador Senior',
+        'dispatcher': 'Despachador',
+        'driver': 'Conductor',
+      }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+      return originalRole;
+    });
+    return userRoles.includes('driver');
   };
 
   const handleRoleToggle = (roleValue: string) => {
@@ -1451,6 +1475,17 @@ export default function Users() {
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
+                        {isUserDriver(user) && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleEditDriver(user)}
+                            title="Editar datos de conductor"
+                            className="text-blue-600 hover:text-blue-700"
+                          >
+                            <Truck className="h-4 w-4" />
+                          </Button>
+                        )}
                         <Button 
                           variant="ghost" 
                           size="sm"
@@ -1547,6 +1582,17 @@ export default function Users() {
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
+                            {isUserDriver(user) && (
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => handleEditDriver(user)}
+                                title="Editar datos de conductor"
+                                className="text-blue-600 hover:text-blue-700"
+                              >
+                                <Truck className="h-4 w-4" />
+                              </Button>
+                            )}
                             <Button 
                               variant="ghost" 
                               size="sm"
