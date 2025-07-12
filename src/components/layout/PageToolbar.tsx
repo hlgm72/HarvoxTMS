@@ -19,7 +19,6 @@ interface PageToolbarProps {
   breadcrumbs: BreadcrumbItem[];
   title?: string;
   actions?: ReactNode;
-  filters?: ReactNode;
   viewToggle?: ReactNode;
 }
 
@@ -27,7 +26,6 @@ export function PageToolbar({
   breadcrumbs, 
   title, 
   actions, 
-  filters, 
   viewToggle 
 }: PageToolbarProps) {
   return (
@@ -62,34 +60,17 @@ export function PageToolbar({
         </Breadcrumb>
 
         {/* Title and Actions Row */}
-        {(title || actions) && (
-          <div className="flex items-center justify-between">
-            {title && (
-              <h1 className="text-xl font-semibold text-foreground">
-                {title}
-              </h1>
-            )}
-            {actions && (
-              <div className="flex items-center gap-2">
-                {actions}
-              </div>
-            )}
+        <div className="flex items-center justify-between">
+          {title && (
+            <h1 className="text-xl font-semibold text-foreground">
+              {title}
+            </h1>
+          )}
+          <div className="flex items-center gap-2">
+            {viewToggle}
+            {actions}
           </div>
-        )}
-
-        {/* Filters and View Toggle Row */}
-        {(filters || viewToggle) && (
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex-1">
-              {filters}
-            </div>
-            {viewToggle && (
-              <div className="flex items-center gap-2">
-                {viewToggle}
-              </div>
-            )}
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

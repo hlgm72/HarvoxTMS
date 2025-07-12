@@ -49,6 +49,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { EditDriverModal } from "@/components/EditDriverModal";
 import { PageToolbar } from "@/components/layout/PageToolbar";
+import { UserFiltersSheet } from "@/components/users/UserFiltersSheet";
 
 type UserRole = Database["public"]["Enums"]["user_role"];
 
@@ -503,86 +504,19 @@ export default function Users() {
         ]}
         title={`Usuarios de la Empresa (${filteredUsers.length})`}
         actions={
-          <Button onClick={() => setInviteDialogOpen(true)} className="gap-2">
-            <UserPlus className="h-4 w-4" />
-            Invitar Usuario
-          </Button>
-        }
-        filters={
-          <div className="flex items-center gap-4 flex-wrap">
-            {/* Búsqueda por nombre/email */}
-            <div className="flex items-center gap-2 min-w-[200px]">
-              <Search className="h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por nombre o email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="max-w-xs"
-              />
-              {searchTerm && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSearchTerm('')}
-                  className="px-2"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              )}
-            </div>
-
-            {/* Filtro por rol */}
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
-              <Select value={roleFilter} onValueChange={setRoleFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filtrar por rol" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos los roles</SelectItem>
-                  {ROLE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-               {roleFilter && roleFilter !== 'all' && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setRoleFilter('all')}
-                  className="px-2"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              )}
-            </div>
-
-            {/* Filtro por estado */}
-            <div className="flex items-center gap-2">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[150px]">
-                  <SelectValue placeholder="Estado" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="active">Activos</SelectItem>
-                  <SelectItem value="pending">Pendientes</SelectItem>
-                  <SelectItem value="inactive">Inactivos</SelectItem>
-                </SelectContent>
-              </Select>
-               {statusFilter && statusFilter !== 'all' && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setStatusFilter('all')}
-                  className="px-2"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              )}
-            </div>
+          <div className="flex items-center gap-2">
+            <UserFiltersSheet
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              roleFilter={roleFilter}
+              setRoleFilter={setRoleFilter}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+            />
+            <Button onClick={() => setInviteDialogOpen(true)} className="gap-2">
+              <UserPlus className="h-4 w-4" />
+              Invitar Usuario
+            </Button>
           </div>
         }
         viewToggle={
