@@ -165,6 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const getCurrentRoleFromStorage = (roles: UserRole[]): UserRole | null => {
     console.log('🔍 getCurrentRoleFromStorage called with roles:', roles.map(r => ({ id: r.id, role: r.role })));
     console.log('🔍 Tab location:', window.location.href);
+    console.log('🔍 Current timestamp:', new Date().toISOString());
     
     try {
       // Intentar múltiples fuentes de persistencia en orden de prioridad
@@ -175,6 +176,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ];
       
       console.log('🔍 Buscando rol activo en múltiples fuentes...');
+      console.log('🔍 Storage values:', sources.map(s => ({ name: s.name, hasValue: !!s.value, value: s.value ? s.value.substring(0, 50) + '...' : null })));
       
       for (const source of sources) {
         if (source.value) {
@@ -200,10 +202,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (validRole) {
               console.log(`🎯 ROL VÁLIDO ENCONTRADO EN ${source.name}:`, validRole);
               console.log('🎯 RETORNANDO ESTE ROL COMO ACTIVO');
+              
+              // Asegurar que el rol encontrado se guarde en todas las fuentes para sincronización
+              const roleString = JSON.stringify(validRole);
+              localStorage.setItem('currentRole', roleString);
+              localStorage.setItem('lastActiveRole', roleString);
+              sessionStorage.setItem('activeRole', roleString);
+              console.log('🔒 Rol válido re-guardado en todas las fuentes para sincronización');
+              
               return validRole;
             } else {
               console.log(`⚠️ Rol en ${source.name} no es válido para roles disponibles`);
               console.log('⚠️ Available roles:', roles.map(r => ({ id: r.id, role: r.role })));
+              console.log('⚠️ Stored role details:', { id: storedRole.id, role: storedRole.role, company_id: storedRole.company_id });
             }
           } catch (parseError) {
             console.warn(`⚠️ Error parsing ${source.name}:`, parseError);
@@ -232,13 +243,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const foundRole = roles.find(r => r.role === hierarchyRole);
         if (foundRole) {
           console.log('🎯 Usando rol por jerarquía:', foundRole);
+          
+          // Guardar este rol como el activo
+          const roleString = JSON.stringify(foundRole);
+          localStorage.setItem('currentRole', roleString);
+          localStorage.setItem('lastActiveRole', roleString);
+          sessionStorage.setItem('activeRole', roleString);
+          console.log('🔒 Rol por jerarquía guardado en storage');
+          
           return foundRole;
         }
       }
       
       // Si no encuentra ninguno por jerarquía, usar el primero disponible
-      console.log('🔄 Fallback al primer rol disponible:', roles[0]);
-      return roles.length > 0 ? roles[0] : null;
+      const fallbackRole = roles.length > 0 ? roles[0] : null;
+      console.log('🔄 Fallback al primer rol disponible:', fallbackRole);
+      
+      if (fallbackRole) {
+        const roleString = JSON.stringify(fallbackRole);
+        localStorage.setItem('currentRole', roleString);
+        localStorage.setItem('lastActiveRole', roleString);
+        sessionStorage.setItem('activeRole', roleString);
+        console.log('🔒 Rol fallback guardado en storage');
+      }
+      
+      return fallbackRole;
     } catch (error) {
       console.error('💥 Error general en getCurrentRoleFromStorage:', error);
       return roles.length > 0 ? roles[0] : null;
