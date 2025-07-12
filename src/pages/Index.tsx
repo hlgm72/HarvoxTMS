@@ -8,7 +8,7 @@ export default function Index() {
   const navigate = useNavigate();
   const { 
     user, 
-    userRole, 
+    currentRole, 
     loading, 
     isSuperAdmin, 
     isCompanyOwner, 
@@ -22,7 +22,7 @@ export default function Index() {
     // Wait for auth context to fully initialize before redirecting
     if (!loading && user && _forceUpdate > 0) {
       // Si el usuario está autenticado pero no tiene rol asignado
-      if (!userRole) {
+      if (!currentRole) {
         // Redirigir a perfil para que el usuario complete su información
         navigate('/profile');
         return;
@@ -31,17 +31,17 @@ export default function Index() {
       // Redirigir según el rol activo del usuario (no por jerarquía)
       if (isSuperAdmin) {
         navigate('/superadmin');
-      } else if (userRole?.role === 'company_owner') {
+      } else if (currentRole?.role === 'company_owner') {
         navigate('/dashboard/owner');
-      } else if (userRole?.role === 'operations_manager') {
+      } else if (currentRole?.role === 'operations_manager') {
         navigate('/dashboard/operations');
-      } else if (userRole?.role === 'dispatcher') {
+      } else if (currentRole?.role === 'dispatcher') {
         navigate('/dashboard/dispatch');
-      } else if (userRole?.role === 'driver') {
+      } else if (currentRole?.role === 'driver') {
         navigate('/dashboard/driver');
       }
     }
-  }, [loading, user, userRole, navigate, isSuperAdmin, isCompanyOwner, isOperationsManager, isDispatcher, isDriver, _forceUpdate]);
+  }, [loading, user, currentRole, navigate, isSuperAdmin, isCompanyOwner, isOperationsManager, isDispatcher, isDriver, _forceUpdate]);
 
 
   // Show loading while determining user role or while auth context initializes
