@@ -902,7 +902,7 @@ export default function Users() {
             <div className="space-y-2">
               <Label htmlFor="roleFilter">Filtrar por Rol</Label>
               <div className="flex gap-2">
-                <Select value={roleFilter} onValueChange={setRoleFilter}>
+                <Select value={roleFilter || undefined} onValueChange={setRoleFilter}>
                   <SelectTrigger className="flex-1">
                     <SelectValue placeholder="Todos los roles" />
                   </SelectTrigger>
@@ -934,7 +934,7 @@ export default function Users() {
             <div className="space-y-2">
               <Label htmlFor="statusFilter">Filtrar por Estado</Label>
               <div className="flex gap-2">
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <Select value={statusFilter || undefined} onValueChange={setStatusFilter}>
                   <SelectTrigger className="flex-1">
                     <SelectValue placeholder="Todos los estados" />
                   </SelectTrigger>
@@ -1163,7 +1163,7 @@ export default function Users() {
               <div>
                 <Label htmlFor="status">Estado</Label>
                 <Select 
-                  value={editingStatus} 
+                  value={editingStatus || undefined} 
                   onValueChange={setEditingStatus}
                 >
                   <SelectTrigger>
