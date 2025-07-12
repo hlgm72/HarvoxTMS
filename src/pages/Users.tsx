@@ -576,11 +576,6 @@ export default function Users() {
                   })}
                 </p>
               </div>
-              
-              <div>
-                <Label>ID de Usuario</Label>
-                <p className="text-sm font-mono text-muted-foreground">{selectedUser.id}</p>
-              </div>
             </div>
           )}
         </DialogContent>
@@ -770,9 +765,6 @@ export default function Users() {
                               ? `${user.first_name} ${user.last_name}`
                               : 'Sin nombre'
                             }
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            ID: {user.id.substring(0, 8)}...
                           </div>
                         </div>
                       </div>
