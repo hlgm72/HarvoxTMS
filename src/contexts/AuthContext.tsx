@@ -257,36 +257,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('Fetched roles for session:', roles);
         
         if (isMounted && roles.length > 0) {
-          // ALWAYS try to get current role from storage first
+          // CRITICAL: Always prioritize stored role from localStorage first
           const storedRole = getCurrentRoleFromStorage(roles);
           console.log('Stored role from localStorage:', storedRole);
           
           let selectedRole: UserRole | null = null;
           
           if (storedRole) {
-            // Use stored role if it's valid
+            // Use stored role - this should be the primary path
             selectedRole = storedRole;
-            console.log('Using stored role:', selectedRole);
+            console.log('Using stored role (primary path):', selectedRole);
           } else {
-            // Only fallback to first role if no valid stored role
+            // Only use first role if absolutely no stored role exists
+            console.log('No stored role found, using first available role as fallback');
             selectedRole = roles[0];
-            console.log('No valid stored role, using first role:', selectedRole);
+            console.log('Fallback to first role:', selectedRole);
           }
           
           if (selectedRole) {
-            console.log('Setting final selected role:', selectedRole);
+            console.log('Final role selection:', selectedRole);
+            
+            // Update localStorage BEFORE dispatching to state to ensure consistency
+            localStorage.setItem('currentRole', JSON.stringify(selectedRole));
+            console.log('Stored role in localStorage:', JSON.stringify(selectedRole));
+            
+            // Then update state
             dispatch({ 
               type: 'SET_ROLES', 
               userRoles: roles, 
               currentRole: selectedRole 
             });
-
-            // Always update storage to ensure consistency
-            localStorage.setItem('currentRole', JSON.stringify(selectedRole));
+            
+            console.log('State updated with role:', selectedRole.role);
+          } else {
+            console.log('No role could be selected');
           }
+        } else if (isMounted) {
+          console.log('No roles available or component unmounted');
         }
       } else {
         if (isMounted) {
+          console.log('No session user, clearing roles');
           dispatch({ 
             type: 'SET_ROLES', 
             userRoles: [], 
