@@ -116,6 +116,21 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
 
       if (ownerOperatorError) throw ownerOperatorError;
 
+      // Cargar datos de la compañía para obtener los valores por defecto
+      const { data: companyData, error: companyError } = await supabase
+        .from('companies')
+        .select('default_dispatching_percentage, default_factoring_percentage, default_leasing_percentage')
+        .eq('id', (await supabase
+          .from('user_company_roles')
+          .select('company_id')
+          .eq('user_id', userId)
+          .eq('is_active', true)
+          .single()
+        ).data?.company_id)
+        .single();
+
+      if (companyError) console.warn('Error loading company defaults:', companyError);
+
       setDriverData({
         is_active: companyDriver?.is_active ?? true,
         termination_date: companyDriver?.termination_date ? new Date(companyDriver.termination_date) : null,
@@ -129,9 +144,9 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
         business_phone: ownerOperator?.business_phone || '',
         business_email: ownerOperator?.business_email || '',
         tax_id: ownerOperator?.tax_id || '',
-        dispatching_percentage: ownerOperator?.dispatching_percentage || 0,
-        factoring_percentage: ownerOperator?.factoring_percentage || 0,
-        leasing_percentage: ownerOperator?.leasing_percentage || 0,
+        dispatching_percentage: ownerOperator?.dispatching_percentage || companyData?.default_dispatching_percentage || 0,
+        factoring_percentage: ownerOperator?.factoring_percentage || companyData?.default_factoring_percentage || 0,
+        leasing_percentage: ownerOperator?.leasing_percentage || companyData?.default_leasing_percentage || 0,
         insurance_pay: ownerOperator?.insurance_pay || 0,
       });
     } catch (error) {
@@ -142,8 +157,40 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
     }
   };
 
-  const updateDriverData = (field: keyof DriverData, value: any) => {
+  const updateDriverData = async (field: keyof DriverData, value: any) => {
     console.log('🔧 DEBUG MODAL: updateDriverData ejecutándose - field:', field, 'value:', value);
+    
+    if (field === 'is_owner_operator' && value === true) {
+      // Si se está activando Owner-Operator, cargar valores por defecto de la compañía
+      try {
+        const { data: companyData, error: companyError } = await supabase
+          .from('companies')
+          .select('default_dispatching_percentage, default_factoring_percentage, default_leasing_percentage')
+          .eq('id', (await supabase
+            .from('user_company_roles')
+            .select('company_id')
+            .eq('user_id', userId)
+            .eq('is_active', true)
+            .single()
+          ).data?.company_id)
+          .single();
+
+        if (!companyError && companyData) {
+          setDriverData(prev => ({
+            ...prev,
+            [field]: value,
+            dispatching_percentage: prev.dispatching_percentage || companyData.default_dispatching_percentage || 0,
+            factoring_percentage: prev.factoring_percentage || companyData.default_factoring_percentage || 0,
+            leasing_percentage: prev.leasing_percentage || companyData.default_leasing_percentage || 0,
+          }));
+          console.log('🔧 DEBUG: Aplicados valores por defecto de la compañía:', companyData);
+          return;
+        }
+      } catch (error) {
+        console.warn('Error cargando valores por defecto de la compañía:', error);
+      }
+    }
+
     setDriverData(prev => {
       console.log('🔧 DEBUG MODAL: Estado anterior - is_owner_operator:', prev.is_owner_operator);
       const newData = { ...prev, [field]: value };
