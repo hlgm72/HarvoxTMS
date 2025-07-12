@@ -161,40 +161,17 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
     console.log('🔧 DEBUG MODAL: updateDriverData ejecutándose - field:', field, 'value:', value);
     
     if (field === 'is_owner_operator' && value === true) {
-      // Si se está activando Owner-Operator, cargar valores por defecto de la compañía
-      try {
-        // Obtener el company_id del usuario
-        const { data: userRoles, error: rolesError } = await supabase
-          .from('user_company_roles')
-          .select('company_id')
-          .eq('user_id', userId)
-          .eq('is_active', true)
-          .limit(1);
-
-        if (rolesError) throw rolesError;
-
-        if (userRoles && userRoles.length > 0) {
-          const { data: companyData, error: companyError } = await supabase
-            .from('companies')
-            .select('default_dispatching_percentage, default_factoring_percentage, default_leasing_percentage')
-            .eq('id', userRoles[0].company_id)
-            .single();
-
-          if (!companyError && companyData) {
-            setDriverData(prev => ({
-              ...prev,
-              [field]: value,
-              dispatching_percentage: prev.dispatching_percentage || companyData.default_dispatching_percentage || 0,
-              factoring_percentage: prev.factoring_percentage || companyData.default_factoring_percentage || 0,
-              leasing_percentage: prev.leasing_percentage || companyData.default_leasing_percentage || 0,
-            }));
-            console.log('🔧 DEBUG: Aplicados valores por defecto de la compañía:', companyData);
-            return;
-          }
-        }
-      } catch (error) {
-        console.warn('Error cargando valores por defecto de la compañía:', error);
-      }
+      // Si se está activando Owner-Operator, usar valores por defecto conocidos
+      console.log('🔧 DEBUG: Aplicando valores por defecto para Owner-Operator');
+      setDriverData(prev => ({
+        ...prev,
+        [field]: value,
+        dispatching_percentage: prev.dispatching_percentage || 5.00,
+        factoring_percentage: prev.factoring_percentage || 3.00,
+        leasing_percentage: prev.leasing_percentage || 5.00,
+      }));
+      console.log('🔧 DEBUG: Aplicados valores por defecto estándar');
+      return;
     }
 
     setDriverData(prev => {
