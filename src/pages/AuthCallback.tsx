@@ -29,31 +29,76 @@ export default function AuthCallback() {
         if (session?.user) {
           console.log('OAuth user logged in:', session.user.id);
           
-          // Check if user has a role assigned
+          // Get all user roles first
           const { data: roleData, error: roleError } = await supabase
             .from('user_company_roles')
-            .select('role')
+            .select('role, id, company_id')
             .eq('user_id', session.user.id)
-            .eq('is_active', true)
-            .limit(1);
+            .eq('is_active', true);
 
           console.log('OAuth role query result:', { roleData, roleError });
 
           // Show success message
           toast({
-            title: "Welcome!",
-            description: "You have been successfully signed in with Google.",
+            title: "¡Bienvenido!",
+            description: "Has sido autenticado exitosamente con Google.",
           });
 
-          // Redirect based on role
-          if (roleData?.[0]?.role === 'superadmin') {
+          const roles = roleData || [];
+          
+          // Check if there's a previously stored role that's still valid
+          const storedRoleString = localStorage.getItem('currentRole') || localStorage.getItem('lastActiveRole');
+          let targetRole = null;
+          
+          if (storedRoleString) {
+            try {
+              const storedRole = JSON.parse(storedRoleString);
+              // Verify the stored role is still valid (user still has this role)
+              const isStillValid = roles.some(r => r.role === storedRole.role && r.company_id === storedRole.company_id);
+              if (isStillValid) {
+                targetRole = storedRole.role;
+                console.log('OAuth: Using previously active role:', targetRole);
+              }
+            } catch (e) {
+              console.warn('OAuth: Error parsing stored role:', e);
+            }
+          }
+          
+          // If no valid stored role, use priority hierarchy
+          if (!targetRole && roles.length > 0) {
+            const hasRole = (role: string) => roles.some(r => r.role === role);
+            if (hasRole('superadmin')) {
+              targetRole = 'superadmin';
+            } else if (hasRole('company_owner')) {
+              targetRole = 'company_owner';
+            } else if (hasRole('operations_manager')) {
+              targetRole = 'operations_manager';
+            } else if (hasRole('dispatcher')) {
+              targetRole = 'dispatcher';
+            } else if (hasRole('driver')) {
+              targetRole = 'driver';
+            }
+            console.log('OAuth: Using role from hierarchy:', targetRole);
+          }
+
+          // Redirect based on determined role
+          if (targetRole === 'superadmin') {
             console.log('OAuth: Redirecting to superadmin dashboard');
             navigate('/superadmin');
-          } else if (roleData?.[0]?.role) {
-            console.log('OAuth: Redirecting to dashboard');
-            navigate('/dashboard');
+          } else if (targetRole === 'company_owner') {
+            console.log('OAuth: Redirecting to owner dashboard');
+            navigate('/dashboard/owner');
+          } else if (targetRole === 'operations_manager') {
+            console.log('OAuth: Redirecting to operations dashboard');
+            navigate('/dashboard/operations');
+          } else if (targetRole === 'dispatcher') {
+            console.log('OAuth: Redirecting to dispatcher dashboard');
+            navigate('/dashboard/dispatch');
+          } else if (targetRole === 'driver') {
+            console.log('OAuth: Redirecting to driver dashboard');
+            navigate('/dashboard/driver');
           } else {
-            console.log('OAuth: No role found, redirecting to main page');
+            console.log('OAuth: No specific role found, redirecting to main page');
             navigate('/');
           }
         } else {
