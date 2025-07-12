@@ -1,5 +1,6 @@
 import { ChevronDown, User, Building2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,6 +37,32 @@ const roleColors = {
 
 export const RoleSwitcher = () => {
   const { currentRole, availableRoles, switchRole, hasMultipleRoles } = useAuth();
+  const navigate = useNavigate();
+
+  // Function to get the correct dashboard route for a role
+  const getDashboardRoute = (role: string): string => {
+    switch (role) {
+      case 'company_owner':
+        return '/dashboard/owner';
+      case 'operations_manager':
+        return '/dashboard/operations';
+      case 'dispatcher':
+      case 'senior_dispatcher':
+        return '/dashboard/dispatch';
+      case 'driver':
+        return '/dashboard/driver';
+      case 'superadmin':
+        return '/superadmin';
+      default:
+        return '/dashboard/dispatch'; // fallback
+    }
+  };
+
+  const handleRoleChange = (role: any) => {
+    switchRole(role);
+    const dashboardRoute = getDashboardRoute(role.role);
+    navigate(dashboardRoute);
+  };
 
   // Don't render if no current role
   if (!currentRole) {
@@ -98,7 +125,7 @@ export const RoleSwitcher = () => {
           .map((role) => (
           <DropdownMenuItem
             key={role.id}
-            onClick={() => switchRole(role)}
+            onClick={() => handleRoleChange(role)}
             className={`cursor-pointer ${
               currentRole.id === role.id 
                 ? 'bg-primary/10 text-primary font-medium' 
