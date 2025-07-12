@@ -21,7 +21,7 @@ import DriverDashboard from "./pages/dashboard/DriverDashboard";
 import Landing from "./pages/Landing";
 import Drivers from "./pages/Drivers";
 import Settings from "./pages/Settings";
-import EditDriver from "./pages/EditDriver";
+
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/layout/Layout";
 import { NotificationProvider } from "./components/notifications";
@@ -241,16 +241,6 @@ function AppContent() {
           } 
         />
         
-        <Route 
-          path="/edit-driver/:userId" 
-          element={
-            <ProtectedRoute requiredRole="company_owner">
-              <Layout>
-                <EditDriver />
-              </Layout>
-            </ProtectedRoute>
-          } 
-        />
         
         {/* Catch-all route */}
         <Route path="*" element={<NotFound />} />
