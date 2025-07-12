@@ -20,7 +20,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 export function Header() {
   const { t } = useTranslation(['common', 'fleet']);
-  const { signOut, currentRole } = useAuth();
+  const { signOut } = useAuth();
   const { getUserInitials, getFullName, user, profile } = useUserProfile();
   const { showSuccess, showError } = useFleetNotifications();
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-3">
-          <RoleSwitcher key={currentRole?.id} />
+          <RoleSwitcher />
           <LanguageSwitcher />
           
           <DropdownMenu>

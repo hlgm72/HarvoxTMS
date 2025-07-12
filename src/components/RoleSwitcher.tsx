@@ -61,20 +61,12 @@ export const RoleSwitcher = () => {
   const handleRoleChange = (role: any) => {
     console.log('🔄 RoleSwitcher: Cambiando a rol:', role);
     
-    // CRITICAL: Usar timestamp para evitar condiciones de carrera entre pestañas
-    const timestamp = Date.now();
-    const roleWithTimestamp = { ...role, _timestamp: timestamp };
-    const roleString = JSON.stringify(roleWithTimestamp);
-    
     // FIRST: Guardar el rol INMEDIATAMENTE y de forma síncrona ANTES de switchRole
+    const roleString = JSON.stringify(role);
     localStorage.setItem('currentRole', roleString);
     localStorage.setItem('lastActiveRole', roleString);
     sessionStorage.setItem('activeRole', roleString);
-    
-    // Forzar escritura síncrona en storage
-    localStorage.setItem('roleChangeTimestamp', timestamp.toString());
-    
-    console.log('🔄 RoleSwitcher: Rol guardado PRIMERO en storage:', role.role, 'con timestamp:', timestamp);
+    console.log('🔄 RoleSwitcher: Rol guardado PRIMERO en storage:', role.role);
     console.log('🔄 RoleSwitcher: Verificando localStorage después de guardar:', localStorage.getItem('currentRole'));
     
     // SECOND: Llamar switchRole DESPUÉS de guardar
