@@ -143,7 +143,13 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
   };
 
   const updateDriverData = (field: keyof DriverData, value: any) => {
-    setDriverData(prev => ({ ...prev, [field]: value }));
+    console.log('🔧 DEBUG MODAL: updateDriverData ejecutándose - field:', field, 'value:', value);
+    setDriverData(prev => {
+      const newData = { ...prev, [field]: value };
+      console.log('🔧 DEBUG MODAL: Estado anterior:', prev);
+      console.log('🔧 DEBUG MODAL: Estado nuevo:', newData);
+      return newData;
+    });
   };
 
   const handleSave = async () => {
