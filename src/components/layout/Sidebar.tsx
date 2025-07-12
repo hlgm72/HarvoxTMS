@@ -380,7 +380,9 @@ export function AppSidebar() {
     isCompanyOwner, 
     isOperationsManager, 
     isDispatcher, 
-    isDriver 
+    isDriver,
+    currentRole,
+    _forceUpdate
   } = useAuth();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -589,14 +591,14 @@ export function AppSidebar() {
                             </div>
                           )}
                         </div>
-                        <div className="text-left">
-                          <p className="text-sm font-medium text-foreground">
-                            {selectedCompany.name}
-                          </p>
-                          <p className="text-xs text-muted-foreground capitalize">
-                            {selectedCompany.role.replace('_', ' ')}
-                          </p>
-                        </div>
+                         <div className="text-left">
+                           <p className="text-sm font-medium text-foreground">
+                             {selectedCompany.name}
+                           </p>
+                           <p className="text-xs text-muted-foreground capitalize">
+                             {currentRole?.role.replace('_', ' ') || 'Sin rol'}
+                           </p>
+                         </div>
                       </div>
                       <ChevronDown className="h-4 w-4 opacity-50" />
                     </Button>
@@ -621,12 +623,12 @@ export function AppSidebar() {
                             </div>
                           )}
                         </div>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{company.name}</span>
-                          <span className="text-xs text-muted-foreground capitalize">
-                            {company.role.replace('_', ' ')}
-                          </span>
-                        </div>
+                         <div className="flex flex-col">
+                           <span className="font-medium">{company.name}</span>
+                           <span className="text-xs text-muted-foreground capitalize">
+                             {company.role.replace('_', ' ')}
+                           </span>
+                         </div>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
