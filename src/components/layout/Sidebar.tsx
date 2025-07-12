@@ -483,16 +483,26 @@ export function AppSidebar() {
                      <NavLink 
                       to={item.url} 
                       end 
-                      className={`group relative flex items-center gap-3 px-3 py-3 mx-1 rounded-2xl transition-all duration-300 backdrop-blur-sm ${
+                      className={`group relative flex items-center gap-3 px-3 py-2.5 transition-all duration-300 ${
                         active 
-                          ? "bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 text-primary shadow-lg shadow-primary/10" 
-                          : "hover:bg-white/5 hover:border hover:border-white/10 hover:backdrop-blur-md"
+                          ? "text-primary font-medium" 
+                          : "hover:text-primary hover:bg-accent/20"
                       }`}
                     >
-                     <div className={`flex items-center justify-center w-8 h-8 rounded-xl transition-all duration-300 backdrop-blur-sm ${
+                     {/* Indicador circular */}
+                     <div className={`absolute left-0 w-1 h-8 rounded-r-full transition-all duration-300 ${
+                       active ? "bg-primary" : "bg-transparent"
+                     }`} />
+                     
+                     {/* Círculo indicador cuando está activo */}
+                     {active && (
+                       <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-lg shadow-primary/50 animate-pulse" />
+                     )}
+                     
+                     <div className={`flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ${
                        active 
-                         ? "bg-primary/20 border border-primary/40 text-primary" 
-                         : "bg-white/5 border border-white/10 text-muted-foreground group-hover:bg-primary/10 group-hover:border-primary/20 group-hover:text-primary"
+                         ? "bg-primary/10 text-primary ring-2 ring-primary/30" 
+                         : "bg-transparent text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary group-hover:ring-2 group-hover:ring-primary/20"
                      }`}>
                        <IconComponent className="h-4 w-4" />
                      </div>
