@@ -351,9 +351,21 @@ export default function Auth() {
           if (roleData?.[0]?.role === 'superadmin') {
             console.log('Redirecting to superadmin dashboard');
             navigate('/superadmin');
+          } else if (roleData?.[0]?.role === 'company_owner') {
+            console.log('Redirecting to owner dashboard');
+            navigate('/dashboard/owner');
+          } else if (roleData?.[0]?.role === 'operations_manager') {
+            console.log('Redirecting to operations dashboard');
+            navigate('/dashboard/operations');
+          } else if (roleData?.[0]?.role === 'dispatcher') {
+            console.log('Redirecting to dispatcher dashboard');
+            navigate('/dashboard/dispatch');
+          } else if (roleData?.[0]?.role === 'driver') {
+            console.log('Redirecting to driver dashboard');
+            navigate('/dashboard/driver');
           } else {
-            console.log('Redirecting to main dashboard');
-            navigate('/');
+            console.log('No specific role found, redirecting to main dashboard');
+            navigate('/dashboard');
           }
         }
       } else {
