@@ -153,19 +153,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const getCurrentRoleFromStorage = (roles: UserRole[]): UserRole | null => {
     try {
       const stored = localStorage.getItem('currentRole');
+      console.log('Reading stored role from localStorage:', stored);
+      
       if (stored) {
         const storedRole = JSON.parse(stored);
+        console.log('Parsed stored role:', storedRole);
+        console.log('Available roles:', roles);
+        
         // Verify the stored role is still valid
         const validRole = roles.find(r => 
           r.id === storedRole.id && 
           r.role === storedRole.role && 
           r.company_id === storedRole.company_id
         );
+        
+        console.log('Found valid role match:', validRole);
         return validRole || null;
       }
     } catch (error) {
       console.error('Error reading stored role:', error);
     }
+    
+    console.log('No stored role found, returning null');
     return null;
   };
 
@@ -245,22 +254,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (session?.user) {
         const roles = await fetchUserRoles(session.user.id);
+        console.log('Fetched roles for session:', roles);
+        
         if (isMounted && roles.length > 0) {
-          // Try to get current role from storage first
+          // ALWAYS try to get current role from storage first
           const storedRole = getCurrentRoleFromStorage(roles);
+          console.log('Stored role from localStorage:', storedRole);
           
           let selectedRole: UserRole | null = null;
           
-          if (storedRole && roles.some(r => r.id === storedRole.id)) {
+          if (storedRole) {
             // Use stored role if it's valid
             selectedRole = storedRole;
+            console.log('Using stored role:', selectedRole);
           } else {
-            // Fallback to first role if no valid stored role
+            // Only fallback to first role if no valid stored role
             selectedRole = roles[0];
-            console.warn('No valid stored role found, using first available role:', selectedRole);
+            console.log('No valid stored role, using first role:', selectedRole);
           }
           
           if (selectedRole) {
+            console.log('Setting final selected role:', selectedRole);
             dispatch({ 
               type: 'SET_ROLES', 
               userRoles: roles, 
