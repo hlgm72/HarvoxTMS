@@ -161,13 +161,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const getCurrentRoleFromStorage = (roles: UserRole[]): UserRole | null => {
     try {
-      // Try sessionStorage first (per-tab), then localStorage (global fallback)
-      let stored = sessionStorage.getItem('currentRole');
-      let storageType = 'sessionStorage';
+      // Try localStorage first (global preference), then sessionStorage (per-tab)
+      let stored = localStorage.getItem('currentRole');
+      let storageType = 'localStorage';
       
       if (!stored) {
-        stored = localStorage.getItem('currentRole');
-        storageType = 'localStorage';
+        stored = sessionStorage.getItem('currentRole');
+        storageType = 'sessionStorage';
       }
       
       console.log(`Reading stored role from ${storageType}:`, stored);
@@ -177,9 +177,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('Parsed stored role:', storedRole);
         console.log('Available roles:', roles);
         
-        // Verify the stored role is still valid
+        // Verify the stored role is still valid - match by role and company_id
         const validRole = roles.find(r => 
-          r.id === storedRole.id && 
           r.role === storedRole.role && 
           r.company_id === storedRole.company_id
         );
