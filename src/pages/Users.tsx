@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/select";
 import { 
   UserPlus, Mail, Shield, Edit, Trash2, Users as UsersIcon, Eye,
-  Activity, Clock, AlertCircle, TrendingUp, Search, Filter, X
+  Activity, Clock, AlertCircle, TrendingUp, Search, Filter, X, GripVertical
 } from "lucide-react";
 import { toast } from "sonner";
 import { useFleetNotifications } from "@/components/notifications";
@@ -111,6 +111,12 @@ export default function Users() {
     usersByRole: {} as Record<string, number>,
     recentUsers: 0
   });
+
+  // Estado para el orden de las columnas
+  const [columnOrder, setColumnOrder] = useState([
+    'user', 'email', 'phone', 'role', 'status', 'created_at', 'actions'
+  ]);
+  const [draggedColumn, setDraggedColumn] = useState<string | null>(null);
 
   // Cargar usuarios al montar el componente
   useEffect(() => {
@@ -1279,18 +1285,58 @@ export default function Users() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Usuario</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Teléfono</TableHead>
-                <TableHead>Rol</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Fecha de Registro</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
+          <div className="relative overflow-auto max-h-[600px]">
+            <Table>
+              <TableHeader className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
+                <TableRow>
+                  {columnOrder.map((columnId, index) => {
+                    const columnConfig = {
+                      user: { label: 'Usuario', className: '' },
+                      email: { label: 'Email', className: '' },
+                      phone: { label: 'Teléfono', className: '' },
+                      role: { label: 'Rol', className: '' },
+                      status: { label: 'Estado', className: '' },
+                      created_at: { label: 'Fecha de Registro', className: '' },
+                      actions: { label: 'Acciones', className: 'text-right' }
+                    };
+
+                    const config = columnConfig[columnId as keyof typeof columnConfig];
+                    if (!config) return null;
+
+                    return (
+                      <TableHead 
+                        key={columnId}
+                        className={`${config.className} ${draggedColumn === columnId ? 'opacity-50' : ''} cursor-move group relative border-b shadow-sm`}
+                        draggable
+                        onDragStart={(e) => {
+                          setDraggedColumn(columnId);
+                          e.dataTransfer.effectAllowed = 'move';
+                        }}
+                        onDragEnd={() => setDraggedColumn(null)}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          if (draggedColumn && draggedColumn !== columnId) {
+                            const newOrder = [...columnOrder];
+                            const draggedIndex = newOrder.indexOf(draggedColumn);
+                            const targetIndex = newOrder.indexOf(columnId);
+                            
+                            newOrder.splice(draggedIndex, 1);
+                            newOrder.splice(targetIndex, 0, draggedColumn);
+                            
+                            setColumnOrder(newOrder);
+                          }
+                        }}
+                      >
+                        <div className="flex items-center gap-2">
+                          <GripVertical className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                          {config.label}
+                        </div>
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
@@ -1354,92 +1400,115 @@ export default function Users() {
               ) : (
                 filteredUsers.map((user) => (
                   <TableRow key={user.id} className="hover:bg-muted/50">
-                    <TableCell>
-                      <div className="flex items-center space-x-3">
-                        {user.avatar_url ? (
-                          <div className="h-8 w-8 rounded-full overflow-hidden bg-muted flex-shrink-0">
-                            <img 
-                              src={user.avatar_url} 
-                              alt={`Avatar de ${user.first_name || user.email}`}
-                              className="h-full w-full object-cover object-center"
-                            />
-                          </div>
-                        ) : (
-                          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <span className="text-sm font-medium text-primary">
-                              {getUserInitials(user)}
-                            </span>
-                          </div>
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <div className="font-medium truncate">
-                            {user.first_name && user.last_name 
-                              ? `${user.first_name} ${user.last_name}`
-                              : 'Sin nombre'
-                            }
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <div className="text-sm text-muted-foreground">
-                        {user.phone || 'No especificado'}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {sortRolesByHierarchy(user.role.split(', ').map((roleLabel) => {
-                          // Obtener el rol original desde el label
-                          const originalRole = Object.entries({
-                            'superadmin': 'Super Admin',
-                            'company_owner': 'Propietario',
-                            'general_manager': 'Gerente General', 
-                            'operations_manager': 'Gerente de Operaciones',
-                            'safety_manager': 'Gerente de Seguridad',
-                            'senior_dispatcher': 'Despachador Senior',
-                            'dispatcher': 'Despachador',
-                            'driver': 'Conductor',
-                          }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
-                          
-                          return originalRole;
-                        })).map((originalRole, index) => (
-                          <Badge 
-                            key={index} 
-                            className={`text-xs ${getRoleBadgeColor(originalRole)}`}
-                          >
-                            {getRoleLabel(originalRole)}
-                          </Badge>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell>{getStatusBadge(user.status)}</TableCell>
-                    <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end space-x-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleViewUser(user)}
-                          title="Ver usuario"
+                    {columnOrder.map((columnId) => {
+                      const renderCell = () => {
+                        switch (columnId) {
+                          case 'user':
+                            return (
+                              <div className="flex items-center space-x-3">
+                                {user.avatar_url ? (
+                                  <div className="h-8 w-8 rounded-full overflow-hidden bg-muted flex-shrink-0">
+                                    <img 
+                                      src={user.avatar_url} 
+                                      alt={`Avatar de ${user.first_name || user.email}`}
+                                      className="h-full w-full object-cover object-center"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <span className="text-sm font-medium text-primary">
+                                      {getUserInitials(user)}
+                                    </span>
+                                  </div>
+                                )}
+                                <div className="min-w-0 flex-1">
+                                  <div className="font-medium truncate">
+                                    {user.first_name && user.last_name 
+                                      ? `${user.first_name} ${user.last_name}`
+                                      : 'Sin nombre'
+                                    }
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          case 'email':
+                            return user.email;
+                          case 'phone':
+                            return (
+                              <div className="text-sm text-muted-foreground">
+                                {user.phone || 'No especificado'}
+                              </div>
+                            );
+                          case 'role':
+                            return (
+                              <div className="flex flex-wrap gap-1">
+                                {sortRolesByHierarchy(user.role.split(', ').map((roleLabel) => {
+                                  const originalRole = Object.entries({
+                                    'superadmin': 'Super Admin',
+                                    'company_owner': 'Propietario',
+                                    'general_manager': 'Gerente General', 
+                                    'operations_manager': 'Gerente de Operaciones',
+                                    'safety_manager': 'Gerente de Seguridad',
+                                    'senior_dispatcher': 'Despachador Senior',
+                                    'dispatcher': 'Despachador',
+                                    'driver': 'Conductor',
+                                  }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+                                  return originalRole;
+                                })).map((originalRole, index) => (
+                                  <Badge 
+                                    key={index} 
+                                    className={`text-xs ${getRoleBadgeColor(originalRole)}`}
+                                  >
+                                    {getRoleLabel(originalRole)}
+                                  </Badge>
+                                ))}
+                              </div>
+                            );
+                          case 'status':
+                            return getStatusBadge(user.status);
+                          case 'created_at':
+                            return new Date(user.created_at).toLocaleDateString();
+                          case 'actions':
+                            return (
+                              <div className="flex items-center justify-end space-x-2">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => handleViewUser(user)}
+                                  title="Ver usuario"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => handleEditUser(user)}
+                                  title="Editar usuario"
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            );
+                          default:
+                            return null;
+                        }
+                      };
+
+                      return (
+                        <TableCell 
+                          key={columnId} 
+                          className={columnId === 'actions' ? 'text-right' : ''}
                         >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleEditUser(user)}
-                          title="Editar usuario"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+                          {renderCell()}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                 ))
               )}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
       </div>
