@@ -109,7 +109,7 @@ export default function EditDriver() {
   const { userRole } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState("employee");
   
   const [driverData, setDriverData] = useState<DriverData>({
     // Información General
@@ -244,41 +244,7 @@ export default function EditDriver() {
     
     setSaving(true);
     try {
-      // Actualizar información general del perfil
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          first_name: driverData.first_name,
-          last_name: driverData.last_name,
-          phone: driverData.phone,
-          preferred_language: driverData.preferred_language,
-          timezone: driverData.timezone,
-        })
-        .eq('user_id', userId);
-
-      if (profileError) throw profileError;
-
-      // Upsert información del conductor
-      const { error: driverError } = await supabase
-        .from('driver_profiles')
-        .upsert({
-          user_id: userId,
-          license_number: driverData.license_number,
-          license_state: driverData.license_state,
-          license_expiry_date: driverData.license_expiry_date?.toISOString().split('T')[0] || null,
-          cdl_class: driverData.cdl_class,
-          date_of_birth: driverData.date_of_birth?.toISOString().split('T')[0] || null,
-          hire_date: driverData.hire_date?.toISOString().split('T')[0] || null,
-          emergency_contact_name: driverData.emergency_contact_name,
-          emergency_contact_phone: driverData.emergency_contact_phone,
-          driver_id: driverData.driver_id,
-        }, {
-          onConflict: 'user_id'
-        });
-
-      if (driverError) throw driverError;
-
-      // Upsert información de empleado
+      // Solo actualizar información de empleado (administrativa)
       const { error: companyDriverError } = await supabase
         .from('company_drivers')
         .upsert({
@@ -292,7 +258,7 @@ export default function EditDriver() {
 
       if (companyDriverError) throw companyDriverError;
 
-      // Manejar información de owner-operator
+      // Manejar información de owner-operator (comercial)
       if (driverData.is_owner_operator) {
         const { error: ownerOperatorError } = await supabase
           .from('owner_operators')
@@ -323,7 +289,7 @@ export default function EditDriver() {
         if (deleteError && deleteError.code !== 'PGRST116') throw deleteError;
       }
 
-      toast.success('Información del conductor actualizada correctamente');
+      toast.success('Información administrativa del conductor actualizada correctamente');
       navigate('/users');
       
     } catch (error) {
@@ -386,15 +352,8 @@ export default function EditDriver() {
       <Card>
         <CardContent className="p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="general" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                Información General
-              </TabsTrigger>
-              <TabsTrigger value="driver" className="flex items-center gap-2">
-                <Truck className="h-4 w-4" />
-                Datos del Conductor
-              </TabsTrigger>
+            {/* Solo mostrar pestañas administrativas para Owners */}
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="employee" className="flex items-center gap-2">
                 <Building className="h-4 w-4" />
                 Información de Empleado
@@ -405,234 +364,7 @@ export default function EditDriver() {
               </TabsTrigger>
             </TabsList>
 
-            {/* Tab 1: Información General */}
-            <TabsContent value="general" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="first_name">Nombre *</Label>
-                  <Input
-                    id="first_name"
-                    value={driverData.first_name}
-                    onChange={(e) => updateDriverData('first_name', e.target.value)}
-                    placeholder="Nombre del conductor"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="last_name">Apellido *</Label>
-                  <Input
-                    id="last_name"
-                    value={driverData.last_name}
-                    onChange={(e) => updateDriverData('last_name', e.target.value)}
-                    placeholder="Apellido del conductor"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Teléfono</Label>
-                  <Input
-                    id="phone"
-                    value={driverData.phone}
-                    onChange={(e) => updateDriverData('phone', e.target.value)}
-                    placeholder="(555) 123-4567"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="preferred_language">Idioma Preferido</Label>
-                  <Select
-                    value={driverData.preferred_language}
-                    onValueChange={(value) => updateDriverData('preferred_language', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {LANGUAGES.map((lang) => (
-                        <SelectItem key={lang.value} value={lang.value}>
-                          {lang.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="timezone">Zona Horaria</Label>
-                  <Select
-                    value={driverData.timezone}
-                    onValueChange={(value) => updateDriverData('timezone', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {TIMEZONES.map((tz) => (
-                        <SelectItem key={tz.value} value={tz.value}>
-                          {tz.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Tab 2: Datos del Conductor */}
-            <TabsContent value="driver" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="driver_id">ID del Conductor</Label>
-                  <Input
-                    id="driver_id"
-                    value={driverData.driver_id}
-                    onChange={(e) => updateDriverData('driver_id', e.target.value)}
-                    placeholder="ID único del conductor"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="license_number">Número de Licencia</Label>
-                  <Input
-                    id="license_number"
-                    value={driverData.license_number}
-                    onChange={(e) => updateDriverData('license_number', e.target.value)}
-                    placeholder="Número de licencia de conducir"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="license_state">Estado de la Licencia</Label>
-                  <StateCombobox
-                    value={driverData.license_state}
-                    onValueChange={(value) => updateDriverData('license_state', value)}
-                    placeholder="Seleccionar estado"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Fecha de Vencimiento de Licencia</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !driverData.license_expiry_date && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {driverData.license_expiry_date ? (
-                          format(driverData.license_expiry_date, "PPP", { locale: es })
-                        ) : (
-                          <span>Seleccionar fecha</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={driverData.license_expiry_date || undefined}
-                        onSelect={(date) => updateDriverData('license_expiry_date', date)}
-                        initialFocus
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cdl_class">Clase CDL</Label>
-                  <Select
-                    value={driverData.cdl_class}
-                    onValueChange={(value) => updateDriverData('cdl_class', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar clase CDL" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CDL_CLASSES.map((cdl) => (
-                        <SelectItem key={cdl.value} value={cdl.value}>
-                          {cdl.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Fecha de Nacimiento</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !driverData.date_of_birth && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {driverData.date_of_birth ? (
-                          format(driverData.date_of_birth, "PPP", { locale: es })
-                        ) : (
-                          <span>Seleccionar fecha</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={driverData.date_of_birth || undefined}
-                        onSelect={(date) => updateDriverData('date_of_birth', date)}
-                        initialFocus
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="space-y-2">
-                  <Label>Fecha de Contratación</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !driverData.hire_date && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {driverData.hire_date ? (
-                          format(driverData.hire_date, "PPP", { locale: es })
-                        ) : (
-                          <span>Seleccionar fecha</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={driverData.hire_date || undefined}
-                        onSelect={(date) => updateDriverData('hire_date', date)}
-                        initialFocus
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="emergency_contact_name">Nombre del Contacto de Emergencia</Label>
-                  <Input
-                    id="emergency_contact_name"
-                    value={driverData.emergency_contact_name}
-                    onChange={(e) => updateDriverData('emergency_contact_name', e.target.value)}
-                    placeholder="Nombre completo"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="emergency_contact_phone">Teléfono de Emergencia</Label>
-                  <Input
-                    id="emergency_contact_phone"
-                    value={driverData.emergency_contact_phone}
-                    onChange={(e) => updateDriverData('emergency_contact_phone', e.target.value)}
-                    placeholder="(555) 123-4567"
-                  />
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Tab 3: Información de Empleado */}
+            {/* Información de Empleado */}
             <TabsContent value="employee" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
