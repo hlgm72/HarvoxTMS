@@ -313,7 +313,47 @@ export default function EditDriver() {
     }
   };
 
-  const updateDriverData = (field: keyof DriverData, value: any) => {
+  const updateDriverData = async (field: keyof DriverData, value: any) => {
+    // Si se está marcando como Owner Operator, heredar valores de la compañía
+    if (field === 'is_owner_operator' && value === true && !driverData.is_owner_operator) {
+      try {
+        // Obtener la compañía del driver
+        const { data: userRole, error: roleError } = await supabase
+          .from('user_company_roles')
+          .select('company_id')
+          .eq('user_id', userId)
+          .eq('is_active', true)
+          .single();
+        
+        if (roleError) throw roleError;
+        
+        // Obtener los valores por defecto de la compañía
+        const { data: company, error: companyError } = await supabase
+          .from('companies')
+          .select('default_factoring_percentage, default_dispatching_percentage, default_leasing_percentage')
+          .eq('id', userRole.company_id)
+          .single();
+        
+        if (companyError) throw companyError;
+        
+        // Actualizar con los valores heredados de la compañía
+        setDriverData(prev => ({ 
+          ...prev, 
+          [field]: value,
+          dispatching_percentage: company.default_dispatching_percentage || 5,
+          factoring_percentage: company.default_factoring_percentage || 3,
+          leasing_percentage: company.default_leasing_percentage || 5,
+        }));
+        
+        toast.success('Porcentajes heredados de la compañía');
+        return;
+      } catch (error) {
+        console.error('Error inheriting company percentages:', error);
+        toast.error('Error al heredar valores de la compañía, usando valores por defecto');
+        // Continuar con valores por defecto
+      }
+    }
+    
     setDriverData(prev => ({ ...prev, [field]: value }));
   };
 
