@@ -1476,14 +1476,6 @@ export default function Users() {
                     <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleViewUser(user)}
-                          title="Ver usuario"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
                         {isUserDriver(user) && (
                           <Button 
                             variant="ghost" 
@@ -1495,6 +1487,14 @@ export default function Users() {
                             <Truck className="h-4 w-4" />
                           </Button>
                         )}
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleViewUser(user)}
+                          title="Ver usuario"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
                         <Button 
                           variant="ghost" 
                           size="sm"
