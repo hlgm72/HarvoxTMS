@@ -266,10 +266,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let isMounted = true;
+    let isInitialized = false; // Prevent multiple initializations
 
     const handleSession = async (session: Session | null) => {
-      if (!isMounted) return;
+      if (!isMounted || isInitialized) return;
 
+      console.log('🚀 HandleSession called for user:', session?.user?.id);
       dispatch({ type: 'SET_SESSION', session, user: session?.user ?? null });
 
       if (session?.user) {
@@ -310,6 +312,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
             
             console.log('State updated with role:', selectedRole.role);
+            isInitialized = true; // Mark as initialized
           } else {
             console.log('No role could be selected');
           }
@@ -331,33 +334,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
-    // Set up auth state listener
+    // Set up auth state listener with debouncing
+    let timeoutId: NodeJS.Timeout;
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state change:', event, session?.user?.id);
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          // Defer data loading to prevent deadlocks
-          setTimeout(() => {
+        
+        // Clear any pending timeouts
+        if (timeoutId) clearTimeout(timeoutId);
+        
+        // Debounce the session handling to prevent multiple rapid calls
+        timeoutId = setTimeout(() => {
+          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            // Reset initialization flag for new sign-ins
+            if (event === 'SIGNED_IN') {
+              isInitialized = false;
+            }
             handleSession(session);
-          }, 0);
-        } else {
-          await handleSession(session);
-        }
+          } else if (event === 'INITIAL_SESSION') {
+            // Only handle initial session if not already initialized
+            if (!isInitialized) {
+              handleSession(session);
+            }
+          } else {
+            handleSession(session);
+          }
+        }, 100); // 100ms debounce
       }
     );
 
-    // Check for existing session immediately
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session && isMounted) {
-        handleSession(session);
+    // Check for existing session immediately, but only once
+    const initializeSession = async () => {
+      if (!isInitialized) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && isMounted) {
+          await handleSession(session);
+        }
       }
-    });
+    };
+
+    initializeSession();
 
     return () => {
       isMounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
       subscription.unsubscribe();
     };
-  }, []);
+  }, []); // Empty dependency array to run only once
 
   const contextValue: AuthContextType = {
     ...authState,
