@@ -161,41 +161,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const getCurrentRoleFromStorage = (roles: UserRole[]): UserRole | null => {
     try {
-      // SOLO usar localStorage - no sessionStorage para evitar conflictos
-      const stored = localStorage.getItem('currentRole');
-      console.log('Reading stored role from localStorage ONLY:', stored);
+      // Intentar múltiples fuentes de persistencia en orden de prioridad
+      const sources = [
+        { name: 'localStorage:currentRole', value: localStorage.getItem('currentRole') },
+        { name: 'localStorage:lastActiveRole', value: localStorage.getItem('lastActiveRole') },
+        { name: 'sessionStorage:activeRole', value: sessionStorage.getItem('activeRole') }
+      ];
       
-      if (stored) {
-        const storedRole = JSON.parse(stored);
-        console.log('Parsed stored role:', storedRole);
-        console.log('Available roles:', roles.map(r => ({ id: r.id, role: r.role })));
-        
-        // Buscar por ID exacto primero
-        let validRole = roles.find(r => r.id === storedRole.id);
-        
-        // Si no encuentra por ID, buscar por role y company_id
-        if (!validRole) {
-          validRole = roles.find(r => 
-            r.role === storedRole.role && 
-            r.company_id === storedRole.company_id
-          );
+      console.log('🔍 Buscando rol activo en múltiples fuentes...');
+      
+      for (const source of sources) {
+        if (source.value) {
+          console.log(`✅ Encontrado en ${source.name}:`, source.value);
+          
+          try {
+            const storedRole = JSON.parse(source.value);
+            console.log('Parsed stored role:', storedRole);
+            
+            // Buscar por ID exacto primero
+            let validRole = roles.find(r => r.id === storedRole.id);
+            
+            // Si no encuentra por ID, buscar por role y company_id
+            if (!validRole) {
+              validRole = roles.find(r => 
+                r.role === storedRole.role && 
+                r.company_id === storedRole.company_id
+              );
+            }
+            
+            if (validRole) {
+              console.log(`🎯 Rol válido encontrado en ${source.name}:`, validRole);
+              return validRole;
+            } else {
+              console.log(`⚠️ Rol en ${source.name} no es válido para roles disponibles`);
+            }
+          } catch (parseError) {
+            console.warn(`⚠️ Error parsing ${source.name}:`, parseError);
+          }
+        } else {
+          console.log(`❌ No encontrado en ${source.name}`);
         }
-        
-        console.log('Found valid role match:', validRole);
-        return validRole || null;
       }
+      
+      console.log('🔄 No se encontró rol activo válido, usando primer rol disponible');
+      return roles.length > 0 ? roles[0] : null;
     } catch (error) {
-      console.error('Error reading stored role:', error);
+      console.error('💥 Error general en getCurrentRoleFromStorage:', error);
+      return roles.length > 0 ? roles[0] : null;
     }
-    
-    console.log('No stored role found, returning null');
-    return null;
   };
 
   const cleanupAuthStorage = () => {
-    // Remove standard auth keys from both storages
+    // Remove todas las claves de rol de ambos storages
     localStorage.removeItem('currentRole');
+    localStorage.removeItem('lastActiveRole');
     sessionStorage.removeItem('currentRole');
+    sessionStorage.removeItem('activeRole');
+    
+    console.log('🧹 Limpieza completa de storage completada');
     
     // Remove any potentially conflicting Supabase auth keys
     Object.keys(localStorage).forEach((key) => {
@@ -208,18 +231,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const storeRoleWithBackup = (role: UserRole) => {
+    const roleString = JSON.stringify(role);
+    
+    // Guardar en múltiples lugares para máxima persistencia
+    localStorage.setItem('currentRole', roleString);
+    localStorage.setItem('lastActiveRole', roleString);
+    sessionStorage.setItem('activeRole', roleString);
+    
+    console.log('💾 Rol guardado en múltiples ubicaciones:', role.role);
+    console.log('   - localStorage:currentRole ✅');
+    console.log('   - localStorage:lastActiveRole ✅');
+    console.log('   - sessionStorage:activeRole ✅');
+  };
+
   const switchRole = (role: UserRole) => {
     console.log('🔄 SWITCHING ROLE FROM:', authState.currentRole?.role, 'TO:', role.role);
     console.log('🔄 Switch role called with:', role);
     dispatch({ type: 'SET_ROLES', userRoles: authState.userRoles, currentRole: role });
     
-    // SOLO guardar en localStorage - no sessionStorage
-    console.log('📝 ESCRIBIENDO a localStorage desde switchRole:', JSON.stringify(role));
-    console.log('📝 STACK TRACE:', new Error().stack);
-    localStorage.setItem('currentRole', JSON.stringify(role));
-    // Limpiar sessionStorage para evitar conflictos
-    sessionStorage.removeItem('currentRole');
-    console.log('🔄 Role switched and stored ONLY in localStorage:', role.role);
+    // Guardar con sistema de respaldo
+    storeRoleWithBackup(role);
+    console.log('🔄 Role switched and stored with backup:', role.role);
     
     // Force an update to trigger re-renders
     dispatch({ type: 'FORCE_UPDATE' });
@@ -320,13 +353,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.log('  - selectedRole (final):', selectedRole);
             console.log('  - All available roles:', roles.map(r => ({ id: r.id, role: r.role })));
             
-            // SOLO guardar en localStorage - no sessionStorage
-            console.log('📝 ESCRIBIENDO a localStorage desde handleSession:', JSON.stringify(selectedRole));
-            console.log('📝 STACK TRACE handleSession:', new Error().stack);
-            localStorage.setItem('currentRole', JSON.stringify(selectedRole));
-            // Limpiar sessionStorage para evitar conflictos
-            sessionStorage.removeItem('currentRole');
-            console.log('💾 Stored role ONLY in localStorage:', JSON.stringify(selectedRole));
+            // Guardar con sistema de respaldo
+            storeRoleWithBackup(selectedRole);
+            console.log('💾 Rol inicial guardado con sistema de respaldo:', selectedRole.role);
             
             dispatch({ 
               type: 'SET_ROLES', 
