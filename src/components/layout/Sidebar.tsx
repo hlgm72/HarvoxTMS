@@ -483,16 +483,16 @@ export function AppSidebar() {
                      <NavLink 
                       to={item.url} 
                       end 
-                      className={`group relative flex items-center gap-3 px-4 py-3 mx-2 rounded-xl transition-all duration-300 ${
+                      className={`group relative flex items-center gap-3 px-3 py-3 mx-1 rounded-2xl transition-all duration-300 backdrop-blur-sm ${
                         active 
-                          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 transform scale-[1.02]" 
-                          : "hover:bg-accent/50 hover:shadow-md hover:transform hover:scale-[1.01]"
+                          ? "bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 text-primary shadow-lg shadow-primary/10" 
+                          : "hover:bg-white/5 hover:border hover:border-white/10 hover:backdrop-blur-md"
                       }`}
                     >
-                     <div className={`flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300 ${
+                     <div className={`flex items-center justify-center w-8 h-8 rounded-xl transition-all duration-300 backdrop-blur-sm ${
                        active 
-                         ? "bg-white/20 text-white" 
-                         : "bg-accent/30 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
+                         ? "bg-primary/20 border border-primary/40 text-primary" 
+                         : "bg-white/5 border border-white/10 text-muted-foreground group-hover:bg-primary/10 group-hover:border-primary/20 group-hover:text-primary"
                      }`}>
                        <IconComponent className="h-4 w-4" />
                      </div>
