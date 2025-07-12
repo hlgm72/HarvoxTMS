@@ -31,7 +31,7 @@ import {
 import { UserPlus, Mail, Shield, Edit, Trash2, Users as UsersIcon, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useFleetNotifications } from "@/components/notifications";
-import { handleTextBlur } from "@/lib/textUtils";
+import { handleTextBlur, createTextHandlers } from "@/lib/textUtils";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
@@ -439,7 +439,9 @@ export default function Users() {
                   <Input
                     id="first_name"
                     value={inviteForm.first_name}
-                    onChange={(e) => setInviteForm(prev => ({ ...prev, first_name: e.target.value }))}
+                    {...createTextHandlers(
+                      (value) => setInviteForm(prev => ({ ...prev, first_name: value }))
+                    )}
                     placeholder="Nombre"
                   />
                 </div>
@@ -448,7 +450,9 @@ export default function Users() {
                   <Input
                     id="last_name"
                     value={inviteForm.last_name}
-                    onChange={(e) => setInviteForm(prev => ({ ...prev, last_name: e.target.value }))}
+                    {...createTextHandlers(
+                      (value) => setInviteForm(prev => ({ ...prev, last_name: value }))
+                    )}
                     placeholder="Apellido"
                   />
                 </div>
