@@ -314,8 +314,11 @@ export default function EditDriver() {
   };
 
   const updateDriverData = async (field: keyof DriverData, value: any) => {
+    console.log('updateDriverData called:', { field, value, currentIsOwnerOperator: driverData.is_owner_operator });
+    
     // Si se está marcando como Owner Operator, heredar valores de la compañía
     if (field === 'is_owner_operator' && value === true && !driverData.is_owner_operator) {
+      console.log('Attempting to inherit company percentages...');
       try {
         // Obtener la compañía del driver
         const { data: userRole, error: roleError } = await supabase
@@ -325,6 +328,7 @@ export default function EditDriver() {
           .eq('is_active', true)
           .single();
         
+        console.log('User role query result:', { userRole, roleError });
         if (roleError) throw roleError;
         
         // Obtener los valores por defecto de la compañía
@@ -334,16 +338,20 @@ export default function EditDriver() {
           .eq('id', userRole.company_id)
           .single();
         
+        console.log('Company query result:', { company, companyError });
         if (companyError) throw companyError;
         
         // Actualizar con los valores heredados de la compañía
-        setDriverData(prev => ({ 
-          ...prev, 
+        const newData = { 
+          ...driverData, 
           [field]: value,
           dispatching_percentage: company.default_dispatching_percentage || 5,
           factoring_percentage: company.default_factoring_percentage || 3,
           leasing_percentage: company.default_leasing_percentage || 5,
-        }));
+        };
+        
+        console.log('Setting new driver data:', newData);
+        setDriverData(newData);
         
         toast.success('Porcentajes heredados de la compañía');
         return;
@@ -354,6 +362,7 @@ export default function EditDriver() {
       }
     }
     
+    console.log('Setting normal field update:', { field, value });
     setDriverData(prev => ({ ...prev, [field]: value }));
   };
 
