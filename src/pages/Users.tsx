@@ -48,6 +48,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { EditDriverModal } from "@/components/EditDriverModal";
+import { PageToolbar } from "@/components/layout/PageToolbar";
 
 type UserRole = Database["public"]["Enums"]["user_role"];
 
@@ -495,149 +496,118 @@ export default function Users() {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <div className="p-8">
-        {/* Barra superior con filtros y botón invitar */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            {/* Botón de filtros */}
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  <Filter className="h-4 w-4" />
-                  Filtros
-                  {(searchTerm || roleFilter || statusFilter) && (
-                    <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 text-xs">
-                      {[searchTerm, roleFilter, statusFilter].filter(Boolean).length}
-                    </Badge>
-                  )}
-                </Button>
-              </SheetTrigger>
-              <SheetContent className="w-[400px] sm:w-[540px]">
-                <SheetHeader>
-                  <SheetTitle className="flex items-center gap-2">
-                    <Filter className="h-5 w-5 text-primary" />
-                    Filtros y Búsqueda
-                  </SheetTitle>
-                  <SheetDescription>
-                    Busca y filtra usuarios por diferentes criterios
-                  </SheetDescription>
-                </SheetHeader>
-                
-                <div className="space-y-6 mt-6">
-                  {/* Barra de búsqueda */}
-                  <div className="space-y-2">
-                    <Label htmlFor="search">Buscar Usuario</Label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="search"
-                        placeholder="Buscar por nombre o email..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
-                      />
-                      {searchTerm && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSearchTerm('')}
-                          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Filtro por rol */}
-                  <div className="space-y-2">
-                    <Label htmlFor="roleFilter">Filtrar por Rol</Label>
-                    <div className="flex gap-2">
-                      <Select value={roleFilter} onValueChange={setRoleFilter}>
-                        <SelectTrigger className="flex-1">
-                          <SelectValue placeholder="Todos los roles" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="">Todos los roles</SelectItem>
-                          {ROLE_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {roleFilter && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setRoleFilter('')}
-                          className="px-2"
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Filtro por estado */}
-                  <div className="space-y-2">
-                    <Label htmlFor="statusFilter">Filtrar por Estado</Label>
-                    <div className="flex gap-2">
-                      <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger className="flex-1">
-                          <SelectValue placeholder="Todos los estados" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="">Todos los estados</SelectItem>
-                          <SelectItem value="active">Activo</SelectItem>
-                          <SelectItem value="pending">Pendiente</SelectItem>
-                          <SelectItem value="inactive">Inactivo</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {statusFilter && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setStatusFilter('')}
-                          className="px-2"
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
-
-            {/* Toggle de vista */}
-            <div className="flex border border-border rounded-lg">
-              <Button
-                variant={viewMode === 'table' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('table')}
-                className="rounded-r-none"
-              >
-                <List className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'cards' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('cards')}
-                className="rounded-l-none"
-              >
-                <Grid className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Botón de invitar usuario */}
+      {/* Page Toolbar */}
+      <PageToolbar
+        breadcrumbs={[
+          { label: "Gestión de Usuarios" }
+        ]}
+        title={`Usuarios de la Empresa (${filteredUsers.length})`}
+        actions={
           <Button onClick={() => setInviteDialogOpen(true)} className="gap-2">
             <UserPlus className="h-4 w-4" />
             Invitar Usuario
           </Button>
-        </div>
+        }
+        filters={
+          <div className="flex items-center gap-4 flex-wrap">
+            {/* Búsqueda por nombre/email */}
+            <div className="flex items-center gap-2 min-w-[200px]">
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por nombre o email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="max-w-xs"
+              />
+              {searchTerm && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSearchTerm('')}
+                  className="px-2"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
 
+            {/* Filtro por rol */}
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <Select value={roleFilter} onValueChange={setRoleFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filtrar por rol" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Todos los roles</SelectItem>
+                  {ROLE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {roleFilter && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setRoleFilter('')}
+                  className="px-2"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
+
+            {/* Filtro por estado */}
+            <div className="flex items-center gap-2">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue placeholder="Estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="active">Activos</SelectItem>
+                  <SelectItem value="pending">Pendientes</SelectItem>
+                  <SelectItem value="inactive">Inactivos</SelectItem>
+                </SelectContent>
+              </Select>
+              {statusFilter && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setStatusFilter('')}
+                  className="px-2"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
+          </div>
+        }
+        viewToggle={
+          <div className="flex border border-border rounded-lg">
+            <Button
+              variant={viewMode === 'table' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('table')}
+              className="rounded-r-none"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === 'cards' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('cards')}
+              className="rounded-l-none"
+            >
+              <Grid className="h-4 w-4" />
+            </Button>
+          </div>
+        }
+      />
+
+      <div className="p-8">
         {/* Dashboard de Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
@@ -705,7 +675,6 @@ export default function Users() {
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>Usuarios de la Empresa ({filteredUsers.length})</CardTitle>
               <CardDescription>
                 Lista de todos los usuarios registrados en tu empresa
               </CardDescription>
