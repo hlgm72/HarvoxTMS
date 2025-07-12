@@ -428,16 +428,16 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                   <TabsContent value="finance" className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="dispatching_percentage">% Dispatching</Label>
+                        <Label htmlFor="leasing_percentage">% Leasing</Label>
                         <div className="relative">
                           <Input
-                            id="dispatching_percentage"
+                            id="leasing_percentage"
                             type="number"
                             min="0"
                             max="100"
                             step="0.1"
-                            value={driverData.dispatching_percentage}
-                            onChange={(e) => updateDriverData('dispatching_percentage', parseFloat(e.target.value) || 0)}
+                            value={driverData.leasing_percentage}
+                            onChange={(e) => updateDriverData('leasing_percentage', parseFloat(e.target.value) || 0)}
                             className="pr-8"
                           />
                           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">%</span>
@@ -460,16 +460,16 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="leasing_percentage">% Leasing</Label>
+                        <Label htmlFor="dispatching_percentage">% Dispatching</Label>
                         <div className="relative">
                           <Input
-                            id="leasing_percentage"
+                            id="dispatching_percentage"
                             type="number"
                             min="0"
                             max="100"
                             step="0.1"
-                            value={driverData.leasing_percentage}
-                            onChange={(e) => updateDriverData('leasing_percentage', parseFloat(e.target.value) || 0)}
+                            value={driverData.dispatching_percentage}
+                            onChange={(e) => updateDriverData('dispatching_percentage', parseFloat(e.target.value) || 0)}
                             className="pr-8"
                           />
                           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">%</span>
