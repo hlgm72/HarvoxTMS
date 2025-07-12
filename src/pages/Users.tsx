@@ -191,6 +191,62 @@ export default function Users() {
         }
       });
 
+      // Obtener emails para usuarios con privilegios administrativos
+      const hasAdminPrivileges = userRole?.role && [
+        'superadmin', 
+        'company_owner', 
+        'general_manager', 
+        'operations_manager'
+      ].includes(userRole.role);
+
+      if (hasAdminPrivileges) {
+        // Los administradores pueden ver emails de invitaciones aceptadas
+        try {
+          const { data: invitations, error: invError } = await supabase
+            .from('user_invitations')
+            .select('email, accepted_at')
+            .eq('company_id', userRole.company_id)
+            .not('accepted_at', 'is', null);
+
+          if (!invError && invitations) {
+            // Mapear emails a usuarios basándose en invitaciones
+            Array.from(usersMap.values()).forEach(mappedUser => {
+              if (mappedUser.id === user?.id) {
+                // Usuario actual siempre muestra su email
+                mappedUser.email = user.email || 'N/A';
+              } else {
+                // Para otros usuarios, intentar encontrar el email en invitaciones
+                const matchingInvitation = invitations.find(inv => 
+                  mappedUser.first_name && mappedUser.last_name && inv.email && (
+                    inv.email.toLowerCase().includes(mappedUser.first_name.toLowerCase()) ||
+                    inv.email.toLowerCase().includes(mappedUser.last_name.toLowerCase())
+                  )
+                );
+                
+                if (matchingInvitation) {
+                  mappedUser.email = matchingInvitation.email;
+                } else {
+                  mappedUser.email = 'Email privado';
+                }
+              }
+            });
+          }
+        } catch (error) {
+          console.warn('No se pudieron obtener emails, usando método básico');
+          // Fallback: solo mostrar email del usuario actual
+          if (user?.id && usersMap.has(user.id)) {
+            const currentUser = usersMap.get(user.id)!;
+            currentUser.email = user.email || 'N/A';
+          }
+        }
+      } else {
+        // Usuarios sin privilegios solo ven su propio email
+        if (user?.id && usersMap.has(user.id)) {
+          const currentUser = usersMap.get(user.id)!;
+          currentUser.email = user.email || 'N/A';
+        }
+      }
+
       const usersList = Array.from(usersMap.values());
       setUsers(usersList);
       setFilteredUsers(usersList); // Inicializar usuarios filtrados
