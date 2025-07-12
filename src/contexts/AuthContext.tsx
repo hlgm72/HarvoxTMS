@@ -290,7 +290,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.log('💾 Stored role from localStorage:', storedRole);
             
             let selectedRole: UserRole | null = storedRole || roles[0];
-            console.log('🎯 Final role selection:', selectedRole);
+            console.log('🎯 Final role selection logic:');
+            console.log('  - storedRole:', storedRole);
+            console.log('  - roles[0] (fallback):', roles[0]);
+            console.log('  - selectedRole (final):', selectedRole);
+            console.log('  - All available roles:', roles.map(r => ({ id: r.id, role: r.role })));
             
             // SOLO guardar en localStorage - no sessionStorage
             localStorage.setItem('currentRole', JSON.stringify(selectedRole));
