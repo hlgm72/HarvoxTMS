@@ -576,15 +576,19 @@ export function AppSidebar() {
                       className="w-full justify-between p-3 h-auto mt-2 hover:bg-accent/50 transition-all duration-200"
                     >
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-6 w-6">
+                        <div className="h-6 w-6 flex items-center justify-center">
                           {selectedCompany.logo_url ? (
-                            <AvatarImage src={selectedCompany.logo_url} alt={selectedCompany.name} />
+                            <img 
+                              src={selectedCompany.logo_url} 
+                              alt={selectedCompany.name}
+                              className="h-6 w-6 object-contain rounded-sm"
+                            />
                           ) : (
-                            <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                            <div className="h-6 w-6 bg-primary/10 text-primary text-xs font-semibold flex items-center justify-center rounded-sm">
                               {selectedCompany.avatar}
-                            </AvatarFallback>
+                            </div>
                           )}
-                        </Avatar>
+                        </div>
                         <div className="text-left">
                           <p className="text-sm font-medium text-foreground">
                             {selectedCompany.name}
@@ -604,15 +608,19 @@ export function AppSidebar() {
                         onClick={() => setSelectedCompany(company)}
                         className="flex items-center gap-3 p-3"
                       >
-                        <Avatar className="h-8 w-8">
+                        <div className="h-8 w-8 flex items-center justify-center">
                           {company.logo_url ? (
-                            <AvatarImage src={company.logo_url} alt={company.name} />
+                            <img 
+                              src={company.logo_url} 
+                              alt={company.name}
+                              className="h-8 w-8 object-contain rounded-sm"
+                            />
                           ) : (
-                            <AvatarFallback className="bg-primary/10 text-primary">
+                            <div className="h-8 w-8 bg-primary/10 text-primary text-sm font-semibold flex items-center justify-center rounded-sm">
                               {company.avatar}
-                            </AvatarFallback>
+                            </div>
                           )}
-                        </Avatar>
+                        </div>
                         <div className="flex flex-col">
                           <span className="font-medium">{company.name}</span>
                           <span className="text-xs text-muted-foreground capitalize">
