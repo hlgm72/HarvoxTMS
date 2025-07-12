@@ -30,23 +30,23 @@ export const useCompanyDrivers = () => {
 
   useEffect(() => {
     const fetchCompanyDrivers = async () => {
-      if (!user || userRole?.role !== 'company_owner') {
+      if (!user) {
         setLoading(false);
         return;
       }
 
       try {
-        // Primero obtener la compañía del owner actual
-        const { data: ownerRole, error: ownerError } = await supabase
+        // Obtener la compañía del usuario actual (puede ser owner, dispatcher, etc.)
+        const { data: userCompanyRole, error: companyError } = await supabase
           .from('user_company_roles')
           .select('company_id')
           .eq('user_id', user.id)
-          .eq('role', 'company_owner')
           .eq('is_active', true)
+          .limit(1)
           .single();
 
-        if (ownerError || !ownerRole) {
-          console.error('Error obteniendo compañía del owner:', ownerError);
+        if (companyError || !userCompanyRole) {
+          console.error('Error obteniendo compañía del usuario:', companyError);
           return;
         }
 
@@ -54,7 +54,7 @@ export const useCompanyDrivers = () => {
         const { data: driverRoles, error: rolesError } = await supabase
           .from('user_company_roles')
           .select('user_id, company_id')
-          .eq('company_id', ownerRole.company_id)
+          .eq('company_id', userCompanyRole.company_id)
           .eq('role', 'driver')
           .eq('is_active', true);
 
