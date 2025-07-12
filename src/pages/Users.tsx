@@ -860,20 +860,22 @@ export default function Users() {
                     <TableCell>
                       <div className="flex items-center space-x-3">
                         {user.avatar_url ? (
-                          <img 
-                            src={user.avatar_url} 
-                            alt={`Avatar de ${user.first_name || user.email}`}
-                            className="h-8 w-8 rounded-full object-cover"
-                          />
+                          <div className="h-8 w-8 rounded-full overflow-hidden bg-muted flex-shrink-0">
+                            <img 
+                              src={user.avatar_url} 
+                              alt={`Avatar de ${user.first_name || user.email}`}
+                              className="h-full w-full object-cover object-center"
+                            />
+                          </div>
                         ) : (
-                          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                             <span className="text-sm font-medium text-primary">
                               {getUserInitials(user)}
                             </span>
                           </div>
                         )}
-                        <div>
-                          <div className="font-medium">
+                        <div className="min-w-0 flex-1">
+                          <div className="font-medium truncate">
                             {user.first_name && user.last_name 
                               ? `${user.first_name} ${user.last_name}`
                               : 'Sin nombre'
