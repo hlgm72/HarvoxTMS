@@ -733,7 +733,7 @@ export default function Users() {
                               <img 
                                 src={user.avatar_url} 
                                 alt={`${user.first_name} ${user.last_name}`}
-                                className="w-8 h-8 rounded-full object-cover"
+                                className="w-8 h-8 rounded-full object-cover object-center border border-border"
                               />
                             ) : (
                               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-medium">
@@ -828,7 +828,7 @@ export default function Users() {
                             <img 
                               src={user.avatar_url} 
                               alt={`${user.first_name} ${user.last_name}`}
-                              className="w-10 h-10 rounded-full object-cover"
+                              className="w-10 h-10 rounded-full object-cover object-center border border-border flex-shrink-0"
                             />
                           ) : (
                             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-medium">
@@ -996,7 +996,7 @@ export default function Users() {
                   <img 
                     src={selectedUser.avatar_url} 
                     alt={`${selectedUser.first_name} ${selectedUser.last_name}`}
-                    className="w-16 h-16 rounded-full object-cover"
+                    className="w-16 h-16 rounded-full object-cover object-center border-2 border-border flex-shrink-0"
                   />
                 ) : (
                   <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white text-xl font-medium">
