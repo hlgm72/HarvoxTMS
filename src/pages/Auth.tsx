@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { handleEmailInput } from '@/lib/textUtils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, ArrowLeft, Mail, Lock, User, Building, Eye, EyeOff } from 'lucide-react';
@@ -758,7 +759,7 @@ export default function Auth() {
                           }
                         }}
                         onBlur={(e) => {
-                          const trimmedValue = e.target.value.trim();
+                          const trimmedValue = handleEmailInput(e.target.value);
                           setFormData(prev => ({ ...prev, email: trimmedValue }));
                           validateField('email', trimmedValue);
                         }}

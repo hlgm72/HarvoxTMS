@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { handleTextBlur } from '@/lib/textUtils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,7 +58,7 @@ export const PaymentReportDialog = ({
       return;
     }
 
-    if (selectedMethod?.requires_reference && !referenceNumber.trim()) {
+    if (selectedMethod?.requires_reference && !handleTextBlur(referenceNumber)) {
       toast({
         title: "Error",
         description: "Este método de pago requiere número de referencia",
@@ -72,8 +73,8 @@ export const PaymentReportDialog = ({
       periodId,
       selectedMethodId,
       amountNumber,
-      referenceNumber.trim() || undefined,
-      notes.trim() || undefined
+      handleTextBlur(referenceNumber) || undefined,
+      handleTextBlur(notes) || undefined
     );
 
     if (success) {

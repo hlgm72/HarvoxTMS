@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, Building2, UserPlus } from 'lucide-react';
 import { useFleetNotifications } from '@/components/notifications';
 import { supabase } from '@/integrations/supabase/client';
+import { handleTextBlur, handleEmailInput } from '@/lib/textUtils';
 
 interface InviteCompanyOwnerDialogProps {
   open: boolean;
@@ -30,7 +31,7 @@ export function InviteCompanyOwnerDialog({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!company || !email.trim()) {
+    if (!company || !handleTextBlur(email)) {
       setError('Email is required');
       return;
     }
@@ -53,7 +54,7 @@ export function InviteCompanyOwnerDialog({
       const { data: result, error: functionError } = await supabase.functions.invoke('send-company-owner-invitation', {
         body: {
           companyId: company.id,
-          email: email.trim(),
+          email: handleEmailInput(email),
           companyName: company.name
         },
         headers: {
@@ -162,7 +163,7 @@ export function InviteCompanyOwnerDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading || !email.trim()}>
+            <Button type="submit" disabled={loading || !handleTextBlur(email)}>
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

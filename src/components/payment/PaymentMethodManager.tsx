@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { handleTextBlur } from '@/lib/textUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -71,7 +72,7 @@ export const PaymentMethodManager = ({ companyId }: PaymentMethodManagerProps) =
   const handleAddMethod = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!newMethod.name.trim()) {
+    if (!handleTextBlur(newMethod.name)) {
       toast({
         title: "Error",
         description: "El nombre del método es requerido",
@@ -82,9 +83,9 @@ export const PaymentMethodManager = ({ companyId }: PaymentMethodManagerProps) =
 
     const success = await createPaymentMethod(
       companyId,
-      newMethod.name.trim(),
+      handleTextBlur(newMethod.name),
       newMethod.methodType,
-      newMethod.description.trim() || undefined,
+      handleTextBlur(newMethod.description) || undefined,
       newMethod.requiresReference
     );
 
