@@ -516,13 +516,13 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="border-r border-[hsl(217_24%_16%)]"
+      className="border-r border-[hsl(var(--sidebar-border))]"
       collapsible="icon"
       variant="sidebar"
       side="left"
-      style={{ backgroundColor: 'hsl(217 24% 14%)' }} // Color exacto del screenshot
+      style={{ backgroundColor: 'hsl(var(--sidebar-background))' }}
     >
-      <SidebarHeader className="border-b border-[hsl(217_24%_16%)] p-4" style={{ backgroundColor: 'hsl(217 24% 11%)' }}>
+      <SidebarHeader className="border-b border-[hsl(var(--sidebar-border))] p-4" style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-8 h-8 bg-[hsl(217_91%_60%)] rounded-lg flex items-center justify-center">
