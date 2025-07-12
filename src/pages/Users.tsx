@@ -130,8 +130,18 @@ export default function Users() {
         .select('user_id, first_name, last_name, avatar_url')
         .in('user_id', userIds);
 
-      if (profilesError) throw profilesError;
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        throw profilesError;
+      }
       console.log('Profiles found:', profiles);
+
+      // Verificar perfiles faltantes
+      const foundUserIds = profiles?.map(p => p.user_id) || [];
+      const missingUserIds = userIds.filter(id => !foundUserIds.includes(id));
+      if (missingUserIds.length > 0) {
+        console.warn('Missing profiles for users:', missingUserIds);
+      }
 
       // Agrupar por usuario para manejar múltiples roles
       const usersMap = new Map<string, User>();
