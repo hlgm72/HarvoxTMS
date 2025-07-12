@@ -52,6 +52,7 @@ type UserRole = Database["public"]["Enums"]["user_role"];
 interface User {
   id: string;
   email: string;
+  phone?: string;
   role: string;
   status: 'active' | 'pending' | 'inactive';
   first_name?: string;
@@ -148,7 +149,7 @@ export default function Users() {
       const userIds = [...new Set(companyUsers.map(u => u.user_id))];
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('user_id, first_name, last_name, avatar_url')
+        .select('user_id, first_name, last_name, avatar_url, phone')
         .in('user_id', userIds);
 
       if (profilesError) throw profilesError;
@@ -169,6 +170,7 @@ export default function Users() {
           usersMap.set(userId, {
             id: userId,
             email: 'N/A', // Se actualizará después si es posible
+            phone: profile?.phone || '',
             role: getRoleLabel(companyUserRole.role),
             status: companyUserRole.is_active ? 'active' : 'inactive',
             first_name: profile?.first_name || '',
@@ -1111,6 +1113,11 @@ export default function Users() {
               </div>
               
               <div>
+                <Label>Teléfono</Label>
+                <p className="text-sm font-medium">{selectedUser.phone || 'No especificado'}</p>
+              </div>
+              
+              <div>
                 <Label>Roles</Label>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {sortRolesByHierarchy(selectedUser.role.split(', ').map((roleLabel) => {
@@ -1277,6 +1284,7 @@ export default function Users() {
               <TableRow>
                 <TableHead>Usuario</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Teléfono</TableHead>
                 <TableHead>Rol</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead>Fecha de Registro</TableHead>
@@ -1286,7 +1294,7 @@ export default function Users() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={7} className="text-center py-8">
                     <div className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mr-2"></div>
                       Cargando usuarios...
@@ -1295,7 +1303,7 @@ export default function Users() {
                 </TableRow>
               ) : filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-16">
+                  <TableCell colSpan={7} className="text-center py-16">
                     <div className="flex flex-col items-center space-y-6 animate-fade-in">
                       <div className="relative">
                         <div className="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center">
@@ -1374,6 +1382,11 @@ export default function Users() {
                       </div>
                     </TableCell>
                     <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <div className="text-sm text-muted-foreground">
+                        {user.phone || 'No especificado'}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {sortRolesByHierarchy(user.role.split(', ').map((roleLabel) => {
