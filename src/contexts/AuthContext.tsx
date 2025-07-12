@@ -35,6 +35,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     case 'SET_ROLES':
       console.log('🔧 AuthReducer SET_ROLES - Current role changing from:', state.currentRole?.role, 'to:', action.currentRole?.role);
       console.log('🔧 AuthReducer SET_ROLES - New current role:', action.currentRole);
+      console.log('🔧 SET_ROLES STACK TRACE:', new Error().stack);
       return { 
         ...state, 
         userRoles: [...action.userRoles], 
@@ -236,6 +237,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const storeRoleWithBackup = (role: UserRole) => {
     const roleString = JSON.stringify(role);
+    
+    console.log('💾 STORE ROLE WITH BACKUP CALLED - STACK TRACE:', new Error().stack);
+    console.log('💾 Storing role:', role.role, 'with ID:', role.id);
     
     // Guardar en múltiples lugares para máxima persistencia
     localStorage.setItem('currentRole', roleString);
