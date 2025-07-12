@@ -531,18 +531,26 @@ export default function EditDriver() {
             {/* Tab 4: Owner-Operator */}
             <TabsContent value="owner-operator" className="space-y-6">
               <div className="space-y-6">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="is_owner_operator"
-                    checked={driverData.is_owner_operator}
-                    onCheckedChange={(checked) => {
-                      console.log('Switch clicked:', checked);
-                      updateDriverData('is_owner_operator', checked);
-                    }}
-                  />
-                  <Label htmlFor="is_owner_operator">
-                    Este conductor es un Owner-Operator
-                  </Label>
+                <div className="space-y-4 p-4 border border-primary/20 rounded-lg bg-primary/5">
+                  <h3 className="text-lg font-semibold text-primary">🔧 DEBUG: Owner-Operator Section</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Current status: {driverData.is_owner_operator ? 'ES Owner-Operator' : 'NO es Owner-Operator'}
+                  </p>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="is_owner_operator"
+                      checked={driverData.is_owner_operator}
+                      onCheckedChange={(checked) => {
+                        console.log('🔧 DEBUG: Switch clicked! New value:', checked);
+                        console.log('🔧 DEBUG: Driver data before update:', driverData);
+                        updateDriverData('is_owner_operator', checked);
+                        console.log('🔧 DEBUG: updateDriverData called with:', 'is_owner_operator', checked);
+                      }}
+                    />
+                    <Label htmlFor="is_owner_operator" className="text-lg font-medium">
+                      Este conductor es un Owner-Operator
+                    </Label>
+                  </div>
                 </div>
 
                 {driverData.is_owner_operator && (
