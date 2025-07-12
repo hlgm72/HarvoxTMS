@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { useNavigate } from 'react-router-dom';
 
 interface UserCompany {
   id: string;
@@ -15,6 +16,7 @@ export const useUserCompanies = () => {
   const [selectedCompany, setSelectedCompany] = useState<UserCompany | null>(null);
   const [loading, setLoading] = useState(true);
   const { user, switchRole, userRoles } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserCompanies = async () => {
@@ -107,8 +109,30 @@ export const useUserCompanies = () => {
     fetchUserCompanies();
   }, [user]);
 
+  // Function to get the correct dashboard route for a role
+  const getDashboardRoute = (role: string): string => {
+    switch (role) {
+      case 'company_owner':
+        return '/dashboard/owner';
+      case 'operations_manager':
+        return '/dashboard/operations';
+      case 'dispatcher':
+      case 'senior_dispatcher':
+        return '/dashboard/dispatch';
+      case 'driver':
+        return '/dashboard/driver';
+      case 'superadmin':
+        return '/superadmin';
+      default:
+        return '/dashboard/dispatch'; // fallback
+    }
+  };
+
   // Custom setSelectedCompany that also updates the auth context role
   const handleSetSelectedCompany = (company: UserCompany) => {
+    console.log('Setting selected company:', company);
+    console.log('Available userRoles:', userRoles);
+    
     setSelectedCompany(company);
     
     // Find the corresponding role in the auth context and switch to it
@@ -116,8 +140,18 @@ export const useUserCompanies = () => {
       role.company_id === company.id && role.role === company.role
     );
     
+    console.log('Found corresponding role:', correspondingRole);
+    
     if (correspondingRole) {
+      console.log('Switching to role:', correspondingRole);
       switchRole(correspondingRole);
+      
+      // Navigate to the appropriate dashboard for the new role
+      const dashboardRoute = getDashboardRoute(company.role);
+      console.log('Navigating to:', dashboardRoute);
+      navigate(dashboardRoute);
+    } else {
+      console.warn('No corresponding role found for company:', company);
     }
   };
 
