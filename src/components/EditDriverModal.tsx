@@ -32,6 +32,9 @@ interface DriverData {
   driver_id: string;
   hire_date?: Date | null;
   
+  // Owner operator status
+  is_owner_operator: boolean;
+  
   // Owner operator data
   business_name: string;
   business_type: string;
@@ -64,6 +67,7 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
     termination_reason: '',
     driver_id: '',
     hire_date: null,
+    is_owner_operator: false,
     business_name: '',
     business_type: '',
     business_address: '',
@@ -118,6 +122,7 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
         termination_reason: companyDriver?.termination_reason || '',
         driver_id: driverProfile?.driver_id || '',
         hire_date: driverProfile?.hire_date ? new Date(driverProfile.hire_date) : null,
+        is_owner_operator: ownerOperator ? ownerOperator.is_active : false,
         business_name: ownerOperator?.business_name || '',
         business_type: ownerOperator?.business_type || '',
         business_address: ownerOperator?.business_address || '',
@@ -171,17 +176,14 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
 
       if (companyDriverError) throw companyDriverError;
 
-      // Actualizar datos de owner operator si hay información
-      if (driverData.business_name || driverData.business_type || 
-          driverData.business_address || driverData.business_phone || 
-          driverData.business_email || driverData.tax_id ||
-          driverData.dispatching_percentage || driverData.factoring_percentage ||
-          driverData.leasing_percentage || driverData.insurance_pay) {
-        
+      // Gestionar datos de owner operator basándose en el switch
+      if (driverData.is_owner_operator) {
+        // Crear/actualizar registro de owner operator
         const { error: ownerOperatorError } = await supabase
           .from('owner_operators')
           .upsert({
             user_id: userId,
+            is_active: true,
             business_name: driverData.business_name,
             business_type: driverData.business_type,
             business_address: driverData.business_address,
@@ -197,6 +199,17 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
           });
 
         if (ownerOperatorError) throw ownerOperatorError;
+      } else {
+        // Desactivar owner operator si existe
+        const { error: deactivateError } = await supabase
+          .from('owner_operators')
+          .update({ is_active: false })
+          .eq('user_id', userId);
+
+        if (deactivateError && deactivateError.code !== 'PGRST116') {
+          // PGRST116 significa que no se encontró registro, lo cual está bien
+          throw deactivateError;
+        }
       }
 
       toast.success('Información del conductor actualizada correctamente');
@@ -334,6 +347,24 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
               </TabsContent>
 
               <TabsContent value="owner-operator" className="space-y-6">
+                <div className="space-y-2 mb-6">
+                  <Label htmlFor="is_owner_operator">¿Es Owner Operator?</Label>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="is_owner_operator"
+                      checked={driverData.is_owner_operator}
+                      onCheckedChange={(checked) => updateDriverData('is_owner_operator', checked)}
+                    />
+                    <span className="text-sm">
+                      {driverData.is_owner_operator ? 'Sí, es Owner Operator' : 'No es Owner Operator'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Activa esta opción si el conductor opera con su propio vehículo y negocio.
+                  </p>
+                </div>
+
+                {driverData.is_owner_operator && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="business_name">Nombre del Negocio</Label>
@@ -449,6 +480,7 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                     </div>
                   </div>
                 </div>
+                )}
               </TabsContent>
             </Tabs>
 
