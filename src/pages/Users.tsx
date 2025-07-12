@@ -182,13 +182,29 @@ export default function Users() {
       return;
     }
 
+    if (!userRole?.company_id) {
+      showError('No se pudo obtener la información de la empresa');
+      return;
+    }
+
     setLoading(true);
     
     try {
+      // Obtener información de la empresa
+      const { data: companyData, error: companyError } = await supabase
+        .from('companies')
+        .select('name')
+        .eq('id', userRole.company_id)
+        .single();
+
+      if (companyError) throw companyError;
+
       // Llamar a la función edge para enviar invitación
       const { data, error } = await supabase.functions.invoke('send-company-owner-invitation', {
         body: {
+          companyId: userRole.company_id,
           email: cleanedForm.email,
+          companyName: companyData.name,
           role: cleanedForm.role,
           first_name: cleanedForm.first_name,
           last_name: cleanedForm.last_name,
