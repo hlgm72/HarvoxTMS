@@ -249,7 +249,7 @@ export default function OwnerDashboard() {
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 {companyInfo?.logo_url ? (
-                  <div className="h-16 w-16 rounded-full overflow-hidden bg-white/10 flex-shrink-0 border-2 border-white/20">
+                  <div className="h-16 w-16 rounded-full overflow-hidden bg-white flex-shrink-0 border-2 border-white/20">
                     <img 
                       src={companyInfo.logo_url} 
                       alt={`Logo de ${companyInfo.name || 'la empresa'}`}
