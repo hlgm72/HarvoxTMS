@@ -625,7 +625,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="py-2" style={{ backgroundColor: 'hsl(217 24% 14%)' }}>
+      <SidebarContent className="py-2" style={{ backgroundColor: 'hsl(var(--sidebar-background))' }}>
         {isSuperAdmin ? (
           // Para SuperAdmin: Estilo Limitless exacto
           <>
