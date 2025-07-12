@@ -45,6 +45,7 @@ interface User {
   status: 'active' | 'pending' | 'inactive';
   first_name?: string;
   last_name?: string;
+  avatar_url?: string;
   created_at: string;
 }
 
@@ -121,7 +122,7 @@ export default function Users() {
       const userIds = [...new Set(companyUsers.map(u => u.user_id))];
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('user_id, first_name, last_name')
+        .select('user_id, first_name, last_name, avatar_url')
         .in('user_id', userIds);
 
       if (profilesError) throw profilesError;
@@ -146,6 +147,7 @@ export default function Users() {
             status: userRole.is_active ? 'active' : 'inactive',
             first_name: profile?.first_name || '',
             last_name: profile?.last_name || '',
+            avatar_url: profile?.avatar_url || '',
             created_at: userRole.created_at
           });
         }
@@ -807,11 +809,19 @@ export default function Users() {
                   <TableRow key={user.id} className="hover:bg-muted/50">
                     <TableCell>
                       <div className="flex items-center space-x-3">
-                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <span className="text-sm font-medium text-primary">
-                            {getUserInitials(user)}
-                          </span>
-                        </div>
+                        {user.avatar_url ? (
+                          <img 
+                            src={user.avatar_url} 
+                            alt={`Avatar de ${user.first_name || user.email}`}
+                            className="h-8 w-8 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                            <span className="text-sm font-medium text-primary">
+                              {getUserInitials(user)}
+                            </span>
+                          </div>
+                        )}
                         <div>
                           <div className="font-medium">
                             {user.first_name && user.last_name 
