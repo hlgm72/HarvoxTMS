@@ -22,7 +22,7 @@ import {
   ChevronDown, Command, Users, Truck, Package, MapPin, Building2, 
   CreditCard, BarChart3, FileText, Target, Activity, Shield, 
   Heart, TrendingUp, Headphones, Settings, FileBarChart, 
-  Lock, Home, Navigation, Zap
+  Lock, Home, Navigation, Zap, Dot
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -407,19 +407,6 @@ export function AppSidebar() {
   const navigationItems = getNavigationItems();
 
   const isActive = (path: string) => currentPath === path;
-  
-  const getBadgeStyles = (variant?: 'live' | 'count' | 'admin') => {
-    switch (variant) {
-      case 'live':
-        return "bg-green-500 text-white animate-pulse";
-      case 'admin':
-        return "bg-primary text-primary-foreground";
-      case 'count':
-        return "bg-primary/10 text-primary border border-primary/20";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
-  };
 
   // Función para obtener mapeo de secciones según el rol
   const getSectionLabels = () => {
@@ -462,11 +449,12 @@ export function AppSidebar() {
     if (sectionItems.length === 0) return null;
 
     return (
-      <SidebarGroup key={sectionName} className={sectionName !== 'dashboard' ? 'mt-6' : 'mt-4'}>
-        <SidebarGroupLabel className="px-6 py-2 text-xs font-semibold text-white/50 uppercase tracking-wider">
+      <SidebarGroup key={sectionName} className="mb-6">
+        <SidebarGroupLabel className="mx-4 mb-3 text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider flex items-center gap-2">
+          <Dot className="h-2 w-2 text-accent" />
           {sectionLabel}
         </SidebarGroupLabel>
-        <SidebarGroupContent className="px-3">
+        <SidebarGroupContent className="px-2">
           <SidebarMenu className="space-y-1">
             {sectionItems.map((item: any) => {
               const active = isActive(item.url);
@@ -482,27 +470,33 @@ export function AppSidebar() {
                     <NavLink 
                       to={item.url} 
                       end 
-                      className={`group relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${
+                      className={`group relative flex items-center gap-3 mx-2 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out ${
                         active 
-                          ? "bg-limitless-accent text-white shadow-lg shadow-limitless-accent/20" 
-                          : "text-white/80 hover:bg-limitless-light hover:text-white"
+                          ? "bg-accent text-accent-foreground shadow-lg shadow-accent/20 scale-[1.02]" 
+                          : "text-muted-foreground hover:bg-accent/10 hover:text-accent-foreground hover:scale-[1.01]"
                       }`}
                     >
-                     <IconComponent className={`h-4 w-4 transition-colors ${
-                       active ? "text-white" : "text-white/70"
-                     }`} />
+                     <div className={`p-1.5 rounded-lg transition-all duration-300 ${
+                       active 
+                         ? "bg-accent-foreground/10" 
+                         : "bg-muted/50 group-hover:bg-accent/20"
+                     }`}>
+                       <IconComponent className={`h-4 w-4 transition-all duration-300 ${
+                         active ? "text-accent-foreground" : "text-muted-foreground group-hover:text-accent"
+                       }`} />
+                     </div>
                      
                      {!collapsed && (
                        <div className="flex items-center justify-between flex-1 min-w-0">
                          <div className="min-w-0">
-                           <span className={`font-medium text-sm ${
-                             active ? "text-white" : "text-white/90"
+                           <span className={`font-medium text-sm transition-colors duration-300 ${
+                             active ? "text-accent-foreground" : "text-foreground group-hover:text-accent-foreground"
                            }`}>
                              {item.title}
                            </span>
                            {item.description && (
-                             <p className={`text-xs truncate ${
-                               active ? "text-white/70" : "text-white/50"
+                             <p className={`text-xs truncate mt-0.5 transition-colors duration-300 ${
+                               active ? "text-accent-foreground/70" : "text-muted-foreground/80 group-hover:text-accent-foreground/60"
                              }`}>
                                {item.description}
                              </p>
@@ -511,11 +505,11 @@ export function AppSidebar() {
                          
                          {item.badge && (
                            <Badge 
-                             variant="secondary" 
-                             className={`text-xs font-medium px-2 py-0.5 ${
+                             variant={active ? "default" : "secondary"}
+                             className={`text-xs font-medium px-2 py-0.5 transition-all duration-300 ${
                                active 
-                                 ? "bg-white/20 text-white border-white/30" 
-                                 : "bg-limitless-light/50 text-white/80 border-limitless-light/30"
+                                 ? "bg-accent-foreground/10 text-accent-foreground border-accent-foreground/20" 
+                                 : "bg-muted text-muted-foreground border-muted-foreground/20 group-hover:bg-accent/20 group-hover:text-accent group-hover:border-accent/30"
                              }`}
                            >
                              {item.badge}
@@ -524,10 +518,18 @@ export function AppSidebar() {
                        </div>
                      )}
                      
-                     {/* Active indicator - Limitless style */}
+                     {/* Indicador activo mejorado */}
                      {active && (
-                       <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full"></div>
+                       <>
+                         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-accent rounded-r-full"></div>
+                         <div className="absolute inset-0 border border-accent/30 rounded-xl"></div>
+                       </>
                      )}
+                     
+                     {/* Efecto hover mejorado */}
+                     <div className={`absolute inset-0 rounded-xl transition-all duration-300 ${
+                       !active ? "opacity-0 group-hover:opacity-100 bg-gradient-to-r from-accent/5 to-accent/10" : ""
+                     }`}></div>
                    </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -541,87 +543,87 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="border-r border-limitless-light/20 bg-limitless-dark shadow-2xl"
+      className="border-r border-border/50 bg-sidebar shadow-xl"
       collapsible="icon"
       variant="sidebar"
       side="left"
     >
-      <SidebarHeader className="border-b border-limitless-light/10 p-6">
+      <SidebarHeader className="border-b border-border/30 p-6 bg-gradient-to-br from-sidebar to-muted/20">
         <div className="flex items-center gap-4">
-          <div className="relative">
-            <div className="w-10 h-10 bg-limitless-accent/20 rounded-xl flex items-center justify-center shadow-lg ring-1 ring-limitless-accent/30">
-              <Zap className="h-5 w-5 text-limitless-accent" />
+          <div className="relative group">
+            <div className="w-11 h-11 bg-gradient-to-br from-accent/20 to-accent/10 rounded-2xl flex items-center justify-center shadow-lg ring-1 ring-accent/20 transition-all duration-300 group-hover:scale-105 group-hover:shadow-accent/20">
+              <Zap className="h-6 w-6 text-accent transition-all duration-300 group-hover:rotate-12" />
             </div>
             {!collapsed && (
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-limitless-accent rounded-full animate-pulse shadow-sm"></div>
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse shadow-lg shadow-accent/50"></div>
             )}
           </div>
           
           {!collapsed && (
             <div className="flex-1 animate-fade-in">
-              <h2 className="font-heading font-bold text-xl text-white tracking-tight">
+              <h2 className="font-heading font-bold text-xl text-foreground tracking-tight">
                 {isSuperAdmin ? "FleetNest Admin" : "FleetNest"}
               </h2>
-              <p className="text-xs text-white/60 font-medium">TMS Platform</p>
+              <p className="text-xs text-muted-foreground font-medium">TMS Platform</p>
               
-              {/* Company selector - Limitless style */}
+              {/* Company selector profesional */}
               {!isSuperAdmin && !loading && selectedCompany && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="w-full justify-between p-3 h-auto mt-3 bg-limitless-light/30 hover:bg-limitless-light/50 transition-all duration-200 text-white border border-limitless-light/20"
+                      className="w-full justify-between p-3 h-auto mt-4 bg-muted/50 hover:bg-muted/80 transition-all duration-300 text-foreground border border-border/30 rounded-xl shadow-sm hover:shadow-md"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="h-6 w-6 flex items-center justify-center">
+                        <div className="h-7 w-7 flex items-center justify-center">
                           {selectedCompany.logo_url ? (
                             <img 
                               src={selectedCompany.logo_url} 
                               alt={selectedCompany.name}
-                              className="h-6 w-6 object-contain rounded-sm brightness-200"
+                              className="h-7 w-7 object-contain rounded-lg"
                             />
                           ) : (
-                            <div className="h-6 w-6 bg-limitless-accent/20 text-limitless-accent text-xs font-semibold flex items-center justify-center rounded-sm">
+                            <div className="h-7 w-7 bg-accent/20 text-accent text-xs font-bold flex items-center justify-center rounded-lg">
                               {selectedCompany.avatar}
                             </div>
                           )}
                         </div>
                          <div className="text-left">
-                           <p className="text-sm font-medium text-white">
+                           <p className="text-sm font-semibold text-foreground">
                              {selectedCompany.name}
                            </p>
-                           <p className="text-xs text-white/60 capitalize">
+                           <p className="text-xs text-muted-foreground capitalize">
                              {currentRole?.role.replace('_', ' ') || 'Sin rol'}
                            </p>
                          </div>
                       </div>
-                      <ChevronDown className="h-4 w-4 text-white/60" />
+                      <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-64 bg-limitless-dark border-limitless-light/20">
+                  <DropdownMenuContent align="start" className="w-64 bg-background border-border shadow-xl rounded-xl">
                     {companies.map((company) => (
                       <DropdownMenuItem
                         key={company.id}
                         onClick={() => setSelectedCompany(company)}
-                        className="flex items-center gap-3 p-3 text-white hover:bg-limitless-light/50"
+                        className="flex items-center gap-3 p-3 rounded-lg m-1 transition-all duration-200 hover:bg-accent/10 focus:bg-accent/10"
                       >
                         <div className="h-8 w-8 flex items-center justify-center">
                           {company.logo_url ? (
                             <img 
                               src={company.logo_url} 
                               alt={company.name}
-                              className="h-8 w-8 object-contain rounded-sm brightness-200"
+                              className="h-8 w-8 object-contain rounded-lg"
                             />
                           ) : (
-                            <div className="h-8 w-8 bg-limitless-accent/20 text-limitless-accent text-sm font-semibold flex items-center justify-center rounded-sm">
+                            <div className="h-8 w-8 bg-accent/20 text-accent text-sm font-bold flex items-center justify-center rounded-lg">
                               {company.avatar}
                             </div>
                           )}
                         </div>
                          <div className="flex flex-col">
-                           <span className="font-medium text-white">{company.name}</span>
-                           <span className="text-xs text-white/60 capitalize">
+                           <span className="font-semibold text-foreground">{company.name}</span>
+                           <span className="text-xs text-muted-foreground capitalize">
                              {company.role.replace('_', ' ')}
                            </span>
                          </div>
@@ -631,14 +633,16 @@ export function AppSidebar() {
                 </DropdownMenu>
               )}
               
-              {/* Superadmin info - Limitless style */}
+              {/* Superadmin info profesional */}
               {isSuperAdmin && (
-                <div className="mt-4 p-4 bg-limitless-accent/10 rounded-lg border border-limitless-accent/20">
+                <div className="mt-4 p-4 bg-gradient-to-r from-accent/10 to-accent/5 rounded-xl border border-accent/20 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <Shield className="h-4 w-4 text-limitless-accent" />
+                    <div className="p-1.5 bg-accent/20 rounded-lg">
+                      <Shield className="h-4 w-4 text-accent" />
+                    </div>
                     <div>
-                      <p className="text-sm font-semibold text-white">{t('admin:navigation.system_administrator')}</p>
-                      <p className="text-xs text-white/60">{t('admin:navigation.global_access')}</p>
+                      <p className="text-sm font-semibold text-foreground">{t('admin:navigation.system_administrator')}</p>
+                      <p className="text-xs text-muted-foreground">{t('admin:navigation.global_access')}</p>
                     </div>
                   </div>
                 </div>
@@ -648,9 +652,9 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="p-2">
+      <SidebarContent className="p-4 bg-gradient-to-b from-sidebar to-muted/10">
         {isSuperAdmin ? (
-          // Para SuperAdmin: Estilo Limitless
+          // Para SuperAdmin: Estilo profesional
           <>
             {/* Sección Principal */}
             {renderSection("main", t('admin:navigation.main_management'))}
@@ -669,39 +673,44 @@ export function AppSidebar() {
           </>
         )}
 
-        {/* Quick Actions Section - Limitless Style */}
+        {/* Quick Actions Section - Estilo profesional */}
         {!collapsed && (
-          <SidebarGroup className="mt-6 px-3">
-            <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-white/50 uppercase tracking-wider">
-              {t('admin:navigation.quick_actions')}
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <div className="space-y-2">
+          <div className="mt-6 p-4 bg-gradient-to-r from-muted/30 to-muted/20 rounded-xl border border-border/30">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-2 h-2 bg-accent rounded-full"></div>
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                {t('admin:navigation.quick_actions')}
+              </span>
+            </div>
+            <div className="space-y-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="w-full justify-start gap-3 bg-background/50 hover:bg-accent/10 transition-all duration-300 rounded-lg shadow-sm hover:shadow-md border border-border/20"
+              >
+                <div className="p-1 bg-green-500/20 rounded-md">
+                  <Activity className="h-3 w-3 text-green-600" />
+                </div>
+                <span className="text-sm font-medium">{t('admin:navigation.system_status')}</span>
+                <Badge variant="outline" className="ml-auto bg-green-50 text-green-700 border-green-200 text-xs">
+                  {t('admin:navigation.online')}
+                </Badge>
+              </Button>
+              
+              {isSuperAdmin && (
                 <Button 
-                  variant="outline" 
+                  variant="ghost" 
                   size="sm" 
-                  className="w-full justify-start gap-3 bg-limitless-light/30 text-white border-limitless-light/20 hover:bg-limitless-light/50 transition-all duration-200"
+                  className="w-full justify-start gap-3 bg-background/50 hover:bg-accent/10 transition-all duration-300 rounded-lg shadow-sm hover:shadow-md border border-border/20"
                 >
-                  <Activity className="h-4 w-4" />
-                  <span className="text-sm">{t('admin:navigation.system_status')}</span>
-                  <Badge variant="outline" className="ml-auto bg-limitless-accent/20 text-limitless-accent border-limitless-accent/30">
-                    {t('admin:navigation.online')}
-                  </Badge>
+                  <div className="p-1 bg-accent/20 rounded-md">
+                    <Settings className="h-3 w-3 text-accent" />
+                  </div>
+                  <span className="text-sm font-medium">{t('admin:navigation.quick_settings')}</span>
                 </Button>
-                
-                {isSuperAdmin && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full justify-start gap-3 bg-limitless-light/30 text-white border-limitless-light/20 hover:bg-limitless-light/50 transition-all duration-200"
-                  >
-                    <Settings className="h-4 w-4" />
-                    <span className="text-sm">{t('admin:navigation.quick_settings')}</span>
-                  </Button>
-                )}
-              </div>
-            </SidebarGroupContent>
-          </SidebarGroup>
+              )}
+            </div>
+          </div>
         )}
       </SidebarContent>
       <SidebarRail />
