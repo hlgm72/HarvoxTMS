@@ -98,22 +98,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const fetchUserRoles = async (userId: string) => {
+    console.log('🔍 Starting fetchUserRoles for userId:', userId);
+    
     try {
-      const { data, error } = await supabase
+      console.log('🔍 Making query to user_company_roles...');
+      
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Query timeout')), 10000)
+      );
+      
+      const queryPromise = supabase
         .from('user_company_roles')
         .select('id, role, company_id, is_active')
         .eq('user_id', userId)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
+      
+      console.log('🔍 Query completed. Data:', data, 'Error:', error);
+
       if (error) {
-        console.error('Error fetching user roles:', error);
+        console.error('❌ Error fetching user roles:', error);
         return [];
       }
 
+      console.log('✅ Successfully fetched roles:', data || []);
       return data || [];
     } catch (error) {
-      console.error('Error fetching user roles:', error);
+      console.error('💥 Exception in fetchUserRoles:', error);
       return [];
     }
   };
@@ -228,12 +242,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isInitialized = useRef(false);
+  const isHandlingSession = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
 
     const handleSession = async (session: Session | null) => {
-      if (!isMounted) return;
+      if (!isMounted || isHandlingSession.current) {
+        console.log('🚫 HandleSession blocked - isMounted:', isMounted, 'isHandling:', isHandlingSession.current);
+        return;
+      }
+      
+      isHandlingSession.current = true;
       
       console.log('🚀 HandleSession called for user:', session?.user?.id);
       console.log('🚀 Session exists:', !!session);
@@ -289,7 +309,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           currentRole: null 
         });
         dispatch({ type: 'SET_LOADING', loading: false });
-        console.log('🏁 Error handling: LOADING SET TO FALSE');
+      } finally {
+        isHandlingSession.current = false;
+        console.log('🔓 Released session handling lock');
       }
     };
 
