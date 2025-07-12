@@ -730,7 +730,9 @@ export default function Users() {
                         <TableCell>
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-medium">
-                              {user.first_name?.[0] || user.email[0]}
+                              {user.first_name && user.last_name 
+                                ? `${user.first_name[0]}${user.last_name[0]}` 
+                                : user.email.slice(0, 2).toUpperCase()}
                             </div>
                             <div>
                               <p className="font-medium">
@@ -815,7 +817,9 @@ export default function Users() {
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3 mb-3">
                           <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-medium">
-                            {user.first_name?.[0] || user.email[0]}
+                            {user.first_name && user.last_name 
+                              ? `${user.first_name[0]}${user.last_name[0]}` 
+                              : user.email.slice(0, 2).toUpperCase()}
                           </div>
                           <div className="flex-1">
                             <p className="font-medium">
@@ -973,7 +977,9 @@ export default function Users() {
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white text-xl font-medium">
-                  {selectedUser.first_name?.[0] || selectedUser.email[0]}
+                  {selectedUser.first_name && selectedUser.last_name 
+                    ? `${selectedUser.first_name[0]}${selectedUser.last_name[0]}` 
+                    : selectedUser.email.slice(0, 2).toUpperCase()}
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold">
