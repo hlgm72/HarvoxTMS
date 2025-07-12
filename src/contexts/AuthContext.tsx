@@ -265,15 +265,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isInitialized = useRef(false);
-  const isHandlingSession = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
 
     const handleSession = async (session: Session | null) => {
-      if (!isMounted || isHandlingSession.current) return;
+      if (!isMounted) return;
       
-      isHandlingSession.current = true;
       console.log('🚀 HandleSession called for user:', session?.user?.id);
       
       try {
@@ -287,16 +285,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const storedRole = getCurrentRoleFromStorage(roles);
             console.log('Stored role from localStorage:', storedRole);
             
-            let selectedRole: UserRole | null = null;
-            
-            if (storedRole) {
-              selectedRole = storedRole;
-              console.log('Using stored role (primary path):', selectedRole);
-            } else {
-              selectedRole = roles[0];
-              console.log('Using first available role (fallback):', selectedRole);
-            }
-            
+            let selectedRole: UserRole | null = storedRole || roles[0];
             console.log('Final role selection:', selectedRole);
             
             // Store in both sessionStorage and localStorage
@@ -311,9 +300,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
             
             console.log('State updated with role:', selectedRole.role);
-            isInitialized.current = true;
           } else {
-            console.log('No role could be selected');
+            console.log('No roles available, setting loading to false');
+            dispatch({ type: 'SET_LOADING', loading: false });
           }
         } else {
           // Clear stored roles when signing out
@@ -323,8 +312,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             userRoles: [], 
             currentRole: null 
           });
-          isInitialized.current = false;
         }
+        
+        isInitialized.current = true;
       } catch (error) {
         console.error('Error in handleSession:', error);
         dispatch({ 
@@ -332,39 +322,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           userRoles: [], 
           currentRole: null 
         });
-      } finally {
-        isHandlingSession.current = false;
+        dispatch({ type: 'SET_LOADING', loading: false });
       }
     };
 
-    // Set up auth state listener - simplified without debouncing
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state change:', event, session?.user?.id);
         
         if (event === 'SIGNED_OUT') {
           isInitialized.current = false;
-          await handleSession(null);
-        } else if (!isInitialized.current && session) {
+        }
+        
+        if (!isInitialized.current) {
           await handleSession(session);
         }
       }
     );
 
-    // Check for existing session only if not initialized
-    if (!isInitialized.current) {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session && isMounted && !isInitialized.current) {
-          handleSession(session);
-        }
-      });
-    }
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session && isMounted && !isInitialized.current) {
+        handleSession(session);
+      } else if (!session && !isInitialized.current) {
+        // No session, stop loading
+        dispatch({ type: 'SET_LOADING', loading: false });
+        isInitialized.current = true;
+      }
+    });
 
     return () => {
       isMounted = false;
       subscription.unsubscribe();
     };
   }, []);
+
 
   const contextValue: AuthContextType = {
     ...authState,
