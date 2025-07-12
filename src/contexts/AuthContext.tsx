@@ -163,6 +163,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const getCurrentRoleFromStorage = (roles: UserRole[]): UserRole | null => {
+    console.log('🔍 getCurrentRoleFromStorage called with roles:', roles.map(r => ({ id: r.id, role: r.role })));
+    console.log('🔍 Tab location:', window.location.href);
+    
     try {
       // Intentar múltiples fuentes de persistencia en orden de prioridad
       const sources = [
@@ -179,10 +182,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           try {
             const storedRole = JSON.parse(source.value);
-            console.log('Parsed stored role:', storedRole);
+            console.log('🔍 Parsed stored role:', storedRole);
             
             // Buscar por ID exacto primero
             let validRole = roles.find(r => r.id === storedRole.id);
+            console.log('🔍 Searching by ID:', storedRole.id, 'found:', validRole);
             
             // Si no encuentra por ID, buscar por role y company_id
             if (!validRole) {
@@ -190,13 +194,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 r.role === storedRole.role && 
                 r.company_id === storedRole.company_id
               );
+              console.log('🔍 Searching by role+company:', storedRole.role, storedRole.company_id, 'found:', validRole);
             }
             
             if (validRole) {
-              console.log(`🎯 Rol válido encontrado en ${source.name}:`, validRole);
+              console.log(`🎯 ROL VÁLIDO ENCONTRADO EN ${source.name}:`, validRole);
+              console.log('🎯 RETORNANDO ESTE ROL COMO ACTIVO');
               return validRole;
             } else {
               console.log(`⚠️ Rol en ${source.name} no es válido para roles disponibles`);
+              console.log('⚠️ Available roles:', roles.map(r => ({ id: r.id, role: r.role })));
             }
           } catch (parseError) {
             console.warn(`⚠️ Error parsing ${source.name}:`, parseError);
@@ -206,7 +213,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
       
-      console.log('🔄 No se encontró rol activo válido, usando primer rol disponible');
+      console.log('🔄 No se encontró rol activo válido, usando rol con jerarquía más alta');
+      console.log('🔄 Available roles for hierarchy selection:', roles.map(r => ({ id: r.id, role: r.role })));
+      
+      // Usar jerarquía de roles en lugar del primer rol disponible
+      const roleHierarchy = [
+        'superadmin',
+        'company_owner', 
+        'general_manager',
+        'operations_manager',
+        'safety_manager',
+        'senior_dispatcher',
+        'dispatcher',
+        'driver'
+      ];
+      
+      for (const hierarchyRole of roleHierarchy) {
+        const foundRole = roles.find(r => r.role === hierarchyRole);
+        if (foundRole) {
+          console.log('🎯 Usando rol por jerarquía:', foundRole);
+          return foundRole;
+        }
+      }
+      
+      // Si no encuentra ninguno por jerarquía, usar el primero disponible
+      console.log('🔄 Fallback al primer rol disponible:', roles[0]);
       return roles.length > 0 ? roles[0] : null;
     } catch (error) {
       console.error('💥 Error general en getCurrentRoleFromStorage:', error);
