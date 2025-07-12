@@ -244,38 +244,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       dispatch({ type: 'SET_SESSION', session, user: session?.user ?? null });
 
       if (session?.user) {
-        // Clear any potentially conflicting auth state first
-        cleanupAuthStorage();
-        
         const roles = await fetchUserRoles(session.user.id);
-        if (isMounted) {
+        if (isMounted && roles.length > 0) {
           // Try to get current role from storage first
           const storedRole = getCurrentRoleFromStorage(roles);
-          // If no stored role or stored role is invalid, use first available role
-          const currentRole = storedRole || (roles.length > 0 ? roles[0] : null);
           
-          // Ensure we have a valid role before proceeding
-          if (currentRole && roles.some(r => r.id === currentRole.id)) {
+          let selectedRole: UserRole | null = null;
+          
+          if (storedRole && roles.some(r => r.id === storedRole.id)) {
+            // Use stored role if it's valid
+            selectedRole = storedRole;
+          } else {
+            // Fallback to first role if no valid stored role
+            selectedRole = roles[0];
+            console.warn('No valid stored role found, using first available role:', selectedRole);
+          }
+          
+          if (selectedRole) {
             dispatch({ 
               type: 'SET_ROLES', 
               userRoles: roles, 
-              currentRole 
+              currentRole: selectedRole 
             });
 
-            // Update stored role
-            localStorage.setItem('currentRole', JSON.stringify(currentRole));
-          } else {
-            // If no valid role found, use the first available
-            const fallbackRole = roles.length > 0 ? roles[0] : null;
-            dispatch({ 
-              type: 'SET_ROLES', 
-              userRoles: roles, 
-              currentRole: fallbackRole 
-            });
-            
-            if (fallbackRole) {
-              localStorage.setItem('currentRole', JSON.stringify(fallbackRole));
-            }
+            // Always update storage to ensure consistency
+            localStorage.setItem('currentRole', JSON.stringify(selectedRole));
           }
         }
       } else {
@@ -293,14 +286,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        handleSession(session);
+      async (event, session) => {
+        console.log('Auth state change:', event, session?.user?.id);
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          // Defer data loading to prevent deadlocks
+          setTimeout(() => {
+            handleSession(session);
+          }, 0);
+        } else {
+          await handleSession(session);
+        }
       }
     );
 
-    // Check for existing session
+    // Check for existing session immediately
     supabase.auth.getSession().then(({ data: { session } }) => {
-      handleSession(session);
+      if (session && isMounted) {
+        handleSession(session);
+      }
     });
 
     return () => {
