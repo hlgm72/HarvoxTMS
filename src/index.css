@@ -79,14 +79,14 @@ All colors MUST be HSL.
 
     --radius: 0.5rem;
 
-    /* Limitless Style Sidebar - Dark Professional (EXACT COLORS) */
-    --limitless-dark: 39 49 66;             /* #273142 - Exact Limitless sidebar */
-    --limitless-darker: 32 40 53;           /* #202835 - Darker header */
-    --limitless-light: 61 82 108;           /* #3d526c - Hover states */
-    --limitless-accent: 44 123 229;         /* #2c7be5 - Limitless blue */
-    --limitless-text: 255 255 255;          /* #ffffff - White text */
-    --limitless-text-muted: 148 163 184;    /* #94a3b8 - Muted text */
-    --limitless-border: 61 82 108;          /* #3d526c - Borders */
+    /* Limitless Style Sidebar - COLORES EXACTOS DEL SCREENSHOT */
+    --limitless-dark: 217 24% 14%;          /* #1f2937 - Color exacto del sidebar Limitless */
+    --limitless-darker: 217 24% 11%;        /* #1a202c - Header más oscuro */
+    --limitless-light: 217 24% 20%;         /* #374151 - Hover states */
+    --limitless-accent: 217 91% 60%;        /* #3B82F6 - Azul exacto de Limitless */
+    --limitless-text: 210 40% 98%;          /* #f8fafc - Texto blanco */
+    --limitless-text-muted: 215 20% 65%;    /* #9ca3af - Texto gris */
+    --limitless-border: 217 24% 16%;        /* #374151 - Bordes */
     
     /* Sidebar mapping to Limitless exact colors */
     --sidebar-background: var(--limitless-dark);
@@ -136,7 +136,7 @@ All colors MUST be HSL.
     --input: 217.2 32.6% 17.5%;
     --ring: 214 88% 60%;
 
-    /* Dark mode sidebar - Limitless exact colors for dark mode */
+    /* Dark mode sidebar - Limitless exact colors */
     --sidebar-background: var(--limitless-dark);
     --sidebar-foreground: var(--limitless-text);
     --sidebar-primary: var(--limitless-accent);
@@ -146,11 +146,11 @@ All colors MUST be HSL.
     --sidebar-border: var(--limitless-border);
     --sidebar-ring: var(--limitless-accent);
     
-    /* Dark mode Limitless colors - maintaining exact colors */
-    --limitless-dark: 39 49 66;      /* Keep exact same color in dark mode */
-    --limitless-darker: 32 40 53;    /* Keep exact same color */
-    --limitless-light: 61 82 108;    /* Keep exact same color */
-    --limitless-accent: 44 123 229;  /* Keep exact same color */
+    /* Dark mode Limitless colors - exactos del screenshot */
+    --limitless-dark: 217 24% 14%;      /* Mismo color oscuro */
+    --limitless-darker: 217 24% 11%;    /* Header más oscuro */
+    --limitless-light: 217 24% 20%;     /* Hover */
+    --limitless-accent: 217 91% 60%;    /* Azul Limitless */
   }
 }
 

@@ -449,7 +449,7 @@ export function AppSidebar() {
 
     return (
       <SidebarGroup key={sectionName} className="mb-2">
-        <SidebarGroupLabel className="px-4 py-2 text-xs font-medium text-[hsl(148_163_184)] uppercase tracking-wide">
+        <SidebarGroupLabel className="px-4 py-2 text-xs font-medium text-[hsl(215_20%_65%)] uppercase tracking-wide">
           {sectionLabel}
         </SidebarGroupLabel>
         <SidebarGroupContent>
@@ -470,12 +470,12 @@ export function AppSidebar() {
                       end 
                       className={`group relative flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                         active 
-                          ? "bg-[hsl(44_123_229)] text-white" 
-                          : "text-[hsl(148_163_184)] hover:bg-[hsl(61_82_108)] hover:text-white"
+                          ? "bg-[hsl(217_91%_60%)] text-white" 
+                          : "text-[hsl(215_20%_65%)] hover:bg-[hsl(217_24%_20%)] hover:text-white"
                       }`}
                     >
                      <IconComponent className={`h-4 w-4 flex-shrink-0 ${
-                       active ? "text-white" : "text-[hsl(148_163_184)] group-hover:text-white"
+                       active ? "text-white" : "text-[hsl(215_20%_65%)] group-hover:text-white"
                      }`} />
                      
                      {!collapsed && (
@@ -490,7 +490,7 @@ export function AppSidebar() {
                              className={`text-xs font-medium px-1.5 py-0.5 ml-2 ${
                                active 
                                  ? "bg-white/20 text-white border-white/30" 
-                                 : "bg-[hsl(61_82_108)]/50 text-[hsl(148_163_184)] border-[hsl(61_82_108)]/30 group-hover:bg-white/20 group-hover:text-white"
+                                 : "bg-[hsl(217_24%_20%)]/50 text-[hsl(215_20%_65%)] border-[hsl(217_24%_16%)] group-hover:bg-white/20 group-hover:text-white"
                              }`}
                            >
                              {item.badge}
@@ -516,16 +516,16 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="border-r border-[hsl(61_82_108)]/20"
+      className="border-r border-[hsl(217_24%_16%)]"
       collapsible="icon"
       variant="sidebar"
       side="left"
-      style={{ backgroundColor: 'hsl(39 49 66)' }} // Color exacto de Limitless
+      style={{ backgroundColor: 'hsl(217 24% 14%)' }} // Color exacto del screenshot
     >
-      <SidebarHeader className="border-b border-[hsl(61_82_108)]/20 p-4" style={{ backgroundColor: 'hsl(32 40 53)' }}>
+      <SidebarHeader className="border-b border-[hsl(217_24%_16%)] p-4" style={{ backgroundColor: 'hsl(217 24% 11%)' }}>
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="w-8 h-8 bg-[hsl(44_123_229)] rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-[hsl(217_91%_60%)] rounded-lg flex items-center justify-center">
               <Zap className="h-4 w-4 text-white" />
             </div>
           </div>
@@ -535,7 +535,7 @@ export function AppSidebar() {
               <h2 className="font-semibold text-base text-white tracking-tight">
                 {isSuperAdmin ? "FleetNest Admin" : "FleetNest"}
               </h2>
-              <p className="text-xs text-[hsl(148_163_184)]">TMS Platform</p>
+              <p className="text-xs text-[hsl(215_20%_65%)]">TMS Platform</p>
               
               {/* Company selector - Estilo Limitless exacto */}
               {!isSuperAdmin && !loading && selectedCompany && (
@@ -544,7 +544,7 @@ export function AppSidebar() {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="w-full justify-between p-2 h-auto mt-3 bg-[hsl(61_82_108)]/30 hover:bg-[hsl(61_82_108)]/50 transition-colors text-white border border-[hsl(61_82_108)]/20 rounded-md"
+                      className="w-full justify-between p-2 h-auto mt-3 bg-[hsl(217_24%_20%)]/50 hover:bg-[hsl(217_24%_20%)] transition-colors text-white border border-[hsl(217_24%_16%)] rounded-md"
                     >
                       <div className="flex items-center gap-2 text-left">
                         <div className="h-5 w-5 flex items-center justify-center">
@@ -555,7 +555,7 @@ export function AppSidebar() {
                               className="h-5 w-5 object-contain rounded"
                             />
                           ) : (
-                            <div className="h-5 w-5 bg-[hsl(44_123_229)] text-white text-xs font-semibold flex items-center justify-center rounded">
+                            <div className="h-5 w-5 bg-[hsl(217_91%_60%)] text-white text-xs font-semibold flex items-center justify-center rounded">
                               {selectedCompany.avatar}
                             </div>
                           )}
@@ -564,24 +564,24 @@ export function AppSidebar() {
                            <p className="text-sm font-medium text-white leading-tight">
                              {selectedCompany.name}
                            </p>
-                           <p className="text-xs text-[hsl(148_163_184)] capitalize leading-tight">
+                           <p className="text-xs text-[hsl(215_20%_65%)] capitalize leading-tight">
                              {currentRole?.role.replace('_', ' ') || 'Sin rol'}
                            </p>
                          </div>
                       </div>
-                      <ChevronDown className="h-3 w-3 text-[hsl(148_163_184)]" />
+                      <ChevronDown className="h-3 w-3 text-[hsl(215_20%_65%)]" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent 
                     align="start" 
-                    className="w-64 border border-[hsl(61_82_108)]/20 rounded-md" 
-                    style={{ backgroundColor: 'hsl(39 49 66)' }}
+                    className="w-64 border border-[hsl(217_24%_16%)] rounded-md" 
+                    style={{ backgroundColor: 'hsl(217 24% 14%)' }}
                   >
                     {companies.map((company) => (
                       <DropdownMenuItem
                         key={company.id}
                         onClick={() => setSelectedCompany(company)}
-                        className="flex items-center gap-3 p-3 text-white hover:bg-[hsl(61_82_108)]/50 rounded-sm m-1"
+                        className="flex items-center gap-3 p-3 text-white hover:bg-[hsl(217_24%_20%)] rounded-sm m-1"
                       >
                         <div className="h-6 w-6 flex items-center justify-center">
                           {company.logo_url ? (
@@ -591,14 +591,14 @@ export function AppSidebar() {
                               className="h-6 w-6 object-contain rounded"
                             />
                           ) : (
-                            <div className="h-6 w-6 bg-[hsl(44_123_229)] text-white text-xs font-semibold flex items-center justify-center rounded">
+                            <div className="h-6 w-6 bg-[hsl(217_91%_60%)] text-white text-xs font-semibold flex items-center justify-center rounded">
                               {company.avatar}
                             </div>
                           )}
                         </div>
                          <div className="flex flex-col">
                            <span className="font-medium text-white text-sm">{company.name}</span>
-                           <span className="text-xs text-[hsl(148_163_184)] capitalize">
+                           <span className="text-xs text-[hsl(215_20%_65%)] capitalize">
                              {company.role.replace('_', ' ')}
                            </span>
                          </div>
@@ -610,12 +610,12 @@ export function AppSidebar() {
               
               {/* Superadmin info - Estilo Limitless exacto */}
               {isSuperAdmin && (
-                <div className="mt-3 p-3 bg-[hsl(44_123_229)]/20 rounded-md border border-[hsl(44_123_229)]/30">
+                <div className="mt-3 p-3 bg-[hsl(217_91%_60%)]/20 rounded-md border border-[hsl(217_91%_60%)]/30">
                   <div className="flex items-center gap-2">
-                    <Shield className="h-3 w-3 text-[hsl(44_123_229)]" />
+                    <Shield className="h-3 w-3 text-[hsl(217_91%_60%)]" />
                     <div>
                       <p className="text-sm font-medium text-white">{t('admin:navigation.system_administrator')}</p>
-                      <p className="text-xs text-[hsl(148_163_184)]">{t('admin:navigation.global_access')}</p>
+                      <p className="text-xs text-[hsl(215_20%_65%)]">{t('admin:navigation.global_access')}</p>
                     </div>
                   </div>
                 </div>
@@ -625,7 +625,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="py-2" style={{ backgroundColor: 'hsl(39 49 66)' }}>
+      <SidebarContent className="py-2" style={{ backgroundColor: 'hsl(217 24% 14%)' }}>
         {isSuperAdmin ? (
           // Para SuperAdmin: Estilo Limitless exacto
           <>
@@ -648,8 +648,8 @@ export function AppSidebar() {
 
         {/* Bottom section como en Limitless */}
         {!collapsed && (
-          <div className="mt-auto p-4 border-t border-[hsl(61_82_108)]/20">
-            <div className="flex items-center gap-2 text-[hsl(148_163_184)] text-xs">
+          <div className="mt-auto p-4 border-t border-[hsl(217_24%_16%)]">
+            <div className="flex items-center gap-2 text-[hsl(215_20%_65%)] text-xs">
               <Activity className="h-3 w-3" />
               <span>System Status</span>
               <div className="ml-auto w-2 h-2 bg-green-500 rounded-full"></div>
