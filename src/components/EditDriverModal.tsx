@@ -123,22 +123,33 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
         default_leasing_percentage: 5.00
       };
 
+      // Si ya es un Owner Operator existente, usar sus valores guardados
+      const hasExistingOO = ownerOperator && ownerOperator.is_active;
+      console.log('🔧 DEBUG: ¿Tiene OO existente?', hasExistingOO);
+      if (hasExistingOO) {
+        console.log('🔧 DEBUG: Valores guardados del OO:', {
+          dispatching: ownerOperator.dispatching_percentage,
+          factoring: ownerOperator.factoring_percentage,
+          leasing: ownerOperator.leasing_percentage
+        });
+      }
+
       setDriverData({
         is_active: companyDriver?.is_active ?? true,
         termination_date: companyDriver?.termination_date ? new Date(companyDriver.termination_date) : null,
         termination_reason: companyDriver?.termination_reason || '',
         driver_id: driverProfile?.driver_id || '',
         hire_date: driverProfile?.hire_date ? new Date(driverProfile.hire_date) : null,
-        is_owner_operator: ownerOperator ? ownerOperator.is_active : false,
+        is_owner_operator: hasExistingOO,
         business_name: ownerOperator?.business_name || '',
         business_type: ownerOperator?.business_type || '',
         business_address: ownerOperator?.business_address || '',
         business_phone: ownerOperator?.business_phone || '',
         business_email: ownerOperator?.business_email || '',
         tax_id: ownerOperator?.tax_id || '',
-        dispatching_percentage: ownerOperator?.dispatching_percentage || defaultValues.default_dispatching_percentage || 0,
-        factoring_percentage: ownerOperator?.factoring_percentage || defaultValues.default_factoring_percentage || 0,
-        leasing_percentage: ownerOperator?.leasing_percentage || defaultValues.default_leasing_percentage || 0,
+        dispatching_percentage: hasExistingOO ? ownerOperator.dispatching_percentage : 0,
+        factoring_percentage: hasExistingOO ? ownerOperator.factoring_percentage : 0,
+        leasing_percentage: hasExistingOO ? ownerOperator.leasing_percentage : 0,
         insurance_pay: ownerOperator?.insurance_pay || 0,
       });
     } catch (error) {
@@ -153,9 +164,20 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
     console.log('🔧 DEBUG MODAL: updateDriverData ejecutándose - field:', field, 'value:', value);
     
     if (field === 'is_owner_operator' && value === true) {
-      // Si se está activando Owner-Operator, cargar valores por defecto de la compañía
+      // Solo aplicar defaults si no tiene valores previos (nuevo OO)
+      const hasExistingValues = driverData.dispatching_percentage > 0 || 
+                               driverData.factoring_percentage > 0 || 
+                               driverData.leasing_percentage > 0;
+      
+      if (hasExistingValues) {
+        console.log('🔧 DEBUG: Manteniendo valores existentes del OO');
+        setDriverData(prev => ({ ...prev, [field]: value }));
+        return;
+      }
+
+      // Si no tiene valores previos, cargar defaults de la compañía
       try {
-        console.log('🔧 DEBUG: Cargando valores de la compañía para Owner-Operator');
+        console.log('🔧 DEBUG: Cargando valores de la compañía para nuevo OO');
         
         // Obtener roles del usuario para encontrar la compañía
         const { data: userRoles, error: rolesError } = await supabase
