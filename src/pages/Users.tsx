@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/select";
 import { UserPlus, Mail, Shield, Edit, Trash2, Users as UsersIcon, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
@@ -65,6 +66,7 @@ const ROLE_OPTIONS = [
 export default function Users() {
   const { t } = useTranslation(['common']);
   const { user, userRole } = useAuth();
+  const { showSuccess, showError } = useFleetNotifications();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
@@ -365,13 +367,13 @@ export default function Users() {
         if (insertError) throw insertError;
       }
 
-      toast.success('Usuario actualizado exitosamente');
+      showSuccess('Usuario actualizado exitosamente');
       setEditDialogOpen(false);
       fetchUsers(); // Recargar la lista
       
     } catch (error: any) {
       console.error('Error updating user:', error);
-      toast.error(error.message || 'Error al actualizar usuario');
+      showError(error.message || 'Error al actualizar usuario');
     } finally {
       setUpdatingRoles(false);
     }
