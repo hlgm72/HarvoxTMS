@@ -257,8 +257,9 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Fecha de Contratación</Label>
+                    <Label htmlFor="hire_date">Fecha de Contratación</Label>
                     <DatePicker
+                      id="hire_date"
                       selected={driverData.hire_date}
                       onChange={(date: Date | null) => updateDriverData('hire_date', date)}
                       dateFormat="dd/MM/yyyy"
