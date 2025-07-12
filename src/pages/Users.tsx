@@ -271,27 +271,18 @@ export default function Users() {
         });
       });
 
-      // Obtener invitaciones pendientes
+      // Obtener invitaciones pendientes enviadas por el usuario actual
       const { count: pendingInvitations, error: invitationsError } = await supabase
         .from('user_invitations')
         .select('*', { count: 'exact', head: true })
         .eq('company_id', companyId)
+        .eq('invited_by', user?.id) // Solo invitaciones enviadas por el usuario actual
         .is('accepted_at', null)
         .gt('expires_at', new Date().toISOString());
 
       if (invitationsError) {
         console.error('Error fetching pending invitations:', invitationsError);
       }
-
-      console.log('Debug invitaciones pendientes:', {
-        company_id: companyId,
-        pending_count: pendingInvitations,
-        query_filters: {
-          company_id: companyId,
-          accepted_at_is_null: true,
-          expires_at_greater_than: new Date().toISOString()
-        }
-      });
 
       setStats({
         totalUsers,
