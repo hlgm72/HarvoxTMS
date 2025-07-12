@@ -268,23 +268,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const isInitialized = useRef(false);
+  // Usar una clave única para evitar conflictos entre pestañas
+  const initKey = 'auth_initialized_' + Date.now();
+
+  // Listener para detectar cambios en localStorage
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'currentRole') {
+        console.log('🔄 localStorage currentRole cambió externamente:');
+        console.log('  - Valor anterior:', e.oldValue);
+        console.log('  - Valor nuevo:', e.newValue);
+        console.log('  - URL que hizo el cambio:', window.location.href);
+        console.log('  - Stack trace:', new Error().stack);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
+    let hasInitialized = false;
 
     const handleSession = async (session: Session | null) => {
-      if (!isMounted) return;
+      if (!isMounted || hasInitialized) return;
       
       console.log('🚀 HandleSession called for user:', session?.user?.id);
       console.log('🚀 Session exists:', !!session);
-      console.log('🚀 isInitialized.current:', isInitialized.current);
+      console.log('🚀 hasInitialized:', hasInitialized);
       
-      // Si ya está inicializado, no hacer nada
-      if (isInitialized.current) {
-        console.log('⏭️ Already initialized, skipping handleSession');
-        return;
-      }
+      // Marcar como inicializado INMEDIATAMENTE para evitar múltiples ejecuciones
+      hasInitialized = true;
       
       try {
         dispatch({ type: 'SET_SESSION', session, user: session?.user ?? null });
@@ -334,8 +349,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
         }
         
-        isInitialized.current = true;
-        console.log('✅ Session handling completed, initialized set to true');
+        console.log('✅ Session handling completed, hasInitialized:', hasInitialized);
       } catch (error) {
         console.error('💥 Error in handleSession:', error);
         dispatch({ 
@@ -353,10 +367,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('Auth state change:', event, session?.user?.id);
         
         if (event === 'SIGNED_OUT') {
-          isInitialized.current = false;
+          hasInitialized = false;
         }
         
-        if (!isInitialized.current) {
+        if (!hasInitialized) {
           await handleSession(session);
         }
       }
@@ -364,12 +378,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session && isMounted && !isInitialized.current) {
+      if (session && isMounted && !hasInitialized) {
         handleSession(session);
-      } else if (!session && !isInitialized.current) {
+      } else if (!session && !hasInitialized) {
         // No session, stop loading
         dispatch({ type: 'SET_LOADING', loading: false });
-        isInitialized.current = true;
+        hasInitialized = true;
       }
     });
 
