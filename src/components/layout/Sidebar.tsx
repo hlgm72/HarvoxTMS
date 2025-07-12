@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from 'react-i18next';
+import { useDriversCount } from "@/hooks/useDriversCount";
 
 // Mock data for companies
 const companies = [
@@ -40,7 +41,7 @@ const companies = [
 ];
 
 // Navegación para Company Owner
-const companyOwnerNavigationItems = [
+const getCompanyOwnerNavigationItems = (driversCount: number) => [
   // Dashboard
   { 
     title: "Dashboard Ejecutivo", 
@@ -57,7 +58,7 @@ const companyOwnerNavigationItems = [
     title: "Conductores", 
     url: "/drivers", 
     icon: Users, 
-    badge: "18",
+    badge: driversCount.toString(),
     badgeVariant: "count" as const,
     description: "Gestión de conductores",
     section: "operations"
@@ -124,7 +125,7 @@ const companyOwnerNavigationItems = [
 ];
 
 // Navegación para Operations Manager  
-const operationsManagerNavigationItems = [
+const getOperationsManagerNavigationItems = (driversCount: number) => [
   // Dashboard y Supervisión
   { 
     title: "Dashboard Operacional", 
@@ -148,7 +149,7 @@ const operationsManagerNavigationItems = [
     title: "Conductores", 
     url: "/drivers", 
     icon: Users, 
-    badge: "18",
+    badge: driversCount.toString(),
     badgeVariant: "count" as const,
     description: "Gestión de conductores",
     section: "operations"
@@ -190,7 +191,7 @@ const operationsManagerNavigationItems = [
 ];
 
 // Navegación para Dispatcher
-const dispatcherNavigationItems = [
+const getDispatcherNavigationItems = (driversCount: number) => [
   // Dashboard y Seguimiento
   { 
     title: "Dashboard", 
@@ -232,7 +233,7 @@ const dispatcherNavigationItems = [
     title: "Conductores", 
     url: "/drivers", 
     icon: Users, 
-    badge: "18",
+    badge: driversCount.toString(),
     badgeVariant: "count" as const,
     description: "Estado de conductores",
     section: "resources"
@@ -383,6 +384,7 @@ export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
   const [selectedCompany, setSelectedCompany] = useState(companies[0]);
+  const { driversCount } = useDriversCount();
   
   const collapsed = state === "collapsed";
   
@@ -390,13 +392,13 @@ export function AppSidebar() {
   // Determinar navegación según el rol del usuario
   const getNavigationItems = () => {
     if (isSuperAdmin) return getSuperAdminNavigationItems(t);
-    if (isCompanyOwner) return companyOwnerNavigationItems;
-    if (isOperationsManager) return operationsManagerNavigationItems;
-    if (isDispatcher) return dispatcherNavigationItems;
+    if (isCompanyOwner) return getCompanyOwnerNavigationItems(driversCount);
+    if (isOperationsManager) return getOperationsManagerNavigationItems(driversCount);
+    if (isDispatcher) return getDispatcherNavigationItems(driversCount);
     if (isDriver) return driverNavigationItems;
     
     // Fallback para usuarios sin rol específico
-    return dispatcherNavigationItems;
+    return getDispatcherNavigationItems(driversCount);
   };
   
   const navigationItems = getNavigationItems();
