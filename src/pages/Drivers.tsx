@@ -2,50 +2,18 @@ import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-
-const mockDrivers = [
-  {
-    id: 1,
-    name: "Carlos Rodriguez",
-    license: "CDL-A-123456",
-    phone: "(555) 123-4567",
-    status: "available",
-    currentLocation: "Dallas, TX",
-    truck: "TR-001",
-    experience: "5 años",
-    licenseExpiry: "2025-03-15"
-  },
-  {
-    id: 2,
-    name: "Maria Garcia",
-    license: "CDL-A-789012",
-    phone: "(555) 987-6543",
-    status: "on_route",
-    currentLocation: "En ruta a Houston",
-    truck: "TR-002",
-    experience: "8 años",
-    licenseExpiry: "2024-12-30"
-  },
-  {
-    id: 3,
-    name: "John Smith",
-    license: "CDL-A-345678",
-    phone: "(555) 456-7890",
-    status: "off_duty",
-    currentLocation: "Phoenix, AZ",
-    truck: "TR-003",
-    experience: "12 años",
-    licenseExpiry: "2025-06-20"
-  }
-];
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 const getStatusColor = (status: string) => {
   switch (status) {
     case "available":
-      return "success";
+      return "default";
     case "on_route":
-      return "primary";
+      return "default";
     case "off_duty":
       return "secondary";
     default:
@@ -66,7 +34,124 @@ const getStatusText = (status: string) => {
   }
 };
 
+const formatExperience = (hireDate: string | null) => {
+  if (!hireDate) return "No especificado";
+  
+  const hire = new Date(hireDate);
+  const now = new Date();
+  const years = now.getFullYear() - hire.getFullYear();
+  const months = now.getMonth() - hire.getMonth();
+  
+  let totalMonths = years * 12 + months;
+  if (totalMonths < 0) totalMonths = 0;
+  
+  if (totalMonths < 12) {
+    return `${totalMonths} meses`;
+  } else {
+    const yearCount = Math.floor(totalMonths / 12);
+    const monthCount = totalMonths % 12;
+    if (monthCount === 0) {
+      return `${yearCount} año${yearCount !== 1 ? 's' : ''}`;
+    }
+    return `${yearCount} año${yearCount !== 1 ? 's' : ''} y ${monthCount} mes${monthCount !== 1 ? 'es' : ''}`;
+  }
+};
+
+const DriverSkeleton = () => (
+  <Card className="animate-pulse">
+    <CardHeader className="pb-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div>
+            <Skeleton className="h-5 w-32 mb-1" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+        </div>
+        <Skeleton className="h-6 w-20" />
+      </div>
+    </CardHeader>
+    <CardContent>
+      <div className="space-y-3">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="flex items-center gap-2">
+            <Skeleton className="h-4 w-4" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-2 mt-4">
+        <Skeleton className="h-8 flex-1" />
+        <Skeleton className="h-8 flex-1" />
+      </div>
+    </CardContent>
+  </Card>
+);
+
 export default function Drivers() {
+  const { drivers, loading } = useCompanyDrivers();
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="p-6 space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Gestión de Conductores
+              </h1>
+              <p className="text-muted-foreground">
+                Administra tu equipo de conductores y su información
+              </p>
+            </div>
+            <Button className="bg-gradient-primary hover:opacity-90">
+              ➕ Nuevo Conductor
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <DriverSkeleton key={i} />
+            ))}
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (drivers.length === 0) {
+    return (
+      <Layout>
+        <div className="p-6 space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Gestión de Conductores
+              </h1>
+              <p className="text-muted-foreground">
+                Administra tu equipo de conductores y su información
+              </p>
+            </div>
+            <Button className="bg-gradient-primary hover:opacity-90">
+              ➕ Nuevo Conductor
+            </Button>
+          </div>
+
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="text-6xl mb-4">🚛</div>
+            <h3 className="text-xl font-semibold mb-2">No hay conductores registrados</h3>
+            <p className="text-muted-foreground mb-4">
+              Comienza agregando conductores a tu flota
+            </p>
+            <Button className="bg-gradient-primary hover:opacity-90">
+              ➕ Invitar Primer Conductor
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="p-6 space-y-6">
@@ -76,7 +161,7 @@ export default function Drivers() {
               Gestión de Conductores
             </h1>
             <p className="text-muted-foreground">
-              Administra tu equipo de conductores y su información
+              {drivers.length} conductor{drivers.length !== 1 ? 'es' : ''} registrado{drivers.length !== 1 ? 's' : ''} en tu flota
             </p>
           </div>
           <Button className="bg-gradient-primary hover:opacity-90">
@@ -85,61 +170,87 @@ export default function Drivers() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockDrivers.map((driver) => (
-            <Card key={driver.id} className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12">
-                      <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                        {driver.name.split(" ").map(n => n[0]).join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <CardTitle className="text-lg">{driver.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{driver.license}</p>
+          {drivers.map((driver) => {
+            const fullName = `${driver.first_name} ${driver.last_name}`.trim();
+            const initials = [driver.first_name, driver.last_name]
+              .filter(Boolean)
+              .map(name => name.charAt(0))
+              .join('')
+              .toUpperCase();
+
+            return (
+              <Card key={driver.id} className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-12 w-12">
+                        {driver.avatar_url && (
+                          <AvatarImage src={driver.avatar_url} alt={fullName} />
+                        )}
+                        <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                          {initials || '??'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <CardTitle className="text-lg">{fullName || 'Sin nombre'}</CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                          {driver.license_number ? `${driver.cdl_class || 'CDL'}-${driver.license_number}` : 'Sin licencia'}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant={getStatusColor(driver.current_status) as any}>
+                      {getStatusText(driver.current_status)}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span>📞</span>
+                      <span className="text-sm">{driver.phone || 'No especificado'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span>📍</span>
+                      <span className="text-sm">
+                        {driver.license_state ? `${driver.license_state}` : 'Ubicación no especificada'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span>🚛</span>
+                      <span className="text-sm">
+                        {driver.active_loads_count > 0 
+                          ? `${driver.active_loads_count} carga${driver.active_loads_count !== 1 ? 's' : ''} activa${driver.active_loads_count !== 1 ? 's' : ''}`
+                          : 'Sin cargas asignadas'
+                        }
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span>🕐</span>
+                      <span className="text-sm">{formatExperience(driver.hire_date)} de experiencia</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span>📋</span>
+                      <span className="text-sm">
+                        {driver.license_expiry_date 
+                          ? `Vence: ${format(new Date(driver.license_expiry_date), 'dd/MM/yyyy', { locale: es })}`
+                          : 'Fecha de vencimiento no especificada'
+                        }
+                      </span>
                     </div>
                   </div>
-                  <Badge variant={getStatusColor(driver.status) as any}>
-                    {getStatusText(driver.status)}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <span>📞</span>
-                    <span className="text-sm">{driver.phone}</span>
+                  
+                  <div className="flex gap-2 mt-4">
+                    <Button variant="outline" size="sm" className="flex-1">
+                      Ver Detalles
+                    </Button>
+                    <Button variant="outline" size="sm" className="flex-1">
+                      Asignar Carga
+                    </Button>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span>📍</span>
-                    <span className="text-sm">{driver.currentLocation}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span>🚛</span>
-                    <span className="text-sm">{driver.truck}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span>🕐</span>
-                    <span className="text-sm">{driver.experience} de experiencia</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span>📋</span>
-                    <span className="text-sm">Vence: {driver.licenseExpiry}</span>
-                  </div>
-                </div>
-                
-                <div className="flex gap-2 mt-4">
-                  <Button variant="outline" size="sm" className="flex-1">
-                    Ver Detalles
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
-                    Asignar Carga
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </Layout>
