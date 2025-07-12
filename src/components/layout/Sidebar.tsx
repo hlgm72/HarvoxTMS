@@ -480,23 +480,21 @@ export function AppSidebar() {
                     isActive={active}
                     tooltip={collapsed ? item.title : undefined}
                   >
-                    <NavLink 
+                     <NavLink 
                       to={item.url} 
                       end 
-                      className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
+                      className={`group relative flex items-center gap-3 px-3 py-2.5 transition-all duration-300 ${
                         active 
-                          ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
-                          : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
+                          ? "text-primary bg-primary/5 border-l-4 border-primary font-medium" 
+                          : "hover:text-primary hover:bg-accent/30 hover:translate-x-1"
                       }`}
                     >
-                     <div className={`p-2 rounded-lg transition-all duration-200 ${
+                     <div className={`flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300 ${
                        active 
-                         ? "bg-white/20" 
-                         : "bg-accent/30 group-hover:bg-accent/50"
+                         ? "bg-primary/10 text-primary" 
+                         : "bg-transparent text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
                      }`}>
-                       <IconComponent className={`h-4 w-4 ${
-                         active ? "text-white" : "text-foreground"
-                       }`} />
+                       <IconComponent className="h-4 w-4" />
                      </div>
                      
                      {!collapsed && (
