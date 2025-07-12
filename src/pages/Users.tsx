@@ -743,16 +743,16 @@ export default function Users() {
                           <SelectTrigger className="flex-1">
                             <SelectValue placeholder="Todos los roles" />
                           </SelectTrigger>
-                          <SelectContent>
-                            {ROLE_OPTIONS.map((option) => (
-                              <SelectItem key={option.value} value={option.value}>
-                                <div className="flex items-center gap-2">
-                                  <Shield className="h-4 w-4" />
-                                  {option.label}
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
+                           <SelectContent>
+                             {ROLE_OPTIONS.map((option) => (
+                               <SelectItem key={option.value} value={option.value}>
+                                 <div className="flex items-center gap-2">
+                                   <Shield className={`h-4 w-4 ${getRoleIconColor(option.value)}`} />
+                                   {option.label}
+                                 </div>
+                               </SelectItem>
+                             ))}
+                           </SelectContent>
                         </Select>
                         {roleFilter && (
                           <Button
