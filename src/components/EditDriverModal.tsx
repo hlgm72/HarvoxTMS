@@ -322,21 +322,32 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
               </TabsContent>
 
               <TabsContent value="owner-operator" className="space-y-6">
-                <div className="space-y-2 mb-6">
-                  <Label htmlFor="is_owner_operator">¿Es Owner Operator?</Label>
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="is_owner_operator"
-                      checked={driverData.is_owner_operator}
-                      onCheckedChange={(checked) => updateDriverData('is_owner_operator', checked)}
-                    />
-                    <span className="text-sm">
-                      {driverData.is_owner_operator ? 'Sí, es Owner Operator' : 'No es Owner Operator'}
-                    </span>
-                  </div>
+                <div className="space-y-4 p-4 border border-primary/20 rounded-lg bg-primary/5">
+                  <h3 className="text-lg font-semibold text-primary">🔧 DEBUG: Owner-Operator Modal</h3>
                   <p className="text-sm text-muted-foreground">
-                    Activa esta opción si el conductor opera con su propio vehículo y negocio.
+                    Current status: {driverData.is_owner_operator ? 'ES Owner-Operator' : 'NO es Owner-Operator'}
                   </p>
+                  <div className="space-y-2 mb-6">
+                    <Label htmlFor="is_owner_operator">¿Es Owner Operator?</Label>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="is_owner_operator"
+                        checked={driverData.is_owner_operator}
+                        onCheckedChange={(checked) => {
+                          console.log('🔧 DEBUG MODAL: Switch clicked! New value:', checked);
+                          console.log('🔧 DEBUG MODAL: Driver data before update:', driverData);
+                          updateDriverData('is_owner_operator', checked);
+                          console.log('🔧 DEBUG MODAL: updateDriverData called with:', 'is_owner_operator', checked);
+                        }}
+                      />
+                      <span className="text-sm">
+                        {driverData.is_owner_operator ? 'Sí, es Owner Operator' : 'No es Owner Operator'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Activa esta opción si el conductor opera con su propio vehículo y negocio.
+                    </p>
+                  </div>
                 </div>
 
                 {driverData.is_owner_operator && (

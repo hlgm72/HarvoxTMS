@@ -586,9 +586,12 @@ export default function Users() {
   };
 
   const handleEditDriver = (user: User) => {
-    // Navegar a la página de edición del conductor
-    console.log('🔧 DEBUG: Navegando a editar conductor:', user.id);
-    window.location.href = `/users/edit/${user.id}`;
+    setSelectedDriverId(user.id);
+    setSelectedDriverName(user.first_name && user.last_name 
+      ? `${user.first_name} ${user.last_name}` 
+      : user.email
+    );
+    setEditDriverModalOpen(true);
   };
 
   const isUserDriver = (user: User) => {
