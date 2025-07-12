@@ -16,11 +16,11 @@ export const ProtectedRoute = ({
   requiredRole, 
   requireAuth = true 
 }: ProtectedRouteProps) => {
-  const { user, userRole, loading, isAuthenticated } = useAuth();
+  const { user, userRole, loading, isAuthenticated, currentRole } = useAuth();
   const { t } = useTranslation('common');
 
-  // Show loading spinner while checking authentication
-  if (loading) {
+  // Show loading spinner while checking authentication OR while role is being determined
+  if (loading || (isAuthenticated && !currentRole)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
