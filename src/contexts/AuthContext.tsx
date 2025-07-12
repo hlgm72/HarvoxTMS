@@ -98,13 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const fetchUserRoles = async (userId: string) => {
-    // Check cache first
-    if (rolesCache.has(userId)) {
-      return rolesCache.get(userId) || [];
-    }
-
     try {
-      // Clear any potential cache issues by creating a fresh query
       const { data, error } = await supabase
         .from('user_company_roles')
         .select('id, role, company_id, is_active')
@@ -114,43 +108,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('Error fetching user roles:', error);
-        
-        // If we get a 406 error, it might be a cache issue, try a different approach
-        if (error.message.includes('406') || error.message.includes('Not Acceptable')) {
-          console.log('Retrying with RPC function...');
-          try {
-            const { data: rpcData, error: rpcError } = await supabase
-              .rpc('get_user_company_roles', { user_id_param: userId });
-            
-            if (rpcError) throw rpcError;
-            
-            const roles = rpcData.map((item: any) => ({
-              id: `${userId}-${item.company_id}-${item.role}`,
-              role: item.role,
-              company_id: item.company_id,
-              is_active: true
-            }));
-            
-            rolesCache.set(userId, roles);
-            return roles;
-          } catch (rpcError) {
-            console.error('RPC fallback also failed:', rpcError);
-            rolesCache.set(userId, []);
-            return [];
-          }
-        }
-        
-        rolesCache.set(userId, []);
         return [];
       }
 
-      // Cache the result
-      const roles = data || [];
-      rolesCache.set(userId, roles);
-      return roles;
+      return data || [];
     } catch (error) {
       console.error('Error fetching user roles:', error);
-      rolesCache.set(userId, []);
       return [];
     }
   };
@@ -273,25 +236,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!isMounted) return;
       
       console.log('🚀 HandleSession called for user:', session?.user?.id);
+      console.log('🚀 Session exists:', !!session);
       
       try {
         dispatch({ type: 'SET_SESSION', session, user: session?.user ?? null });
 
         if (session?.user) {
+          console.log('📡 Fetching roles for user:', session.user.id);
           const roles = await fetchUserRoles(session.user.id);
-          console.log('Fetched roles for session:', roles);
+          console.log('✅ Fetched roles for session:', roles, 'Count:', roles.length);
           
           if (roles && roles.length > 0) {
             const storedRole = getCurrentRoleFromStorage(roles);
-            console.log('Stored role from localStorage:', storedRole);
+            console.log('💾 Stored role from localStorage:', storedRole);
             
             let selectedRole: UserRole | null = storedRole || roles[0];
-            console.log('Final role selection:', selectedRole);
+            console.log('🎯 Final role selection:', selectedRole);
             
             // Store in both sessionStorage and localStorage
             sessionStorage.setItem('currentRole', JSON.stringify(selectedRole));
             localStorage.setItem('currentRole', JSON.stringify(selectedRole));
-            console.log('Stored role in both storages:', JSON.stringify(selectedRole));
+            console.log('💾 Stored role in both storages:', JSON.stringify(selectedRole));
             
             dispatch({ 
               type: 'SET_ROLES', 
@@ -299,13 +264,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               currentRole: selectedRole 
             });
             
-            console.log('State updated with role:', selectedRole.role);
+            console.log('🏁 State updated with role:', selectedRole.role, '- LOADING SET TO FALSE');
           } else {
-            console.log('No roles available, setting loading to false');
+            console.log('❌ No roles available, setting loading to false');
             dispatch({ type: 'SET_LOADING', loading: false });
           }
         } else {
-          // Clear stored roles when signing out
+          console.log('🚪 No session user, clearing roles and setting loading to false');
           cleanupAuthStorage();
           dispatch({ 
             type: 'SET_ROLES', 
@@ -315,14 +280,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         
         isInitialized.current = true;
+        console.log('✅ Session handling completed, initialized set to true');
       } catch (error) {
-        console.error('Error in handleSession:', error);
+        console.error('💥 Error in handleSession:', error);
         dispatch({ 
           type: 'SET_ROLES', 
           userRoles: [], 
           currentRole: null 
         });
         dispatch({ type: 'SET_LOADING', loading: false });
+        console.log('🏁 Error handling: LOADING SET TO FALSE');
       }
     };
 
