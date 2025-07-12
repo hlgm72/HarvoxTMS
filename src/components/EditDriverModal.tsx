@@ -240,9 +240,10 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
         ) : (
           <div className="space-y-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="employee">Empleado</TabsTrigger>
-                <TabsTrigger value="owner-operator">Owner-Operator</TabsTrigger>
+                <TabsTrigger value="owner-business">Negocio OO</TabsTrigger>
+                <TabsTrigger value="owner-finance">Finanzas OO</TabsTrigger>
               </TabsList>
 
               <TabsContent value="employee" className="space-y-6">
@@ -346,7 +347,7 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                 </div>
               </TabsContent>
 
-              <TabsContent value="owner-operator" className="space-y-6">
+              <TabsContent value="owner-business" className="space-y-6">
                 <div className="space-y-2 mb-6">
                   <Label htmlFor="is_owner_operator">¿Es Owner Operator?</Label>
                   <div className="flex items-center space-x-2">
@@ -365,121 +366,177 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                 </div>
 
                 {driverData.is_owner_operator && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="business_name">Nombre del Negocio</Label>
-                    <Input
-                      id="business_name"
-                      value={driverData.business_name}
-                      onChange={(e) => updateDriverData('business_name', e.target.value)}
-                      placeholder="Nombre de la empresa del conductor"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="business_name">Nombre del Negocio</Label>
+                      <Input
+                        id="business_name"
+                        value={driverData.business_name}
+                        onChange={(e) => updateDriverData('business_name', e.target.value)}
+                        placeholder="Nombre de la empresa del conductor"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="business_type">Tipo de Negocio</Label>
+                      <Input
+                        id="business_type"
+                        value={driverData.business_type}
+                        onChange={(e) => updateDriverData('business_type', e.target.value)}
+                        placeholder="LLC, Corporation, etc."
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="business_address">Dirección del Negocio</Label>
+                      <Textarea
+                        id="business_address"
+                        value={driverData.business_address}
+                        onChange={(e) => updateDriverData('business_address', e.target.value)}
+                        placeholder="Dirección completa del negocio"
+                        rows={3}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="business_phone">Teléfono del Negocio</Label>
+                      <Input
+                        id="business_phone"
+                        value={driverData.business_phone}
+                        onChange={(e) => updateDriverData('business_phone', e.target.value)}
+                        placeholder="(555) 123-4567"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="business_email">Email del Negocio</Label>
+                      <Input
+                        id="business_email"
+                        type="email"
+                        value={driverData.business_email}
+                        onChange={(e) => updateDriverData('business_email', e.target.value)}
+                        placeholder="business@example.com"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="tax_id">Tax ID</Label>
+                      <Input
+                        id="tax_id"
+                        value={driverData.tax_id}
+                        onChange={(e) => updateDriverData('tax_id', e.target.value)}
+                        placeholder="EIN o SSN"
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="business_type">Tipo de Negocio</Label>
-                    <Input
-                      id="business_type"
-                      value={driverData.business_type}
-                      onChange={(e) => updateDriverData('business_type', e.target.value)}
-                      placeholder="LLC, Corporation, etc."
-                    />
+                )}
+              </TabsContent>
+
+              <TabsContent value="owner-finance" className="space-y-6">
+                {!driverData.is_owner_operator ? (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">
+                      Debes activar "Owner Operator" en la pestaña "Negocio OO" para configurar aspectos financieros.
+                    </p>
                   </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="business_address">Dirección del Negocio</Label>
-                    <Textarea
-                      id="business_address"
-                      value={driverData.business_address}
-                      onChange={(e) => updateDriverData('business_address', e.target.value)}
-                      placeholder="Dirección completa del negocio"
-                      rows={3}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="business_phone">Teléfono del Negocio</Label>
-                    <Input
-                      id="business_phone"
-                      value={driverData.business_phone}
-                      onChange={(e) => updateDriverData('business_phone', e.target.value)}
-                      placeholder="(555) 123-4567"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="business_email">Email del Negocio</Label>
-                    <Input
-                      id="business_email"
-                      type="email"
-                      value={driverData.business_email}
-                      onChange={(e) => updateDriverData('business_email', e.target.value)}
-                      placeholder="business@example.com"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="tax_id">Tax ID</Label>
-                    <Input
-                      id="tax_id"
-                      value={driverData.tax_id}
-                      onChange={(e) => updateDriverData('tax_id', e.target.value)}
-                      placeholder="EIN o SSN"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="insurance_pay">Pago de Seguro ($)</Label>
-                    <Input
-                      id="insurance_pay"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={driverData.insurance_pay}
-                      onChange={(e) => updateDriverData('insurance_pay', parseFloat(e.target.value) || 0)}
-                      placeholder="0.00"
-                    />
-                  </div>
-                  
-                  <div className="md:col-span-2">
-                    <h4 className="text-lg font-medium mb-4">Porcentajes de Comisión</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="dispatching_percentage">Dispatching (%)</Label>
-                        <Input
-                          id="dispatching_percentage"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          max="100"
-                          value={driverData.dispatching_percentage}
-                          onChange={(e) => updateDriverData('dispatching_percentage', parseFloat(e.target.value) || 0)}
-                          placeholder="5.00"
-                        />
+                ) : (
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="insurance_pay">Pago de Seguro ($)</Label>
+                      <Input
+                        id="insurance_pay"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={driverData.insurance_pay}
+                        onChange={(e) => updateDriverData('insurance_pay', parseFloat(e.target.value) || 0)}
+                        placeholder="0.00"
+                        className="max-w-xs"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        Monto mensual que se deducirá por concepto de seguro
+                      </p>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="text-lg font-medium">Porcentajes de Comisión</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Define los porcentajes que se aplicarán sobre los ingresos del conductor
+                      </p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="dispatching_percentage">Dispatching (%)</Label>
+                          <Input
+                            id="dispatching_percentage"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="100"
+                            value={driverData.dispatching_percentage}
+                            onChange={(e) => updateDriverData('dispatching_percentage', parseFloat(e.target.value) || 0)}
+                            placeholder="5.00"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Comisión por servicios de dispatching
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="factoring_percentage">Factoring (%)</Label>
+                          <Input
+                            id="factoring_percentage"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="100"
+                            value={driverData.factoring_percentage}
+                            onChange={(e) => updateDriverData('factoring_percentage', parseFloat(e.target.value) || 0)}
+                            placeholder="3.00"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Comisión por servicios de factoring
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="leasing_percentage">Leasing (%)</Label>
+                          <Input
+                            id="leasing_percentage"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="100"
+                            value={driverData.leasing_percentage}
+                            onChange={(e) => updateDriverData('leasing_percentage', parseFloat(e.target.value) || 0)}
+                            placeholder="5.00"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Comisión por servicios de leasing
+                          </p>
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="factoring_percentage">Factoring (%)</Label>
-                        <Input
-                          id="factoring_percentage"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          max="100"
-                          value={driverData.factoring_percentage}
-                          onChange={(e) => updateDriverData('factoring_percentage', parseFloat(e.target.value) || 0)}
-                          placeholder="3.00"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="leasing_percentage">Leasing (%)</Label>
-                        <Input
-                          id="leasing_percentage"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          max="100"
-                          value={driverData.leasing_percentage}
-                          onChange={(e) => updateDriverData('leasing_percentage', parseFloat(e.target.value) || 0)}
-                          placeholder="5.00"
-                        />
+                    </div>
+
+                    <div className="p-4 bg-muted/30 rounded-lg">
+                      <h5 className="font-medium mb-2">Resumen de Deducciones</h5>
+                      <div className="space-y-1 text-sm">
+                        <div className="flex justify-between">
+                          <span>Dispatching:</span>
+                          <span>{driverData.dispatching_percentage}%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Factoring:</span>
+                          <span>{driverData.factoring_percentage}%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Leasing:</span>
+                          <span>{driverData.leasing_percentage}%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Seguro:</span>
+                          <span>${driverData.insurance_pay}</span>
+                        </div>
+                        <div className="flex justify-between font-medium border-t pt-1">
+                          <span>Total Porcentajes:</span>
+                          <span>{(driverData.dispatching_percentage + driverData.factoring_percentage + driverData.leasing_percentage).toFixed(2)}%</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
                 )}
               </TabsContent>
             </Tabs>
