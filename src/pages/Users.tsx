@@ -108,8 +108,8 @@ export default function Users() {
   
   // Estados para filtros
   const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   
   // Estados para estadísticas del dashboard
   const [stats, setStats] = useState({
@@ -282,7 +282,7 @@ export default function Users() {
     }
 
     // Filtro por rol
-    if (roleFilter) {
+    if (roleFilter && roleFilter !== 'all') {
       filtered = filtered.filter(user => {
         // Convertir roles del usuario a sus valores originales
         const userRoles = user.role.split(', ').map((roleLabel) => {
@@ -302,7 +302,7 @@ export default function Users() {
     }
 
     // Filtro por estado
-    if (statusFilter) {
+    if (statusFilter && statusFilter !== 'all') {
       filtered = filtered.filter(user => user.status === statusFilter);
     }
 
@@ -539,7 +539,7 @@ export default function Users() {
                   <SelectValue placeholder="Filtrar por rol" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los roles</SelectItem>
+                  <SelectItem value="all">Todos los roles</SelectItem>
                   {ROLE_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
@@ -547,11 +547,11 @@ export default function Users() {
                   ))}
                 </SelectContent>
               </Select>
-              {roleFilter && (
+               {roleFilter && roleFilter !== 'all' && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setRoleFilter('')}
+                  onClick={() => setRoleFilter('all')}
                   className="px-2"
                 >
                   <X className="h-3 w-3" />
@@ -566,17 +566,17 @@ export default function Users() {
                   <SelectValue placeholder="Estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="all">Todos</SelectItem>
                   <SelectItem value="active">Activos</SelectItem>
                   <SelectItem value="pending">Pendientes</SelectItem>
                   <SelectItem value="inactive">Inactivos</SelectItem>
                 </SelectContent>
               </Select>
-              {statusFilter && (
+               {statusFilter && statusFilter !== 'all' && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setStatusFilter('')}
+                  onClick={() => setStatusFilter('all')}
                   className="px-2"
                 >
                   <X className="h-3 w-3" />
