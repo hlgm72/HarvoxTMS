@@ -16,11 +16,12 @@ export const ProtectedRoute = ({
   requiredRole, 
   requireAuth = true 
 }: ProtectedRouteProps) => {
-  const { user, userRole, loading, isAuthenticated, currentRole } = useAuth();
+  const { user, userRole, loading, isAuthenticated, currentRole, _forceUpdate } = useAuth();
   const { t } = useTranslation('common');
 
   // Show loading spinner while checking authentication OR while role is being determined
-  if (loading || (isAuthenticated && !currentRole)) {
+  // Also wait for the AuthContext to complete its initialization cycle
+  if (loading || (isAuthenticated && !currentRole) || _forceUpdate === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
