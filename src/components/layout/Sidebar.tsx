@@ -483,16 +483,16 @@ export function AppSidebar() {
                      <NavLink 
                       to={item.url} 
                       end 
-                      className={`group relative flex items-center gap-3 px-3 py-2.5 transition-all duration-300 ${
+                      className={`group relative flex items-center gap-3 px-4 py-3 mx-2 rounded-xl transition-all duration-300 ${
                         active 
-                          ? "text-primary bg-primary/5 border-l-4 border-primary font-medium" 
-                          : "hover:text-primary hover:bg-accent/30 hover:translate-x-1"
+                          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 transform scale-[1.02]" 
+                          : "hover:bg-accent/50 hover:shadow-md hover:transform hover:scale-[1.01]"
                       }`}
                     >
                      <div className={`flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300 ${
                        active 
-                         ? "bg-primary/10 text-primary" 
-                         : "bg-transparent text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
+                         ? "bg-white/20 text-white" 
+                         : "bg-accent/30 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
                      }`}>
                        <IconComponent className="h-4 w-4" />
                      </div>
