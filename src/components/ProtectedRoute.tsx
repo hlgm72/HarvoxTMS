@@ -16,7 +16,7 @@ export const ProtectedRoute = ({
   requiredRole, 
   requireAuth = true 
 }: ProtectedRouteProps) => {
-  const { user, userRole, loading, isAuthenticated, currentRole, _forceUpdate } = useAuth();
+  const { user, currentRole, loading, isAuthenticated, _forceUpdate } = useAuth();
   const { t } = useTranslation('common');
 
   // Show loading spinner while checking authentication OR while role is being determined
@@ -42,7 +42,7 @@ export const ProtectedRoute = ({
   }
 
   // Check role requirement
-  if (requiredRole && userRole?.role !== requiredRole) {
+  if (requiredRole && currentRole?.role !== requiredRole) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
@@ -59,9 +59,9 @@ export const ProtectedRoute = ({
                 <p className="text-sm text-muted-foreground mt-2">
                   {t('messages.required_role')} <span className="font-medium">{requiredRole}</span>
                 </p>
-                {userRole && (
+                {currentRole && (
                   <p className="text-sm text-muted-foreground">
-                    {t('messages.current_role')} <span className="font-medium">{userRole.role}</span>
+                    {t('messages.current_role')} <span className="font-medium">{currentRole.role}</span>
                   </p>
                 )}
               </div>
