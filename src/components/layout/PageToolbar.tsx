@@ -32,20 +32,20 @@ export function PageToolbar({
 }: PageToolbarProps) {
   return (
     <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="p-6 space-y-4">
+      <div className="px-6 py-4 space-y-3">
         {/* Breadcrumb */}
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/dashboard" className="flex items-center gap-2">
-                <Home className="h-4 w-4" />
+                <Home className="h-3 w-3" />
                 Inicio
               </BreadcrumbLink>
             </BreadcrumbItem>
             {breadcrumbs.map((crumb, index) => (
               <div key={index} className="flex items-center gap-2">
                 <BreadcrumbSeparator>
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-3 w-3" />
                 </BreadcrumbSeparator>
                 <BreadcrumbItem>
                   {crumb.href ? (
@@ -65,12 +65,12 @@ export function PageToolbar({
         {(title || actions) && (
           <div className="flex items-center justify-between">
             {title && (
-              <h1 className="text-2xl font-semibold text-foreground">
+              <h1 className="text-xl font-semibold text-foreground">
                 {title}
               </h1>
             )}
             {actions && (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 {actions}
               </div>
             )}
@@ -84,7 +84,7 @@ export function PageToolbar({
               {filters}
             </div>
             {viewToggle && (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 {viewToggle}
               </div>
             )}
