@@ -97,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     forceUpdate: 0,
   });
 
-  const fetchUserRoles = async (userId: string) => {
+  const fetchUserRoles = async (userId: string): Promise<UserRole[]> => {
     console.log('🔍 Starting fetchUserRoles for userId:', userId);
     
     try {
