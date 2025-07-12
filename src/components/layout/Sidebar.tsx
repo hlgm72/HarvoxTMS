@@ -248,7 +248,7 @@ const getDispatcherNavigationItems = (driversCount: number) => [
 ];
 
 // Navegación para Driver
-const driverNavigationItems = [
+const getDriverNavigationItems = () => [
   // Panel Personal
   { 
     title: "Mi Dashboard", 
@@ -395,7 +395,7 @@ export function AppSidebar() {
     if (isCompanyOwner) return getCompanyOwnerNavigationItems(driversCount);
     if (isOperationsManager) return getOperationsManagerNavigationItems(driversCount);
     if (isDispatcher) return getDispatcherNavigationItems(driversCount);
-    if (isDriver) return driverNavigationItems;
+    if (isDriver) return getDriverNavigationItems();
     
     // Fallback para usuarios sin rol específico
     return getDispatcherNavigationItems(driversCount);
