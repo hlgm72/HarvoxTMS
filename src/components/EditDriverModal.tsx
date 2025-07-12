@@ -510,31 +510,6 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                           </div>
                         </div>
 
-                        <div className="p-4 bg-muted/30 rounded-lg">
-                          <h5 className="font-medium mb-2">Resumen de Deducciones</h5>
-                          <div className="space-y-1 text-sm">
-                            <div className="flex justify-between">
-                              <span>Dispatching:</span>
-                              <span>{driverData.dispatching_percentage}%</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Factoring:</span>
-                              <span>{driverData.factoring_percentage}%</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Leasing:</span>
-                              <span>{driverData.leasing_percentage}%</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Seguro:</span>
-                              <span>${driverData.insurance_pay}</span>
-                            </div>
-                            <div className="flex justify-between font-medium border-t pt-1">
-                              <span>Total Porcentajes:</span>
-                              <span>{(driverData.dispatching_percentage + driverData.factoring_percentage + driverData.leasing_percentage).toFixed(2)}%</span>
-                            </div>
-                          </div>
-                        </div>
                       </div>
                     </TabsContent>
                   </Tabs>
