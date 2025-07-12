@@ -35,7 +35,6 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     case 'SET_ROLES':
       console.log('🔧 AuthReducer SET_ROLES - Current role changing from:', state.currentRole?.role, 'to:', action.currentRole?.role);
       console.log('🔧 AuthReducer SET_ROLES - New current role:', action.currentRole);
-      console.log('🔧 SET_ROLES STACK TRACE:', new Error().stack);
       return { 
         ...state, 
         userRoles: [...action.userRoles], 
@@ -207,11 +206,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
       
-      console.log('🔄 No se encontró rol activo válido, manteniendo sin rol para forzar selección manual');
-      return null;
+      console.log('🔄 No se encontró rol activo válido, usando primer rol disponible');
+      return roles.length > 0 ? roles[0] : null;
     } catch (error) {
       console.error('💥 Error general en getCurrentRoleFromStorage:', error);
-      return null;
+      return roles.length > 0 ? roles[0] : null;
     }
   };
 
@@ -237,9 +236,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const storeRoleWithBackup = (role: UserRole) => {
     const roleString = JSON.stringify(role);
-    
-    console.log('💾 STORE ROLE WITH BACKUP CALLED - STACK TRACE:', new Error().stack);
-    console.log('💾 Storing role:', role.role, 'with ID:', role.id);
     
     // Guardar en múltiples lugares para máxima persistencia
     localStorage.setItem('currentRole', roleString);
@@ -371,19 +367,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const storedRole = getCurrentRoleFromStorage(roles);
             console.log('💾 Stored role from localStorage:', storedRole);
             
-            let selectedRole: UserRole | null = storedRole;
+            let selectedRole: UserRole | null = storedRole || roles[0];
             console.log('🎯 Final role selection logic:');
             console.log('  - storedRole:', storedRole);
+            console.log('  - roles[0] (fallback):', roles[0]);
             console.log('  - selectedRole (final):', selectedRole);
             console.log('  - All available roles:', roles.map(r => ({ id: r.id, role: r.role })));
             
-            if (selectedRole) {
-              // Guardar con sistema de respaldo solo si hay un rol válido
-              storeRoleWithBackup(selectedRole);
-              console.log('💾 Rol inicial guardado con sistema de respaldo:', selectedRole.role);
-            } else {
-              console.log('⚠️ No hay rol almacenado válido, usuario debe seleccionar rol manualmente');
-            }
+            // Guardar con sistema de respaldo
+            storeRoleWithBackup(selectedRole);
+            console.log('💾 Rol inicial guardado con sistema de respaldo:', selectedRole.role);
             
             dispatch({ 
               type: 'SET_ROLES', 
@@ -391,7 +384,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               currentRole: selectedRole 
             });
             
-            console.log('🏁 State updated with role:', selectedRole?.role || 'NONE', '- LOADING SET TO FALSE');
+            console.log('🏁 State updated with role:', selectedRole.role, '- LOADING SET TO FALSE');
           } else {
             console.log('❌ No roles available, setting loading to false');
             dispatch({ type: 'SET_LOADING', loading: false });

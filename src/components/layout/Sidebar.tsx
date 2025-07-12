@@ -568,33 +568,71 @@ export function AppSidebar() {
                 {isSuperAdmin ? "FleetNest Admin" : "FleetNest"}
               </h2>
               
-              {/* Mostrar información de compañía y rol (solo informativo, sin dropdown) */}
+              {/* Solo mostrar selector de compañía si NO es superadmin */}
               {!isSuperAdmin && !loading && selectedCompany && (
-                <div className="mt-3 p-3 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">
-                  <div className="flex items-center gap-3">
-                    <div className="h-6 w-6 flex items-center justify-center">
-                      {selectedCompany.logo_url ? (
-                        <img 
-                          src={selectedCompany.logo_url} 
-                          alt={selectedCompany.name}
-                          className="h-6 w-6 object-contain rounded-sm"
-                        />
-                      ) : (
-                        <div className="h-6 w-6 bg-primary/10 text-primary text-xs font-semibold flex items-center justify-center rounded-sm">
-                          {selectedCompany.avatar}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="w-full justify-between p-3 h-auto mt-2 hover:bg-accent/50 transition-all duration-200"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="h-6 w-6 flex items-center justify-center">
+                          {selectedCompany.logo_url ? (
+                            <img 
+                              src={selectedCompany.logo_url} 
+                              alt={selectedCompany.name}
+                              className="h-6 w-6 object-contain rounded-sm"
+                            />
+                          ) : (
+                            <div className="h-6 w-6 bg-primary/10 text-primary text-xs font-semibold flex items-center justify-center rounded-sm">
+                              {selectedCompany.avatar}
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                    <div className="text-left">
-                      <p className="text-sm font-medium text-foreground">
-                        {selectedCompany.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground capitalize">
-                        {currentRole?.role.replace('_', ' ') || 'Sin rol'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                         <div className="text-left">
+                           <p className="text-sm font-medium text-foreground">
+                             {selectedCompany.name}
+                           </p>
+                           <p className="text-xs text-muted-foreground capitalize">
+                             {currentRole?.role.replace('_', ' ') || 'Sin rol'}
+                           </p>
+                         </div>
+                      </div>
+                      <ChevronDown className="h-4 w-4 opacity-50" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-64">
+                    {companies.map((company) => (
+                      <DropdownMenuItem
+                        key={company.id}
+                        onClick={() => setSelectedCompany(company)}
+                        className="flex items-center gap-3 p-3"
+                      >
+                        <div className="h-8 w-8 flex items-center justify-center">
+                          {company.logo_url ? (
+                            <img 
+                              src={company.logo_url} 
+                              alt={company.name}
+                              className="h-8 w-8 object-contain rounded-sm"
+                            />
+                          ) : (
+                            <div className="h-8 w-8 bg-primary/10 text-primary text-sm font-semibold flex items-center justify-center rounded-sm">
+                              {company.avatar}
+                            </div>
+                          )}
+                        </div>
+                         <div className="flex flex-col">
+                           <span className="font-medium">{company.name}</span>
+                           <span className="text-xs text-muted-foreground capitalize">
+                             {company.role.replace('_', ' ')}
+                           </span>
+                         </div>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
               
               {/* Para superadmin, mostrar información del sistema */}
