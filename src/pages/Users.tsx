@@ -47,7 +47,7 @@ import { handleTextBlur, createTextHandlers } from "@/lib/textUtils";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { EditDriverModal } from "@/components/EditDriverModal";
 
 type UserRole = Database["public"]["Enums"]["user_role"];
 
@@ -83,7 +83,6 @@ export default function Users() {
   const { t } = useTranslation(['common']);
   const { user, userRole } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
-  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,6 +99,11 @@ export default function Users() {
   const [editingRoles, setEditingRoles] = useState<string[]>([]);
   const [editingStatus, setEditingStatus] = useState<string>('');
   const [updatingRoles, setUpdatingRoles] = useState(false);
+  
+  // Estado para el modal de edición de conductor
+  const [editDriverModalOpen, setEditDriverModalOpen] = useState(false);
+  const [selectedDriverId, setSelectedDriverId] = useState<string>('');
+  const [selectedDriverName, setSelectedDriverName] = useState<string>('');
   
   // Estados para filtros
   const [searchTerm, setSearchTerm] = useState('');
@@ -582,7 +586,12 @@ export default function Users() {
   };
 
   const handleEditDriver = (user: User) => {
-    navigate(`/edit-driver/${user.id}`);
+    setSelectedDriverId(user.id);
+    setSelectedDriverName(user.first_name && user.last_name 
+      ? `${user.first_name} ${user.last_name}` 
+      : user.email
+    );
+    setEditDriverModalOpen(true);
   };
 
   const isUserDriver = (user: User) => {
@@ -1657,6 +1666,14 @@ export default function Users() {
         </CardContent>
       </Card>
       </div>
+
+      {/* Modal para editar conductor */}
+      <EditDriverModal
+        isOpen={editDriverModalOpen}
+        onClose={() => setEditDriverModalOpen(false)}
+        userId={selectedDriverId}
+        userName={selectedDriverName}
+      />
     </div>
   );
 }
