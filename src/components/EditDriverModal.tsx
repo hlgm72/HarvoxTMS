@@ -125,14 +125,6 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
 
       // Si ya es un Owner Operator existente, usar sus valores guardados
       const hasExistingOO = ownerOperator && ownerOperator.is_active;
-      console.log('🔧 DEBUG: ¿Tiene OO existente?', hasExistingOO);
-      if (hasExistingOO) {
-        console.log('🔧 DEBUG: Valores guardados del OO:', {
-          dispatching: ownerOperator.dispatching_percentage,
-          factoring: ownerOperator.factoring_percentage,
-          leasing: ownerOperator.leasing_percentage
-        });
-      }
 
       setDriverData({
         is_active: companyDriver?.is_active ?? true,
@@ -161,7 +153,6 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
   };
 
   const updateDriverData = async (field: keyof DriverData, value: any) => {
-    console.log('🔧 DEBUG MODAL: updateDriverData ejecutándose - field:', field, 'value:', value);
     
     if (field === 'is_owner_operator' && value === true) {
       // Solo aplicar defaults si no tiene valores previos (nuevo OO)
@@ -170,14 +161,12 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                                driverData.leasing_percentage > 0;
       
       if (hasExistingValues) {
-        console.log('🔧 DEBUG: Manteniendo valores existentes del OO');
         setDriverData(prev => ({ ...prev, [field]: value }));
         return;
       }
 
       // Si no tiene valores previos, cargar defaults de la compañía
       try {
-        console.log('🔧 DEBUG: Cargando valores de la compañía para nuevo OO');
         
         // Obtener roles del usuario para encontrar la compañía
         const { data: userRoles, error: rolesError } = await supabase
@@ -194,7 +183,6 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
         if (userRoles && userRoles.length > 0) {
           // Usar el primer company_id encontrado
           const companyId = userRoles[0].company_id;
-          console.log('🔧 DEBUG: Company ID encontrado:', companyId);
           
           const { data: companyData, error: companyError } = await supabase
             .from('companies')
@@ -208,7 +196,6 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
           }
 
           if (companyData) {
-            console.log('🔧 DEBUG: Datos de la compañía cargados:', companyData);
             setDriverData(prev => ({
               ...prev,
               [field]: value,
@@ -216,7 +203,6 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
               factoring_percentage: companyData.default_factoring_percentage || 0,
               leasing_percentage: companyData.default_leasing_percentage || 0,
             }));
-            console.log('🔧 DEBUG: Aplicados valores de la compañía:', companyData);
             return;
           }
         }
@@ -225,7 +211,6 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
       }
       
       // Fallback: usar valores por defecto si hay error
-      console.log('🔧 DEBUG: Usando valores por defecto fallback');
       setDriverData(prev => ({
         ...prev,
         [field]: value,
@@ -236,14 +221,7 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
       return;
     }
 
-    setDriverData(prev => {
-      console.log('🔧 DEBUG MODAL: Estado anterior - is_owner_operator:', prev.is_owner_operator);
-      const newData = { ...prev, [field]: value };
-      console.log('🔧 DEBUG MODAL: Estado nuevo - is_owner_operator:', newData.is_owner_operator);
-      console.log('🔧 DEBUG MODAL: Campo actualizado:', field, 'Valor nuevo:', value);
-      console.log('🔧 DEBUG MODAL: ¿El campo coincide?', field === 'is_owner_operator');
-      return newData;
-    });
+    setDriverData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
@@ -422,23 +400,14 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
               </TabsContent>
 
               <TabsContent value="owner-operator" className="space-y-6">
-                <div className="space-y-4 p-4 border border-primary/20 rounded-lg bg-primary/5">
-                  <h3 className="text-lg font-semibold text-primary">🔧 DEBUG: Owner-Operator Modal</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Current status: {driverData.is_owner_operator ? 'ES Owner-Operator' : 'NO es Owner-Operator'}
-                  </p>
-                  <div className="space-y-2 mb-6">
+                <div className="space-y-6">
+                  <div className="space-y-2">
                     <Label htmlFor="is_owner_operator">¿Es Owner Operator?</Label>
                     <div className="flex items-center space-x-2">
                       <Switch
                         id="is_owner_operator"
                         checked={driverData.is_owner_operator}
-                        onCheckedChange={(checked) => {
-                          console.log('🔧 DEBUG MODAL: Switch clicked! New value:', checked);
-                          console.log('🔧 DEBUG MODAL: Driver data before update:', driverData);
-                          updateDriverData('is_owner_operator', checked);
-                          console.log('🔧 DEBUG MODAL: updateDriverData called with:', 'is_owner_operator', checked);
-                        }}
+                        onCheckedChange={(checked) => updateDriverData('is_owner_operator', checked)}
                       />
                       <span className="text-sm">
                         {driverData.is_owner_operator ? 'Sí, es Owner Operator' : 'No es Owner Operator'}
