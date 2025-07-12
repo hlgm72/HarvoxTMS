@@ -449,7 +449,7 @@ export function AppSidebar() {
 
     return (
       <SidebarGroup key={sectionName} className="mb-2">
-        <SidebarGroupLabel className="px-4 py-2 text-xs font-medium text-[hsl(215_20%_65%)] uppercase tracking-wide">
+        <SidebarGroupLabel className="px-4 py-2 text-xs font-medium text-white/70 uppercase tracking-wide">
           {sectionLabel}
         </SidebarGroupLabel>
         <SidebarGroupContent>
@@ -470,12 +470,12 @@ export function AppSidebar() {
                       end 
                       className={`group relative flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                         active 
-                          ? "bg-[hsl(217_91%_60%)] text-white" 
-                          : "text-[hsl(215_20%_65%)] hover:bg-[hsl(217_24%_20%)] hover:text-white"
+                          ? "bg-white/15 text-white" 
+                          : "text-white/80 hover:bg-white/10 hover:text-white"
                       }`}
                     >
                      <IconComponent className={`h-4 w-4 flex-shrink-0 ${
-                       active ? "text-white" : "text-[hsl(215_20%_65%)] group-hover:text-white"
+                       active ? "text-white" : "text-white/70 group-hover:text-white"
                      }`} />
                      
                      {!collapsed && (
@@ -489,8 +489,8 @@ export function AppSidebar() {
                              variant="secondary" 
                              className={`text-xs font-medium px-1.5 py-0.5 ml-2 ${
                                active 
-                                 ? "bg-white/20 text-white border-white/30" 
-                                 : "bg-[hsl(217_24%_20%)]/50 text-[hsl(215_20%_65%)] border-[hsl(217_24%_16%)] group-hover:bg-white/20 group-hover:text-white"
+                                 ? "bg-white/25 text-white border-white/40" 
+                                 : "bg-white/10 text-white/80 border-white/20 group-hover:bg-white/20 group-hover:text-white"
                              }`}
                            >
                              {item.badge}
@@ -535,7 +535,7 @@ export function AppSidebar() {
               <h2 className="font-semibold text-base text-white tracking-tight">
                 {isSuperAdmin ? "FleetNest Admin" : "FleetNest"}
               </h2>
-              <p className="text-xs text-[hsl(215_20%_65%)]">TMS Platform</p>
+              <p className="text-xs text-white/70">TMS Platform</p>
               
               {/* Company selector - Estilo Limitless exacto */}
               {!isSuperAdmin && !loading && selectedCompany && (
