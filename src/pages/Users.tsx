@@ -583,14 +583,34 @@ export default function Users() {
   };
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gestión de Usuarios</h1>
-          <p className="text-muted-foreground">
-            Administra los usuarios de tu empresa
-          </p>
+    <div className="min-h-screen bg-gradient-subtle">
+      {/* Header */}
+      <div className="bg-primary text-white shadow-lg relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-32 translate-x-32"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-24 -translate-x-24"></div>
         </div>
+        
+        <div className="relative p-8">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-white/10 rounded-full">
+              <UsersIcon className="h-8 w-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in text-white">
+                Gestión de Usuarios
+              </h1>
+              <p className="text-white font-body text-lg">
+                Administra los usuarios de tu empresa
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="container mx-auto py-8 space-y-6">
+        <div className="flex items-center justify-between">
         
         <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
           <DialogTrigger asChild>
@@ -1116,6 +1136,7 @@ export default function Users() {
           </Table>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
