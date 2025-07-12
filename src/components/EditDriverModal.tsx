@@ -153,8 +153,57 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
     console.log('🔧 DEBUG MODAL: updateDriverData ejecutándose - field:', field, 'value:', value);
     
     if (field === 'is_owner_operator' && value === true) {
-      // Si se está activando Owner-Operator, usar valores por defecto conocidos
-      console.log('🔧 DEBUG: Aplicando valores por defecto para Owner-Operator');
+      // Si se está activando Owner-Operator, cargar valores por defecto de la compañía
+      try {
+        console.log('🔧 DEBUG: Cargando valores de la compañía para Owner-Operator');
+        
+        // Obtener roles del usuario para encontrar la compañía
+        const { data: userRoles, error: rolesError } = await supabase
+          .from('user_company_roles')
+          .select('company_id')
+          .eq('user_id', userId)
+          .eq('is_active', true);
+
+        if (rolesError) {
+          console.warn('Error al obtener roles de usuario:', rolesError);
+          throw rolesError;
+        }
+
+        if (userRoles && userRoles.length > 0) {
+          // Usar el primer company_id encontrado
+          const companyId = userRoles[0].company_id;
+          console.log('🔧 DEBUG: Company ID encontrado:', companyId);
+          
+          const { data: companyData, error: companyError } = await supabase
+            .from('companies')
+            .select('default_dispatching_percentage, default_factoring_percentage, default_leasing_percentage')
+            .eq('id', companyId)
+            .single();
+
+          if (companyError) {
+            console.warn('Error al cargar datos de la compañía:', companyError);
+            throw companyError;
+          }
+
+          if (companyData) {
+            console.log('🔧 DEBUG: Datos de la compañía cargados:', companyData);
+            setDriverData(prev => ({
+              ...prev,
+              [field]: value,
+              dispatching_percentage: prev.dispatching_percentage || companyData.default_dispatching_percentage || 0,
+              factoring_percentage: prev.factoring_percentage || companyData.default_factoring_percentage || 0,
+              leasing_percentage: prev.leasing_percentage || companyData.default_leasing_percentage || 0,
+            }));
+            console.log('🔧 DEBUG: Aplicados valores de la compañía:', companyData);
+            return;
+          }
+        }
+      } catch (error) {
+        console.warn('Error cargando valores de la compañía, usando valores por defecto:', error);
+      }
+      
+      // Fallback: usar valores por defecto si hay error
+      console.log('🔧 DEBUG: Usando valores por defecto fallback');
       setDriverData(prev => ({
         ...prev,
         [field]: value,
@@ -162,7 +211,6 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
         factoring_percentage: prev.factoring_percentage || 3.00,
         leasing_percentage: prev.leasing_percentage || 5.00,
       }));
-      console.log('🔧 DEBUG: Aplicados valores por defecto estándar');
       return;
     }
 
