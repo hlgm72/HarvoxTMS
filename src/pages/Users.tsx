@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/select";
 import { 
   UserPlus, Mail, Shield, Edit, Trash2, Users as UsersIcon, Eye,
-  Activity, Clock, AlertCircle, TrendingUp, Search, Filter, X
+  Activity, Clock, AlertCircle, TrendingUp, Search, Filter, X, Grid, List
 } from "lucide-react";
 import { toast } from "sonner";
 import { useFleetNotifications } from "@/components/notifications";
@@ -111,6 +111,9 @@ export default function Users() {
     usersByRole: {} as Record<string, number>,
     recentUsers: 0
   });
+
+  // Estado para la vista actual (tabla o tarjetas)
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
   // Cargar usuarios al montar el componente
   useEffect(() => {
@@ -1273,12 +1276,36 @@ export default function Users() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Usuarios de la Empresa</CardTitle>
-          <CardDescription>
-            Lista de todos los usuarios registrados en tu empresa
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Usuarios de la Empresa</CardTitle>
+              <CardDescription>
+                Lista de todos los usuarios registrados en tu empresa
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant={viewMode === 'table' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('table')}
+                title="Vista de tabla"
+              >
+                <List className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'cards' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('cards')}
+                title="Vista de tarjetas"
+              >
+                <Grid className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
+          {viewMode === 'table' ? (
+            // Vista de tabla
           <div className="relative overflow-auto max-h-[600px]">
             <Table>
               <TableHeader className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
@@ -1440,6 +1467,147 @@ export default function Users() {
             </TableBody>
           </Table>
           </div>
+          ) : (
+            // Vista de tarjetas
+            <div className="space-y-6">
+              {loading ? (
+                <div className="flex items-center justify-center py-16">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-3"></div>
+                  <span className="text-muted-foreground">Cargando usuarios...</span>
+                </div>
+              ) : filteredUsers.length === 0 ? (
+                <div className="flex flex-col items-center space-y-6 py-16 animate-fade-in">
+                  <div className="relative">
+                    <div className="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center">
+                      <UsersIcon className="h-12 w-12 text-muted-foreground/60" />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3 max-w-sm text-center">
+                    <h3 className="text-xl font-semibold text-foreground">
+                      {users.length === 0 ? 'No hay usuarios registrados aún' : 'No se encontraron usuarios'}
+                    </h3>
+                    
+                    <p className="text-muted-foreground leading-relaxed">
+                      {users.length === 0 
+                        ? 'Comienza invitando a los miembros de tu equipo para que puedan acceder al sistema.'
+                        : 'Intenta ajustar los filtros de búsqueda para encontrar los usuarios que necesitas.'
+                      }
+                    </p>
+                  </div>
+                  
+                  {users.length === 0 && (
+                    <Button 
+                      onClick={() => setInviteDialogOpen(true)}
+                      className="mt-4"
+                    >
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Invitar primer usuario
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredUsers.map((user) => (
+                    <Card key={user.id} className="hover:shadow-md transition-shadow animate-fade-in hover-scale">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center space-x-3">
+                            {user.avatar_url ? (
+                              <div className="h-12 w-12 rounded-full overflow-hidden bg-muted flex-shrink-0">
+                                <img 
+                                  src={user.avatar_url} 
+                                  alt={`Avatar de ${user.first_name || user.email}`}
+                                  className="h-full w-full object-cover object-center"
+                                />
+                              </div>
+                            ) : (
+                              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <span className="text-lg font-medium text-primary">
+                                  {getUserInitials(user)}
+                                </span>
+                              </div>
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <h3 className="font-semibold text-foreground truncate">
+                                {user.first_name && user.last_name 
+                                  ? `${user.first_name} ${user.last_name}`
+                                  : 'Sin nombre'
+                                }
+                              </h3>
+                              <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleViewUser(user)}
+                              title="Ver usuario"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleEditUser(user)}
+                              title="Editar usuario"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <div>
+                            <span className="text-sm font-medium text-muted-foreground">Teléfono:</span>
+                            <p className="text-sm text-foreground">{user.phone || 'No especificado'}</p>
+                          </div>
+                          
+                          <div>
+                            <span className="text-sm font-medium text-muted-foreground">Roles:</span>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {sortRolesByHierarchy(user.role.split(', ').map((roleLabel) => {
+                                const originalRole = Object.entries({
+                                  'superadmin': 'Super Admin',
+                                  'company_owner': 'Propietario',
+                                  'general_manager': 'Gerente General', 
+                                  'operations_manager': 'Gerente de Operaciones',
+                                  'safety_manager': 'Gerente de Seguridad',
+                                  'senior_dispatcher': 'Despachador Senior',
+                                  'dispatcher': 'Despachador',
+                                  'driver': 'Conductor',
+                                }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+                                return originalRole;
+                              })).map((originalRole, index) => (
+                                <Badge 
+                                  key={index} 
+                                  className={`text-xs ${getRoleBadgeColor(originalRole)}`}
+                                >
+                                  {getRoleLabel(originalRole)}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between pt-2">
+                            <div>
+                              <span className="text-sm font-medium text-muted-foreground">Estado:</span>
+                              <div className="mt-1">{getStatusBadge(user.status)}</div>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-sm font-medium text-muted-foreground">Registrado:</span>
+                              <p className="text-sm text-foreground">{new Date(user.created_at).toLocaleDateString()}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
       </div>
