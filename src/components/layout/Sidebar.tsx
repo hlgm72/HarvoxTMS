@@ -391,7 +391,6 @@ export function AppSidebar() {
   
   const collapsed = state === "collapsed";
   
-  
   // Determinar navegación según el rol del usuario
   const getNavigationItems = () => {
     if (isSuperAdmin) return getSuperAdminNavigationItems(t);
@@ -443,19 +442,18 @@ export function AppSidebar() {
     return {};
   };
 
-  // Función para renderizar una sección específica
+  // Función para renderizar una sección específica - ESTILO LIMITLESS EXACTO
   const renderSection = (sectionName: string, sectionLabel: string) => {
     const sectionItems = navigationItems.filter((item: any) => item.section === sectionName);
     if (sectionItems.length === 0) return null;
 
     return (
-      <SidebarGroup key={sectionName} className="mb-6">
-        <SidebarGroupLabel className="mx-4 mb-3 text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider flex items-center gap-2">
-          <Dot className="h-2 w-2 text-accent" />
+      <SidebarGroup key={sectionName} className="mb-2">
+        <SidebarGroupLabel className="px-4 py-2 text-xs font-medium text-[hsl(148_163_184)] uppercase tracking-wide">
           {sectionLabel}
         </SidebarGroupLabel>
-        <SidebarGroupContent className="px-2">
-          <SidebarMenu className="space-y-1">
+        <SidebarGroupContent>
+          <SidebarMenu className="space-y-0">
             {sectionItems.map((item: any) => {
               const active = isActive(item.url);
               const IconComponent = item.icon;
@@ -470,46 +468,29 @@ export function AppSidebar() {
                     <NavLink 
                       to={item.url} 
                       end 
-                      className={`group relative flex items-center gap-3 mx-2 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out ${
+                      className={`group relative flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                         active 
-                          ? "bg-accent text-accent-foreground shadow-lg shadow-accent/20 scale-[1.02]" 
-                          : "text-muted-foreground hover:bg-accent/10 hover:text-accent-foreground hover:scale-[1.01]"
+                          ? "bg-[hsl(44_123_229)] text-white" 
+                          : "text-[hsl(148_163_184)] hover:bg-[hsl(61_82_108)] hover:text-white"
                       }`}
                     >
-                     <div className={`p-1.5 rounded-lg transition-all duration-300 ${
-                       active 
-                         ? "bg-accent-foreground/10" 
-                         : "bg-muted/50 group-hover:bg-accent/20"
-                     }`}>
-                       <IconComponent className={`h-4 w-4 transition-all duration-300 ${
-                         active ? "text-accent-foreground" : "text-muted-foreground group-hover:text-accent"
-                       }`} />
-                     </div>
+                     <IconComponent className={`h-4 w-4 flex-shrink-0 ${
+                       active ? "text-white" : "text-[hsl(148_163_184)] group-hover:text-white"
+                     }`} />
                      
                      {!collapsed && (
                        <div className="flex items-center justify-between flex-1 min-w-0">
-                         <div className="min-w-0">
-                           <span className={`font-medium text-sm transition-colors duration-300 ${
-                             active ? "text-accent-foreground" : "text-foreground group-hover:text-accent-foreground"
-                           }`}>
-                             {item.title}
-                           </span>
-                           {item.description && (
-                             <p className={`text-xs truncate mt-0.5 transition-colors duration-300 ${
-                               active ? "text-accent-foreground/70" : "text-muted-foreground/80 group-hover:text-accent-foreground/60"
-                             }`}>
-                               {item.description}
-                             </p>
-                           )}
-                         </div>
+                         <span className="truncate">
+                           {item.title}
+                         </span>
                          
                          {item.badge && (
                            <Badge 
-                             variant={active ? "default" : "secondary"}
-                             className={`text-xs font-medium px-2 py-0.5 transition-all duration-300 ${
+                             variant="secondary" 
+                             className={`text-xs font-medium px-1.5 py-0.5 ml-2 ${
                                active 
-                                 ? "bg-accent-foreground/10 text-accent-foreground border-accent-foreground/20" 
-                                 : "bg-muted text-muted-foreground border-muted-foreground/20 group-hover:bg-accent/20 group-hover:text-accent group-hover:border-accent/30"
+                                 ? "bg-white/20 text-white border-white/30" 
+                                 : "bg-[hsl(61_82_108)]/50 text-[hsl(148_163_184)] border-[hsl(61_82_108)]/30 group-hover:bg-white/20 group-hover:text-white"
                              }`}
                            >
                              {item.badge}
@@ -518,18 +499,10 @@ export function AppSidebar() {
                        </div>
                      )}
                      
-                     {/* Indicador activo mejorado */}
+                     {/* Active indicator - exacto como Limitless */}
                      {active && (
-                       <>
-                         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-accent rounded-r-full"></div>
-                         <div className="absolute inset-0 border border-accent/30 rounded-xl"></div>
-                       </>
+                       <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
                      )}
-                     
-                     {/* Efecto hover mejorado */}
-                     <div className={`absolute inset-0 rounded-xl transition-all duration-300 ${
-                       !active ? "opacity-0 group-hover:opacity-100 bg-gradient-to-r from-accent/5 to-accent/10" : ""
-                     }`}></div>
                    </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -543,87 +516,89 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="border-r border-border/50 bg-sidebar shadow-xl"
+      className="border-r border-[hsl(61_82_108)]/20"
       collapsible="icon"
       variant="sidebar"
       side="left"
+      style={{ backgroundColor: 'hsl(39 49 66)' }} // Color exacto de Limitless
     >
-      <SidebarHeader className="border-b border-border/30 p-6 bg-gradient-to-br from-sidebar to-muted/20">
-        <div className="flex items-center gap-4">
-          <div className="relative group">
-            <div className="w-11 h-11 bg-gradient-to-br from-accent/20 to-accent/10 rounded-2xl flex items-center justify-center shadow-lg ring-1 ring-accent/20 transition-all duration-300 group-hover:scale-105 group-hover:shadow-accent/20">
-              <Zap className="h-6 w-6 text-accent transition-all duration-300 group-hover:rotate-12" />
+      <SidebarHeader className="border-b border-[hsl(61_82_108)]/20 p-4" style={{ backgroundColor: 'hsl(32 40 53)' }}>
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="w-8 h-8 bg-[hsl(44_123_229)] rounded-lg flex items-center justify-center">
+              <Zap className="h-4 w-4 text-white" />
             </div>
-            {!collapsed && (
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse shadow-lg shadow-accent/50"></div>
-            )}
           </div>
           
           {!collapsed && (
-            <div className="flex-1 animate-fade-in">
-              <h2 className="font-heading font-bold text-xl text-foreground tracking-tight">
+            <div className="flex-1">
+              <h2 className="font-semibold text-base text-white tracking-tight">
                 {isSuperAdmin ? "FleetNest Admin" : "FleetNest"}
               </h2>
-              <p className="text-xs text-muted-foreground font-medium">TMS Platform</p>
+              <p className="text-xs text-[hsl(148_163_184)]">TMS Platform</p>
               
-              {/* Company selector profesional */}
+              {/* Company selector - Estilo Limitless exacto */}
               {!isSuperAdmin && !loading && selectedCompany && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="w-full justify-between p-3 h-auto mt-4 bg-muted/50 hover:bg-muted/80 transition-all duration-300 text-foreground border border-border/30 rounded-xl shadow-sm hover:shadow-md"
+                      className="w-full justify-between p-2 h-auto mt-3 bg-[hsl(61_82_108)]/30 hover:bg-[hsl(61_82_108)]/50 transition-colors text-white border border-[hsl(61_82_108)]/20 rounded-md"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="h-7 w-7 flex items-center justify-center">
+                      <div className="flex items-center gap-2 text-left">
+                        <div className="h-5 w-5 flex items-center justify-center">
                           {selectedCompany.logo_url ? (
                             <img 
                               src={selectedCompany.logo_url} 
                               alt={selectedCompany.name}
-                              className="h-7 w-7 object-contain rounded-lg"
+                              className="h-5 w-5 object-contain rounded"
                             />
                           ) : (
-                            <div className="h-7 w-7 bg-accent/20 text-accent text-xs font-bold flex items-center justify-center rounded-lg">
+                            <div className="h-5 w-5 bg-[hsl(44_123_229)] text-white text-xs font-semibold flex items-center justify-center rounded">
                               {selectedCompany.avatar}
                             </div>
                           )}
                         </div>
-                         <div className="text-left">
-                           <p className="text-sm font-semibold text-foreground">
+                         <div>
+                           <p className="text-sm font-medium text-white leading-tight">
                              {selectedCompany.name}
                            </p>
-                           <p className="text-xs text-muted-foreground capitalize">
+                           <p className="text-xs text-[hsl(148_163_184)] capitalize leading-tight">
                              {currentRole?.role.replace('_', ' ') || 'Sin rol'}
                            </p>
                          </div>
                       </div>
-                      <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                      <ChevronDown className="h-3 w-3 text-[hsl(148_163_184)]" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-64 bg-background border-border shadow-xl rounded-xl">
+                  <DropdownMenuContent 
+                    align="start" 
+                    className="w-64 border border-[hsl(61_82_108)]/20 rounded-md" 
+                    style={{ backgroundColor: 'hsl(39 49 66)' }}
+                  >
                     {companies.map((company) => (
                       <DropdownMenuItem
                         key={company.id}
                         onClick={() => setSelectedCompany(company)}
-                        className="flex items-center gap-3 p-3 rounded-lg m-1 transition-all duration-200 hover:bg-accent/10 focus:bg-accent/10"
+                        className="flex items-center gap-3 p-3 text-white hover:bg-[hsl(61_82_108)]/50 rounded-sm m-1"
                       >
-                        <div className="h-8 w-8 flex items-center justify-center">
+                        <div className="h-6 w-6 flex items-center justify-center">
                           {company.logo_url ? (
                             <img 
                               src={company.logo_url} 
                               alt={company.name}
-                              className="h-8 w-8 object-contain rounded-lg"
+                              className="h-6 w-6 object-contain rounded"
                             />
                           ) : (
-                            <div className="h-8 w-8 bg-accent/20 text-accent text-sm font-bold flex items-center justify-center rounded-lg">
+                            <div className="h-6 w-6 bg-[hsl(44_123_229)] text-white text-xs font-semibold flex items-center justify-center rounded">
                               {company.avatar}
                             </div>
                           )}
                         </div>
                          <div className="flex flex-col">
-                           <span className="font-semibold text-foreground">{company.name}</span>
-                           <span className="text-xs text-muted-foreground capitalize">
+                           <span className="font-medium text-white text-sm">{company.name}</span>
+                           <span className="text-xs text-[hsl(148_163_184)] capitalize">
                              {company.role.replace('_', ' ')}
                            </span>
                          </div>
@@ -633,16 +608,14 @@ export function AppSidebar() {
                 </DropdownMenu>
               )}
               
-              {/* Superadmin info profesional */}
+              {/* Superadmin info - Estilo Limitless exacto */}
               {isSuperAdmin && (
-                <div className="mt-4 p-4 bg-gradient-to-r from-accent/10 to-accent/5 rounded-xl border border-accent/20 shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <div className="p-1.5 bg-accent/20 rounded-lg">
-                      <Shield className="h-4 w-4 text-accent" />
-                    </div>
+                <div className="mt-3 p-3 bg-[hsl(44_123_229)]/20 rounded-md border border-[hsl(44_123_229)]/30">
+                  <div className="flex items-center gap-2">
+                    <Shield className="h-3 w-3 text-[hsl(44_123_229)]" />
                     <div>
-                      <p className="text-sm font-semibold text-foreground">{t('admin:navigation.system_administrator')}</p>
-                      <p className="text-xs text-muted-foreground">{t('admin:navigation.global_access')}</p>
+                      <p className="text-sm font-medium text-white">{t('admin:navigation.system_administrator')}</p>
+                      <p className="text-xs text-[hsl(148_163_184)]">{t('admin:navigation.global_access')}</p>
                     </div>
                   </div>
                 </div>
@@ -652,9 +625,9 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="p-4 bg-gradient-to-b from-sidebar to-muted/10">
+      <SidebarContent className="py-2" style={{ backgroundColor: 'hsl(39 49 66)' }}>
         {isSuperAdmin ? (
-          // Para SuperAdmin: Estilo profesional
+          // Para SuperAdmin: Estilo Limitless exacto
           <>
             {/* Sección Principal */}
             {renderSection("main", t('admin:navigation.main_management'))}
@@ -673,42 +646,13 @@ export function AppSidebar() {
           </>
         )}
 
-        {/* Quick Actions Section - Estilo profesional */}
+        {/* Bottom section como en Limitless */}
         {!collapsed && (
-          <div className="mt-6 p-4 bg-gradient-to-r from-muted/30 to-muted/20 rounded-xl border border-border/30">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 bg-accent rounded-full"></div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                {t('admin:navigation.quick_actions')}
-              </span>
-            </div>
-            <div className="space-y-2">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="w-full justify-start gap-3 bg-background/50 hover:bg-accent/10 transition-all duration-300 rounded-lg shadow-sm hover:shadow-md border border-border/20"
-              >
-                <div className="p-1 bg-green-500/20 rounded-md">
-                  <Activity className="h-3 w-3 text-green-600" />
-                </div>
-                <span className="text-sm font-medium">{t('admin:navigation.system_status')}</span>
-                <Badge variant="outline" className="ml-auto bg-green-50 text-green-700 border-green-200 text-xs">
-                  {t('admin:navigation.online')}
-                </Badge>
-              </Button>
-              
-              {isSuperAdmin && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full justify-start gap-3 bg-background/50 hover:bg-accent/10 transition-all duration-300 rounded-lg shadow-sm hover:shadow-md border border-border/20"
-                >
-                  <div className="p-1 bg-accent/20 rounded-md">
-                    <Settings className="h-3 w-3 text-accent" />
-                  </div>
-                  <span className="text-sm font-medium">{t('admin:navigation.quick_settings')}</span>
-                </Button>
-              )}
+          <div className="mt-auto p-4 border-t border-[hsl(61_82_108)]/20">
+            <div className="flex items-center gap-2 text-[hsl(148_163_184)] text-xs">
+              <Activity className="h-3 w-3" />
+              <span>System Status</span>
+              <div className="ml-auto w-2 h-2 bg-green-500 rounded-full"></div>
             </div>
           </div>
         )}

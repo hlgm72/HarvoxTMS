@@ -79,21 +79,24 @@ All colors MUST be HSL.
 
     --radius: 0.5rem;
 
-    /* Limitless Style Sidebar - Dark Professional */
-    --sidebar-background: 220 26% 14%;      /* Dark professional gray */
-    --sidebar-foreground: 210 20% 98%;      /* Light text */
-    --sidebar-primary: 214 88% 54%;         /* Fleet blue for active items */
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 26% 18%;          /* Slightly lighter for hover */
-    --sidebar-accent-foreground: 210 20% 90%;
-    --sidebar-border: 220 26% 20%;          /* Subtle border */
-    --sidebar-ring: 214 88% 54%;            /* Blue focus ring */
+    /* Limitless Style Sidebar - Dark Professional (EXACT COLORS) */
+    --limitless-dark: 39 49 66;             /* #273142 - Exact Limitless sidebar */
+    --limitless-darker: 32 40 53;           /* #202835 - Darker header */
+    --limitless-light: 61 82 108;           /* #3d526c - Hover states */
+    --limitless-accent: 44 123 229;         /* #2c7be5 - Limitless blue */
+    --limitless-text: 255 255 255;          /* #ffffff - White text */
+    --limitless-text-muted: 148 163 184;    /* #94a3b8 - Muted text */
+    --limitless-border: 61 82 108;          /* #3d526c - Borders */
     
-    /* Limitless Layout Colors */
-    --limitless-dark: 220 26% 14%;          /* Main sidebar dark */
-    --limitless-darker: 220 26% 10%;        /* Darker accents */
-    --limitless-light: 220 26% 18%;         /* Hover states */
-    --limitless-accent: 214 88% 54%;        /* Blue accent */
+    /* Sidebar mapping to Limitless exact colors */
+    --sidebar-background: var(--limitless-dark);
+    --sidebar-foreground: var(--limitless-text);
+    --sidebar-primary: var(--limitless-accent);
+    --sidebar-primary-foreground: var(--limitless-text);
+    --sidebar-accent: var(--limitless-light);
+    --sidebar-accent-foreground: var(--limitless-text);
+    --sidebar-border: var(--limitless-border);
+    --sidebar-ring: var(--limitless-accent);
 
     /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -133,21 +136,21 @@ All colors MUST be HSL.
     --input: 217.2 32.6% 17.5%;
     --ring: 214 88% 60%;
 
-    /* Dark mode sidebar - Even darker for Limitless style */
-    --sidebar-background: 220 26% 8%;       /* Very dark professional */
-    --sidebar-foreground: 210 20% 98%;
-    --sidebar-primary: 214 88% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 26% 12%;          /* Slightly lighter */
-    --sidebar-accent-foreground: 210 20% 90%;
-    --sidebar-border: 220 26% 15%;
-    --sidebar-ring: 214 88% 60%;
+    /* Dark mode sidebar - Limitless exact colors for dark mode */
+    --sidebar-background: var(--limitless-dark);
+    --sidebar-foreground: var(--limitless-text);
+    --sidebar-primary: var(--limitless-accent);
+    --sidebar-primary-foreground: var(--limitless-text);
+    --sidebar-accent: var(--limitless-light);
+    --sidebar-accent-foreground: var(--limitless-text);
+    --sidebar-border: var(--limitless-border);
+    --sidebar-ring: var(--limitless-accent);
     
-    /* Dark mode Limitless colors */
-    --limitless-dark: 220 26% 8%;
-    --limitless-darker: 220 26% 5%;
-    --limitless-light: 220 26% 12%;
-    --limitless-accent: 214 88% 60%;
+    /* Dark mode Limitless colors - maintaining exact colors */
+    --limitless-dark: 39 49 66;      /* Keep exact same color in dark mode */
+    --limitless-darker: 32 40 53;    /* Keep exact same color */
+    --limitless-light: 61 82 108;    /* Keep exact same color */
+    --limitless-accent: 44 123 229;  /* Keep exact same color */
   }
 }
 
