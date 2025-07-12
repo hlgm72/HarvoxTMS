@@ -50,21 +50,10 @@ export default function Index() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-muted-foreground">Verificando autenticación...</p>
+          <p className="text-muted-foreground">Cargando...</p>
         </div>
       </div>
     );
-  }
-
-  // Si no hay usuario autenticado, mostrar landing o redirigir a auth
-  if (!user) {
-    navigate('/auth');
-    return null;
-  }
-
-  // Si hay usuario pero no tiene rol seleccionado, mostrar dashboard genérico con selector de rol
-  if (!userRole) {
-    return <Dashboard />;
   }
 
   // Fallback: show generic dashboard if no specific role redirect

@@ -165,9 +165,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const getCurrentRoleFromStorage = (roles: UserRole[]): UserRole | null => {
     try {
-      // Limpiar storage si es nueva pestaña desde Lovable
-      forceCleanStorageOnNewTab();
-      
       // Intentar múltiples fuentes de persistencia en orden de prioridad
       const sources = [
         { name: 'localStorage:currentRole', value: localStorage.getItem('currentRole') },
@@ -236,20 +233,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
     });
-  };
-
-  const forceCleanStorageOnNewTab = () => {
-    // Detectar si esta es una nueva pestaña desde Lovable
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasLovableToken = urlParams.has('__lovable_token');
-    
-    if (hasLovableToken) {
-      console.log('🆕 Nueva pestaña desde Lovable detectada, limpiando storage de roles');
-      localStorage.removeItem('currentRole');
-      localStorage.removeItem('lastActiveRole'); 
-      sessionStorage.removeItem('currentRole');
-      sessionStorage.removeItem('activeRole');
-    }
   };
 
   const storeRoleWithBackup = (role: UserRole) => {
