@@ -31,6 +31,7 @@ import {
 import { UserPlus, Mail, Shield, Edit, Trash2, Users as UsersIcon, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useFleetNotifications } from "@/components/notifications";
+import { handleTextBlur } from "@/lib/textUtils";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
@@ -168,12 +169,12 @@ export default function Users() {
   const handleInviteUser = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Limpiar espacios innecesarios de los campos de texto
+    // Limpiar espacios innecesarios de los campos de texto usando la utilidad global
     const cleanedForm = {
-      email: inviteForm.email.trim(),
+      email: handleTextBlur(inviteForm.email),
       role: inviteForm.role,
-      first_name: inviteForm.first_name.trim(),
-      last_name: inviteForm.last_name.trim()
+      first_name: handleTextBlur(inviteForm.first_name),
+      last_name: handleTextBlur(inviteForm.last_name)
     };
     
     if (!cleanedForm.email || !cleanedForm.role) {
