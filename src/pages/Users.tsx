@@ -199,8 +199,15 @@ export default function Users() {
 
       if (companyError) throw companyError;
 
+      // Obtener el token de autenticación
+      const { data: session } = await supabase.auth.getSession();
+      
+      if (!session.session) {
+        throw new Error('Not authenticated');
+      }
+
       // Llamar a la función edge para enviar invitación
-      const { data, error } = await supabase.functions.invoke('send-company-owner-invitation', {
+      const { data, error } = await supabase.functions.invoke('send-user-invitation', {
         body: {
           companyId: userRole.company_id,
           email: cleanedForm.email,
@@ -208,12 +215,30 @@ export default function Users() {
           role: cleanedForm.role,
           first_name: cleanedForm.first_name,
           last_name: cleanedForm.last_name,
+        },
+        headers: {
+          'Authorization': `Bearer ${session.session.access_token}`
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error inviting user:', error);
+        throw new Error(error.message || 'Error al enviar invitación');
+      }
 
-      showSuccess('Invitación enviada exitosamente');
+      if (!data || !data.success) {
+        console.error('Function result error:', data);
+        throw new Error(data?.error || 'Error al enviar invitación');
+      }
+
+      const displayName = cleanedForm.first_name && cleanedForm.last_name 
+        ? `${cleanedForm.first_name} ${cleanedForm.last_name}` 
+        : cleanedForm.email;
+
+      showSuccess(
+        'Invitación Enviada',
+        `Se ha enviado una invitación a ${displayName}. Recibirá un email con instrucciones para configurar su cuenta.`
+      );
       setInviteDialogOpen(false);
       setInviteForm({ email: '', role: '', first_name: '', last_name: '' });
       
