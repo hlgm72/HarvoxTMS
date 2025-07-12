@@ -30,8 +30,11 @@ type AuthAction =
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case 'SET_SESSION':
+      console.log('🔧 AuthReducer SET_SESSION');
       return { ...state, session: action.session, user: action.user };
     case 'SET_ROLES':
+      console.log('🔧 AuthReducer SET_ROLES - Current role changing from:', state.currentRole?.role, 'to:', action.currentRole?.role);
+      console.log('🔧 AuthReducer SET_ROLES - New current role:', action.currentRole);
       return { 
         ...state, 
         userRoles: [...action.userRoles], 
@@ -40,8 +43,10 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         forceUpdate: Date.now()
       };
     case 'SET_LOADING':
+      console.log('🔧 AuthReducer SET_LOADING:', action.loading);
       return { ...state, loading: action.loading };
     case 'FORCE_UPDATE':
+      console.log('🔧 AuthReducer FORCE_UPDATE');
       return { ...state, forceUpdate: Date.now() };
     default:
       return state;
@@ -194,8 +199,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const switchRole = (role: UserRole) => {
+    console.log('🔄 SWITCHING ROLE FROM:', authState.currentRole?.role, 'TO:', role.role);
+    console.log('🔄 Switch role called with:', role);
     dispatch({ type: 'SET_ROLES', userRoles: authState.userRoles, currentRole: role });
     localStorage.setItem('currentRole', JSON.stringify(role));
+    console.log('🔄 Role switched and stored in localStorage:', role.role);
     
     // Force an update to trigger re-renders
     dispatch({ type: 'FORCE_UPDATE' });
