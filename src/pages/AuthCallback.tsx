@@ -35,7 +35,7 @@ export default function AuthCallback() {
             .select('role')
             .eq('user_id', session.user.id)
             .eq('is_active', true)
-            .single();
+            .limit(1);
 
           console.log('OAuth role query result:', { roleData, roleError });
 
@@ -46,10 +46,10 @@ export default function AuthCallback() {
           });
 
           // Redirect based on role
-          if (roleData?.role === 'superadmin') {
+          if (roleData?.[0]?.role === 'superadmin') {
             console.log('OAuth: Redirecting to superadmin dashboard');
             navigate('/superadmin');
-          } else if (roleData?.role) {
+          } else if (roleData?.[0]?.role) {
             console.log('OAuth: Redirecting to dashboard');
             navigate('/dashboard');
           } else {

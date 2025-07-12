@@ -338,7 +338,7 @@ export default function Auth() {
             .select('role')
             .eq('user_id', data.user.id)
             .eq('is_active', true)
-            .single();
+            .limit(1);
 
           console.log('Role query result:', { roleData, roleError });
 
@@ -348,7 +348,7 @@ export default function Auth() {
           );
 
           // Redirect based on role
-          if (roleData?.role === 'superadmin') {
+          if (roleData?.[0]?.role === 'superadmin') {
             console.log('Redirecting to superadmin dashboard');
             navigate('/superadmin');
           } else {
