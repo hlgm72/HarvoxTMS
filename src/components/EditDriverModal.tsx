@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { User, Truck } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -56,7 +57,6 @@ interface EditDriverModalProps {
 
 export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDriverModalProps) {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState('employee');
   const [activeOwnerTab, setActiveOwnerTab] = useState('business');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -317,30 +317,63 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
           </div>
         ) : (
           <div className="space-y-6">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="employee">Empleado</TabsTrigger>
-                <TabsTrigger value="owner-operator">Owner-Operator</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="employee" className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="driver_id">ID del Conductor</Label>
-                    <Input
-                      id="driver_id"
-                      value={driverData.driver_id}
-                      onChange={(e) => updateDriverData('driver_id', e.target.value)}
-                      placeholder="ID único asignado por la empresa"
+            {/* Información de Empleado */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Información de Empleado
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="driver_id">ID del Conductor</Label>
+                  <Input
+                    id="driver_id"
+                    value={driverData.driver_id}
+                    onChange={(e) => updateDriverData('driver_id', e.target.value)}
+                    placeholder="ID único asignado por la empresa"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="hire_date">Fecha de Contratación</Label>
+                  <div>
+                    <DatePicker
+                      id="hire_date"
+                      selected={driverData.hire_date}
+                      onChange={(date: Date | null) => updateDriverData('hire_date', date)}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="Seleccionar fecha"
+                      showYearDropdown
+                      showMonthDropdown
+                      dropdownMode="select"
+                      yearDropdownItemNumber={100}
+                      scrollableYearDropdown
+                      locale={es}
+                      className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="hire_date">Fecha de Contratación</Label>
-                    <div>
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="is_active">Estado del Empleado</Label>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="is_active"
+                      checked={driverData.is_active}
+                      onCheckedChange={(checked) => updateDriverData('is_active', checked)}
+                    />
+                    <span className="text-sm">
+                      {driverData.is_active ? 'Activo' : 'Inactivo'}
+                    </span>
+                  </div>
+                </div>
+
+                {!driverData.is_active && (
+                  <>
+                    <div className="space-y-2">
+                      <Label>Fecha de Terminación</Label>
                       <DatePicker
-                        id="hire_date"
-                        selected={driverData.hire_date}
-                        onChange={(date: Date | null) => updateDriverData('hire_date', date)}
+                        selected={driverData.termination_date}
+                        onChange={(date: Date | null) => updateDriverData('termination_date', date)}
                         dateFormat="dd/MM/yyyy"
                         placeholderText="Seleccionar fecha"
                         showYearDropdown
@@ -349,238 +382,194 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                         yearDropdownItemNumber={100}
                         scrollableYearDropdown
                         locale={es}
-                        className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
+                        className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md"
                       />
                     </div>
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="is_active">Estado del Empleado</Label>
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        id="is_active"
-                        checked={driverData.is_active}
-                        onCheckedChange={(checked) => updateDriverData('is_active', checked)}
+                    <div className="space-y-2">
+                      <Label htmlFor="termination_reason">Razón de Terminación</Label>
+                      <Input
+                        id="termination_reason"
+                        value={driverData.termination_reason}
+                        onChange={(e) => updateDriverData('termination_reason', e.target.value)}
+                        placeholder="Motivo de la terminación del contrato"
                       />
-                      <span className="text-sm">
-                        {driverData.is_active ? 'Activo' : 'Inactivo'}
-                      </span>
                     </div>
-                  </div>
+                  </>
+                )}
+              </div>
+            </div>
 
-                  {!driverData.is_active && (
-                    <>
+            {/* Separador */}
+            <div className="border-t border-border"></div>
+
+            {/* Owner-Operator Section */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Truck className="h-5 w-5" />
+                  Owner-Operator
+                </h3>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="is_owner_operator"
+                    checked={driverData.is_owner_operator}
+                    onCheckedChange={(checked) => updateDriverData('is_owner_operator', checked)}
+                  />
+                  <Label htmlFor="is_owner_operator" className="text-sm">
+                    {driverData.is_owner_operator ? 'Sí, es Owner Operator' : 'No es Owner Operator'}
+                  </Label>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Activa esta opción si el conductor opera con su propio vehículo y negocio.
+                </p>
+              </div>
+
+              {/* Sub-tabs cuando es Owner Operator */}
+              {driverData.is_owner_operator && (
+                <Tabs value={activeOwnerTab} onValueChange={setActiveOwnerTab} className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="business">Datos del Negocio</TabsTrigger>
+                    <TabsTrigger value="finance">Configuración Financiera</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="business" className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label>Fecha de Terminación</Label>
-                        <DatePicker
-                          selected={driverData.termination_date}
-                          onChange={(date: Date | null) => updateDriverData('termination_date', date)}
-                          dateFormat="dd/MM/yyyy"
-                          placeholderText="Seleccionar fecha"
-                          showYearDropdown
-                          showMonthDropdown
-                          dropdownMode="select"
-                          yearDropdownItemNumber={100}
-                          scrollableYearDropdown
-                          locale={es}
-                          className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="termination_reason">Razón de Terminación</Label>
+                        <Label htmlFor="business_name">Nombre del Negocio</Label>
                         <Input
-                          id="termination_reason"
-                          value={driverData.termination_reason}
-                          onChange={(e) => updateDriverData('termination_reason', e.target.value)}
-                          placeholder="Motivo de la terminación del contrato"
+                          id="business_name"
+                          value={driverData.business_name}
+                          onChange={(e) => updateDriverData('business_name', e.target.value)}
+                          placeholder="Nombre de la empresa del conductor"
                         />
                       </div>
-                    </>
-                  )}
-                </div>
-              </TabsContent>
-
-              <TabsContent value="owner-operator" className="space-y-6">
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="is_owner_operator">¿Es Owner Operator?</Label>
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        id="is_owner_operator"
-                        checked={driverData.is_owner_operator}
-                        onCheckedChange={(checked) => updateDriverData('is_owner_operator', checked)}
-                      />
-                      <span className="text-sm">
-                        {driverData.is_owner_operator ? 'Sí, es Owner Operator' : 'No es Owner Operator'}
-                      </span>
+                      <div className="space-y-2">
+                        <Label htmlFor="business_type">Tipo de Negocio</Label>
+                        <Input
+                          id="business_type"
+                          value={driverData.business_type}
+                          onChange={(e) => updateDriverData('business_type', e.target.value)}
+                          placeholder="LLC, Corporation, etc."
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="business_address">Dirección del Negocio</Label>
+                        <Textarea
+                          id="business_address"
+                          value={driverData.business_address}
+                          onChange={(e) => updateDriverData('business_address', e.target.value)}
+                          placeholder="Dirección completa del negocio"
+                          rows={3}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="business_phone">Teléfono del Negocio</Label>
+                        <Input
+                          id="business_phone"
+                          value={driverData.business_phone}
+                          onChange={(e) => updateDriverData('business_phone', e.target.value)}
+                          placeholder="(555) 123-4567"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="business_email">Email del Negocio</Label>
+                        <Input
+                          id="business_email"
+                          type="email"
+                          value={driverData.business_email}
+                          onChange={(e) => updateDriverData('business_email', e.target.value)}
+                          placeholder="business@example.com"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="tax_id">Tax ID / EIN</Label>
+                        <Input
+                          id="tax_id"
+                          value={driverData.tax_id}
+                          onChange={(e) => updateDriverData('tax_id', e.target.value)}
+                          placeholder="12-3456789"
+                        />
+                      </div>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      Activa esta opción si el conductor opera con su propio vehículo y negocio.
-                    </p>
-                  </div>
-                </div>
+                  </TabsContent>
 
-                {driverData.is_owner_operator && (
-                  <Tabs value={activeOwnerTab} onValueChange={setActiveOwnerTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="business">Datos del Negocio</TabsTrigger>
-                      <TabsTrigger value="finance">Configuración Financiera</TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="business" className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="business_name">Nombre del Negocio</Label>
+                  <TabsContent value="finance" className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="dispatching_percentage">% Dispatching</Label>
+                        <div className="relative">
                           <Input
-                            id="business_name"
-                            value={driverData.business_name}
-                            onChange={(e) => updateDriverData('business_name', e.target.value)}
-                            placeholder="Nombre de la empresa del conductor"
+                            id="dispatching_percentage"
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            value={driverData.dispatching_percentage}
+                            onChange={(e) => updateDriverData('dispatching_percentage', parseFloat(e.target.value) || 0)}
+                            className="pr-8"
                           />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="business_type">Tipo de Negocio</Label>
-                          <Input
-                            id="business_type"
-                            value={driverData.business_type}
-                            onChange={(e) => updateDriverData('business_type', e.target.value)}
-                            placeholder="LLC, Corporation, etc."
-                          />
-                        </div>
-                        <div className="space-y-2 md:col-span-2">
-                          <Label htmlFor="business_address">Dirección del Negocio</Label>
-                          <Textarea
-                            id="business_address"
-                            value={driverData.business_address}
-                            onChange={(e) => updateDriverData('business_address', e.target.value)}
-                            placeholder="Dirección completa del negocio"
-                            rows={3}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="business_phone">Teléfono del Negocio</Label>
-                          <Input
-                            id="business_phone"
-                            value={driverData.business_phone}
-                            onChange={(e) => updateDriverData('business_phone', e.target.value)}
-                            placeholder="(555) 123-4567"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="business_email">Email del Negocio</Label>
-                          <Input
-                            id="business_email"
-                            type="email"
-                            value={driverData.business_email}
-                            onChange={(e) => updateDriverData('business_email', e.target.value)}
-                            placeholder="business@example.com"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="tax_id">Tax ID</Label>
-                          <Input
-                            id="tax_id"
-                            value={driverData.tax_id}
-                            onChange={(e) => updateDriverData('tax_id', e.target.value)}
-                            placeholder="EIN o SSN"
-                          />
+                          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">%</span>
                         </div>
                       </div>
-                    </TabsContent>
-
-                    <TabsContent value="finance" className="space-y-6">
-                      <div className="space-y-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="insurance_pay">Pago de Seguro ($)</Label>
+                      <div className="space-y-2">
+                        <Label htmlFor="factoring_percentage">% Factoring</Label>
+                        <div className="relative">
+                          <Input
+                            id="factoring_percentage"
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            value={driverData.factoring_percentage}
+                            onChange={(e) => updateDriverData('factoring_percentage', parseFloat(e.target.value) || 0)}
+                            className="pr-8"
+                          />
+                          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">%</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="leasing_percentage">% Leasing</Label>
+                        <div className="relative">
+                          <Input
+                            id="leasing_percentage"
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            value={driverData.leasing_percentage}
+                            onChange={(e) => updateDriverData('leasing_percentage', parseFloat(e.target.value) || 0)}
+                            className="pr-8"
+                          />
+                          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">%</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2 md:col-span-3">
+                        <Label htmlFor="insurance_pay">Pago de Seguro</Label>
+                        <div className="relative">
                           <Input
                             id="insurance_pay"
                             type="number"
-                            step="0.01"
                             min="0"
+                            step="0.01"
                             value={driverData.insurance_pay}
                             onChange={(e) => updateDriverData('insurance_pay', parseFloat(e.target.value) || 0)}
-                            placeholder="0.00"
-                            className="max-w-xs"
+                            className="pl-8"
                           />
-                          <p className="text-sm text-muted-foreground">
-                            Monto mensual que se deducirá por concepto de seguro
-                          </p>
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">$</span>
                         </div>
-
-                        <div className="space-y-4">
-                          <h4 className="text-lg font-medium">Porcentajes de Comisión</h4>
-                          <p className="text-sm text-muted-foreground">
-                            Define los porcentajes que se aplicarán sobre los ingresos del conductor
-                          </p>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="space-y-2">
-                              <Label htmlFor="dispatching_percentage">Dispatching (%)</Label>
-                              <Input
-                                id="dispatching_percentage"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                max="100"
-                                value={driverData.dispatching_percentage}
-                                onChange={(e) => updateDriverData('dispatching_percentage', parseFloat(e.target.value) || 0)}
-                                placeholder="5.00"
-                              />
-                              <p className="text-xs text-muted-foreground">
-                                Comisión por servicios de dispatching
-                              </p>
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="factoring_percentage">Factoring (%)</Label>
-                              <Input
-                                id="factoring_percentage"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                max="100"
-                                value={driverData.factoring_percentage}
-                                onChange={(e) => updateDriverData('factoring_percentage', parseFloat(e.target.value) || 0)}
-                                placeholder="3.00"
-                              />
-                              <p className="text-xs text-muted-foreground">
-                                Comisión por servicios de factoring
-                              </p>
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="leasing_percentage">Leasing (%)</Label>
-                              <Input
-                                id="leasing_percentage"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                max="100"
-                                value={driverData.leasing_percentage}
-                                onChange={(e) => updateDriverData('leasing_percentage', parseFloat(e.target.value) || 0)}
-                                placeholder="5.00"
-                              />
-                              <p className="text-xs text-muted-foreground">
-                                Comisión por servicios de leasing
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
+                        <p className="text-sm text-muted-foreground">
+                          Monto fijo por período de pago para cobertura de seguro
+                        </p>
                       </div>
-                    </TabsContent>
-                  </Tabs>
-                )}
-
-                {!driverData.is_owner_operator && (
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground">
-                      Activa el switch "¿Es Owner Operator?" para configurar la información del negocio y aspectos financieros.
-                    </p>
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
-
-            <div className="flex justify-end space-x-2 pt-4 border-t">
-              <Button variant="outline" onClick={onClose} disabled={saving}>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              )}
+            </div>
+            
+            {/* Botones de acción */}
+            <div className="flex justify-end space-x-3 pt-6 border-t border-border">
+              <Button variant="outline" onClick={onClose}>
                 Cancelar
               </Button>
               <Button onClick={handleSave} disabled={saving}>
