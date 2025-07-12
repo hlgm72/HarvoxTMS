@@ -62,12 +62,22 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("User authenticated:", user.id);
 
     // Check if user is company owner for this company
-    const { data: isCompanyOwner, error: roleError } = await supabase.rpc(
-      "is_company_owner_in_company",
-      { company_id_param: companyId }
-    );
+    // Instead of using the RPC function, we'll query directly since we have the user ID
+    const { data: companyOwnerCheck, error: roleError } = await supabase
+      .from('user_company_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('company_id', companyId)
+      .eq('role', 'company_owner')
+      .eq('is_active', true)
+      .single();
 
-    if (roleError || !isCompanyOwner) {
+    if (roleError && roleError.code !== 'PGRST116') { // PGRST116 is "not found" error
+      console.error("Error checking company owner role:", roleError);
+      throw new Error("Error verifying permissions");
+    }
+
+    if (!companyOwnerCheck) {
       throw new Error("Access denied. Company Owner role required for this company.");
     }
 
