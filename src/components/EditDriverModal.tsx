@@ -190,9 +190,9 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
             setDriverData(prev => ({
               ...prev,
               [field]: value,
-              dispatching_percentage: prev.dispatching_percentage || companyData.default_dispatching_percentage || 0,
-              factoring_percentage: prev.factoring_percentage || companyData.default_factoring_percentage || 0,
-              leasing_percentage: prev.leasing_percentage || companyData.default_leasing_percentage || 0,
+              dispatching_percentage: companyData.default_dispatching_percentage || 0,
+              factoring_percentage: companyData.default_factoring_percentage || 0,
+              leasing_percentage: companyData.default_leasing_percentage || 0,
             }));
             console.log('🔧 DEBUG: Aplicados valores de la compañía:', companyData);
             return;
