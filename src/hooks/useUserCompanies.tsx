@@ -92,9 +92,11 @@ export const useUserCompanies = () => {
 
         setCompanies(transformedCompanies);
         
-        // Set the first company as selected by default if none is selected
+        // Only set the first company as selected if none is selected AND no current role is already active
+        // This prevents overriding the user's active role when they open new tabs
         if (!selectedCompany && transformedCompanies.length > 0) {
-          setSelectedCompany(transformedCompanies[0]);
+          console.log('🏢 Setting first company as default (no auto role switch)');
+          handleSetSelectedCompany(transformedCompanies[0], false); // Don't auto-switch roles
         }
 
       } catch (error) {
@@ -129,11 +131,18 @@ export const useUserCompanies = () => {
   };
 
   // Custom setSelectedCompany that also updates the auth context role
-  const handleSetSelectedCompany = (company: UserCompany) => {
+  const handleSetSelectedCompany = (company: UserCompany, autoSwitch: boolean = true) => {
     console.log('Setting selected company:', company);
     console.log('Available userRoles:', userRoles);
+    console.log('Auto switch role:', autoSwitch);
     
     setSelectedCompany(company);
+    
+    // Only auto-switch roles if explicitly requested (not during automatic initialization)
+    if (!autoSwitch) {
+      console.log('🏢 Skipping auto role switch - company set for display only');
+      return;
+    }
     
     // Find the corresponding role in the auth context and switch to it
     const correspondingRole = userRoles.find(role => 
@@ -143,7 +152,8 @@ export const useUserCompanies = () => {
     console.log('Found corresponding role:', correspondingRole);
     
     if (correspondingRole) {
-      console.log('Switching to role:', correspondingRole);
+      console.log('🏢 useUserCompanies SWITCHING ROLE - STACK TRACE:', new Error().stack);
+      console.log('🏢 Switching to role:', correspondingRole);
       switchRole(correspondingRole);
       
       // Navigate to the appropriate dashboard for the new role
