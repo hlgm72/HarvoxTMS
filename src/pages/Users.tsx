@@ -191,62 +191,6 @@ export default function Users() {
         }
       });
 
-      // Obtener emails para usuarios con privilegios administrativos
-      const hasAdminPrivileges = userRole?.role && [
-        'superadmin', 
-        'company_owner', 
-        'general_manager', 
-        'operations_manager'
-      ].includes(userRole.role);
-
-      if (hasAdminPrivileges) {
-        // Los administradores pueden ver emails de invitaciones aceptadas
-        try {
-          const { data: invitations, error: invError } = await supabase
-            .from('user_invitations')
-            .select('email, accepted_at')
-            .eq('company_id', userRole.company_id)
-            .not('accepted_at', 'is', null);
-
-          if (!invError && invitations) {
-            // Mapear emails a usuarios basándose en invitaciones
-            Array.from(usersMap.values()).forEach(mappedUser => {
-              if (mappedUser.id === user?.id) {
-                // Usuario actual siempre muestra su email
-                mappedUser.email = user.email || 'N/A';
-              } else {
-                // Para otros usuarios, intentar encontrar el email en invitaciones
-                const matchingInvitation = invitations.find(inv => 
-                  mappedUser.first_name && mappedUser.last_name && inv.email && (
-                    inv.email.toLowerCase().includes(mappedUser.first_name.toLowerCase()) ||
-                    inv.email.toLowerCase().includes(mappedUser.last_name.toLowerCase())
-                  )
-                );
-                
-                if (matchingInvitation) {
-                  mappedUser.email = matchingInvitation.email;
-                } else {
-                  mappedUser.email = 'Email privado';
-                }
-              }
-            });
-          }
-        } catch (error) {
-          console.warn('No se pudieron obtener emails, usando método básico');
-          // Fallback: solo mostrar email del usuario actual
-          if (user?.id && usersMap.has(user.id)) {
-            const currentUser = usersMap.get(user.id)!;
-            currentUser.email = user.email || 'N/A';
-          }
-        }
-      } else {
-        // Usuarios sin privilegios solo ven su propio email
-        if (user?.id && usersMap.has(user.id)) {
-          const currentUser = usersMap.get(user.id)!;
-          currentUser.email = user.email || 'N/A';
-        }
-      }
-
       const usersList = Array.from(usersMap.values());
       setUsers(usersList);
       setFilteredUsers(usersList); // Inicializar usuarios filtrados
@@ -493,1210 +437,448 @@ export default function Users() {
     return roleLabels[role] || role;
   };
 
-  const getRoleBadgeColor = (role: string) => {
-    const roleColors: Record<string, string> = {
-      'superadmin': 'bg-rose-500 text-white hover:bg-rose-600',
-      'company_owner': 'bg-blue-500 text-white hover:bg-blue-600',
-      'general_manager': 'bg-indigo-500 text-white hover:bg-indigo-600',
-      'operations_manager': 'bg-purple-500 text-white hover:bg-purple-600',
-      'safety_manager': 'bg-red-500 text-white hover:bg-red-600',
-      'senior_dispatcher': 'bg-amber-600 text-white hover:bg-amber-700',
-      'dispatcher': 'bg-orange-500 text-white hover:bg-orange-600',
-      'driver': 'bg-green-500 text-white hover:bg-green-600',
-    };
-    
-    return roleColors[role] || 'bg-gray-500 text-white hover:bg-gray-600';
-  };
-
-  const getRoleIconColor = (role: string) => {
-    const iconColors: Record<string, string> = {
-      'superadmin': 'text-rose-500',
-      'company_owner': 'text-blue-500',
-      'general_manager': 'text-indigo-500',
-      'operations_manager': 'text-purple-500',
-      'safety_manager': 'text-red-500',
-      'senior_dispatcher': 'text-amber-600',
-      'dispatcher': 'text-orange-500',
-      'driver': 'text-green-500',
-    };
-    
-    return iconColors[role] || 'text-gray-500';
-  };
-
-  const sortRolesByHierarchy = (roles: string[]) => {
-    const roleHierarchy = [
-      'superadmin',
-      'company_owner', 
-      'general_manager',
-      'operations_manager',
-      'safety_manager',
-      'senior_dispatcher',
-      'dispatcher',
-      'driver'
-    ];
-    
-    return roles.sort((a, b) => {
-      const aIndex = roleHierarchy.indexOf(a);
-      const bIndex = roleHierarchy.indexOf(b);
-      return aIndex - bIndex;
-    });
-  };
-
-  // Función para obtener las iniciales del usuario
-  const getUserInitials = (user: User) => {
-    const firstName = user.first_name?.trim();
-    const lastName = user.last_name?.trim();
-    
-    if (firstName && lastName) {
-      return `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`;
-    } else if (firstName) {
-      return firstName[0].toUpperCase();
-    } else if (user.email) {
-      return user.email[0].toUpperCase();
-    } else {
-      return 'U';
-    }
-  };
-
-  const handleViewUser = (user: User) => {
-    setSelectedUser(user);
-    setViewDialogOpen(true);
-  };
-
-  const handleEditUser = (user: User) => {
-    setSelectedUser(user);
-    // Extraer roles actuales del usuario
-    const currentRoles = user.role.split(', ').map((roleLabel) => {
-      const originalRole = Object.entries({
-        'superadmin': 'Super Admin',
-        'company_owner': 'Propietario',
-        'general_manager': 'Gerente General', 
-        'operations_manager': 'Gerente de Operaciones',
-        'safety_manager': 'Gerente de Seguridad',
-        'senior_dispatcher': 'Despachador Senior',
-        'dispatcher': 'Despachador',
-        'driver': 'Conductor',
-      }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
-      
-      return originalRole;
-    });
-    setEditingRoles(currentRoles);
-    setEditingStatus(user.status); // Inicializar el estado en edición
-    setEditDialogOpen(true);
-  };
-
-  const handleEditDriver = (user: User) => {
-    setSelectedDriverId(user.id);
-    setSelectedDriverName(user.first_name && user.last_name 
-      ? `${user.first_name} ${user.last_name}` 
-      : user.email
-    );
-    setEditDriverModalOpen(true);
-  };
-
-  const isUserDriver = (user: User) => {
-    const userRoles = user.role.split(', ').map((roleLabel) => {
-      const originalRole = Object.entries({
-        'superadmin': 'Super Admin',
-        'company_owner': 'Propietario',
-        'general_manager': 'Gerente General', 
-        'operations_manager': 'Gerente de Operaciones',
-        'safety_manager': 'Gerente de Seguridad',
-        'senior_dispatcher': 'Despachador Senior',
-        'dispatcher': 'Despachador',
-        'driver': 'Conductor',
-      }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
-      return originalRole;
-    });
-    return userRoles.includes('driver');
-  };
-
-  const handleRoleToggle = (roleValue: string) => {
-    setEditingRoles(prev => 
-      prev.includes(roleValue) 
-        ? prev.filter(r => r !== roleValue)
-        : [...prev, roleValue]
-    );
-  };
-
-  const handleSaveRoles = async () => {
-    if (!selectedUser || !userRole?.company_id) return;
-    
-    setUpdatingRoles(true);
-    try {
-      // Obtener roles actuales del usuario
-      const { data: currentRoles, error: fetchError } = await supabase
-        .from('user_company_roles')
-        .select('role')
-        .eq('user_id', selectedUser.id)
-        .eq('company_id', userRole.company_id)
-        .eq('is_active', true);
-
-      if (fetchError) throw fetchError;
-
-      const currentRoleValues = currentRoles?.map(r => r.role) || [];
-      
-      // Identificar roles a remover y agregar
-      const rolesToRemove = currentRoleValues.filter(role => !editingRoles.includes(role));
-      const rolesToAdd = editingRoles.filter(role => !currentRoleValues.includes(role as UserRole));
-
-      // Actualizar estado si cambió
-      const newIsActive = editingStatus === 'active';
-      
-      // Actualizar estado de todos los roles existentes
-      if (editingStatus !== selectedUser.status) {
-        const { error: statusError } = await supabase
-          .from('user_company_roles')
-          .update({ is_active: newIsActive })
-          .eq('user_id', selectedUser.id)
-          .eq('company_id', userRole.company_id);
-
-        if (statusError) throw statusError;
-      }
-
-      // Remover roles (solo si el usuario está activo)
-      if (rolesToRemove.length > 0 && newIsActive) {
-        const { error: removeError } = await supabase
-          .from('user_company_roles')
-          .update({ is_active: false })
-          .eq('user_id', selectedUser.id)
-          .eq('company_id', userRole.company_id)
-          .in('role', rolesToRemove);
-
-        if (removeError) throw removeError;
-      }
-
-      // Agregar nuevos roles (solo si el usuario está activo)
-      if (rolesToAdd.length > 0 && newIsActive) {
-        const newRoles = rolesToAdd.map(role => ({
-          user_id: selectedUser.id,
-          company_id: userRole.company_id,
-          role: role as UserRole,
-          is_active: true
-        }));
-
-        const { error: insertError } = await supabase
-          .from('user_company_roles')
-          .upsert(newRoles, {
-            onConflict: 'user_id,company_id,role',
-            ignoreDuplicates: false
-          });
-
-        if (insertError) throw insertError;
-
-        // Activar automáticamente cuando se asigna rol de conductor
-        const driverRoles = newRoles.filter(role => role.role === 'driver');
-        if (driverRoles.length > 0) {
-          const driverActivations = driverRoles.map(driverRole => ({
-            user_id: driverRole.user_id,
-            is_active: true
-          }));
-
-          const { error: driverActivationError } = await supabase
-            .from('company_drivers')
-            .upsert(driverActivations, {
-              onConflict: 'user_id',
-              ignoreDuplicates: false
-            });
-
-          if (driverActivationError) {
-            console.warn('Error activating driver status:', driverActivationError);
-            // No lanzamos error para no bloquear la asignación de roles
-          }
-        }
-      }
-
-      showSuccess('Usuario actualizado exitosamente');
-      setEditDialogOpen(false);
-      fetchUsers(); // Recargar la lista
-      
-    } catch (error: any) {
-      console.error('Error updating user:', error);
-      showError(error.message || 'Error al actualizar usuario');
-    } finally {
-      setUpdatingRoles(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      {/* Header */}
-      <div className="bg-primary text-white shadow-lg relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-32 translate-x-32"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-24 -translate-x-24"></div>
-        </div>
-        
-        <div className="relative p-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white/10 rounded-full">
-                <UsersIcon className="h-8 w-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in text-white">
-                  Gestión de Usuarios
-                </h1>
-                <p className="text-white font-body text-lg">
-                  Administra los usuarios de tu empresa
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              {/* Botón de filtros */}
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="secondary" className="gap-2 bg-white/10 text-white hover:bg-white/20 border-white/20">
-                    <Filter className="h-4 w-4" />
-                    Filtros
-                    {(searchTerm || roleFilter || statusFilter) && (
-                      <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 text-xs">
-                        {[searchTerm, roleFilter, statusFilter].filter(Boolean).length}
-                      </Badge>
-                    )}
-                  </Button>
-                </SheetTrigger>
-                <SheetContent className="w-[400px] sm:w-[540px]">
-                  <SheetHeader>
-                    <SheetTitle className="flex items-center gap-2">
-                      <Filter className="h-5 w-5 text-primary" />
-                      Filtros y Búsqueda
-                    </SheetTitle>
-                    <SheetDescription>
-                      Busca y filtra usuarios por diferentes criterios
-                    </SheetDescription>
-                  </SheetHeader>
-                  
-                  <div className="space-y-6 mt-6">
-                    {/* Barra de búsqueda */}
-                    <div className="space-y-2">
-                      <Label htmlFor="search">Buscar Usuario</Label>
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="search"
-                          placeholder="Buscar por nombre o email..."
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          className="pl-10"
-                        />
-                        {searchTerm && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSearchTerm('')}
-                            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        )}
-                      </div>
+      <div className="p-8">
+        {/* Barra superior con filtros y botón invitar */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            {/* Botón de filtros */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Filter className="h-4 w-4" />
+                  Filtros
+                  {(searchTerm || roleFilter || statusFilter) && (
+                    <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 text-xs">
+                      {[searchTerm, roleFilter, statusFilter].filter(Boolean).length}
+                    </Badge>
+                  )}
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="w-[400px] sm:w-[540px]">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    <Filter className="h-5 w-5 text-primary" />
+                    Filtros y Búsqueda
+                  </SheetTitle>
+                  <SheetDescription>
+                    Busca y filtra usuarios por diferentes criterios
+                  </SheetDescription>
+                </SheetHeader>
+                
+                <div className="space-y-6 mt-6">
+                  {/* Barra de búsqueda */}
+                  <div className="space-y-2">
+                    <Label htmlFor="search">Buscar Usuario</Label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="search"
+                        placeholder="Buscar por nombre o email..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10"
+                      />
+                      {searchTerm && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSearchTerm('')}
+                          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      )}
                     </div>
-
-                    {/* Filtro por rol */}
-                    <div className="space-y-2">
-                      <Label htmlFor="roleFilter">Filtrar por Rol</Label>
-                      <div className="flex gap-2">
-                        <Select value={roleFilter || undefined} onValueChange={setRoleFilter}>
-                          <SelectTrigger className="flex-1">
-                            <SelectValue placeholder="Todos los roles" />
-                          </SelectTrigger>
-                           <SelectContent>
-                             {ROLE_OPTIONS.map((option) => (
-                               <SelectItem key={option.value} value={option.value}>
-                                 <div className="flex items-center gap-2">
-                                   <Shield className={`h-4 w-4 ${getRoleIconColor(option.value)}`} />
-                                   {option.label}
-                                 </div>
-                               </SelectItem>
-                             ))}
-                           </SelectContent>
-                        </Select>
-                        {roleFilter && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setRoleFilter('')}
-                            className="px-2"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Filtro por estado */}
-                    <div className="space-y-2">
-                      <Label htmlFor="statusFilter">Filtrar por Estado</Label>
-                      <div className="flex gap-2">
-                        <Select value={statusFilter || undefined} onValueChange={setStatusFilter}>
-                          <SelectTrigger className="flex-1">
-                            <SelectValue placeholder="Todos los estados" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="active">
-                              <div className="flex items-center gap-2">
-                                <Activity className="h-4 w-4 text-green-500" />
-                                Activo
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="inactive">
-                              <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4 text-red-500" />
-                                Inactivo
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="pending">
-                              <div className="flex items-center gap-2">
-                                <AlertCircle className="h-4 w-4 text-amber-500" />
-                                Pendiente
-                              </div>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        {statusFilter && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setStatusFilter('')}
-                            className="px-2"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Resumen de filtros */}
-                    {(searchTerm || roleFilter || statusFilter) && (
-                      <div className="p-4 bg-muted/50 rounded-lg space-y-3">
-                        <h4 className="font-medium text-sm">Filtros Activos:</h4>
-                        <div className="space-y-2">
-                          {searchTerm && (
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-muted-foreground">Búsqueda:</span>
-                              <Badge variant="secondary">"{searchTerm}"</Badge>
-                            </div>
-                          )}
-                          {roleFilter && (
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-muted-foreground">Rol:</span>
-                              <Badge variant="secondary">{ROLE_OPTIONS.find(opt => opt.value === roleFilter)?.label}</Badge>
-                            </div>
-                          )}
-                          {statusFilter && (
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-muted-foreground">Estado:</span>
-                              <Badge variant="secondary">
-                                {statusFilter === 'active' ? 'Activo' : statusFilter === 'inactive' ? 'Inactivo' : 'Pendiente'}
-                              </Badge>
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex items-center justify-between pt-2 border-t">
-                          <span className="text-xs text-muted-foreground">
-                            {filteredUsers.length} de {users.length} usuarios
-                          </span>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setSearchTerm('');
-                              setRoleFilter('');
-                              setStatusFilter('');
-                            }}
-                          >
-                            Limpiar Todo
-                          </Button>
-                        </div>
-                      </div>
-                    )}
                   </div>
-                </SheetContent>
-              </Sheet>
-              
-              <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="gap-2 bg-white text-primary hover:bg-white/90 shadow-lg">
-                    <UserPlus className="h-4 w-4" />
-                    Invitar Usuario
-                  </Button>
-                </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2">
-                    <Mail className="h-5 w-5" />
-                    Invitar Nuevo Usuario
-                  </DialogTitle>
-                  <DialogDescription>
-                    Envía una invitación por email para que se una a tu empresa.
-                   </DialogDescription>
-                 </DialogHeader>
-             
-                 <form onSubmit={handleInviteUser} className="space-y-4">
-                   <div className="grid grid-cols-2 gap-4">
-                     <div>
-                       <Label htmlFor="first_name">Nombre</Label>
-                       <Input
-                         id="first_name"
-                         value={inviteForm.first_name}
-                         {...createTextHandlers(
-                           (value) => setInviteForm(prev => ({ ...prev, first_name: value }))
-                         )}
-                         placeholder="Nombre"
-                       />
-                     </div>
-                     <div>
-                       <Label htmlFor="last_name">Apellido</Label>
-                       <Input
-                         id="last_name"
-                         value={inviteForm.last_name}
-                         {...createTextHandlers(
-                           (value) => setInviteForm(prev => ({ ...prev, last_name: value }))
-                         )}
-                         placeholder="Apellido"
-                       />
-                     </div>
-                   </div>
-                   
-                   <div>
-                     <Label htmlFor="email">Email *</Label>
-                     <Input
-                       id="email"
-                       type="email"
-                       value={inviteForm.email}
-                       onChange={(e) => setInviteForm(prev => ({ ...prev, email: e.target.value }))}
-                       placeholder="usuario@ejemplo.com"
-                       required
-                     />
-                   </div>
-                   
-                   <div>
-                     <Label htmlFor="role">Rol *</Label>
-                     <Select 
-                       value={inviteForm.role} 
-                       onValueChange={(value) => {
-                         setInviteForm(prev => ({ ...prev, role: value }));
-                       }}
-                       required
-                     >
-                       <SelectTrigger>
-                         <SelectValue placeholder="Selecciona un rol" />
-                       </SelectTrigger>
+
+                  {/* Filtro por rol */}
+                  <div className="space-y-2">
+                    <Label htmlFor="roleFilter">Filtrar por Rol</Label>
+                    <div className="flex gap-2">
+                      <Select value={roleFilter} onValueChange={setRoleFilter}>
+                        <SelectTrigger className="flex-1">
+                          <SelectValue placeholder="Todos los roles" />
+                        </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="">Todos los roles</SelectItem>
                           {ROLE_OPTIONS.map((option) => (
                             <SelectItem key={option.value} value={option.value}>
-                              <div className="flex items-center gap-2">
-                                <Shield className={`h-4 w-4 ${getRoleIconColor(option.value)}`} />
-                                {option.label}
-                              </div>
+                              {option.label}
                             </SelectItem>
                           ))}
                         </SelectContent>
-                     </Select>
-                   </div>
-                   
-                   <div className="flex gap-2 pt-4">
-                     <Button type="submit" disabled={loading} className="flex-1">
-                       {loading ? 'Enviando...' : 'Enviar Invitación'}
-                     </Button>
-                     <Button 
-                       type="button" 
-                       variant="outline" 
-                       onClick={() => setInviteDialogOpen(false)}
-                     >
-                       Cancelar
-                     </Button>
-                   </div>
-                 </form>
-               </DialogContent>
-              </Dialog>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="container mx-auto py-8 space-y-6">
-         {/* Dashboard de Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Total de Usuarios</p>
-                <p className="text-3xl font-bold text-blue-600">{stats.totalUsers}</p>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-full">
-                <UsersIcon className="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Usuarios Activos</p>
-                <p className="text-3xl font-bold text-green-600">{stats.activeUsers}</p>
-                <p className="text-xs text-muted-foreground">
-                  {stats.totalUsers > 0 ? `${Math.round((stats.activeUsers / stats.totalUsers) * 100)}%` : '0%'} del total
-                </p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-full">
-                <Activity className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Invitaciones Pendientes</p>
-                <p className="text-3xl font-bold text-orange-600">{stats.pendingInvitations}</p>
-              </div>
-              <div className="p-3 bg-orange-100 rounded-full">
-                <AlertCircle className="h-6 w-6 text-orange-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Nuevos (7 días)</p>
-                <p className="text-3xl font-bold text-purple-600">{stats.recentUsers}</p>
-              </div>
-              <div className="p-3 bg-purple-100 rounded-full">
-                <TrendingUp className="h-6 w-6 text-purple-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Distribución por Roles */}
-      {Object.keys(stats.usersByRole).length > 0 && (
-        <Card className="animate-fade-in">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-primary" />
-              Distribución por Roles
-            </CardTitle>
-            <CardDescription>
-              Cantidad de usuarios asignados a cada rol en tu empresa
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {Object.entries(stats.usersByRole)
-                .sort(([a], [b]) => {
-                  const hierarchy = [
-                    'superadmin', 'company_owner', 'general_manager', 'operations_manager',
-                    'safety_manager', 'senior_dispatcher', 'dispatcher', 'driver'
-                  ];
-                  return hierarchy.indexOf(a) - hierarchy.indexOf(b);
-                })
-                .map(([role, count]) => (
-                  <div key={role} className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
-                    <Badge className={`text-xs ${getRoleBadgeColor(role)}`}>
-                      {getRoleLabel(role)}
-                    </Badge>
-                    <span className="font-semibold text-lg">{count}</span>
-                  </div>
-                ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Lista de Usuarios */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Lista de Usuarios</h2>
-        {(searchTerm || roleFilter || statusFilter) && (
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              Mostrando {filteredUsers.length} de {users.length} usuarios
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setSearchTerm('');
-                setRoleFilter('');
-                setStatusFilter('');
-              }}
-              className="h-8"
-            >
-              <X className="h-4 w-4 mr-1" />
-              Limpiar Filtros
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* Dialog para Ver Usuario */}
-      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Eye className="h-5 w-5" />
-              Información del Usuario
-            </DialogTitle>
-          </DialogHeader>
-          
-          {selectedUser && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Nombre</Label>
-                  <p className="text-sm font-medium">{selectedUser.first_name || 'N/A'}</p>
-                </div>
-                <div>
-                  <Label>Apellido</Label>
-                  <p className="text-sm font-medium">{selectedUser.last_name || 'N/A'}</p>
-                </div>
-              </div>
-              
-              <div>
-                <Label>Email</Label>
-                <p className="text-sm font-medium">{selectedUser.email}</p>
-              </div>
-              
-              <div>
-                <Label>Teléfono</Label>
-                <p className="text-sm font-medium">{selectedUser.phone || 'No especificado'}</p>
-              </div>
-              
-              <div>
-                <Label>Roles</Label>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {sortRolesByHierarchy(selectedUser.role.split(', ').map((roleLabel) => {
-                    const originalRole = Object.entries({
-                      'superadmin': 'Super Admin',
-                      'company_owner': 'Propietario',
-                      'general_manager': 'Gerente General', 
-                      'operations_manager': 'Gerente de Operaciones',
-                      'safety_manager': 'Gerente de Seguridad',
-                      'senior_dispatcher': 'Despachador Senior',
-                      'dispatcher': 'Despachador',
-                      'driver': 'Conductor',
-                    }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
-                    
-                    return originalRole;
-                  })).map((originalRole, index) => (
-                    <Badge 
-                      key={index} 
-                      className={`text-xs ${getRoleBadgeColor(originalRole)}`}
-                    >
-                      {getRoleLabel(originalRole)}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <Label>Estado</Label>
-                <div className="mt-1">{getStatusBadge(selectedUser.status)}</div>
-              </div>
-              
-              <div>
-                <Label>Fecha de Registro</Label>
-                <p className="text-sm font-medium">
-                  {new Date(selectedUser.created_at).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </p>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog para Editar Usuario */}
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Edit className="h-5 w-5" />
-              Editar Usuario
-            </DialogTitle>
-            <DialogDescription>
-              Modifica la información del usuario seleccionado.
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedUser && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Nombre</Label>
-                  <p className="text-sm font-medium">{selectedUser.first_name || 'N/A'}</p>
-                </div>
-                <div>
-                  <Label>Apellido</Label>
-                  <p className="text-sm font-medium">{selectedUser.last_name || 'N/A'}</p>
-                </div>
-              </div>
-              
-              <div>
-                <Label>Email</Label>
-                <p className="text-sm font-medium">{selectedUser.email}</p>
-              </div>
-              
-              <div>
-                <Label>Roles Asignados</Label>
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {ROLE_OPTIONS.map((roleOption) => (
-                    <div key={roleOption.value} className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id={`role-${roleOption.value}`}
-                        checked={editingRoles.includes(roleOption.value)}
-                        onChange={() => handleRoleToggle(roleOption.value)}
-                        className="rounded border-border"
-                        disabled={updatingRoles}
-                      />
-                      <Label 
-                        htmlFor={`role-${roleOption.value}`}
-                        className="text-sm font-normal cursor-pointer"
-                      >
-                        <Badge 
-                          className={`text-xs ${getRoleBadgeColor(roleOption.value)} ml-2`}
+                      </Select>
+                      {roleFilter && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setRoleFilter('')}
+                          className="px-2"
                         >
-                          {roleOption.label}
-                        </Badge>
-                      </Label>
+                          <X className="h-3 w-3" />
+                        </Button>
+                      )}
                     </div>
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Selecciona los roles que deseas asignar a este usuario
-                </p>
-              </div>
-              
-              <div>
-                <Label htmlFor="status">Estado</Label>
-                <Select 
-                  value={editingStatus || undefined} 
-                  onValueChange={setEditingStatus}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">
-                      <Badge variant="default" className="bg-green-100 text-green-800">Activo</Badge>
-                    </SelectItem>
-                    <SelectItem value="inactive">
-                      <Badge variant="destructive">Inactivo</Badge>
-                    </SelectItem>
-                    <SelectItem value="pending">
-                      <Badge variant="secondary">Pendiente</Badge>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="flex gap-2 pt-4">
-                <Button 
-                  onClick={handleSaveRoles}
-                  disabled={updatingRoles || editingRoles.length === 0}
-                  className="flex-1"
-                >
-                  {updatingRoles ? 'Guardando...' : 'Guardar Roles'}
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setEditDialogOpen(false)}
-                  disabled={updatingRoles}
-                >
-                  Cancelar
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+                  </div>
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Usuarios de la Empresa</CardTitle>
-              <CardDescription>
-                Lista de todos los usuarios registrados en tu empresa
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
+                  {/* Filtro por estado */}
+                  <div className="space-y-2">
+                    <Label htmlFor="statusFilter">Filtrar por Estado</Label>
+                    <div className="flex gap-2">
+                      <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <SelectTrigger className="flex-1">
+                          <SelectValue placeholder="Todos los estados" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Todos los estados</SelectItem>
+                          <SelectItem value="active">Activo</SelectItem>
+                          <SelectItem value="pending">Pendiente</SelectItem>
+                          <SelectItem value="inactive">Inactivo</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {statusFilter && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setStatusFilter('')}
+                          className="px-2"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+
+            {/* Toggle de vista */}
+            <div className="flex border border-border rounded-lg">
               <Button
-                variant={viewMode === 'table' ? 'default' : 'outline'}
+                variant={viewMode === 'table' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setViewMode('table')}
-                title="Vista de tabla"
+                className="rounded-r-none"
               >
                 <List className="h-4 w-4" />
               </Button>
               <Button
-                variant={viewMode === 'cards' ? 'default' : 'outline'}
+                variant={viewMode === 'cards' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setViewMode('cards')}
-                title="Vista de tarjetas"
+                className="rounded-l-none"
               >
                 <Grid className="h-4 w-4" />
               </Button>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          {viewMode === 'table' ? (
-            // Vista de tabla
-          <div className="relative overflow-auto max-h-[600px]">
-            <Table>
-              <TableHeader className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
-                <TableRow>
-                  <TableHead className="border-b shadow-sm">Usuario</TableHead>
-                  <TableHead className="border-b shadow-sm">Email</TableHead>
-                  <TableHead className="border-b shadow-sm">Teléfono</TableHead>
-                  <TableHead className="border-b shadow-sm">Rol</TableHead>
-                  <TableHead className="border-b shadow-sm">Estado</TableHead>
-                  <TableHead className="border-b shadow-sm">Fecha de Registro</TableHead>
-                  <TableHead className="text-right border-b shadow-sm">Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mr-2"></div>
-                      Cargando usuarios...
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : filteredUsers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-16">
-                    <div className="flex flex-col items-center space-y-6 animate-fade-in">
-                      <div className="relative">
-                        <div className="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center">
-                          <UsersIcon className="h-12 w-12 text-muted-foreground/60" />
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-3 max-w-sm">
-                        <h3 className="text-xl font-semibold text-foreground">
-                          {users.length === 0 ? 'No hay usuarios registrados aún' : 'No se encontraron usuarios'}
-                        </h3>
-                        
-                        <p className="text-muted-foreground text-center leading-relaxed">
-                          {users.length === 0 
-                            ? 'Utiliza el botón "Invitar Usuario" para comenzar.'
-                            : 'Prueba con otros criterios de búsqueda o limpia los filtros.'
-                          }
-                        </p>
-                        
-                        <div className="pt-4">
-                          {users.length === 0 ? (
-                            <Button 
-                              onClick={() => setInviteDialogOpen(true)}
-                              className="gap-2"
-                            >
-                              <UserPlus className="h-4 w-4" />
-                              Invitar Usuario
-                            </Button>
-                          ) : (
-                            <Button 
-                              onClick={() => {
-                                setSearchTerm('');
-                                setRoleFilter('');
-                                setStatusFilter('');
-                              }}
-                              variant="outline"
-                              className="gap-2"
-                            >
-                              <X className="h-4 w-4" />
-                              Limpiar Filtros
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredUsers.map((user) => (
-                  <TableRow key={user.id} className="hover:bg-muted/50">
-                    <TableCell>
-                      <div className="flex items-center space-x-3">
-                        {user.avatar_url ? (
-                          <div className="h-8 w-8 rounded-full overflow-hidden bg-muted flex-shrink-0">
-                            <img 
-                              src={user.avatar_url} 
-                              alt={`Avatar de ${user.first_name || user.email}`}
-                              className="h-full w-full object-cover object-center"
-                            />
-                          </div>
-                        ) : (
-                          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <span className="text-sm font-medium text-primary">
-                              {getUserInitials(user)}
-                            </span>
-                          </div>
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <div className="font-medium truncate">
-                            {user.first_name && user.last_name 
-                              ? `${user.first_name} ${user.last_name}`
-                              : 'Sin nombre'
-                            }
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <div className="text-sm text-muted-foreground">
-                        {user.phone || 'No especificado'}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {sortRolesByHierarchy(user.role.split(', ').map((roleLabel) => {
-                          const originalRole = Object.entries({
-                            'superadmin': 'Super Admin',
-                            'company_owner': 'Propietario',
-                            'general_manager': 'Gerente General', 
-                            'operations_manager': 'Gerente de Operaciones',
-                            'safety_manager': 'Gerente de Seguridad',
-                            'senior_dispatcher': 'Despachador Senior',
-                            'dispatcher': 'Despachador',
-                            'driver': 'Conductor',
-                          }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
-                          return originalRole;
-                        })).map((originalRole, index) => (
-                          <Badge 
-                            key={index} 
-                            className={`text-xs ${getRoleBadgeColor(originalRole)}`}
-                          >
-                            {getRoleLabel(originalRole)}
-                          </Badge>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell>{getStatusBadge(user.status)}</TableCell>
-                    <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end space-x-2">
-                        {isUserDriver(user) && (
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => handleEditDriver(user)}
-                            title="Editar datos de conductor"
-                            className="text-orange-600 hover:text-orange-700"
-                          >
-                            <Truck className="h-4 w-4" />
-                          </Button>
-                        )}
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleViewUser(user)}
-                          title="Ver usuario"
-                          className="text-green-600 hover:text-green-700"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleEditUser(user)}
-                          title="Editar usuario"
-                          className="text-blue-600 hover:text-blue-700"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+
+          {/* Botón de invitar usuario */}
+          <Button onClick={() => setInviteDialogOpen(true)} className="gap-2">
+            <UserPlus className="h-4 w-4" />
+            Invitar Usuario
+          </Button>
+        </div>
+
+        {/* Dashboard de Estadísticas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Total de Usuarios</p>
+                  <p className="text-3xl font-bold text-blue-600">{stats.totalUsers}</p>
+                </div>
+                <div className="p-3 bg-blue-100 rounded-full">
+                  <UsersIcon className="h-6 w-6 text-blue-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Usuarios Activos</p>
+                  <p className="text-3xl font-bold text-green-600">{stats.activeUsers}</p>
+                </div>
+                <div className="p-3 bg-green-100 rounded-full">
+                  <Activity className="h-6 w-6 text-green-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Invitaciones Pendientes</p>
+                  <p className="text-3xl font-bold text-orange-600">{stats.pendingInvitations}</p>
+                </div>
+                <div className="p-3 bg-orange-100 rounded-full">
+                  <Clock className="h-6 w-6 text-orange-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Nuevos esta Semana</p>
+                  <p className="text-3xl font-bold text-purple-600">{stats.recentUsers}</p>
+                </div>
+                <div className="p-3 bg-purple-100 rounded-full">
+                  <TrendingUp className="h-6 w-6 text-purple-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Lista de usuarios */}
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
-          ) : (
-            // Vista de tarjetas
-            <div className="space-y-6">
-              {loading ? (
-                <div className="flex items-center justify-center py-16">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-3"></div>
-                  <span className="text-muted-foreground">Cargando usuarios...</span>
-                </div>
-              ) : filteredUsers.length === 0 ? (
-                <div className="flex flex-col items-center space-y-6 py-16 animate-fade-in">
-                  <div className="relative">
-                    <div className="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center">
-                      <UsersIcon className="h-12 w-12 text-muted-foreground/60" />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3 max-w-sm text-center">
-                    <h3 className="text-xl font-semibold text-foreground">
-                      {users.length === 0 ? 'No hay usuarios registrados aún' : 'No se encontraron usuarios'}
-                    </h3>
-                    
-                    <p className="text-muted-foreground leading-relaxed">
-                      {users.length === 0 
-                        ? 'Comienza invitando a los miembros de tu equipo para que puedan acceder al sistema.'
-                        : 'Intenta ajustar los filtros de búsqueda para encontrar los usuarios que necesitas.'
-                      }
-                    </p>
-                  </div>
-                  
-                  {users.length === 0 && (
-                    <Button 
-                      onClick={() => setInviteDialogOpen(true)}
-                      className="mt-4"
-                    >
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Invitar primer usuario
-                    </Button>
-                  )}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredUsers.map((user) => (
-                    <Card key={user.id} className="hover:shadow-md transition-shadow animate-fade-in hover-scale">
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex items-center space-x-3">
-                            {user.avatar_url ? (
-                              <div className="h-12 w-12 rounded-full overflow-hidden bg-muted flex-shrink-0">
-                                <img 
-                                  src={user.avatar_url} 
-                                  alt={`Avatar de ${user.first_name || user.email}`}
-                                  className="h-full w-full object-cover object-center"
-                                />
-                              </div>
-                            ) : (
-                              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                <span className="text-lg font-medium text-primary">
-                                  {getUserInitials(user)}
-                                </span>
-                              </div>
-                            )}
-                            <div className="min-w-0 flex-1">
-                              <h3 className="font-semibold text-foreground truncate">
-                                {user.first_name && user.last_name 
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle>Usuarios de la Empresa ({filteredUsers.length})</CardTitle>
+              <CardDescription>
+                Lista de todos los usuarios registrados en tu empresa
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {viewMode === 'table' ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Usuario</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Rol</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead>Fecha de Registro</TableHead>
+                      <TableHead className="text-right">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredUsers.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-medium">
+                              {user.first_name?.[0] || user.email[0]}
+                            </div>
+                            <div>
+                              <p className="font-medium">
+                                {user.first_name && user.last_name
                                   ? `${user.first_name} ${user.last_name}`
-                                  : 'Sin nombre'
-                                }
-                              </h3>
-                              <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                                  : 'Sin nombre'}
+                              </p>
+                              {user.phone && (
+                                <p className="text-sm text-muted-foreground">{user.phone}</p>
+                              )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Button 
-                              variant="ghost" 
+                        </TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{user.role}</Badge>
+                        </TableCell>
+                        <TableCell>{getStatusBadge(user.status)}</TableCell>
+                        <TableCell>
+                          {new Date(user.created_at).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="ghost"
                               size="sm"
-                              onClick={() => handleViewUser(user)}
-                              title="Ver usuario"
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setViewDialogOpen(true);
+                              }}
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
-                            {isUserDriver(user) && (
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => handleEditDriver(user)}
-                                title="Editar datos de conductor"
-                                className="text-blue-600 hover:text-blue-700"
-                              >
-                                <Truck className="h-4 w-4" />
-                              </Button>
-                            )}
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => handleEditUser(user)}
-                              title="Editar usuario"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredUsers.map((user) => (
+                    <Card key={user.id}>
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-medium">
+                            {user.first_name?.[0] || user.email[0]}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium">
+                              {user.first_name && user.last_name
+                                ? `${user.first_name} ${user.last_name}`
+                                : 'Sin nombre'}
+                            </p>
+                            <p className="text-sm text-muted-foreground">{user.email}</p>
                           </div>
                         </div>
-                        
-                        <div className="space-y-3">
-                          <div>
-                            <span className="text-sm font-medium text-muted-foreground">Teléfono:</span>
-                            <p className="text-sm text-foreground">{user.phone || 'No especificado'}</p>
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Rol:</span>
+                            <Badge variant="outline">{user.role}</Badge>
                           </div>
-                          
-                          <div>
-                            <span className="text-sm font-medium text-muted-foreground">Roles:</span>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {sortRolesByHierarchy(user.role.split(', ').map((roleLabel) => {
-                                const originalRole = Object.entries({
-                                  'superadmin': 'Super Admin',
-                                  'company_owner': 'Propietario',
-                                  'general_manager': 'Gerente General', 
-                                  'operations_manager': 'Gerente de Operaciones',
-                                  'safety_manager': 'Gerente de Seguridad',
-                                  'senior_dispatcher': 'Despachador Senior',
-                                  'dispatcher': 'Despachador',
-                                  'driver': 'Conductor',
-                                }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
-                                return originalRole;
-                              })).map((originalRole, index) => (
-                                <Badge 
-                                  key={index} 
-                                  className={`text-xs ${getRoleBadgeColor(originalRole)}`}
-                                >
-                                  {getRoleLabel(originalRole)}
-                                </Badge>
-                              ))}
-                            </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Estado:</span>
+                            {getStatusBadge(user.status)}
                           </div>
-                          
-                          <div className="flex items-center justify-between pt-2">
-                            <div>
-                              <span className="text-sm font-medium text-muted-foreground">Estado:</span>
-                              <div className="mt-1">{getStatusBadge(user.status)}</div>
-                            </div>
-                            <div className="text-right">
-                              <span className="text-sm font-medium text-muted-foreground">Registrado:</span>
-                              <p className="text-sm text-foreground">{new Date(user.created_at).toLocaleDateString()}</p>
-                            </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Registro:</span>
+                            <span className="text-sm">{new Date(user.created_at).toLocaleDateString()}</span>
                           </div>
+                        </div>
+                        <div className="flex justify-end mt-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setViewDialogOpen(true);
+                            }}
+                          >
+                            <Eye className="h-4 w-4 mr-2" />
+                            Ver Detalles
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
                   ))}
                 </div>
               )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
-      {/* Modal para editar conductor */}
-      <EditDriverModal
-        isOpen={editDriverModalOpen}
-        onClose={() => setEditDriverModalOpen(false)}
-        userId={selectedDriverId}
-        userName={selectedDriverName}
-      />
+      {/* Dialog para invitar usuario */}
+      <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Invitar Nuevo Usuario</DialogTitle>
+            <DialogDescription>
+              Envía una invitación por email para que se una a tu empresa.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleInviteUser} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="first_name">Nombre</Label>
+                <Input
+                  id="first_name"
+                  value={inviteForm.first_name}
+                  onChange={(e) => setInviteForm({ ...inviteForm, first_name: e.target.value })}
+                  placeholder="Nombre"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="last_name">Apellido</Label>
+                <Input
+                  id="last_name"
+                  value={inviteForm.last_name}
+                  onChange={(e) => setInviteForm({ ...inviteForm, last_name: e.target.value })}
+                  placeholder="Apellido"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={inviteForm.email}
+                onChange={(e) => setInviteForm({ ...inviteForm, email: e.target.value })}
+                placeholder="usuario@ejemplo.com"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="role">Rol</Label>
+              <Select value={inviteForm.role} onValueChange={(value) => setInviteForm({ ...inviteForm, role: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona un rol" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ROLE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button type="button" variant="outline" onClick={() => setInviteDialogOpen(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Enviando...' : 'Enviar Invitación'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog para ver detalles del usuario */}
+      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Detalles del Usuario</DialogTitle>
+          </DialogHeader>
+          {selectedUser && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white text-xl font-medium">
+                  {selectedUser.first_name?.[0] || selectedUser.email[0]}
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">
+                    {selectedUser.first_name && selectedUser.last_name
+                      ? `${selectedUser.first_name} ${selectedUser.last_name}`
+                      : 'Sin nombre'}
+                  </h3>
+                  <p className="text-muted-foreground">{selectedUser.email}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Rol</Label>
+                  <p>{selectedUser.role}</p>
+                </div>
+                <div>
+                  <Label>Estado</Label>
+                  <div className="mt-1">{getStatusBadge(selectedUser.status)}</div>
+                </div>
+                <div>
+                  <Label>Teléfono</Label>
+                  <p>{selectedUser.phone || 'No especificado'}</p>
+                </div>
+                <div>
+                  <Label>Fecha de Registro</Label>
+                  <p>{new Date(selectedUser.created_at).toLocaleDateString()}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

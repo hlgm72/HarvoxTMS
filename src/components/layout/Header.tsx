@@ -14,9 +14,9 @@ import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { LogOut } from "lucide-react";
+import { LogOut, Users, LayoutDashboard, Truck, Settings, User, Building2 } from "lucide-react";
 import { useFleetNotifications } from '@/components/notifications';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export function Header() {
   const { t } = useTranslation(['common', 'fleet']);
@@ -24,6 +24,60 @@ export function Header() {
   const { getUserInitials, getFullName, user, profile } = useUserProfile();
   const { showSuccess, showError } = useFleetNotifications();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Función para obtener información de la página actual
+  const getPageInfo = () => {
+    const path = location.pathname;
+    
+    switch (path) {
+      case '/users':
+        return {
+          icon: Users,
+          title: 'Gestión de Usuarios',
+          subtitle: 'Administra los usuarios de tu empresa'
+        };
+      case '/dashboard':
+        return {
+          icon: LayoutDashboard,
+          title: 'Centro de Comando FleetNest',
+          subtitle: 'Operaciones en tiempo real'
+        };
+      case '/drivers':
+        return {
+          icon: Truck,
+          title: 'Gestión de Conductores',
+          subtitle: 'Administra tu flota de conductores'
+        };
+      case '/companies':
+        return {
+          icon: Building2,
+          title: 'Gestión de Empresas',
+          subtitle: 'Administra las empresas del sistema'
+        };
+      case '/settings':
+        return {
+          icon: Settings,
+          title: 'Configuración',
+          subtitle: 'Ajustes del sistema'
+        };
+      case '/profile':
+        return {
+          icon: User,
+          title: 'Perfil de Usuario',
+          subtitle: 'Gestiona tu información personal'
+        };
+      default:
+        return {
+          icon: LayoutDashboard,
+          title: 'Centro de Comando FleetNest',
+          subtitle: 'Operaciones en tiempo real'
+        };
+    }
+  };
+
+  const pageInfo = getPageInfo();
+  const IconComponent = pageInfo.icon;
 
   const handleLogout = async () => {
     try {
@@ -47,13 +101,20 @@ export function Header() {
         <div className="flex items-center gap-4">
           <SidebarTrigger className="p-2 hover:bg-muted/50 rounded-lg transition-colors" />
           <div className="border-l border-border/20 pl-4">
-            <h1 className="text-xl font-bold bg-gradient-fleet bg-clip-text text-transparent tracking-tight">
-              {t('fleet:titles.command_center')}
-            </h1>
-            <p className="text-sm text-muted-foreground flex items-center gap-2 font-medium">
-              <span className="w-2 h-2 bg-success rounded-full animate-pulse shadow-sm"></span>
-              {t('fleet:states.real_time_operations')}
-            </p>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-fleet rounded-lg">
+                <IconComponent className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold bg-gradient-fleet bg-clip-text text-transparent tracking-tight">
+                  {pageInfo.title}
+                </h1>
+                <p className="text-sm text-muted-foreground flex items-center gap-2 font-medium">
+                  <span className="w-2 h-2 bg-success rounded-full animate-pulse shadow-sm"></span>
+                  {pageInfo.subtitle}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
