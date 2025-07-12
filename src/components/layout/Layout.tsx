@@ -8,14 +8,18 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+    <SidebarProvider defaultOpen>
+      <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
-        <SidebarInset className="flex flex-col">
+        <SidebarInset className="flex flex-col flex-1">
           <Header />
-          <div className="flex flex-1 flex-col gap-4 p-4">
-            {children}
-          </div>
+          <main className="flex-1 bg-gradient-subtle">
+            <div className="h-full p-6 space-y-6">
+              <div className="animate-fade-in">
+                {children}
+              </div>
+            </div>
+          </main>
         </SidebarInset>
       </div>
     </SidebarProvider>

@@ -79,15 +79,21 @@ All colors MUST be HSL.
 
     --radius: 0.5rem;
 
-    /* Sidebar colors */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 214 88% 54%;  /* Blue primary for sidebar */
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 214 88% 96%;   /* Light blue accent */
-    --sidebar-accent-foreground: 214 88% 54%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 214 88% 54%;
+    /* Limitless Style Sidebar - Dark Professional */
+    --sidebar-background: 220 26% 14%;      /* Dark professional gray */
+    --sidebar-foreground: 210 20% 98%;      /* Light text */
+    --sidebar-primary: 214 88% 54%;         /* Fleet blue for active items */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 26% 18%;          /* Slightly lighter for hover */
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 220 26% 20%;          /* Subtle border */
+    --sidebar-ring: 214 88% 54%;            /* Blue focus ring */
+    
+    /* Limitless Layout Colors */
+    --limitless-dark: 220 26% 14%;          /* Main sidebar dark */
+    --limitless-darker: 220 26% 10%;        /* Darker accents */
+    --limitless-light: 220 26% 18%;         /* Hover states */
+    --limitless-accent: 214 88% 54%;        /* Blue accent */
 
     /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -127,15 +133,21 @@ All colors MUST be HSL.
     --input: 217.2 32.6% 17.5%;
     --ring: 214 88% 60%;
 
-    /* Dark mode sidebar */
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
+    /* Dark mode sidebar - Even darker for Limitless style */
+    --sidebar-background: 220 26% 8%;       /* Very dark professional */
+    --sidebar-foreground: 210 20% 98%;
     --sidebar-primary: 214 88% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-accent: 220 26% 12%;          /* Slightly lighter */
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 220 26% 15%;
     --sidebar-ring: 214 88% 60%;
+    
+    /* Dark mode Limitless colors */
+    --limitless-dark: 220 26% 8%;
+    --limitless-darker: 220 26% 5%;
+    --limitless-light: 220 26% 12%;
+    --limitless-accent: 214 88% 60%;
   }
 }
 

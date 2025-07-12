@@ -462,12 +462,11 @@ export function AppSidebar() {
     if (sectionItems.length === 0) return null;
 
     return (
-      <SidebarGroup key={sectionName} className={sectionName !== 'dashboard' ? 'mt-4' : ''}>
-        <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+      <SidebarGroup key={sectionName} className={sectionName !== 'dashboard' ? 'mt-6' : 'mt-4'}>
+        <SidebarGroupLabel className="px-6 py-2 text-xs font-semibold text-white/50 uppercase tracking-wider">
           {sectionLabel}
         </SidebarGroupLabel>
-        <Separator className="my-2 opacity-50" />
-        <SidebarGroupContent>
+        <SidebarGroupContent className="px-3">
           <SidebarMenu className="space-y-1">
             {sectionItems.map((item: any) => {
               const active = isActive(item.url);
@@ -483,44 +482,40 @@ export function AppSidebar() {
                     <NavLink 
                       to={item.url} 
                       end 
-                      className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
+                      className={`group relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${
                         active 
-                          ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
-                          : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
+                          ? "bg-limitless-accent text-white shadow-lg shadow-limitless-accent/20" 
+                          : "text-white/80 hover:bg-limitless-light hover:text-white"
                       }`}
                     >
-                     <div className={`p-2 rounded-lg transition-all duration-200 ${
-                       active 
-                         ? "bg-white/20" 
-                         : "bg-accent/30 group-hover:bg-accent/50"
-                     }`}>
-                       <IconComponent className={`h-4 w-4 ${
-                         active ? "text-white" : "text-foreground"
-                       }`} />
-                     </div>
+                     <IconComponent className={`h-4 w-4 transition-colors ${
+                       active ? "text-white" : "text-white/70"
+                     }`} />
                      
                      {!collapsed && (
                        <div className="flex items-center justify-between flex-1 min-w-0">
                          <div className="min-w-0">
-                           <span className={`font-medium ${
-                             active ? "text-white" : "text-foreground"
+                           <span className={`font-medium text-sm ${
+                             active ? "text-white" : "text-white/90"
                            }`}>
                              {item.title}
                            </span>
-                           <p className={`text-xs truncate ${
-                             active ? "text-white/70" : "text-muted-foreground"
-                           }`}>
-                             {item.description}
-                           </p>
+                           {item.description && (
+                             <p className={`text-xs truncate ${
+                               active ? "text-white/70" : "text-white/50"
+                             }`}>
+                               {item.description}
+                             </p>
+                           )}
                          </div>
                          
                          {item.badge && (
                            <Badge 
                              variant="secondary" 
-                             className={`text-xs font-medium ${
+                             className={`text-xs font-medium px-2 py-0.5 ${
                                active 
                                  ? "bg-white/20 text-white border-white/30" 
-                                 : getBadgeStyles(item.badgeVariant)
+                                 : "bg-limitless-light/50 text-white/80 border-limitless-light/30"
                              }`}
                            >
                              {item.badge}
@@ -529,13 +524,13 @@ export function AppSidebar() {
                        </div>
                      )}
                      
-                     {/* Active indicator */}
+                     {/* Active indicator - Limitless style */}
                      {active && (
-                       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
+                       <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full"></div>
                      )}
                    </NavLink>
-                 </SidebarMenuButton>
-               </SidebarMenuItem>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               );
             })}
           </SidebarMenu>
@@ -546,36 +541,37 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="border-r bg-gradient-to-b from-background to-muted/20"
+      className="border-r border-limitless-light/20 bg-limitless-dark shadow-2xl"
       collapsible="icon"
       variant="sidebar"
       side="left"
     >
-      <SidebarHeader className="border-b border-border/40 p-4 bg-gradient-to-r from-primary/5 to-secondary/5">
-        <div className="flex items-center gap-3">
+      <SidebarHeader className="border-b border-limitless-light/10 p-6">
+        <div className="flex items-center gap-4">
           <div className="relative">
-            <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-lg">
-              <Zap className="h-6 w-6 text-white" />
+            <div className="w-10 h-10 bg-limitless-accent/20 rounded-xl flex items-center justify-center shadow-lg ring-1 ring-limitless-accent/30">
+              <Zap className="h-5 w-5 text-limitless-accent" />
             </div>
             {!collapsed && (
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-limitless-accent rounded-full animate-pulse shadow-sm"></div>
             )}
           </div>
           
           {!collapsed && (
             <div className="flex-1 animate-fade-in">
-              <h2 className="font-heading font-bold text-xl text-foreground">
+              <h2 className="font-heading font-bold text-xl text-white tracking-tight">
                 {isSuperAdmin ? "FleetNest Admin" : "FleetNest"}
               </h2>
+              <p className="text-xs text-white/60 font-medium">TMS Platform</p>
               
-              {/* Solo mostrar selector de compañía si NO es superadmin */}
+              {/* Company selector - Limitless style */}
               {!isSuperAdmin && !loading && selectedCompany && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="w-full justify-between p-3 h-auto mt-2 hover:bg-accent/50 transition-all duration-200"
+                      className="w-full justify-between p-3 h-auto mt-3 bg-limitless-light/30 hover:bg-limitless-light/50 transition-all duration-200 text-white border border-limitless-light/20"
                     >
                       <div className="flex items-center gap-3">
                         <div className="h-6 w-6 flex items-center justify-center">
@@ -583,49 +579,49 @@ export function AppSidebar() {
                             <img 
                               src={selectedCompany.logo_url} 
                               alt={selectedCompany.name}
-                              className="h-6 w-6 object-contain rounded-sm"
+                              className="h-6 w-6 object-contain rounded-sm brightness-200"
                             />
                           ) : (
-                            <div className="h-6 w-6 bg-primary/10 text-primary text-xs font-semibold flex items-center justify-center rounded-sm">
+                            <div className="h-6 w-6 bg-limitless-accent/20 text-limitless-accent text-xs font-semibold flex items-center justify-center rounded-sm">
                               {selectedCompany.avatar}
                             </div>
                           )}
                         </div>
                          <div className="text-left">
-                           <p className="text-sm font-medium text-foreground">
+                           <p className="text-sm font-medium text-white">
                              {selectedCompany.name}
                            </p>
-                           <p className="text-xs text-muted-foreground capitalize">
+                           <p className="text-xs text-white/60 capitalize">
                              {currentRole?.role.replace('_', ' ') || 'Sin rol'}
                            </p>
                          </div>
                       </div>
-                      <ChevronDown className="h-4 w-4 opacity-50" />
+                      <ChevronDown className="h-4 w-4 text-white/60" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-64">
+                  <DropdownMenuContent align="start" className="w-64 bg-limitless-dark border-limitless-light/20">
                     {companies.map((company) => (
                       <DropdownMenuItem
                         key={company.id}
                         onClick={() => setSelectedCompany(company)}
-                        className="flex items-center gap-3 p-3"
+                        className="flex items-center gap-3 p-3 text-white hover:bg-limitless-light/50"
                       >
                         <div className="h-8 w-8 flex items-center justify-center">
                           {company.logo_url ? (
                             <img 
                               src={company.logo_url} 
                               alt={company.name}
-                              className="h-8 w-8 object-contain rounded-sm"
+                              className="h-8 w-8 object-contain rounded-sm brightness-200"
                             />
                           ) : (
-                            <div className="h-8 w-8 bg-primary/10 text-primary text-sm font-semibold flex items-center justify-center rounded-sm">
+                            <div className="h-8 w-8 bg-limitless-accent/20 text-limitless-accent text-sm font-semibold flex items-center justify-center rounded-sm">
                               {company.avatar}
                             </div>
                           )}
                         </div>
                          <div className="flex flex-col">
-                           <span className="font-medium">{company.name}</span>
-                           <span className="text-xs text-muted-foreground capitalize">
+                           <span className="font-medium text-white">{company.name}</span>
+                           <span className="text-xs text-white/60 capitalize">
                              {company.role.replace('_', ' ')}
                            </span>
                          </div>
@@ -635,14 +631,14 @@ export function AppSidebar() {
                 </DropdownMenu>
               )}
               
-              {/* Para superadmin, mostrar información del sistema */}
+              {/* Superadmin info - Limitless style */}
               {isSuperAdmin && (
-                <div className="mt-3 p-3 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-4 w-4 text-primary" />
+                <div className="mt-4 p-4 bg-limitless-accent/10 rounded-lg border border-limitless-accent/20">
+                  <div className="flex items-center gap-3">
+                    <Shield className="h-4 w-4 text-limitless-accent" />
                     <div>
-                      <p className="text-sm font-medium text-primary">{t('admin:navigation.system_administrator')}</p>
-                      <p className="text-xs text-muted-foreground">{t('admin:navigation.global_access')}</p>
+                      <p className="text-sm font-semibold text-white">{t('admin:navigation.system_administrator')}</p>
+                      <p className="text-xs text-white/60">{t('admin:navigation.global_access')}</p>
                     </div>
                   </div>
                 </div>
@@ -654,331 +650,15 @@ export function AppSidebar() {
 
       <SidebarContent className="p-2">
         {isSuperAdmin ? (
-          // Para SuperAdmin: Renderizar por secciones con separadores
+          // Para SuperAdmin: Estilo Limitless
           <>
             {/* Sección Principal */}
-            <SidebarGroup>
-              <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                {t('admin:navigation.main_management')}
-              </SidebarGroupLabel>
-              <Separator className="my-2 opacity-50" />
-              <SidebarGroupContent>
-                <SidebarMenu className="space-y-1">
-                  {navigationItems.filter((item: any) => item.section === "main").map((item: any) => {
-                    const active = isActive(item.url);
-                    const IconComponent = item.icon;
-                    
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton 
-                          asChild 
-                          isActive={active}
-                          tooltip={collapsed ? item.title : undefined}
-                        >
-                          <NavLink 
-                            to={item.url} 
-                            end 
-                            className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
-                              active 
-                                ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
-                                : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
-                            }`}
-                          >
-                           <div className={`p-2 rounded-lg transition-all duration-200 ${
-                             active 
-                               ? "bg-white/20" 
-                               : "bg-accent/30 group-hover:bg-accent/50"
-                           }`}>
-                             <IconComponent className={`h-4 w-4 ${
-                               active ? "text-white" : "text-foreground"
-                             }`} />
-                           </div>
-                           
-                           {!collapsed && (
-                             <div className="flex items-center justify-between flex-1 min-w-0">
-                               <div className="min-w-0">
-                                 <span className={`font-medium ${
-                                   active ? "text-white" : "text-foreground"
-                                 }`}>
-                                   {item.title}
-                                 </span>
-                                 <p className={`text-xs truncate ${
-                                   active ? "text-white/70" : "text-muted-foreground"
-                                 }`}>
-                                   {item.description}
-                                 </p>
-                               </div>
-                               
-                               {item.badge && (
-                                 <Badge 
-                                   variant="secondary" 
-                                   className={`text-xs font-medium ${
-                                     active 
-                                       ? "bg-white/20 text-white border-white/30" 
-                                       : getBadgeStyles(item.badgeVariant)
-                                   }`}
-                                 >
-                                   {item.badge}
-                                 </Badge>
-                               )}
-                             </div>
-                           )}
-                           
-                           {/* Active indicator */}
-                           {active && (
-                             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
-                           )}
-                         </NavLink>
-                       </SidebarMenuButton>
-                     </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+            {renderSection("main", t('admin:navigation.main_management'))}
 
-            {/* Sección Monitoreo */}
-            <SidebarGroup className="mt-4">
-              <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                {t('admin:navigation.monitoring')}
-              </SidebarGroupLabel>
-              <Separator className="my-2 opacity-50" />
-              <SidebarGroupContent>
-                <SidebarMenu className="space-y-1">
-                  {navigationItems.filter((item: any) => item.section === "monitoring").map((item: any) => {
-                    const active = isActive(item.url);
-                    const IconComponent = item.icon;
-                    
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton 
-                          asChild 
-                          isActive={active}
-                          tooltip={collapsed ? item.title : undefined}
-                        >
-                          <NavLink 
-                            to={item.url} 
-                            end 
-                            className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
-                              active 
-                                ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
-                                : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
-                            }`}
-                          >
-                           <div className={`p-2 rounded-lg transition-all duration-200 ${
-                             active 
-                               ? "bg-white/20" 
-                               : "bg-accent/30 group-hover:bg-accent/50"
-                           }`}>
-                             <IconComponent className={`h-4 w-4 ${
-                               active ? "text-white" : "text-foreground"
-                             }`} />
-                           </div>
-                           
-                           {!collapsed && (
-                             <div className="flex items-center justify-between flex-1 min-w-0">
-                               <div className="min-w-0">
-                                 <span className={`font-medium ${
-                                   active ? "text-white" : "text-foreground"
-                                 }`}>
-                                   {item.title}
-                                 </span>
-                                 <p className={`text-xs truncate ${
-                                   active ? "text-white/70" : "text-muted-foreground"
-                                 }`}>
-                                   {item.description}
-                                 </p>
-                               </div>
-                               
-                               {item.badge && (
-                                 <Badge 
-                                   variant="secondary" 
-                                   className={`text-xs font-medium ${
-                                     active 
-                                       ? "bg-white/20 text-white border-white/30" 
-                                       : getBadgeStyles(item.badgeVariant)
-                                   }`}
-                                 >
-                                   {item.badge}
-                                 </Badge>
-                               )}
-                             </div>
-                           )}
-                           
-                           {/* Active indicator */}
-                           {active && (
-                             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
-                           )}
-                         </NavLink>
-                       </SidebarMenuButton>
-                     </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-
-            {/* Sección Facturación y Soporte */}
-            <SidebarGroup className="mt-4">
-              <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                {t('admin:navigation.business')}
-              </SidebarGroupLabel>
-              <Separator className="my-2 opacity-50" />
-              <SidebarGroupContent>
-                <SidebarMenu className="space-y-1">
-                  {navigationItems.filter((item: any) => item.section === "business").map((item: any) => {
-                    const active = isActive(item.url);
-                    const IconComponent = item.icon;
-                    
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton 
-                          asChild 
-                          isActive={active}
-                          tooltip={collapsed ? item.title : undefined}
-                        >
-                          <NavLink 
-                            to={item.url} 
-                            end 
-                            className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
-                              active 
-                                ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
-                                : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
-                            }`}
-                          >
-                           <div className={`p-2 rounded-lg transition-all duration-200 ${
-                             active 
-                               ? "bg-white/20" 
-                               : "bg-accent/30 group-hover:bg-accent/50"
-                           }`}>
-                             <IconComponent className={`h-4 w-4 ${
-                               active ? "text-white" : "text-foreground"
-                             }`} />
-                           </div>
-                           
-                           {!collapsed && (
-                             <div className="flex items-center justify-between flex-1 min-w-0">
-                               <div className="min-w-0">
-                                 <span className={`font-medium ${
-                                   active ? "text-white" : "text-foreground"
-                                 }`}>
-                                   {item.title}
-                                 </span>
-                                 <p className={`text-xs truncate ${
-                                   active ? "text-white/70" : "text-muted-foreground"
-                                 }`}>
-                                   {item.description}
-                                 </p>
-                               </div>
-                               
-                               {item.badge && (
-                                 <Badge 
-                                   variant="secondary" 
-                                   className={`text-xs font-medium ${
-                                     active 
-                                       ? "bg-white/20 text-white border-white/30" 
-                                       : getBadgeStyles(item.badgeVariant)
-                                   }`}
-                                 >
-                                   {item.badge}
-                                 </Badge>
-                               )}
-                             </div>
-                           )}
-                           
-                           {/* Active indicator */}
-                           {active && (
-                             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
-                           )}
-                         </NavLink>
-                       </SidebarMenuButton>
-                     </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-
-            {/* Sección Configuración y Seguridad */}
-            <SidebarGroup className="mt-4">
-              <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                {t('admin:navigation.settings')}
-              </SidebarGroupLabel>
-              <Separator className="my-2 opacity-50" />
-              <SidebarGroupContent>
-                <SidebarMenu className="space-y-1">
-                  {navigationItems.filter((item: any) => item.section === "settings").map((item: any) => {
-                    const active = isActive(item.url);
-                    const IconComponent = item.icon;
-                    
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton 
-                          asChild 
-                          isActive={active}
-                          tooltip={collapsed ? item.title : undefined}
-                        >
-                          <NavLink 
-                            to={item.url} 
-                            end 
-                            className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
-                              active 
-                                ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg scale-[0.98]" 
-                                : "hover:bg-accent/50 hover:scale-[0.99] hover:shadow-sm"
-                            }`}
-                          >
-                           <div className={`p-2 rounded-lg transition-all duration-200 ${
-                             active 
-                               ? "bg-white/20" 
-                               : "bg-accent/30 group-hover:bg-accent/50"
-                           }`}>
-                             <IconComponent className={`h-4 w-4 ${
-                               active ? "text-white" : "text-foreground"
-                             }`} />
-                           </div>
-                           
-                           {!collapsed && (
-                             <div className="flex items-center justify-between flex-1 min-w-0">
-                               <div className="min-w-0">
-                                 <span className={`font-medium ${
-                                   active ? "text-white" : "text-foreground"
-                                 }`}>
-                                   {item.title}
-                                 </span>
-                                 <p className={`text-xs truncate ${
-                                   active ? "text-white/70" : "text-muted-foreground"
-                                 }`}>
-                                   {item.description}
-                                 </p>
-                               </div>
-                               
-                               {item.badge && (
-                                 <Badge 
-                                   variant="secondary" 
-                                   className={`text-xs font-medium ${
-                                     active 
-                                       ? "bg-white/20 text-white border-white/30" 
-                                       : getBadgeStyles(item.badgeVariant)
-                                   }`}
-                                 >
-                                   {item.badge}
-                                 </Badge>
-                               )}
-                             </div>
-                           )}
-                           
-                           {/* Active indicator */}
-                           {active && (
-                             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
-                           )}
-                         </NavLink>
-                       </SidebarMenuButton>
-                     </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+            {/* Otras secciones usando el mismo renderSection */}
+            {renderSection("monitoring", t('admin:navigation.monitoring'))}
+            {renderSection("business", t('admin:navigation.business'))}
+            {renderSection("settings", t('admin:navigation.settings'))}
           </>
         ) : (
           // Para otros roles: Renderizar por secciones con separadores
@@ -989,23 +669,22 @@ export function AppSidebar() {
           </>
         )}
 
-        {/* Quick Actions Section */}
+        {/* Quick Actions Section - Limitless Style */}
         {!collapsed && (
-          <SidebarGroup className="mt-6">
-            <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <SidebarGroup className="mt-6 px-3">
+            <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-white/50 uppercase tracking-wider">
               {t('admin:navigation.quick_actions')}
             </SidebarGroupLabel>
-            <Separator className="my-2 opacity-50" />
             <SidebarGroupContent>
-              <div className="space-y-2 px-2">
+              <div className="space-y-2">
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="w-full justify-start gap-2 hover:bg-accent/50 transition-all"
+                  className="w-full justify-start gap-3 bg-limitless-light/30 text-white border-limitless-light/20 hover:bg-limitless-light/50 transition-all duration-200"
                 >
                   <Activity className="h-4 w-4" />
                   <span className="text-sm">{t('admin:navigation.system_status')}</span>
-                  <Badge variant="outline" className="ml-auto bg-green-50 text-green-700 border-green-200">
+                  <Badge variant="outline" className="ml-auto bg-limitless-accent/20 text-limitless-accent border-limitless-accent/30">
                     {t('admin:navigation.online')}
                   </Badge>
                 </Button>
@@ -1014,7 +693,7 @@ export function AppSidebar() {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="w-full justify-start gap-2 hover:bg-accent/50 transition-all"
+                    className="w-full justify-start gap-3 bg-limitless-light/30 text-white border-limitless-light/20 hover:bg-limitless-light/50 transition-all duration-200"
                   >
                     <Settings className="h-4 w-4" />
                     <span className="text-sm">{t('admin:navigation.quick_settings')}</span>

@@ -83,6 +83,13 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
+				// Limitless theme colors
+				'limitless': {
+					'dark': 'hsl(var(--limitless-dark))',
+					'darker': 'hsl(var(--limitless-darker))',
+					'light': 'hsl(var(--limitless-light))',
+					'accent': 'hsl(var(--limitless-accent))'
+				},
 				// FleetNest specific colors
 				'fleet-orange': 'hsl(var(--fleet-orange))',
 				'fleet-orange-dark': 'hsl(var(--fleet-orange-dark))',
