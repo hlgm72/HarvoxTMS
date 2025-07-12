@@ -48,8 +48,34 @@ export const useUserCompanies = () => {
           return;
         }
 
+        // Define role hierarchy (higher number = higher priority)
+        const roleHierarchy: { [key: string]: number } = {
+          'superadmin': 6,
+          'company_owner': 5,
+          'general_manager': 4,
+          'operations_manager': 3,
+          'senior_dispatcher': 2,
+          'dispatcher': 1,
+          'driver': 0,
+          'safety_manager': 2
+        };
+
+        // Group by company and keep the highest role
+        const companiesMap = new Map<string, any>();
+        
+        userRoles.forEach((userRole: any) => {
+          const companyId = userRole.companies.id;
+          const currentRole = userRole.role;
+          const currentRolePriority = roleHierarchy[currentRole] || 0;
+          
+          if (!companiesMap.has(companyId) || 
+              currentRolePriority > (roleHierarchy[companiesMap.get(companyId).role] || 0)) {
+            companiesMap.set(companyId, userRole);
+          }
+        });
+
         // Transform the data to match our interface
-        const transformedCompanies: UserCompany[] = userRoles.map((userRole: any) => ({
+        const transformedCompanies: UserCompany[] = Array.from(companiesMap.values()).map((userRole: any) => ({
           id: userRole.companies.id,
           name: userRole.companies.name,
           role: userRole.role,
