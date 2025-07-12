@@ -535,7 +535,10 @@ export default function EditDriver() {
                   <Switch
                     id="is_owner_operator"
                     checked={driverData.is_owner_operator}
-                    onCheckedChange={(checked) => updateDriverData('is_owner_operator', checked)}
+                    onCheckedChange={(checked) => {
+                      console.log('Switch clicked:', checked);
+                      updateDriverData('is_owner_operator', checked);
+                    }}
                   />
                   <Label htmlFor="is_owner_operator">
                     Este conductor es un Owner-Operator
