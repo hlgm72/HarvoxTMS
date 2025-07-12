@@ -163,28 +163,35 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
     if (field === 'is_owner_operator' && value === true) {
       // Si se está activando Owner-Operator, cargar valores por defecto de la compañía
       try {
-        const { data: companyData, error: companyError } = await supabase
-          .from('companies')
-          .select('default_dispatching_percentage, default_factoring_percentage, default_leasing_percentage')
-          .eq('id', (await supabase
-            .from('user_company_roles')
-            .select('company_id')
-            .eq('user_id', userId)
-            .eq('is_active', true)
-            .single()
-          ).data?.company_id)
+        // Obtener el company_id del usuario
+        const { data: userRoles, error: rolesError } = await supabase
+          .from('user_company_roles')
+          .select('company_id')
+          .eq('user_id', userId)
+          .eq('is_active', true)
+          .limit(1)
           .single();
 
-        if (!companyError && companyData) {
-          setDriverData(prev => ({
-            ...prev,
-            [field]: value,
-            dispatching_percentage: prev.dispatching_percentage || companyData.default_dispatching_percentage || 0,
-            factoring_percentage: prev.factoring_percentage || companyData.default_factoring_percentage || 0,
-            leasing_percentage: prev.leasing_percentage || companyData.default_leasing_percentage || 0,
-          }));
-          console.log('🔧 DEBUG: Aplicados valores por defecto de la compañía:', companyData);
-          return;
+        if (rolesError) throw rolesError;
+
+        if (userRoles?.company_id) {
+          const { data: companyData, error: companyError } = await supabase
+            .from('companies')
+            .select('default_dispatching_percentage, default_factoring_percentage, default_leasing_percentage')
+            .eq('id', userRoles.company_id)
+            .single();
+
+          if (!companyError && companyData) {
+            setDriverData(prev => ({
+              ...prev,
+              [field]: value,
+              dispatching_percentage: prev.dispatching_percentage || companyData.default_dispatching_percentage || 0,
+              factoring_percentage: prev.factoring_percentage || companyData.default_factoring_percentage || 0,
+              leasing_percentage: prev.leasing_percentage || companyData.default_leasing_percentage || 0,
+            }));
+            console.log('🔧 DEBUG: Aplicados valores por defecto de la compañía:', companyData);
+            return;
+          }
         }
       } catch (error) {
         console.warn('Error cargando valores por defecto de la compañía:', error);
