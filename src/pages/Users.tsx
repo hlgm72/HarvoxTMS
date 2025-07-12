@@ -166,8 +166,14 @@ export default function Users() {
     }
   };
 
-  const handleInviteUser = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleInviteUser = async (e: React.FormEvent<HTMLFormElement>) => {
+    try {
+      e.preventDefault();
+      e.stopPropagation();
+    } catch (preventDefaultError) {
+      // Ignorar errores de preventDefault en event listeners pasivos
+      console.warn('preventDefault error ignored:', preventDefaultError);
+    }
     
     // Limpiar espacios innecesarios de los campos de texto usando la utilidad global
     const cleanedForm = {
@@ -515,7 +521,9 @@ export default function Users() {
                 <Label htmlFor="role">Rol *</Label>
                 <Select 
                   value={inviteForm.role} 
-                  onValueChange={(value) => setInviteForm(prev => ({ ...prev, role: value }))}
+                  onValueChange={(value) => {
+                    setInviteForm(prev => ({ ...prev, role: value }));
+                  }}
                   required
                 >
                   <SelectTrigger>
