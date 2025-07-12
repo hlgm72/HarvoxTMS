@@ -101,29 +101,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('🔍 Starting fetchUserRoles for userId:', userId);
     
     try {
-      console.log('🔍 Using RPC function get_user_company_roles...');
+      console.log('🔍 Using direct query to user_company_roles...');
       
-      // Use RPC function to avoid RLS issues
-      const { data: rpcData, error: rpcError } = await supabase
-        .rpc('get_user_company_roles', { user_id_param: userId });
+      // Use direct query with timeout
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Query timeout after 5 seconds')), 5000)
+      );
       
-      console.log('🔍 RPC Query completed. Data:', rpcData, 'Error:', rpcError);
+      const queryPromise = supabase
+        .from('user_company_roles')
+        .select('id, role, company_id, is_active')
+        .eq('user_id', userId)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
 
-      if (rpcError) {
-        console.error('❌ Error in RPC call:', rpcError);
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
+      
+      console.log('🔍 Query completed. Data:', data, 'Error:', error);
+
+      if (error) {
+        console.error('❌ Error fetching user roles:', error);
         return [];
       }
 
-      // Transform RPC data to match expected format
-      const roles = (rpcData || []).map((item: any) => ({
-        id: `${userId}-${item.company_id}-${item.role}`,
-        role: item.role,
-        company_id: item.company_id,
-        is_active: true
-      }));
-
-      console.log('✅ Successfully fetched and transformed roles:', roles);
-      return roles;
+      console.log('✅ Successfully fetched roles:', data || []);
+      return data || [];
     } catch (error) {
       console.error('💥 Exception in fetchUserRoles:', error);
       return [];
