@@ -1482,7 +1482,7 @@ export default function Users() {
                             size="sm"
                             onClick={() => handleEditDriver(user)}
                             title="Editar datos de conductor"
-                            className="text-blue-600 hover:text-blue-700"
+                            className="text-orange-600 hover:text-orange-700"
                           >
                             <Truck className="h-4 w-4" />
                           </Button>
@@ -1492,6 +1492,7 @@ export default function Users() {
                           size="sm"
                           onClick={() => handleViewUser(user)}
                           title="Ver usuario"
+                          className="text-green-600 hover:text-green-700"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -1500,6 +1501,7 @@ export default function Users() {
                           size="sm"
                           onClick={() => handleEditUser(user)}
                           title="Editar usuario"
+                          className="text-blue-600 hover:text-blue-700"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
