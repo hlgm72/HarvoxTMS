@@ -214,6 +214,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     dispatch({ type: 'SET_ROLES', userRoles: authState.userRoles, currentRole: role });
     
     // SOLO guardar en localStorage - no sessionStorage
+    console.log('📝 ESCRIBIENDO a localStorage desde switchRole:', JSON.stringify(role));
+    console.log('📝 STACK TRACE:', new Error().stack);
     localStorage.setItem('currentRole', JSON.stringify(role));
     // Limpiar sessionStorage para evitar conflictos
     sessionStorage.removeItem('currentRole');
@@ -304,6 +306,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.log('  - All available roles:', roles.map(r => ({ id: r.id, role: r.role })));
             
             // SOLO guardar en localStorage - no sessionStorage
+            console.log('📝 ESCRIBIENDO a localStorage desde handleSession:', JSON.stringify(selectedRole));
+            console.log('📝 STACK TRACE handleSession:', new Error().stack);
             localStorage.setItem('currentRole', JSON.stringify(selectedRole));
             // Limpiar sessionStorage para evitar conflictos
             sessionStorage.removeItem('currentRole');
