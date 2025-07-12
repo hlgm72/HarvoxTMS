@@ -592,125 +592,124 @@ export default function Users() {
         </div>
         
         <div className="relative p-8">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-white/10 rounded-full">
-              <UsersIcon className="h-8 w-8 text-white" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/10 rounded-full">
+                <UsersIcon className="h-8 w-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in text-white">
+                  Gestión de Usuarios
+                </h1>
+                <p className="text-white font-body text-lg">
+                  Administra los usuarios de tu empresa
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in text-white">
-                Gestión de Usuarios
-              </h1>
-              <p className="text-white font-body text-lg">
-                Administra los usuarios de tu empresa
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="container mx-auto py-8 space-y-6">
-        <div className="flex items-center justify-between">
-        
-        <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="gap-2">
-              <UserPlus className="h-4 w-4" />
-              Invitar Usuario
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Mail className="h-5 w-5" />
-                Invitar Nuevo Usuario
-              </DialogTitle>
-              <DialogDescription>
-                Envía una invitación por email para que se una a tu empresa.
-              </DialogDescription>
-            </DialogHeader>
             
-            <form onSubmit={handleInviteUser} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="first_name">Nombre</Label>
-                  <Input
-                    id="first_name"
-                    value={inviteForm.first_name}
-                    {...createTextHandlers(
-                      (value) => setInviteForm(prev => ({ ...prev, first_name: value }))
-                    )}
-                    placeholder="Nombre"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="last_name">Apellido</Label>
-                  <Input
-                    id="last_name"
-                    value={inviteForm.last_name}
-                    {...createTextHandlers(
-                      (value) => setInviteForm(prev => ({ ...prev, last_name: value }))
-                    )}
-                    placeholder="Apellido"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={inviteForm.email}
-                  onChange={(e) => setInviteForm(prev => ({ ...prev, email: e.target.value }))}
-                  placeholder="usuario@ejemplo.com"
-                  required
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="role">Rol *</Label>
-                <Select 
-                  value={inviteForm.role} 
-                  onValueChange={(value) => {
-                    setInviteForm(prev => ({ ...prev, role: value }));
-                  }}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un rol" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ROLE_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        <div className="flex items-center gap-2">
-                          <Shield className="h-4 w-4" />
-                          {option.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="flex gap-2 pt-4">
-                <Button type="submit" disabled={loading} className="flex-1">
-                  {loading ? 'Enviando...' : 'Enviar Invitación'}
+            <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="gap-2 bg-white text-primary hover:bg-white/90 shadow-lg">
+                  <UserPlus className="h-4 w-4" />
+                  Invitar Usuario
                 </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setInviteDialogOpen(false)}
-                >
-                  Cancelar
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Mail className="h-5 w-5" />
+                    Invitar Nuevo Usuario
+                  </DialogTitle>
+                  <DialogDescription>
+                    Envía una invitación por email para que se una a tu empresa.
+                   </DialogDescription>
+                 </DialogHeader>
+             
+                 <form onSubmit={handleInviteUser} className="space-y-4">
+                   <div className="grid grid-cols-2 gap-4">
+                     <div>
+                       <Label htmlFor="first_name">Nombre</Label>
+                       <Input
+                         id="first_name"
+                         value={inviteForm.first_name}
+                         {...createTextHandlers(
+                           (value) => setInviteForm(prev => ({ ...prev, first_name: value }))
+                         )}
+                         placeholder="Nombre"
+                       />
+                     </div>
+                     <div>
+                       <Label htmlFor="last_name">Apellido</Label>
+                       <Input
+                         id="last_name"
+                         value={inviteForm.last_name}
+                         {...createTextHandlers(
+                           (value) => setInviteForm(prev => ({ ...prev, last_name: value }))
+                         )}
+                         placeholder="Apellido"
+                       />
+                     </div>
+                   </div>
+                   
+                   <div>
+                     <Label htmlFor="email">Email *</Label>
+                     <Input
+                       id="email"
+                       type="email"
+                       value={inviteForm.email}
+                       onChange={(e) => setInviteForm(prev => ({ ...prev, email: e.target.value }))}
+                       placeholder="usuario@ejemplo.com"
+                       required
+                     />
+                   </div>
+                   
+                   <div>
+                     <Label htmlFor="role">Rol *</Label>
+                     <Select 
+                       value={inviteForm.role} 
+                       onValueChange={(value) => {
+                         setInviteForm(prev => ({ ...prev, role: value }));
+                       }}
+                       required
+                     >
+                       <SelectTrigger>
+                         <SelectValue placeholder="Selecciona un rol" />
+                       </SelectTrigger>
+                       <SelectContent>
+                         {ROLE_OPTIONS.map((option) => (
+                           <SelectItem key={option.value} value={option.value}>
+                             <div className="flex items-center gap-2">
+                               <Shield className="h-4 w-4" />
+                               {option.label}
+                             </div>
+                           </SelectItem>
+                         ))}
+                       </SelectContent>
+                     </Select>
+                   </div>
+                   
+                   <div className="flex gap-2 pt-4">
+                     <Button type="submit" disabled={loading} className="flex-1">
+                       {loading ? 'Enviando...' : 'Enviar Invitación'}
+                     </Button>
+                     <Button 
+                       type="button" 
+                       variant="outline" 
+                       onClick={() => setInviteDialogOpen(false)}
+                     >
+                       Cancelar
+                     </Button>
+                   </div>
+                 </form>
+               </DialogContent>
+             </Dialog>
+           </div>
+         </div>
+       </div>
 
-      {/* Dashboard de Estadísticas */}
+       {/* Content */}
+       <div className="container mx-auto py-8 space-y-6">
+         {/* Dashboard de Estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
           <CardContent className="p-6">
