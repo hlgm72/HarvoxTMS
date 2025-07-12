@@ -496,6 +496,24 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
+                    <Label htmlFor="default_leasing_percentage">Leasing (%)</Label>
+                    <div className="relative">
+                      <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="default_leasing_percentage"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="100"
+                        value={formData.default_leasing_percentage || 5.00}
+                        onChange={(e) => handleInputChange('default_leasing_percentage', parseFloat(e.target.value) || 0)}
+                        placeholder="5.00"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="default_factoring_percentage">Factoring (%)</Label>
                     <div className="relative">
                       <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -525,24 +543,6 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                         max="100"
                         value={formData.default_dispatching_percentage || 5.00}
                         onChange={(e) => handleInputChange('default_dispatching_percentage', parseFloat(e.target.value) || 0)}
-                        placeholder="5.00"
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="default_leasing_percentage">Leasing (%)</Label>
-                    <div className="relative">
-                      <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="default_leasing_percentage"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max="100"
-                        value={formData.default_leasing_percentage || 5.00}
-                        onChange={(e) => handleInputChange('default_leasing_percentage', parseFloat(e.target.value) || 0)}
                         placeholder="5.00"
                         className="pl-10"
                       />
