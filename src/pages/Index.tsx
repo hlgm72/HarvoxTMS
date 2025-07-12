@@ -23,8 +23,8 @@ export default function Index() {
     if (!loading && user && _forceUpdate > 0) {
       // Si el usuario está autenticado pero no tiene rol asignado
       if (!userRole) {
-        // Redirigir a perfil para que el usuario complete su información
-        navigate('/profile');
+        // Mostrar selector de rol en lugar de redirigir
+        console.log('⚠️ Usuario sin rol seleccionado, debe elegir rol');
         return;
       }
       
