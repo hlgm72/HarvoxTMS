@@ -105,19 +105,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('🎯 Using hard-coded roles for user');
       const hardCodedRoles = [
         {
-          id: `${userId}-e5d52767-ca59-4c28-94e4-058aff6a037b-company_owner`,
+          id: 'fc7a85af-9e15-4f75-8781-081c5daee1ca', // Original company_owner ID
           role: 'company_owner',
           company_id: 'e5d52767-ca59-4c28-94e4-058aff6a037b',
           is_active: true
         },
         {
-          id: `${userId}-e5d52767-ca59-4c28-94e4-058aff6a037b-dispatcher`,
+          id: '2557a45d-7a2a-4128-a289-0de3bea73c5d', // Original dispatcher ID
           role: 'dispatcher',
           company_id: 'e5d52767-ca59-4c28-94e4-058aff6a037b',
           is_active: true
         },
         {
-          id: `${userId}-e5d52767-ca59-4c28-94e4-058aff6a037b-driver`,
+          id: 'e81bbb5d-2e79-48b5-835b-f8b03edb0dd1', // Original driver ID
           role: 'driver',
           company_id: 'e5d52767-ca59-4c28-94e4-058aff6a037b',
           is_active: true
