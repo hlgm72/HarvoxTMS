@@ -36,7 +36,7 @@ const roleColors = {
 };
 
 export const RoleSwitcher = () => {
-  const { currentRole, availableRoles, switchRole, hasMultipleRoles } = useAuth();
+  const { currentRole, availableRoles, switchRole, hasMultipleRoles, loading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   // Function to get the correct dashboard route for a role
@@ -64,8 +64,13 @@ export const RoleSwitcher = () => {
     navigate(dashboardRoute);
   };
 
-  // Don't render if no current role
-  if (!currentRole) {
+  // Don't render while loading or if not authenticated
+  if (loading || !isAuthenticated) {
+    return null;
+  }
+
+  // Don't render if no current role or no available roles
+  if (!currentRole || !availableRoles.length) {
     return null;
   }
 
