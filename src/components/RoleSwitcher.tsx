@@ -59,8 +59,18 @@ export const RoleSwitcher = () => {
   };
 
   const handleRoleChange = (role: any) => {
+    console.log('🔄 RoleSwitcher: Cambiando a rol:', role);
     switchRole(role);
+    
+    // Asegurar que el rol se guarde en localStorage antes de navegar
+    const roleString = JSON.stringify(role);
+    localStorage.setItem('currentRole', roleString);
+    localStorage.setItem('lastActiveRole', roleString);
+    sessionStorage.setItem('activeRole', roleString);
+    console.log('🔄 RoleSwitcher: Rol guardado explícitamente en storage');
+    
     const dashboardRoute = getDashboardRoute(role.role);
+    console.log('🔄 RoleSwitcher: Navegando a:', dashboardRoute);
     navigate(dashboardRoute);
   };
 
