@@ -717,6 +717,7 @@ export default function Users() {
                     <TableRow>
                       <TableHead>Usuario</TableHead>
                       <TableHead>Email</TableHead>
+                      <TableHead>Teléfono</TableHead>
                       <TableHead>Rol</TableHead>
                       <TableHead>Estado</TableHead>
                       <TableHead>Fecha de Registro</TableHead>
@@ -737,13 +738,11 @@ export default function Users() {
                                   ? `${user.first_name} ${user.last_name}`
                                   : 'Sin nombre'}
                               </p>
-                              {user.phone && (
-                                <p className="text-sm text-muted-foreground">{user.phone}</p>
-                              )}
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>{user.email}</TableCell>
+                        <TableCell>{user.phone || 'No especificado'}</TableCell>
                         <TableCell>
                           <Badge variant="outline">{user.role}</Badge>
                         </TableCell>
@@ -763,6 +762,46 @@ export default function Users() {
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
+                            
+                            {/* Mostrar botón de editar conductor solo para conductores */}
+                            {user.role.toLowerCase().includes('conductor') && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedDriverId(user.id);
+                                  setSelectedDriverName(`${user.first_name} ${user.last_name}` || user.email);
+                                  setEditDriverModalOpen(true);
+                                }}
+                              >
+                                <Truck className="h-4 w-4" />
+                              </Button>
+                            )}
+                            
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setEditDialogOpen(true);
+                              }}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            
+                            {/* Solo superadmin y company_owner pueden eliminar usuarios */}
+                            {userRole?.role && ['superadmin', 'company_owner'].includes(userRole.role) && user.id !== user?.id && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  // TODO: Implementar eliminación de usuario
+                                  toast.info('Función de eliminar usuario próximamente');
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -787,33 +826,65 @@ export default function Users() {
                             <p className="text-sm text-muted-foreground">{user.email}</p>
                           </div>
                         </div>
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Rol:</span>
-                            <Badge variant="outline">{user.role}</Badge>
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-muted-foreground">Teléfono:</span>
+                              <span className="text-sm">{user.phone || 'No especificado'}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-muted-foreground">Rol:</span>
+                              <Badge variant="outline">{user.role}</Badge>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-muted-foreground">Estado:</span>
+                              {getStatusBadge(user.status)}
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-muted-foreground">Registro:</span>
+                              <span className="text-sm">{new Date(user.created_at).toLocaleDateString()}</span>
+                            </div>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Estado:</span>
-                            {getStatusBadge(user.status)}
+                          <div className="flex justify-end gap-2 mt-4">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setViewDialogOpen(true);
+                              }}
+                            >
+                              <Eye className="h-4 w-4 mr-2" />
+                              Ver
+                            </Button>
+                            
+                            {/* Botón de editar conductor para vista de tarjetas */}
+                            {user.role.toLowerCase().includes('conductor') && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedDriverId(user.id);
+                                  setSelectedDriverName(`${user.first_name} ${user.last_name}` || user.email);
+                                  setEditDriverModalOpen(true);
+                                }}
+                              >
+                                <Truck className="h-4 w-4 mr-2" />
+                                Conductor
+                              </Button>
+                            )}
+                            
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setEditDialogOpen(true);
+                              }}
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              Editar
+                            </Button>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Registro:</span>
-                            <span className="text-sm">{new Date(user.created_at).toLocaleDateString()}</span>
-                          </div>
-                        </div>
-                        <div className="flex justify-end mt-4">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setViewDialogOpen(true);
-                            }}
-                          >
-                            <Eye className="h-4 w-4 mr-2" />
-                            Ver Detalles
-                          </Button>
-                        </div>
                       </CardContent>
                     </Card>
                   ))}
@@ -935,6 +1006,17 @@ export default function Users() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Modal de edición de conductor */}
+      <EditDriverModal
+        isOpen={editDriverModalOpen}
+        onClose={() => {
+          setEditDriverModalOpen(false);
+          fetchUsers(); // Recargar la lista
+        }}
+        userId={selectedDriverId}
+        userName={selectedDriverName}
+      />
     </div>
   );
 }
