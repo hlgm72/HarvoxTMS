@@ -669,13 +669,186 @@ export default function Users() {
               </div>
             </div>
             
-            <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="gap-2 bg-white text-primary hover:bg-white/90 shadow-lg">
-                  <UserPlus className="h-4 w-4" />
-                  Invitar Usuario
-                </Button>
-              </DialogTrigger>
+            <div className="flex items-center gap-3">
+              {/* Botón de filtros */}
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="secondary" className="gap-2 bg-white/10 text-white hover:bg-white/20 border-white/20">
+                    <Filter className="h-4 w-4" />
+                    Filtros
+                    {(searchTerm || roleFilter || statusFilter) && (
+                      <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 text-xs">
+                        {[searchTerm, roleFilter, statusFilter].filter(Boolean).length}
+                      </Badge>
+                    )}
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="w-[400px] sm:w-[540px]">
+                  <SheetHeader>
+                    <SheetTitle className="flex items-center gap-2">
+                      <Filter className="h-5 w-5 text-primary" />
+                      Filtros y Búsqueda
+                    </SheetTitle>
+                    <SheetDescription>
+                      Busca y filtra usuarios por diferentes criterios
+                    </SheetDescription>
+                  </SheetHeader>
+                  
+                  <div className="space-y-6 mt-6">
+                    {/* Barra de búsqueda */}
+                    <div className="space-y-2">
+                      <Label htmlFor="search">Buscar Usuario</Label>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="search"
+                          placeholder="Buscar por nombre o email..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="pl-10"
+                        />
+                        {searchTerm && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSearchTerm('')}
+                            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Filtro por rol */}
+                    <div className="space-y-2">
+                      <Label htmlFor="roleFilter">Filtrar por Rol</Label>
+                      <div className="flex gap-2">
+                        <Select value={roleFilter || undefined} onValueChange={setRoleFilter}>
+                          <SelectTrigger className="flex-1">
+                            <SelectValue placeholder="Todos los roles" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ROLE_OPTIONS.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                <div className="flex items-center gap-2">
+                                  <Shield className="h-4 w-4" />
+                                  {option.label}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {roleFilter && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setRoleFilter('')}
+                            className="px-2"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Filtro por estado */}
+                    <div className="space-y-2">
+                      <Label htmlFor="statusFilter">Filtrar por Estado</Label>
+                      <div className="flex gap-2">
+                        <Select value={statusFilter || undefined} onValueChange={setStatusFilter}>
+                          <SelectTrigger className="flex-1">
+                            <SelectValue placeholder="Todos los estados" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="active">
+                              <div className="flex items-center gap-2">
+                                <Activity className="h-4 w-4 text-green-500" />
+                                Activo
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="inactive">
+                              <div className="flex items-center gap-2">
+                                <Clock className="h-4 w-4 text-red-500" />
+                                Inactivo
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="pending">
+                              <div className="flex items-center gap-2">
+                                <AlertCircle className="h-4 w-4 text-amber-500" />
+                                Pendiente
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {statusFilter && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setStatusFilter('')}
+                            className="px-2"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Resumen de filtros */}
+                    {(searchTerm || roleFilter || statusFilter) && (
+                      <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+                        <h4 className="font-medium text-sm">Filtros Activos:</h4>
+                        <div className="space-y-2">
+                          {searchTerm && (
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-muted-foreground">Búsqueda:</span>
+                              <Badge variant="secondary">"{searchTerm}"</Badge>
+                            </div>
+                          )}
+                          {roleFilter && (
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-muted-foreground">Rol:</span>
+                              <Badge variant="secondary">{ROLE_OPTIONS.find(opt => opt.value === roleFilter)?.label}</Badge>
+                            </div>
+                          )}
+                          {statusFilter && (
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-muted-foreground">Estado:</span>
+                              <Badge variant="secondary">
+                                {statusFilter === 'active' ? 'Activo' : statusFilter === 'inactive' ? 'Inactivo' : 'Pendiente'}
+                              </Badge>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between pt-2 border-t">
+                          <span className="text-xs text-muted-foreground">
+                            {filteredUsers.length} de {users.length} usuarios
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSearchTerm('');
+                              setRoleFilter('');
+                              setStatusFilter('');
+                            }}
+                          >
+                            Limpiar Todo
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+              
+              <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="gap-2 bg-white text-primary hover:bg-white/90 shadow-lg">
+                    <UserPlus className="h-4 w-4" />
+                    Invitar Usuario
+                  </Button>
+                </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2">
@@ -764,13 +937,14 @@ export default function Users() {
                    </div>
                  </form>
                </DialogContent>
-             </Dialog>
-           </div>
-         </div>
-       </div>
+              </Dialog>
+            </div>
+          </div>
+        </div>
+      </div>
 
-       {/* Content */}
-       <div className="container mx-auto py-8 space-y-6">
+      {/* Content */}
+      <div className="container mx-auto py-8 space-y-6">
          {/* Dashboard de Estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
@@ -868,231 +1042,29 @@ export default function Users() {
         </Card>
       )}
 
-      {/* Barra de acciones con filtros */}
+      {/* Lista de Usuarios */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <h2 className="text-2xl font-bold">Lista de Usuarios</h2>
-          {(searchTerm || roleFilter || statusFilter) && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">
-                Mostrando {filteredUsers.length} de {users.length} usuarios
-              </span>
-              {(searchTerm || roleFilter || statusFilter) && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setRoleFilter('');
-                    setStatusFilter('');
-                  }}
-                  className="h-8"
-                >
-                  <X className="h-4 w-4 mr-1" />
-                  Limpiar Filtros
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
-        
-        <div className="flex items-center gap-3">
-          {/* Indicadores de filtros activos */}
-          {(searchTerm || roleFilter || statusFilter) && (
-            <div className="flex items-center gap-2">
-              {searchTerm && (
-                <Badge variant="secondary" className="gap-1">
-                  <Search className="h-3 w-3" />
-                  "{searchTerm}"
-                </Badge>
-              )}
-              {roleFilter && (
-                <Badge variant="secondary" className="gap-1">
-                  <Shield className="h-3 w-3" />
-                  {ROLE_OPTIONS.find(opt => opt.value === roleFilter)?.label}
-                </Badge>
-              )}
-              {statusFilter && (
-                <Badge variant="secondary" className="gap-1">
-                  <Activity className="h-3 w-3" />
-                  {statusFilter === 'active' ? 'Activo' : statusFilter === 'inactive' ? 'Inactivo' : 'Pendiente'}
-                </Badge>
-              )}
-            </div>
-          )}
-          
-          {/* Botón de filtros */}
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <Filter className="h-4 w-4" />
-                Filtros
-                {(searchTerm || roleFilter || statusFilter) && (
-                  <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 text-xs">
-                    {[searchTerm, roleFilter, statusFilter].filter(Boolean).length}
-                  </Badge>
-                )}
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="w-[400px] sm:w-[540px]">
-              <SheetHeader>
-                <SheetTitle className="flex items-center gap-2">
-                  <Filter className="h-5 w-5 text-primary" />
-                  Filtros y Búsqueda
-                </SheetTitle>
-                <SheetDescription>
-                  Busca y filtra usuarios por diferentes criterios
-                </SheetDescription>
-              </SheetHeader>
-              
-              <div className="space-y-6 mt-6">
-                {/* Barra de búsqueda */}
-                <div className="space-y-2">
-                  <Label htmlFor="search">Buscar Usuario</Label>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="search"
-                      placeholder="Buscar por nombre o email..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                    {searchTerm && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setSearchTerm('')}
-                        className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Filtro por rol */}
-                <div className="space-y-2">
-                  <Label htmlFor="roleFilter">Filtrar por Rol</Label>
-                  <div className="flex gap-2">
-                    <Select value={roleFilter || undefined} onValueChange={setRoleFilter}>
-                      <SelectTrigger className="flex-1">
-                        <SelectValue placeholder="Todos los roles" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ROLE_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            <div className="flex items-center gap-2">
-                              <Shield className="h-4 w-4" />
-                              {option.label}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {roleFilter && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setRoleFilter('')}
-                        className="px-2"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Filtro por estado */}
-                <div className="space-y-2">
-                  <Label htmlFor="statusFilter">Filtrar por Estado</Label>
-                  <div className="flex gap-2">
-                    <Select value={statusFilter || undefined} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="flex-1">
-                        <SelectValue placeholder="Todos los estados" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="active">
-                          <div className="flex items-center gap-2">
-                            <Activity className="h-4 w-4 text-green-500" />
-                            Activo
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="inactive">
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-red-500" />
-                            Inactivo
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="pending">
-                          <div className="flex items-center gap-2">
-                            <AlertCircle className="h-4 w-4 text-amber-500" />
-                            Pendiente
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {statusFilter && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setStatusFilter('')}
-                        className="px-2"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Resumen de filtros */}
-                {(searchTerm || roleFilter || statusFilter) && (
-                  <div className="p-4 bg-muted/50 rounded-lg space-y-3">
-                    <h4 className="font-medium text-sm">Filtros Activos:</h4>
-                    <div className="space-y-2">
-                      {searchTerm && (
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Búsqueda:</span>
-                          <Badge variant="secondary">"{searchTerm}"</Badge>
-                        </div>
-                      )}
-                      {roleFilter && (
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Rol:</span>
-                          <Badge variant="secondary">{ROLE_OPTIONS.find(opt => opt.value === roleFilter)?.label}</Badge>
-                        </div>
-                      )}
-                      {statusFilter && (
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Estado:</span>
-                          <Badge variant="secondary">
-                            {statusFilter === 'active' ? 'Activo' : statusFilter === 'inactive' ? 'Inactivo' : 'Pendiente'}
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center justify-between pt-2 border-t">
-                      <span className="text-xs text-muted-foreground">
-                        {filteredUsers.length} de {users.length} usuarios
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setSearchTerm('');
-                          setRoleFilter('');
-                          setStatusFilter('');
-                        }}
-                      >
-                        Limpiar Todo
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
+        <h2 className="text-2xl font-bold">Lista de Usuarios</h2>
+        {(searchTerm || roleFilter || statusFilter) && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">
+              Mostrando {filteredUsers.length} de {users.length} usuarios
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setSearchTerm('');
+                setRoleFilter('');
+                setStatusFilter('');
+              }}
+              className="h-8"
+            >
+              <X className="h-4 w-4 mr-1" />
+              Limpiar Filtros
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Dialog para Ver Usuario */}
