@@ -448,24 +448,23 @@ export function AppSidebar() {
     if (sectionItems.length === 0) return null;
 
      return (
-      <SidebarGroup key={sectionName} className="mb-2" onClick={(e) => e.stopPropagation()}>
+      <div key={sectionName} className="mb-2">
         {!collapsed && (
-          <SidebarGroupLabel className="px-4 py-2 text-xs font-normal text-white/70 uppercase tracking-wide" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal' }}>
+          <div className="px-4 py-2 text-xs font-normal text-white/70 uppercase tracking-wide" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal' }}>
             {sectionLabel}
-          </SidebarGroupLabel>
+          </div>
         )}
-        <SidebarGroupContent onClick={(e) => e.stopPropagation()}>
-          <SidebarMenu className="space-y-0" onClick={(e) => e.stopPropagation()}>
+        <div>
+          <div className="space-y-0">
             {sectionItems.map((item: any) => {
               const active = isActive(item.url);
               const IconComponent = item.icon;
               
               return (
-                 <SidebarMenuItem key={item.title} onClick={(e) => e.stopPropagation()}>
+                <div key={item.title}>
                    <NavLink 
                      to={item.url} 
                      end 
-                     onClick={(e) => e.stopPropagation()}
                      className={`group relative flex items-center gap-4 transition-all duration-200 ${
                        collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'
                      } ${
@@ -508,13 +507,13 @@ export function AppSidebar() {
                       <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
                     )}
                   </NavLink>
-                 </SidebarMenuItem>
-              );
-            })}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
-    );
+                 </div>
+               );
+             })}
+           </div>
+         </div>
+       </div>
+     );
   };
 
   return (
