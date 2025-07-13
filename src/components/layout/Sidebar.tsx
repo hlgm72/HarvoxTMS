@@ -478,9 +478,12 @@ export function AppSidebar() {
                            : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
                        }`}
                     >
-                     <IconComponent className={`h-10 w-10 flex-shrink-0 ${
-                       active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
-                     }`} />
+                      <IconComponent 
+                        className={`!h-10 !w-10 flex-shrink-0 transition-all duration-200 ${
+                          active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
+                        }`} 
+                        style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}
+                      />
                      
                      {!collapsed && (
                        <div className="flex items-center justify-between flex-1 min-w-0">
