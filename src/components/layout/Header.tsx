@@ -55,6 +55,12 @@ export function Header() {
           title: 'Gestión de Empresas',
           subtitle: 'Administra las empresas del sistema'
         };
+      case '/clients':
+        return {
+          icon: Building2,
+          title: 'Gestión de Clientes',
+          subtitle: 'Administra tus clientes y brokers'
+        };
       case '/settings':
         return {
           icon: Settings,
