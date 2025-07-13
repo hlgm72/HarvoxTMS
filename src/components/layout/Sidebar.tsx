@@ -450,7 +450,7 @@ export function AppSidebar() {
     return (
       <SidebarGroup key={sectionName} className="mb-2">
         {!collapsed && (
-          <SidebarGroupLabel className="px-4 py-2 text-xs font-medium text-white/70 uppercase tracking-wide font-body">
+          <SidebarGroupLabel className="px-4 py-2 text-xs font-normal text-white/70 uppercase tracking-wide" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal' }}>
             {sectionLabel}
           </SidebarGroupLabel>
         )}
@@ -470,13 +470,14 @@ export function AppSidebar() {
                      <NavLink 
                        to={item.url} 
                        end 
-                       className={`group relative flex items-center gap-4 text-base font-semibold transition-all duration-200 font-body ${
+                       className={`group relative flex items-center gap-4 transition-all duration-200 ${
                          collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'
                        } ${
                          active 
                            ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
                            : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
                        }`}
+                       style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}
                     >
                       <IconComponent 
                         className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
@@ -487,7 +488,7 @@ export function AppSidebar() {
                      
                      {!collapsed && (
                        <div className="flex items-center justify-between flex-1 min-w-0">
-                         <span className="truncate font-body">
+                         <span className="truncate" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}>
                            {item.title}
                          </span>
                          
