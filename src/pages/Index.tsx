@@ -20,7 +20,7 @@ export default function Index() {
 
   useEffect(() => {
     // Wait for auth context to fully initialize before redirecting
-    if (!loading && user && _forceUpdate > 0) {
+    if (!loading && user) {
       // Si el usuario está autenticado pero no tiene rol asignado
       if (!userRole) {
         // Redirigir a perfil para que el usuario complete su información
@@ -45,7 +45,7 @@ export default function Index() {
 
 
   // Show loading while determining user role or while auth context initializes
-  if (loading || _forceUpdate === 0) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
