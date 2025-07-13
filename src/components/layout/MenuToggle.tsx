@@ -64,15 +64,8 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
   }, [isOpen, onToggle, sidebarContext, isMobile]);
   
   return (
-    <div 
-      className="flex-shrink-0 px-3 md:px-6" 
-      style={{ 
-        position: 'relative', 
-        zIndex: 100,
-        isolation: 'isolate'
-      }}
-    >
-      <Button 
+    <div className="flex-shrink-0 pl-3 md:pl-6">
+      <Button
         variant="ghost" 
         size="sm"
         className="h-8 w-8 p-0 rounded-full border border-border bg-background shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
