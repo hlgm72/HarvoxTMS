@@ -445,6 +445,48 @@ export type Database = {
           },
         ]
       }
+      equipment_assignments: {
+        Row: {
+          assigned_by: string | null
+          assigned_date: string
+          assignment_type: string
+          created_at: string
+          driver_user_id: string
+          equipment_id: string
+          id: string
+          is_active: boolean
+          notes: string | null
+          unassigned_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          assigned_date?: string
+          assignment_type?: string
+          created_at?: string
+          driver_user_id: string
+          equipment_id: string
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          unassigned_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_by?: string | null
+          assigned_date?: string
+          assignment_type?: string
+          created_at?: string
+          driver_user_id?: string
+          equipment_id?: string
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          unassigned_date?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       equipment_documents: {
         Row: {
           content_type: string | null
@@ -499,6 +541,60 @@ export type Database = {
           issuing_authority?: string | null
           updated_at?: string
           uploaded_by?: string | null
+        }
+        Relationships: []
+      }
+      equipment_locations: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          equipment_id: string
+          facility_name: string | null
+          id: string
+          is_current: boolean
+          latitude: number | null
+          location_type: string
+          longitude: number | null
+          notes: string | null
+          reported_at: string
+          reported_by: string | null
+          state: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          equipment_id: string
+          facility_name?: string | null
+          id?: string
+          is_current?: boolean
+          latitude?: number | null
+          location_type?: string
+          longitude?: number | null
+          notes?: string | null
+          reported_at?: string
+          reported_by?: string | null
+          state?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          equipment_id?: string
+          facility_name?: string | null
+          id?: string
+          is_current?: boolean
+          latitude?: number | null
+          location_type?: string
+          longitude?: number | null
+          notes?: string | null
+          reported_at?: string
+          reported_by?: string | null
+          state?: string | null
+          zip_code?: string | null
         }
         Relationships: []
       }
@@ -954,6 +1050,75 @@ export type Database = {
         }
         Relationships: []
       }
+      inspections: {
+        Row: {
+          certificate_expiry_date: string | null
+          certificate_number: string | null
+          cost: number | null
+          created_at: string
+          created_by: string | null
+          defects_found: string[] | null
+          engine_hours: number | null
+          equipment_id: string
+          id: string
+          inspection_date: string
+          inspection_items: Json | null
+          inspection_location: string | null
+          inspection_type: string
+          inspector_license: string | null
+          inspector_name: string
+          notes: string | null
+          odometer_reading: number | null
+          overall_status: string
+          report_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          certificate_expiry_date?: string | null
+          certificate_number?: string | null
+          cost?: number | null
+          created_at?: string
+          created_by?: string | null
+          defects_found?: string[] | null
+          engine_hours?: number | null
+          equipment_id: string
+          id?: string
+          inspection_date: string
+          inspection_items?: Json | null
+          inspection_location?: string | null
+          inspection_type: string
+          inspector_license?: string | null
+          inspector_name: string
+          notes?: string | null
+          odometer_reading?: number | null
+          overall_status?: string
+          report_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          certificate_expiry_date?: string | null
+          certificate_number?: string | null
+          cost?: number | null
+          created_at?: string
+          created_by?: string | null
+          defects_found?: string[] | null
+          engine_hours?: number | null
+          equipment_id?: string
+          id?: string
+          inspection_date?: string
+          inspection_items?: Json | null
+          inspection_location?: string | null
+          inspection_type?: string
+          inspector_license?: string | null
+          inspector_name?: string
+          notes?: string | null
+          odometer_reading?: number | null
+          overall_status?: string
+          report_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       load_documents: {
         Row: {
           content_type: string | null
@@ -1135,6 +1300,168 @@ export type Database = {
           total_amount?: number
           updated_at?: string
           weight_lbs?: number | null
+        }
+        Relationships: []
+      }
+      maintenance_records: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          engine_hours_at_service: number | null
+          equipment_id: string
+          id: string
+          labor_cost: number | null
+          maintenance_type_id: string
+          mileage_at_service: number | null
+          next_service_due_date: string | null
+          next_service_due_mileage: number | null
+          notes: string | null
+          parts_cost: number | null
+          parts_used: string[] | null
+          performed_by: string
+          performed_date: string
+          receipt_url: string | null
+          schedule_id: string | null
+          status: string
+          total_cost: number | null
+          updated_at: string
+          work_description: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          engine_hours_at_service?: number | null
+          equipment_id: string
+          id?: string
+          labor_cost?: number | null
+          maintenance_type_id: string
+          mileage_at_service?: number | null
+          next_service_due_date?: string | null
+          next_service_due_mileage?: number | null
+          notes?: string | null
+          parts_cost?: number | null
+          parts_used?: string[] | null
+          performed_by: string
+          performed_date: string
+          receipt_url?: string | null
+          schedule_id?: string | null
+          status?: string
+          total_cost?: number | null
+          updated_at?: string
+          work_description?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          engine_hours_at_service?: number | null
+          equipment_id?: string
+          id?: string
+          labor_cost?: number | null
+          maintenance_type_id?: string
+          mileage_at_service?: number | null
+          next_service_due_date?: string | null
+          next_service_due_mileage?: number | null
+          notes?: string | null
+          parts_cost?: number | null
+          parts_used?: string[] | null
+          performed_by?: string
+          performed_date?: string
+          receipt_url?: string | null
+          schedule_id?: string | null
+          status?: string
+          total_cost?: number | null
+          updated_at?: string
+          work_description?: string | null
+        }
+        Relationships: []
+      }
+      maintenance_schedules: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          equipment_id: string
+          frequency_type: string
+          frequency_value: number
+          id: string
+          is_active: boolean
+          last_performed_date: string | null
+          last_performed_mileage: number | null
+          maintenance_type_id: string
+          next_due_date: string | null
+          next_due_mileage: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          equipment_id: string
+          frequency_type: string
+          frequency_value: number
+          id?: string
+          is_active?: boolean
+          last_performed_date?: string | null
+          last_performed_mileage?: number | null
+          maintenance_type_id: string
+          next_due_date?: string | null
+          next_due_mileage?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          equipment_id?: string
+          frequency_type?: string
+          frequency_value?: number
+          id?: string
+          is_active?: boolean
+          last_performed_date?: string | null
+          last_performed_mileage?: number | null
+          maintenance_type_id?: string
+          next_due_date?: string | null
+          next_due_mileage?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      maintenance_types: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          estimated_cost: number | null
+          estimated_duration_hours: number | null
+          id: string
+          is_active: boolean
+          name: string
+          required_parts: string[] | null
+          safety_requirements: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          estimated_cost?: number | null
+          estimated_duration_hours?: number | null
+          id?: string
+          is_active?: boolean
+          name: string
+          required_parts?: string[] | null
+          safety_requirements?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          estimated_cost?: number | null
+          estimated_duration_hours?: number | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          required_parts?: string[] | null
+          safety_requirements?: string[] | null
+          updated_at?: string
         }
         Relationships: []
       }
