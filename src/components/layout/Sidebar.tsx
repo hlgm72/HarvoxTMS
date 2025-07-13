@@ -536,8 +536,12 @@ export function AppSidebar() {
       <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-2 px-2' : 'p-4'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))', width: collapsed ? '64px' : 'auto' }}>
         <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
           <div className="relative">
-            <div className="w-8 h-8 bg-[hsl(217_91%_60%)] rounded-lg flex items-center justify-center">
-              <Zap className="h-4 w-4 text-white" />
+            <div className="w-8 h-8 flex items-center justify-center">
+              <img 
+                src="/lovable-uploads/f2dc63b4-a93b-49bd-a347-e03a7c567905.png" 
+                alt="FleetNest Logo" 
+                className="w-7 h-7 object-contain filter brightness-0 invert"
+              />
             </div>
           </div>
           
