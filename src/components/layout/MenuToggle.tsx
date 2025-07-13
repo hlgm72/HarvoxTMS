@@ -1,8 +1,7 @@
 
-import { useState, useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useSidebar } from "@/components/ui/sidebar";
 
 interface MenuToggleProps {
@@ -10,58 +9,36 @@ interface MenuToggleProps {
 }
 
 export function MenuToggle({ onToggle }: MenuToggleProps) {
-  const [isOpen, setIsOpen] = useState(true);
-  const isMobile = useIsMobile();
-  
-  // Intentar usar useSidebar si está disponible, sino usar eventos personalizados
-  let sidebarContext = null;
-  try {
-    sidebarContext = useSidebar();
-  } catch (error) {
-    // No hay contexto de sidebar disponible
-  }
+  const sidebarContext = useSidebar();
   
   const handleToggle = useCallback(() => {
-    console.log('🔥 MENU DEBUG:', {
-      isMobileHook: isMobile,
-      windowWidth: window.innerWidth,
-      hasContext: !!sidebarContext,
+    const windowWidth = window.innerWidth;
+    const isMobileWidth = windowWidth < 768;
+    
+    console.log('🔥 MENU TOGGLE:', {
+      windowWidth,
+      isMobileWidth,
       contextIsMobile: sidebarContext?.isMobile,
       currentOpenMobile: sidebarContext?.openMobile,
       currentOpen: sidebarContext?.open
     });
     
     if (sidebarContext) {
-      // Usar la detección de móvil del contexto del sidebar, que es más confiable
-      if (sidebarContext.isMobile) {
+      if (isMobileWidth) {
         // En móvil, usar setOpenMobile
-        const newMobileState = !sidebarContext.openMobile;
-        console.log('📱 Mobile: Setting openMobile to:', newMobileState);
-        sidebarContext.setOpenMobile(newMobileState);
-        onToggle?.(newMobileState);
+        const newState = !sidebarContext.openMobile;
+        console.log('📱 Mobile toggle:', newState);
+        sidebarContext.setOpenMobile(newState);
+        onToggle?.(newState);
       } else {
         // En desktop, usar setOpen
-        const newDesktopState = !sidebarContext.open;
-        console.log('💻 Desktop: Setting open to:', newDesktopState);
-        sidebarContext.setOpen(newDesktopState);
-        onToggle?.(newDesktopState);
+        const newState = !sidebarContext.open;
+        console.log('💻 Desktop toggle:', newState);
+        sidebarContext.setOpen(newState);
+        onToggle?.(newState);
       }
-    } else {
-      console.log('❌ No sidebar context available');
-      // Fallback: usar eventos personalizados y estado local
-      const newState = !isOpen;
-      setIsOpen(newState);
-      
-      console.log('🔘 Independent menu toggle:', newState);
-      
-      // Notificar al sidebar mediante evento personalizado
-      window.dispatchEvent(new CustomEvent('independent-sidebar-toggle', { 
-        detail: { open: newState } 
-      }));
-      
-      onToggle?.(newState);
     }
-  }, [isOpen, onToggle, sidebarContext, isMobile]);
+  }, [onToggle, sidebarContext]);
   
   return (
     <div className="flex-shrink-0 pl-3 md:pl-6">
