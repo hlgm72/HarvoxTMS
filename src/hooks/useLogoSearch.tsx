@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface LogoSearchResult {
   success: boolean;
   logoUrl?: string;
-  source?: 'brandfetch' | 'clearbit' | 'fallback';
+  source?: 'clearbit';
   error?: string;
 }
 

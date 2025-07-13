@@ -8,45 +8,8 @@ const corsHeaders = {
 interface LogoSearchResult {
   success: boolean;
   logoUrl?: string;
-  source?: 'brandfetch' | 'clearbit' | 'fallback';
+  source?: 'clearbit';
   error?: string;
-}
-
-async function searchWithBrandfetch(domain: string, apiKey: string): Promise<string | null> {
-  try {
-    const response = await fetch(`https://api.brandfetch.io/v2/brands/${domain}`, {
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      console.log(`Brandfetch failed with status: ${response.status}`);
-      return null;
-    }
-
-    const data = await response.json();
-    
-    // Look for the best quality logo
-    const logos = data.logos || [];
-    if (logos.length > 0) {
-      // Prefer SVG, then PNG, then any format
-      const svgLogo = logos.find((logo: any) => logo.formats?.some((format: any) => format.format === 'svg'));
-      const pngLogo = logos.find((logo: any) => logo.formats?.some((format: any) => format.format === 'png'));
-      const anyLogo = logos[0];
-      
-      const selectedLogo = svgLogo || pngLogo || anyLogo;
-      const bestFormat = selectedLogo.formats?.find((format: any) => 
-        format.format === 'svg' || format.format === 'png'
-      ) || selectedLogo.formats?.[0];
-      
-      return bestFormat?.src || null;
-    }
-  } catch (error) {
-    console.error('Brandfetch error:', error);
-  }
-  return null;
 }
 
 async function searchWithClearbit(domain: string): Promise<string | null> {
@@ -130,23 +93,12 @@ serve(async (req) => {
     console.log(`Searching logo for domain: ${domain}`);
 
     let logoUrl: string | null = null;
-    let source: 'brandfetch' | 'clearbit' | 'fallback' = 'fallback';
+    let source: 'clearbit' | undefined = undefined;
 
-    // Try Brandfetch first if API key is available
-    const brandfetchKey = Deno.env.get('BRANDFETCH_API_KEY');
-    if (brandfetchKey) {
-      logoUrl = await searchWithBrandfetch(domain, brandfetchKey);
-      if (logoUrl) {
-        source = 'brandfetch';
-      }
-    }
-
-    // Fallback to Clearbit if Brandfetch didn't work
-    if (!logoUrl) {
-      logoUrl = await searchWithClearbit(domain);
-      if (logoUrl) {
-        source = 'clearbit';
-      }
+    // Try Clearbit
+    logoUrl = await searchWithClearbit(domain);
+    if (logoUrl) {
+      source = 'clearbit';
     }
 
     const result: LogoSearchResult = {
