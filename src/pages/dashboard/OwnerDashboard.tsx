@@ -261,7 +261,7 @@ export default function OwnerDashboard() {
               </TabsTrigger>
               <TabsTrigger value="fleet" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
                 <Truck className="h-4 w-4" />
-                <span className="hidden xs:inline">Flota</span>
+                <span className="hidden xs:inline">Fleet Tracking</span>
               </TabsTrigger>
               <TabsTrigger value="reports" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
                 <FileText className="h-4 w-4" />
@@ -287,7 +287,7 @@ export default function OwnerDashboard() {
               </TabsTrigger>
               <TabsTrigger value="fleet" className="flex items-center gap-2">
                 <Truck className="h-4 w-4" />
-                <span className="hidden md:inline">Flota</span>
+                <span className="hidden md:inline">Fleet Tracking</span>
               </TabsTrigger>
               <TabsTrigger value="reports" className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
