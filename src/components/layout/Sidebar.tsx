@@ -462,22 +462,22 @@ export function AppSidebar() {
               
               return (
                 <SidebarMenuItem key={item.title}>
-                  <div className="relative">
-                    <NavLink 
-                      to={item.url} 
-                      end 
-                      className={`group relative flex items-center gap-4 transition-all duration-200 w-full ${
-                        collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'
-                      } ${
-                        active 
-                          ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
-                          : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
-                      }`}
-                      style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}
-                      onClick={(e) => {
-                        // Prevenir que el click expanda el sidebar
-                        e.stopPropagation();
-                      }}
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={active}
+                    tooltip={collapsed ? item.title : undefined}
+                  >
+                     <NavLink 
+                       to={item.url} 
+                       end 
+                       className={`group relative flex items-center gap-4 transition-all duration-200 ${
+                         collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'
+                       } ${
+                         active 
+                           ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                           : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                       }`}
+                       style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}
                     >
                       <IconComponent 
                         className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
@@ -512,14 +512,7 @@ export function AppSidebar() {
                        <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
                      )}
                    </NavLink>
-                   
-                   {/* Tooltip para collapsed state */}
-                   {collapsed && (
-                     <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-popover text-popover-foreground px-2 py-1 rounded-md text-sm opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 shadow-md border">
-                       {item.title}
-                     </div>
-                   )}
-                  </div>
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
               );
             })}
