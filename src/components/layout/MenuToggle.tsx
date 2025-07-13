@@ -28,7 +28,8 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
       windowWidth: window.innerWidth,
       hasContext: !!sidebarContext,
       currentOpenMobile: sidebarContext?.openMobile,
-      currentOpen: sidebarContext?.open
+      currentOpen: sidebarContext?.open,
+      isMobileHook: sidebarContext?.isMobile
     });
     
     if (sidebarContext) {
@@ -36,6 +37,7 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
         // En móvil, usar setOpenMobile directamente
         const newMobileState = !sidebarContext.openMobile;
         console.log('📱 Setting mobile state to:', newMobileState);
+        console.log('📱 Sidebar context isMobile:', sidebarContext.isMobile);
         sidebarContext.setOpenMobile(newMobileState);
         onToggle?.(newMobileState);
       } else {
