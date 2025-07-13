@@ -103,9 +103,9 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Dark mode - usando colores Limitless */
-    --background: 217 24% 16%;         /* Fondo principal Limitless */
-    --foreground: 0 0% 100%;
+    /* Dark mode - usando color personalizado */
+    --background: 224 50% 97%;         /* #f2f4f8 - Gris claro personalizado */
+    --foreground: 222 84% 4%;
 
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
