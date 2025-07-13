@@ -12,7 +12,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { useFleetNotifications } from '@/components/notifications';
+// import { useFleetNotifications } from '@/components/notifications';
 import { CompanySettingsForm } from '@/components/companies/settings/CompanySettingsForm';
 import { PageToolbar } from '@/components/layout/PageToolbar';
 import { Company } from '@/types/company';
@@ -44,7 +44,7 @@ interface Driver {
 export default function OwnerDashboard() {
   const { user, userRole, loading } = useAuth();
   const { toast } = useToast();
-  const { showSuccess, showError } = useFleetNotifications();
+  // const { showSuccess, showError } = useFleetNotifications();
   
   const [activeTab, setActiveTab] = useState('overview');
   const [loadingData, setLoadingData] = useState(true);
