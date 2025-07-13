@@ -337,11 +337,12 @@ export default function Auth() {
             "Has iniciado sesión exitosamente en FleetNest"
           );
 
-          // Let AuthContext handle all role logic and redirection
-          console.log('Login successful, letting AuthContext handle authentication flow...');
-          
-          // Force navigation to trigger AuthContext initialization
-          navigate('/');
+          // Wait a bit for the AuthContext to process the session
+          // then force a redirect with a full page reload to ensure clean state
+          setTimeout(() => {
+            console.log('Redirecting after successful login...');
+            window.location.href = '/';
+          }, 1000);
         }
       } else {
         // Sign up new user
