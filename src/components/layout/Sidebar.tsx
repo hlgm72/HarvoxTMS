@@ -470,16 +470,16 @@ export function AppSidebar() {
                      <NavLink 
                        to={item.url} 
                        end 
-                       className={`group relative flex items-center gap-3 text-base font-medium transition-all duration-200 ${
-                         collapsed ? 'px-3 py-4 justify-center' : 'px-4 py-4'
+                       className={`group relative flex items-center gap-4 text-base font-semibold transition-all duration-200 ${
+                         collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'
                        } ${
                          active 
-                           ? "bg-white/15 text-white" 
-                           : "text-white/80 hover:bg-white/10 hover:text-white"
+                           ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                           : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
                        }`}
                     >
-                     <IconComponent className={`h-6 w-6 flex-shrink-0 ${
-                       active ? "text-white" : "text-white/70 group-hover:text-white"
+                     <IconComponent className={`h-7 w-7 flex-shrink-0 ${
+                       active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
                      }`} />
                      
                      {!collapsed && (
@@ -489,13 +489,13 @@ export function AppSidebar() {
                          </span>
                          
                          {item.badge && (
-                           <Badge 
-                             variant="secondary" 
-                             className={`text-xs font-medium px-1.5 py-0.5 ml-2 ${
-                               active 
-                                 ? "bg-white/25 text-white border-white/40" 
-                                 : "bg-white/10 text-white/80 border-white/20 group-hover:bg-white/20 group-hover:text-white"
-                             }`}
+                            <Badge 
+                              variant="secondary" 
+                              className={`text-sm font-bold px-2 py-1 ml-3 rounded-md shadow-sm ${
+                                active 
+                                  ? "bg-white/30 text-white border-white/50" 
+                                  : "bg-white/15 text-white/90 border-white/30 group-hover:bg-white/25 group-hover:text-white"
+                              }`}
                            >
                              {item.badge}
                            </Badge>
