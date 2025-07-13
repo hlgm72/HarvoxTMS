@@ -577,13 +577,14 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="border-r border-[hsl(var(--sidebar-border))]"
+      className=""
       collapsible="icon"
       variant="sidebar"
       side="left"
       style={{ 
         backgroundColor: 'hsl(var(--sidebar-background))',
-        width: collapsed ? '64px' : 'var(--sidebar-width)'
+        width: collapsed ? '64px' : 'var(--sidebar-width)',
+        borderRight: 'none'
       } as any}
     >
       <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-3 px-2' : 'p-6'}`} style={{ 
