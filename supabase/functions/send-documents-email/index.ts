@@ -71,12 +71,11 @@ const handler = async (req: Request): Promise<Response> => {
 
     const company = userRole.companies as any;
     const companyName = company.name || "FleetNest";
-    const senderName = company.owner_name || companyName;
+    const senderName = `${companyName} (via FleetNest)`;
     const companyEmail = company.email || company.owner_email;
     
-    // Try to use company email first, fallback to verified email
-    const primarySenderEmail = companyEmail || "noreply@fleetnest.app";
-    const fallbackSenderEmail = "noreply@fleetnest.app";
+    // Always use verified FleetNest email as sender for deliverability
+    const senderEmail = "noreply@fleetnest.app";
 
     // Get documents information
     const { data: documents, error: docsError } = await supabase
@@ -193,8 +192,13 @@ const handler = async (req: Request): Promise<Response> => {
           
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
             <p style="color: #999; font-size: 14px; margin: 0;">
-              Este email fue enviado desde ${companyName} usando FleetNest.
+              Este email fue enviado por <strong>${companyName}</strong> a través de FleetNest.
             </p>
+            ${companyEmail ? `
+              <p style="color: #999; font-size: 14px; margin: 5px 0 0 0;">
+                Para responder, contacte: <a href="mailto:${companyEmail}" style="color: #667eea;">${companyEmail}</a>
+              </p>
+            ` : ''}
           </div>
         </div>
       </div>
@@ -203,49 +207,26 @@ const handler = async (req: Request): Promise<Response> => {
     // Send email
     console.log(`Sending email to: ${recipientList.join(', ')}`);
     
-    let emailResponse;
-    let finalSenderEmail = primarySenderEmail;
+    // Always use FleetNest verified email for guaranteed delivery
+    console.log(`Sending email from: ${senderName} <${senderEmail}>`);
     
-    try {
-      // Try with company email first
-      console.log(`Attempting to send email from: ${senderName} <${primarySenderEmail}>`);
-      
-      emailResponse = await resend.emails.send({
-        from: `${senderName} <${primarySenderEmail}>`,
-        to: recipientList,
-        subject: subject,
-        html: emailHtml,
-        attachments: attachments
-      });
-      
-    } catch (primaryError: any) {
-      console.warn(`Failed to send with company email ${primarySenderEmail}:`, primaryError.message);
-      
-      // If company email fails, try with fallback
-      if (primarySenderEmail !== fallbackSenderEmail) {
-        console.log(`Attempting to send with fallback email: ${senderName} <${fallbackSenderEmail}>`);
-        finalSenderEmail = fallbackSenderEmail;
-        
-        const emailData: any = {
-          from: `${senderName} <${fallbackSenderEmail}>`,
-          to: recipientList,
-          subject: subject,
-          html: emailHtml,
-          attachments: attachments
-        };
-        
-        // Add reply-to with company email if available
-        if (companyEmail && companyEmail !== fallbackSenderEmail) {
-          emailData.reply_to = companyEmail;
-        }
-        
-        emailResponse = await resend.emails.send(emailData);
-      } else {
-        throw primaryError;
-      }
+    const emailData: any = {
+      from: `${senderName} <${senderEmail}>`,
+      to: recipientList,
+      subject: subject,
+      html: emailHtml,
+      attachments: attachments
+    };
+    
+    // Add company email as reply-to if available
+    if (companyEmail) {
+      emailData.reply_to = companyEmail;
+      console.log(`Reply-to set to: ${companyEmail}`);
     }
+    
+    const emailResponse = await resend.emails.send(emailData);
 
-    console.log(`Email sent successfully from ${finalSenderEmail}:`, emailResponse);
+    console.log("Email sent successfully:", emailResponse);
 
     return new Response(
       JSON.stringify({
