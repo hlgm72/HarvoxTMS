@@ -1,21 +1,19 @@
 import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/components/ui/sidebar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface SidebarCollapseButtonProps {
-  onAuthorizedToggle: () => void;
+  collapsed: boolean;
+  onToggle: () => void;
 }
 
-export function SidebarCollapseButton({ onAuthorizedToggle }: SidebarCollapseButtonProps) {
-  const { state } = useSidebar();
-  const collapsed = state === "collapsed";
+export function SidebarCollapseButton({ collapsed, onToggle }: SidebarCollapseButtonProps) {
 
   return (
     <Button
       data-sidebar-trigger="true"
       variant="ghost"
       size="sm"
-      onClick={onAuthorizedToggle}
+      onClick={onToggle}
       className={`absolute top-4 z-50 h-8 w-8 p-0 rounded-full border border-border bg-background 
                   shadow-md hover:shadow-lg transition-all duration-200 
                   hover:bg-accent flex items-center justify-center ${

@@ -1,19 +1,5 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarTrigger,
-  SidebarRail,
-  useSidebar,
-} from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -373,9 +359,8 @@ const getSuperAdminNavigationItems = (t: any) => [
   },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ collapsed }: { collapsed: boolean }) {
   const { t } = useTranslation(['admin', 'common']);
-  const { state } = useSidebar();
   const { 
     isSuperAdmin, 
     isCompanyOwner, 
@@ -389,8 +374,6 @@ export function AppSidebar() {
   const currentPath = location.pathname;
   const { companies, selectedCompany, setSelectedCompany, loading } = useUserCompanies();
   const { driversCount } = useDriversCount();
-  
-  const collapsed = state === "collapsed";
   
   // Determinar navegación según el rol del usuario
   const getNavigationItems = () => {
@@ -443,7 +426,7 @@ export function AppSidebar() {
     return {};
   };
 
-  // Función para renderizar una sección específica - ESTILO LIMITLESS EXACTO
+  // Función para renderizar una sección específica - COMPLETAMENTE PERSONALIZADA
   const renderSection = (sectionName: string, sectionLabel: string) => {
     const sectionItems = navigationItems.filter((item: any) => item.section === sectionName);
     if (sectionItems.length === 0) return null;
@@ -485,7 +468,7 @@ export function AppSidebar() {
                              style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }}
                            />
                            
-                           {/* Active indicator - exacto como Limitless */}
+                           {/* Active indicator */}
                            {active && (
                              <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
                            )}
@@ -536,7 +519,7 @@ export function AppSidebar() {
                         </div>
                       )}
                       
-                      {/* Active indicator - exacto como Limitless */}
+                      {/* Active indicator */}
                       {active && (
                         <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
                       )}
@@ -552,41 +535,35 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar
-      className="border-r border-[hsl(var(--sidebar-border))]"
-      collapsible="none"
-      variant="sidebar"
-      side="left"
+    <div
+      className={`flex flex-col h-screen border-r border-[hsl(var(--sidebar-border))] transition-all duration-200 ${
+        collapsed ? 'w-16' : 'w-72'
+      }`}
       style={{ 
-        backgroundColor: 'hsl(var(--sidebar-background))',
-        width: collapsed ? '64px' : 'var(--sidebar-width)'
-      } as any}
+        backgroundColor: 'hsl(var(--sidebar-background))'
+      }}
     >
-      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-3 px-2' : 'p-6'}`} style={{ 
-        backgroundColor: 'hsl(var(--fleet-sidebar-darker))', 
-        width: collapsed ? '64px' : 'auto'
+      {/* Header personalizado */}
+      <div className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-3 px-2' : 'p-6'}`} style={{ 
+        backgroundColor: 'hsl(var(--fleet-sidebar-darker))'
       }}>
         <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-4'}`}>
-          {/* Logo Container with Professional Styling */}
+          {/* Logo Container */}
           <div className="relative group">
-            <div className={`${collapsed ? 'w-14 h-14' : 'w-20 h-20'} bg-gradient-to-br from-white/20 to-white/5 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 animate-[scale-in_0.8s_cubic-bezier(0.4,0,0.2,1)]`}>
+            <div className={`${collapsed ? 'w-14 h-14' : 'w-20 h-20'} bg-gradient-to-br from-white/20 to-white/5 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105`}>
               <img 
                 src="/lovable-uploads/f2dc63b4-a93b-49bd-a347-e03a7c567905.png" 
                 alt="FleetNest Logo" 
-                className={`${collapsed ? 'w-10 h-10' : 'w-16 h-16'} object-contain filter brightness-0 invert drop-shadow-md transition-all duration-300 group-hover:drop-shadow-lg animate-[fade-in_1s_ease-out_0.3s_both]`}
+                className={`${collapsed ? 'w-10 h-10' : 'w-16 h-16'} object-contain filter brightness-0 invert drop-shadow-md transition-all duration-300 group-hover:drop-shadow-lg`}
               />
-              {/* Subtle glow effect */}
-              <div className="absolute inset-0 rounded-xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              {/* Impact glow on load */}
-              <div className="absolute inset-0 rounded-xl bg-white/10 animate-[scale-in_0.8s_cubic-bezier(0.4,0,0.2,1),fade-out_1.5s_ease-out_0.8s_forwards]"></div>
             </div>
           </div>
           
           {!collapsed && (
-            <div className="flex-1 animate-fade-in">
+            <div className="flex-1">
               {/* Brand Section */}
               <div className="space-y-1">
-                <h2 className="font-bold text-xl text-white tracking-tight leading-none bg-gradient-to-r from-white to-white/90 bg-clip-text">
+                <h2 className="font-bold text-xl text-white tracking-tight leading-none">
                   FleetNest
                   {isSuperAdmin && <span className="text-blue-300 ml-2 text-sm font-medium">Admin</span>}
                 </h2>
@@ -595,9 +572,9 @@ export function AppSidebar() {
                 </p>
               </div>
               
-              {/* Superadmin Badge - More Professional */}
+              {/* Superadmin Badge */}
               {isSuperAdmin && (
-                <div className="mt-4 p-3 bg-gradient-to-r from-blue-500/20 to-blue-600/20 rounded-lg border border-blue-400/30 backdrop-blur-sm animate-scale-in">
+                <div className="mt-4 p-3 bg-gradient-to-r from-blue-500/20 to-blue-600/20 rounded-lg border border-blue-400/30 backdrop-blur-sm">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-blue-500/30 rounded-lg flex items-center justify-center">
                       <Shield className="h-4 w-4 text-blue-300" />
@@ -609,34 +586,22 @@ export function AppSidebar() {
                   </div>
                 </div>
               )}
-              
-              {/* Status Indicator */}
-              {!isSuperAdmin && (
-                <div className="mt-3 flex items-center gap-2 text-xs text-white/60">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="font-medium">System Online</span>
-                </div>
-              )}
             </div>
           )}
         </div>
-      </SidebarHeader>
+      </div>
 
-      <SidebarContent className={`py-2 ${collapsed ? 'px-2' : 'px-0'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
+      {/* Content personalizado */}
+      <div className={`flex-1 overflow-y-auto py-2 ${collapsed ? 'px-2' : 'px-0'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
         <TooltipProvider>
           {isSuperAdmin ? (
-            // Para SuperAdmin: Estilo Limitless exacto
             <>
-              {/* Sección Principal */}
               {renderSection("main", t('admin:navigation.main_management'))}
-
-              {/* Otras secciones usando el mismo renderSection */}
               {renderSection("monitoring", t('admin:navigation.monitoring'))}
               {renderSection("business", t('admin:navigation.business'))}
               {renderSection("settings", t('admin:navigation.settings'))}
             </>
           ) : (
-            // Para otros roles: Renderizar por secciones con separadores
             <>
               {Object.entries(getSectionLabels()).map(([sectionName, sectionLabel]) => 
                 renderSection(sectionName, sectionLabel)
@@ -644,91 +609,7 @@ export function AppSidebar() {
             </>
           )}
         </TooltipProvider>
-
-        {/* Company selector moved to bottom - Professional style */}
-        {!collapsed && !isSuperAdmin && !loading && selectedCompany && (
-          <div className="mt-auto px-4 pb-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full justify-start p-3 h-auto bg-white hover:bg-slate-50 transition-all duration-200 border border-slate-200 rounded-lg shadow-sm"
-                >
-                  <div className="flex items-center gap-3 text-left">
-                    <div className="h-7 w-7 flex items-center justify-center">
-                      {selectedCompany.logo_url ? (
-                        <img 
-                          src={selectedCompany.logo_url} 
-                          alt={selectedCompany.name}
-                          className="h-7 w-7 object-contain rounded-md shadow-sm"
-                        />
-                      ) : (
-                        <div className="h-7 w-7 bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm font-semibold flex items-center justify-center rounded-md shadow-sm">
-                          {selectedCompany.avatar}
-                        </div>
-                      )}
-                    </div>
-                     <div className="flex-1 min-w-0">
-                       <p className="text-sm font-medium text-slate-900 leading-tight truncate">
-                         {selectedCompany.name}
-                       </p>
-                       <p className="text-xs text-slate-500 capitalize leading-tight">
-                         {currentRole?.role.replace('_', ' ') || 'Sin rol'}
-                       </p>
-                     </div>
-                     <ChevronDown className="h-4 w-4 text-slate-400 ml-2 flex-shrink-0" />
-                  </div>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent 
-                align="start" 
-                className="w-72 border border-slate-200 rounded-lg shadow-xl bg-white"
-              >
-                {companies.map((company) => (
-                  <DropdownMenuItem
-                    key={company.id}
-                    onClick={() => setSelectedCompany(company)}
-                    className="flex items-center gap-3 p-3 text-slate-700 hover:bg-slate-50 rounded-md m-1 transition-all duration-150 cursor-pointer"
-                  >
-                    <div className="h-8 w-8 flex items-center justify-center">
-                      {company.logo_url ? (
-                        <img 
-                          src={company.logo_url} 
-                          alt={company.name}
-                          className="h-8 w-8 object-contain rounded-md"
-                        />
-                      ) : (
-                        <div className="h-8 w-8 bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm font-semibold flex items-center justify-center rounded-md shadow-sm">
-                          {company.avatar}
-                        </div>
-                      )}
-                    </div>
-                     <div className="flex flex-col flex-1">
-                       <span className="font-medium text-slate-900 text-sm leading-tight">{company.name}</span>
-                       <span className="text-xs text-slate-500 capitalize leading-tight">
-                         {company.role.replace('_', ' ')}
-                       </span>
-                     </div>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
-
-        {/* Bottom section como en Limitless */}
-        {!collapsed && (
-          <div className="p-4 border-t border-[hsl(var(--sidebar-border))]">
-            <div className="flex items-center gap-2 text-slate-300 text-xs">
-              <Activity className="h-3 w-3" />
-              <span>System Status</span>
-              <div className="ml-auto w-2 h-2 bg-green-500 rounded-full"></div>
-            </div>
-          </div>
-        )}
-      </SidebarContent>
-      <SidebarRail />
-    </Sidebar>
+      </div>
+    </div>
   );
 }
