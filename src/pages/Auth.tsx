@@ -13,7 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useFleetNotifications } from '@/components/notifications';
 import { createTextHandlers } from '@/lib/textUtils';
-const fleetNestLogo = '/auth-bg-fleet.jpg'; // Usar temporalmente hasta que puedas subir tu logo
+const fleetNestLogo = '/lovable-uploads/f2dc63b4-a93b-49bd-a347-e03a7c567905.png';
 
 export default function Auth() {
   const { t, i18n } = useTranslation(['auth', 'common']);
