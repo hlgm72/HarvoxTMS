@@ -90,7 +90,10 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
     }
   };
 
-  const handleNext = async () => {
+  const handleNext = async (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    
     const isValidStep1 = await form.trigger(["name"]);
     if (isValidStep1) {
       setCurrentStep(2);
