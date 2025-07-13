@@ -23,6 +23,7 @@ import {
 import { Client, useDeleteClient } from "@/hooks/useClients";
 import { EditClientDialog } from "./EditClientDialog";
 import { ClientDetailDialog } from "./ClientDetailDialog";
+import { ClientDispatchersPopover } from "./ClientDispatchersPopover";
 
 interface ClientsGridProps {
   clients: Client[];
@@ -135,14 +136,17 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
                   <span className="text-muted-foreground">Dirección:</span>
                   <span className="flex-1">{client.address}</span>
                 </div>
-              )}
-
-              <div className="pt-2">
+                )}
+              
+              <div className="flex items-center justify-between pt-2">
+                <ClientDispatchersPopover 
+                  clientId={client.id} 
+                  clientName={client.alias || client.name}
+                />
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handleView(client)}
-                  className="w-full"
                 >
                   <Eye className="h-4 w-4 mr-2" />
                   Ver Detalles

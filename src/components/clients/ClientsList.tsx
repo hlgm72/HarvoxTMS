@@ -23,6 +23,7 @@ import {
 import { Client, useDeleteClient } from "@/hooks/useClients";
 import { EditClientDialog } from "./EditClientDialog";
 import { ClientDetailDialog } from "./ClientDetailDialog";
+import { ClientDispatchersPopover } from "./ClientDispatchersPopover";
 
 interface ClientsListProps {
   clients: Client[];
@@ -109,6 +110,10 @@ export function ClientsList({ clients }: ClientsListProps) {
                         {client.address}
                       </div>
                     )}
+                    <ClientDispatchersPopover 
+                      clientId={client.id} 
+                      clientName={client.alias || client.name}
+                    />
                   </div>
                 </div>
               </div>

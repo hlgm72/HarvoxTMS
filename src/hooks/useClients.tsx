@@ -64,6 +64,23 @@ export const useClientDispatchers = (clientId: string) => {
   });
 };
 
+// Get dispatcher count for a specific client
+export const useClientDispatcherCount = (clientId: string) => {
+  return useQuery({
+    queryKey: ["client-dispatcher-count", clientId],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("company_broker_dispatchers")
+        .select("*", { count: "exact", head: true })
+        .eq("broker_id", clientId);
+
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!clientId,
+  });
+};
+
 // Create a new client
 export const useCreateClient = () => {
   const queryClient = useQueryClient();
