@@ -22,11 +22,15 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 export function Header() {
   // Estado local para el menú como fallback
   const [localMenuOpen, setLocalMenuOpen] = useState(false);
+  const [isContextReady, setIsContextReady] = useState(false);
   
   // Intentar usar el contexto de sidebar de forma segura
   let sidebarContext;
   try {
     sidebarContext = useSidebar();
+    if (!isContextReady && sidebarContext) {
+      setIsContextReady(true);
+    }
   } catch (error) {
     console.log('Sidebar context not available, using local state');
     sidebarContext = null;
@@ -125,10 +129,19 @@ export function Header() {
           <Button 
             variant="ghost" 
             size="sm"
-            className="h-8 w-8 p-0 rounded-full border border-border bg-background shadow-md hover:shadow-lg transition-all duration-200"
+            className="h-8 w-8 p-0 rounded-full border border-border bg-background shadow-md hover:shadow-lg transition-all duration-200 relative z-30"
             onClick={() => {
-              console.log('Menu button clicked, current state:', sidebarOpen);
+              console.log('🔘 Menu button clicked, current state:', sidebarOpen);
+              console.log('🔘 Context ready:', isContextReady);
+              console.log('🔘 Has context:', !!sidebarContext);
               setSidebarOpen(!sidebarOpen);
+            }}
+            style={{ 
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              opacity: 1,
+              visibility: 'visible'
             }}
           >
             <Menu className="h-4 w-4" />
