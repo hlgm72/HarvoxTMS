@@ -462,59 +462,53 @@ export function AppSidebar() {
               
               return (
                  <SidebarMenuItem key={item.title}>
-                   <SidebarMenuButton 
-                     asChild 
-                     isActive={active}
-                     tooltip={collapsed ? item.title : undefined}
+                   <NavLink 
+                     to={item.url} 
+                     end 
+                     onClick={(e) => e.stopPropagation()}
+                     className={`group relative flex items-center gap-4 transition-all duration-200 ${
+                       collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'
+                     } ${
+                       active 
+                         ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                         : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                     }`}
+                     style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}
                    >
-                     <NavLink 
-                       to={item.url} 
-                       end 
-                       onClick={(e) => e.stopPropagation()}
-                       className={`group relative flex items-center gap-4 transition-all duration-200 ${
-                         collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'
-                       } ${
-                         active 
-                           ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
-                           : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
-                       }`}
-                       style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}
-                    >
-                      <IconComponent 
-                        className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
-                          active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
-                        }`} 
-                        style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }}
-                      />
-                     
-                     {!collapsed && (
-                       <div className="flex items-center justify-between flex-1 min-w-0">
-                         <span className="truncate" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}>
-                           {item.title}
-                         </span>
-                         
-                         {item.badge && (
-                            <Badge 
-                              variant="secondary" 
-                              className={`text-xs font-medium px-1.5 py-0.5 ml-2 rounded-md shadow-sm ${
-                                active 
-                                  ? "bg-white/30 text-white border-white/50" 
-                                  : "bg-white/15 text-white/90 border-white/30 group-hover:bg-white/25 group-hover:text-white"
-                              }`}
-                           >
-                             {item.badge}
-                           </Badge>
-                         )}
-                       </div>
-                     )}
-                     
-                     {/* Active indicator - exacto como Limitless */}
-                     {active && (
-                       <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
-                     )}
-                   </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                     <IconComponent 
+                       className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
+                         active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
+                       }`} 
+                       style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }}
+                     />
+                    
+                    {!collapsed && (
+                      <div className="flex items-center justify-between flex-1 min-w-0">
+                        <span className="truncate" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}>
+                          {item.title}
+                        </span>
+                        
+                        {item.badge && (
+                           <Badge 
+                             variant="secondary" 
+                             className={`text-xs font-medium px-1.5 py-0.5 ml-2 rounded-md shadow-sm ${
+                               active 
+                                 ? "bg-white/30 text-white border-white/50" 
+                                 : "bg-white/15 text-white/90 border-white/30 group-hover:bg-white/25 group-hover:text-white"
+                             }`}
+                          >
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Active indicator - exacto como Limitless */}
+                    {active && (
+                      <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
+                    )}
+                  </NavLink>
+                 </SidebarMenuItem>
               );
             })}
           </SidebarMenu>
