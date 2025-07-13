@@ -127,9 +127,9 @@ export function Header() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 rounded-full hover:bg-muted/50 transition-all duration-200 flex items-center gap-3 px-3">
-                <Avatar className="h-8 w-8 ring-2 ring-primary/10 transition-all duration-200 hover:ring-primary/20">
+                <Avatar className="h-10 w-10 ring-2 ring-primary/10 transition-all duration-200 hover:ring-primary/20">
                   <AvatarImage src={profile?.avatar_url || undefined} alt="Avatar" />
-                  <AvatarFallback className="bg-gradient-fleet text-white font-semibold text-sm">
+                  <AvatarFallback className="bg-gradient-fleet text-white font-semibold">
                     {getUserInitials()}
                   </AvatarFallback>
                 </Avatar>
