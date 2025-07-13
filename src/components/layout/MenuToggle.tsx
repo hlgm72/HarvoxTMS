@@ -65,11 +65,16 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
   
   return (
     <div 
-      className="flex-shrink-0 px-3 md:px-6" 
+      className="flex-shrink-0" 
       style={{ 
         position: 'relative', 
         zIndex: 100,
-        isolation: 'isolate'
+        isolation: 'isolate',
+        margin: 0,
+        padding: '12px 24px',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center'
       }}
     >
       <Button 
