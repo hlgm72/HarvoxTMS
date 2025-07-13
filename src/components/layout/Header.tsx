@@ -19,7 +19,12 @@ import { useFleetNotifications } from '@/components/notifications';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export function Header() {
-  const { open: sidebarOpen, setOpen: setSidebarOpen } = useSidebar();
+  const sidebarContext = useSidebar();
+  const { open: sidebarOpen, setOpen: setSidebarOpen } = sidebarContext || { open: false, setOpen: () => {} };
+  
+  console.log('Header render - sidebarContext:', sidebarContext);
+  console.log('Header render - sidebarOpen:', sidebarOpen);
+  
   const { t } = useTranslation(['common', 'fleet']);
   const { signOut } = useAuth();
   const { getUserInitials, getFullName, user, profile } = useUserProfile();
