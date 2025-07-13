@@ -2,61 +2,67 @@ import React, { useState, useEffect } from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./Sidebar";
 import { Header } from "./Header";
+import { SidebarCollapseButton } from "./SidebarCollapseButton";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [hasManuallyInteracted, setHasManuallyInteracted] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Cerrado por defecto para móviles
   
-  // Auto-open sidebar on desktop only if user hasn't manually interacted
+  // Abrir sidebar en desktop por defecto
   useEffect(() => {
-    const handleResize = () => {
-      const isDesktop = window.innerWidth >= 768;
-      
-      // Solo auto-manejar si el usuario no ha interactuado manualmente
-      if (!hasManuallyInteracted) {
-        if (isDesktop) {
-          setSidebarOpen(true);
-        } else {
-          setSidebarOpen(false);
-        }
+    const checkIsMobile = () => {
+      const isMobile = window.innerWidth < 768;
+      if (!isMobile) {
+        setSidebarOpen(true);
       }
     };
     
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [hasManuallyInteracted]);
-
-  // Wrapper para setSidebarOpen que marca interacción manual
-  const handleSidebarToggle = (open: boolean) => {
-    setHasManuallyInteracted(true);
-    setSidebarOpen(open);
-  };
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
   return (
     <SidebarProvider 
       open={sidebarOpen}
-      onOpenChange={handleSidebarToggle}
+      onOpenChange={setSidebarOpen}
     >
-      <div className="min-h-screen flex w-full bg-background">
-        {/* Sidebar - Only visible on desktop */}
-        <AppSidebar />
+      <div className="min-h-screen flex w-full bg-background prevent-horizontal-scroll">
+        {/* Sidebar desktop */}
+        <div className="relative hidden md:block">
+          <AppSidebar />
+          <SidebarCollapseButton />
+        </div>
         
         {/* Main content area */}
-        <SidebarInset className="flex flex-col flex-1 w-full min-w-0 overflow-x-hidden">
+        <SidebarInset className="flex flex-col flex-1 w-full md:w-auto min-w-0">
           <Header />
-          <main className="flex-1 bg-gradient-subtle p-2 md:p-4 overflow-x-auto">
-            <div className="h-full w-full max-w-none">
+          <main className="flex-1 bg-gradient-subtle p-2 md:p-4 overflow-x-hidden">
+            <div className="h-full max-w-full">
               <div className="animate-fade-in">
                 {children}
               </div>
             </div>
           </main>
         </SidebarInset>
+        
+        {/* Sidebar móvil como overlay */}
+        {sidebarOpen && (
+          <div 
+            className="md:hidden fixed inset-0 z-50 mobile-sidebar-overlay" 
+            onClick={() => setSidebarOpen(false)}
+          >
+            <div 
+              className="fixed left-0 top-0 h-full w-64 bg-fleet-blue transform transition-transform duration-300 ease-in-out shadow-2xl" 
+              onClick={(e) => e.stopPropagation()}
+            >
+              <AppSidebar />
+            </div>
+          </div>
+        )}
       </div>
     </SidebarProvider>
   );

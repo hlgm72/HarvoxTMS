@@ -563,8 +563,8 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="border-r border-[hsl(var(--sidebar-border))] data-[state=closed]:hidden md:data-[state=closed]:flex"
-      collapsible="icon"
+      className="border-r border-[hsl(var(--sidebar-border))]"
+      collapsible="none"
       variant="sidebar"
       side="left"
       style={{ 
