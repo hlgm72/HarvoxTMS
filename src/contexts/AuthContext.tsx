@@ -459,6 +459,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
             
             console.log('🏁 State updated with role:', selectedRole.role, '- LOADING SET TO FALSE');
+            console.log('🏁 AuthState after dispatch:', {
+              loading: false,
+              user: session.user.id,
+              currentRole: selectedRole.role,
+              userRoles: roles.length
+            });
           } else {
             console.log('❌ No roles available, setting loading to false');
             dispatch({ type: 'SET_LOADING', loading: false });
@@ -546,6 +552,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       currentRoleId: authState.currentRole?.id,
     }
   };
+  
+  // Log context value changes for debugging
+  if (authState.user && authState.currentRole) {
+    console.log('🔍 AuthContext providing values:', {
+      isAuthenticated: contextValue.isAuthenticated,
+      loading: contextValue.loading,
+      userRole: contextValue.userRole?.role,
+      currentRole: contextValue.currentRole?.role,
+      forceUpdate: contextValue._forceUpdate
+    });
+  }
 
   return (
     <AuthContext.Provider value={contextValue}>
