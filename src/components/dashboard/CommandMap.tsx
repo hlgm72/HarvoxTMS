@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader } from "@googlemaps/js-api-loader";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 
 interface Vehicle {
@@ -56,18 +57,106 @@ const convertToMph = (speedKmh: number | undefined): number => {
   return speedKmh ? Math.round(speedKmh * 0.621371) : 0;
 };
 
+// Estado coordinates mapping
+const getStateCoordinates = (stateId: string): { lat: number; lng: number } => {
+  const stateCoords: { [key: string]: { lat: number; lng: number } } = {
+    'AL': { lat: 32.7767, lng: -86.7999 },  // Alabama
+    'AK': { lat: 61.2181, lng: -149.9003 }, // Alaska
+    'AZ': { lat: 33.7712, lng: -111.3877 }, // Arizona
+    'AR': { lat: 34.9513, lng: -92.3809 },  // Arkansas
+    'CA': { lat: 36.1162, lng: -119.6816 }, // California
+    'CO': { lat: 39.0598, lng: -105.3111 }, // Colorado
+    'CT': { lat: 41.5978, lng: -72.7554 },  // Connecticut
+    'DE': { lat: 39.3185, lng: -75.5071 },  // Delaware
+    'FL': { lat: 27.8006, lng: -81.8168 },  // Florida
+    'GA': { lat: 33.0406, lng: -83.6431 },  // Georgia
+    'HI': { lat: 21.0943, lng: -157.4983 }, // Hawaii
+    'ID': { lat: 44.2405, lng: -114.4788 }, // Idaho
+    'IL': { lat: 40.3363, lng: -89.0022 },  // Illinois
+    'IN': { lat: 39.8647, lng: -86.2604 },  // Indiana
+    'IA': { lat: 42.0115, lng: -93.2105 },  // Iowa
+    'KS': { lat: 38.5266, lng: -96.7265 },  // Kansas
+    'KY': { lat: 37.6681, lng: -84.6701 },  // Kentucky
+    'LA': { lat: 31.1695, lng: -91.8678 },  // Louisiana
+    'ME': { lat: 44.6939, lng: -69.3819 },  // Maine
+    'MD': { lat: 39.0639, lng: -76.8021 },  // Maryland
+    'MA': { lat: 42.2373, lng: -71.5314 },  // Massachusetts
+    'MI': { lat: 43.3266, lng: -84.5361 },  // Michigan
+    'MN': { lat: 45.7326, lng: -93.9196 },  // Minnesota
+    'MS': { lat: 32.7364, lng: -89.6678 },  // Mississippi
+    'MO': { lat: 38.4623, lng: -92.3020 },  // Missouri
+    'MT': { lat: 47.0527, lng: -110.2143 }, // Montana
+    'NE': { lat: 41.1257, lng: -98.2482 },  // Nebraska
+    'NV': { lat: 38.3135, lng: -117.0554 }, // Nevada
+    'NH': { lat: 43.4525, lng: -71.5639 },  // New Hampshire
+    'NJ': { lat: 40.3573, lng: -74.4057 },  // New Jersey
+    'NM': { lat: 34.8405, lng: -106.2485 }, // New Mexico
+    'NY': { lat: 42.1657, lng: -74.9481 },  // New York
+    'NC': { lat: 35.6301, lng: -79.8064 },  // North Carolina
+    'ND': { lat: 47.5289, lng: -99.7840 },  // North Dakota
+    'OH': { lat: 40.3888, lng: -82.7649 },  // Ohio
+    'OK': { lat: 35.5653, lng: -96.9289 },  // Oklahoma
+    'OR': { lat: 44.5672, lng: -122.1269 }, // Oregon
+    'PA': { lat: 40.5908, lng: -77.2098 },  // Pennsylvania
+    'RI': { lat: 41.6809, lng: -71.5118 },  // Rhode Island
+    'SC': { lat: 33.8569, lng: -80.9450 },  // South Carolina
+    'SD': { lat: 44.2998, lng: -99.4388 },  // South Dakota
+    'TN': { lat: 35.7449, lng: -86.7489 },  // Tennessee
+    'TX': { lat: 31.0545, lng: -97.5635 },  // Texas
+    'UT': { lat: 40.1500, lng: -111.8947 }, // Utah
+    'VT': { lat: 44.0459, lng: -72.7107 },  // Vermont
+    'VA': { lat: 37.7693, lng: -78.2057 },  // Virginia
+    'WA': { lat: 47.4009, lng: -121.4905 }, // Washington
+    'WV': { lat: 38.4912, lng: -80.9540 },  // West Virginia
+    'WI': { lat: 44.2685, lng: -89.6165 },  // Wisconsin
+    'WY': { lat: 42.7559, lng: -107.3025 }  // Wyoming
+  };
+  
+  return stateCoords[stateId] || { lat: 39.8283, lng: -98.5795 }; // Default to US center
+};
+
 export function CommandMap() {
   const { t } = useTranslation(['common', 'fleet']);
+  const { userRole } = useAuth();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<google.maps.Map | null>(null);
   const markers = useRef<google.maps.Marker[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [companyInfo, setCompanyInfo] = useState<any>(null);
   const [googleApiKey, setGoogleApiKey] = useState<string>(() => {
     return localStorage.getItem('google-maps-api-key') || '';
   });
   const [isLoading, setIsLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState<string>('');
   const { toast } = useToast();
+
+  // Fetch company information
+  const fetchCompanyInfo = async () => {
+    if (!userRole?.company_id) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('companies')
+        .select('state_id, name')
+        .eq('id', userRole.company_id)
+        .single();
+
+      if (error) throw error;
+      setCompanyInfo(data);
+    } catch (error) {
+      console.error('Error fetching company info:', error);
+    }
+  };
+
+  // Get initial map center based on company location
+  const getInitialMapCenter = () => {
+    if (companyInfo?.state_id) {
+      console.log('🗺️ Setting map center for company state:', companyInfo.state_id);
+      return getStateCoordinates(companyInfo.state_id);
+    }
+    console.log('🗺️ Using default US center');
+    return { lat: 39.8283, lng: -98.5795 }; // Default US center
+  };
 
   // Load vehicles from database
   const loadVehicles = async () => {
@@ -182,9 +271,12 @@ export function CommandMap() {
     }
   };
 
-  // Initialize Google Maps
+  // Initialize Google Maps with company-based center
   useEffect(() => {
     if (!mapContainer.current || !googleApiKey) return;
+
+    const mapCenter = getInitialMapCenter();
+    const zoom = companyInfo?.state_id ? 6 : 4; // State level zoom vs national zoom
 
     const loader = new Loader({
       apiKey: googleApiKey,
@@ -195,8 +287,8 @@ export function CommandMap() {
     loader.load().then(() => {
       if (mapContainer.current) {
         map.current = new google.maps.Map(mapContainer.current, {
-          center: { lat: 39.8283, lng: -98.5795 }, // Centro geográfico de Estados Unidos
-          zoom: 4,
+          center: mapCenter,
+          zoom: zoom,
           mapTypeId: google.maps.MapTypeId.ROADMAP,
           styles: [
             {
@@ -216,7 +308,12 @@ export function CommandMap() {
       markers.current.forEach(marker => marker.setMap(null));
       markers.current = [];
     };
-  }, [googleApiKey]);
+  }, [googleApiKey, companyInfo]);
+
+  // Fetch company info when component mounts or userRole changes
+  useEffect(() => {
+    fetchCompanyInfo();
+  }, [userRole]);
 
   // Add vehicle markers to map
   useEffect(() => {
