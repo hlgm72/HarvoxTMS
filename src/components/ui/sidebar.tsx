@@ -205,11 +205,18 @@ const Sidebar = React.forwardRef<
             className="w-[280px] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden border-0"
             side="left"
             style={{
-              zIndex: 99999,
+              zIndex: 999999,
               position: 'fixed',
-              inset: 0,
+              top: 0,
+              left: 0,
+              height: '100vh',
+              width: '280px',
+              transform: openMobile ? 'translateX(0)' : 'translateX(-100%)',
+              transition: 'transform 0.3s ease-in-out',
               background: 'hsl(var(--sidebar))',
-              display: openMobile ? 'flex' : 'none'
+              display: 'block',
+              visibility: 'visible',
+              opacity: 1
             }}
           >
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
@@ -219,12 +226,15 @@ const Sidebar = React.forwardRef<
               style={{
                 background: 'hsl(var(--sidebar))',
                 color: 'hsl(var(--sidebar-foreground))',
-                minHeight: '100vh'
+                minHeight: '100vh',
+                position: 'relative',
+                zIndex: 1
               }}
             >
-              <div className="p-4 border-b border-sidebar-border">
-                <div className="text-lg font-semibold">🚀 MOBILE MENU VISIBLE!</div>
-                <div className="text-sm opacity-70">openMobile: {String(openMobile)}</div>
+              <div className="p-4 border-b border-sidebar-border bg-red-500 text-white">
+                <div className="text-lg font-bold">🚀 MOBILE MENU IS HERE!</div>
+                <div className="text-sm">openMobile: {String(openMobile)}</div>
+                <div className="text-sm">Window: {typeof window !== 'undefined' ? window.innerWidth : 'unknown'}</div>
               </div>
               {children}
             </div>
