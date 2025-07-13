@@ -10,6 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Upload, FileText, Download, Trash2, AlertCircle, CheckCircle, Calendar, Plus } from "lucide-react";
 import { CompanyDocumentUpload } from "@/components/documents/CompanyDocumentUpload";
 import { DocumentCard } from "@/components/documents/DocumentCard";
+import { PageToolbar } from "@/components/layout/PageToolbar";
+import { Layout } from "@/components/layout/Layout";
 
 // Tipos de documentos predefinidos con categorías
 const PREDEFINED_DOCUMENT_TYPES = {
@@ -164,40 +166,41 @@ export default function Documents() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Documentos de la Compañía</h1>
-          <p className="text-muted-foreground">
-            Gestiona todos los documentos legales, permisos y certificaciones de tu empresa
-          </p>
-        </div>
-        <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => handleOpenUploadDialog()}>
-              <Plus className="w-4 h-4 mr-2" />
-              Subir Documento
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Subir Nuevo Documento</DialogTitle>
-              <DialogDescription>
-                Selecciona el tipo de documento y sube el archivo correspondiente
-              </DialogDescription>
-            </DialogHeader>
-            <CompanyDocumentUpload
-              predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-              selectedType={selectedDocumentType}
-              onSuccess={() => {
-                setUploadDialogOpen(false);
-                queryClient.invalidateQueries({ queryKey: ["company-documents"] });
-              }}
-            />
-          </DialogContent>
-        </Dialog>
-      </div>
+    <Layout>
+      <PageToolbar 
+        breadcrumbs={[
+          { label: "Documentos" }
+        ]}
+        title="Documentos de la Compañía"
+        actions={
+          <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => handleOpenUploadDialog()}>
+                <Plus className="w-4 h-4 mr-2" />
+                Subir Documento
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Subir Nuevo Documento</DialogTitle>
+                <DialogDescription>
+                  Selecciona el tipo de documento y sube el archivo correspondiente
+                </DialogDescription>
+              </DialogHeader>
+              <CompanyDocumentUpload
+                predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                selectedType={selectedDocumentType}
+                onSuccess={() => {
+                  setUploadDialogOpen(false);
+                  queryClient.invalidateQueries({ queryKey: ["company-documents"] });
+                }}
+              />
+            </DialogContent>
+          </Dialog>
+        }
+      />
+      
+      <div className="container mx-auto p-6 space-y-6">
 
       {/* Status Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -352,6 +355,7 @@ export default function Documents() {
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </Layout>
   );
 }
