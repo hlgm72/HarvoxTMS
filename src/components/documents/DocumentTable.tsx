@@ -295,7 +295,7 @@ export function DocumentTable({
           </TableHeader>
           <TableBody>
             {groupedDocuments.map((group, groupIndex) => (
-              <React.Fragment key={groupIndex}>
+              <React.Fragment key={`group-${groupIndex}`}>
                 {/* Group header */}
                 {groupBy !== 'none' && group.title && (
                   <TableRow className="bg-muted/30">
