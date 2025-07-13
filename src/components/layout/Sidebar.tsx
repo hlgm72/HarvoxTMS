@@ -491,7 +491,7 @@ export function AppSidebar() {
                          {item.badge && (
                             <Badge 
                               variant="secondary" 
-                              className={`text-sm font-bold px-2 py-1 ml-3 rounded-md shadow-sm ${
+                              className={`text-xs font-medium px-1.5 py-0.5 ml-2 rounded-md shadow-sm ${
                                 active 
                                   ? "bg-white/30 text-white border-white/50" 
                                   : "bg-white/15 text-white/90 border-white/30 group-hover:bg-white/25 group-hover:text-white"
