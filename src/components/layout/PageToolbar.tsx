@@ -49,7 +49,7 @@ export function PageToolbar({
     return "/dashboard";
   };
   return (
-    <div className="border-b border-border bg-card backdrop-blur supports-[backdrop-filter]:bg-card/92">
+    <div className="w-full border-b border-border bg-card backdrop-blur supports-[backdrop-filter]:bg-card/92">
       <div className="px-3 md:px-6 py-3 md:py-4 space-y-2 md:space-y-3">
         {/* Breadcrumb */}
         <Breadcrumb>
