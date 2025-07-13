@@ -104,7 +104,7 @@ All colors MUST be HSL.
 
   .dark {
     /* Dark mode - usando color personalizado */
-    --background: 224 50% 97%;         /* #f2f4f8 - Gris claro personalizado */
+    --background: 228 33% 97%;         /* #f2f4f8 - Conversión HSL correcta */
     --foreground: 222 84% 4%;
 
     --card: 222.2 84% 4.9%;
