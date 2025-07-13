@@ -198,17 +198,15 @@ const Sidebar = React.forwardRef<
       });
       
       return (
-        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+        <Sheet open={openMobile} onOpenChange={setOpenMobile}>
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
-            className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
-            style={
-              {
-                "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-              } as React.CSSProperties
-            }
-            side={side}
+            className="w-[280px] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+            side="left"
+            style={{
+              zIndex: 9999
+            }}
           >
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
             <SheetDescription className="sr-only">Main navigation for the application</SheetDescription>
