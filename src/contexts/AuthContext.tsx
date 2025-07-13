@@ -414,19 +414,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [authState.userRoles, authState.currentRole]);
 
+  const hasInitializedRef = useRef(false);
+
   useEffect(() => {
     let isMounted = true;
-    let hasInitialized = false;
 
     const handleSession = async (session: Session | null) => {
-      if (!isMounted || hasInitialized) return;
+      if (!isMounted) return;
       
       console.log('🚀 HandleSession called for user:', session?.user?.id);
       console.log('🚀 Session exists:', !!session);
-      console.log('🚀 hasInitialized:', hasInitialized);
+      console.log('🚀 hasInitialized:', hasInitializedRef.current);
       
       // Marcar como inicializado INMEDIATAMENTE para evitar múltiples ejecuciones
-      hasInitialized = true;
+      hasInitializedRef.current = true;
       
       try {
         dispatch({ type: 'SET_SESSION', session, user: session?.user ?? null });
@@ -472,7 +473,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
         }
         
-        console.log('✅ Session handling completed, hasInitialized:', hasInitialized);
+        console.log('✅ Session handling completed, hasInitialized:', hasInitializedRef.current);
       } catch (error) {
         console.error('💥 Error in handleSession:', error);
         dispatch({ 
@@ -490,10 +491,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('Auth state change:', event, session?.user?.id);
         
         if (event === 'SIGNED_OUT') {
-          hasInitialized = false;
+          hasInitializedRef.current = false;
         }
         
-        if (!hasInitialized) {
+        if (!hasInitializedRef.current) {
           await handleSession(session);
         }
       }
@@ -501,12 +502,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session && isMounted && !hasInitialized) {
+      if (session && isMounted && !hasInitializedRef.current) {
         handleSession(session);
-      } else if (!session && !hasInitialized) {
+      } else if (!session && !hasInitializedRef.current) {
         // No session, stop loading
         dispatch({ type: 'SET_LOADING', loading: false });
-        hasInitialized = true;
+        hasInitializedRef.current = true;
       }
     });
 
