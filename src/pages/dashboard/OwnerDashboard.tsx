@@ -14,6 +14,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useFleetNotifications } from '@/components/notifications';
 import { CompanySettingsForm } from '@/components/companies/settings/CompanySettingsForm';
+import { PageToolbar } from '@/components/layout/PageToolbar';
 import { Company } from '@/types/company';
 
 // Types
@@ -236,67 +237,15 @@ export default function OwnerDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      {/* Header */}
-      <div className="bg-primary text-white shadow-lg relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-32 translate-x-32"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-24 -translate-x-24"></div>
-        </div>
-        
-        <div className="relative p-8">
-          <div className="flex justify-between items-start">
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                {companyInfo?.logo_url ? (
-                  <div className="h-16 w-16 rounded-full overflow-hidden bg-white flex-shrink-0 border-2 border-white/20">
-                    <img 
-                      src={companyInfo.logo_url} 
-                      alt={`Logo de ${companyInfo.name || 'la empresa'}`}
-                      className="h-full w-full object-cover object-center"
-                    />
-                  </div>
-                ) : (
-                  <div className="h-16 w-16 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 border-2 border-white/20">
-                    <Building className="h-8 w-8 text-white" />
-                  </div>
-                )}
-                <div>
-                  <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in text-white">
-                    {companyInfo?.name || 'Mi Empresa'}
-                  </h1>
-                  <p className="text-white font-body text-lg">Dashboard Ejecutivo</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-4 animate-fade-in" style={{animationDelay: '0.1s'}}>
-                <Badge variant="secondary" className="bg-white text-primary border-0 hover:bg-white/90 transition-colors font-semibold">
-                  <Building className="h-3 w-3 mr-1" />
-                  Propietario
-                </Badge>
-                <div className="flex items-center gap-2 text-white">
-                  <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium">Sistema Operativo</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex gap-3 animate-fade-in" style={{animationDelay: '0.2s'}}>
-              <Button 
-                variant="outline" 
-                className="bg-white/10 border-white text-white hover:bg-white hover:text-primary transition-all hover:scale-105 font-medium"
-                onClick={() => setActiveTab('settings')}
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                Configuración
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-8">
+    <>
+      <PageToolbar 
+        breadcrumbs={[
+          { label: "Dashboard Ejecutivo" }
+        ]}
+      />
+      <div className="p-6 min-h-screen bg-gradient-subtle">
+        {/* Content */}
+        <div className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm border">
             <TabsTrigger value="overview" className="flex items-center gap-2">
@@ -511,7 +460,8 @@ export default function OwnerDashboard() {
             />
           </TabsContent>
         </Tabs>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

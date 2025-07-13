@@ -3,6 +3,7 @@ import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { CommandMap } from "@/components/dashboard/CommandMap";
 import { DispatchPanel } from "@/components/dashboard/DispatchPanel";
 import { FleetStatus } from "@/components/dashboard/FleetStatus";
+import { PageToolbar } from "@/components/layout/PageToolbar";
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,21 +14,13 @@ export default function DispatcherDashboard() {
   const { t } = useTranslation(['common', 'fleet']);
   
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-fleet bg-clip-text text-transparent mb-2">
-            Panel de Despacho
-          </h1>
-          <p className="text-muted-foreground flex items-center gap-2">
-            <span className="w-2 h-2 bg-fleet-green rounded-full animate-pulse"></span>
-            Operaciones en tiempo real • {new Date().toLocaleDateString('es-ES')}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>🕐 {new Date().toLocaleTimeString('es-ES')}</span>
-        </div>
-      </div>
+    <>
+      <PageToolbar 
+        breadcrumbs={[
+          { label: "Panel de Despacho" }
+        ]}
+      />
+      <div className="p-6 space-y-6">
 
       {/* Dispatch KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -176,6 +169,7 @@ export default function DispatcherDashboard() {
           <RecentActivity />
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

@@ -3,27 +3,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { PageToolbar } from "@/components/layout/PageToolbar";
 import { MapPin, Clock, DollarSign, Fuel, Phone, MessageSquare, FileText, AlertTriangle } from "lucide-react";
 
 export default function DriverDashboard() {
   const { t } = useTranslation(['common', 'fleet']);
   
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-fleet bg-clip-text text-transparent mb-2">
-            Mi Dashboard
-          </h1>
-          <p className="text-muted-foreground flex items-center gap-2">
-            <span className="w-2 h-2 bg-fleet-green rounded-full animate-pulse"></span>
-            Bienvenido, Juan Pérez • {new Date().toLocaleDateString('es-ES')}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>🕐 {new Date().toLocaleTimeString('es-ES')}</span>
-        </div>
-      </div>
+    <>
+      <PageToolbar 
+        breadcrumbs={[
+          { label: "Mi Dashboard" }
+        ]}
+      />
+      <div className="p-6 space-y-6">
 
       {/* Driver Status & Current Load */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -276,6 +269,7 @@ export default function DriverDashboard() {
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
