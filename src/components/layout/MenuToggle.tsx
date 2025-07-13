@@ -22,28 +22,27 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
   }
   
   const handleToggle = useCallback(() => {
-    const isMobileDevice = window.innerWidth < 768;
-    console.log('🔥 MOBILE MENU DEBUG:', {
-      isMobile: isMobileDevice,
+    console.log('🔥 MENU DEBUG:', {
+      isMobileHook: isMobile,
       windowWidth: window.innerWidth,
       hasContext: !!sidebarContext,
+      contextIsMobile: sidebarContext?.isMobile,
       currentOpenMobile: sidebarContext?.openMobile,
-      currentOpen: sidebarContext?.open,
-      isMobileHook: sidebarContext?.isMobile
+      currentOpen: sidebarContext?.open
     });
     
     if (sidebarContext) {
-      if (isMobileDevice) {
-        // En móvil, usar setOpenMobile directamente
+      // Usar la detección de móvil del contexto del sidebar, que es más confiable
+      if (sidebarContext.isMobile) {
+        // En móvil, usar setOpenMobile
         const newMobileState = !sidebarContext.openMobile;
-        console.log('📱 Setting mobile state to:', newMobileState);
-        console.log('📱 Sidebar context isMobile:', sidebarContext.isMobile);
+        console.log('📱 Mobile: Setting openMobile to:', newMobileState);
         sidebarContext.setOpenMobile(newMobileState);
         onToggle?.(newMobileState);
       } else {
         // En desktop, usar setOpen
         const newDesktopState = !sidebarContext.open;
-        console.log('💻 Setting desktop state to:', newDesktopState);
+        console.log('💻 Desktop: Setting open to:', newDesktopState);
         sidebarContext.setOpen(newDesktopState);
         onToggle?.(newDesktopState);
       }
@@ -62,7 +61,7 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
       
       onToggle?.(newState);
     }
-  }, [isOpen, onToggle, sidebarContext]);
+  }, [isOpen, onToggle, sidebarContext, isMobile]);
   
   return (
     <div 
