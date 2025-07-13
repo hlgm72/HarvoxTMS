@@ -29,7 +29,7 @@ export function PageToolbar({
   viewToggle 
 }: PageToolbarProps) {
   return (
-    <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="border-b border-border bg-slate-50/95 backdrop-blur supports-[backdrop-filter]:bg-slate-50/90">
       <div className="px-6 py-4 space-y-3">
         {/* Breadcrumb */}
         <Breadcrumb>
