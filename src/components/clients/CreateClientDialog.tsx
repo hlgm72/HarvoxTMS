@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { Building2, Users, Plus, Trash2, ArrowLeft, ArrowRight } from "lucide-react";
+import { createTextHandlers, createPhoneHandlers } from "@/lib/textUtils";
 import { ClientLogoUpload } from "./ClientLogoUpload";
 import {
   Dialog,
@@ -150,93 +151,147 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
                     control={form.control}
                     name="name"
                     rules={{ required: "El nombre es requerido" }}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nombre de la Empresa *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Ej. ABC Transport LLC" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      const handlers = createTextHandlers(field.onChange, 'text');
+                      return (
+                        <FormItem>
+                          <FormLabel>Nombre de la Empresa *</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Ej. ABC Transport LLC" 
+                              value={field.value}
+                              onChange={handlers.onChange}
+                              onBlur={handlers.onBlur}
+                              name={field.name}
+                              ref={field.ref}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
                   />
 
                   <FormField
                     control={form.control}
                     name="alias"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nombre Comercial / Alias</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Ej. ABC Transport" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      const handlers = createTextHandlers(field.onChange, 'text');
+                      return (
+                        <FormItem>
+                          <FormLabel>Nombre Comercial / Alias</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Ej. ABC Transport" 
+                              value={field.value}
+                              onChange={handlers.onChange}
+                              onBlur={handlers.onBlur}
+                              name={field.name}
+                              ref={field.ref}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
                   />
 
                   <FormField
                     control={form.control}
                     name="contact_person"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Persona de Contacto</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Ej. Juan Pérez" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      const handlers = createTextHandlers(field.onChange, 'text');
+                      return (
+                        <FormItem>
+                          <FormLabel>Persona de Contacto</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Ej. Juan Pérez" 
+                              value={field.value}
+                              onChange={handlers.onChange}
+                              onBlur={handlers.onBlur}
+                              name={field.name}
+                              ref={field.ref}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
                   />
 
                   <FormField
                     control={form.control}
                     name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="correo@empresa.com"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      const handlers = createTextHandlers(field.onChange, 'email');
+                      return (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              placeholder="correo@empresa.com"
+                              value={field.value}
+                              onChange={handlers.onChange}
+                              onBlur={handlers.onBlur}
+                              name={field.name}
+                              ref={field.ref}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
                   />
 
                   <FormField
                     control={form.control}
                     name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Teléfono</FormLabel>
-                        <FormControl>
-                          <Input placeholder="(555) 123-4567" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      const handlers = createPhoneHandlers(field.onChange);
+                      return (
+                        <FormItem>
+                          <FormLabel>Teléfono</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="(555) 123-4567" 
+                              value={field.value}
+                              onChange={handlers.onChange}
+                              onKeyPress={handlers.onKeyPress}
+                              name={field.name}
+                              ref={field.ref}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
                   />
                 </div>
 
                 <FormField
                   control={form.control}
                   name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Dirección</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="123 Main St, Ciudad, Estado, CP"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const handlers = createTextHandlers(field.onChange, 'text');
+                    return (
+                      <FormItem>
+                        <FormLabel>Dirección</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="123 Main St, Ciudad, Estado, CP"
+                            value={field.value}
+                            onChange={handlers.onChange}
+                            onBlur={handlers.onBlur}
+                            name={field.name}
+                            ref={field.ref}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
 
                 <FormField
@@ -341,75 +396,122 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
                               control={form.control}
                               name={`dispatchers.${index}.name`}
                               rules={{ required: "El nombre es requerido" }}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Nombre Completo *</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Ej. María González" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                              render={({ field }) => {
+                                const handlers = createTextHandlers(field.onChange, 'text');
+                                return (
+                                  <FormItem>
+                                    <FormLabel>Nombre Completo *</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        placeholder="Ej. María González" 
+                                        value={field.value}
+                                        onChange={handlers.onChange}
+                                        onBlur={handlers.onBlur}
+                                        name={field.name}
+                                        ref={field.ref}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                );
+                              }}
                             />
 
                             <FormField
                               control={form.control}
                               name={`dispatchers.${index}.email`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Email</FormLabel>
-                                  <FormControl>
-                                    <Input 
-                                      type="email" 
-                                      placeholder="maria@empresa.com" 
-                                      {...field} 
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                              render={({ field }) => {
+                                const handlers = createTextHandlers(field.onChange, 'email');
+                                return (
+                                  <FormItem>
+                                    <FormLabel>Email</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        type="email" 
+                                        placeholder="maria@empresa.com" 
+                                        value={field.value}
+                                        onChange={handlers.onChange}
+                                        onBlur={handlers.onBlur}
+                                        name={field.name}
+                                        ref={field.ref}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                );
+                              }}
                             />
 
                             <FormField
                               control={form.control}
                               name={`dispatchers.${index}.phone_office`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Teléfono Oficina</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="(555) 987-6543" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                              render={({ field }) => {
+                                const handlers = createPhoneHandlers(field.onChange);
+                                return (
+                                  <FormItem>
+                                    <FormLabel>Teléfono Oficina</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        placeholder="(555) 987-6543" 
+                                        value={field.value}
+                                        onChange={handlers.onChange}
+                                        onKeyPress={handlers.onKeyPress}
+                                        name={field.name}
+                                        ref={field.ref}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                );
+                              }}
                             />
 
                             <FormField
                               control={form.control}
                               name={`dispatchers.${index}.phone_mobile`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Teléfono Móvil</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="(555) 123-4567" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                              render={({ field }) => {
+                                const handlers = createPhoneHandlers(field.onChange);
+                                return (
+                                  <FormItem>
+                                    <FormLabel>Teléfono Móvil</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        placeholder="(555) 123-4567" 
+                                        value={field.value}
+                                        onChange={handlers.onChange}
+                                        onKeyPress={handlers.onKeyPress}
+                                        name={field.name}
+                                        ref={field.ref}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                );
+                              }}
                             />
 
                             <FormField
                               control={form.control}
                               name={`dispatchers.${index}.extension`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Extensión</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="1234" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                              render={({ field }) => {
+                                const handlers = createTextHandlers(field.onChange, 'text');
+                                return (
+                                  <FormItem>
+                                    <FormLabel>Extensión</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        placeholder="1234" 
+                                        value={field.value}
+                                        onChange={handlers.onChange}
+                                        onBlur={handlers.onBlur}
+                                        name={field.name}
+                                        ref={field.ref}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                );
+                              }}
                             />
                           </div>
 
