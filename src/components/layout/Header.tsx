@@ -146,7 +146,7 @@ export function Header() {
                 <DropdownMenuItem asChild className="p-3 cursor-pointer rounded-lg hover:bg-accent text-foreground transition-colors">
                   <Link to="/profile" className="w-full flex items-center">
                     <User className="mr-3 h-4 w-4" />
-                    {t('common:navigation.profile', 'Perfil')}
+                    {t('common:navigation.profile', 'Mi Perfil')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="p-3 cursor-pointer rounded-lg hover:bg-accent text-foreground transition-colors">
