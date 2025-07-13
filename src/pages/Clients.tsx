@@ -49,13 +49,14 @@ export default function Clients() {
   };
 
   const breadcrumbs = [
-    { label: "Clientes" }
+    { label: "Gestión de Clientes" }
   ];
 
   return (
     <Layout>
       <PageToolbar
         breadcrumbs={breadcrumbs}
+        title="Gestión de Clientes"
         actions={
           <Button 
             onClick={() => setShowCreateDialog(true)}
