@@ -1,4 +1,5 @@
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import React, { useState } from "react";
+import { SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { SidebarCollapseButton } from "./SidebarCollapseButton";
@@ -8,30 +9,28 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
+  const [collapsed, setCollapsed] = useState(false);
+  
+  const toggleSidebar = () => {
+    setCollapsed(prev => !prev);
+  };
+
   return (
-    <SidebarProvider 
-      defaultOpen
-      onOpenChange={(open) => {
-        // Solo permitir cambios desde el trigger externo
-        console.log('SidebarProvider onOpenChange:', open);
-      }}
-    >
-      <div className="min-h-screen flex w-full bg-background">
-        <div className="relative">
-          <AppSidebar />
-          <SidebarCollapseButton />
-        </div>
-        <SidebarInset className="flex flex-col flex-1">
-          <Header />
-          <main className="flex-1 bg-gradient-subtle">
-            <div className="h-full">
-              <div className="animate-fade-in">
-                {children}
-              </div>
-            </div>
-          </main>
-        </SidebarInset>
+    <div className="min-h-screen flex w-full bg-background">
+      <div className="relative">
+        <AppSidebar collapsed={collapsed} />
+        <SidebarCollapseButton collapsed={collapsed} toggleSidebar={toggleSidebar} />
       </div>
-    </SidebarProvider>
+      <div className="flex flex-col flex-1">
+        <Header />
+        <main className="flex-1 bg-gradient-subtle">
+          <div className="h-full">
+            <div className="animate-fade-in">
+              {children}
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
   );
 }
