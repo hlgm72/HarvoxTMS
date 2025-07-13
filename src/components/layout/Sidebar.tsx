@@ -479,10 +479,10 @@ export function AppSidebar() {
                        }`}
                     >
                       <IconComponent 
-                        className={`!h-10 !w-10 flex-shrink-0 transition-all duration-200 ${
+                        className={`!h-8 !w-8 flex-shrink-0 transition-all duration-200 ${
                           active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
                         }`} 
-                        style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}
+                        style={{ width: '32px', height: '32px', minWidth: '32px', minHeight: '32px' }}
                       />
                      
                      {!collapsed && (
