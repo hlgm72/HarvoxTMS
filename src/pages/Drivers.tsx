@@ -8,6 +8,8 @@ import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { UserPlus } from "lucide-react";
+import { useState } from "react";
+import { InviteDriverDialog } from "@/components/drivers/InviteDriverDialog";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -90,7 +92,8 @@ const DriverSkeleton = () => (
 );
 
 export default function Drivers() {
-  const { drivers, loading } = useCompanyDrivers();
+  const { drivers, loading, refetch } = useCompanyDrivers();
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
 
   if (loading) {
     return (
@@ -100,7 +103,7 @@ export default function Drivers() {
             { label: "Gestión de Conductores" }
           ]}
           actions={
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />
               Nuevo Conductor
             </Button>
@@ -126,7 +129,7 @@ export default function Drivers() {
             { label: "Gestión de Conductores" }
           ]}
           actions={
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />
               Nuevo Conductor
             </Button>
@@ -140,7 +143,7 @@ export default function Drivers() {
             <p className="text-muted-foreground mb-4">
               Comienza agregando conductores a tu flota
             </p>
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />
               Invitar Primer Conductor
             </Button>
@@ -158,7 +161,7 @@ export default function Drivers() {
           ]}
           title={`Gestión de Conductores (${drivers.length})`}
           actions={
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />
               Nuevo Conductor
             </Button>
@@ -250,6 +253,14 @@ export default function Drivers() {
           })}
         </div>
       </div>
+
+      <InviteDriverDialog
+        isOpen={showInviteDialog}
+        onClose={() => setShowInviteDialog(false)}
+        onSuccess={() => {
+          refetch();
+        }}
+      />
     </>
   );
 }
