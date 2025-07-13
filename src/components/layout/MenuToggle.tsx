@@ -1,6 +1,9 @@
-import { useState, useCallback } from "react";
+
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useSidebar } from "@/components/ui/sidebar";
 
 interface MenuToggleProps {
   onToggle?: (isOpen: boolean) => void;
@@ -8,21 +11,41 @@ interface MenuToggleProps {
 
 export function MenuToggle({ onToggle }: MenuToggleProps) {
   const [isOpen, setIsOpen] = useState(true);
+  const isMobile = useIsMobile();
+  
+  // Intentar usar useSidebar si está disponible, sino usar eventos personalizados
+  let sidebarContext = null;
+  try {
+    sidebarContext = useSidebar();
+  } catch (error) {
+    // No hay contexto de sidebar disponible
+  }
   
   const handleToggle = useCallback(() => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    
-    console.log('🔘 Independent menu toggle:', newState);
-    
-    // Notificar al sidebar mediante evento personalizado
-    window.dispatchEvent(new CustomEvent('independent-sidebar-toggle', { 
-      detail: { open: newState } 
-    }));
+    if (isMobile && sidebarContext) {
+      // En móvil, usar el contexto del sidebar directamente
+      sidebarContext.setOpenMobile(!sidebarContext.openMobile);
+      console.log('📱 Mobile sidebar toggle:', !sidebarContext.openMobile);
+    } else if (!isMobile && sidebarContext) {
+      // En desktop, usar el contexto del sidebar
+      sidebarContext.setOpen(!sidebarContext.open);
+      console.log('💻 Desktop sidebar toggle:', !sidebarContext.open);
+    } else {
+      // Fallback: usar eventos personalizados y estado local
+      const newState = !isOpen;
+      setIsOpen(newState);
+      
+      console.log('🔘 Independent menu toggle:', newState);
+      
+      // Notificar al sidebar mediante evento personalizado
+      window.dispatchEvent(new CustomEvent('independent-sidebar-toggle', { 
+        detail: { open: newState } 
+      }));
+    }
     
     // Llamar callback si existe
-    onToggle?.(newState);
-  }, [isOpen, onToggle]);
+    onToggle?.(isOpen);
+  }, [isOpen, onToggle, isMobile, sidebarContext]);
   
   return (
     <div 

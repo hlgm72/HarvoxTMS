@@ -373,7 +373,7 @@ const getSuperAdminNavigationItems = (t: any) => [
 
 export function AppSidebar() {
   const { t } = useTranslation(['admin', 'common']);
-  const { state, setOpen } = useSidebar();
+  const { state, setOpen, openMobile, setOpenMobile } = useSidebar();
   const { 
     isSuperAdmin, 
     isCompanyOwner, 
@@ -388,11 +388,14 @@ export function AppSidebar() {
   const { companies, selectedCompany, setSelectedCompany, loading } = useUserCompanies();
   const { driversCount } = useDriversCount();
   
-  // Escuchar eventos del botón independiente
+  // Escuchar eventos del botón independiente solo para desktop
   useEffect(() => {
     const handleIndependentToggle = (event: CustomEvent) => {
       console.log('📡 Sidebar received independent toggle:', event.detail);
-      setOpen(event.detail.open);
+      // Solo aplicar en desktop, en móvil el MenuToggle maneja directamente el contexto
+      if (window.innerWidth >= 768) {
+        setOpen(event.detail.open);
+      }
     };
     
     window.addEventListener('independent-sidebar-toggle', handleIndependentToggle as EventListener);
@@ -407,7 +410,7 @@ export function AppSidebar() {
   const handleNavClick = () => {
     // Cerrar sidebar en móviles cuando se hace click en un enlace
     if (window.innerWidth < 768) {
-      setOpen(false);
+      setOpenMobile(false);
     }
   };
   
