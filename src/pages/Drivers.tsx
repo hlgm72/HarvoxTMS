@@ -106,7 +106,7 @@ export default function Drivers() {
             </Button>
           }
         />
-        <div className="p-6 space-y-6 bg-card">
+        <div className="p-6 space-y-6">
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
@@ -132,7 +132,7 @@ export default function Drivers() {
             </Button>
           }
         />
-        <div className="p-6 space-y-6 bg-card">
+        <div className="p-6 space-y-6">
 
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="text-6xl mb-4">🚛</div>
@@ -164,7 +164,7 @@ export default function Drivers() {
             </Button>
           }
         />
-        <div className="p-6 space-y-6 bg-card">
+        <div className="p-6 space-y-6">
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {drivers.map((driver) => {
