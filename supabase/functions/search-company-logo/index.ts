@@ -8,7 +8,7 @@ const corsHeaders = {
 interface LogoSearchResult {
   success: boolean;
   logoUrl?: string;
-  source?: 'clearbit' | 'google' | 'iconhorse';
+  source?: 'clearbit' | 'google' | 'iconhorse' | 'website' | 'logosearch';
   error?: string;
 }
 
@@ -40,6 +40,99 @@ async function searchWithGoogle(domain: string): Promise<string | null> {
     }
   } catch (error) {
     console.error('Google Favicon error:', error);
+  }
+  return null;
+}
+
+async function searchWebsiteLogo(domain: string): Promise<string | null> {
+  try {
+    // Try common logo paths on the website
+    const logoPaths = [
+      '/logo.svg',
+      '/logo.png', 
+      '/assets/logo.svg',
+      '/assets/logo.png',
+      '/images/logo.svg',
+      '/images/logo.png',
+      '/static/logo.svg',
+      '/static/logo.png'
+    ];
+
+    for (const path of logoPaths) {
+      try {
+        const logoUrl = `https://${domain}${path}`;
+        const response = await fetch(logoUrl, { method: 'HEAD' });
+        
+        if (response.ok) {
+          return logoUrl;
+        }
+      } catch (error) {
+        // Continue to next path
+        continue;
+      }
+    }
+
+    // Try to scrape the website for logo in meta tags or common selectors
+    try {
+      const response = await fetch(`https://${domain}`, { 
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; LogoBot/1.0)' }
+      });
+      
+      if (response.ok) {
+        const html = await response.text();
+        
+        // Look for common logo patterns in HTML
+        const logoPatterns = [
+          /<link[^>]*rel=["']apple-touch-icon["'][^>]*href=["']([^"']+)["']/i,
+          /<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i,
+          /<img[^>]*class=["'][^"']*logo[^"']*["'][^>]*src=["']([^"']+)["']/i,
+          /<img[^>]*alt=["'][^"']*logo[^"']*["'][^>]*src=["']([^"']+)["']/i
+        ];
+
+        for (const pattern of logoPatterns) {
+          const match = html.match(pattern);
+          if (match && match[1]) {
+            let logoUrl = match[1];
+            // Convert relative URLs to absolute
+            if (logoUrl.startsWith('/')) {
+              logoUrl = `https://${domain}${logoUrl}`;
+            } else if (logoUrl.startsWith('./')) {
+              logoUrl = `https://${domain}/${logoUrl.substring(2)}`;
+            } else if (!logoUrl.startsWith('http')) {
+              logoUrl = `https://${domain}/${logoUrl}`;
+            }
+            
+            // Verify the logo exists
+            const verifyResponse = await fetch(logoUrl, { method: 'HEAD' });
+            if (verifyResponse.ok) {
+              return logoUrl;
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Website scraping error:', error);
+    }
+
+  } catch (error) {
+    console.error('Website logo search error:', error);
+  }
+  return null;
+}
+
+async function searchWithLogoSearch(domain: string): Promise<string | null> {
+  try {
+    // LogoSearch API - free tier available
+    const logoUrl = `https://api.logo.dev/${domain}?format=png&size=400`;
+    
+    // Test if the logo exists
+    const response = await fetch(logoUrl, { method: 'HEAD' });
+    
+    if (response.ok) {
+      return logoUrl;
+    }
+  } catch (error) {
+    console.error('LogoSearch error:', error);
   }
   return null;
 }
@@ -125,15 +218,31 @@ serve(async (req) => {
     console.log(`Searching logo for domain: ${domain}`);
 
     let logoUrl: string | null = null;
-    let source: 'clearbit' | 'google' | 'iconhorse' | undefined = undefined;
+    let source: 'clearbit' | 'google' | 'iconhorse' | 'website' | 'logosearch' | undefined = undefined;
 
-    // Try Clearbit first
+    // Try Clearbit first (best quality for business logos)
     logoUrl = await searchWithClearbit(domain);
     if (logoUrl) {
       source = 'clearbit';
     }
 
-    // Try Google Favicon if Clearbit failed
+    // Try website scraping if Clearbit failed (direct from source)
+    if (!logoUrl) {
+      logoUrl = await searchWebsiteLogo(domain);
+      if (logoUrl) {
+        source = 'website';
+      }
+    }
+
+    // Try LogoSearch API if previous failed (good business database)
+    if (!logoUrl) {
+      logoUrl = await searchWithLogoSearch(domain);
+      if (logoUrl) {
+        source = 'logosearch';
+      }
+    }
+
+    // Try Google Favicon if others failed
     if (!logoUrl) {
       logoUrl = await searchWithGoogle(domain);
       if (logoUrl) {

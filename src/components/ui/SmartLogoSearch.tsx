@@ -64,6 +64,8 @@ export function SmartLogoSearch({
   const getSourceBadgeColor = (source: string) => {
     switch (source) {
       case 'clearbit': return 'default';
+      case 'website': return 'default';
+      case 'logosearch': return 'secondary';
       case 'google': return 'secondary';
       case 'iconhorse': return 'destructive';
       default: return 'outline';
@@ -73,6 +75,8 @@ export function SmartLogoSearch({
   const getSourceLabel = (source: string) => {
     switch (source) {
       case 'clearbit': return 'Clearbit';
+      case 'website': return 'Sitio Web';
+      case 'logosearch': return 'LogoSearch';
       case 'google': return 'Google';
       case 'iconhorse': return 'Iconhorse';
       default: return 'Encontrado';
