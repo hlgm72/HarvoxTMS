@@ -22,6 +22,7 @@ import Landing from "./pages/Landing";
 import Drivers from "./pages/Drivers";
 import Settings from "./pages/Settings";
 import Clients from "./pages/Clients";
+import Documents from "./pages/Documents";
 import EagleDemo from "./pages/EagleDemo";
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -206,7 +207,7 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <Layout>
-                <div>Documents page coming soon</div>
+                <Documents />
               </Layout>
             </ProtectedRoute>
           } 
