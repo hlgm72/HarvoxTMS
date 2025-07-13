@@ -449,9 +449,11 @@ export function AppSidebar() {
 
     return (
       <SidebarGroup key={sectionName} className="mb-2">
-        <SidebarGroupLabel className="px-4 py-2 text-xs font-medium text-white/70 uppercase tracking-wide">
-          {sectionLabel}
-        </SidebarGroupLabel>
+        {!collapsed && (
+          <SidebarGroupLabel className="px-4 py-2 text-xs font-medium text-white/70 uppercase tracking-wide">
+            {sectionLabel}
+          </SidebarGroupLabel>
+        )}
         <SidebarGroupContent>
           <SidebarMenu className="space-y-0">
             {sectionItems.map((item: any) => {
@@ -465,14 +467,16 @@ export function AppSidebar() {
                     isActive={active}
                     tooltip={collapsed ? item.title : undefined}
                   >
-                    <NavLink 
-                      to={item.url} 
-                      end 
-                      className={`group relative flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
-                        active 
-                          ? "bg-white/15 text-white" 
-                          : "text-white/80 hover:bg-white/10 hover:text-white"
-                      }`}
+                     <NavLink 
+                       to={item.url} 
+                       end 
+                       className={`group relative flex items-center gap-3 text-sm font-medium transition-all duration-200 ${
+                         collapsed ? 'px-2 py-2.5 justify-center' : 'px-4 py-2.5'
+                       } ${
+                         active 
+                           ? "bg-white/15 text-white" 
+                           : "text-white/80 hover:bg-white/10 hover:text-white"
+                       }`}
                     >
                      <IconComponent className={`h-4 w-4 flex-shrink-0 ${
                        active ? "text-white" : "text-white/70 group-hover:text-white"
@@ -625,7 +629,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="py-2" style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
+      <SidebarContent className={`py-2 ${collapsed ? 'px-2' : ''}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
         {isSuperAdmin ? (
           // Para SuperAdmin: Estilo Limitless exacto
           <>
