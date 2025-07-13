@@ -6,7 +6,6 @@ import { handleEmailInput } from '@/lib/textUtils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, ArrowLeft, Mail, Lock, User, Building, Eye, EyeOff } from 'lucide-react';
-import { EagleLogo } from '@/components/ui/EagleLogo';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -399,10 +398,10 @@ export default function Auth() {
           {/* Logo and Branding */}
           <div className="flex items-center space-x-4 mb-8">
             <div className="flex items-center space-x-4 p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20">
-              <EagleLogo 
-                className="text-white drop-shadow-lg"
-                width={64}
-                height={64}
+              <img 
+                src={fleetNestLogo}
+                alt="FleetNest Logo" 
+                className="h-16 w-16 object-contain filter drop-shadow-lg"
               />
               <span className="text-3xl font-heading font-bold text-white drop-shadow-lg">{t('common:app.name')}</span>
             </div>
@@ -472,10 +471,10 @@ export default function Auth() {
             {/* Logo for Mobile */}
             <div className="flex justify-center mb-6 lg:hidden">
               <div className="flex items-center space-x-3 p-4 rounded-2xl bg-gradient-primary shadow-glow">
-                <EagleLogo 
-                  className="text-white drop-shadow-lg"
-                  width={48}
-                  height={48}
+                <img 
+                  src={fleetNestLogo} 
+                  alt="FleetNest Logo" 
+                  className="h-12 w-12 object-contain filter drop-shadow-lg"
                 />
                 <span className="text-xl font-heading font-bold text-white drop-shadow-lg">{t('common:app.name')}</span>
               </div>
