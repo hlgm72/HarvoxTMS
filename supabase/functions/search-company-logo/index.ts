@@ -8,7 +8,7 @@ const corsHeaders = {
 interface LogoSearchResult {
   success: boolean;
   logoUrl?: string;
-  source?: 'clearbit';
+  source?: 'clearbit' | 'google' | 'iconhorse';
   error?: string;
 }
 
@@ -24,6 +24,38 @@ async function searchWithClearbit(domain: string): Promise<string | null> {
     }
   } catch (error) {
     console.error('Clearbit error:', error);
+  }
+  return null;
+}
+
+async function searchWithGoogle(domain: string): Promise<string | null> {
+  try {
+    const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+    
+    // Test if the favicon exists
+    const response = await fetch(logoUrl, { method: 'HEAD' });
+    
+    if (response.ok) {
+      return logoUrl;
+    }
+  } catch (error) {
+    console.error('Google Favicon error:', error);
+  }
+  return null;
+}
+
+async function searchWithIconhorse(domain: string): Promise<string | null> {
+  try {
+    const logoUrl = `https://icon.horse/icon/${domain}`;
+    
+    // Test if the icon exists
+    const response = await fetch(logoUrl, { method: 'HEAD' });
+    
+    if (response.ok) {
+      return logoUrl;
+    }
+  } catch (error) {
+    console.error('Iconhorse error:', error);
   }
   return null;
 }
@@ -93,12 +125,28 @@ serve(async (req) => {
     console.log(`Searching logo for domain: ${domain}`);
 
     let logoUrl: string | null = null;
-    let source: 'clearbit' | undefined = undefined;
+    let source: 'clearbit' | 'google' | 'iconhorse' | undefined = undefined;
 
-    // Try Clearbit
+    // Try Clearbit first
     logoUrl = await searchWithClearbit(domain);
     if (logoUrl) {
       source = 'clearbit';
+    }
+
+    // Try Google Favicon if Clearbit failed
+    if (!logoUrl) {
+      logoUrl = await searchWithGoogle(domain);
+      if (logoUrl) {
+        source = 'google';
+      }
+    }
+
+    // Try Iconhorse as final fallback
+    if (!logoUrl) {
+      logoUrl = await searchWithIconhorse(domain);
+      if (logoUrl) {
+        source = 'iconhorse';
+      }
     }
 
     const result: LogoSearchResult = {
