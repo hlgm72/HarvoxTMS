@@ -202,61 +202,12 @@ const Sidebar = React.forwardRef<
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
-            className="w-[280px] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden border-0"
+            className="w-[280px] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
             side="left"
-            style={{
-              zIndex: 999999,
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              height: '100vh',
-              width: '280px',
-              transform: openMobile ? 'translateX(0)' : 'translateX(-100%)',
-              transition: 'transform 0.3s ease-in-out',
-              background: 'hsl(var(--sidebar))',
-              display: 'block',
-              visibility: 'visible',
-              opacity: 1,
-              overflow: 'auto',
-              WebkitOverflowScrolling: 'touch'
-            }}
-            onAnimationEnd={() => {
-              console.log('🎭 Sheet animation ended, openMobile:', openMobile);
-            }}
           >
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
             <SheetDescription className="sr-only">Main navigation for the application</SheetDescription>
-            <div 
-              className="flex h-full w-full flex-col"
-              style={{
-                background: '#ff0000', // Rojo súper visible
-                color: '#ffffff',
-                minHeight: '100vh',
-                position: 'relative',
-                zIndex: 1,
-                overflow: 'auto'
-              }}
-              onClick={() => {
-                console.log('🎯 Mobile menu content clicked!');
-              }}
-            >
-              <div className="p-4 border-b border-white bg-blue-600">
-                <div className="text-lg font-bold">🚀 MOBILE MENU IS HERE!</div>
-                <div className="text-sm">openMobile: {String(openMobile)}</div>
-                <div className="text-sm">Window: {typeof window !== 'undefined' ? window.innerWidth : 'unknown'}</div>
-                <div className="text-sm">UserAgent: {typeof navigator !== 'undefined' ? navigator.userAgent.substring(0, 50) : 'unknown'}</div>
-                <div className="text-sm">Touch: {typeof window !== 'undefined' && 'ontouchstart' in window ? 'YES' : 'NO'}</div>
-                <div className="text-sm">DevicePixelRatio: {typeof window !== 'undefined' ? window.devicePixelRatio : 'unknown'}</div>
-                <button 
-                  onClick={() => {
-                    console.log('🚫 Close button clicked');
-                    setOpenMobile(false);
-                  }}
-                  className="mt-2 px-3 py-1 bg-red-500 text-white rounded text-sm"
-                >
-                  Cerrar Menú
-                </button>
-              </div>
+            <div className="flex h-full w-full flex-col">
               {children}
             </div>
           </SheetContent>

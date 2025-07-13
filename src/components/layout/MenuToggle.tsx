@@ -12,22 +12,10 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
   const { toggleSidebar, isMobile, openMobile, open } = useSidebar();
   
   const handleToggle = useCallback(() => {
-    console.log('🔥 MENU TOGGLE CLICKED:', {
-      windowWidth: window.innerWidth,
-      contextIsMobile: isMobile,
-      currentOpenMobile: openMobile,
-      currentOpen: open,
-      hasToggleSidebar: !!toggleSidebar,
-      userAgent: navigator.userAgent,
-      isTouchDevice: 'ontouchstart' in window,
-      devicePixelRatio: window.devicePixelRatio
-    });
-    
     toggleSidebar();
     
     // Notificar el nuevo estado al callback opcional
     const newState = isMobile ? !openMobile : !open;
-    console.log('📱 New state after toggle:', newState);
     onToggle?.(newState);
   }, [toggleSidebar, onToggle, isMobile, openMobile, open]);
   
@@ -37,16 +25,7 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
         variant="ghost" 
         size="sm"
         className="h-8 w-8 p-0 rounded-full border border-border bg-background shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
-        onClick={(e) => {
-          console.log('🚀 BUTTON CLICKED!', { 
-            timestamp: Date.now(),
-            windowWidth: window.innerWidth,
-            isMobile: window.innerWidth < 768
-          });
-          e.preventDefault();
-          e.stopPropagation();
-          handleToggle();
-        }}
+        onClick={handleToggle}
         style={{ 
           display: 'flex',
           visibility: 'visible',

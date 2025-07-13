@@ -3,7 +3,6 @@ import React from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./Sidebar";
 import { Header } from "./Header";
-import { MobileConsole } from "@/components/ui/MobileConsole";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -30,7 +29,6 @@ export function Layout({ children }: LayoutProps) {
             </div>
           </main>
         </SidebarInset>
-        <MobileConsole />
       </div>
     </SidebarProvider>
   );
