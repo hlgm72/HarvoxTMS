@@ -13,8 +13,8 @@ All colors MUST be HSL.
     --font-body: 'Inter', system-ui, sans-serif; 
     --font-mono: 'JetBrains Mono', 'Consolas', monospace;
     
-    /* Color System - Command Center Template */
-    --background: 0 0% 100%;
+    /* Color System - usando color personalizado */
+    --background: 228 33% 97%;       /* #f2f4f8 - Color personalizado solicitado */
     --foreground: 222 84% 4%;
 
     --card: 0 0% 100%;
