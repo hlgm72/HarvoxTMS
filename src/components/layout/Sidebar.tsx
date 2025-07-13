@@ -563,7 +563,7 @@ export function AppSidebar() {
                   {isSuperAdmin && <span className="text-blue-300 ml-2 text-sm font-medium">Admin</span>}
                 </h2>
                 <p className="text-sm text-white/70 font-medium tracking-wide">
-                  Professional TMS Platform
+                  Professional TMS
                 </p>
               </div>
               
