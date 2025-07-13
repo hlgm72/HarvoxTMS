@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Search, Filter, Grid, List, Building2, Users, DollarSign, TrendingUp } from "lucide-react";
+import { Plus, Search, Grid, List, Building2, Users, DollarSign, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -155,24 +155,13 @@ export default function Clients() {
               className="pl-10"
             />
           </div>
-          <Button
-            variant="outline"
-            onClick={() => setShowFilters(!showFilters)}
-            className={showFilters ? "bg-muted" : ""}
-          >
-            <Filter className="h-4 w-4 mr-2" />
-            Filtros
-          </Button>
-        </div>
-
-        {/* Filters Panel */}
-        {showFilters && (
           <ClientFilters 
             filters={filters} 
             onFiltersChange={setFilters}
-            onClose={() => setShowFilters(false)}
+            open={showFilters}
+            onOpenChange={setShowFilters}
           />
-        )}
+        </div>
 
         {/* Clients List/Grid */}
         <Card>

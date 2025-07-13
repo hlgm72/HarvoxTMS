@@ -1,9 +1,9 @@
-import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Filter } from "lucide-react";
 
 interface ClientFiltersProps {
   filters: {
@@ -11,10 +11,11 @@ interface ClientFiltersProps {
     location: string;
   };
   onFiltersChange: (filters: { status: string; location: string }) => void;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function ClientFilters({ filters, onFiltersChange, onClose }: ClientFiltersProps) {
+export function ClientFilters({ filters, onFiltersChange, open, onOpenChange }: ClientFiltersProps) {
   const handleFilterChange = (key: string, value: string) => {
     onFiltersChange({
       ...filters,
@@ -29,18 +30,29 @@ export function ClientFilters({ filters, onFiltersChange, onClose }: ClientFilte
     });
   };
 
+  const hasActiveFilters = filters.status !== "all" || filters.location !== "";
+
   return (
-    <Card>
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Filtros</CardTitle>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetTrigger asChild>
+        <Button
+          variant="outline"
+          className={hasActiveFilters ? "bg-muted" : ""}
+        >
+          <Filter className="h-4 w-4 mr-2" />
+          Filtros
+          {hasActiveFilters && (
+            <span className="ml-2 bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 text-xs">
+              {[filters.status !== "all", filters.location !== ""].filter(Boolean).length}
+            </span>
+          )}
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-[400px] sm:w-[540px]">
+        <SheetHeader>
+          <SheetTitle>Filtros de Clientes</SheetTitle>
+        </SheetHeader>
+        <div className="mt-6 space-y-6">
           <div className="space-y-2">
             <Label htmlFor="status">Estado</Label>
             <Select
@@ -68,13 +80,16 @@ export function ClientFilters({ filters, onFiltersChange, onClose }: ClientFilte
             />
           </div>
 
-          <div className="flex items-end">
-            <Button variant="outline" onClick={clearFilters} className="w-full">
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={clearFilters} className="flex-1">
               Limpiar Filtros
+            </Button>
+            <Button onClick={() => onOpenChange(false)} className="flex-1">
+              Aplicar Filtros
             </Button>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </SheetContent>
+    </Sheet>
   );
 }
