@@ -3,27 +3,20 @@ import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { CommandMap } from "@/components/dashboard/CommandMap";
 import { DispatchPanel } from "@/components/dashboard/DispatchPanel";
 import { FleetStatus } from "@/components/dashboard/FleetStatus";
+import { PageToolbar } from "@/components/layout/PageToolbar";
 import { useTranslation } from 'react-i18next';
 
 export default function Dashboard() {
   const { t } = useTranslation(['common', 'fleet']);
   
   return (
-    <div className="space-y-6">{/* Removed p-6 since Layout now handles padding */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-fleet bg-clip-text text-transparent mb-2">
-            {t('fleet:titles.command_center')}
-          </h1>
-          <p className="text-muted-foreground flex items-center gap-2">
-            <span className="w-2 h-2 bg-fleet-green rounded-full animate-pulse"></span>
-            {t('fleet:states.real_time_operations')} • {t('fleet:states.last_update')}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>🕐 {new Date().toLocaleTimeString('es-ES')}</span>
-        </div>
-      </div>
+    <>
+      <PageToolbar 
+        breadcrumbs={[
+          { label: "Centro de Comando" }
+        ]}
+      />
+      <div className="p-6 space-y-6">
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -76,6 +69,7 @@ export default function Dashboard() {
           <RecentActivity />
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
