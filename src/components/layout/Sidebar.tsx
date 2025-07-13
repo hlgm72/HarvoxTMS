@@ -470,13 +470,13 @@ export function AppSidebar() {
                            to={item.url} 
                            end 
                            className={`group relative flex items-center gap-4 transition-all duration-200 ${
-                             collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'
+                             collapsed ? 'px-3 py-3 justify-center' : 'px-5 py-3'
                            } ${
                              active 
                                ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
                                : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
                            }`}
-                           style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}
+                           style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '15px', lineHeight: '20px' }}
                          >
                            <IconComponent 
                              className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
@@ -499,14 +499,14 @@ export function AppSidebar() {
                      <NavLink 
                        to={item.url} 
                        end 
-                       className={`group relative flex items-center gap-4 transition-all duration-200 ${
-                         collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'
-                       } ${
-                         active 
-                           ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
-                           : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
-                       }`}
-                       style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}
+                        className={`group relative flex items-center gap-4 transition-all duration-200 ${
+                          collapsed ? 'px-3 py-3 justify-center' : 'px-5 py-3'
+                        } ${
+                          active 
+                            ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                            : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                        }`}
+                        style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '15px', lineHeight: '20px' }}
                      >
                        <IconComponent 
                          className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
@@ -517,7 +517,7 @@ export function AppSidebar() {
                       
                       {!collapsed && (
                         <div className="flex items-center justify-between flex-1 min-w-0">
-                          <span className="truncate" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}>
+                          <span className="truncate" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '15px', lineHeight: '20px' }}>
                             {item.title}
                           </span>
                           
