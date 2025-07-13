@@ -471,14 +471,14 @@ export function AppSidebar() {
                        to={item.url} 
                        end 
                        className={`group relative flex items-center gap-3 text-sm font-medium transition-all duration-200 ${
-                         collapsed ? 'px-3 py-2.5 justify-center' : 'px-4 py-2.5'
+                         collapsed ? 'px-3 py-3' : 'px-4 py-3'
                        } ${
                          active 
                            ? "bg-white/15 text-white" 
                            : "text-white/80 hover:bg-white/10 hover:text-white"
                        }`}
                     >
-                     <IconComponent className={`h-4 w-4 flex-shrink-0 ${
+                     <IconComponent className={`h-5 w-5 flex-shrink-0 ${
                        active ? "text-white" : "text-white/70 group-hover:text-white"
                      }`} />
                      
