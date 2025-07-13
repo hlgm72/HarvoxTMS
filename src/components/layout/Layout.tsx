@@ -36,8 +36,8 @@ export function Layout({ children }: LayoutProps) {
         {/* Sidebar */}
         <AppSidebar />
         
-        {/* Botón colapsar desktop - posicionado sobre el sidebar */}
-        <div className="hidden md:block">
+        {/* Botón colapsar desktop - posicionado relativamente al sidebar */}
+        <div className="hidden md:block relative">
           <SidebarCollapseButton />
         </div>
         
