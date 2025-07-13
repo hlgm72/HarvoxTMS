@@ -346,20 +346,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      // Clean up all auth-related storage
+      console.log('🚪 Starting signOut process...');
+      
+      // Clean up all auth-related storage FIRST
       cleanupAuthStorage();
       localStorage.removeItem('currentRole');
+      console.log('🧹 Local storage cleaned');
       
-      const { error } = await supabase.auth.signOut({ scope: 'global' });
-      if (error) throw error;
+      // Try to sign out from server, but don't fail if it doesn't work
+      try {
+        console.log('🔄 Attempting server signout...');
+        const { error } = await supabase.auth.signOut({ scope: 'global' });
+        if (error && error.message !== 'Auth session missing!' && !error.message.includes('session_not_found')) {
+          console.warn('⚠️ Server signout warning (continuing anyway):', error);
+        } else {
+          console.log('✅ Server signout successful');
+        }
+      } catch (serverError: any) {
+        console.warn('⚠️ Server signout failed (continuing anyway):', serverError);
+        // Continue with local cleanup even if server signout fails
+      }
       
-      // Force page refresh to ensure clean state
+      console.log('🔄 Forcing redirect to auth page...');
+      // Force page refresh to ensure completely clean state
       setTimeout(() => {
         window.location.href = '/auth';
       }, 100);
     } catch (error) {
-      console.error('Error signing out:', error);
-      // Force redirect even if signout fails
+      console.error('💥 Critical error in signOut, forcing redirect:', error);
+      // Force redirect even if everything fails
       window.location.href = '/auth';
     }
   };
