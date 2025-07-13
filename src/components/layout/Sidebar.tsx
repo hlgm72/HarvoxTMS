@@ -471,7 +471,7 @@ export function AppSidebar() {
                        to={item.url} 
                        end 
                        className={`group relative flex items-center gap-3 text-sm font-medium transition-all duration-200 ${
-                         collapsed ? 'px-2 py-2.5 justify-center' : 'px-4 py-2.5'
+                         collapsed ? 'px-3 py-2.5 justify-center' : 'px-4 py-2.5'
                        } ${
                          active 
                            ? "bg-white/15 text-white" 
