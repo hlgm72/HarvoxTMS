@@ -105,8 +105,8 @@ export function Header() {
     <header className="h-16 border-b border-border bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 z-5 shadow-sm">
       <div className="flex h-full items-center justify-between px-6">
         <div className="flex items-center gap-4">
-          <SidebarTrigger className="p-2 hover:bg-muted/50 rounded-lg transition-colors" />
-          <div className="border-l border-border/20 pl-4">
+          {/* Removido el SidebarTrigger del header ya que ahora está en la línea divisoria */}
+          <div className="border-l border-border/20 pl-4">{/* ... keep existing code */}
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-fleet rounded-lg">
                 <IconComponent className="h-5 w-5 text-white" />
