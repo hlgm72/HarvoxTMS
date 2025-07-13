@@ -135,27 +135,27 @@ export function Header() {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-64 p-1 bg-limitless-background border-limitless-border shadow-xl" align="end">
-              <DropdownMenuLabel className="p-4 border-b border-limitless-border">
+            <DropdownMenuContent className="w-64 p-1 bg-card border-border shadow-xl backdrop-blur-sm" align="end">
+              <DropdownMenuLabel className="p-4 border-b border-border">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-semibold leading-none text-limitless-text">{getFullName()}</p>
-                  <p className="text-xs leading-none text-limitless-muted font-medium">{user?.email}</p>
+                  <p className="text-sm font-semibold leading-none text-foreground">{getFullName()}</p>
+                  <p className="text-xs leading-none text-muted-foreground font-medium">{user?.email}</p>
                 </div>
               </DropdownMenuLabel>
               <div className="p-1">
-                <DropdownMenuItem asChild className="p-3 cursor-pointer rounded-lg hover:bg-limitless-hover text-limitless-text transition-colors">
+                <DropdownMenuItem asChild className="p-3 cursor-pointer rounded-lg hover:bg-accent text-foreground transition-colors">
                   <Link to="/profile" className="w-full flex items-center">
                     <User className="mr-3 h-4 w-4" />
                     {t('common:navigation.profile', 'Perfil')}
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="p-3 cursor-pointer rounded-lg hover:bg-limitless-hover text-limitless-text transition-colors">
+                <DropdownMenuItem asChild className="p-3 cursor-pointer rounded-lg hover:bg-accent text-foreground transition-colors">
                   <Link to="/settings" className="w-full flex items-center">
                     <Settings className="mr-3 h-4 w-4" />
                     {t('common:navigation.settings', 'Configuración')}
                   </Link>
                 </DropdownMenuItem>
-                <div className="my-1 h-px bg-limitless-border"></div>
+                <div className="my-1 h-px bg-border"></div>
                 <DropdownMenuItem 
                   onClick={handleLogout}
                   className="p-3 text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer rounded-lg transition-colors flex items-center"
