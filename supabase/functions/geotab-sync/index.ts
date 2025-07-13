@@ -182,7 +182,7 @@ serve(async (req) => {
     
     console.log('Testing Supabase connection...');
     const { data: testData, error: testError } = await supabaseClient
-      .from('vehicles')
+      .from('geotab_vehicles')
       .select('id')
       .limit(1);
     
@@ -248,7 +248,7 @@ serve(async (req) => {
         if (devices && devices.length > 0) {
           for (const device of devices) {
             const { data: existingVehicle, error: checkError } = await supabaseClient
-              .from('vehicles')
+              .from('geotab_vehicles')
               .select('id')
               .eq('geotab_id', device.id)
               .maybeSingle();
@@ -260,7 +260,7 @@ serve(async (req) => {
             
             if (!existingVehicle) {
               const { error: insertError } = await supabaseClient
-                .from('vehicles')
+                .from('geotab_vehicles')
                 .insert({
                   geotab_id: device.id,
                   name: device.name || `Vehicle ${device.serialNumber || device.id}`,
@@ -309,7 +309,7 @@ serve(async (req) => {
             
             // Find the corresponding vehicle in our database
             const { data: vehicle, error: vehicleError } = await supabaseClient
-              .from('vehicles')
+              .from('geotab_vehicles')
               .select('id')
               .eq('geotab_id', record.device.id)
               .maybeSingle();
@@ -321,7 +321,7 @@ serve(async (req) => {
             
             // Check if this position already exists
             const { data: existingPosition, error: positionError } = await supabaseClient
-              .from('vehicle_positions')
+              .from('geotab_vehicle_positions')
               .select('id')
               .eq('vehicle_id', vehicle.id)
               .eq('date_time', record.dateTime)
@@ -334,7 +334,7 @@ serve(async (req) => {
             
             if (!existingPosition) {
               const { error: insertError } = await supabaseClient
-                .from('vehicle_positions')
+                .from('geotab_vehicle_positions')
                 .insert({
                   vehicle_id: vehicle.id,
                   geotab_device_id: record.device.id,
@@ -372,7 +372,7 @@ serve(async (req) => {
         if (drivers && drivers.length > 0) {
           for (const driver of drivers) {
             const { data: existingDriver, error: checkError } = await supabaseClient
-              .from('drivers')
+              .from('geotab_drivers')
               .select('id')
               .eq('geotab_id', driver.id)
               .maybeSingle();
@@ -384,7 +384,7 @@ serve(async (req) => {
             
             if (!existingDriver) {
               const { error: insertError } = await supabaseClient
-                .from('drivers')
+                .from('geotab_drivers')
                 .insert({
                   geotab_id: driver.id,
                   name: driver.name || `Driver ${driver.id}`,

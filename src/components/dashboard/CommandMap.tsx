@@ -162,13 +162,13 @@ export function CommandMap() {
   const loadVehicles = async () => {
     try {
       const { data: vehicleData, error } = await supabase
-        .from('vehicles')
+        .from('geotab_vehicles')
         .select(`
           id,
           name,
           geotab_id,
           license_plate,
-          vehicle_positions!inner (
+          geotab_vehicle_positions!inner (
             latitude,
             longitude,
             speed,
@@ -177,7 +177,7 @@ export function CommandMap() {
             date_time
           )
         `)
-        .gte('vehicle_positions.date_time', new Date(Date.now() - 60 * 60 * 1000).toISOString()) // Last hour only
+        .gte('geotab_vehicle_positions.date_time', new Date(Date.now() - 60 * 60 * 1000).toISOString()) // Last hour only
         .order('name');
 
       if (error) throw error;
@@ -185,7 +185,7 @@ export function CommandMap() {
       // Get the latest position for each vehicle
       const vehiclesWithPositions = vehicleData?.map(vehicle => {
         // Sort positions by date_time to get the most recent (newest first)
-        const sortedPositions = vehicle.vehicle_positions?.sort((a, b) => {
+        const sortedPositions = vehicle.geotab_vehicle_positions?.sort((a, b) => {
           const timeA = new Date(a.date_time).getTime();
           const timeB = new Date(b.date_time).getTime();
           return timeB - timeA; // Newest first
@@ -193,7 +193,7 @@ export function CommandMap() {
         const latestPosition = sortedPositions?.[0];
         
         console.log('Vehicle positions for', vehicle.name, {
-          totalPositions: vehicle.vehicle_positions?.length || 0,
+          totalPositions: vehicle.geotab_vehicle_positions?.length || 0,
           latestPosition: latestPosition ? {
             lat: latestPosition.latitude,
             lng: latestPosition.longitude,
@@ -201,7 +201,7 @@ export function CommandMap() {
             speed: latestPosition.speed,
             odometer: latestPosition.odometer
           } : null,
-          allPositionTimes: vehicle.vehicle_positions?.map(p => p.date_time).slice(0, 3) // Show first 3 timestamps
+          allPositionTimes: vehicle.geotab_vehicle_positions?.map(p => p.date_time).slice(0, 3) // Show first 3 timestamps
         });
 
         return {
@@ -381,7 +381,7 @@ export function CommandMap() {
     const channel = supabase
       .channel('vehicle-positions')
       .on('postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'vehicle_positions' },
+        { event: 'INSERT', schema: 'public', table: 'geotab_vehicle_positions' },
         () => { loadVehicles(); }
       )
       .subscribe();

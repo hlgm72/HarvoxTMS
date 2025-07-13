@@ -44,7 +44,7 @@ export const useSuperAdminDashboard = () => {
       const [companiesResult, usersResult, vehiclesResult, driversResult] = await Promise.all([
         supabase.from('companies').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
-        supabase.from('vehicles').select('*', { count: 'exact', head: true }),
+        supabase.from('geotab_vehicles').select('*', { count: 'exact', head: true }),
         supabase.from('geotab_drivers').select('*', { count: 'exact', head: true })
       ]);
 

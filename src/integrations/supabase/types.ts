@@ -599,7 +599,7 @@ export type Database = {
             foreignKeyName: "fuel_expenses_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
-            referencedRelation: "vehicles"
+            referencedRelation: "geotab_vehicles"
             referencedColumns: ["id"]
           },
         ]
@@ -682,6 +682,137 @@ export type Database = {
           name?: string
           phone?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      geotab_vehicle_assignments: {
+        Row: {
+          assigned_at: string
+          driver_id: string
+          id: string
+          is_active: boolean
+          vehicle_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          driver_id: string
+          id?: string
+          is_active?: boolean
+          vehicle_id: string
+        }
+        Update: {
+          assigned_at?: string
+          driver_id?: string
+          id?: string
+          is_active?: boolean
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_assignments_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "geotab_drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vehicle_assignments_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "geotab_vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      geotab_vehicle_positions: {
+        Row: {
+          bearing: number | null
+          created_at: string
+          date_time: string
+          engine_hours: number | null
+          geotab_device_id: string
+          id: string
+          latitude: number
+          longitude: number
+          odometer: number | null
+          speed: number | null
+          vehicle_id: string
+        }
+        Insert: {
+          bearing?: number | null
+          created_at?: string
+          date_time: string
+          engine_hours?: number | null
+          geotab_device_id: string
+          id?: string
+          latitude: number
+          longitude: number
+          odometer?: number | null
+          speed?: number | null
+          vehicle_id: string
+        }
+        Update: {
+          bearing?: number | null
+          created_at?: string
+          date_time?: string
+          engine_hours?: number | null
+          geotab_device_id?: string
+          id?: string
+          latitude?: number
+          longitude?: number
+          odometer?: number | null
+          speed?: number | null
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_positions_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "geotab_vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      geotab_vehicles: {
+        Row: {
+          created_at: string
+          device_serial_number: string | null
+          geotab_id: string
+          id: string
+          license_plate: string | null
+          make: string | null
+          model: string | null
+          name: string
+          updated_at: string
+          vin: string | null
+          year: number | null
+        }
+        Insert: {
+          created_at?: string
+          device_serial_number?: string | null
+          geotab_id: string
+          id?: string
+          license_plate?: string | null
+          make?: string | null
+          model?: string | null
+          name: string
+          updated_at?: string
+          vin?: string | null
+          year?: number | null
+        }
+        Update: {
+          created_at?: string
+          device_serial_number?: string | null
+          geotab_id?: string
+          id?: string
+          license_plate?: string | null
+          make?: string | null
+          model?: string | null
+          name?: string
+          updated_at?: string
+          vin?: string | null
+          year?: number | null
         }
         Relationships: []
       }
@@ -1538,137 +1669,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      vehicle_assignments: {
-        Row: {
-          assigned_at: string
-          driver_id: string
-          id: string
-          is_active: boolean
-          vehicle_id: string
-        }
-        Insert: {
-          assigned_at?: string
-          driver_id: string
-          id?: string
-          is_active?: boolean
-          vehicle_id: string
-        }
-        Update: {
-          assigned_at?: string
-          driver_id?: string
-          id?: string
-          is_active?: boolean
-          vehicle_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "vehicle_assignments_driver_id_fkey"
-            columns: ["driver_id"]
-            isOneToOne: false
-            referencedRelation: "geotab_drivers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "vehicle_assignments_vehicle_id_fkey"
-            columns: ["vehicle_id"]
-            isOneToOne: false
-            referencedRelation: "vehicles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      vehicle_positions: {
-        Row: {
-          bearing: number | null
-          created_at: string
-          date_time: string
-          engine_hours: number | null
-          geotab_device_id: string
-          id: string
-          latitude: number
-          longitude: number
-          odometer: number | null
-          speed: number | null
-          vehicle_id: string
-        }
-        Insert: {
-          bearing?: number | null
-          created_at?: string
-          date_time: string
-          engine_hours?: number | null
-          geotab_device_id: string
-          id?: string
-          latitude: number
-          longitude: number
-          odometer?: number | null
-          speed?: number | null
-          vehicle_id: string
-        }
-        Update: {
-          bearing?: number | null
-          created_at?: string
-          date_time?: string
-          engine_hours?: number | null
-          geotab_device_id?: string
-          id?: string
-          latitude?: number
-          longitude?: number
-          odometer?: number | null
-          speed?: number | null
-          vehicle_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "vehicle_positions_vehicle_id_fkey"
-            columns: ["vehicle_id"]
-            isOneToOne: false
-            referencedRelation: "vehicles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      vehicles: {
-        Row: {
-          created_at: string
-          device_serial_number: string | null
-          geotab_id: string
-          id: string
-          license_plate: string | null
-          make: string | null
-          model: string | null
-          name: string
-          updated_at: string
-          vin: string | null
-          year: number | null
-        }
-        Insert: {
-          created_at?: string
-          device_serial_number?: string | null
-          geotab_id: string
-          id?: string
-          license_plate?: string | null
-          make?: string | null
-          model?: string | null
-          name: string
-          updated_at?: string
-          vin?: string | null
-          year?: number | null
-        }
-        Update: {
-          created_at?: string
-          device_serial_number?: string | null
-          geotab_id?: string
-          id?: string
-          license_plate?: string | null
-          make?: string | null
-          model?: string | null
-          name?: string
-          updated_at?: string
-          vin?: string | null
-          year?: number | null
-        }
-        Relationships: []
       }
     }
     Views: {

@@ -46,7 +46,7 @@ export function FleetStatus() {
       
       // Obtener total de vehículos
       const { data: vehicles, error: vehiclesError } = await supabase
-        .from('vehicles')
+        .from('geotab_vehicles')
         .select('id, name');
 
       if (vehiclesError) {
@@ -63,7 +63,7 @@ export function FleetStatus() {
       
       // Obtener posiciones recientes para determinar vehículos activos
       const { data: recentPositions, error: positionsError } = await supabase
-        .from('vehicle_positions')
+        .from('geotab_vehicle_positions')
         .select('vehicle_id, date_time')
         .gte('date_time', new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()) // Últimas 2 horas
         .order('date_time', { ascending: false });
