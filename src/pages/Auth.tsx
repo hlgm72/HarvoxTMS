@@ -330,18 +330,17 @@ export default function Auth() {
         if (error) throw error;
 
         if (data.user) {
-          console.log('User logged in:', data.user.id);
+          console.log('User logged in successfully:', data.user.id);
           
           showSuccess(
             "¡Bienvenido de vuelta!",
             "Has iniciado sesión exitosamente en FleetNest"
           );
 
-          // Don't redirect immediately - let AuthContext handle it
-          // This prevents conflicts between manual navigation and AuthContext logic
-          console.log('Login successful, letting AuthContext handle redirection...');
+          // Let AuthContext handle all role logic and redirection
+          console.log('Login successful, letting AuthContext handle authentication flow...');
           
-          // Just navigate to root and let Index.tsx handle role-based redirection
+          // Navigate to root and let Index.tsx handle role-based redirection
           setTimeout(() => {
             navigate('/');
           }, 500); // Small delay to ensure auth context updates

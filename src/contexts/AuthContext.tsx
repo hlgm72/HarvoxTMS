@@ -100,42 +100,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchUserRoles = async (userId: string): Promise<UserRole[]> => {
     console.log('🔍 Starting fetchUserRoles for userId:', userId);
     
-    // Temporary hard-coded roles for user 087a825c-94ea-42d9-8388-5087a19d776f
-    if (userId === '087a825c-94ea-42d9-8388-5087a19d776f') {
-      console.log('🎯 Using hard-coded roles for user');
-      console.log('🔍 Pestaña:', window.location.href);
-      console.log('🔍 Timestamp:', new Date().toISOString());
-      
-      const hardCodedRoles = [
-        {
-          id: 'e81bbb5d-2e79-48b5-835b-f8b03edb0dd1', // Driver PRIMERO
-          role: 'driver',
-          company_id: 'e5d52767-ca59-4c28-94e4-058aff6a037b',
-          is_active: true
-        },
-        {
-          id: '2557a45d-7a2a-4128-a289-0de3bea73c5d', // Dispatcher segundo
-          role: 'dispatcher',
-          company_id: 'e5d52767-ca59-4c28-94e4-058aff6a037b',
-          is_active: true
-        },
-        {
-          id: 'fc7a85af-9e15-4f75-8781-081c5daee1ca', // Owner último
-          role: 'company_owner',
-          company_id: 'e5d52767-ca59-4c28-94e4-058aff6a037b',
-          is_active: true
-        }
-      ];
-      console.log('✅ Returning hard-coded roles en orden:', hardCodedRoles.map(r => `${r.role} (${r.id})`));
-      return hardCodedRoles;
-    }
-    
     try {
       console.log('🔍 Using direct query to user_company_roles...');
       
       // Use direct query with timeout
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Query timeout after 5 seconds')), 5000)
+        setTimeout(() => reject(new Error('Query timeout after 10 seconds')), 10000)
       );
       
       const queryPromise = supabase
