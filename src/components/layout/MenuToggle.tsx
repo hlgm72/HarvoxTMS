@@ -65,11 +65,11 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
   
   return (
     <div 
-      className="flex-shrink-0" 
+      className="flex-shrink-0 px-3 md:px-6" 
       style={{ 
         position: 'relative', 
-        zIndex: 100, // Z-index súper alto
-        isolation: 'isolate' // Crear contexto de apilamiento
+        zIndex: 100,
+        isolation: 'isolate'
       }}
     >
       <Button 
