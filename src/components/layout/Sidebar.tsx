@@ -447,15 +447,15 @@ export function AppSidebar() {
     const sectionItems = navigationItems.filter((item: any) => item.section === sectionName);
     if (sectionItems.length === 0) return null;
 
-    return (
-      <SidebarGroup key={sectionName} className="mb-2">
+     return (
+      <SidebarGroup key={sectionName} className="mb-2" onClick={(e) => e.stopPropagation()}>
         {!collapsed && (
           <SidebarGroupLabel className="px-4 py-2 text-xs font-normal text-white/70 uppercase tracking-wide" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal' }}>
             {sectionLabel}
           </SidebarGroupLabel>
         )}
-        <SidebarGroupContent>
-          <SidebarMenu className="space-y-0">
+        <SidebarGroupContent onClick={(e) => e.stopPropagation()}>
+          <SidebarMenu className="space-y-0" onClick={(e) => e.stopPropagation()}>
             {sectionItems.map((item: any) => {
               const active = isActive(item.url);
               const IconComponent = item.icon;
