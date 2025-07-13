@@ -524,7 +524,10 @@ export function AppSidebar() {
       collapsible="icon"
       variant="sidebar"
       side="left"
-      style={{ backgroundColor: 'hsl(var(--sidebar-background))' }}
+      style={{ 
+        backgroundColor: 'hsl(var(--sidebar-background))',
+        width: collapsed ? '56px' : 'var(--sidebar-width)'
+      }}
     >
       <SidebarHeader className="border-b border-[hsl(var(--sidebar-border))] p-4" style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
         <div className="flex items-center gap-3">
