@@ -461,7 +461,7 @@ export function AppSidebar() {
               const IconComponent = item.icon;
               
               return (
-                 <SidebarMenuItem key={item.title}>
+                 <SidebarMenuItem key={item.title} onClick={(e) => e.stopPropagation()}>
                    <NavLink 
                      to={item.url} 
                      end 
