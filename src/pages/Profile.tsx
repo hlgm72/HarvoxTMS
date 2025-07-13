@@ -259,12 +259,12 @@ export default function Profile() {
           { label: "Mi Perfil" }
         ]}
       />
-      <div className="container mx-auto p-3 md:p-6 max-w-6xl">
+      <div className="container mx-auto p-6 max-w-4xl">
 
-      <div className="grid gap-4 md:gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-3">
         {/* Profile Summary Card */}
-        <Card className="lg:col-span-1 order-2 lg:order-1">
-          <CardHeader className="text-center p-4 md:p-6">
+        <Card className="md:col-span-1">
+          <CardHeader className="text-center">
             <AvatarUpload 
               currentAvatarUrl={profile?.avatar_url}
               userName={`${profile?.first_name || ''} ${profile?.last_name || ''}`.trim()}
@@ -273,63 +273,61 @@ export default function Profile() {
                 await refreshProfile();
               }}
             />
-            <CardTitle className="text-lg md:text-xl mt-4">{profile?.first_name} {profile?.last_name}</CardTitle>
-            <CardDescription className="text-sm">{user?.email}</CardDescription>
+            <CardTitle className="text-xl">{profile?.first_name} {profile?.last_name}</CardTitle>
+            <CardDescription>{user?.email}</CardDescription>
           </CardHeader>
-          <CardContent className="p-4 md:p-6">
-            <div className="space-y-3 text-sm">
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
-                <span className="text-muted-foreground font-medium">Teléfono:</span>
-                <span className="text-foreground">{profile?.phone || 'No especificado'}</span>
+          <CardContent>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Teléfono:</span>
+                <span>{profile?.phone || 'No especificado'}</span>
               </div>
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
-                <span className="text-muted-foreground font-medium">Idioma:</span>
-                <span className="text-foreground">{profile?.preferred_language === 'es' ? 'Español' : 'English'}</span>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Idioma:</span>
+                <span>{profile?.preferred_language === 'es' ? 'Español' : 'English'}</span>
               </div>
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
-                <span className="text-muted-foreground font-medium">Zona horaria:</span>
-                <span className="text-foreground">{profile?.timezone || 'America/New_York'}</span>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Zona horaria:</span>
+                <span>{profile?.timezone || 'America/New_York'}</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Tabs for Profile Information and Security */}
-        <Card className="lg:col-span-2 order-1 lg:order-2">
+        <Card className="md:col-span-2">
           <Tabs defaultValue="profile" className="w-full">
-            <CardHeader className="p-4 md:p-6">
-              <TabsList className="grid w-full grid-cols-2 h-auto">
-                <TabsTrigger value="profile" className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4">
-                  <User className="h-3 w-3 md:h-4 md:w-4" />
-                  <span className="hidden sm:inline">Información Personal</span>
-                  <span className="sm:hidden">Info</span>
+            <CardHeader>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="profile" className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Información Personal
                 </TabsTrigger>
-                <TabsTrigger value="security" className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4">
-                  <Shield className="h-3 w-3 md:h-4 md:w-4" />
-                  <span className="hidden sm:inline">Seguridad</span>
-                  <span className="sm:hidden">Seguridad</span>
+                <TabsTrigger value="security" className="flex items-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  Seguridad
                 </TabsTrigger>
               </TabsList>
             </CardHeader>
 
-            <CardContent className="p-4 md:p-6">
-              <TabsContent value="profile" className="space-y-4 mt-0">
+            <CardContent>
+              <TabsContent value="profile" className="space-y-4">
                 <div className="mb-4">
-                  <h3 className="text-base md:text-lg font-medium">Información Personal</h3>
-                  <p className="text-xs md:text-sm text-muted-foreground">
+                  <h3 className="text-lg font-medium">Información Personal</h3>
+                  <p className="text-sm text-muted-foreground">
                     Actualiza tu información personal y preferencias
                   </p>
                 </div>
                 
                 <Form {...profileForm}>
                   <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={profileForm.control}
                         name="first_name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-sm font-medium">Nombre</FormLabel>
+                            <FormLabel>Nombre</FormLabel>
                             <FormControl>
                               <Input placeholder="Tu nombre" {...field} />
                             </FormControl>
@@ -343,7 +341,7 @@ export default function Profile() {
                         name="last_name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-sm font-medium">Apellido</FormLabel>
+                            <FormLabel>Apellido</FormLabel>
                             <FormControl>
                               <Input placeholder="Tu apellido" {...field} />
                             </FormControl>
@@ -358,7 +356,7 @@ export default function Profile() {
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium">Teléfono</FormLabel>
+                          <FormLabel>Teléfono</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="(555) 123-4567" 
@@ -366,7 +364,7 @@ export default function Profile() {
                               {...phoneHandlers}
                             />
                           </FormControl>
-                          <FormDescription className="text-xs">
+                          <FormDescription>
                             Número de teléfono para contacto (opcional)
                           </FormDescription>
                           <FormMessage />
@@ -374,13 +372,13 @@ export default function Profile() {
                       )}
                     />
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={profileForm.control}
                         name="preferred_language"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-sm font-medium">Idioma Preferido</FormLabel>
+                            <FormLabel>Idioma Preferido</FormLabel>
                             <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
                                 <SelectTrigger>
@@ -402,7 +400,7 @@ export default function Profile() {
                         name="timezone"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-sm font-medium">Zona Horaria</FormLabel>
+                            <FormLabel>Zona Horaria</FormLabel>
                             <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
                                 <SelectTrigger>
@@ -422,15 +420,15 @@ export default function Profile() {
                       />
                     </div>
 
-                    <div className="flex flex-col sm:flex-row justify-end gap-2">
-                      <Button type="button" variant="outline" onClick={onCancelProfile} className="w-full sm:w-auto">
+                    <div className="flex justify-end gap-2">
+                      <Button type="button" variant="outline" onClick={onCancelProfile}>
                         <RotateCcw className="mr-2 h-4 w-4" />
                         Cancelar
                       </Button>
                       <Button 
                         type="submit" 
                         disabled={updating}
-                        className="bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-colors w-full sm:w-auto"
+                        className="bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-colors"
                       >
                         {updating ? (
                           <>
@@ -449,10 +447,10 @@ export default function Profile() {
                 </Form>
               </TabsContent>
 
-              <TabsContent value="security" className="space-y-4 mt-0">
+              <TabsContent value="security" className="space-y-4">
                 <div className="mb-4">
-                  <h3 className="text-base md:text-lg font-medium">Seguridad de la Cuenta</h3>
-                  <p className="text-xs md:text-sm text-muted-foreground">
+                  <h3 className="text-lg font-medium">Seguridad de la Cuenta</h3>
+                  <p className="text-sm text-muted-foreground">
                     Actualiza tu contraseña para mantener tu cuenta segura
                   </p>
                 </div>
@@ -464,7 +462,7 @@ export default function Profile() {
                       name="currentPassword"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium">Contraseña Actual</FormLabel>
+                          <FormLabel>Contraseña Actual</FormLabel>
                           <FormControl>
                             <Input type="password" placeholder="Tu contraseña actual" {...field} />
                           </FormControl>
@@ -478,11 +476,11 @@ export default function Profile() {
                       name="newPassword"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium">Nueva Contraseña</FormLabel>
+                          <FormLabel>Nueva Contraseña</FormLabel>
                           <FormControl>
                             <Input type="password" placeholder="Nueva contraseña" {...field} />
                           </FormControl>
-                          <FormDescription className="text-xs">
+                          <FormDescription>
                             Debe tener al menos 6 caracteres
                           </FormDescription>
                           <FormMessage />
@@ -495,7 +493,7 @@ export default function Profile() {
                       name="confirmPassword"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium">Confirmar Nueva Contraseña</FormLabel>
+                          <FormLabel>Confirmar Nueva Contraseña</FormLabel>
                           <FormControl>
                             <Input type="password" placeholder="Confirma la nueva contraseña" {...field} />
                           </FormControl>
@@ -504,12 +502,12 @@ export default function Profile() {
                       )}
                     />
 
-                    <div className="flex flex-col sm:flex-row justify-start gap-2">
-                      <Button type="button" variant="outline" onClick={onCancelPassword} className="w-full sm:w-auto">
+                    <div className="flex justify-start gap-2">
+                      <Button type="button" variant="outline" onClick={onCancelPassword}>
                         <RotateCcw className="mr-2 h-4 w-4" />
                         Cancelar
                       </Button>
-                      <Button type="submit" disabled={changingPassword} variant="secondary" className="w-full sm:w-auto">
+                      <Button type="submit" disabled={changingPassword} variant="secondary">
                         {changingPassword ? (
                           <>
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
@@ -533,21 +531,21 @@ export default function Profile() {
 
       {/* Modal de confirmación para cancelar */}
       <AlertDialog open={showCancelModal} onOpenChange={setShowCancelModal}>
-        <AlertDialogContent className="mx-4 max-w-md">
+        <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-base">¿Descartar cambios?</AlertDialogTitle>
-            <AlertDialogDescription className="text-sm">
+            <AlertDialogTitle>¿Descartar cambios?</AlertDialogTitle>
+            <AlertDialogDescription>
               {pendingCancelAction === 'profile' 
                 ? "Se perderán todos los cambios no guardados en tu información personal y serás redirigido a tu dashboard."
                 : "Se limpiarán todos los campos de contraseña y serás redirigido a tu dashboard."
               }
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-            <AlertDialogCancel onClick={() => setShowCancelModal(false)} className="w-full sm:w-auto">
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowCancelModal(false)}>
               Continuar editando
             </AlertDialogCancel>
-            <AlertDialogAction onClick={handleCancelConfirmation} className="bg-destructive hover:bg-destructive/90 w-full sm:w-auto">
+            <AlertDialogAction onClick={handleCancelConfirmation} className="bg-destructive hover:bg-destructive/90">
               Sí, descartar y salir
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -502,15 +502,7 @@ export default function Users() {
         breadcrumbs={[
           { label: "Gestión de Usuarios" }
         ]}
-        title={
-          <span className="flex items-center gap-2">
-            <span className="hidden sm:inline">Usuarios de la Empresa</span>
-            <span className="sm:hidden">Usuarios</span>
-            <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-medium bg-primary text-primary-foreground rounded-full">
-              {filteredUsers.length}
-            </span>
-          </span>
-        }
+        title={`Usuarios de la Empresa (${filteredUsers.length})`}
         actions={
           <div className="flex items-center gap-2">
             <UserFiltersSheet
