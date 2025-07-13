@@ -418,7 +418,7 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen auth-background flex relative overflow-hidden">
+    <div className="min-h-screen auth-background flex flex-col lg:flex-row relative overflow-hidden">
       {/* Floating Elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-20 left-20 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse"></div>
@@ -484,9 +484,9 @@ export default function Auth() {
       </div>
       
       {/* Auth Form - Right Side */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-8 relative z-10">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-3 sm:p-4 lg:p-8 relative z-10 min-h-screen lg:min-h-0">
         {/* Back to landing - Mobile Only */}
-        <div className="absolute top-4 left-4 lg:hidden animate-fade-in">
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 lg:hidden animate-fade-in">
           <Link to="/" className="inline-flex items-center text-white/80 hover:text-white transition-all duration-300">
             <ArrowLeft className="h-4 w-4 mr-2" />
             <span className="font-body text-sm">{t('common:actions.back_home')}</span>
@@ -494,32 +494,32 @@ export default function Auth() {
         </div>
         
         {/* Language Switcher - Mobile Only */}
-        <div className="absolute top-4 right-4 lg:hidden">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 lg:hidden">
           <LanguageSwitcher />
         </div>
         
-        <div className="w-full max-w-md mt-16 lg:mt-0">
+        <div className="w-full max-w-md mt-12 sm:mt-16 lg:mt-0 px-2 sm:px-0">
 
-        <Card className="w-full auth-card animate-scale-in">
-          <CardHeader className="text-center pb-6">
+        <Card className="w-full auth-card animate-scale-in shadow-lg">
+          <CardHeader className="text-center pb-4 sm:pb-6">
             {/* Logo for Mobile */}
-            <div className="flex justify-center mb-6 lg:hidden">
-              <div className="flex items-center space-x-3 p-4 rounded-2xl bg-gradient-primary shadow-glow">
+            <div className="flex justify-center mb-4 sm:mb-6 lg:hidden">
+              <div className="flex items-center space-x-2 sm:space-x-3 p-3 sm:p-4 rounded-2xl bg-gradient-primary shadow-glow">
                 <img 
                   src={fleetNestLogo} 
                   alt="FleetNest Logo" 
-                  className="h-12 w-12 object-contain filter drop-shadow-lg"
+                  className="h-10 w-10 sm:h-12 sm:w-12 object-contain filter drop-shadow-lg"
                 />
-                <span className="text-xl font-heading font-bold text-white drop-shadow-lg">{t('common:app.name')}</span>
+                <span className="text-lg sm:text-xl font-heading font-bold text-white drop-shadow-lg">{t('common:app.name')}</span>
               </div>
             </div>
             
-            <CardTitle className="text-2xl lg:text-3xl font-heading font-bold text-foreground mb-2">
+            <CardTitle className="text-xl sm:text-2xl lg:text-3xl font-heading font-bold text-foreground mb-2">
               {showResetPassword ? 'Nueva Contraseña' : 
                showForgotPassword ? t('auth:forgot_password.title') : 
                (isLogin ? t('auth:title.login') : t('auth:title.signup'))}
             </CardTitle>
-             <CardDescription className="font-body text-muted-foreground">
+             <CardDescription className="font-body text-muted-foreground text-sm sm:text-base">
                {showResetPassword 
                  ? `Establece tu nueva contraseña para ${tokenValidation?.userEmail || 'tu cuenta'}`
                 : showForgotPassword 
@@ -528,11 +528,11 @@ export default function Auth() {
                     ? t('auth:description.login')
                     : t('auth:description.signup')
                   )
-              }
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent className="pt-0">
+               }
+             </CardDescription>
+           </CardHeader>
+           
+           <CardContent className="pt-0 px-4 sm:px-6">
             {/* Forgot Password Form */}
             {showForgotPassword && (
               <form onSubmit={handleForgotPassword} className="space-y-4">
@@ -690,10 +690,10 @@ export default function Auth() {
             {/* Main Login/Signup Form */}
             {!showForgotPassword && (
               <>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                   {!isLogin && (
                     <div className="space-y-4 animate-fade-in">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="firstName" className="font-body font-medium text-foreground">
                             {t('auth:form.first_name')}
