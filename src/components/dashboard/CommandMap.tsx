@@ -498,7 +498,7 @@ export function CommandMap() {
       </CardHeader>
       <CardContent>
         {/* Google Maps */}
-        <div className="relative h-96 rounded-lg border overflow-hidden mb-4">
+        <div className="relative h-[500px] rounded-lg border overflow-hidden mb-4">
           <div ref={mapContainer} className="w-full h-full" />
           {isLoading && (
             <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
