@@ -200,7 +200,7 @@ export default function Documents() {
         }
       />
       
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="flex-1 space-y-6 p-6">
 
       {/* Status Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
