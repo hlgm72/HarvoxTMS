@@ -10,6 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -589,6 +590,8 @@ export function AppSidebar() {
       <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'px-3 py-4' : 'px-6 py-6'}`} style={{ 
         backgroundColor: 'hsl(var(--fleet-sidebar-darker))'
       }}>
+        {/* SidebarTrigger oficial */}
+        <SidebarTrigger className={`${collapsed ? 'self-center mb-2' : 'self-start mb-4'} transition-all duration-300`} />
         <div className={`flex items-center transition-all duration-300 ${collapsed ? 'justify-center' : 'gap-4'}`}>
           {/* Logo Container with Professional Styling */}
           <div className="relative group">
