@@ -10,8 +10,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
-  SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -738,7 +736,6 @@ export function AppSidebar() {
           </div>
         )}
       </SidebarContent>
-      <SidebarRail />
     </Sidebar>
   );
 }
