@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./Sidebar";
 import { Header } from "./Header";
@@ -9,26 +9,15 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false); // Cerrado por defecto para móviles
-  
-  // Abrir sidebar en desktop por defecto
-  useEffect(() => {
-    const checkIsMobile = () => {
-      const isMobile = window.innerWidth < 768;
-      if (!isMobile) {
-        setSidebarOpen(true);
-      }
-    };
-    
-    checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-    return () => window.removeEventListener('resize', checkIsMobile);
-  }, []);
-
   return (
     <SidebarProvider 
-      open={sidebarOpen}
-      onOpenChange={setSidebarOpen}
+      defaultOpen={true}
+      style={
+        {
+          "--sidebar-width": "280px",
+          "--sidebar-width-mobile": "280px",
+        } as React.CSSProperties
+      }
     >
       <div className="min-h-screen flex w-full bg-background prevent-horizontal-scroll">
         {/* Sidebar desktop */}
@@ -49,20 +38,10 @@ export function Layout({ children }: LayoutProps) {
           </main>
         </SidebarInset>
         
-        {/* Sidebar móvil como overlay */}
-        {sidebarOpen && (
-          <div 
-            className="md:hidden fixed inset-0 z-50 mobile-sidebar-overlay" 
-            onClick={() => setSidebarOpen(false)}
-          >
-            <div 
-              className="fixed left-0 top-0 h-full w-64 bg-fleet-blue transform transition-transform duration-300 ease-in-out shadow-2xl" 
-              onClick={(e) => e.stopPropagation()}
-            >
-              <AppSidebar />
-            </div>
-          </div>
-        )}
+        {/* Mobile sidebar trigger - using the proper shadcn trigger */}
+        <div className="md:hidden">
+          <AppSidebar />
+        </div>
       </div>
     </SidebarProvider>
   );
