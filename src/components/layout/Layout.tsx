@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./Sidebar";
 import { Header } from "./Header";
@@ -9,28 +9,60 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Cerrado por defecto para móviles
+  
+  // Abrir sidebar en desktop por defecto
+  useEffect(() => {
+    const checkIsMobile = () => {
+      const isMobile = window.innerWidth < 768;
+      if (!isMobile) {
+        setSidebarOpen(true);
+      }
+    };
+    
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
   return (
     <SidebarProvider 
       open={sidebarOpen}
       onOpenChange={setSidebarOpen}
     >
-      <div className="min-h-screen flex w-full bg-background">
-        <div className="relative">
+      <div className="min-h-screen flex w-full bg-background prevent-horizontal-scroll">
+        {/* Sidebar desktop */}
+        <div className="relative hidden md:block">
           <AppSidebar />
           <SidebarCollapseButton />
         </div>
-        <SidebarInset className="flex flex-col flex-1">
+        
+        {/* Main content area */}
+        <SidebarInset className="flex flex-col flex-1 w-full md:w-auto min-w-0">
           <Header />
-          <main className="flex-1 bg-gradient-subtle">
-            <div className="h-full">
+          <main className="flex-1 bg-gradient-subtle p-2 md:p-4 overflow-x-hidden">
+            <div className="h-full max-w-full">
               <div className="animate-fade-in">
                 {children}
               </div>
             </div>
           </main>
         </SidebarInset>
+        
+        {/* Sidebar móvil como overlay */}
+        {sidebarOpen && (
+          <div 
+            className="md:hidden fixed inset-0 z-50 mobile-sidebar-overlay" 
+            onClick={() => setSidebarOpen(false)}
+          >
+            <div 
+              className="fixed left-0 top-0 h-full w-64 bg-fleet-blue transform transition-transform duration-300 ease-in-out shadow-2xl" 
+              onClick={(e) => e.stopPropagation()}
+            >
+              <AppSidebar />
+            </div>
+          </div>
+        )}
       </div>
     </SidebarProvider>
   );

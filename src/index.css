@@ -7,6 +7,31 @@ All colors MUST be HSL.
 */
 
 @layer base {
+  /* Mobile-first responsive fixes */
+  * {
+    box-sizing: border-box;
+  }
+  
+  html {
+    font-size: 16px;
+    overflow-x: hidden;
+  }
+  
+  body {
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  @media (min-width: 768px) {
+    body {
+      font-size: 16px;
+    }
+  }
+
   :root {
     /* Typography System */
     --font-heading: 'Outfit', system-ui, sans-serif;
@@ -245,5 +270,34 @@ All colors MUST be HSL.
   .google-button:hover {
     transform: translateY(-1px);
     box-shadow: var(--shadow-elegant);
+  }
+  
+  /* Mobile-specific responsive utilities */
+  .mobile-safe-height {
+    height: calc(100vh - 3.5rem); /* Accounting for mobile header */
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-safe-height {
+      height: calc(100vh - 4rem); /* Desktop header height */
+    }
+  }
+  
+  /* Prevent horizontal scroll */
+  .prevent-horizontal-scroll {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  /* Touch targets for mobile */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Mobile overlay sidebar */
+  .mobile-sidebar-overlay {
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.5);
   }
 }
