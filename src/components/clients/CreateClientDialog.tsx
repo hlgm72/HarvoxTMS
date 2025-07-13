@@ -45,9 +45,7 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
     defaultValues: {
       name: "",
       alias: "",
-      contact_person: "",
-      email: "",
-      phone: "",
+      email_domain: "",
       address: "",
       notes: "",
       logo_url: "",
@@ -209,67 +207,18 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
 
                   <FormField
                     control={form.control}
-                    name="contact_person"
+                    name="email_domain"
                     render={({ field }) => {
                       const handlers = createTextHandlers(field.onChange, 'text');
                       return (
                         <FormItem>
-                          <FormLabel>Persona de Contacto</FormLabel>
+                          <FormLabel>Dominio de Email</FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="Ej. Juan Pérez" 
+                              placeholder="Ej. empresa.com" 
                               value={field.value}
                               onChange={handlers.onChange}
                               onBlur={handlers.onBlur}
-                              name={field.name}
-                              ref={field.ref}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => {
-                      const handlers = createTextHandlers(field.onChange, 'email');
-                      return (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="email"
-                              placeholder="correo@empresa.com"
-                              value={field.value}
-                              onChange={handlers.onChange}
-                              onBlur={handlers.onBlur}
-                              name={field.name}
-                              ref={field.ref}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => {
-                      const handlers = createPhoneHandlers(field.onChange);
-                      return (
-                        <FormItem>
-                          <FormLabel>Teléfono</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="(555) 123-4567" 
-                              value={field.value}
-                              onChange={handlers.onChange}
-                              onKeyPress={handlers.onKeyPress}
                               name={field.name}
                               ref={field.ref}
                             />

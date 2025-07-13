@@ -121,27 +121,11 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
             </CardHeader>
             
             <CardContent className="space-y-3">
-              {client.contact_person && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Users className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-muted-foreground">Contacto:</span>
-                  <span>{client.contact_person}</span>
-                </div>
-              )}
-              
-              {client.email && (
+              {client.email_domain && (
                 <div className="flex items-center gap-2 text-sm">
                   <Mail className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-muted-foreground">Email:</span>
-                  <span className="truncate">{client.email}</span>
-                </div>
-              )}
-              
-              {client.phone && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Phone className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-muted-foreground">Teléfono:</span>
-                  <span>{client.phone}</span>
+                  <span className="text-muted-foreground">Dominio:</span>
+                  <span className="truncate">{client.email_domain}</span>
                 </div>
               )}
               

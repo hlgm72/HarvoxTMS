@@ -41,9 +41,7 @@ export function EditClientDialog({ client, open, onOpenChange }: EditClientDialo
       name: client.name,
       alias: client.alias || "",
       company_id: client.company_id,
-      contact_person: client.contact_person || "",
-      email: client.email || "",
-      phone: client.phone || "",
+      email_domain: client.email_domain || "",
       address: client.address || "",
       notes: client.notes || "",
       logo_url: client.logo_url || "",
@@ -59,9 +57,7 @@ export function EditClientDialog({ client, open, onOpenChange }: EditClientDialo
         name: client.name,
         alias: client.alias || "",
         company_id: client.company_id,
-        contact_person: client.contact_person || "",
-        email: client.email || "",
-        phone: client.phone || "",
+        email_domain: client.email_domain || "",
         address: client.address || "",
         notes: client.notes || "",
         logo_url: client.logo_url || "",
@@ -145,44 +141,12 @@ export function EditClientDialog({ client, open, onOpenChange }: EditClientDialo
 
               <FormField
                 control={form.control}
-                name="contact_person"
+                name="email_domain"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Persona de Contacto</FormLabel>
+                    <FormLabel>Dominio de Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ej. Juan Pérez" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="correo@empresa.com"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Teléfono</FormLabel>
-                    <FormControl>
-                      <Input placeholder="(555) 123-4567" {...field} />
+                      <Input placeholder="Ej. empresa.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

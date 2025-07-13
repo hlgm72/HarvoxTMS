@@ -28,8 +28,8 @@ export default function Clients() {
   // Filter clients based on search and filters
   const filteredClients = clients.filter((client) => {
     const matchesSearch = client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.contact_person?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      client.alias?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.email_domain?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = filters.status === "all" || 
       (filters.status === "active" && client.is_active) ||

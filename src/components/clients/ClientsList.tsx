@@ -97,22 +97,10 @@ export function ClientsList({ clients }: ClientsListProps) {
                   </div>
                   
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    {client.contact_person && (
-                      <div className="flex items-center gap-1">
-                        <Users className="h-3 w-3" />
-                        {client.contact_person}
-                      </div>
-                    )}
-                    {client.email && (
+                    {client.email_domain && (
                       <div className="flex items-center gap-1">
                         <Mail className="h-3 w-3" />
-                        {client.email}
-                      </div>
-                    )}
-                    {client.phone && (
-                      <div className="flex items-center gap-1">
-                        <Phone className="h-3 w-3" />
-                        {client.phone}
+                        {client.email_domain}
                       </div>
                     )}
                     {client.address && (

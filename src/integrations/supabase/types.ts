@@ -180,45 +180,39 @@ export type Database = {
           address: string | null
           alias: string | null
           company_id: string
-          contact_person: string | null
           created_at: string
-          email: string | null
+          email_domain: string | null
           id: string
           is_active: boolean
           logo_url: string | null
           name: string
           notes: string | null
-          phone: string | null
           updated_at: string
         }
         Insert: {
           address?: string | null
           alias?: string | null
           company_id: string
-          contact_person?: string | null
           created_at?: string
-          email?: string | null
+          email_domain?: string | null
           id?: string
           is_active?: boolean
           logo_url?: string | null
           name: string
           notes?: string | null
-          phone?: string | null
           updated_at?: string
         }
         Update: {
           address?: string | null
           alias?: string | null
           company_id?: string
-          contact_person?: string | null
           created_at?: string
-          email?: string | null
+          email_domain?: string | null
           id?: string
           is_active?: boolean
           logo_url?: string | null
           name?: string
           notes?: string | null
-          phone?: string | null
           updated_at?: string
         }
         Relationships: [

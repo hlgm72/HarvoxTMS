@@ -8,9 +8,7 @@ export interface Client {
   alias?: string;
   company_id: string;
   is_active: boolean;
-  contact_person?: string;
-  email?: string;
-  phone?: string;
+  email_domain?: string;
   address?: string;
   notes?: string;
   logo_url?: string;
