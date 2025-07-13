@@ -71,8 +71,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     const company = userRole.companies as any;
     const companyName = company.name || "FleetNest";
-    const senderEmail = company.email || company.owner_email || "noreply@fleetnest.app";
+    // Use a verified Resend email as sender, but include company info in reply-to
+    const senderEmail = "noreply@fleetnest.app"; // Always use verified domain
     const senderName = company.owner_name || companyName;
+    const replyToEmail = company.email || company.owner_email;
 
     // Get documents information
     const { data: documents, error: docsError } = await supabase
@@ -199,13 +201,22 @@ const handler = async (req: Request): Promise<Response> => {
     // Send email
     console.log(`Sending email to: ${recipientList.join(', ')}`);
     
-    const emailResponse = await resend.emails.send({
+    const emailData: any = {
       from: `${senderName} <${senderEmail}>`,
       to: recipientList,
       subject: subject,
       html: emailHtml,
       attachments: attachments
-    });
+    };
+    
+    // Add reply-to if company email is available
+    if (replyToEmail) {
+      emailData.reply_to = replyToEmail;
+    }
+    
+    console.log("Email data:", { ...emailData, attachments: `${attachments.length} files` });
+    
+    const emailResponse = await resend.emails.send(emailData);
 
     console.log("Email sent successfully:", emailResponse);
 
