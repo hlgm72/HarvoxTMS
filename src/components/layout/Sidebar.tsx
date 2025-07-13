@@ -526,10 +526,10 @@ export function AppSidebar() {
       side="left"
       style={{ 
         backgroundColor: 'hsl(var(--sidebar-background))',
-        width: collapsed ? 'var(--sidebar-width-icon)' : 'var(--sidebar-width)'
+        width: collapsed ? '64px' : 'var(--sidebar-width)'
       } as any}
     >
-      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'p-2' : 'p-4'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
+      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'p-2' : 'p-4'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))', width: collapsed ? '64px' : 'auto' }}>
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-8 h-8 bg-[hsl(217_91%_60%)] rounded-lg flex items-center justify-center">
