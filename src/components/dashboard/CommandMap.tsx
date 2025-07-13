@@ -195,8 +195,8 @@ export function CommandMap() {
     loader.load().then(() => {
       if (mapContainer.current) {
         map.current = new google.maps.Map(mapContainer.current, {
-          center: { lat: 19.4326, lng: -99.1332 }, // Mexico City
-          zoom: 6,
+          center: { lat: 39.8283, lng: -98.5795 }, // Centro geográfico de Estados Unidos
+          zoom: 4,
           mapTypeId: google.maps.MapTypeId.ROADMAP,
           styles: [
             {
