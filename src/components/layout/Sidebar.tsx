@@ -461,15 +461,16 @@ export function AppSidebar() {
               const IconComponent = item.icon;
               
               return (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild 
-                    isActive={active}
-                    tooltip={collapsed ? item.title : undefined}
-                  >
+                 <SidebarMenuItem key={item.title}>
+                   <SidebarMenuButton 
+                     asChild 
+                     isActive={active}
+                     tooltip={collapsed ? item.title : undefined}
+                   >
                      <NavLink 
                        to={item.url} 
                        end 
+                       onClick={(e) => e.stopPropagation()}
                        className={`group relative flex items-center gap-4 transition-all duration-200 ${
                          collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'
                        } ${
