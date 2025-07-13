@@ -496,7 +496,7 @@ export default function Users() {
   };
 
   return (
-    <div>
+    <div className="w-full max-w-full overflow-x-hidden">
       {/* Page Toolbar */}
       <PageToolbar
         breadcrumbs={[
@@ -623,18 +623,19 @@ export default function Users() {
             </CardHeader>
             <CardContent>
               {viewMode === 'table' ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Usuario</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Teléfono</TableHead>
-                      <TableHead>Rol</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Fecha de Registro</TableHead>
-                      <TableHead className="text-right">Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
+                <div className="overflow-x-auto">
+                  <Table className="min-w-full">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="min-w-[150px]">Usuario</TableHead>
+                        <TableHead className="min-w-[200px] hidden sm:table-cell">Email</TableHead>
+                        <TableHead className="min-w-[120px] hidden md:table-cell">Teléfono</TableHead>
+                        <TableHead className="min-w-[120px]">Rol</TableHead>
+                        <TableHead className="min-w-[100px] hidden sm:table-cell">Estado</TableHead>
+                        <TableHead className="min-w-[120px] hidden lg:table-cell">Fecha de Registro</TableHead>
+                        <TableHead className="min-w-[120px] text-right">Acciones</TableHead>
+                      </TableRow>
+                    </TableHeader>
                   <TableBody>
                     {filteredUsers.map((user) => (
                       <TableRow key={user.id}>
@@ -664,15 +665,15 @@ export default function Users() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>{user.phone || 'No especificado'}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{user.role}</Badge>
-                        </TableCell>
-                        <TableCell>{getStatusBadge(user.status)}</TableCell>
-                        <TableCell>
-                          {new Date(user.created_at).toLocaleDateString()}
-                        </TableCell>
+                         <TableCell className="hidden sm:table-cell truncate max-w-[200px]">{user.email}</TableCell>
+                         <TableCell className="hidden md:table-cell">{user.phone || 'No especificado'}</TableCell>
+                         <TableCell>
+                           <Badge variant="outline" className="truncate max-w-[120px]">{user.role}</Badge>
+                         </TableCell>
+                         <TableCell className="hidden sm:table-cell">{getStatusBadge(user.status)}</TableCell>
+                         <TableCell className="hidden lg:table-cell">
+                           {new Date(user.created_at).toLocaleDateString()}
+                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
                             <Button
@@ -729,8 +730,9 @@ export default function Users() {
                         </TableCell>
                       </TableRow>
                     ))}
-                  </TableBody>
-                </Table>
+                   </TableBody>
+                  </Table>
+                </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {filteredUsers.map((user) => (
