@@ -60,9 +60,9 @@ export default function Clients() {
         actions={
           <Button 
             onClick={() => setShowCreateDialog(true)}
-            className="bg-gradient-fleet hover:opacity-90"
+            className="gap-2"
           >
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="h-4 w-4" />
             Nuevo Cliente
           </Button>
         }
