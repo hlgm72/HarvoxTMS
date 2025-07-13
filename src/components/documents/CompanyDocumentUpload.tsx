@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import { useFleetNotifications } from "@/components/notifications";
 import { Upload, FileText, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -38,7 +38,7 @@ export function CompanyDocumentUpload({
   const [expiryDate, setExpiryDate] = useState("");
   const [notes, setNotes] = useState("");
   const [uploading, setUploading] = useState(false);
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
 
   // Get all predefined types for the select
   const allPredefinedTypes = Object.entries(predefinedTypes).flatMap(([categoryKey, category]) =>
@@ -110,10 +110,10 @@ export function CompanyDocumentUpload({
       return { fileName, publicUrl };
     },
     onSuccess: () => {
-      toast({
-        title: "Documento subido exitosamente",
-        description: "El documento se ha guardado correctamente",
-      });
+      showSuccess(
+        "Documento subido exitosamente",
+        "El documento se ha guardado correctamente"
+      );
       onSuccess();
       // Reset form
       setFile(null);
@@ -124,11 +124,10 @@ export function CompanyDocumentUpload({
     },
     onError: (error) => {
       console.error("Error uploading document:", error);
-      toast({
-        title: "Error al subir documento",
-        description: "No se pudo subir el documento. Intenta nuevamente.",
-        variant: "destructive",
-      });
+      showError(
+        "Error al subir documento",
+        "No se pudo subir el documento. Intenta nuevamente."
+      );
     }
   });
 
@@ -136,20 +135,18 @@ export function CompanyDocumentUpload({
     e.preventDefault();
     
     if (!file || !documentType) {
-      toast({
-        title: "Campos requeridos",
-        description: "Por favor selecciona un tipo de documento y un archivo",
-        variant: "destructive",
-      });
+      showError(
+        "Campos requeridos",
+        "Por favor selecciona un tipo de documento y un archivo"
+      );
       return;
     }
 
     if (documentType === "custom" && !customDocumentName.trim()) {
-      toast({
-        title: "Nombre requerido",
-        description: "Por favor ingresa un nombre para el documento personalizado",
-        variant: "destructive",
-      });
+      showError(
+        "Nombre requerido",
+        "Por favor ingresa un nombre para el documento personalizado"
+      );
       return;
     }
 
