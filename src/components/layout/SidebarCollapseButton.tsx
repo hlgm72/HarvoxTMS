@@ -11,10 +11,11 @@ export function SidebarCollapseButton() {
       variant="ghost"
       size="sm"
       onClick={toggleSidebar}
-      className="absolute right-0 top-4 translate-x-1/2 z-50 
-                 h-8 w-8 p-0 rounded-full border border-border bg-background 
-                 shadow-md hover:shadow-lg transition-all duration-200 
-                 hover:bg-accent flex items-center justify-center"
+      className={`absolute top-4 z-50 h-8 w-8 p-0 rounded-full border border-border bg-background 
+                  shadow-md hover:shadow-lg transition-all duration-200 
+                  hover:bg-accent flex items-center justify-center ${
+                    collapsed ? "right-2 translate-x-0" : "right-0 translate-x-1/2"
+                  }`}
       aria-label={collapsed ? "Expandir sidebar" : "Colapsar sidebar"}
     >
       {collapsed ? (
