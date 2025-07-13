@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { LogOut, Users, LayoutDashboard, Truck, Settings, User, Building2, Menu } from "lucide-react";
+import { SidebarCollapseButton } from "./SidebarCollapseButton";
 import { useFleetNotifications } from '@/components/notifications';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -106,8 +107,8 @@ export function Header() {
     <header className="h-14 md:h-16 border-b border-border bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 z-5 shadow-sm">
       <div className="flex h-full items-center justify-between px-3 md:px-6">
         <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
-          {/* Botón menú - SidebarTrigger oficial para todas las pantallas */}
-          <SidebarTrigger />
+          {/* Botón menú móvil - SidebarTrigger simple */}
+          <SidebarTrigger className="md:hidden" />
           
           {/* Título responsivo */}
           <div className="border-l border-border/20 pl-2 md:pl-4 flex-1 min-w-0">

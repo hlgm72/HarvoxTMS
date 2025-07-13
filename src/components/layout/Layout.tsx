@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./Sidebar";
 import { Header } from "./Header";
+import { SidebarCollapseButton } from "./SidebarCollapseButton";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -31,9 +32,14 @@ export function Layout({ children }: LayoutProps) {
       open={sidebarOpen}
       onOpenChange={setSidebarOpen}
     >
-      <div className="min-h-screen flex w-full bg-background">
-        {/* Sidebar - Only visible on desktop */}
+      <div className="min-h-screen flex w-full bg-background relative">
+        {/* Sidebar */}
         <AppSidebar />
+        
+        {/* Botón colapsar desktop - posicionado sobre el sidebar */}
+        <div className="hidden md:block">
+          <SidebarCollapseButton />
+        </div>
         
         {/* Main content area */}
         <SidebarInset className="flex flex-col flex-1 w-full min-w-0 overflow-x-hidden">
