@@ -332,77 +332,19 @@ export default function Auth() {
         if (data.user) {
           console.log('User logged in:', data.user.id);
           
-          // Get all user roles first
-          const { data: roleData, error: roleError } = await supabase
-            .from('user_company_roles')
-            .select('role, id, company_id')
-            .eq('user_id', data.user.id)
-            .eq('is_active', true);
-
-          console.log('Role query result:', { roleData, roleError });
-
           showSuccess(
             "¡Bienvenido de vuelta!",
             "Has iniciado sesión exitosamente en FleetNest"
           );
 
-          const roles = roleData || [];
+          // Don't redirect immediately - let AuthContext handle it
+          // This prevents conflicts between manual navigation and AuthContext logic
+          console.log('Login successful, letting AuthContext handle redirection...');
           
-          // Check if there's a previously stored role that's still valid
-          const storedRoleString = localStorage.getItem('currentRole') || localStorage.getItem('lastActiveRole');
-          let targetRole = null;
-          
-          if (storedRoleString) {
-            try {
-              const storedRole = JSON.parse(storedRoleString);
-              // Verify the stored role is still valid (user still has this role)
-              const isStillValid = roles.some(r => r.role === storedRole.role && r.company_id === storedRole.company_id);
-              if (isStillValid) {
-                targetRole = storedRole.role;
-                console.log('Using previously active role:', targetRole);
-              }
-            } catch (e) {
-              console.warn('Error parsing stored role:', e);
-            }
-          }
-          
-          // If no valid stored role, use priority hierarchy
-          if (!targetRole && roles.length > 0) {
-            const hasRole = (role: string) => roles.some(r => r.role === role);
-            if (hasRole('superadmin')) {
-              targetRole = 'superadmin';
-            } else if (hasRole('company_owner')) {
-              targetRole = 'company_owner';
-            } else if (hasRole('operations_manager')) {
-              targetRole = 'operations_manager';
-            } else if (hasRole('dispatcher')) {
-              targetRole = 'dispatcher';
-            } else if (hasRole('driver')) {
-              targetRole = 'driver';
-            }
-            console.log('Using role from hierarchy:', targetRole);
-          }
-
-          // Redirect based on determined role
-          if (targetRole === 'superadmin') {
-            console.log('Redirecting to superadmin dashboard');
-            navigate('/superadmin');
-          } else if (targetRole === 'company_owner') {
-            console.log('Redirecting to owner dashboard');
-            navigate('/dashboard/owner');
-          } else if (targetRole === 'operations_manager') {
-            console.log('Redirecting to operations dashboard');
-            navigate('/dashboard/operations');
-          } else if (targetRole === 'dispatcher') {
-            console.log('Redirecting to dispatcher dashboard');
-            navigate('/dashboard/dispatch');
-          } else if (targetRole === 'driver') {
-            console.log('Redirecting to driver dashboard');
-            navigate('/dashboard/driver');
-          } else {
-            console.log('No specific role found, redirecting to main dashboard');
-            navigate('/dashboard');
-          }
+          // Just navigate to root and let Index.tsx handle role-based redirection
+          setTimeout(() => {
+            navigate('/');
+          }, 500); // Small delay to ensure auth context updates
         }
       } else {
         // Sign up new user
