@@ -530,7 +530,7 @@ export function AppSidebar() {
       } as any}
     >
       <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-2 px-2' : 'p-4'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))', width: collapsed ? '64px' : 'auto' }}>
-        <div className="flex items-center gap-3">
+        <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
           <div className="relative">
             <div className="w-8 h-8 bg-[hsl(217_91%_60%)] rounded-lg flex items-center justify-center">
               <Zap className="h-4 w-4 text-white" />
