@@ -1,9 +1,17 @@
 import { PaymentSystemDemo } from '@/components/payment/PaymentSystemDemo';
+import { PageToolbar } from '@/components/layout/PageToolbar';
 
 export default function PaymentSystem() {
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      <PaymentSystemDemo />
-    </div>
+    <>
+      <PageToolbar 
+        breadcrumbs={[
+          { label: "Sistema de Pagos" }
+        ]}
+      />
+      <div className="container mx-auto p-6 space-y-8">
+        <PaymentSystemDemo />
+      </div>
+    </>
   );
 }

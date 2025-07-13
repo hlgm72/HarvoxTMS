@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useFleetNotifications } from '@/components/notifications';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
+import { PageToolbar } from '@/components/layout/PageToolbar';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Settings, Save, KeyRound, CheckCircle, AlertCircle, RotateCcw, Trash2, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -252,11 +253,13 @@ export default function Profile() {
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-4xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground">Mi Perfil</h1>
-        <p className="text-muted-foreground">Gestiona tu información personal y configuraciones de cuenta</p>
-      </div>
+    <>
+      <PageToolbar 
+        breadcrumbs={[
+          { label: "Mi Perfil" }
+        ]}
+      />
+      <div className="container mx-auto p-6 max-w-4xl">
 
       <div className="grid gap-6 md:grid-cols-3">
         {/* Profile Summary Card */}
@@ -547,7 +550,8 @@ export default function Profile() {
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog>
-    </div>
+        </AlertDialog>
+      </div>
+    </>
   );
 }

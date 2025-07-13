@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useFleetNotifications } from '@/components/notifications';
 import { CompanySettingsForm } from '@/components/companies/settings/CompanySettingsForm';
 import { SelfRoleManager } from '@/components/owner/SelfRoleManager';
+import { PageToolbar } from '@/components/layout/PageToolbar';
 import { Company } from '@/types/company';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
@@ -222,33 +223,15 @@ export default function Settings() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      {/* Header */}
-      <div className="bg-primary text-white shadow-lg relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-32 translate-x-32"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-24 -translate-x-24"></div>
-        </div>
-        
-        <div className="relative p-8">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-white/10 rounded-full">
-              <SettingsIcon className="h-8 w-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-4xl font-heading font-bold mb-2 animate-fade-in text-white">
-                Configuración
-              </h1>
-              <p className="text-white font-body text-lg">
-                Administra las configuraciones de tu empresa y sistema
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-8">
+    <>
+      <PageToolbar 
+        breadcrumbs={[
+          { label: "Configuración" }
+        ]}
+      />
+      <div className="p-6 min-h-screen bg-gradient-subtle">
+        {/* Content */}
+        <div className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm border">
             <TabsTrigger 
@@ -763,7 +746,8 @@ export default function Settings() {
             </Card>
           </TabsContent>
         </Tabs>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
