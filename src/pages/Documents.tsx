@@ -11,7 +11,6 @@ import { Upload, FileText, Download, Trash2, AlertCircle, CheckCircle, Calendar,
 import { CompanyDocumentUpload } from "@/components/documents/CompanyDocumentUpload";
 import { DocumentCard } from "@/components/documents/DocumentCard";
 import { PageToolbar } from "@/components/layout/PageToolbar";
-import { Layout } from "@/components/layout/Layout";
 
 // Tipos de documentos predefinidos con categorías
 const PREDEFINED_DOCUMENT_TYPES = {
@@ -166,7 +165,7 @@ export default function Documents() {
   }
 
   return (
-    <Layout>
+    <div>
       <PageToolbar 
         breadcrumbs={[
           { label: "Documentos" }
@@ -200,7 +199,7 @@ export default function Documents() {
         }
       />
       
-      <div className="flex-1 space-y-6 p-6">
+      <div className="p-6 space-y-6">
 
       {/* Status Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -356,6 +355,6 @@ export default function Documents() {
         </TabsContent>
       </Tabs>
       </div>
-    </Layout>
+    </div>
   );
 }
