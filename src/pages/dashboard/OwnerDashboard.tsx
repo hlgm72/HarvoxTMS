@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useFleetNotifications } from '@/components/notifications';
 import { CompanySettingsForm } from '@/components/companies/settings/CompanySettingsForm';
 import { PageToolbar } from '@/components/layout/PageToolbar';
+import { CommandMap } from '@/components/dashboard/CommandMap';
 import { Company } from '@/types/company';
 
 // Types
@@ -449,19 +450,21 @@ export default function OwnerDashboard() {
 
           {/* Fleet Management */}
           <TabsContent value="fleet" className="space-y-6">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center py-12">
-                  <Truck className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Gestión de Flota</h3>
-                  <p className="text-muted-foreground mb-4">La gestión de vehículos estará disponible próximamente</p>
-                  <Button variant="outline">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Agregar Vehículo
-                  </Button>
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-2xl font-bold">Gestión de Flota</h2>
+                  <p className="text-muted-foreground">Monitor y sincroniza tu flota con Geotab</p>
                 </div>
-              </CardContent>
-            </Card>
+                <Button variant="outline">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Agregar Vehículo
+                </Button>
+              </div>
+              
+              {/* Geotab Integration Map */}
+              <CommandMap />
+            </div>
           </TabsContent>
 
           {/* Reports */}

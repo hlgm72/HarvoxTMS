@@ -45,7 +45,7 @@ export const useSuperAdminDashboard = () => {
         supabase.from('companies').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('vehicles').select('*', { count: 'exact', head: true }),
-        supabase.from('drivers').select('*', { count: 'exact', head: true })
+        supabase.from('geotab_drivers').select('*', { count: 'exact', head: true })
       ]);
 
       setStats({
