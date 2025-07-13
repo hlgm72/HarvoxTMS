@@ -305,6 +305,87 @@ export type Database = {
         }
         Relationships: []
       }
+      company_equipment: {
+        Row: {
+          annual_inspection_expiry_date: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          current_mileage: number | null
+          equipment_number: string
+          equipment_type: string
+          fuel_type: string | null
+          geotab_vehicle_id: string | null
+          id: string
+          insurance_expiry_date: string | null
+          license_plate: string | null
+          license_plate_expiry_date: string | null
+          make: string | null
+          model: string | null
+          notes: string | null
+          purchase_date: string | null
+          purchase_price: number | null
+          registration_expiry_date: string | null
+          status: string
+          updated_at: string
+          updated_by: string | null
+          vin_number: string | null
+          year: number | null
+        }
+        Insert: {
+          annual_inspection_expiry_date?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          current_mileage?: number | null
+          equipment_number: string
+          equipment_type?: string
+          fuel_type?: string | null
+          geotab_vehicle_id?: string | null
+          id?: string
+          insurance_expiry_date?: string | null
+          license_plate?: string | null
+          license_plate_expiry_date?: string | null
+          make?: string | null
+          model?: string | null
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          registration_expiry_date?: string | null
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+          vin_number?: string | null
+          year?: number | null
+        }
+        Update: {
+          annual_inspection_expiry_date?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          current_mileage?: number | null
+          equipment_number?: string
+          equipment_type?: string
+          fuel_type?: string | null
+          geotab_vehicle_id?: string | null
+          id?: string
+          insurance_expiry_date?: string | null
+          license_plate?: string | null
+          license_plate_expiry_date?: string | null
+          make?: string | null
+          model?: string | null
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          registration_expiry_date?: string | null
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+          vin_number?: string | null
+          year?: number | null
+        }
+        Relationships: []
+      }
       driver_profiles: {
         Row: {
           cdl_class: string | null
@@ -363,6 +444,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      equipment_documents: {
+        Row: {
+          content_type: string | null
+          created_at: string
+          document_name: string
+          document_number: string | null
+          document_type: string
+          equipment_id: string
+          expiry_date: string | null
+          file_name: string
+          file_size: number | null
+          file_url: string
+          id: string
+          is_current: boolean
+          issue_date: string | null
+          issuing_authority: string | null
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          content_type?: string | null
+          created_at?: string
+          document_name: string
+          document_number?: string | null
+          document_type: string
+          equipment_id: string
+          expiry_date?: string | null
+          file_name: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          is_current?: boolean
+          issue_date?: string | null
+          issuing_authority?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          content_type?: string | null
+          created_at?: string
+          document_name?: string
+          document_number?: string | null
+          document_type?: string
+          equipment_id?: string
+          expiry_date?: string | null
+          file_name?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          is_current?: boolean
+          issue_date?: string | null
+          issuing_authority?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
       }
       expense_instances: {
         Row: {
@@ -1672,7 +1810,108 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      equipment_with_document_status: {
+        Row: {
+          annual_inspection_expiry_date: string | null
+          company_id: string | null
+          created_at: string | null
+          created_by: string | null
+          current_mileage: number | null
+          equipment_number: string | null
+          equipment_type: string | null
+          fuel_type: string | null
+          geotab_vehicle_id: string | null
+          has_form_2290: number | null
+          has_inspection: number | null
+          has_registration: number | null
+          has_title: number | null
+          id: string | null
+          inspection_status: string | null
+          insurance_expiry_date: string | null
+          license_plate: string | null
+          license_plate_expiry_date: string | null
+          license_status: string | null
+          make: string | null
+          model: string | null
+          notes: string | null
+          purchase_date: string | null
+          purchase_price: number | null
+          registration_expiry_date: string | null
+          registration_status: string | null
+          status: string | null
+          updated_at: string | null
+          updated_by: string | null
+          vin_number: string | null
+          year: number | null
+        }
+        Insert: {
+          annual_inspection_expiry_date?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          current_mileage?: number | null
+          equipment_number?: string | null
+          equipment_type?: string | null
+          fuel_type?: string | null
+          geotab_vehicle_id?: string | null
+          has_form_2290?: never
+          has_inspection?: never
+          has_registration?: never
+          has_title?: never
+          id?: string | null
+          inspection_status?: never
+          insurance_expiry_date?: string | null
+          license_plate?: string | null
+          license_plate_expiry_date?: string | null
+          license_status?: never
+          make?: string | null
+          model?: string | null
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          registration_expiry_date?: string | null
+          registration_status?: never
+          status?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          vin_number?: string | null
+          year?: number | null
+        }
+        Update: {
+          annual_inspection_expiry_date?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          current_mileage?: number | null
+          equipment_number?: string | null
+          equipment_type?: string | null
+          fuel_type?: string | null
+          geotab_vehicle_id?: string | null
+          has_form_2290?: never
+          has_inspection?: never
+          has_registration?: never
+          has_title?: never
+          id?: string | null
+          inspection_status?: never
+          insurance_expiry_date?: string | null
+          license_plate?: string | null
+          license_plate_expiry_date?: string | null
+          license_status?: never
+          make?: string | null
+          model?: string | null
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          registration_expiry_date?: string | null
+          registration_status?: never
+          status?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          vin_number?: string | null
+          year?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       assign_first_superadmin: {
