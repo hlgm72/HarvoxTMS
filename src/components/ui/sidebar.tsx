@@ -216,7 +216,12 @@ const Sidebar = React.forwardRef<
               background: 'hsl(var(--sidebar))',
               display: 'block',
               visibility: 'visible',
-              opacity: 1
+              opacity: 1,
+              overflow: 'auto',
+              WebkitOverflowScrolling: 'touch'
+            }}
+            onAnimationEnd={() => {
+              console.log('🎭 Sheet animation ended, openMobile:', openMobile);
             }}
           >
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
@@ -224,17 +229,33 @@ const Sidebar = React.forwardRef<
             <div 
               className="flex h-full w-full flex-col"
               style={{
-                background: 'hsl(var(--sidebar))',
-                color: 'hsl(var(--sidebar-foreground))',
+                background: '#ff0000', // Rojo súper visible
+                color: '#ffffff',
                 minHeight: '100vh',
                 position: 'relative',
-                zIndex: 1
+                zIndex: 1,
+                overflow: 'auto'
+              }}
+              onClick={() => {
+                console.log('🎯 Mobile menu content clicked!');
               }}
             >
-              <div className="p-4 border-b border-sidebar-border bg-red-500 text-white">
+              <div className="p-4 border-b border-white bg-blue-600">
                 <div className="text-lg font-bold">🚀 MOBILE MENU IS HERE!</div>
                 <div className="text-sm">openMobile: {String(openMobile)}</div>
                 <div className="text-sm">Window: {typeof window !== 'undefined' ? window.innerWidth : 'unknown'}</div>
+                <div className="text-sm">UserAgent: {typeof navigator !== 'undefined' ? navigator.userAgent.substring(0, 50) : 'unknown'}</div>
+                <div className="text-sm">Touch: {typeof window !== 'undefined' && 'ontouchstart' in window ? 'YES' : 'NO'}</div>
+                <div className="text-sm">DevicePixelRatio: {typeof window !== 'undefined' ? window.devicePixelRatio : 'unknown'}</div>
+                <button 
+                  onClick={() => {
+                    console.log('🚫 Close button clicked');
+                    setOpenMobile(false);
+                  }}
+                  className="mt-2 px-3 py-1 bg-red-500 text-white rounded text-sm"
+                >
+                  Cerrar Menú
+                </button>
               </div>
               {children}
             </div>
