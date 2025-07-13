@@ -332,17 +332,15 @@ export default function Auth() {
         if (data.user) {
           console.log('User logged in successfully:', data.user.id);
           
-          showSuccess(
-            "¡Bienvenido de vuelta!",
-            "Has iniciado sesión exitosamente en FleetNest"
-          );
-
+          // Store success message for the dashboard to show
+          localStorage.setItem('loginSuccess', 'true');
+          
           // Wait a bit for the AuthContext to process the session
           // then force a redirect with a full page reload to ensure clean state
           setTimeout(() => {
             console.log('Redirecting after successful login...');
             window.location.href = '/';
-          }, 1000);
+          }, 500);
         }
       } else {
         // Sign up new user
