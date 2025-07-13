@@ -307,10 +307,10 @@ export default function OwnerDashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Cargas Completadas</p>
-                      <p className="text-3xl font-bold text-cyan-600">{stats.total_loads}</p>
+                      <p className="text-3xl font-bold text-slate-600">{stats.total_loads}</p>
                     </div>
-                    <div className="p-3 bg-cyan-100 rounded-full">
-                      <Truck className="h-6 w-6 text-cyan-600" />
+                    <div className="p-3 bg-slate-100 rounded-full">
+                      <Truck className="h-6 w-6 text-slate-600" />
                     </div>
                   </div>
                 </CardContent>
