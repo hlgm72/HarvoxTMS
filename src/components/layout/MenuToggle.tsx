@@ -22,19 +22,31 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
   }
   
   const handleToggle = useCallback(() => {
-    console.log('📱 isMobile:', isMobile, 'window.innerWidth:', window.innerWidth);
+    const isMobileDevice = window.innerWidth < 768;
+    console.log('🔥 MOBILE MENU DEBUG:', {
+      isMobile: isMobileDevice,
+      windowWidth: window.innerWidth,
+      hasContext: !!sidebarContext,
+      currentOpenMobile: sidebarContext?.openMobile,
+      currentOpen: sidebarContext?.open
+    });
     
     if (sidebarContext) {
-      if (window.innerWidth < 768) {
-        // En móvil, usar openMobile
-        sidebarContext.setOpenMobile(!sidebarContext.openMobile);
-        console.log('📱 Mobile sidebar toggle:', !sidebarContext.openMobile);
+      if (isMobileDevice) {
+        // En móvil, usar setOpenMobile directamente
+        const newMobileState = !sidebarContext.openMobile;
+        console.log('📱 Setting mobile state to:', newMobileState);
+        sidebarContext.setOpenMobile(newMobileState);
+        onToggle?.(newMobileState);
       } else {
-        // En desktop, usar open
-        sidebarContext.setOpen(!sidebarContext.open);
-        console.log('💻 Desktop sidebar toggle:', !sidebarContext.open);
+        // En desktop, usar setOpen
+        const newDesktopState = !sidebarContext.open;
+        console.log('💻 Setting desktop state to:', newDesktopState);
+        sidebarContext.setOpen(newDesktopState);
+        onToggle?.(newDesktopState);
       }
     } else {
+      console.log('❌ No sidebar context available');
       // Fallback: usar eventos personalizados y estado local
       const newState = !isOpen;
       setIsOpen(newState);
@@ -45,10 +57,9 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
       window.dispatchEvent(new CustomEvent('independent-sidebar-toggle', { 
         detail: { open: newState } 
       }));
+      
+      onToggle?.(newState);
     }
-    
-    // Llamar callback si existe
-    onToggle?.(isOpen);
   }, [isOpen, onToggle, sidebarContext]);
   
   return (
