@@ -340,7 +340,8 @@ export default function Auth() {
           // Let AuthContext handle all role logic and redirection
           console.log('Login successful, letting AuthContext handle authentication flow...');
           
-          // Don't navigate - let the AuthContext handle redirection in useEffect
+          // Force navigation to trigger AuthContext initialization
+          navigate('/');
         }
       } else {
         // Sign up new user
