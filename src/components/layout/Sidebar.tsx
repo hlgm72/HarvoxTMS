@@ -594,7 +594,7 @@ export function AppSidebar() {
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="w-full justify-start p-3 h-auto bg-gradient-to-r from-slate-700/30 to-slate-600/20 hover:from-slate-600/40 hover:to-slate-500/30 transition-all duration-200 text-white border border-slate-500/20 rounded-lg shadow-sm backdrop-blur-sm"
+                  className="w-full justify-start p-3 h-auto bg-white hover:bg-slate-50 transition-all duration-200 border border-slate-200 rounded-lg shadow-sm"
                 >
                   <div className="flex items-center gap-3 text-left">
                     <div className="h-7 w-7 flex items-center justify-center">
@@ -611,14 +611,14 @@ export function AppSidebar() {
                       )}
                     </div>
                      <div className="flex-1 min-w-0">
-                       <p className="text-sm font-medium text-white leading-tight truncate">
+                       <p className="text-sm font-medium text-slate-900 leading-tight truncate">
                          {selectedCompany.name}
                        </p>
-                       <p className="text-xs text-slate-300 capitalize leading-tight">
+                       <p className="text-xs text-slate-500 capitalize leading-tight">
                          {currentRole?.role.replace('_', ' ') || 'Sin rol'}
                        </p>
                      </div>
-                     <ChevronDown className="h-4 w-4 text-slate-300 ml-2 flex-shrink-0" />
+                     <ChevronDown className="h-4 w-4 text-slate-400 ml-2 flex-shrink-0" />
                   </div>
                 </Button>
               </DropdownMenuTrigger>
