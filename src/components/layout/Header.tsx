@@ -103,21 +103,26 @@ export function Header() {
   };
   
   return (
-    <header className="h-14 md:h-16 border-b border-border bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 z-30 shadow-sm">
-      <div className="flex h-full items-center justify-between px-3 md:px-6">
+    <header className="h-14 md:h-16 border-b border-border bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 z-30 shadow-sm sticky top-0">
+      <div className="flex h-full items-center justify-between pr-3 md:pr-6">
         <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
-          {/* Título responsivo - sin el MenuToggle que se superpone */}
-          <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-            <div className="p-1.5 md:p-2 bg-gradient-fleet rounded-lg flex-shrink-0">
-              <IconComponent className="h-4 w-4 md:h-5 md:w-5 text-white" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-base md:text-xl font-bold bg-gradient-fleet bg-clip-text text-transparent tracking-tight truncate">
-                {pageInfo.title}
-              </h1>
-              <p className="text-xs md:text-sm text-muted-foreground font-medium truncate hidden sm:block">
-                {pageInfo.subtitle}
-              </p>
+          {/* Botón menú independiente - NO MÁS PROBLEMAS */}
+          <MenuToggle />
+          
+          {/* Título responsivo */}
+          <div className="border-l border-border/20 pl-2 md:pl-4 flex-1 min-w-0">
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="p-1.5 md:p-2 bg-gradient-fleet rounded-lg flex-shrink-0">
+                <IconComponent className="h-4 w-4 md:h-5 md:w-5 text-white" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-base md:text-xl font-bold bg-gradient-fleet bg-clip-text text-transparent tracking-tight truncate">
+                  {pageInfo.title}
+                </h1>
+                <p className="text-xs md:text-sm text-muted-foreground font-medium truncate hidden sm:block">
+                  {pageInfo.subtitle}
+                </p>
+              </div>
             </div>
           </div>
         </div>
