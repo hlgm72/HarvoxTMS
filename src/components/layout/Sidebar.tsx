@@ -586,11 +586,10 @@ export function AppSidebar() {
         width: collapsed ? '64px' : 'var(--sidebar-width)'
       } as any}
     >
-      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-3 px-2' : 'p-6'}`} style={{ 
-        backgroundColor: 'hsl(var(--fleet-sidebar-darker))', 
-        width: collapsed ? '64px' : 'auto'
+      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'px-3 py-4' : 'px-6 py-6'}`} style={{ 
+        backgroundColor: 'hsl(var(--fleet-sidebar-darker))'
       }}>
-        <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-4'}`}>
+        <div className={`flex items-center transition-all duration-300 ${collapsed ? 'justify-center' : 'gap-4'}`}>
           {/* Logo Container with Professional Styling */}
           <div className="relative group">
             <div className={`${collapsed ? 'w-14 h-14' : 'w-20 h-20'} bg-gradient-to-br from-white/20 to-white/5 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 animate-[scale-in_0.8s_cubic-bezier(0.4,0,0.2,1)]`}>
@@ -742,15 +741,19 @@ export function AppSidebar() {
         )}
 
         {/* Bottom section como en Limitless */}
-        {!collapsed && (
-          <div className="p-4 border-t border-[hsl(var(--sidebar-border))]">
+        <div className={`${collapsed ? 'px-3 py-2' : 'px-4 py-4'} border-t border-[hsl(var(--sidebar-border))]`}>
+          {collapsed ? (
+            <div className="flex justify-center">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            </div>
+          ) : (
             <div className="flex items-center gap-2 text-slate-300 text-xs">
               <Activity className="h-3 w-3" />
               <span>System Status</span>
               <div className="ml-auto w-2 h-2 bg-green-500 rounded-full"></div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </SidebarContent>
     </Sidebar>
   );
