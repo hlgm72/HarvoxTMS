@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Home } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface BreadcrumbItem {
   label: string;
@@ -28,6 +29,25 @@ export function PageToolbar({
   actions, 
   viewToggle 
 }: PageToolbarProps) {
+  const { 
+    isSuperAdmin, 
+    isCompanyOwner, 
+    isOperationsManager, 
+    isDispatcher, 
+    isDriver 
+  } = useAuth();
+
+  // Función para determinar el dashboard correcto según el rol
+  const getDashboardUrl = () => {
+    if (isSuperAdmin) return "/superadmin";
+    if (isCompanyOwner) return "/dashboard/owner";
+    if (isOperationsManager) return "/dashboard/operations";
+    if (isDispatcher) return "/dashboard/dispatch";
+    if (isDriver) return "/dashboard/driver";
+    
+    // Fallback por defecto
+    return "/dashboard";
+  };
   return (
     <div className="border-b border-border bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/85">
       <div className="px-6 py-4 space-y-3">
@@ -35,7 +55,7 @@ export function PageToolbar({
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard" className="flex items-center gap-2">
+              <BreadcrumbLink href={getDashboardUrl()} className="flex items-center gap-2">
                 <Home className="h-3 w-3" />
                 Inicio
               </BreadcrumbLink>
