@@ -14,6 +14,7 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -461,53 +462,87 @@ export function AppSidebar() {
               const IconComponent = item.icon;
               
               return (
-                <div key={item.title}>
-                   <NavLink 
-                     to={item.url} 
-                     end 
-                     className={`group relative flex items-center gap-4 transition-all duration-200 ${
-                       collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'
-                     } ${
-                       active 
-                         ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
-                         : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
-                     }`}
-                     style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}
-                   >
-                     <IconComponent 
-                       className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
-                         active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
-                       }`} 
-                       style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }}
-                     />
-                    
-                    {!collapsed && (
-                      <div className="flex items-center justify-between flex-1 min-w-0">
-                        <span className="truncate" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}>
-                          {item.title}
-                        </span>
-                        
-                        {item.badge && (
-                           <Badge 
-                             variant="secondary" 
-                             className={`text-xs font-medium px-1.5 py-0.5 ml-2 rounded-md shadow-sm ${
-                               active 
-                                 ? "bg-white/30 text-white border-white/50" 
-                                 : "bg-white/15 text-white/90 border-white/30 group-hover:bg-white/25 group-hover:text-white"
-                             }`}
-                          >
-                            {item.badge}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                    
-                    {/* Active indicator - exacto como Limitless */}
-                    {active && (
-                      <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
-                    )}
-                  </NavLink>
-                 </div>
+                 <div key={item.title}>
+                   {collapsed ? (
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <NavLink 
+                           to={item.url} 
+                           end 
+                           className={`group relative flex items-center gap-4 transition-all duration-200 ${
+                             collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'
+                           } ${
+                             active 
+                               ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                               : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                           }`}
+                           style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}
+                         >
+                           <IconComponent 
+                             className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
+                               active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
+                             }`} 
+                             style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }}
+                           />
+                           
+                           {/* Active indicator - exacto como Limitless */}
+                           {active && (
+                             <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
+                           )}
+                         </NavLink>
+                       </TooltipTrigger>
+                       <TooltipContent side="right" className="bg-slate-900 text-white border-slate-700">
+                         <p>{item.title}</p>
+                       </TooltipContent>
+                     </Tooltip>
+                   ) : (
+                     <NavLink 
+                       to={item.url} 
+                       end 
+                       className={`group relative flex items-center gap-4 transition-all duration-200 ${
+                         collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'
+                       } ${
+                         active 
+                           ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                           : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                       }`}
+                       style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}
+                     >
+                       <IconComponent 
+                         className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
+                           active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
+                         }`} 
+                         style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }}
+                       />
+                      
+                      {!collapsed && (
+                        <div className="flex items-center justify-between flex-1 min-w-0">
+                          <span className="truncate" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '16px', lineHeight: '24px' }}>
+                            {item.title}
+                          </span>
+                          
+                          {item.badge && (
+                             <Badge 
+                               variant="secondary" 
+                               className={`text-xs font-medium px-1.5 py-0.5 ml-2 rounded-md shadow-sm ${
+                                 active 
+                                   ? "bg-white/30 text-white border-white/50" 
+                                   : "bg-white/15 text-white/90 border-white/30 group-hover:bg-white/25 group-hover:text-white"
+                               }`}
+                            >
+                              {item.badge}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* Active indicator - exacto como Limitless */}
+                      {active && (
+                        <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
+                      )}
+                    </NavLink>
+                   )}
+                  </div>
                );
              })}
            </div>
@@ -588,25 +623,27 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className={`py-2 ${collapsed ? 'px-2' : 'px-0'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
-        {isSuperAdmin ? (
-          // Para SuperAdmin: Estilo Limitless exacto
-          <>
-            {/* Sección Principal */}
-            {renderSection("main", t('admin:navigation.main_management'))}
+        <TooltipProvider>
+          {isSuperAdmin ? (
+            // Para SuperAdmin: Estilo Limitless exacto
+            <>
+              {/* Sección Principal */}
+              {renderSection("main", t('admin:navigation.main_management'))}
 
-            {/* Otras secciones usando el mismo renderSection */}
-            {renderSection("monitoring", t('admin:navigation.monitoring'))}
-            {renderSection("business", t('admin:navigation.business'))}
-            {renderSection("settings", t('admin:navigation.settings'))}
-          </>
-        ) : (
-          // Para otros roles: Renderizar por secciones con separadores
-          <>
-            {Object.entries(getSectionLabels()).map(([sectionName, sectionLabel]) => 
-              renderSection(sectionName, sectionLabel)
-            )}
-          </>
-        )}
+              {/* Otras secciones usando el mismo renderSection */}
+              {renderSection("monitoring", t('admin:navigation.monitoring'))}
+              {renderSection("business", t('admin:navigation.business'))}
+              {renderSection("settings", t('admin:navigation.settings'))}
+            </>
+          ) : (
+            // Para otros roles: Renderizar por secciones con separadores
+            <>
+              {Object.entries(getSectionLabels()).map(([sectionName, sectionLabel]) => 
+                renderSection(sectionName, sectionLabel)
+              )}
+            </>
+          )}
+        </TooltipProvider>
 
         {/* Company selector moved to bottom - Professional style */}
         {!collapsed && !isSuperAdmin && !loading && selectedCompany && (
