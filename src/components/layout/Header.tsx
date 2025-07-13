@@ -126,13 +126,16 @@ export function Header() {
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-muted/50 transition-all duration-200">
-                <Avatar className="h-10 w-10 ring-2 ring-primary/10 transition-all duration-200 hover:ring-primary/20">
+              <Button variant="ghost" className="relative h-10 rounded-full hover:bg-muted/50 transition-all duration-200 flex items-center gap-3 px-3">
+                <Avatar className="h-8 w-8 ring-2 ring-primary/10 transition-all duration-200 hover:ring-primary/20">
                   <AvatarImage src={profile?.avatar_url || undefined} alt="Avatar" />
-                  <AvatarFallback className="bg-gradient-fleet text-white font-semibold">
+                  <AvatarFallback className="bg-gradient-fleet text-white font-semibold text-sm">
                     {getUserInitials()}
                   </AvatarFallback>
                 </Avatar>
+                <span className="text-sm font-medium text-foreground hidden sm:block">
+                  {profile?.first_name || user?.email?.split('@')[0] || 'Usuario'}
+                </span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-64 p-1 bg-card border-border shadow-xl backdrop-blur-sm" align="end">
