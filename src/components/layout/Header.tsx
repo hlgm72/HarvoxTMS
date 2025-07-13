@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,24 +20,35 @@ import { useFleetNotifications } from '@/components/notifications';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export function Header() {
-  // Estado local para el menú como fallback
+  // Estado independiente para el menú - no depende del contexto
   const [localMenuOpen, setLocalMenuOpen] = useState(false);
-  const [isContextReady, setIsContextReady] = useState(false);
+  const [mounted, setMounted] = useState(false);
   
-  // Intentar usar el contexto de sidebar de forma segura
-  let sidebarContext;
-  try {
-    sidebarContext = useSidebar();
-    if (!isContextReady && sidebarContext) {
-      setIsContextReady(true);
+  // Solo después del mount intentamos acceder al contexto
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  // Función para manejar el toggle del menú de forma robusta
+  const handleMenuToggle = useCallback(() => {
+    console.log('🔘 Menu toggle - mounted:', mounted);
+    
+    if (mounted) {
+      // Solo después del mount intentamos usar el contexto
+      try {
+        const sidebarContext = useSidebar();
+        console.log('🔘 Using sidebar context');
+        sidebarContext.toggleSidebar();
+        return;
+      } catch (error) {
+        console.log('🔘 Sidebar context not available, using local state');
+      }
     }
-  } catch (error) {
-    console.log('Sidebar context not available, using local state');
-    sidebarContext = null;
-  }
-  
-  const sidebarOpen = sidebarContext?.open ?? localMenuOpen;
-  const setSidebarOpen = sidebarContext?.setOpen ?? setLocalMenuOpen;
+    
+    // Fallback a estado local
+    console.log('🔘 Using local state toggle');
+    setLocalMenuOpen(prev => !prev);
+  }, [mounted]);
   
   const { t } = useTranslation(['common', 'fleet']);
   const { signOut } = useAuth();
@@ -130,12 +141,7 @@ export function Header() {
             variant="ghost" 
             size="sm"
             className="h-8 w-8 p-0 rounded-full border border-border bg-background shadow-md hover:shadow-lg transition-all duration-200 relative z-30"
-            onClick={() => {
-              console.log('🔘 Menu button clicked, current state:', sidebarOpen);
-              console.log('🔘 Context ready:', isContextReady);
-              console.log('🔘 Has context:', !!sidebarContext);
-              setSidebarOpen(!sidebarOpen);
-            }}
+            onClick={handleMenuToggle}
             style={{ 
               display: 'flex',
               alignItems: 'center',
