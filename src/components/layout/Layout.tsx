@@ -9,10 +9,24 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <SidebarProvider defaultOpen>
+    <SidebarProvider 
+      defaultOpen
+      onOpenChange={(open) => {
+        // Solo permitir cambios desde el trigger externo
+        console.log('SidebarProvider onOpenChange:', open);
+      }}
+    >
       <div className="min-h-screen flex w-full bg-background">
         <div className="relative">
-          <AppSidebar />
+          <div onClickCapture={(e) => {
+            // Prevenir que clicks dentro del sidebar lo expandan
+            const target = e.target as HTMLElement;
+            if (target.closest('[data-sidebar="true"]') && !target.closest('[data-sidebar-trigger="true"]')) {
+              e.stopPropagation();
+            }
+          }}>
+            <AppSidebar />
+          </div>
           <SidebarCollapseButton />
         </div>
         <SidebarInset className="flex flex-col flex-1">

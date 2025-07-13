@@ -469,10 +469,6 @@ export function AppSidebar() {
                          <NavLink 
                            to={item.url} 
                            end
-                           onClick={(e) => {
-                             console.log(`Clicked on ${item.title} - collapsed: ${collapsed}`);
-                             e.stopPropagation();
-                           }}
                            className={`group relative flex items-center gap-4 transition-all duration-200 ${
                              collapsed ? 'px-3 py-3 justify-center' : 'px-5 py-3'
                            } ${
@@ -500,13 +496,9 @@ export function AppSidebar() {
                        </TooltipContent>
                      </Tooltip>
                    ) : (
-                      <NavLink 
-                        to={item.url} 
-                        end
-                        onClick={(e) => {
-                          console.log(`Clicked on ${item.title} - collapsed: ${collapsed}`);
-                          e.stopPropagation();
-                        }}
+                       <NavLink 
+                         to={item.url} 
+                         end
                         className={`group relative flex items-center gap-4 transition-all duration-200 ${
                           collapsed ? 'px-3 py-3 justify-center' : 'px-5 py-3'
                         } ${
@@ -561,6 +553,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar
+      data-sidebar="true"
       className="border-r border-[hsl(var(--sidebar-border))]"
       collapsible="none"
       variant="sidebar"

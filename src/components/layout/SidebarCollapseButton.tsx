@@ -8,6 +8,7 @@ export function SidebarCollapseButton() {
 
   return (
     <Button
+      data-sidebar-trigger="true"
       variant="ghost"
       size="sm"
       onClick={toggleSidebar}
