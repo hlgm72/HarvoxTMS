@@ -75,7 +75,16 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
         variant="ghost" 
         size="sm"
         className="h-8 w-8 p-0 rounded-full border border-border bg-background shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
-        onClick={handleToggle}
+        onClick={(e) => {
+          console.log('🚀 BUTTON CLICKED!', { 
+            timestamp: Date.now(),
+            windowWidth: window.innerWidth,
+            isMobile: window.innerWidth < 768
+          });
+          e.preventDefault();
+          e.stopPropagation();
+          handleToggle();
+        }}
         style={{ 
           display: 'flex',
           visibility: 'visible',
