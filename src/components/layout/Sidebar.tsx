@@ -661,7 +661,7 @@ export function AppSidebar() {
         {/* Bottom section como en Limitless */}
         {!collapsed && (
           <div className="p-4 border-t border-[hsl(217_24%_16%)]">
-            <div className="flex items-center gap-2 text-[hsl(215_20%_65%)] text-xs">
+            <div className="flex items-center gap-2 text-slate-300 text-xs">
               <Activity className="h-3 w-3" />
               <span>System Status</span>
               <div className="ml-auto w-2 h-2 bg-green-500 rounded-full"></div>
