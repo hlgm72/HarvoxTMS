@@ -27,13 +27,13 @@ export function StatsCard({
       variant === "destructive" && "border-destructive/20 bg-gradient-to-br from-destructive/5 to-destructive/10"
     )}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+        <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground leading-tight">
           {title}
         </CardTitle>
-        <span className="text-2xl">{icon}</span>
+        <span className="text-lg md:text-2xl flex-shrink-0">{icon}</span>
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-foreground mb-1">
+      <CardContent className="space-y-1">
+        <div className="text-xl md:text-2xl font-bold text-foreground">
           {value}
         </div>
         {trend && (
@@ -44,7 +44,8 @@ export function StatsCard({
             <span className={trend.isPositive ? "↗️" : "↘️"}>
               {Math.abs(trend.value)}%
             </span>
-            vs semana anterior
+            <span className="hidden sm:inline">vs semana anterior</span>
+            <span className="sm:hidden">vs anterior</span>
           </p>
         )}
       </CardContent>

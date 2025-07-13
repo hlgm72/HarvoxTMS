@@ -375,7 +375,7 @@ const getSuperAdminNavigationItems = (t: any) => [
 
 export function AppSidebar() {
   const { t } = useTranslation(['admin', 'common']);
-  const { state } = useSidebar();
+  const { state, setOpen } = useSidebar();
   const { 
     isSuperAdmin, 
     isCompanyOwner, 
@@ -391,6 +391,14 @@ export function AppSidebar() {
   const { driversCount } = useDriversCount();
   
   const collapsed = state === "collapsed";
+  
+  // Función para manejar clicks en enlaces de navegación
+  const handleNavClick = () => {
+    // Cerrar sidebar en móviles cuando se hace click en un enlace
+    if (window.innerWidth < 768) {
+      setOpen(false);
+    }
+  };
   
   // Determinar navegación según el rol del usuario
   const getNavigationItems = () => {
@@ -466,81 +474,83 @@ export function AppSidebar() {
                    {collapsed ? (
                      <Tooltip>
                        <TooltipTrigger asChild>
-                         <NavLink 
-                           to={item.url} 
-                           end
-                           className={`group relative flex items-center gap-4 transition-all duration-200 ${
-                             collapsed ? 'px-3 py-3 justify-center' : 'px-5 py-3'
-                           } ${
-                             active 
-                               ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
-                               : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
-                           }`}
-                           style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '15px', lineHeight: '20px' }}
-                         >
-                           <IconComponent 
-                             className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
-                               active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
-                             }`} 
-                             style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }}
-                           />
-                           
-                           {/* Active indicator - exacto como Limitless */}
-                           {active && (
-                             <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
-                           )}
-                         </NavLink>
+                          <NavLink 
+                            to={item.url} 
+                            end
+                            onClick={handleNavClick}
+                            className={`group relative flex items-center gap-4 transition-all duration-200 ${
+                              collapsed ? 'px-3 py-3 justify-center' : 'px-5 py-3'
+                            } ${
+                              active 
+                                ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                                : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                            }`}
+                            style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '15px', lineHeight: '20px' }}
+                          >
+                            <IconComponent 
+                              className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
+                                active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
+                              }`} 
+                              style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }}
+                            />
+                            
+                            {/* Active indicator - exacto como Limitless */}
+                            {active && (
+                              <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
+                            )}
+                          </NavLink>
                        </TooltipTrigger>
                        <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200 shadow-lg">
                          <p>{item.title}</p>
                        </TooltipContent>
                      </Tooltip>
                    ) : (
-                       <NavLink 
-                         to={item.url} 
-                         end
-                        className={`group relative flex items-center gap-4 transition-all duration-200 ${
-                          collapsed ? 'px-3 py-3 justify-center' : 'px-5 py-3'
-                        } ${
-                          active 
-                            ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
-                            : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
-                        }`}
-                        style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '15px', lineHeight: '20px' }}
-                     >
-                       <IconComponent 
-                         className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
-                           active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
-                         }`} 
-                         style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }}
-                       />
-                      
-                      {!collapsed && (
-                        <div className="flex items-center justify-between flex-1 min-w-0">
-                          <span className="truncate" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '15px', lineHeight: '20px' }}>
-                            {item.title}
-                          </span>
-                          
-                          {item.badge && (
-                             <Badge 
-                               variant="secondary" 
-                               className={`text-xs font-medium px-1.5 py-0.5 ml-2 rounded-md shadow-sm ${
-                                 active 
-                                   ? "bg-white/30 text-white border-white/50" 
-                                   : "bg-white/15 text-white/90 border-white/30 group-hover:bg-white/25 group-hover:text-white"
-                               }`}
-                            >
-                              {item.badge}
-                            </Badge>
-                          )}
-                        </div>
-                      )}
-                      
-                      {/* Active indicator - exacto como Limitless */}
-                      {active && (
-                        <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
-                      )}
-                    </NavLink>
+                        <NavLink 
+                          to={item.url} 
+                          end
+                          onClick={handleNavClick}
+                         className={`group relative flex items-center gap-4 transition-all duration-200 ${
+                           collapsed ? 'px-3 py-3 justify-center' : 'px-5 py-3'
+                         } ${
+                           active 
+                             ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                             : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                         }`}
+                         style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '15px', lineHeight: '20px' }}
+                      >
+                        <IconComponent 
+                          className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
+                            active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
+                          }`} 
+                          style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }}
+                        />
+                       
+                       {!collapsed && (
+                         <div className="flex items-center justify-between flex-1 min-w-0">
+                           <span className="truncate" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal', fontSize: '15px', lineHeight: '20px' }}>
+                             {item.title}
+                           </span>
+                           
+                           {item.badge && (
+                              <Badge 
+                                variant="secondary" 
+                                className={`text-xs font-medium px-1.5 py-0.5 ml-2 rounded-md shadow-sm ${
+                                  active 
+                                    ? "bg-white/30 text-white border-white/50" 
+                                    : "bg-white/15 text-white/90 border-white/30 group-hover:bg-white/25 group-hover:text-white"
+                                }`}
+                             >
+                               {item.badge}
+                             </Badge>
+                           )}
+                         </div>
+                       )}
+                       
+                       {/* Active indicator - exacto como Limitless */}
+                       {active && (
+                         <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
+                       )}
+                     </NavLink>
                    )}
                   </div>
                );

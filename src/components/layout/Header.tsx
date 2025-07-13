@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
+import { useState, useCallback } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,11 +15,26 @@ import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { LogOut, Users, LayoutDashboard, Truck, Settings, User, Building2 } from "lucide-react";
+import { LogOut, Users, LayoutDashboard, Truck, Settings, User, Building2, Menu } from "lucide-react";
 import { useFleetNotifications } from '@/components/notifications';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export function Header() {
+  // Estado local para el menú como fallback
+  const [localMenuOpen, setLocalMenuOpen] = useState(false);
+  
+  // Intentar usar el contexto de sidebar de forma segura
+  let sidebarContext;
+  try {
+    sidebarContext = useSidebar();
+  } catch (error) {
+    console.log('Sidebar context not available, using local state');
+    sidebarContext = null;
+  }
+  
+  const sidebarOpen = sidebarContext?.open ?? localMenuOpen;
+  const setSidebarOpen = sidebarContext?.setOpen ?? setLocalMenuOpen;
+  
   const { t } = useTranslation(['common', 'fleet']);
   const { signOut } = useAuth();
   const { getUserInitials, getFullName, user, profile } = useUserProfile();
@@ -102,20 +118,33 @@ export function Header() {
   };
   
   return (
-    <header className="h-16 border-b border-border bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 z-5 shadow-sm">
-      <div className="flex h-full items-center justify-between px-6">
-        <div className="flex items-center gap-4">
-          {/* Removido el SidebarTrigger del header ya que ahora está en la línea divisoria */}
-          <div className="border-l border-border/20 pl-4">{/* ... keep existing code */}
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-fleet rounded-lg">
-                <IconComponent className="h-5 w-5 text-white" />
+    <header className="h-14 md:h-16 border-b border-border bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 z-5 shadow-sm">
+      <div className="flex h-full items-center justify-between px-3 md:px-6">
+        <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
+          {/* Botón menú - siempre visible, estilizado como redondo */}
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="h-8 w-8 p-0 rounded-full border border-border bg-background shadow-md hover:shadow-lg transition-all duration-200"
+            onClick={() => {
+              console.log('Menu button clicked, current state:', sidebarOpen);
+              setSidebarOpen(!sidebarOpen);
+            }}
+          >
+            <Menu className="h-4 w-4" />
+          </Button>
+          
+          {/* Título responsivo */}
+          <div className="border-l border-border/20 pl-2 md:pl-4 flex-1 min-w-0">
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="p-1.5 md:p-2 bg-gradient-fleet rounded-lg flex-shrink-0">
+                <IconComponent className="h-4 w-4 md:h-5 md:w-5 text-white" />
               </div>
-              <div>
-                <h1 className="text-xl font-bold bg-gradient-fleet bg-clip-text text-transparent tracking-tight">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-base md:text-xl font-bold bg-gradient-fleet bg-clip-text text-transparent tracking-tight truncate">
                   {pageInfo.title}
                 </h1>
-                <p className="text-sm text-muted-foreground font-medium">
+                <p className="text-xs md:text-sm text-muted-foreground font-medium truncate hidden sm:block">
                   {pageInfo.subtitle}
                 </p>
               </div>
@@ -123,8 +152,9 @@ export function Header() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 px-3 py-1.5 bg-white/40 rounded-lg border border-border/10">
+        <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
+          {/* Controles responsivos - ocultos en móvil muy pequeño */}
+          <div className="hidden sm:flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1.5 bg-white/40 rounded-lg border border-border/10">
             <RoleSwitcher />
             <div className="w-px h-4 bg-border/30"></div>
             <LanguageSwitcher />
@@ -132,25 +162,35 @@ export function Header() {
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 rounded-full hover:bg-muted/50 transition-all duration-200 flex items-center gap-3 px-3">
-                <Avatar className="h-10 w-10 ring-2 ring-primary/10 transition-all duration-200 hover:ring-primary/20">
+              <Button variant="ghost" className="relative h-8 md:h-10 rounded-full hover:bg-muted/50 transition-all duration-200 flex items-center gap-2 md:gap-3 px-2 md:px-3">
+                <Avatar className="h-8 w-8 md:h-10 md:w-10 ring-2 ring-primary/10 transition-all duration-200 hover:ring-primary/20">
                   <AvatarImage src={profile?.avatar_url || undefined} alt="Avatar" />
-                  <AvatarFallback className="bg-gradient-fleet text-white font-semibold">
+                  <AvatarFallback className="bg-gradient-fleet text-white font-semibold text-xs md:text-sm">
                     {getUserInitials()}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-sm font-medium text-foreground hidden sm:block">
+                <span className="text-sm font-medium text-foreground hidden lg:block">
                   {profile?.first_name || user?.email?.split('@')[0] || 'Usuario'}
                 </span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-64 p-1 bg-card border-border shadow-xl backdrop-blur-sm" align="end">
-              <DropdownMenuLabel className="p-4 border-b border-border">
+            <DropdownMenuContent className="w-60 md:w-64 p-1 bg-card border-border shadow-xl backdrop-blur-sm" align="end">
+              <DropdownMenuLabel className="p-3 md:p-4 border-b border-border">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-semibold leading-none text-foreground">{getFullName()}</p>
                   <p className="text-xs leading-none text-muted-foreground font-medium">{user?.email}</p>
                 </div>
               </DropdownMenuLabel>
+              
+              {/* Controles de idioma/rol en móvil */}
+              <div className="sm:hidden p-2 border-b border-border">
+                <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                  <RoleSwitcher />
+                  <div className="w-px h-4 bg-border/30"></div>
+                  <LanguageSwitcher />
+                </div>
+              </div>
+              
               <div className="p-1">
                 <DropdownMenuItem asChild className="p-3 cursor-pointer rounded-lg hover:bg-accent text-foreground transition-colors">
                   <Link to="/profile" className="w-full flex items-center">
