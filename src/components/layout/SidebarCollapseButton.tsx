@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -12,10 +13,12 @@ export function SidebarCollapseButton() {
       variant="ghost"
       size="sm"
       onClick={toggleSidebar}
-      className={`absolute top-4 z-50 h-8 w-8 p-0 rounded-full border border-border bg-background 
+      className={`fixed top-4 z-50 h-8 w-8 p-0 rounded-full border border-border bg-background 
                   shadow-md hover:shadow-lg transition-all duration-200 
                   hover:bg-accent flex items-center justify-center ${
-                    collapsed ? "right-[-24px] translate-x-0" : "right-0 translate-x-1/2"
+                    collapsed 
+                      ? "left-[60px]" // Posición cuando está colapsado
+                      : "left-[264px]" // Posición cuando está expandido (280px - 16px)
                   }`}
       aria-label={collapsed ? "Expandir sidebar" : "Colapsar sidebar"}
     >

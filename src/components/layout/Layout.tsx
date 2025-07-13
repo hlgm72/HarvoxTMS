@@ -1,3 +1,4 @@
+
 import React from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./Sidebar";
@@ -19,12 +20,12 @@ export function Layout({ children }: LayoutProps) {
         } as React.CSSProperties
       }
     >
-      <div className="min-h-screen flex w-full bg-background prevent-horizontal-scroll">
+      <div className="min-h-screen flex w-full bg-background prevent-horizontal-scroll relative">
         {/* Sidebar desktop */}
-        <div className="relative hidden md:block">
-          <AppSidebar />
-          <SidebarCollapseButton />
-        </div>
+        <AppSidebar />
+        
+        {/* Botón de colapso - siempre visible */}
+        <SidebarCollapseButton />
         
         {/* Main content area */}
         <SidebarInset className="flex flex-col flex-1 w-full md:w-auto min-w-0">
@@ -37,11 +38,6 @@ export function Layout({ children }: LayoutProps) {
             </div>
           </main>
         </SidebarInset>
-        
-        {/* Mobile sidebar trigger - using the proper shadcn trigger */}
-        <div className="md:hidden">
-          <AppSidebar />
-        </div>
       </div>
     </SidebarProvider>
   );
