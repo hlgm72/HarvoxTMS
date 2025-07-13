@@ -71,10 +71,12 @@ const handler = async (req: Request): Promise<Response> => {
 
     const company = userRole.companies as any;
     const companyName = company.name || "FleetNest";
-    // Use a verified Resend email as sender, but include company info in reply-to
-    const senderEmail = "noreply@fleetnest.app"; // Always use verified domain
     const senderName = company.owner_name || companyName;
-    const replyToEmail = company.email || company.owner_email;
+    const companyEmail = company.email || company.owner_email;
+    
+    // Try to use company email first, fallback to verified email
+    const primarySenderEmail = companyEmail || "noreply@fleetnest.app";
+    const fallbackSenderEmail = "noreply@fleetnest.app";
 
     // Get documents information
     const { data: documents, error: docsError } = await supabase
@@ -201,24 +203,49 @@ const handler = async (req: Request): Promise<Response> => {
     // Send email
     console.log(`Sending email to: ${recipientList.join(', ')}`);
     
-    const emailData: any = {
-      from: `${senderName} <${senderEmail}>`,
-      to: recipientList,
-      subject: subject,
-      html: emailHtml,
-      attachments: attachments
-    };
+    let emailResponse;
+    let finalSenderEmail = primarySenderEmail;
     
-    // Add reply-to if company email is available
-    if (replyToEmail) {
-      emailData.reply_to = replyToEmail;
+    try {
+      // Try with company email first
+      console.log(`Attempting to send email from: ${senderName} <${primarySenderEmail}>`);
+      
+      emailResponse = await resend.emails.send({
+        from: `${senderName} <${primarySenderEmail}>`,
+        to: recipientList,
+        subject: subject,
+        html: emailHtml,
+        attachments: attachments
+      });
+      
+    } catch (primaryError: any) {
+      console.warn(`Failed to send with company email ${primarySenderEmail}:`, primaryError.message);
+      
+      // If company email fails, try with fallback
+      if (primarySenderEmail !== fallbackSenderEmail) {
+        console.log(`Attempting to send with fallback email: ${senderName} <${fallbackSenderEmail}>`);
+        finalSenderEmail = fallbackSenderEmail;
+        
+        const emailData: any = {
+          from: `${senderName} <${fallbackSenderEmail}>`,
+          to: recipientList,
+          subject: subject,
+          html: emailHtml,
+          attachments: attachments
+        };
+        
+        // Add reply-to with company email if available
+        if (companyEmail && companyEmail !== fallbackSenderEmail) {
+          emailData.reply_to = companyEmail;
+        }
+        
+        emailResponse = await resend.emails.send(emailData);
+      } else {
+        throw primaryError;
+      }
     }
-    
-    console.log("Email data:", { ...emailData, attachments: `${attachments.length} files` });
-    
-    const emailResponse = await resend.emails.send(emailData);
 
-    console.log("Email sent successfully:", emailResponse);
+    console.log(`Email sent successfully from ${finalSenderEmail}:`, emailResponse);
 
     return new Response(
       JSON.stringify({
