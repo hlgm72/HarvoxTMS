@@ -22,14 +22,18 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
   }
   
   const handleToggle = useCallback(() => {
-    if (isMobile && sidebarContext) {
-      // En móvil, usar el contexto del sidebar directamente
-      sidebarContext.setOpenMobile(!sidebarContext.openMobile);
-      console.log('📱 Mobile sidebar toggle:', !sidebarContext.openMobile);
-    } else if (!isMobile && sidebarContext) {
-      // En desktop, usar el contexto del sidebar
-      sidebarContext.setOpen(!sidebarContext.open);
-      console.log('💻 Desktop sidebar toggle:', !sidebarContext.open);
+    console.log('📱 isMobile:', isMobile, 'window.innerWidth:', window.innerWidth);
+    
+    if (sidebarContext) {
+      if (window.innerWidth < 768) {
+        // En móvil, usar openMobile
+        sidebarContext.setOpenMobile(!sidebarContext.openMobile);
+        console.log('📱 Mobile sidebar toggle:', !sidebarContext.openMobile);
+      } else {
+        // En desktop, usar open
+        sidebarContext.setOpen(!sidebarContext.open);
+        console.log('💻 Desktop sidebar toggle:', !sidebarContext.open);
+      }
     } else {
       // Fallback: usar eventos personalizados y estado local
       const newState = !isOpen;
@@ -45,7 +49,7 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
     
     // Llamar callback si existe
     onToggle?.(isOpen);
-  }, [isOpen, onToggle, isMobile, sidebarContext]);
+  }, [isOpen, onToggle, sidebarContext]);
   
   return (
     <div 
