@@ -624,21 +624,20 @@ export function AppSidebar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent 
                 align="start" 
-                className="w-72 border border-slate-600/30 rounded-lg shadow-xl backdrop-blur-lg" 
-                style={{ backgroundColor: 'rgba(51, 65, 85, 0.95)' }}
+                className="w-72 border border-slate-200 rounded-lg shadow-xl bg-white"
               >
                 {companies.map((company) => (
                   <DropdownMenuItem
                     key={company.id}
                     onClick={() => setSelectedCompany(company)}
-                    className="flex items-center gap-3 p-3 text-white hover:bg-slate-600/30 rounded-md m-1 transition-all duration-150 cursor-pointer"
+                    className="flex items-center gap-3 p-3 text-slate-700 hover:bg-slate-50 rounded-md m-1 transition-all duration-150 cursor-pointer"
                   >
                     <div className="h-8 w-8 flex items-center justify-center">
                       {company.logo_url ? (
                         <img 
                           src={company.logo_url} 
                           alt={company.name}
-                          className="h-8 w-8 object-contain rounded-md shadow-sm"
+                          className="h-8 w-8 object-contain rounded-md"
                         />
                       ) : (
                         <div className="h-8 w-8 bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm font-semibold flex items-center justify-center rounded-md shadow-sm">
@@ -647,8 +646,8 @@ export function AppSidebar() {
                       )}
                     </div>
                      <div className="flex flex-col flex-1">
-                       <span className="font-medium text-white text-sm leading-tight">{company.name}</span>
-                       <span className="text-xs text-slate-300 capitalize leading-tight">
+                       <span className="font-medium text-slate-900 text-sm leading-tight">{company.name}</span>
+                       <span className="text-xs text-slate-500 capitalize leading-tight">
                          {company.role.replace('_', ' ')}
                        </span>
                      </div>
