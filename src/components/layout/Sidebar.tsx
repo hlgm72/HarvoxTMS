@@ -34,6 +34,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from 'react-i18next';
 import { useDriversCount } from "@/hooks/useDriversCount";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
+import { SidebarCollapseButton } from "./SidebarCollapseButton";
 
 // Mock data for companies
 const companies = [
@@ -524,7 +525,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="border-r border-[hsl(var(--sidebar-border))]"
+      className="border-r border-[hsl(var(--sidebar-border))] relative"
       collapsible="icon"
       variant="sidebar"
       side="left"
@@ -533,11 +534,14 @@ export function AppSidebar() {
         width: collapsed ? '64px' : 'var(--sidebar-width)'
       } as any}
     >
+      {/* Botón de colapsar en la parte superior */}
+      <SidebarCollapseButton />
+      
       <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-3 px-2' : 'p-6'}`} style={{ 
         backgroundColor: 'hsl(var(--fleet-sidebar-darker))', 
         width: collapsed ? '64px' : 'auto'
       }}>
-        <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-4'}`}>
+        <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-4'}`}>{/* ... keep existing code */}
           {/* Logo Container with Professional Styling */}
           <div className="relative group">
             <div className={`${collapsed ? 'w-14 h-14' : 'w-20 h-20'} bg-gradient-to-br from-white/20 to-white/5 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 animate-[scale-in_0.8s_cubic-bezier(0.4,0,0.2,1)]`}>
