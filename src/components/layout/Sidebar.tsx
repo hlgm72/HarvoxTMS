@@ -12,7 +12,6 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
   SidebarRail,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
