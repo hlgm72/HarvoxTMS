@@ -103,8 +103,8 @@ export function Header() {
   };
   
   return (
-    <header className="h-14 md:h-16 border-b border-border bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 z-20 shadow-sm" style={{ margin: 0, padding: 0 }}>
-      <div className="flex h-full items-center justify-between pr-3 md:pr-6" style={{ margin: 0, gap: 0 }}>
+    <header className="h-14 md:h-16 border-b border-border bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 z-20 shadow-sm">
+      <div className="flex h-full items-center justify-between pl-0 pr-3 md:pr-6">
         <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
           {/* Botón menú independiente - NO MÁS PROBLEMAS */}
           <MenuToggle />

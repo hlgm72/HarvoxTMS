@@ -21,7 +21,7 @@ export function Layout({ children }: LayoutProps) {
     >
       <div className="min-h-screen flex w-full bg-background prevent-horizontal-scroll">
         <AppSidebar />
-        <div className="flex flex-col flex-1 w-full md:w-auto min-w-0" style={{ marginLeft: 0, paddingLeft: 0 }}>
+        <SidebarInset className="flex flex-col flex-1 w-full md:w-auto min-w-0">
           <Header />
           <main className="flex-1 bg-gradient-subtle p-2 md:p-4 overflow-x-hidden">
             <div className="h-full max-w-full">
@@ -30,7 +30,7 @@ export function Layout({ children }: LayoutProps) {
               </div>
             </div>
           </main>
-        </div>
+        </SidebarInset>
       </div>
     </SidebarProvider>
   );
