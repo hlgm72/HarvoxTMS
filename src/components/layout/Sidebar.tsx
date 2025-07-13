@@ -12,6 +12,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
@@ -372,9 +373,9 @@ const getSuperAdminNavigationItems = (t: any) => [
   },
 ];
 
-export function AppSidebar({ collapsed }: { collapsed: boolean }) {
+export function AppSidebar() {
   const { t } = useTranslation(['admin', 'common']);
-  // Remove useSidebar hook since we're getting collapsed as prop
+  const { state } = useSidebar();
   const { 
     isSuperAdmin, 
     isCompanyOwner, 
@@ -389,7 +390,7 @@ export function AppSidebar({ collapsed }: { collapsed: boolean }) {
   const { companies, selectedCompany, setSelectedCompany, loading } = useUserCompanies();
   const { driversCount } = useDriversCount();
   
-  // collapsed is now a prop, no need to derive from state
+  const collapsed = state === "collapsed";
   
   // Determinar navegación según el rol del usuario
   const getNavigationItems = () => {
@@ -552,7 +553,6 @@ export function AppSidebar({ collapsed }: { collapsed: boolean }) {
 
   return (
     <Sidebar
-      data-sidebar="true"
       className="border-r border-[hsl(var(--sidebar-border))]"
       collapsible="none"
       variant="sidebar"
