@@ -7,6 +7,7 @@ interface SidebarCollapseButtonProps {
 }
 
 export function SidebarCollapseButton({ collapsed, onToggle }: SidebarCollapseButtonProps) {
+  console.log('SidebarCollapseButton props:', { collapsed, onToggle });
 
   return (
     <Button
