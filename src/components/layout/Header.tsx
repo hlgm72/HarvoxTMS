@@ -119,7 +119,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 px-3 py-1.5 bg-muted/30 rounded-lg">
+          <div className="flex items-center gap-3 px-3 py-1.5 bg-white/40 rounded-lg border border-border/10">
             <RoleSwitcher />
             <div className="w-px h-4 bg-border/30"></div>
             <LanguageSwitcher />
