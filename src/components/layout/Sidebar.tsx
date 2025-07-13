@@ -540,11 +540,11 @@ export function AppSidebar() {
         <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-4'}`}>
           {/* Logo Container with Professional Styling */}
           <div className="relative group">
-            <div className={`${collapsed ? 'w-12 h-12' : 'w-16 h-16'} bg-gradient-to-br from-white/20 to-white/5 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105`}>
+            <div className={`${collapsed ? 'w-14 h-14' : 'w-20 h-20'} bg-gradient-to-br from-white/20 to-white/5 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105`}>
               <img 
                 src="/lovable-uploads/f2dc63b4-a93b-49bd-a347-e03a7c567905.png" 
                 alt="FleetNest Logo" 
-                className={`${collapsed ? 'w-8 h-8' : 'w-12 h-12'} object-contain filter brightness-0 invert drop-shadow-md transition-all duration-300 group-hover:drop-shadow-lg`}
+                className={`${collapsed ? 'w-10 h-10' : 'w-16 h-16'} object-contain filter brightness-0 invert drop-shadow-md transition-all duration-300 group-hover:drop-shadow-lg`}
               />
               {/* Subtle glow effect */}
               <div className="absolute inset-0 rounded-xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
