@@ -88,16 +88,24 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Error al obtener los documentos");
     }
 
+    // Enhanced validation rules
+    const MAX_TOTAL_SIZE = 20 * 1024 * 1024; // 20MB total
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;  // 10MB individual
+    const MAX_DOCUMENTS = 10; // max documents per email
+
     if (!documents || documents.length === 0) {
       throw new Error("No se encontraron documentos válidos");
     }
 
-    console.log(`Found ${documents.length} documents to send`);
+    if (documents.length > MAX_DOCUMENTS) {
+      throw new Error(`Demasiados documentos. Máximo ${MAX_DOCUMENTS} por email.`);
+    }
 
+    console.log(`Found ${documents.length} documents to send (max ${MAX_DOCUMENTS})`);
+    
     // Download and prepare attachments
     const attachments = [];
     let totalSize = 0;
-    const maxSizeBytes = 25 * 1024 * 1024; // 25MB limit for Resend
 
     for (const doc of documents) {
       try {
@@ -128,9 +136,15 @@ const handler = async (req: Request): Promise<Response> => {
         const arrayBuffer = await fileData.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
         
-        // Check size limit
-        if (totalSize + uint8Array.length > maxSizeBytes) {
-          console.warn(`Skipping ${doc.file_name} - would exceed size limit`);
+        // Check individual file size limit
+        if (uint8Array.length > MAX_FILE_SIZE) {
+          console.warn(`Skipping ${doc.file_name} - file too large (${(uint8Array.length / (1024 * 1024)).toFixed(1)}MB > 10MB)`);
+          continue;
+        }
+        
+        // Check total size limit
+        if (totalSize + uint8Array.length > MAX_TOTAL_SIZE) {
+          console.warn(`Skipping ${doc.file_name} - would exceed total size limit`);
           continue;
         }
 
