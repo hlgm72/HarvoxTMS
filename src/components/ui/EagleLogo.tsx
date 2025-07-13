@@ -5,13 +5,15 @@ interface EagleLogoProps {
   width?: number;
   height?: number;
   fill?: string;
+  style?: React.CSSProperties;
 }
 
 export const EagleLogo: React.FC<EagleLogoProps> = ({
   className = '',
   width = 120,
   height = 120,
-  fill = 'currentColor'
+  fill = 'currentColor',
+  style
 }) => {
   return (
     <svg
@@ -21,6 +23,7 @@ export const EagleLogo: React.FC<EagleLogoProps> = ({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      style={style}
     >
       {/* Eagle head and beak */}
       <path

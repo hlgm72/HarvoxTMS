@@ -22,6 +22,7 @@ import Landing from "./pages/Landing";
 import Drivers from "./pages/Drivers";
 import Settings from "./pages/Settings";
 import Clients from "./pages/Clients";
+import EagleDemo from "./pages/EagleDemo";
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/layout/Layout";
@@ -45,6 +46,7 @@ function AppContent() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/invitation/:token" element={<Invitation />} />
+        <Route path="/demo" element={<EagleDemo />} />
         
         {/* Protected routes with Layout */}
         <Route 
