@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Building2 } from "lucide-react";
+import { ClientLogoUpload } from "./ClientLogoUpload";
 import {
   Dialog,
   DialogContent,
@@ -36,11 +37,13 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
   const form = useForm<CreateClientForm>({
     defaultValues: {
       name: "",
+      alias: "",
       contact_person: "",
       email: "",
       phone: "",
       address: "",
       notes: "",
+      logo_url: "",
       is_active: true,
       company_id: "", // This will be set automatically by the backend
     },
@@ -71,6 +74,25 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Logo Upload Section */}
+            <FormField
+              control={form.control}
+              name="logo_url"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Logo del Cliente</FormLabel>
+                  <FormControl>
+                    <ClientLogoUpload
+                      logoUrl={field.value || undefined}
+                      clientName={form.watch("name") || form.watch("alias")}
+                      onLogoChange={(url) => field.onChange(url || "")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -81,6 +103,20 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
                     <FormLabel>Nombre de la Empresa *</FormLabel>
                     <FormControl>
                       <Input placeholder="Ej. ABC Transport LLC" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="alias"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre Comercial / Alias</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ej. ABC Transport" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -178,12 +178,14 @@ export type Database = {
       company_brokers: {
         Row: {
           address: string | null
+          alias: string | null
           company_id: string
           contact_person: string | null
           created_at: string
           email: string | null
           id: string
           is_active: boolean
+          logo_url: string | null
           name: string
           notes: string | null
           phone: string | null
@@ -191,12 +193,14 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          alias?: string | null
           company_id: string
           contact_person?: string | null
           created_at?: string
           email?: string | null
           id?: string
           is_active?: boolean
+          logo_url?: string | null
           name: string
           notes?: string | null
           phone?: string | null
@@ -204,12 +208,14 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          alias?: string | null
           company_id?: string
           contact_person?: string | null
           created_at?: string
           email?: string | null
           id?: string
           is_active?: boolean
+          logo_url?: string | null
           name?: string
           notes?: string | null
           phone?: string | null

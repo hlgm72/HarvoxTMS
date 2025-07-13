@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Building2, Phone, Mail, MapPin, MoreHorizontal, Edit, Trash2, Users, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -59,6 +60,15 @@ export function ClientsList({ clients }: ClientsListProps) {
     }
   };
 
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+  };
+
   return (
     <div className="space-y-4">
       {clients.map((client) => (
@@ -66,13 +76,21 @@ export function ClientsList({ clients }: ClientsListProps) {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4 flex-1">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <Building2 className="h-5 w-5 text-primary" />
-                </div>
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={client.logo_url} alt={client.name} />
+                  <AvatarFallback>
+                    {getInitials(client.alias || client.name)}
+                  </AvatarFallback>
+                </Avatar>
                 
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-lg">{client.name}</h3>
+                    <div>
+                      <h3 className="font-semibold text-lg">{client.name}</h3>
+                      {client.alias && (
+                        <p className="text-sm text-muted-foreground">"{client.alias}"</p>
+                      )}
+                    </div>
                     <Badge variant={client.is_active ? "default" : "secondary"}>
                       {client.is_active ? "Activo" : "Inactivo"}
                     </Badge>

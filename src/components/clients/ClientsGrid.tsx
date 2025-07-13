@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Building2, Phone, Mail, MapPin, MoreHorizontal, Edit, Trash2, Users, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -59,6 +60,15 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
     }
   };
 
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+  };
+
   return (
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -67,9 +77,12 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Building2 className="h-4 w-4 text-primary" />
-                  </div>
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={client.logo_url} alt={client.name} />
+                    <AvatarFallback className="text-xs">
+                      {getInitials(client.alias || client.name)}
+                    </AvatarFallback>
+                  </Avatar>
                   <Badge variant={client.is_active ? "default" : "secondary"}>
                     {client.is_active ? "Activo" : "Inactivo"}
                   </Badge>
@@ -99,7 +112,12 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              <CardTitle className="text-lg">{client.name}</CardTitle>
+              <div>
+                <CardTitle className="text-lg">{client.name}</CardTitle>
+                {client.alias && (
+                  <p className="text-sm text-muted-foreground mt-1">"{client.alias}"</p>
+                )}
+              </div>
             </CardHeader>
             
             <CardContent className="space-y-3">

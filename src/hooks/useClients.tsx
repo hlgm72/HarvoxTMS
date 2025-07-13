@@ -5,6 +5,7 @@ import { useFleetNotifications } from "@/components/notifications";
 export interface Client {
   id: string;
   name: string;
+  alias?: string;
   company_id: string;
   is_active: boolean;
   contact_person?: string;
@@ -12,6 +13,7 @@ export interface Client {
   phone?: string;
   address?: string;
   notes?: string;
+  logo_url?: string;
   created_at: string;
   updated_at: string;
 }
