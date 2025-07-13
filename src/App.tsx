@@ -21,6 +21,7 @@ import DriverDashboard from "./pages/dashboard/DriverDashboard";
 import Landing from "./pages/Landing";
 import Drivers from "./pages/Drivers";
 import Settings from "./pages/Settings";
+import Clients from "./pages/Clients";
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/layout/Layout";
@@ -164,9 +165,7 @@ function AppContent() {
           path="/clients" 
           element={
             <ProtectedRoute>
-              <Layout>
-                <div>Clients page coming soon</div>
-              </Layout>
+              <Clients />
             </ProtectedRoute>
           } 
         />
