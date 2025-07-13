@@ -373,7 +373,24 @@ const getSuperAdminNavigationItems = (t: any) => [
 
 export function AppSidebar() {
   const { t } = useTranslation(['admin', 'common']);
-  const { state, setOpen, openMobile, setOpenMobile } = useSidebar();
+  
+  // Verificar si estamos dentro del contexto del sidebar
+  let sidebarState;
+  try {
+    sidebarState = useSidebar();
+    console.log('✅ Sidebar context available:', sidebarState);
+  } catch (error) {
+    console.error('❌ Error accessing sidebar context:', error);
+    // Fallback si no está disponible el contexto
+    sidebarState = {
+      state: "expanded",
+      setOpen: () => {},
+      openMobile: false,
+      setOpenMobile: () => {}
+    };
+  }
+  
+  const { state, setOpen, openMobile, setOpenMobile } = sidebarState;
   const { 
     isSuperAdmin, 
     isCompanyOwner, 
