@@ -4,9 +4,8 @@ import { Plus, Search, Filter, Grid, List, Building2, Users, DollarSign, Trendin
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { Layout } from "@/components/layout/Layout";
+import { PageToolbar } from "@/components/layout/PageToolbar";
 import { ClientsList } from "@/components/clients/ClientsList";
 import { ClientsGrid } from "@/components/clients/ClientsGrid";
 import { CreateClientDialog } from "@/components/clients/CreateClientDialog";
@@ -49,19 +48,16 @@ export default function Clients() {
     activeLoads: 0
   };
 
+  const breadcrumbs = [
+    { label: "Gestión de Clientes" }
+  ];
+
   return (
     <Layout>
-      <div className="flex-1 space-y-6 p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-fleet bg-clip-text text-transparent">
-              Gestión de Clientes
-            </h1>
-            <p className="text-muted-foreground">
-              Administra tus brokers y clientes de transporte
-            </p>
-          </div>
+      <PageToolbar
+        breadcrumbs={breadcrumbs}
+        title="Gestión de Clientes"
+        actions={
           <Button 
             onClick={() => setShowCreateDialog(true)}
             className="bg-gradient-fleet hover:opacity-90"
@@ -69,7 +65,27 @@ export default function Clients() {
             <Plus className="h-4 w-4 mr-2" />
             Nuevo Cliente
           </Button>
-        </div>
+        }
+        viewToggle={
+          <div className="flex items-center gap-2">
+            <Button
+              variant={viewMode === "list" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setViewMode("list")}
+            >
+              <List className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === "grid" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setViewMode("grid")}
+            >
+              <Grid className="h-4 w-4" />
+            </Button>
+          </div>
+        }
+      />
+      <div className="flex-1 space-y-6 p-6">
 
         {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -129,43 +145,24 @@ export default function Clients() {
         </div>
 
         {/* Search and Filters */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4 flex-1">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar clientes..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => setShowFilters(!showFilters)}
-              className={showFilters ? "bg-muted" : ""}
-            >
-              <Filter className="h-4 w-4 mr-2" />
-              Filtros
-            </Button>
+        <div className="flex items-center gap-4 flex-1">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar clientes..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
           </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant={viewMode === "list" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewMode("list")}
-            >
-              <List className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === "grid" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewMode("grid")}
-            >
-              <Grid className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            onClick={() => setShowFilters(!showFilters)}
+            className={showFilters ? "bg-muted" : ""}
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            Filtros
+          </Button>
         </div>
 
         {/* Filters Panel */}
