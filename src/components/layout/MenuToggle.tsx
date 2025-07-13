@@ -9,7 +9,22 @@ interface MenuToggleProps {
 }
 
 export function MenuToggle({ onToggle }: MenuToggleProps) {
-  const { toggleSidebar, isMobile, openMobile, open } = useSidebar();
+  // Safe sidebar hook usage with fallback
+  let sidebarContext;
+  try {
+    sidebarContext = useSidebar();
+  } catch (error) {
+    // Fallback when sidebar context is not available
+    console.warn('MenuToggle: Sidebar context not available, using fallback');
+    sidebarContext = {
+      toggleSidebar: () => {},
+      isMobile: false,
+      openMobile: false,
+      open: true
+    };
+  }
+  
+  const { toggleSidebar, isMobile, openMobile, open } = sidebarContext;
   
   const handleToggle = useCallback(() => {
     toggleSidebar();
