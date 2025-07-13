@@ -558,6 +558,10 @@ export function AppSidebar() {
       collapsible="none"
       variant="sidebar"
       side="left"
+      onClickCapture={(e) => {
+        // Prevenir que clicks dentro del sidebar lo expandan
+        e.stopPropagation();
+      }}
       style={{ 
         backgroundColor: 'hsl(var(--sidebar-background))',
         width: collapsed ? '64px' : 'var(--sidebar-width)'

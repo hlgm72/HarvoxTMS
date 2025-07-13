@@ -18,19 +18,8 @@ export function Layout({ children }: LayoutProps) {
     >
       <div className="min-h-screen flex w-full bg-background">
         <div className="relative">
-          <div onClickCapture={(e) => {
-            // Prevenir que clicks dentro del sidebar lo expandan, EXCEPTO el trigger
-            const target = e.target as HTMLElement;
-            const isInsideSidebar = target.closest('[data-sidebar="true"]');
-            const isTrigger = target.closest('[data-sidebar-trigger="true"]');
-            
-            if (isInsideSidebar && !isTrigger) {
-              e.stopPropagation();
-            }
-          }}>
-            <AppSidebar />
-            <SidebarCollapseButton />
-          </div>
+          <AppSidebar />
+          <SidebarCollapseButton />
         </div>
         <SidebarInset className="flex flex-col flex-1">
           <Header />
