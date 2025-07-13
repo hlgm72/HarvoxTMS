@@ -364,39 +364,6 @@ export type Database = {
           },
         ]
       }
-      drivers: {
-        Row: {
-          created_at: string
-          email: string | null
-          geotab_id: string
-          id: string
-          license_number: string | null
-          name: string
-          phone: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          email?: string | null
-          geotab_id: string
-          id?: string
-          license_number?: string | null
-          name: string
-          phone?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          email?: string | null
-          geotab_id?: string
-          id?: string
-          license_number?: string | null
-          name?: string
-          phone?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
       expense_instances: {
         Row: {
           amount: number
@@ -682,6 +649,39 @@ export type Database = {
           updated_at?: string
           weekly_dollar_limit?: number | null
           weekly_gallon_limit?: number | null
+        }
+        Relationships: []
+      }
+      geotab_drivers: {
+        Row: {
+          created_at: string
+          email: string | null
+          geotab_id: string
+          id: string
+          license_number: string | null
+          name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          geotab_id: string
+          id?: string
+          license_number?: string | null
+          name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          geotab_id?: string
+          id?: string
+          license_number?: string | null
+          name?: string
+          phone?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1566,7 +1566,7 @@ export type Database = {
             foreignKeyName: "vehicle_assignments_driver_id_fkey"
             columns: ["driver_id"]
             isOneToOne: false
-            referencedRelation: "drivers"
+            referencedRelation: "geotab_drivers"
             referencedColumns: ["id"]
           },
           {
