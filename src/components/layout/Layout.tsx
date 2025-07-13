@@ -11,25 +11,26 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
-  // Auto-open sidebar on desktop - solo initial
+  // Auto-open sidebar on desktop
   useEffect(() => {
     const handleResize = () => {
       const isDesktop = window.innerWidth >= 768;
-      // Solo cambiar automáticamente en el resize inicial, no interferir después
-      setSidebarOpen(isDesktop);
+      if (isDesktop && !sidebarOpen) {
+        setSidebarOpen(true);
+      } else if (!isDesktop && sidebarOpen) {
+        setSidebarOpen(false);
+      }
     };
     
-    // Solo ejecutar una vez al montar el componente
     handleResize();
-  }, []); // Sin dependencia en sidebarOpen para evitar loops
-
-  console.log("🏠 Layout - sidebarOpen:", sidebarOpen);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [sidebarOpen]);
 
   return (
     <SidebarProvider 
       open={sidebarOpen}
       onOpenChange={setSidebarOpen}
-      defaultOpen={false}
     >
       <div className="min-h-screen flex w-full bg-background relative">
         {/* Sidebar */}
