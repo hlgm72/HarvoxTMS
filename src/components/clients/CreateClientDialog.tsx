@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { Building2, Users, Plus, Trash2, ArrowLeft, ArrowRight } from "lucide-react";
 import { createTextHandlers, createPhoneHandlers } from "@/lib/textUtils";
+import { useAuth } from "@/contexts/AuthContext";
 import { ClientLogoUpload } from "./ClientLogoUpload";
 import {
   Dialog,
@@ -36,6 +37,7 @@ type CreateClientForm = Omit<Client, "id" | "created_at" | "updated_at"> & {
 
 export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogProps) {
   const [currentStep, setCurrentStep] = useState(1);
+  const { currentRole } = useAuth();
   const createClient = useCreateClient();
   const createDispatcher = useCreateDispatcher();
   
@@ -50,7 +52,7 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
       notes: "",
       logo_url: "",
       is_active: true,
-      company_id: "", // This will be set automatically by the backend
+      company_id: currentRole?.company_id || "",
       dispatchers: [],
     },
   });
@@ -62,8 +64,14 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
 
   const onSubmit = async (data: CreateClientForm) => {
     try {
-      // Create the client first
+      // Ensure company_id is set
       const { dispatchers, ...clientData } = data;
+      clientData.company_id = currentRole?.company_id || "";
+      
+      if (!clientData.company_id) {
+        throw new Error("No se pudo obtener el ID de la empresa");
+      }
+      
       const newClient = await createClient.mutateAsync(clientData);
       
       // Then create dispatchers if any
