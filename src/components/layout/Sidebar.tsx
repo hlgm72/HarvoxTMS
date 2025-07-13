@@ -534,9 +534,8 @@ export function AppSidebar() {
       } as any}
     >
       <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-3 px-2' : 'p-6'}`} style={{ 
-        backgroundColor: 'hsl(var(--fleet-sidebar-darker))', 
-        width: collapsed ? '64px' : 'auto',
-        background: collapsed ? 'hsl(var(--fleet-sidebar-darker))' : 'linear-gradient(135deg, hsl(var(--fleet-sidebar-darker)) 0%, hsl(217, 24%, 18%) 100%)'
+        backgroundColor: 'hsl(var(--sidebar-background))', 
+        width: collapsed ? '64px' : 'auto'
       }}>
         <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-4'}`}>
           {/* Logo Container with Professional Styling */}
