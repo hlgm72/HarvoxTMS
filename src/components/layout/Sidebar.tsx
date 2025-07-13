@@ -478,7 +478,7 @@ export function AppSidebar() {
                            : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
                        }`}
                     >
-                     <IconComponent className={`h-7 w-7 flex-shrink-0 ${
+                     <IconComponent className={`h-8 w-8 flex-shrink-0 ${
                        active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
                      }`} />
                      
