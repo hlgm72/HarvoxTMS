@@ -123,7 +123,7 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 bg-muted/30 p-6 rounded-lg">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 bg-muted/10 p-6 rounded-lg">
             {currentStep === 1 && (
               <>
                 {/* Logo Upload Section */}
