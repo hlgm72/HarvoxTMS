@@ -551,8 +551,6 @@ export function AppSidebar() {
               {/* Impact glow on load */}
               <div className="absolute inset-0 rounded-xl bg-white/10 animate-[scale-in_0.8s_cubic-bezier(0.4,0,0.2,1),fade-out_1.5s_ease-out_0.8s_forwards]"></div>
             </div>
-            {/* Optional floating indicator */}
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full shadow-lg animate-pulse opacity-80"></div>
           </div>
           
           {!collapsed && (
