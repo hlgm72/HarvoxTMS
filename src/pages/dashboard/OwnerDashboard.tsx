@@ -247,28 +247,57 @@ export default function OwnerDashboard() {
         {/* Content */}
         <div className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm border">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Dashboard
-            </TabsTrigger>
-            <TabsTrigger value="drivers" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Conductores
-            </TabsTrigger>
-            <TabsTrigger value="fleet" className="flex items-center gap-2">
-              <Truck className="h-4 w-4" />
-              Flota
-            </TabsTrigger>
-            <TabsTrigger value="reports" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Reportes
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Configuración
-            </TabsTrigger>
-          </TabsList>
+          {/* Mobile Layout - Horizontal Scroll */}
+          <div className="sm:hidden">
+            <TabsList className="flex w-full overflow-x-auto bg-white shadow-sm border p-1">
+              <TabsTrigger value="overview" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
+                <BarChart3 className="h-4 w-4" />
+                <span className="hidden xs:inline">Dashboard</span>
+              </TabsTrigger>
+              <TabsTrigger value="drivers" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
+                <Users className="h-4 w-4" />
+                <span className="hidden xs:inline">Conductores</span>
+              </TabsTrigger>
+              <TabsTrigger value="fleet" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
+                <Truck className="h-4 w-4" />
+                <span className="hidden xs:inline">Flota</span>
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
+                <FileText className="h-4 w-4" />
+                <span className="hidden xs:inline">Reportes</span>
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
+                <Settings className="h-4 w-4" />
+                <span className="hidden xs:inline">Config</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          {/* Desktop Layout - Grid */}
+          <div className="hidden sm:block">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5 bg-white shadow-sm border">
+              <TabsTrigger value="overview" className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4" />
+                <span className="hidden md:inline">Dashboard</span>
+              </TabsTrigger>
+              <TabsTrigger value="drivers" className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                <span className="hidden md:inline">Conductores</span>
+              </TabsTrigger>
+              <TabsTrigger value="fleet" className="flex items-center gap-2">
+                <Truck className="h-4 w-4" />
+                <span className="hidden md:inline">Flota</span>
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                <span className="hidden md:inline">Reportes</span>
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                <span className="hidden md:inline">Configuración</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Dashboard Overview */}
           <TabsContent value="overview" className="space-y-6">
