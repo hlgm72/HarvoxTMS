@@ -63,12 +63,12 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
   return (
     <div
       className={cn(
-        'relative flex items-start gap-3 md:gap-4 p-3 md:p-4 rounded-xl border backdrop-blur-sm',
+        'relative flex items-start gap-4 p-4 rounded-xl border backdrop-blur-sm',
         'animate-fade-in transition-all duration-300 hover:scale-105',
         config.bgColor,
         config.borderColor,
         config.shadow,
-        'w-full md:min-w-[320px] md:max-w-[420px]'
+        'min-w-[320px] max-w-[420px]'
       )}
     >
       {/* Icon */}
@@ -78,11 +78,11 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <h4 className={cn('font-heading font-semibold text-sm md:text-base', config.textColor)}>
+        <h4 className={cn('font-heading font-semibold text-sm', config.textColor)}>
           {notification.title}
         </h4>
         {notification.message && (
-          <p className={cn('mt-1 text-xs md:text-sm opacity-90 font-body', config.textColor)}>
+          <p className={cn('mt-1 text-sm opacity-90 font-body', config.textColor)}>
             {notification.message}
           </p>
         )}
@@ -106,12 +106,12 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
         size="sm"
         onClick={() => onClose(notification.id)}
         className={cn(
-          'flex-shrink-0 h-5 w-5 md:h-6 md:w-6 p-0 rounded-full',
+          'flex-shrink-0 h-6 w-6 p-0 rounded-full',
           'hover:bg-white/20 transition-colors',
           config.textColor
         )}
       >
-        <X className="h-3 w-3 md:h-4 md:w-4" />
+        <X className="h-3 w-3" />
       </Button>
     </div>
   );

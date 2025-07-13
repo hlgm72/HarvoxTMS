@@ -110,8 +110,8 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     >
       {children}
       
-      {/* Notification Container - Responsivo */}
-      <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-auto z-50 space-y-3 pointer-events-none">
+      {/* Notification Container */}
+      <div className="fixed bottom-4 right-4 z-50 space-y-3 pointer-events-none">
         {notifications.map((notification) => (
           <div key={notification.id} className="pointer-events-auto">
             <NotificationItem

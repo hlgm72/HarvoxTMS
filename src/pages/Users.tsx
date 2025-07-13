@@ -623,26 +623,26 @@ export default function Users() {
             </CardHeader>
             <CardContent>
               {viewMode === 'table' ? (
-                <div className="w-full overflow-x-auto">
+                <div className="overflow-x-auto">
                   <Table className="min-w-full">
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="min-w-[120px] w-[120px]">Usuario</TableHead>
-                        <TableHead className="min-w-[150px] w-[150px] hidden sm:table-cell">Email</TableHead>
-                        <TableHead className="min-w-[100px] w-[100px] hidden md:table-cell">Teléfono</TableHead>
-                        <TableHead className="min-w-[100px] w-[100px]">Rol</TableHead>
-                        <TableHead className="min-w-[80px] w-[80px] hidden sm:table-cell">Estado</TableHead>
-                        <TableHead className="min-w-[100px] w-[100px] hidden lg:table-cell">Fecha</TableHead>
-                        <TableHead className="min-w-[100px] w-[100px] text-right">Acciones</TableHead>
+                        <TableHead className="min-w-[150px]">Usuario</TableHead>
+                        <TableHead className="min-w-[200px] hidden sm:table-cell">Email</TableHead>
+                        <TableHead className="min-w-[120px] hidden md:table-cell">Teléfono</TableHead>
+                        <TableHead className="min-w-[120px]">Rol</TableHead>
+                        <TableHead className="min-w-[100px] hidden sm:table-cell">Estado</TableHead>
+                        <TableHead className="min-w-[120px] hidden lg:table-cell">Fecha de Registro</TableHead>
+                        <TableHead className="min-w-[120px] text-right">Acciones</TableHead>
                       </TableRow>
                     </TableHeader>
                   <TableBody>
                     {filteredUsers.map((user) => (
                       <TableRow key={user.id}>
-                        <TableCell className="w-[120px]">
-                          <div className="flex items-center gap-2">
+                        <TableCell>
+                          <div className="flex items-center gap-3">
                              {user.avatar_url ? (
-                               <div className="w-6 h-6 flex-shrink-0">
+                               <div className="w-8 h-8 flex-shrink-0">
                                  <img 
                                    src={user.avatar_url} 
                                    alt={`${user.first_name} ${user.last_name}`}
@@ -650,14 +650,14 @@ export default function Users() {
                                  />
                                </div>
                             ) : (
-                               <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-xs font-medium flex-shrink-0">
+                               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
                                  {user.first_name && user.last_name 
                                    ? `${user.first_name[0]}${user.last_name[0]}` 
                                    : user.email.slice(0, 2).toUpperCase()}
                                </div>
                             )}
-                            <div className="min-w-0 flex-1">
-                              <p className="font-medium text-xs truncate">
+                            <div>
+                              <p className="font-medium">
                                 {user.first_name && user.last_name
                                   ? `${user.first_name} ${user.last_name}`
                                   : 'Sin nombre'}
@@ -665,31 +665,26 @@ export default function Users() {
                             </div>
                           </div>
                         </TableCell>
-                         <TableCell className="hidden sm:table-cell w-[150px]">
-                           <span className="text-xs truncate block">{user.email}</span>
+                         <TableCell className="hidden sm:table-cell truncate max-w-[200px]">{user.email}</TableCell>
+                         <TableCell className="hidden md:table-cell">{user.phone || 'No especificado'}</TableCell>
+                         <TableCell>
+                           <Badge variant="outline" className="truncate max-w-[120px]">{user.role}</Badge>
                          </TableCell>
-                         <TableCell className="hidden md:table-cell w-[100px]">
-                           <span className="text-xs">{user.phone || 'N/A'}</span>
+                         <TableCell className="hidden sm:table-cell">{getStatusBadge(user.status)}</TableCell>
+                         <TableCell className="hidden lg:table-cell">
+                           {new Date(user.created_at).toLocaleDateString()}
                          </TableCell>
-                         <TableCell className="w-[100px]">
-                           <Badge variant="outline" className="text-xs truncate max-w-[90px]">{getRoleLabel(user.role)}</Badge>
-                         </TableCell>
-                         <TableCell className="hidden sm:table-cell w-[80px]">{getStatusBadge(user.status)}</TableCell>
-                         <TableCell className="hidden lg:table-cell w-[100px]">
-                           <span className="text-xs">{new Date(user.created_at).toLocaleDateString()}</span>
-                         </TableCell>
-                        <TableCell className="text-right w-[100px]">
-                          <div className="flex items-center justify-end gap-1">
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0"
                               onClick={() => {
                                 setSelectedUser(user);
                                 setViewDialogOpen(true);
                               }}
                             >
-                              <Eye className="h-3 w-3" />
+                              <Eye className="h-4 w-4" />
                             </Button>
                             
                             {/* Mostrar botón de editar conductor solo para conductores */}
@@ -697,27 +692,25 @@ export default function Users() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-6 w-6 p-0"
                                 onClick={() => {
                                   setSelectedDriverId(user.id);
                                   setSelectedDriverName(`${user.first_name} ${user.last_name}` || user.email);
                                   setEditDriverModalOpen(true);
                                 }}
                               >
-                                <Truck className="h-3 w-3" />
+                                <Truck className="h-4 w-4" />
                               </Button>
                             )}
                             
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0"
                               onClick={() => {
                                 setSelectedUser(user);
                                 setEditDialogOpen(true);
                               }}
                             >
-                              <Edit className="h-3 w-3" />
+                              <Edit className="h-4 w-4" />
                             </Button>
                             
                             {/* Solo superadmin y company_owner pueden eliminar usuarios */}
@@ -725,13 +718,12 @@ export default function Users() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-6 w-6 p-0"
                                 onClick={() => {
                                   // TODO: Implementar eliminación de usuario
                                   toast.info('Función de eliminar usuario próximamente');
                                 }}
                               >
-                                <Trash2 className="h-3 w-3" />
+                                <Trash2 className="h-4 w-4" />
                               </Button>
                             )}
                           </div>
