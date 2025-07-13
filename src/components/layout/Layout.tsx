@@ -9,27 +9,38 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [hasManuallyInteracted, setHasManuallyInteracted] = useState(false);
   
-  // Auto-open sidebar on desktop
+  // Auto-open sidebar on desktop only if user hasn't manually interacted
   useEffect(() => {
     const handleResize = () => {
       const isDesktop = window.innerWidth >= 768;
-      if (isDesktop && !sidebarOpen) {
-        setSidebarOpen(true);
-      } else if (!isDesktop && sidebarOpen) {
-        setSidebarOpen(false);
+      
+      // Solo auto-manejar si el usuario no ha interactuado manualmente
+      if (!hasManuallyInteracted) {
+        if (isDesktop) {
+          setSidebarOpen(true);
+        } else {
+          setSidebarOpen(false);
+        }
       }
     };
     
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [sidebarOpen]);
+  }, [hasManuallyInteracted]);
+
+  // Wrapper para setSidebarOpen que marca interacción manual
+  const handleSidebarToggle = (open: boolean) => {
+    setHasManuallyInteracted(true);
+    setSidebarOpen(open);
+  };
 
   return (
     <SidebarProvider 
       open={sidebarOpen}
-      onOpenChange={setSidebarOpen}
+      onOpenChange={handleSidebarToggle}
     >
       <div className="min-h-screen flex w-full bg-background">
         {/* Sidebar - Only visible on desktop */}

@@ -19,7 +19,7 @@ import { useFleetNotifications } from '@/components/notifications';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export function Header() {
-  const { open: sidebarOpen, setOpen: setSidebarOpen } = useSidebar();
+  const { open: sidebarOpen, toggleSidebar } = useSidebar();
   const { t } = useTranslation(['common', 'fleet']);
   const { signOut } = useAuth();
   const { getUserInitials, getFullName, user, profile } = useUserProfile();
@@ -111,7 +111,7 @@ export function Header() {
             variant="ghost" 
             size="sm"
             className="md:hidden p-2"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            onClick={toggleSidebar}
           >
             <Menu className="h-5 w-5" />
           </Button>
