@@ -6,10 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
-import { Upload, FileText, Download, Trash2, AlertCircle, CheckCircle, Calendar, Plus } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useFleetNotifications } from "@/components/notifications";
+import { Upload, FileText, Download, Trash2, AlertCircle, CheckCircle, Calendar, Plus, Mail, CheckSquare, Square } from "lucide-react";
 import { CompanyDocumentUpload } from "@/components/documents/CompanyDocumentUpload";
 import { DocumentCard } from "@/components/documents/DocumentCard";
+import { EmailDocumentsModal } from "@/components/documents/EmailDocumentsModal";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 
 // Tipos de documentos predefinidos con categorías
@@ -75,8 +77,10 @@ interface CompanyDocument {
 export default function Documents() {
   const [activeTab, setActiveTab] = useState("all");
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string>("");
-  const { toast } = useToast();
+  const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(new Set());
+  const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
 
   // Fetch company documents
@@ -102,20 +106,20 @@ export default function Documents() {
         .eq("id", documentId);
 
       if (error) throw error;
+      return documentId;
     },
-    onSuccess: () => {
+    onSuccess: (deletedDocumentId) => {
       queryClient.invalidateQueries({ queryKey: ["company-documents"] });
-      toast({
-        title: "Documento eliminado",
-        description: "El documento ha sido eliminado exitosamente",
+      showSuccess("Documento eliminado", "El documento ha sido eliminado exitosamente");
+      // Remove from selection if it was selected
+      setSelectedDocuments(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(deletedDocumentId);
+        return newSet;
       });
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: "No se pudo eliminar el documento",
-        variant: "destructive",
-      });
+      showError("Error", "No se pudo eliminar el documento");
     }
   });
 
@@ -151,9 +155,45 @@ export default function Documents() {
 
   const statusCounts = getStatusCounts();
 
+  // Selection handlers
+  const handleSelectDocument = (documentId: string, selected: boolean) => {
+    setSelectedDocuments(prev => {
+      const newSet = new Set(prev);
+      if (selected) {
+        newSet.add(documentId);
+      } else {
+        newSet.delete(documentId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = () => {
+    const currentTabDocuments = getDocumentsByCategory(activeTab);
+    if (selectedDocuments.size === currentTabDocuments.length) {
+      // Deselect all
+      setSelectedDocuments(new Set());
+    } else {
+      // Select all in current tab
+      setSelectedDocuments(new Set(currentTabDocuments.map(doc => doc.id)));
+    }
+  };
+
+  const getSelectedDocumentsList = () => {
+    return documents.filter(doc => selectedDocuments.has(doc.id));
+  };
+
   const handleOpenUploadDialog = (documentType?: string) => {
     setSelectedDocumentType(documentType || "");
     setUploadDialogOpen(true);
+  };
+
+  const handleOpenEmailModal = () => {
+    if (selectedDocuments.size === 0) {
+      showError("Sin documentos", "Selecciona al menos un documento para enviar");
+      return;
+    }
+    setEmailModalOpen(true);
   };
 
   if (isLoading) {
@@ -172,30 +212,38 @@ export default function Documents() {
         ]}
         title="Documentos de la Compañía"
         actions={
-          <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => handleOpenUploadDialog()}>
-                <Plus className="w-4 h-4 mr-2" />
-                Subir Documento
+          <div className="flex gap-2">
+            {selectedDocuments.size > 0 && (
+              <Button variant="outline" onClick={handleOpenEmailModal}>
+                <Mail className="w-4 h-4 mr-2" />
+                Enviar por Email ({selectedDocuments.size})
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Subir Nuevo Documento</DialogTitle>
-                <DialogDescription>
-                  Selecciona el tipo de documento y sube el archivo correspondiente
-                </DialogDescription>
-              </DialogHeader>
-              <CompanyDocumentUpload
-                predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                selectedType={selectedDocumentType}
-                onSuccess={() => {
-                  setUploadDialogOpen(false);
-                  queryClient.invalidateQueries({ queryKey: ["company-documents"] });
-                }}
-              />
-            </DialogContent>
-          </Dialog>
+            )}
+            <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+              <DialogTrigger asChild>
+                <Button onClick={() => handleOpenUploadDialog()}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Subir Documento
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Subir Nuevo Documento</DialogTitle>
+                  <DialogDescription>
+                    Selecciona el tipo de documento y sube el archivo correspondiente
+                  </DialogDescription>
+                </DialogHeader>
+                <CompanyDocumentUpload
+                  predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                  selectedType={selectedDocumentType}
+                  onSuccess={() => {
+                    setUploadDialogOpen(false);
+                    queryClient.invalidateQueries({ queryKey: ["company-documents"] });
+                  }}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
         }
       />
       
@@ -254,15 +302,45 @@ export default function Documents() {
 
         {/* All Documents */}
         <TabsContent value="all" className="space-y-4">
+          {documents.length > 0 && (
+            <div className="flex items-center gap-4 p-3 bg-muted/50 rounded-lg">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSelectAll}
+              >
+                {selectedDocuments.size === documents.length ? (
+                  <Square className="w-4 h-4 mr-2" />
+                ) : (
+                  <CheckSquare className="w-4 h-4 mr-2" />
+                )}
+                {selectedDocuments.size === documents.length ? 'Deseleccionar Todos' : 'Seleccionar Todos'}
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                {selectedDocuments.size} de {documents.length} documentos seleccionados
+              </span>
+            </div>
+          )}
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {documents.map((document) => (
-              <DocumentCard
-                key={document.id}
-                document={document}
-                predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                onDelete={(id) => deleteMutation.mutate(id)}
-                getExpiryStatus={getExpiryStatus}
-              />
+              <div key={document.id} className="relative">
+                <div className="absolute top-2 left-2 z-10">
+                  <Checkbox
+                    checked={selectedDocuments.has(document.id)}
+                    onCheckedChange={(checked) => 
+                      handleSelectDocument(document.id, checked as boolean)
+                    }
+                    className="bg-white shadow-sm"
+                  />
+                </div>
+                <DocumentCard
+                  document={document}
+                  predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                  onDelete={(id) => deleteMutation.mutate(id)}
+                  getExpiryStatus={getExpiryStatus}
+                />
+              </div>
             ))}
           </div>
           {documents.length === 0 && (
@@ -296,13 +374,23 @@ export default function Documents() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {getDocumentsByCategory(categoryKey).map((document) => (
-                <DocumentCard
-                  key={document.id}
-                  document={document}
-                  predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                  onDelete={(id) => deleteMutation.mutate(id)}
-                  getExpiryStatus={getExpiryStatus}
-                />
+                <div key={document.id} className="relative">
+                  <div className="absolute top-2 left-2 z-10">
+                    <Checkbox
+                      checked={selectedDocuments.has(document.id)}
+                      onCheckedChange={(checked) => 
+                        handleSelectDocument(document.id, checked as boolean)
+                      }
+                      className="bg-white shadow-sm"
+                    />
+                  </div>
+                  <DocumentCard
+                    document={document}
+                    predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                    onDelete={(id) => deleteMutation.mutate(id)}
+                    getExpiryStatus={getExpiryStatus}
+                  />
+                </div>
               ))}
             </div>
 
@@ -343,17 +431,38 @@ export default function Documents() {
                 .flatMap(cat => cat.types.map(t => t.value))
                 .includes(doc.document_type))
               .map((document) => (
-                <DocumentCard
-                  key={document.id}
-                  document={document}
-                  predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                  onDelete={(id) => deleteMutation.mutate(id)}
-                  getExpiryStatus={getExpiryStatus}
-                />
+                <div key={document.id} className="relative">
+                  <div className="absolute top-2 left-2 z-10">
+                    <Checkbox
+                      checked={selectedDocuments.has(document.id)}
+                      onCheckedChange={(checked) => 
+                        handleSelectDocument(document.id, checked as boolean)
+                      }
+                      className="bg-white shadow-sm"
+                    />
+                  </div>
+                  <DocumentCard
+                    document={document}
+                    predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                    onDelete={(id) => deleteMutation.mutate(id)}
+                    getExpiryStatus={getExpiryStatus}
+                  />
+                </div>
               ))}
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Email Modal */}
+      <EmailDocumentsModal
+        open={emailModalOpen}
+        onOpenChange={setEmailModalOpen}
+        selectedDocuments={getSelectedDocumentsList()}
+        onSuccess={() => {
+          setSelectedDocuments(new Set());
+          queryClient.invalidateQueries({ queryKey: ["company-documents"] });
+        }}
+      />
       </div>
     </div>
   );
