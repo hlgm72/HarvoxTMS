@@ -21,6 +21,11 @@ export default function Clients() {
   const [filters, setFilters] = useState({
     status: "all",
     location: "",
+    hasLogo: "all",
+    hasAlias: "all",
+    hasNotes: "all", 
+    dateRange: "all",
+    emailDomain: "",
   });
 
   const { data: clients = [], isLoading } = useClients();
@@ -35,7 +40,53 @@ export default function Clients() {
       (filters.status === "active" && client.is_active) ||
       (filters.status === "inactive" && !client.is_active);
 
-    return matchesSearch && matchesStatus;
+    const matchesLocation = filters.location === "" ||
+      client.address?.toLowerCase().includes(filters.location.toLowerCase());
+
+    const matchesEmailDomain = filters.emailDomain === "" ||
+      client.email_domain?.toLowerCase().includes(filters.emailDomain.toLowerCase());
+
+    const matchesHasLogo = filters.hasLogo === "all" ||
+      (filters.hasLogo === "yes" && client.logo_url) ||
+      (filters.hasLogo === "no" && !client.logo_url);
+
+    const matchesHasAlias = filters.hasAlias === "all" ||
+      (filters.hasAlias === "yes" && client.alias) ||
+      (filters.hasAlias === "no" && !client.alias);
+
+    const matchesHasNotes = filters.hasNotes === "all" ||
+      (filters.hasNotes === "yes" && client.notes) ||
+      (filters.hasNotes === "no" && !client.notes);
+
+    const matchesDateRange = (() => {
+      if (filters.dateRange === "all") return true;
+      
+      const clientDate = new Date(client.created_at);
+      const now = new Date();
+      
+      switch (filters.dateRange) {
+        case "today":
+          return clientDate.toDateString() === now.toDateString();
+        case "week":
+          const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          return clientDate >= oneWeekAgo;
+        case "month":
+          const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+          return clientDate >= oneMonthAgo;
+        case "quarter":
+          const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+          return clientDate >= threeMonthsAgo;
+        case "year":
+          const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+          return clientDate >= oneYearAgo;
+        default:
+          return true;
+      }
+    })();
+
+    return matchesSearch && matchesStatus && matchesLocation && 
+           matchesEmailDomain && matchesHasLogo && matchesHasAlias && 
+           matchesHasNotes && matchesDateRange;
   });
 
   // Calculate stats
@@ -175,12 +226,12 @@ export default function Clients() {
                 <Building2 className="h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No hay clientes</h3>
                 <p className="text-muted-foreground mb-4">
-                  {searchTerm || filters.status !== "all" 
+                  {searchTerm || Object.values(filters).some(f => f !== "all" && f !== "") 
                     ? "No se encontraron clientes con los filtros aplicados"
                     : "Comienza agregando tu primer cliente"
                   }
                 </p>
-                {!searchTerm && filters.status === "all" && (
+                {!searchTerm && Object.values(filters).every(f => f === "all" || f === "") && (
                   <Button onClick={() => setShowCreateDialog(true)}>
                     <Plus className="h-4 w-4 mr-2" />
                     Crear Primer Cliente
