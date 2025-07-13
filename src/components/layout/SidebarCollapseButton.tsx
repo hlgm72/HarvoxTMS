@@ -11,7 +11,7 @@ export function SidebarCollapseButton() {
       variant="ghost"
       size="sm"
       onClick={toggleSidebar}
-      className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-50 
+      className="absolute right-0 top-4 translate-x-1/2 z-50 
                  h-8 w-8 p-0 rounded-full border border-border bg-background 
                  shadow-md hover:shadow-lg transition-all duration-200 
                  hover:bg-accent flex items-center justify-center"
