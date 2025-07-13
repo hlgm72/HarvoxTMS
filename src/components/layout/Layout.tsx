@@ -10,16 +10,30 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [allowToggle, setAllowToggle] = useState(false);
+
+  const handleSidebarChange = (open: boolean) => {
+    // Solo permitir cambios si están autorizados por el botón oficial
+    if (allowToggle) {
+      setSidebarOpen(open);
+      setAllowToggle(false); // Reset the flag
+    }
+  };
+
+  const authorizedToggle = () => {
+    setAllowToggle(true); // Autorizar el próximo cambio
+    setSidebarOpen(prev => !prev);
+  };
 
   return (
     <SidebarProvider 
       open={sidebarOpen}
-      onOpenChange={setSidebarOpen}
+      onOpenChange={handleSidebarChange}
     >
       <div className="min-h-screen flex w-full bg-background">
         <div className="relative">
           <AppSidebar />
-          <SidebarCollapseButton />
+          <SidebarCollapseButton onAuthorizedToggle={authorizedToggle} />
         </div>
         <SidebarInset className="flex flex-col flex-1">
           <Header />
