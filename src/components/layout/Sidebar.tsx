@@ -548,77 +548,6 @@ export function AppSidebar() {
               </h2>
               <p className="text-xs text-white/70">TMS Platform</p>
               
-              {/* Company selector - Estilo Limitless exacto */}
-              {!isSuperAdmin && !loading && selectedCompany && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="w-full justify-between p-2 h-auto mt-3 bg-[hsl(217_24%_20%)]/50 hover:bg-[hsl(217_24%_20%)] transition-colors text-white border border-[hsl(217_24%_16%)] rounded-md"
-                    >
-                      <div className="flex items-center gap-2 text-left">
-                        <div className="h-5 w-5 flex items-center justify-center">
-                          {selectedCompany.logo_url ? (
-                            <img 
-                              src={selectedCompany.logo_url} 
-                              alt={selectedCompany.name}
-                              className="h-5 w-5 object-contain rounded"
-                            />
-                          ) : (
-                            <div className="h-5 w-5 bg-[hsl(217_91%_60%)] text-white text-xs font-semibold flex items-center justify-center rounded">
-                              {selectedCompany.avatar}
-                            </div>
-                          )}
-                        </div>
-                         <div>
-                           <p className="text-sm font-medium text-white leading-tight">
-                             {selectedCompany.name}
-                           </p>
-                           <p className="text-xs text-[hsl(215_20%_65%)] capitalize leading-tight">
-                             {currentRole?.role.replace('_', ' ') || 'Sin rol'}
-                           </p>
-                         </div>
-                      </div>
-                      <ChevronDown className="h-3 w-3 text-[hsl(215_20%_65%)]" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent 
-                    align="start" 
-                    className="w-64 border border-[hsl(217_24%_16%)] rounded-md" 
-                    style={{ backgroundColor: 'hsl(217 24% 14%)' }}
-                  >
-                    {companies.map((company) => (
-                      <DropdownMenuItem
-                        key={company.id}
-                        onClick={() => setSelectedCompany(company)}
-                        className="flex items-center gap-3 p-3 text-white hover:bg-[hsl(217_24%_20%)] rounded-sm m-1"
-                      >
-                        <div className="h-6 w-6 flex items-center justify-center">
-                          {company.logo_url ? (
-                            <img 
-                              src={company.logo_url} 
-                              alt={company.name}
-                              className="h-6 w-6 object-contain rounded"
-                            />
-                          ) : (
-                            <div className="h-6 w-6 bg-[hsl(217_91%_60%)] text-white text-xs font-semibold flex items-center justify-center rounded">
-                              {company.avatar}
-                            </div>
-                          )}
-                        </div>
-                         <div className="flex flex-col">
-                           <span className="font-medium text-white text-sm">{company.name}</span>
-                           <span className="text-xs text-[hsl(215_20%_65%)] capitalize">
-                             {company.role.replace('_', ' ')}
-                           </span>
-                         </div>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-              
               {/* Superadmin info - Estilo Limitless exacto */}
               {isSuperAdmin && (
                 <div className="mt-3 p-3 bg-[hsl(217_91%_60%)]/20 rounded-md border border-[hsl(217_91%_60%)]/30">
@@ -657,9 +586,82 @@ export function AppSidebar() {
           </>
         )}
 
+        {/* Company selector moved to bottom - Professional style */}
+        {!collapsed && !isSuperAdmin && !loading && selectedCompany && (
+          <div className="mt-auto px-4 pb-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full justify-start p-3 h-auto bg-gradient-to-r from-slate-700/30 to-slate-600/20 hover:from-slate-600/40 hover:to-slate-500/30 transition-all duration-200 text-white border border-slate-500/20 rounded-lg shadow-sm backdrop-blur-sm"
+                >
+                  <div className="flex items-center gap-3 text-left">
+                    <div className="h-7 w-7 flex items-center justify-center">
+                      {selectedCompany.logo_url ? (
+                        <img 
+                          src={selectedCompany.logo_url} 
+                          alt={selectedCompany.name}
+                          className="h-7 w-7 object-contain rounded-md shadow-sm"
+                        />
+                      ) : (
+                        <div className="h-7 w-7 bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm font-semibold flex items-center justify-center rounded-md shadow-sm">
+                          {selectedCompany.avatar}
+                        </div>
+                      )}
+                    </div>
+                     <div className="flex-1 min-w-0">
+                       <p className="text-sm font-medium text-white leading-tight truncate">
+                         {selectedCompany.name}
+                       </p>
+                       <p className="text-xs text-slate-300 capitalize leading-tight">
+                         {currentRole?.role.replace('_', ' ') || 'Sin rol'}
+                       </p>
+                     </div>
+                     <ChevronDown className="h-4 w-4 text-slate-300 ml-2 flex-shrink-0" />
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                align="start" 
+                className="w-72 border border-slate-600/30 rounded-lg shadow-xl backdrop-blur-lg" 
+                style={{ backgroundColor: 'rgba(51, 65, 85, 0.95)' }}
+              >
+                {companies.map((company) => (
+                  <DropdownMenuItem
+                    key={company.id}
+                    onClick={() => setSelectedCompany(company)}
+                    className="flex items-center gap-3 p-3 text-white hover:bg-slate-600/30 rounded-md m-1 transition-all duration-150 cursor-pointer"
+                  >
+                    <div className="h-8 w-8 flex items-center justify-center">
+                      {company.logo_url ? (
+                        <img 
+                          src={company.logo_url} 
+                          alt={company.name}
+                          className="h-8 w-8 object-contain rounded-md shadow-sm"
+                        />
+                      ) : (
+                        <div className="h-8 w-8 bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm font-semibold flex items-center justify-center rounded-md shadow-sm">
+                          {company.avatar}
+                        </div>
+                      )}
+                    </div>
+                     <div className="flex flex-col flex-1">
+                       <span className="font-medium text-white text-sm leading-tight">{company.name}</span>
+                       <span className="text-xs text-slate-300 capitalize leading-tight">
+                         {company.role.replace('_', ' ')}
+                       </span>
+                     </div>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
+
         {/* Bottom section como en Limitless */}
         {!collapsed && (
-          <div className="mt-auto p-4 border-t border-[hsl(217_24%_16%)]">
+          <div className="p-4 border-t border-[hsl(217_24%_16%)]">
             <div className="flex items-center gap-2 text-[hsl(215_20%_65%)] text-xs">
               <Activity className="h-3 w-3" />
               <span>System Status</span>
