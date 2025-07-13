@@ -96,7 +96,22 @@ export default function Auth() {
       
       validateToken();
     }
-  }, [searchParams]);
+
+    // Agregar un listener para detectar autocompletado después del mount
+    const detectAutofill = () => {
+      const emailInput = document.getElementById('email') as HTMLInputElement;
+      if (emailInput && emailInput.value && !formData.email) {
+        const value = emailInput.value;
+        setFormData(prev => ({ ...prev, email: value }));
+        validateField('email', value);
+      }
+    };
+
+    // Verificar autocompletado después de un delay
+    const timeoutId = setTimeout(detectAutofill, 500);
+    
+    return () => clearTimeout(timeoutId);
+  }, [searchParams, formData.email]);
 
   const validateField = (field: string, value: string) => {
     const errors = { ...fieldErrors };
@@ -178,6 +193,26 @@ export default function Auth() {
     setFormData(prev => ({ ...prev, [field]: value }));
     validateField(field, value);
     if (error) setError(null);
+  };
+
+  // Handler específico para detectar autocompletado
+  const handleAutofill = (field: string, event: React.FormEvent<HTMLInputElement>) => {
+    const target = event.target as HTMLInputElement;
+    const value = target.value;
+    
+    // Si el campo tiene valor pero nuestro estado no, significa que fue autocompletado
+    if (value && !formData[field as keyof typeof formData]) {
+      setTimeout(() => {
+        handleInputChange(field, value);
+      }, 100);
+    }
+  };
+
+  // Handler para eventos de input (detecta autocompletado en algunos navegadores)
+  const handleInput = (field: string, event: React.FormEvent<HTMLInputElement>) => {
+    const target = event.target as HTMLInputElement;
+    const value = target.value;
+    handleInputChange(field, value);
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -731,23 +766,28 @@ export default function Auth() {
                       <Input
                         id="email"
                         type="email"
+                        autoComplete="email"
                         value={formData.email}
                         onChange={(e) => {
                           const inputValue = e.target.value;
                           const cleanValue = inputValue.replace(/\s/g, '');
                           setFormData(prev => ({ ...prev, email: cleanValue }));
+                          validateField('email', cleanValue);
                           if (error) setError(null);
+                        }}
+                        onInput={(e) => handleInput('email', e)}
+                        onFocus={(e) => handleAutofill('email', e)}
+                        onBlur={(e) => {
+                          const trimmedValue = handleEmailInput(e.target.value);
+                          setFormData(prev => ({ ...prev, email: trimmedValue }));
+                          validateField('email', trimmedValue);
+                          handleAutofill('email', e);
                         }}
                         onKeyPress={(e) => {
                           // Prevent spaces from being typed
                           if (e.key === ' ') {
                             e.preventDefault();
                           }
-                        }}
-                        onBlur={(e) => {
-                          const trimmedValue = handleEmailInput(e.target.value);
-                          setFormData(prev => ({ ...prev, email: trimmedValue }));
-                          validateField('email', trimmedValue);
                         }}
                         placeholder={t('auth:form.email_placeholder')}
                         className={`auth-input pl-10 font-body ${fieldErrors.email ? 'border-destructive' : ''}`}
