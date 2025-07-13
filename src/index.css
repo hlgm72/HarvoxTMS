@@ -103,9 +103,9 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Dark mode - keeping orange/blue theme */
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark mode - usando colores Limitless */
+    --background: 217 24% 16%;         /* Fondo principal Limitless */
+    --foreground: 0 0% 100%;
 
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
@@ -151,6 +151,11 @@ All colors MUST be HSL.
     --limitless-darker: 217 24% 11%;    /* Header más oscuro */
     --limitless-light: 217 24% 20%;     /* Hover */
     --limitless-accent: 217 91% 60%;    /* Azul Limitless */
+    --limitless-text: 0 0% 100%;        /* Texto blanco */
+    --limitless-muted: 215 15% 65%;     /* Texto apagado */
+    --limitless-border: 217 24% 25%;    /* Bordes */
+    --limitless-hover: 217 24% 18%;     /* Estados hover */
+    --limitless-background: 217 24% 16%; /* Fondo principal de contenido */
   }
 }
 

@@ -88,7 +88,12 @@ export default {
 					'dark': 'hsl(var(--limitless-dark))',
 					'darker': 'hsl(var(--limitless-darker))',
 					'light': 'hsl(var(--limitless-light))',
-					'accent': 'hsl(var(--limitless-accent))'
+					'accent': 'hsl(var(--limitless-accent))',
+					'text': 'hsl(var(--limitless-text))',
+					'muted': 'hsl(var(--limitless-muted))',
+					'border': 'hsl(var(--limitless-border))',
+					'hover': 'hsl(var(--limitless-hover))',
+					'background': 'hsl(var(--limitless-background))'
 				},
 				// FleetNest specific colors
 				'fleet-orange': 'hsl(var(--fleet-orange))',
