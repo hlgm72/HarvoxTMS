@@ -108,7 +108,7 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-muted/30">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {currentStep === 1 ? <Building2 className="h-5 w-5" /> : <Users className="h-5 w-5" />}
