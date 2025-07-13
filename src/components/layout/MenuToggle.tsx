@@ -17,7 +17,10 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
       contextIsMobile: isMobile,
       currentOpenMobile: openMobile,
       currentOpen: open,
-      hasToggleSidebar: !!toggleSidebar
+      hasToggleSidebar: !!toggleSidebar,
+      userAgent: navigator.userAgent,
+      isTouchDevice: 'ontouchstart' in window,
+      devicePixelRatio: window.devicePixelRatio
     });
     
     toggleSidebar();
