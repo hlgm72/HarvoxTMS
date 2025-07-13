@@ -526,7 +526,7 @@ export function AppSidebar() {
       side="left"
       style={{ 
         backgroundColor: 'hsl(var(--sidebar-background))',
-        width: collapsed ? '64px' : 'var(--sidebar-width)'
+        width: collapsed ? 'var(--sidebar-width-icon)' : 'var(--sidebar-width)'
       } as any}
     >
       <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'p-2' : 'p-4'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
