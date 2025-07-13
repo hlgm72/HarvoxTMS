@@ -14,7 +14,7 @@ export function SidebarCollapseButton() {
       className={`absolute top-4 z-50 h-8 w-8 p-0 rounded-full border border-border bg-background 
                   shadow-md hover:shadow-lg transition-all duration-200 
                   hover:bg-accent flex items-center justify-center ${
-                    collapsed ? "right-2 translate-x-0" : "right-0 translate-x-1/2"
+                    collapsed ? "right-[-4px] translate-x-0" : "right-0 translate-x-1/2"
                   }`}
       aria-label={collapsed ? "Expandir sidebar" : "Colapsar sidebar"}
     >
