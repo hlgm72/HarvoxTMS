@@ -20,35 +20,49 @@ import { useFleetNotifications } from '@/components/notifications';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export function Header() {
-  // Estado independiente para el menú - no depende del contexto
+  // Estado completamente independiente del contexto
   const [localMenuOpen, setLocalMenuOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   
-  // Solo después del mount intentamos acceder al contexto
+  // Solo después del mount marcamos como cliente
   useEffect(() => {
-    setMounted(true);
+    setIsClient(true);
+    console.log('🔄 Header mounted - client side ready');
   }, []);
   
-  // Función para manejar el toggle del menú de forma robusta
+  // Función robusta para el toggle que siempre funciona
   const handleMenuToggle = useCallback(() => {
-    console.log('🔘 Menu toggle - mounted:', mounted);
+    console.log('🔘 Menu clicked - isClient:', isClient);
     
-    if (mounted) {
-      // Solo después del mount intentamos usar el contexto
+    // Primero intentamos con el contexto si estamos en cliente
+    if (isClient) {
       try {
-        const sidebarContext = useSidebar();
-        console.log('🔘 Using sidebar context');
-        sidebarContext.toggleSidebar();
-        return;
+        // Creamos una referencia dinámica al contexto
+        const sidebarModule = require('@/components/ui/sidebar');
+        const { useSidebar } = sidebarModule;
+        const context = useSidebar();
+        
+        if (context && context.toggleSidebar) {
+          console.log('✅ Using sidebar context');
+          context.toggleSidebar();
+          return;
+        }
       } catch (error) {
-        console.log('🔘 Sidebar context not available, using local state');
+        console.log('⚠️ Sidebar context not available:', error);
       }
     }
     
-    // Fallback a estado local
-    console.log('🔘 Using local state toggle');
-    setLocalMenuOpen(prev => !prev);
-  }, [mounted]);
+    // Fallback: toggle local y forzar evento global
+    console.log('🔄 Using fallback toggle');
+    setLocalMenuOpen(prev => {
+      const newState = !prev;
+      // Dispatchar evento global para el sidebar
+      window.dispatchEvent(new CustomEvent('sidebar-toggle', { 
+        detail: { open: newState } 
+      }));
+      return newState;
+    });
+  }, [isClient]);
   
   const { t } = useTranslation(['common', 'fleet']);
   const { signOut } = useAuth();
@@ -136,22 +150,24 @@ export function Header() {
     <header className="h-14 md:h-16 border-b border-border bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 z-20 shadow-sm">
       <div className="flex h-full items-center justify-between px-3 md:px-6">
         <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
-          {/* Botón menú - siempre visible, estilizado como redondo */}
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="h-8 w-8 p-0 rounded-full border border-border bg-background shadow-md hover:shadow-lg transition-all duration-200 relative z-30"
-            onClick={handleMenuToggle}
-            style={{ 
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              opacity: 1,
-              visibility: 'visible'
-            }}
-          >
-            <Menu className="h-4 w-4" />
-          </Button>
+          {/* Botón menú - SIEMPRE VISIBLE CON FUERZA TOTAL */}
+          <div className="flex-shrink-0" style={{ position: 'relative', zIndex: 50 }}>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="h-8 w-8 p-0 rounded-full border border-border bg-background shadow-md hover:shadow-lg transition-all duration-200 relative z-30 flex items-center justify-center"
+              onClick={handleMenuToggle}
+              style={{ 
+                display: 'flex',
+                visibility: 'visible',
+                opacity: 1,
+                minWidth: '32px',
+                minHeight: '32px'
+              } as React.CSSProperties}
+            >
+              <Menu className="h-4 w-4" style={{ display: 'block' }} />
+            </Button>
+          </div>
           
           {/* Título responsivo */}
           <div className="border-l border-border/20 pl-2 md:pl-4 flex-1 min-w-0">

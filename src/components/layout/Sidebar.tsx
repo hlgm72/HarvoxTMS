@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -387,6 +387,19 @@ export function AppSidebar() {
   const currentPath = location.pathname;
   const { companies, selectedCompany, setSelectedCompany, loading } = useUserCompanies();
   const { driversCount } = useDriversCount();
+  
+  // Escuchar eventos globales del botón del header
+  useEffect(() => {
+    const handleSidebarToggle = (event: CustomEvent) => {
+      console.log('📡 Sidebar received global toggle event:', event.detail);
+      setOpen(event.detail.open);
+    };
+    
+    window.addEventListener('sidebar-toggle', handleSidebarToggle as EventListener);
+    return () => {
+      window.removeEventListener('sidebar-toggle', handleSidebarToggle as EventListener);
+    };
+  }, [setOpen]);
   
   const collapsed = state === "collapsed";
   
