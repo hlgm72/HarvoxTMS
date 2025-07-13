@@ -340,10 +340,7 @@ export default function Auth() {
           // Let AuthContext handle all role logic and redirection
           console.log('Login successful, letting AuthContext handle authentication flow...');
           
-          // Navigate to root and let Index.tsx handle role-based redirection
-          setTimeout(() => {
-            navigate('/');
-          }, 500); // Small delay to ensure auth context updates
+          // Don't navigate - let the AuthContext handle redirection in useEffect
         }
       } else {
         // Sign up new user
