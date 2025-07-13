@@ -184,7 +184,7 @@ serve(async (req) => {
   }
 
   try {
-    const { companyName, emailDomain } = await req.json();
+    const { companyName, emailDomain, sourceIndex } = await req.json();
     
     if (!companyName && !emailDomain) {
       return new Response(
@@ -220,41 +220,28 @@ serve(async (req) => {
     let logoUrl: string | null = null;
     let source: 'clearbit' | 'google' | 'iconhorse' | 'website' | 'logosearch' | undefined = undefined;
 
-    // Try Clearbit first (best quality for business logos)
-    logoUrl = await searchWithClearbit(domain);
-    if (logoUrl) {
-      source = 'clearbit';
-    }
+    // Define search sources in order
+    const searchSources = [
+      { name: 'clearbit', fn: () => searchWithClearbit(domain) },
+      { name: 'website', fn: () => searchWebsiteLogo(domain) },
+      { name: 'logosearch', fn: () => searchWithLogoSearch(domain) },
+      { name: 'google', fn: () => searchWithGoogle(domain) },
+      { name: 'iconhorse', fn: () => searchWithIconhorse(domain) }
+    ];
 
-    // Try website scraping if Clearbit failed (direct from source)
-    if (!logoUrl) {
-      logoUrl = await searchWebsiteLogo(domain);
+    // Start from the specified source index (default 0)
+    const startIndex = Math.max(0, Math.min(sourceIndex || 0, searchSources.length - 1));
+    
+    // Try each source starting from the specified index
+    for (let i = startIndex; i < searchSources.length; i++) {
+      const currentSource = searchSources[i];
+      console.log(`Trying source ${i}: ${currentSource.name}`);
+      
+      logoUrl = await currentSource.fn();
       if (logoUrl) {
-        source = 'website';
-      }
-    }
-
-    // Try LogoSearch API if previous failed (good business database)
-    if (!logoUrl) {
-      logoUrl = await searchWithLogoSearch(domain);
-      if (logoUrl) {
-        source = 'logosearch';
-      }
-    }
-
-    // Try Google Favicon if others failed
-    if (!logoUrl) {
-      logoUrl = await searchWithGoogle(domain);
-      if (logoUrl) {
-        source = 'google';
-      }
-    }
-
-    // Try Iconhorse as final fallback
-    if (!logoUrl) {
-      logoUrl = await searchWithIconhorse(domain);
-      if (logoUrl) {
-        source = 'iconhorse';
+        source = currentSource.name as any;
+        console.log(`Found logo with ${currentSource.name}: ${logoUrl}`);
+        break;
       }
     }
 

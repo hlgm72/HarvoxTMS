@@ -11,7 +11,7 @@ interface LogoSearchResult {
 export function useLogoSearch() {
   const [isSearching, setIsSearching] = useState(false);
 
-  const searchLogo = async (companyName: string, emailDomain?: string): Promise<LogoSearchResult> => {
+  const searchLogo = async (companyName: string, emailDomain?: string, sourceIndex?: number): Promise<LogoSearchResult> => {
     setIsSearching(true);
     
     try {
@@ -19,6 +19,7 @@ export function useLogoSearch() {
         body: {
           companyName,
           emailDomain,
+          sourceIndex: sourceIndex || 0,
         },
       });
 

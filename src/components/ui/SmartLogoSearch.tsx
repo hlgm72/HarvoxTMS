@@ -24,6 +24,8 @@ export function SmartLogoSearch({
   const [searchResults, setSearchResults] = useState<string[]>([]);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [searchSource, setSearchSource] = useState<string | null>(null);
+  const [currentSourceIndex, setCurrentSourceIndex] = useState(0);
+  const [isRejected, setIsRejected] = useState(false);
   const { searchLogo, isSearching } = useLogoSearch();
 
   const handleSearch = async () => {
@@ -35,6 +37,8 @@ export function SmartLogoSearch({
     setSearchError(null);
     setSearchResults([]);
     setSearchSource(null);
+    setCurrentSourceIndex(0);
+    setIsRejected(false);
 
     const result = await searchLogo(companyName, emailDomain);
     
@@ -46,10 +50,31 @@ export function SmartLogoSearch({
     }
   };
 
+  const handleSearchNext = async () => {
+    setSearchError(null);
+    setSearchResults([]);
+    setSearchSource(null);
+    setIsRejected(true);
+
+    // Buscar en la siguiente fuente disponible
+    const result = await searchLogo(companyName, emailDomain, currentSourceIndex + 1);
+    
+    if (result.success && result.logoUrl) {
+      setSearchResults([result.logoUrl]);
+      setSearchSource(result.source || 'unknown');
+      setCurrentSourceIndex(prev => prev + 1);
+    } else {
+      setSearchError("No se encontraron más alternativas");
+      setCurrentSourceIndex(prev => prev + 1);
+    }
+  };
+
   const handleSelectLogo = (logoUrl: string) => {
     onLogoSelect(logoUrl);
     setSearchResults([]);
     setSearchError(null);
+    setIsRejected(false);
+    setCurrentSourceIndex(0);
   };
 
   const getInitials = (name: string) => {
@@ -114,25 +139,43 @@ export function SmartLogoSearch({
 
       {searchResults.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Logos encontrados:</p>
+          <p className="text-sm text-muted-foreground">Logo encontrado:</p>
           <div className="flex flex-wrap gap-2">
             {searchResults.map((logoUrl, index) => (
-              <div key={index} className="flex items-center gap-2 p-2 border rounded-lg">
-                <Avatar className="h-10 w-10">
+              <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
+                <Avatar className="h-12 w-12">
                   <AvatarImage src={logoUrl} alt="Logo encontrado" />
                   <AvatarFallback className="text-xs">
                     {getInitials(companyName)}
                   </AvatarFallback>
                 </Avatar>
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={() => handleSelectLogo(logoUrl)}
-                  className="flex items-center gap-1"
-                >
-                  <Download className="h-3 w-3" />
-                  Usar este logo
-                </Button>
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => handleSelectLogo(logoUrl)}
+                      className="flex items-center gap-1"
+                    >
+                      <Download className="h-3 w-3" />
+                      Usar este logo
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleSearchNext}
+                      disabled={isSearching}
+                      className="flex items-center gap-1"
+                    >
+                      <Search className="h-3 w-3" />
+                      {isSearching ? "Buscando..." : "Buscar alternativa"}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    ¿No es el logo correcto? Haz clic en "Buscar alternativa"
+                  </p>
+                </div>
               </div>
             ))}
           </div>
