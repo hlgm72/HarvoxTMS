@@ -96,7 +96,7 @@ export function Header() {
   };
   
   return (
-    <header className="h-16 border-b border-border/10 bg-background/98 backdrop-blur-xl supports-[backdrop-filter]:bg-background/95 z-30 shadow-sm">
+    <header className="h-16 border-b border-border/10 bg-background/98 backdrop-blur-xl supports-[backdrop-filter]:bg-background/95 z-10 shadow-sm">
       <div className="flex h-full items-center justify-between px-6">
         <div className="flex items-center gap-4">
           <SidebarTrigger className="p-2 hover:bg-muted/50 rounded-lg transition-colors" />
