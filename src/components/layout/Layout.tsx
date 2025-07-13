@@ -1,9 +1,7 @@
 
 import React from "react";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./Sidebar";
-import { Header } from "./Header";
-import { SidebarCollapseButton } from "./SidebarCollapseButton";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,16 +18,13 @@ export function Layout({ children }: LayoutProps) {
         } as React.CSSProperties
       }
     >
-      <div className="min-h-screen flex w-full bg-background prevent-horizontal-scroll relative">
-        {/* Sidebar desktop */}
+      <div className="min-h-screen flex w-full bg-background prevent-horizontal-scroll">
         <AppSidebar />
-        
-        {/* Botón de colapso - siempre visible */}
-        <SidebarCollapseButton />
-        
-        {/* Main content area */}
         <SidebarInset className="flex flex-col flex-1 w-full md:w-auto min-w-0">
-          <Header />
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+            <SidebarTrigger className="h-8 w-8 p-0 rounded-full border border-border bg-background shadow-md hover:shadow-lg" />
+            <div className="flex-1" />
+          </header>
           <main className="flex-1 bg-gradient-subtle p-2 md:p-4 overflow-x-hidden">
             <div className="h-full max-w-full">
               <div className="animate-fade-in">
