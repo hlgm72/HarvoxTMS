@@ -147,6 +147,7 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
                         <ClientLogoUpload
                           logoUrl={field.value || undefined}
                           clientName={form.watch("name") || form.watch("alias")}
+                          emailDomain={form.watch("email_domain")}
                           onLogoChange={(url) => field.onChange(url || "")}
                         />
                       </FormControl>

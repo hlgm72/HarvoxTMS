@@ -4,15 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { SmartLogoSearch } from "@/components/ui/SmartLogoSearch";
 
 interface ClientLogoUploadProps {
   logoUrl?: string;
   clientName?: string;
+  emailDomain?: string;
   onLogoChange: (url: string | null) => void;
   disabled?: boolean;
 }
 
-export function ClientLogoUpload({ logoUrl, clientName, onLogoChange, disabled }: ClientLogoUploadProps) {
+export function ClientLogoUpload({ logoUrl, clientName, emailDomain, onLogoChange, disabled }: ClientLogoUploadProps) {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -96,53 +98,66 @@ export function ClientLogoUpload({ logoUrl, clientName, onLogoChange, disabled }
   };
 
   return (
-    <div className="flex items-center gap-4">
-      <Avatar className="h-16 w-16">
-        <AvatarImage src={logoUrl} alt={clientName} />
-        <AvatarFallback>
-          {clientName ? getInitials(clientName) : <Building2 className="h-6 w-6" />}
-        </AvatarFallback>
-      </Avatar>
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <Avatar className="h-16 w-16">
+          <AvatarImage src={logoUrl} alt={clientName} />
+          <AvatarFallback>
+            {clientName ? getInitials(clientName) : <Building2 className="h-6 w-6" />}
+          </AvatarFallback>
+        </Avatar>
 
-      <div className="flex flex-col gap-2">
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={disabled || uploading}
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            {uploading ? 'Cargando...' : logoUrl ? 'Cambiar Logo' : 'Cargar Logo'}
-          </Button>
-
-          {logoUrl && (
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
             <Button
               type="button"
               variant="outline"
               size="sm"
-              onClick={removeLogo}
+              onClick={() => fileInputRef.current?.click()}
               disabled={disabled || uploading}
             >
-              <X className="h-4 w-4 mr-2" />
-              Eliminar
+              <Upload className="h-4 w-4 mr-2" />
+              {uploading ? 'Cargando...' : logoUrl ? 'Cambiar Logo' : 'Cargar Logo'}
             </Button>
-          )}
+
+            {logoUrl && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={removeLogo}
+                disabled={disabled || uploading}
+              >
+                <X className="h-4 w-4 mr-2" />
+                Eliminar
+              </Button>
+            )}
+          </div>
+
+          <p className="text-xs text-muted-foreground">
+            PNG, JPG hasta 5MB
+          </p>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
         </div>
-
-        <p className="text-xs text-muted-foreground">
-          PNG, JPG hasta 5MB
-        </p>
-
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
       </div>
+
+      {/* Smart Logo Search */}
+      {clientName && (
+        <SmartLogoSearch
+          companyName={clientName}
+          emailDomain={emailDomain}
+          currentLogoUrl={logoUrl}
+          onLogoSelect={onLogoChange}
+          className="border-t pt-4"
+        />
+      )}
     </div>
   );
 }
