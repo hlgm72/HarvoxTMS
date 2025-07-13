@@ -50,7 +50,7 @@ export function PageToolbar({
   };
   return (
     <div className="border-b border-border bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/92">
-      <div className="px-6 py-4 space-y-3">
+      <div className="px-6 py-4 space-y-3 border-b border-border">{}
         {/* Breadcrumb */}
         <Breadcrumb>
           <BreadcrumbList>
