@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
+import { useState, useCallback } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,11 +20,20 @@ import { useFleetNotifications } from '@/components/notifications';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export function Header() {
-  const sidebarContext = useSidebar();
-  const { open: sidebarOpen, setOpen: setSidebarOpen } = sidebarContext || { open: false, setOpen: () => {} };
+  // Estado local para el menú como fallback
+  const [localMenuOpen, setLocalMenuOpen] = useState(false);
   
-  console.log('Header render - sidebarContext:', sidebarContext);
-  console.log('Header render - sidebarOpen:', sidebarOpen);
+  // Intentar usar el contexto de sidebar de forma segura
+  let sidebarContext;
+  try {
+    sidebarContext = useSidebar();
+  } catch (error) {
+    console.log('Sidebar context not available, using local state');
+    sidebarContext = null;
+  }
+  
+  const sidebarOpen = sidebarContext?.open ?? localMenuOpen;
+  const setSidebarOpen = sidebarContext?.setOpen ?? setLocalMenuOpen;
   
   const { t } = useTranslation(['common', 'fleet']);
   const { signOut } = useAuth();
@@ -116,7 +126,10 @@ export function Header() {
             variant="ghost" 
             size="sm"
             className="h-8 w-8 p-0 rounded-full border border-border bg-background shadow-md hover:shadow-lg transition-all duration-200"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            onClick={() => {
+              console.log('Menu button clicked, current state:', sidebarOpen);
+              setSidebarOpen(!sidebarOpen);
+            }}
           >
             <Menu className="h-4 w-4" />
           </Button>
