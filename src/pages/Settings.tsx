@@ -229,57 +229,62 @@ export default function Settings() {
           { label: "Configuración" }
         ]}
       />
-      <div className="p-6 min-h-screen bg-gradient-subtle">
+      <div className="p-3 sm:p-6 min-h-screen bg-gradient-subtle">
         {/* Content */}
-        <div className="space-y-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm border">
+        <div className="space-y-4 sm:space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 bg-white shadow-sm border">
             <TabsTrigger 
               value="profile" 
-              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              className="flex items-center gap-1 sm:gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm"
             >
-              <User className="h-4 w-4" />
-              Mi Perfil
+              <User className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Mi Perfil</span>
+              <span className="sm:hidden">Perfil</span>
             </TabsTrigger>
             <TabsTrigger 
               value="company" 
-              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              className="flex items-center gap-1 sm:gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm"
             >
-              <Building className="h-4 w-4" />
-              Empresa
+              <Building className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Empresa</span>
+              <span className="sm:hidden">Empresa</span>
             </TabsTrigger>
             <TabsTrigger 
               value="system" 
-              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              className="flex items-center gap-1 sm:gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm col-span-2 sm:col-span-1"
             >
-              <Database className="h-4 w-4" />
-              Sistema
+              <Database className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Sistema</span>
+              <span className="sm:hidden">Sistema</span>
             </TabsTrigger>
             <TabsTrigger 
               value="interface" 
-              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              className="flex items-center gap-1 sm:gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm hidden sm:flex"
             >
-              <Palette className="h-4 w-4" />
-              Interfaz
+              <Palette className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden lg:inline">Interfaz</span>
+              <span className="lg:hidden">UI</span>
             </TabsTrigger>
             <TabsTrigger 
               value="notifications" 
-              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              className="flex items-center gap-1 sm:gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm hidden sm:flex"
             >
-              <Bell className="h-4 w-4" />
-              Notificaciones
+              <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden lg:inline">Notificaciones</span>
+              <span className="lg:hidden">Notif</span>
             </TabsTrigger>
           </TabsList>
 
           {/* Mi Perfil */}
           <TabsContent value="profile">
-            <div className="grid gap-6">
+            <div className="grid gap-4 sm:gap-6">
               {/* Self Role Manager - Only for Company Owners */}
               <SelfRoleManager />
               
-              <div className="grid gap-6 md:grid-cols-3">
+              <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
               {/* Profile Summary Card */}
-              <Card className="md:col-span-1">
+              <Card className="lg:col-span-1">
                 <CardHeader className="text-center">
                   <AvatarUpload 
                     currentAvatarUrl={profile?.avatar_url}
@@ -310,23 +315,25 @@ export default function Settings() {
               </Card>
 
               {/* Profile Forms */}
-              <Card className="md:col-span-2">
+              <Card className="lg:col-span-2">
                 <Tabs value={profileSubTab} onValueChange={setProfileSubTab} className="w-full">
                   <CardHeader>
                     <TabsList className="grid w-full grid-cols-2">
                       <TabsTrigger 
                         value="info" 
-                        className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+                        className="flex items-center gap-1 sm:gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground text-xs sm:text-sm"
                       >
-                        <User className="h-4 w-4" />
-                        Información Personal
+                        <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                        <span className="hidden sm:inline">Información Personal</span>
+                        <span className="sm:hidden">Info</span>
                       </TabsTrigger>
                       <TabsTrigger 
                         value="security" 
-                        className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+                        className="flex items-center gap-1 sm:gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground text-xs sm:text-sm"
                       >
-                        <Shield className="h-4 w-4" />
-                        Seguridad
+                        <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
+                        <span className="hidden sm:inline">Seguridad</span>
+                        <span className="sm:hidden">Seguridad</span>
                       </TabsTrigger>
                     </TabsList>
                   </CardHeader>
@@ -343,7 +350,7 @@ export default function Settings() {
                       
                       <Form {...profileForm}>
                         <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <FormField
                               control={profileForm.control}
                               name="first_name"
@@ -414,7 +421,7 @@ export default function Settings() {
                             }}
                           />
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <FormField
                               control={profileForm.control}
                               name="preferred_language"
