@@ -534,7 +534,7 @@ export function AppSidebar() {
       } as any}
     >
       <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-3 px-2' : 'p-6'}`} style={{ 
-        backgroundColor: 'hsl(var(--sidebar-background))', 
+        backgroundColor: 'hsl(var(--fleet-sidebar-darker))', 
         width: collapsed ? '64px' : 'auto'
       }}>
         <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-4'}`}>
