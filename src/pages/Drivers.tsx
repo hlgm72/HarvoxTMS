@@ -109,8 +109,7 @@ export default function Drivers() {
             </Button>
           }
         />
-        <div className="p-6 space-y-6">
-
+        <div className="p-2 md:p-4 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
               <DriverSkeleton key={i} />
@@ -135,8 +134,7 @@ export default function Drivers() {
             </Button>
           }
         />
-        <div className="p-6 space-y-6">
-
+        <div className="p-2 md:p-4 space-y-6">
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="text-6xl mb-4">🚛</div>
             <h3 className="text-xl font-semibold mb-2">No hay conductores registrados</h3>
@@ -167,8 +165,7 @@ export default function Drivers() {
             </Button>
           }
         />
-        <div className="p-6 space-y-6">
-
+        <div className="p-2 md:p-4 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {drivers.map((driver) => {
             const fullName = `${driver.first_name} ${driver.last_name}`.trim();
