@@ -106,15 +106,8 @@ export function Header() {
     <header className="h-14 md:h-16 border-b border-border bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 z-5 shadow-sm">
       <div className="flex h-full items-center justify-between px-3 md:px-6">
         <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
-          {/* Botón menú móvil */}
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="md:hidden p-2"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
+          {/* Botón menú móvil - usar SidebarTrigger oficial */}
+          <SidebarTrigger className="md:hidden" />
           
           {/* Título responsivo */}
           <div className="border-l border-border/20 pl-2 md:pl-4 flex-1 min-w-0">
