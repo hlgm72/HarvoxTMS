@@ -109,8 +109,7 @@ export function Header() {
                 <h1 className="text-xl font-bold bg-gradient-fleet bg-clip-text text-transparent tracking-tight">
                   {pageInfo.title}
                 </h1>
-                <p className="text-sm text-muted-foreground flex items-center gap-2 font-medium">
-                  <span className="w-2 h-2 bg-success rounded-full animate-pulse shadow-sm"></span>
+                <p className="text-sm text-muted-foreground font-medium">
                   {pageInfo.subtitle}
                 </p>
               </div>
