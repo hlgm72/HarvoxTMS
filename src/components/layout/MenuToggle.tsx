@@ -9,36 +9,24 @@ interface MenuToggleProps {
 }
 
 export function MenuToggle({ onToggle }: MenuToggleProps) {
-  const sidebarContext = useSidebar();
+  const { toggleSidebar, isMobile, openMobile, open } = useSidebar();
   
   const handleToggle = useCallback(() => {
-    const windowWidth = window.innerWidth;
-    const isMobileWidth = windowWidth < 768;
-    
-    console.log('🔥 MENU TOGGLE:', {
-      windowWidth,
-      isMobileWidth,
-      contextIsMobile: sidebarContext?.isMobile,
-      currentOpenMobile: sidebarContext?.openMobile,
-      currentOpen: sidebarContext?.open
+    console.log('🔥 MENU TOGGLE CLICKED:', {
+      windowWidth: window.innerWidth,
+      contextIsMobile: isMobile,
+      currentOpenMobile: openMobile,
+      currentOpen: open,
+      hasToggleSidebar: !!toggleSidebar
     });
     
-    if (sidebarContext) {
-      if (isMobileWidth) {
-        // En móvil, usar setOpenMobile
-        const newState = !sidebarContext.openMobile;
-        console.log('📱 Mobile toggle:', newState);
-        sidebarContext.setOpenMobile(newState);
-        onToggle?.(newState);
-      } else {
-        // En desktop, usar setOpen
-        const newState = !sidebarContext.open;
-        console.log('💻 Desktop toggle:', newState);
-        sidebarContext.setOpen(newState);
-        onToggle?.(newState);
-      }
-    }
-  }, [onToggle, sidebarContext]);
+    toggleSidebar();
+    
+    // Notificar el nuevo estado al callback opcional
+    const newState = isMobile ? !openMobile : !open;
+    console.log('📱 New state after toggle:', newState);
+    onToggle?.(newState);
+  }, [toggleSidebar, onToggle, isMobile, openMobile, open]);
   
   return (
     <div className="flex-shrink-0 pl-3 md:pl-6">
