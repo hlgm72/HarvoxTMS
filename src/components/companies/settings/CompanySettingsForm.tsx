@@ -130,24 +130,23 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
   const hasChanges = JSON.stringify(formData) !== JSON.stringify(company);
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold">Configuración de la Empresa</h2>
-          <p className="text-muted-foreground text-sm sm:text-base">Administra la información y configuración de tu empresa</p>
+          <h2 className="text-2xl font-bold">Configuración de la Empresa</h2>
+          <p className="text-muted-foreground">Administra la información y configuración de tu empresa</p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+        <div className="flex gap-2">
           {hasChanges && (
-            <Button variant="outline" onClick={handleReset} className="w-full sm:w-auto">
+            <Button variant="outline" onClick={handleReset}>
               <RotateCcw className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Restablecer</span>
-              <span className="sm:hidden">Reset</span>
+              Restablecer
             </Button>
           )}
           <Button 
             onClick={handleSave} 
             disabled={loading || !hasChanges}
-            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-colors w-full sm:w-auto"
+            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-colors"
           >
             <Save className="h-4 w-4 mr-2" />
             {loading ? 'Guardando...' : 'Guardar Cambios'}
@@ -155,55 +154,49 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 bg-white shadow-sm border">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-6 bg-white shadow-sm border">
           <TabsTrigger 
             value="company" 
-            className="flex items-center gap-1 sm:gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground text-xs sm:text-sm"
+            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
           >
-            <Building className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Empresa</span>
-            <span className="sm:hidden">Empresa</span>
+            <Building className="h-4 w-4" />
+            Empresa
           </TabsTrigger>
           <TabsTrigger 
             value="documentation" 
-            className="flex items-center gap-1 sm:gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground text-xs sm:text-sm"
+            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
           >
-            <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Documentación</span>
-            <span className="sm:hidden">Docs</span>
+            <FileText className="h-4 w-4" />
+            Documentación
           </TabsTrigger>
           <TabsTrigger 
             value="contact" 
-            className="flex items-center gap-1 sm:gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground text-xs sm:text-sm col-span-2 sm:col-span-1"
+            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
           >
-            <MapPin className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Ubicación</span>
-            <span className="sm:hidden">Ubicación</span>
+            <MapPin className="h-4 w-4" />
+            Ubicación
           </TabsTrigger>
           <TabsTrigger 
             value="owner" 
-            className="flex items-center gap-1 sm:gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground text-xs sm:text-sm hidden sm:flex"
+            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
           >
-            <User className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden lg:inline">Propietario</span>
-            <span className="lg:hidden">Owner</span>
+            <User className="h-4 w-4" />
+            Propietario
           </TabsTrigger>
           <TabsTrigger 
             value="payments" 
-            className="flex items-center gap-1 sm:gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground text-xs sm:text-sm hidden sm:flex"
+            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
           >
-            <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden lg:inline">Pagos</span>
-            <span className="lg:hidden">Pagos</span>
+            <CreditCard className="h-4 w-4" />
+            Pagos
           </TabsTrigger>
           <TabsTrigger 
             value="system" 
-            className="flex items-center gap-1 sm:gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground text-xs sm:text-sm hidden sm:flex"
+            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
           >
-            <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden lg:inline">Sistema</span>
-            <span className="lg:hidden">Sistema</span>
+            <Settings className="h-4 w-4" />
+            Sistema
           </TabsTrigger>
         </TabsList>
 
@@ -227,7 +220,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
 
               <Separator />
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2 space-y-2">
                   <Label htmlFor="name">Nombre de la Empresa *</Label>
                   <Input
@@ -276,7 +269,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="ein">EIN (Tax ID)</Label>
                   <Input
@@ -357,7 +350,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="owner_name">Nombre Completo</Label>
                   <Input
@@ -430,7 +423,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="payment_day">Día de Pago del Mes</Label>
                   <Select 
