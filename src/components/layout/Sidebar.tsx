@@ -491,7 +491,7 @@ export function AppSidebar() {
                            )}
                          </NavLink>
                        </TooltipTrigger>
-                       <TooltipContent side="right" className="bg-slate-900 text-white border-slate-700">
+                       <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200 shadow-lg">
                          <p>{item.title}</p>
                        </TooltipContent>
                      </Tooltip>
