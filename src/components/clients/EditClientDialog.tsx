@@ -68,7 +68,12 @@ export function EditClientDialog({ client, open, onOpenChange }: EditClientDialo
 
   const onSubmit = async (data: UpdateClientForm) => {
     try {
-      await updateClient.mutateAsync(data);
+      // Ensure email_domain is lowercase before saving
+      const formattedData = {
+        ...data,
+        email_domain: data.email_domain?.toLowerCase() || ""
+      };
+      await updateClient.mutateAsync(formattedData);
       onOpenChange(false);
     } catch (error) {
       // Error is handled by the mutation
@@ -146,7 +151,11 @@ export function EditClientDialog({ client, open, onOpenChange }: EditClientDialo
                   <FormItem>
                     <FormLabel>Dominio de Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ej. empresa.com" {...field} />
+                      <Input 
+                        placeholder="Ej. empresa.com" 
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value.toLowerCase())}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

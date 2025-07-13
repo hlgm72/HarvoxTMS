@@ -209,7 +209,7 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
                     control={form.control}
                     name="email_domain"
                     render={({ field }) => {
-                      const handlers = createTextHandlers(field.onChange, 'text');
+                      const handlers = createTextHandlers((value) => field.onChange(value.toLowerCase()), 'text');
                       return (
                         <FormItem>
                           <FormLabel>Dominio de Email</FormLabel>
