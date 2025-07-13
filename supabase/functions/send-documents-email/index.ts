@@ -173,6 +173,20 @@ const handler = async (req: Request): Promise<Response> => {
           <p style="margin: 10px 0 0 0; opacity: 0.9;">Documentos Adjuntos</p>
         </div>
         
+        ${companyEmail ? `
+          <div style="background: #e8f4fd; border: 2px solid #4f9cf9; border-radius: 8px; padding: 15px; margin: 20px; text-align: center;">
+            <p style="margin: 0; color: #1e40af; font-weight: bold; font-size: 16px;">
+              📧 Para responder a este mensaje, escriba a:
+            </p>
+            <p style="margin: 5px 0 0 0; color: #1e40af; font-size: 18px; font-weight: bold;">
+              <a href="mailto:${companyEmail}" style="color: #1e40af; text-decoration: none;">${companyEmail}</a>
+            </p>
+            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">
+              (No responda al remitente de este email)
+            </p>
+          </div>
+        ` : ''}
+        
         <div style="padding: 30px 20px;">
           <h2 style="color: #333; margin-bottom: 20px;">Documentos de ${companyName}</h2>
           
@@ -190,15 +204,21 @@ const handler = async (req: Request): Promise<Response> => {
             ${attachments.map(att => `<li>${att.filename}</li>`).join('')}
           </ul>
           
+          ${companyEmail ? `
+            <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin: 20px 0;">
+              <p style="margin: 0; color: #856404; font-weight: bold;">
+                ⚠️ Importante: Para responder este email, utilice la dirección:
+              </p>
+              <p style="margin: 5px 0 0 0; color: #856404; font-size: 16px;">
+                <a href="mailto:${companyEmail}" style="color: #856404; font-weight: bold;">${companyEmail}</a>
+              </p>
+            </div>
+          ` : ''}
+          
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
             <p style="color: #999; font-size: 14px; margin: 0;">
               Este email fue enviado por <strong>${companyName}</strong> a través de FleetNest.
             </p>
-            ${companyEmail ? `
-              <p style="color: #999; font-size: 14px; margin: 5px 0 0 0;">
-                Para responder, contacte: <a href="mailto:${companyEmail}" style="color: #667eea;">${companyEmail}</a>
-              </p>
-            ` : ''}
           </div>
         </div>
       </div>
