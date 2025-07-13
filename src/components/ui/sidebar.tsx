@@ -202,15 +202,32 @@ const Sidebar = React.forwardRef<
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
-            className="w-[280px] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+            className="w-[280px] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden border-0"
             side="left"
             style={{
-              zIndex: 9999
+              zIndex: 99999,
+              position: 'fixed',
+              inset: 0,
+              background: 'hsl(var(--sidebar))',
+              display: openMobile ? 'flex' : 'none'
             }}
           >
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
             <SheetDescription className="sr-only">Main navigation for the application</SheetDescription>
-            <div className="flex h-full w-full flex-col">{children}</div>
+            <div 
+              className="flex h-full w-full flex-col"
+              style={{
+                background: 'hsl(var(--sidebar))',
+                color: 'hsl(var(--sidebar-foreground))',
+                minHeight: '100vh'
+              }}
+            >
+              <div className="p-4 border-b border-sidebar-border">
+                <div className="text-lg font-semibold">🚀 MOBILE MENU VISIBLE!</div>
+                <div className="text-sm opacity-70">openMobile: {String(openMobile)}</div>
+              </div>
+              {children}
+            </div>
           </SheetContent>
         </Sheet>
       )
