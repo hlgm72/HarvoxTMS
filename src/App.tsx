@@ -10,7 +10,6 @@ import AuthCallback from "./pages/AuthCallback";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import Companies from "./pages/Companies";
 import PaymentSystem from "./pages/PaymentSystem";
-import EagleLogoDemo from "./pages/EagleLogoDemo";
 import Invitation from "./pages/Invitation";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
@@ -242,8 +241,6 @@ function AppContent() {
             </ProtectedRoute>
           } 
         />
-        {/* Demo route */}
-        <Route path="/demo" element={<EagleLogoDemo />} />
         
         {/* Catch-all route */}
         <Route path="*" element={<NotFound />} />
