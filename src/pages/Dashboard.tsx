@@ -4,6 +4,7 @@ import { CommandMap } from "@/components/dashboard/CommandMap";
 import { DispatchPanel } from "@/components/dashboard/DispatchPanel";
 import { FleetStatus } from "@/components/dashboard/FleetStatus";
 import { PageToolbar } from "@/components/layout/PageToolbar";
+import { PWAInstallBanner } from "@/components/ui/PWAInstallBanner";
 import { useTranslation } from 'react-i18next';
 
 export default function Dashboard() {
@@ -17,8 +18,10 @@ export default function Dashboard() {
         ]}
       />
       <div className="p-6 space-y-6">
+        {/* PWA Install Banner */}
+        <PWAInstallBanner />
 
-      {/* Stats Grid */}
+        {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           title={t('fleet:loads.in_transit')}
