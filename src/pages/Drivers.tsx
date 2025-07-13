@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { UserPlus } from "lucide-react";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -98,22 +99,14 @@ export default function Drivers() {
           breadcrumbs={[
             { label: "Gestión de Conductores" }
           ]}
-        />
-        <div className="p-6 space-y-6">
-
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">
-                Gestión de Conductores
-              </h1>
-              <p className="text-muted-foreground">
-                Administra tu equipo de conductores y su información
-              </p>
-            </div>
-            <Button className="bg-gradient-primary hover:opacity-90">
-              ➕ Nuevo Conductor
+          actions={
+            <Button className="gap-2">
+              <UserPlus className="h-4 w-4" />
+              Nuevo Conductor
             </Button>
-          </div>
+          }
+        />
+        <div className="p-6 space-y-6 bg-card">
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
@@ -132,21 +125,14 @@ export default function Drivers() {
           breadcrumbs={[
             { label: "Gestión de Conductores" }
           ]}
-        />
-        <div className="p-6 space-y-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">
-                Gestión de Conductores
-              </h1>
-              <p className="text-muted-foreground">
-                Administra tu equipo de conductores y su información
-              </p>
-            </div>
-            <Button className="bg-gradient-primary hover:opacity-90">
-              ➕ Nuevo Conductor
+          actions={
+            <Button className="gap-2">
+              <UserPlus className="h-4 w-4" />
+              Nuevo Conductor
             </Button>
-          </div>
+          }
+        />
+        <div className="p-6 space-y-6 bg-card">
 
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="text-6xl mb-4">🚛</div>
@@ -154,8 +140,9 @@ export default function Drivers() {
             <p className="text-muted-foreground mb-4">
               Comienza agregando conductores a tu flota
             </p>
-            <Button className="bg-gradient-primary hover:opacity-90">
-              ➕ Invitar Primer Conductor
+            <Button className="gap-2">
+              <UserPlus className="h-4 w-4" />
+              Invitar Primer Conductor
             </Button>
           </div>
         </div>
@@ -164,26 +151,20 @@ export default function Drivers() {
   }
 
   return (
-    <>
-      <PageToolbar 
-        breadcrumbs={[
-          { label: "Gestión de Conductores" }
-        ]}
-      />
-      <div className="p-6 space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Gestión de Conductores
-            </h1>
-            <p className="text-muted-foreground">
-              {drivers.length} conductor{drivers.length !== 1 ? 'es' : ''} registrado{drivers.length !== 1 ? 's' : ''} en tu flota
-            </p>
-          </div>
-          <Button className="bg-gradient-primary hover:opacity-90">
-            ➕ Nuevo Conductor
-          </Button>
-        </div>
+      <>
+        <PageToolbar 
+          breadcrumbs={[
+            { label: "Gestión de Conductores" }
+          ]}
+          title={`Gestión de Conductores (${drivers.length})`}
+          actions={
+            <Button className="gap-2">
+              <UserPlus className="h-4 w-4" />
+              Nuevo Conductor
+            </Button>
+          }
+        />
+        <div className="p-6 space-y-6 bg-card">
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {drivers.map((driver) => {
