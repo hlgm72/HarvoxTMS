@@ -11,6 +11,8 @@ import { useFleetNotifications } from "@/components/notifications";
 import { Upload, FileText, Download, Trash2, AlertCircle, CheckCircle, Calendar, Plus, Mail, CheckSquare, Square } from "lucide-react";
 import { CompanyDocumentUpload } from "@/components/documents/CompanyDocumentUpload";
 import { DocumentCard } from "@/components/documents/DocumentCard";
+import { DocumentTable } from "@/components/documents/DocumentTable";
+import { DocumentViewToggle, DocumentViewMode } from "@/components/documents/DocumentViewToggle";
 import { EmailDocumentsModal } from "@/components/documents/EmailDocumentsModal";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 
@@ -76,6 +78,7 @@ interface CompanyDocument {
 
 export default function Documents() {
   const [activeTab, setActiveTab] = useState("all");
+  const [viewMode, setViewMode] = useState<DocumentViewMode>("cards");
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string>("");
@@ -213,6 +216,10 @@ export default function Documents() {
         title="Documentos de la Compañía"
         actions={
           <div className="flex gap-2">
+            <DocumentViewToggle 
+              currentView={viewMode} 
+              onViewChange={setViewMode} 
+            />
             {selectedDocuments.size > 0 && (
               <Button variant="outline" onClick={handleOpenEmailModal}>
                 <Mail className="w-4 h-4 mr-2" />
@@ -322,27 +329,39 @@ export default function Documents() {
             </div>
           )}
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {documents.map((document) => (
-              <div key={document.id} className="relative">
-                <div className="absolute top-2 left-2 z-10">
-                  <Checkbox
-                    checked={selectedDocuments.has(document.id)}
-                    onCheckedChange={(checked) => 
-                      handleSelectDocument(document.id, checked as boolean)
-                    }
-                    className="bg-white shadow-sm"
+          {viewMode === "cards" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {documents.map((document) => (
+                <div key={document.id} className="relative">
+                  <div className="absolute top-2 left-2 z-10">
+                    <Checkbox
+                      checked={selectedDocuments.has(document.id)}
+                      onCheckedChange={(checked) => 
+                        handleSelectDocument(document.id, checked as boolean)
+                      }
+                      className="bg-white shadow-sm"
+                    />
+                  </div>
+                  <DocumentCard
+                    document={document}
+                    predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                    onDelete={(id) => deleteMutation.mutate(id)}
+                    getExpiryStatus={getExpiryStatus}
                   />
                 </div>
-                <DocumentCard
-                  document={document}
-                  predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                  onDelete={(id) => deleteMutation.mutate(id)}
-                  getExpiryStatus={getExpiryStatus}
-                />
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <DocumentTable
+              documents={documents}
+              predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+              selectedDocuments={selectedDocuments}
+              onSelectDocument={handleSelectDocument}
+              onSelectAll={handleSelectAll}
+              onDelete={(id) => deleteMutation.mutate(id)}
+              getExpiryStatus={getExpiryStatus}
+            />
+          )}
           {documents.length === 0 && (
             <div className="text-center py-12">
               <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
@@ -372,27 +391,39 @@ export default function Documents() {
               </Button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {getDocumentsByCategory(categoryKey).map((document) => (
-                <div key={document.id} className="relative">
-                  <div className="absolute top-2 left-2 z-10">
-                    <Checkbox
-                      checked={selectedDocuments.has(document.id)}
-                      onCheckedChange={(checked) => 
-                        handleSelectDocument(document.id, checked as boolean)
-                      }
-                      className="bg-white shadow-sm"
+{viewMode === "cards" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {getDocumentsByCategory(categoryKey).map((document) => (
+                  <div key={document.id} className="relative">
+                    <div className="absolute top-2 left-2 z-10">
+                      <Checkbox
+                        checked={selectedDocuments.has(document.id)}
+                        onCheckedChange={(checked) => 
+                          handleSelectDocument(document.id, checked as boolean)
+                        }
+                        className="bg-white shadow-sm"
+                      />
+                    </div>
+                    <DocumentCard
+                      document={document}
+                      predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                      onDelete={(id) => deleteMutation.mutate(id)}
+                      getExpiryStatus={getExpiryStatus}
                     />
                   </div>
-                  <DocumentCard
-                    document={document}
-                    predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                    onDelete={(id) => deleteMutation.mutate(id)}
-                    getExpiryStatus={getExpiryStatus}
-                  />
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <DocumentTable
+                documents={getDocumentsByCategory(categoryKey)}
+                predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                selectedDocuments={selectedDocuments}
+                onSelectDocument={handleSelectDocument}
+                onSelectAll={handleSelectAll}
+                onDelete={(id) => deleteMutation.mutate(id)}
+                getExpiryStatus={getExpiryStatus}
+              />
+            )}
 
             {getDocumentsByCategory(categoryKey).length === 0 && (
               <div className="text-center py-8">
@@ -425,31 +456,45 @@ export default function Documents() {
             </Button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {documents
-              .filter(doc => !Object.values(PREDEFINED_DOCUMENT_TYPES)
-                .flatMap(cat => cat.types.map(t => t.value))
-                .includes(doc.document_type))
-              .map((document) => (
-                <div key={document.id} className="relative">
-                  <div className="absolute top-2 left-2 z-10">
-                    <Checkbox
-                      checked={selectedDocuments.has(document.id)}
-                      onCheckedChange={(checked) => 
-                        handleSelectDocument(document.id, checked as boolean)
-                      }
-                      className="bg-white shadow-sm"
+{viewMode === "cards" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {documents
+                .filter(doc => !Object.values(PREDEFINED_DOCUMENT_TYPES)
+                  .flatMap(cat => cat.types.map(t => t.value))
+                  .includes(doc.document_type))
+                .map((document) => (
+                  <div key={document.id} className="relative">
+                    <div className="absolute top-2 left-2 z-10">
+                      <Checkbox
+                        checked={selectedDocuments.has(document.id)}
+                        onCheckedChange={(checked) => 
+                          handleSelectDocument(document.id, checked as boolean)
+                        }
+                        className="bg-white shadow-sm"
+                      />
+                    </div>
+                    <DocumentCard
+                      document={document}
+                      predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                      onDelete={(id) => deleteMutation.mutate(id)}
+                      getExpiryStatus={getExpiryStatus}
                     />
                   </div>
-                  <DocumentCard
-                    document={document}
-                    predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                    onDelete={(id) => deleteMutation.mutate(id)}
-                    getExpiryStatus={getExpiryStatus}
-                  />
-                </div>
-              ))}
-          </div>
+                ))}
+            </div>
+          ) : (
+            <DocumentTable
+              documents={documents.filter(doc => !Object.values(PREDEFINED_DOCUMENT_TYPES)
+                .flatMap(cat => cat.types.map(t => t.value))
+                .includes(doc.document_type))}
+              predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+              selectedDocuments={selectedDocuments}
+              onSelectDocument={handleSelectDocument}
+              onSelectAll={handleSelectAll}
+              onDelete={(id) => deleteMutation.mutate(id)}
+              getExpiryStatus={getExpiryStatus}
+            />
+          )}
         </TabsContent>
       </Tabs>
 
