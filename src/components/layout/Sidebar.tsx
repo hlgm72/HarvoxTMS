@@ -533,35 +533,60 @@ export function AppSidebar() {
         width: collapsed ? '64px' : 'var(--sidebar-width)'
       } as any}
     >
-      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-2 px-2' : 'p-4'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))', width: collapsed ? '64px' : 'auto' }}>
-        <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
-          <div className="relative">
-            <div className="w-10 h-10 flex items-center justify-center">
+      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-3 px-2' : 'p-6'}`} style={{ 
+        backgroundColor: 'hsl(var(--fleet-sidebar-darker))', 
+        width: collapsed ? '64px' : 'auto',
+        background: collapsed ? 'hsl(var(--fleet-sidebar-darker))' : 'linear-gradient(135deg, hsl(var(--fleet-sidebar-darker)) 0%, hsl(217, 24%, 18%) 100%)'
+      }}>
+        <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-4'}`}>
+          {/* Logo Container with Professional Styling */}
+          <div className="relative group">
+            <div className={`${collapsed ? 'w-10 h-10' : 'w-12 h-12'} bg-gradient-to-br from-white/20 to-white/5 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105`}>
               <img 
                 src="/lovable-uploads/f2dc63b4-a93b-49bd-a347-e03a7c567905.png" 
                 alt="FleetNest Logo" 
-                className="w-9 h-9 object-contain filter brightness-0 invert"
+                className={`${collapsed ? 'w-6 h-6' : 'w-8 h-8'} object-contain filter brightness-0 invert drop-shadow-md transition-all duration-300 group-hover:drop-shadow-lg`}
               />
+              {/* Subtle glow effect */}
+              <div className="absolute inset-0 rounded-xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
+            {/* Optional floating indicator */}
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full shadow-lg animate-pulse opacity-80"></div>
           </div>
           
           {!collapsed && (
-            <div className="flex-1">
-              <h2 className="font-semibold text-base text-white tracking-tight">
-                {isSuperAdmin ? "FleetNest Admin" : "FleetNest"}
-              </h2>
-              <p className="text-xs text-white/70">TMS Platform</p>
+            <div className="flex-1 animate-fade-in">
+              {/* Brand Section */}
+              <div className="space-y-1">
+                <h2 className="font-bold text-xl text-white tracking-tight leading-none bg-gradient-to-r from-white to-white/90 bg-clip-text">
+                  FleetNest
+                  {isSuperAdmin && <span className="text-blue-300 ml-2 text-sm font-medium">Admin</span>}
+                </h2>
+                <p className="text-sm text-white/70 font-medium tracking-wide">
+                  Professional TMS Platform
+                </p>
+              </div>
               
-              {/* Superadmin info - Estilo Limitless exacto */}
+              {/* Superadmin Badge - More Professional */}
               {isSuperAdmin && (
-                <div className="mt-3 p-3 bg-[hsl(217_91%_60%)]/20 rounded-md border border-[hsl(217_91%_60%)]/30">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-3 w-3 text-[hsl(217_91%_60%)]" />
+                <div className="mt-4 p-3 bg-gradient-to-r from-blue-500/20 to-blue-600/20 rounded-lg border border-blue-400/30 backdrop-blur-sm animate-scale-in">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-blue-500/30 rounded-lg flex items-center justify-center">
+                      <Shield className="h-4 w-4 text-blue-300" />
+                    </div>
                     <div>
-                      <p className="text-sm font-medium text-white">{t('admin:navigation.system_administrator')}</p>
-                      <p className="text-xs text-[hsl(215_20%_65%)]">{t('admin:navigation.global_access')}</p>
+                      <p className="text-sm font-semibold text-white">{t('admin:navigation.system_administrator')}</p>
+                      <p className="text-xs text-blue-200/80">{t('admin:navigation.global_access')}</p>
                     </div>
                   </div>
+                </div>
+              )}
+              
+              {/* Status Indicator */}
+              {!isSuperAdmin && (
+                <div className="mt-3 flex items-center gap-2 text-xs text-white/60">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="font-medium">System Online</span>
                 </div>
               )}
             </div>
