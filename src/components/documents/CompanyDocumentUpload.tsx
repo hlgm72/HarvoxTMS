@@ -68,7 +68,8 @@ export function CompanyDocumentUpload({
         .select("company_id")
         .eq("user_id", user.id)
         .eq("is_active", true)
-        .single();
+        .limit(1)
+        .maybeSingle();
 
       if (!userRoles) throw new Error("No se pudo obtener la información de la compañía");
 
