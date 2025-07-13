@@ -21,7 +21,7 @@ export const ProtectedRoute = ({
 
   // Show loading spinner while checking authentication OR while role is being determined
   // Also wait for the AuthContext to complete its initialization cycle
-  if (loading || (isAuthenticated && !currentRole) || _forceUpdate === 0) {
+  if (loading || (isAuthenticated && !currentRole)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
