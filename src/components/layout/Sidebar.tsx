@@ -109,6 +109,13 @@ const getCompanyOwnerNavigationItems = (driversCount: number) => [
   
   // Administración
   { 
+    title: "Documentos", 
+    url: "/documents", 
+    icon: FileText,
+    description: "Documentos de la compañía",
+    section: "admin"
+  },
+  { 
     title: "Gestión de Usuarios", 
     url: "/users", 
     icon: Users, 
@@ -180,7 +187,14 @@ const getOperationsManagerNavigationItems = (driversCount: number) => [
     section: "operations"
   },
   
-  // Reportes
+  // Documentos y Reportes
+  { 
+    title: "Documentos", 
+    url: "/documents", 
+    icon: FileText,
+    description: "Documentos de la compañía",
+    section: "reports"
+  },
   { 
     title: "Reportes", 
     url: "/reports", 
