@@ -244,9 +244,9 @@ export default function OwnerDashboard() {
           { label: "Dashboard Ejecutivo" }
         ]}
       />
-      <div className="p-6 min-h-screen bg-gradient-subtle">
+      <div className="p-6 pt-2 min-h-screen bg-gradient-subtle">
         {/* Content */}
-        <div className="space-y-6">
+        <div className="space-y-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           {/* Mobile Layout - Horizontal Scroll */}
           <div className="sm:hidden">
