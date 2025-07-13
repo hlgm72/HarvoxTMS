@@ -388,16 +388,16 @@ export function AppSidebar() {
   const { companies, selectedCompany, setSelectedCompany, loading } = useUserCompanies();
   const { driversCount } = useDriversCount();
   
-  // Escuchar eventos globales del botón del header
+  // Escuchar eventos del botón independiente
   useEffect(() => {
-    const handleSidebarToggle = (event: CustomEvent) => {
-      console.log('📡 Sidebar received global toggle event:', event.detail);
+    const handleIndependentToggle = (event: CustomEvent) => {
+      console.log('📡 Sidebar received independent toggle:', event.detail);
       setOpen(event.detail.open);
     };
     
-    window.addEventListener('sidebar-toggle', handleSidebarToggle as EventListener);
+    window.addEventListener('independent-sidebar-toggle', handleIndependentToggle as EventListener);
     return () => {
-      window.removeEventListener('sidebar-toggle', handleSidebarToggle as EventListener);
+      window.removeEventListener('independent-sidebar-toggle', handleIndependentToggle as EventListener);
     };
   }, [setOpen]);
   

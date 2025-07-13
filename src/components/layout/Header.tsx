@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/components/ui/sidebar";
 import { useState, useCallback, useEffect } from "react";
 import {
   DropdownMenu,
@@ -15,55 +14,12 @@ import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { LogOut, Users, LayoutDashboard, Truck, Settings, User, Building2, Menu } from "lucide-react";
+import { LogOut, Users, LayoutDashboard, Truck, Settings, User, Building2 } from "lucide-react";
 import { useFleetNotifications } from '@/components/notifications';
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { MenuToggle } from "./MenuToggle";
 
 export function Header() {
-  // Estado completamente independiente del contexto
-  const [localMenuOpen, setLocalMenuOpen] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-  
-  // Solo después del mount marcamos como cliente
-  useEffect(() => {
-    setIsClient(true);
-    console.log('🔄 Header mounted - client side ready');
-  }, []);
-  
-  // Función robusta para el toggle que siempre funciona
-  const handleMenuToggle = useCallback(() => {
-    console.log('🔘 Menu clicked - isClient:', isClient);
-    
-    // Primero intentamos con el contexto si estamos en cliente
-    if (isClient) {
-      try {
-        // Creamos una referencia dinámica al contexto
-        const sidebarModule = require('@/components/ui/sidebar');
-        const { useSidebar } = sidebarModule;
-        const context = useSidebar();
-        
-        if (context && context.toggleSidebar) {
-          console.log('✅ Using sidebar context');
-          context.toggleSidebar();
-          return;
-        }
-      } catch (error) {
-        console.log('⚠️ Sidebar context not available:', error);
-      }
-    }
-    
-    // Fallback: toggle local y forzar evento global
-    console.log('🔄 Using fallback toggle');
-    setLocalMenuOpen(prev => {
-      const newState = !prev;
-      // Dispatchar evento global para el sidebar
-      window.dispatchEvent(new CustomEvent('sidebar-toggle', { 
-        detail: { open: newState } 
-      }));
-      return newState;
-    });
-  }, [isClient]);
-  
   const { t } = useTranslation(['common', 'fleet']);
   const { signOut } = useAuth();
   const { getUserInitials, getFullName, user, profile } = useUserProfile();
@@ -150,24 +106,8 @@ export function Header() {
     <header className="h-14 md:h-16 border-b border-border bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 z-20 shadow-sm">
       <div className="flex h-full items-center justify-between px-3 md:px-6">
         <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
-          {/* Botón menú - SIEMPRE VISIBLE CON FUERZA TOTAL */}
-          <div className="flex-shrink-0" style={{ position: 'relative', zIndex: 50 }}>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="h-8 w-8 p-0 rounded-full border border-border bg-background shadow-md hover:shadow-lg transition-all duration-200 relative z-30 flex items-center justify-center"
-              onClick={handleMenuToggle}
-              style={{ 
-                display: 'flex',
-                visibility: 'visible',
-                opacity: 1,
-                minWidth: '32px',
-                minHeight: '32px'
-              } as React.CSSProperties}
-            >
-              <Menu className="h-4 w-4" style={{ display: 'block' }} />
-            </Button>
-          </div>
+          {/* Botón menú independiente - NO MÁS PROBLEMAS */}
+          <MenuToggle />
           
           {/* Título responsivo */}
           <div className="border-l border-border/20 pl-2 md:pl-4 flex-1 min-w-0">
