@@ -144,7 +144,9 @@ function AppContent() {
           path="/drivers" 
           element={
             <ProtectedRoute>
-              <Drivers />
+              <Layout>
+                <Drivers />
+              </Layout>
             </ProtectedRoute>
           } 
         />
