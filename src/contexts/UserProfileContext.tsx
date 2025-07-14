@@ -1,7 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { useTranslation } from 'react-i18next';
+import React, { createContext, useContext, ReactNode } from 'react';
 
 interface UserProfile {
   id: string;
@@ -23,14 +20,21 @@ interface UserProfileContextType {
   user: any;
 }
 
-const UserProfileContext = createContext<UserProfileContextType | undefined>(undefined);
+// Simple mock implementation
+const mockProfileContext: UserProfileContextType = {
+  profile: null,
+  loading: false,
+  refreshProfile: async () => console.log('Refresh profile'),
+  getUserInitials: () => 'U',
+  getFullName: () => 'Usuario',
+  user: null
+};
+
+const UserProfileContext = createContext<UserProfileContextType>(mockProfileContext);
 
 export const useUserProfile = () => {
   const context = useContext(UserProfileContext);
-  if (!context) {
-    throw new Error('useUserProfile must be used within a UserProfileProvider');
-  }
-  return context;
+  return context || mockProfileContext;
 };
 
 interface UserProfileProviderProps {
@@ -38,129 +42,10 @@ interface UserProfileProviderProps {
 }
 
 export const UserProfileProvider: React.FC<UserProfileProviderProps> = ({ children }) => {
-  const { user } = useAuth();
-  const { i18n } = useTranslation();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  // Efecto para sincronizar el idioma del perfil con i18n
-  useEffect(() => {
-    if (profile?.preferred_language && profile.preferred_language !== i18n.language) {
-      i18n.changeLanguage(profile.preferred_language);
-    }
-  }, [profile?.preferred_language, i18n]);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!user) {
-        setProfile(null);
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (error) {
-          console.error('Error fetching profile:', error);
-          setProfile(null);
-        } else {
-          setProfile(data);
-        }
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-        setProfile(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, [user]);
-
-  const getUserInitials = (): string => {
-    if (!profile) return 'U';
-    
-    const firstName = profile.first_name?.trim();
-    const lastName = profile.last_name?.trim();
-    
-    if (firstName && lastName) {
-      return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-    }
-    
-    if (firstName) {
-      return firstName.charAt(0).toUpperCase();
-    }
-    
-    if (lastName) {
-      return lastName.charAt(0).toUpperCase();
-    }
-    
-    // Como fallback, usamos el email
-    return user?.email?.charAt(0)?.toUpperCase() || 'U';
-  };
-
-  const getFullName = (): string => {
-    if (!profile) return 'Usuario';
-    
-    const firstName = profile.first_name?.trim();
-    const lastName = profile.last_name?.trim();
-    
-    if (firstName && lastName) {
-      return `${firstName} ${lastName}`;
-    }
-    
-    if (firstName) {
-      return firstName;
-    }
-    
-    if (lastName) {
-      return lastName;
-    }
-    
-    // Como fallback, usamos el email
-    return user?.email || 'Usuario';
-  };
-
-  // Función para refrescar el perfil después de actualizaciones
-  const refreshProfile = async () => {
-    if (!user) return;
-    
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error refreshing profile:', error);
-      } else {
-        setProfile(data);
-      }
-    } catch (error) {
-      console.error('Error refreshing profile:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const value: UserProfileContextType = {
-    profile,
-    loading,
-    refreshProfile,
-    getUserInitials,
-    getFullName,
-    user
-  };
-
+  console.log('👤 UserProfileProvider rendering with simplified implementation');
+  
   return (
-    <UserProfileContext.Provider value={value}>
+    <UserProfileContext.Provider value={mockProfileContext}>
       {children}
     </UserProfileContext.Provider>
   );

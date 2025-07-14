@@ -5,10 +5,8 @@ import { DispatchPanel } from "@/components/dashboard/DispatchPanel";
 import { FleetStatus } from "@/components/dashboard/FleetStatus";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { PWAInstallBanner } from "@/components/ui/PWAInstallBanner";
-import { useTranslation } from 'react-i18next';
 
 export default function Dashboard() {
-  const { t } = useTranslation(['common', 'fleet']);
   
   return (
     <>
@@ -24,28 +22,28 @@ export default function Dashboard() {
         {/* Stats Grid - Mejorado para móviles */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           <StatsCard
-            title={t('fleet:loads.in_transit')}
+            title="Cargas en Tránsito"
             value={24}
             icon="🚛"
             trend={{ value: 12, isPositive: true }}
             variant="success"
           />
           <StatsCard
-            title={t('fleet:metrics.fleet_utilization')}
+            title="Utilización de Flota"
             value="85.7%"
             icon="🚛"
             trend={{ value: 3.2, isPositive: true }}
             variant="success"
           />
           <StatsCard
-            title={t('fleet:loads.today_revenue')}
+            title="Ingresos de Hoy"
             value="$47,890"
             icon="💰"
             trend={{ value: 15.3, isPositive: true }}
             variant="success"
           />
           <StatsCard
-            title={t('fleet:loads.scheduled_deliveries')}
+            title="Entregas Programadas"
             value={38}
             icon="📦"
             trend={{ value: 8.7, isPositive: true }}
