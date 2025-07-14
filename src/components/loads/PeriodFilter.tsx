@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar, CalendarDays, ChevronDown, Clock, X, TrendingUp, FileText } from 'lucide-react';
+import { Calendar, CalendarDays, ChevronDown, Clock, X, TrendingUp, FileText, Loader2 } from 'lucide-react';
 import { usePaymentPeriods, useCurrentPaymentPeriod } from '@/hooks/usePaymentPeriods';
 import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -19,9 +19,10 @@ export interface PeriodFilterValue {
 interface PeriodFilterProps {
   value: PeriodFilterValue;
   onChange: (value: PeriodFilterValue) => void;
+  isLoading?: boolean;
 }
 
-export function PeriodFilter({ value, onChange }: PeriodFilterProps) {
+export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilterProps) {
   const { data: allPeriods = [] } = usePaymentPeriods({ includeDriverName: true });
   const { data: currentPeriod } = useCurrentPaymentPeriod();
 
@@ -154,9 +155,17 @@ export function PeriodFilter({ value, onChange }: PeriodFilterProps) {
     <div className="flex items-center gap-2">
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="justify-between min-w-[200px]">
+          <Button 
+            variant="outline" 
+            className="justify-between min-w-[200px]"
+            disabled={isLoading}
+          >
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Calendar className="h-4 w-4" />
+              )}
               <span className="truncate">{getFilterLabel()}</span>
             </div>
             <ChevronDown className="h-4 w-4 opacity-50" />

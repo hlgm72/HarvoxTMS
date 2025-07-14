@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft } from "lucide-react";
+import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -13,6 +13,71 @@ import { PeriodFilterValue } from "./PeriodFilter";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
 import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
 import { EmptyLoadsState } from "./EmptyLoadsState";
+
+// Componente de skeleton para cargas
+const LoadSkeleton = () => (
+  <Card className="animate-pulse">
+    <CardHeader className="pb-3">
+      <div className="flex items-start justify-between">
+        <div className="space-y-2">
+          <div className="h-5 bg-muted rounded w-32"></div>
+          <div className="flex items-center gap-4">
+            <div className="h-4 bg-muted rounded w-24"></div>
+            <div className="h-4 bg-muted rounded w-20"></div>
+            <div className="h-4 bg-muted rounded w-20"></div>
+          </div>
+        </div>
+        <div className="h-6 bg-muted rounded w-16"></div>
+      </div>
+    </CardHeader>
+    <CardContent className="pt-0">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div className="space-y-2">
+          <div className="h-3 bg-muted rounded w-16"></div>
+          <div className="h-4 bg-muted rounded w-24"></div>
+        </div>
+        <div className="space-y-2">
+          <div className="h-3 bg-muted rounded w-20"></div>
+          <div className="h-4 bg-muted rounded w-28"></div>
+        </div>
+        <div className="space-y-2">
+          <div className="h-3 bg-muted rounded w-18"></div>
+          <div className="h-4 bg-muted rounded w-20"></div>
+        </div>
+      </div>
+      <div className="flex items-center justify-between">
+        <div className="h-3 bg-muted rounded w-32"></div>
+        <div className="flex gap-2">
+          <div className="h-8 bg-muted rounded w-16"></div>
+          <div className="h-8 bg-muted rounded w-16"></div>
+          <div className="h-8 bg-muted rounded w-8"></div>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
+
+// Componente de loading mejorado
+const LoadingState = () => (
+  <div className="space-y-4">
+    <div className="flex flex-col items-center justify-center py-12 space-y-4">
+      <div className="flex items-center gap-3">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <div className="text-lg font-medium">Cargando cargas...</div>
+      </div>
+      <div className="text-sm text-muted-foreground animate-pulse">
+        Obteniendo datos del período seleccionado
+      </div>
+    </div>
+    
+    {/* Skeletons de cargas */}
+    <div className="space-y-4">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <LoadSkeleton key={i} />
+      ))}
+    </div>
+  </div>
+);
 
 // Mock data - later will be replaced with real data from Supabase
 const mockLoads = [
@@ -114,11 +179,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
   });
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">Cargando cargas...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (error) {

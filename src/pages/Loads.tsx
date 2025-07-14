@@ -111,7 +111,8 @@ export default function Loads() {
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <PeriodFilter 
             value={periodFilter} 
-            onChange={setPeriodFilter} 
+            onChange={setPeriodFilter}
+            isLoading={false} // TODO: Conectar con el estado real de loading
           />
           <div className="text-sm text-muted-foreground animate-fade-in">
             <div className="flex items-center gap-2">
