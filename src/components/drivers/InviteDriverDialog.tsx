@@ -147,6 +147,9 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
                   onSelect={(date) => date && setFormData(prev => ({ ...prev, hireDate: date }))}
                   initialFocus
                   className="pointer-events-auto"
+                  captionLayout="dropdown"
+                  fromYear={2000}
+                  toYear={2030}
                 />
               </PopoverContent>
             </Popover>
