@@ -61,17 +61,22 @@ export function useEquipment() {
   const equipmentQuery = useQuery({
     queryKey: ["equipment"],
     queryFn: async () => {
+      console.log('🔧 Fetching equipment data...');
       const { data, error } = await supabase
         .from("company_equipment")
         .select("*")
         .order("created_at", { ascending: false });
 
       if (error) {
+        console.error('🔧 Error fetching equipment:', error);
         throw error;
       }
 
+      console.log('🔧 Equipment data fetched:', data?.length, 'items');
       return data as Equipment[];
     },
+    staleTime: 30000, // Cache for 30 seconds
+    refetchOnWindowFocus: true, // Refetch when window gains focus
   });
 
   const createEquipmentMutation = useMutation({
@@ -110,7 +115,9 @@ export function useEquipment() {
     },
     onSuccess: (data) => {
       console.log('🔧 Equipment created successfully:', data);
+      // Force immediate refresh of equipment list
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      queryClient.refetchQueries({ queryKey: ["equipment"] });
       showSuccess(
         t("equipment.created.title", "Equipo creado"),
         t("equipment.created.description", "El equipo se ha registrado exitosamente")
@@ -141,7 +148,9 @@ export function useEquipment() {
     },
     onSuccess: (data) => {
       console.log('🔧 Equipment updated successfully:', data);
+      // Force immediate refresh of equipment list
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      queryClient.refetchQueries({ queryKey: ["equipment"] });
       showSuccess(
         t("equipment.updated.title", "Equipo actualizado"),
         t("equipment.updated.description", "Los cambios se han guardado exitosamente")
@@ -168,7 +177,9 @@ export function useEquipment() {
     },
     onSuccess: () => {
       console.log('🔧 Equipment deleted successfully');
+      // Force immediate refresh of equipment list
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      queryClient.refetchQueries({ queryKey: ["equipment"] });
       showSuccess(
         t("equipment.deleted.title", "Equipo eliminado"),
         t("equipment.deleted.description", "El equipo se ha eliminado exitosamente")
@@ -184,9 +195,12 @@ export function useEquipment() {
 
   // Set up real-time subscription to automatically refresh equipment list
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      console.log('🔧 User not authenticated, skipping realtime setup');
+      return;
+    }
 
-    console.log('🔧 Setting up equipment realtime subscription...');
+    console.log('🔧 Setting up equipment realtime subscription for user:', user.id);
     
     const channel = supabase
       .channel('equipment-realtime-updates')
@@ -202,10 +216,18 @@ export function useEquipment() {
           
           // Invalidate and refetch the equipment query
           queryClient.invalidateQueries({ queryKey: ["equipment"] });
+          
+          // Also manually refetch to ensure immediate update
+          queryClient.refetchQueries({ queryKey: ["equipment"] });
         }
       )
       .subscribe((status) => {
         console.log('🔧 Equipment subscription status:', status);
+        if (status === 'SUBSCRIBED') {
+          console.log('🔧 ✅ Equipment realtime subscription active');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('🔧 ❌ Equipment subscription error');
+        }
       });
 
     return () => {
