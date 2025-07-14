@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Package } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { LoadsList } from "@/components/loads/LoadsList";
-import { LoadsActionSheet } from "@/components/loads/LoadsActionSheet";
+import { LoadsFloatingActions } from "@/components/loads/LoadsFloatingActions";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 
 export default function Loads() {
@@ -24,16 +24,10 @@ export default function Loads() {
         title={t("loads.title", "Gestión de Cargas")}
         subtitle="12 cargas activas • $45,230 en tránsito • 3 pendientes asignación"
         actions={
-          <div className="flex gap-2">
-            <LoadsActionSheet 
-              filters={filters}
-              onFiltersChange={setFilters}
-            />
-            <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
-              <Plus className="h-4 w-4" />
-              {t("loads.create.button", "Nueva Carga")}
-            </Button>
-          </div>
+          <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            {t("loads.create.button", "Nueva Carga")}
+          </Button>
         }
       />
 
@@ -45,6 +39,12 @@ export default function Loads() {
           onClose={() => setIsCreateDialogOpen(false)}
         />
       </div>
+
+      {/* Floating Actions */}
+      <LoadsFloatingActions 
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
     </>
   );
 }
