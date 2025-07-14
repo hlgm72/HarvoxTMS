@@ -32,9 +32,12 @@ export default function Loads() {
       />
 
       <div className="p-2 md:p-4 space-y-6">
-        <LoadsList filters={filters} />
+        <LoadsList 
+          filters={filters} 
+          onCreateLoad={() => setIsCreateDialogOpen(true)}
+        />
 
-        <CreateLoadDialog 
+        <CreateLoadDialog
           isOpen={isCreateDialogOpen}
           onClose={() => setIsCreateDialogOpen(false)}
         />

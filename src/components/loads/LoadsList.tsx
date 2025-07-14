@@ -4,13 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Eye, Edit, Truck, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft } from "lucide-react";
+import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useLoads } from "@/hooks/useLoads";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
 import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
+import { EmptyLoadsState } from "./EmptyLoadsState";
 
 // Mock data - later will be replaced with real data from Supabase
 const mockLoads = [
@@ -73,9 +74,10 @@ interface LoadsListProps {
     broker: string;
     dateRange: { from: Date | undefined; to: Date | undefined };
   };
+  onCreateLoad?: () => void;
 }
 
-export function LoadsList({ filters }: LoadsListProps) {
+export function LoadsList({ filters, onCreateLoad }: LoadsListProps) {
   const { t } = useTranslation();
   const { data: loads = [], isLoading, error } = useLoads();
   const [reassignmentDialog, setReassignmentDialog] = useState<{
@@ -116,15 +118,9 @@ export function LoadsList({ filters }: LoadsListProps) {
 
   if (filteredLoads.length === 0) {
     return (
-      <Card>
-        <CardContent className="py-8">
-          <div className="text-center text-muted-foreground">
-            <Truck className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="text-lg font-medium mb-2">No hay cargas registradas</p>
-            <p className="text-sm">Comienza creando tu primera carga</p>
-          </div>
-        </CardContent>
-      </Card>
+      <EmptyLoadsState 
+        onCreateLoad={onCreateLoad || (() => {})}
+      />
     );
   }
 
