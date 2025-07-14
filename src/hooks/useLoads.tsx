@@ -137,10 +137,13 @@ export const useLoads = (filters?: LoadsFilters) => {
 
         if (!loads || loads.length === 0) {
           console.timeEnd('useLoads-total');
+          console.log('✅ useLoads completado: Sin cargas encontradas');
           return [];
         }
 
-        // PASO 5: Obtener datos relacionados EN PARALELO (clave para velocidad)
+        console.log(`📊 Procesando ${loads.length} cargas encontradas`);
+
+        // PASO 5: Obtener datos relacionados EN PARALELO solo si hay cargas
         const driverIds = [...new Set(loads.map(l => l.driver_user_id))];
         const brokerIds = [...new Set(loads.map(l => l.broker_id).filter(Boolean))];
         const periodIds = [...new Set(loads.map(l => l.payment_period_id).filter(Boolean))];
@@ -148,28 +151,38 @@ export const useLoads = (filters?: LoadsFilters) => {
 
         console.time('parallel-queries');
         
-        // Todas las consultas en paralelo para máxima velocidad
-        const [profilesResult, brokersResult, periodsResult, stopsResult] = await Promise.allSettled([
-          // Perfiles de conductores
-          driverIds.length > 0 
-            ? supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', driverIds)
-            : Promise.resolve({ data: [] }),
-          
-          // Brokers
-          brokerIds.length > 0 
-            ? supabase.from('company_brokers').select('id, name').in('id', brokerIds)
-            : Promise.resolve({ data: [] }),
-          
-          // Períodos de pago
-          periodIds.length > 0 
-            ? supabase.from('payment_periods').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds)
-            : Promise.resolve({ data: [] }),
-          
-          // Paradas (solo pickup y delivery cities)
-          loadIds.length > 0 
-            ? supabase.from('load_stops').select('load_id, stop_type, city, stop_number').in('load_id', loadIds).in('stop_type', ['pickup', 'delivery'])
-            : Promise.resolve({ data: [] })
-        ]);
+        // Optimización: Solo hacer consultas si hay IDs para consultar
+        const queries = [];
+        
+        // Perfiles de conductores
+        if (driverIds.length > 0) {
+          queries.push(supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', driverIds));
+        } else {
+          queries.push(Promise.resolve({ data: [] }));
+        }
+        
+        // Brokers
+        if (brokerIds.length > 0) {
+          queries.push(supabase.from('company_brokers').select('id, name').in('id', brokerIds));
+        } else {
+          queries.push(Promise.resolve({ data: [] }));
+        }
+        
+        // Períodos de pago
+        if (periodIds.length > 0) {
+          queries.push(supabase.from('payment_periods').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds));
+        } else {
+          queries.push(Promise.resolve({ data: [] }));
+        }
+        
+        // Paradas (solo pickup y delivery cities)
+        if (loadIds.length > 0) {
+          queries.push(supabase.from('load_stops').select('load_id, stop_type, city, stop_number').in('load_id', loadIds).in('stop_type', ['pickup', 'delivery']));
+        } else {
+          queries.push(Promise.resolve({ data: [] }));
+        }
+
+        const [profilesResult, brokersResult, periodsResult, stopsResult] = await Promise.allSettled(queries);
 
         console.timeEnd('parallel-queries');
 
