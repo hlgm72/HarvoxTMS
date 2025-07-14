@@ -1,4 +1,5 @@
-const CACHE_VERSION = 'v3.0.0-' + Date.now(); // Force complete cache reset
+
+const CACHE_VERSION = 'v4.0.0-' + Date.now(); // Force complete cache reset
 const STATIC_CACHE = 'fleetnest-static-' + CACHE_VERSION;
 const DYNAMIC_CACHE = 'fleetnest-dynamic-' + CACHE_VERSION;
 
@@ -70,7 +71,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - Network first for JS/CSS, cache for static assets
+// Fetch event - Network first strategy with better error handling
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -85,30 +86,37 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For JS/CSS files, always try network first to avoid stale code
-  if (url.pathname.includes('.js') || url.pathname.includes('.css')) {
+  // For JS/CSS files, always try network first and don't cache 404s
+  if (url.pathname.includes('.js') || url.pathname.includes('.css') || url.pathname.includes('index-')) {
     event.respondWith(
       fetch(request)
         .then((networkResponse) => {
           if (networkResponse.status === 200) {
             console.log('🌐 SW: Fresh JS/CSS from network:', request.url);
+            // Only cache successful responses
             const responseClone = networkResponse.clone();
             caches.open(DYNAMIC_CACHE)
               .then((cache) => {
                 cache.put(request, responseClone);
               });
+            return networkResponse;
+          } else {
+            console.log('⚠️ SW: Non-200 response for:', request.url, 'Status:', networkResponse.status);
+            // Don't cache non-200 responses, just return them
+            return networkResponse;
           }
-          return networkResponse;
         })
-        .catch(() => {
-          console.log('📱 SW: Network failed, trying cache for:', request.url);
-          return caches.match(request);
+        .catch((error) => {
+          console.log('❌ SW: Network failed for:', request.url, error);
+          // For JS/CSS files, if network fails, don't try cache - let it fail
+          // This prevents serving stale JS/CSS that might break the app
+          throw error;
         })
     );
     return;
   }
 
-  // For other assets, cache first
+  // For other assets, try cache first, then network
   event.respondWith(
     caches.match(request)
       .then((cachedResponse) => {
