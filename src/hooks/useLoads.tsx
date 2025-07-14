@@ -120,10 +120,21 @@ export const useLoads = (filters?: LoadsFilters) => {
               loadsQuery = loadsQuery.eq('id', '00000000-0000-0000-0000-000000000000'); // ID imposible
             }
           } else if (periodFilter.startDate && periodFilter.endDate) {
-            // Para rangos de fechas, filtrar por pickup_date
-            loadsQuery = loadsQuery
-              .gte('pickup_date', periodFilter.startDate)
-              .lte('pickup_date', periodFilter.endDate);
+            // Para rangos de fechas, buscar períodos que se solapen con el rango
+            const { data: periodsInRange } = await supabase
+              .from('payment_periods')
+              .select('id')
+              .in('driver_user_id', userIds)
+              .lte('period_start_date', periodFilter.endDate)
+              .gte('period_end_date', periodFilter.startDate);
+            
+            if (periodsInRange && periodsInRange.length > 0) {
+              const periodIds = periodsInRange.map(p => p.id);
+              loadsQuery = loadsQuery.in('payment_period_id', periodIds);
+            } else {
+              // Si no hay períodos en el rango, no devolver nada
+              loadsQuery = loadsQuery.eq('id', '00000000-0000-0000-0000-000000000000');
+            }
           }
           // Para 'all', no aplicar filtros
         }
