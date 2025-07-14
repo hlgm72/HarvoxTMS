@@ -219,7 +219,10 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   </span>
                   <span className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
-                    {format(new Date(load.pickup_date), "dd/MM/yyyy", { locale: es })}
+                    Período: {load.period_start_date && load.period_end_date 
+                      ? `${format(new Date(load.period_start_date), "dd/MM", { locale: es })} - ${format(new Date(load.period_end_date), "dd/MM/yy", { locale: es })}`
+                      : 'Sin asignar'
+                    }
                   </span>
                 </div>
               </div>

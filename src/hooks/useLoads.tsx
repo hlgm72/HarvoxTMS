@@ -8,8 +8,6 @@ export interface Load {
   driver_user_id: string;
   total_amount: number;
   commodity: string | null;
-  pickup_date: string | null;
-  delivery_date: string | null;
   weight_lbs: number | null;
   status: string;
   notes: string | null;
@@ -22,8 +20,9 @@ export interface Load {
   leasing_percentage: number | null;
   currency: string;
   payment_period_id: string | null;
+  created_by: string | null;
   
-  // Datos relacionados
+  // Datos relacionados calculados
   driver_name?: string;
   broker_name?: string;
   pickup_city?: string;
@@ -267,17 +266,12 @@ function applyPeriodFilter(loads: Load[], periodFilter?: LoadsFilters['periodFil
   
   switch (periodFilter.type) {
     case 'current':
-      const currentDate = new Date().toISOString().split('T')[0];
-      return loads.filter(load => {
-        if (!load.period_start_date || !load.period_end_date) return false;
-        return load.period_start_date <= currentDate && load.period_end_date >= currentDate;
-      });
+      // Ya filtrado por SQL usando payment_period_id
+      return loads;
       
     case 'specific':
-      if (periodFilter.periodId) {
-        return loads.filter(load => load.payment_period_id === periodFilter.periodId);
-      }
-      break;
+      // Ya filtrado por SQL usando payment_period_id
+      return loads;
       
     case 'this_month':
     case 'last_month':
@@ -286,18 +280,11 @@ function applyPeriodFilter(loads: Load[], periodFilter?: LoadsFilters['periodFil
     case 'this_year':
     case 'last_year':
     case 'custom':
-      if (periodFilter.startDate && periodFilter.endDate) {
-        return loads.filter(load => {
-          if (!load.pickup_date) return false;
-          return load.pickup_date >= periodFilter.startDate! && load.pickup_date <= periodFilter.endDate!;
-        });
-      }
-      break;
+      // Ya filtrado por SQL usando payment_period_id
+      return loads;
       
     case 'all':
     default:
-      break;
+      return loads;
   }
-  
-  return loads;
 }

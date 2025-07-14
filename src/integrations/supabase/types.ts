@@ -1283,7 +1283,6 @@ export type Database = {
           created_by: string | null
           currency: string
           customer_name: string | null
-          delivery_date: string | null
           dispatching_percentage: number | null
           driver_user_id: string
           factoring_percentage: number | null
@@ -1292,7 +1291,6 @@ export type Database = {
           load_number: string
           notes: string | null
           payment_period_id: string | null
-          pickup_date: string | null
           status: string
           total_amount: number
           updated_at: string
@@ -1305,7 +1303,6 @@ export type Database = {
           created_by?: string | null
           currency?: string
           customer_name?: string | null
-          delivery_date?: string | null
           dispatching_percentage?: number | null
           driver_user_id: string
           factoring_percentage?: number | null
@@ -1314,7 +1311,6 @@ export type Database = {
           load_number: string
           notes?: string | null
           payment_period_id?: string | null
-          pickup_date?: string | null
           status?: string
           total_amount: number
           updated_at?: string
@@ -1327,7 +1323,6 @@ export type Database = {
           created_by?: string | null
           currency?: string
           customer_name?: string | null
-          delivery_date?: string | null
           dispatching_percentage?: number | null
           driver_user_id?: string
           factoring_percentage?: number | null
@@ -1336,7 +1331,6 @@ export type Database = {
           load_number?: string
           notes?: string | null
           payment_period_id?: string | null
-          pickup_date?: string | null
           status?: string
           total_amount?: number
           updated_at?: string
@@ -2292,7 +2286,6 @@ export type Database = {
           created_by: string | null
           currency: string | null
           customer_name: string | null
-          delivery_date: string | null
           dispatching_percentage: number | null
           driver_user_id: string | null
           factoring_percentage: number | null
@@ -2301,7 +2294,6 @@ export type Database = {
           load_number: string | null
           notes: string | null
           payment_period_id: string | null
-          pickup_date: string | null
           status: string | null
           total_amount: number | null
           updated_at: string | null
