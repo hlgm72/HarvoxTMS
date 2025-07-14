@@ -1,4 +1,6 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface UserProfile {
   id: string;
@@ -20,21 +22,14 @@ interface UserProfileContextType {
   user: any;
 }
 
-// Simple mock implementation
-const mockProfileContext: UserProfileContextType = {
-  profile: null,
-  loading: false,
-  refreshProfile: async () => console.log('Refresh profile'),
-  getUserInitials: () => 'U',
-  getFullName: () => 'Usuario',
-  user: null
-};
-
-const UserProfileContext = createContext<UserProfileContextType>(mockProfileContext);
+const UserProfileContext = createContext<UserProfileContextType | null>(null);
 
 export const useUserProfile = () => {
   const context = useContext(UserProfileContext);
-  return context || mockProfileContext;
+  if (!context) {
+    throw new Error('useUserProfile must be used within a UserProfileProvider');
+  }
+  return context;
 };
 
 interface UserProfileProviderProps {
@@ -42,10 +37,83 @@ interface UserProfileProviderProps {
 }
 
 export const UserProfileProvider: React.FC<UserProfileProviderProps> = ({ children }) => {
-  console.log('👤 UserProfileProvider rendering with simplified implementation');
-  
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchProfile = async () => {
+    if (!user?.id) return;
+    
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error);
+        return;
+      }
+
+      setProfile(data);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const refreshProfile = async () => {
+    await fetchProfile();
+  };
+
+  const getUserInitials = () => {
+    if (profile?.first_name && profile?.last_name) {
+      return `${profile.first_name.charAt(0)}${profile.last_name.charAt(0)}`.toUpperCase();
+    }
+    if (profile?.first_name) {
+      return profile.first_name.charAt(0).toUpperCase();
+    }
+    if (user?.email) {
+      return user.email.charAt(0).toUpperCase();
+    }
+    return 'U';
+  };
+
+  const getFullName = () => {
+    if (profile?.first_name && profile?.last_name) {
+      return `${profile.first_name} ${profile.last_name}`;
+    }
+    if (profile?.first_name) {
+      return profile.first_name;
+    }
+    if (user?.email) {
+      return user.email.split('@')[0];
+    }
+    return 'Usuario';
+  };
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchProfile();
+    } else {
+      setProfile(null);
+    }
+  }, [user?.id]);
+
+  const value: UserProfileContextType = {
+    profile,
+    loading,
+    refreshProfile,
+    getUserInitials,
+    getFullName,
+    user
+  };
+
   return (
-    <UserProfileContext.Provider value={mockProfileContext}>
+    <UserProfileContext.Provider value={value}>
       {children}
     </UserProfileContext.Provider>
   );
