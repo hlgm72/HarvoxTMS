@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Search, Filter, Grid3X3, List } from "lucide-react";
+import { Plus, Search, Filter, Grid3X3, List, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -122,21 +122,26 @@ export default function Equipment() {
               </div>
             </div>
           ) : filteredEquipment.length === 0 ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="text-center">
-                <p className="text-muted-foreground mb-2">
-                  {searchQuery 
-                    ? t("equipment.noResults", "No se encontraron equipos con ese criterio de búsqueda")
-                    : t("equipment.noEquipment", "No hay equipos registrados")
-                  }
-                </p>
-                {!searchQuery && (
-                  <Button onClick={() => setShowCreateDialog(true)} variant="outline">
-                    <Plus className="h-4 w-4 mr-2" />
-                    {t("equipment.addFirst", "Agregar primer equipo")}
-                  </Button>
-                )}
-              </div>
+            <div className="text-center py-12">
+              <Wrench className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium mb-2">
+                {searchQuery 
+                  ? t("equipment.noResults", "No se encontraron equipos")
+                  : t("equipment.noEquipment", "No hay equipos registrados")
+                }
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                {searchQuery 
+                  ? t("equipment.noResultsDescription", "Intenta ajustar los criterios de búsqueda para encontrar equipos")
+                  : t("equipment.noEquipmentDescription", "Comienza agregando el primer vehículo o equipo de tu flota")
+                }
+              </p>
+              {!searchQuery && (
+                <Button onClick={() => setShowCreateDialog(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  {t("equipment.addFirst", "Agregar Primer Equipo")}
+                </Button>
+              )}
             </div>
           ) : (
             <>
