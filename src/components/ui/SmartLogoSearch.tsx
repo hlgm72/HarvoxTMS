@@ -140,10 +140,10 @@ export function SmartLogoSearch({
       {searchResults.length > 0 && (
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">Logo encontrado:</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="space-y-2">
             {searchResults.map((logoUrl, index) => (
-              <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
-                <Avatar className="h-12 w-12">
+              <div key={index} className="flex items-center gap-3 p-3 border rounded-lg bg-card">
+                <Avatar className="h-10 w-10 flex-shrink-0">
                   <AvatarImage src={logoUrl} alt="Logo encontrado" />
                   <AvatarFallback className="text-xs">
                     {getInitials(companyName)}

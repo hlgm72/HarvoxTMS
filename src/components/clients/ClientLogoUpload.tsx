@@ -107,10 +107,10 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, onLogoChang
           </AvatarFallback>
         </Avatar>
 
-        <div className="flex flex-1 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-w-0">
           {/* Upload Section */}
           <div className="flex flex-col gap-2">
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 type="button"
                 variant="outline"
