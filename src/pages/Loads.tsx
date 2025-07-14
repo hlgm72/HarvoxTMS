@@ -60,7 +60,9 @@ export default function Loads() {
       {/* Floating Actions */}
       <LoadsFloatingActions 
         filters={filters}
+        periodFilter={periodFilter}
         onFiltersChange={setFilters}
+        onPeriodFilterChange={setPeriodFilter}
       />
     </>
   );

@@ -62,10 +62,12 @@ interface LoadsFloatingActionsProps {
     broker: string;
     dateRange: { from: Date | undefined; to: Date | undefined };
   };
+  periodFilter?: { type: string; periodId?: string; };
   onFiltersChange: (filters: any) => void;
+  onPeriodFilterChange?: (filter: any) => void;
 }
 
-export function LoadsFloatingActions({ filters, onFiltersChange }: LoadsFloatingActionsProps) {
+export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, onPeriodFilterChange }: LoadsFloatingActionsProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'view' | 'stats'>('filters');
@@ -278,6 +280,24 @@ export function LoadsFloatingActions({ filters, onFiltersChange }: LoadsFloating
                             {option.label}
                           </SelectItem>
                         ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Period Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Período de Pago</label>
+                    <Select 
+                      value={periodFilter?.type || 'current'} 
+                      onValueChange={(value) => onPeriodFilterChange?.({ type: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar período" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="current">Período Actual</SelectItem>
+                        <SelectItem value="all">Todos los Períodos</SelectItem>
+                        <SelectItem value="specific">Período Específico...</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
