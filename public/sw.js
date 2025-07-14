@@ -58,8 +58,12 @@ self.addEventListener('activate', (event) => {
         // Force reload all clients to get fresh content
         return self.clients.matchAll().then(clients => {
           clients.forEach(client => {
-            console.log('🔄 SW: Sending reload message to client');
-            client.postMessage({ type: 'CACHE_UPDATED' });
+            try {
+              console.log('🔄 SW: Sending reload message to client');
+              client.postMessage({ type: 'CACHE_UPDATED' });
+            } catch (error) {
+              console.log('⚠️ SW: Could not send message to client:', error);
+            }
           });
         });
       })
