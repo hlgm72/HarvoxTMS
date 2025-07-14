@@ -32,6 +32,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from 'react-i18next';
 import { useDriversCount } from "@/hooks/useDriversCount";
+import { useEquipmentCount } from "@/hooks/useEquipmentCount";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
 
 // Mock data for companies
@@ -41,7 +42,7 @@ const companies = [
 ];
 
 // Navegación para Company Owner
-const getCompanyOwnerNavigationItems = (driversCount: number) => [
+const getCompanyOwnerNavigationItems = (driversCount: number, equipmentCount: number) => [
   // Dashboard
   { 
     title: "Dashboard Ejecutivo", 
@@ -67,7 +68,7 @@ const getCompanyOwnerNavigationItems = (driversCount: number) => [
     title: "Flota", 
     url: "/equipment", 
     icon: Truck, 
-    badge: "42",
+     badge: equipmentCount.toString(),
     badgeVariant: "count" as const,
     description: "Vehículos y equipos",
     section: "operations"
@@ -132,7 +133,7 @@ const getCompanyOwnerNavigationItems = (driversCount: number) => [
 ];
 
 // Navegación para Operations Manager  
-const getOperationsManagerNavigationItems = (driversCount: number) => [
+const getOperationsManagerNavigationItems = (driversCount: number, equipmentCount: number) => [
   // Dashboard y Supervisión
   { 
     title: "Dashboard Operacional", 
@@ -165,7 +166,7 @@ const getOperationsManagerNavigationItems = (driversCount: number) => [
     title: "Flota", 
     url: "/equipment", 
     icon: Truck, 
-    badge: "42",
+     badge: equipmentCount.toString(),
     badgeVariant: "count" as const,
     description: "Vehículos y equipos",
     section: "operations"
@@ -401,6 +402,7 @@ export function AppSidebar() {
   const currentPath = location.pathname;
   const { companies, selectedCompany, setSelectedCompany, loading } = useUserCompanies();
   const { driversCount } = useDriversCount();
+  const { equipmentCount } = useEquipmentCount();
   
   // Escuchar eventos del botón independiente solo para desktop
   useEffect(() => {
@@ -431,8 +433,8 @@ export function AppSidebar() {
   // Determinar navegación según el rol del usuario
   const getNavigationItems = () => {
     if (isSuperAdmin) return getSuperAdminNavigationItems(t);
-    if (isCompanyOwner) return getCompanyOwnerNavigationItems(driversCount);
-    if (isOperationsManager) return getOperationsManagerNavigationItems(driversCount);
+    if (isCompanyOwner) return getCompanyOwnerNavigationItems(driversCount, equipmentCount);
+    if (isOperationsManager) return getOperationsManagerNavigationItems(driversCount, equipmentCount);
     if (isDispatcher) return getDispatcherNavigationItems(driversCount);
     if (isDriver) return getDriverNavigationItems();
     
