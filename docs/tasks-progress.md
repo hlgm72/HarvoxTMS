@@ -89,6 +89,48 @@
 
 ## 🔮 **TAREAS FUTURAS - MEJORAS AVANZADAS**
 
+### Sistema de Rastreo de Equipos
+#### Fase 1: Integración Geotab (COMPLETADA PARCIALMENTE)
+- [x] **GeotabLinkDialog** - Modal para vincular equipos ✅
+- [x] **EquipmentLocationStatus** - Componente de estado ✅  
+- [x] **EquipmentLocationMap** - Mapa básico ✅
+- [x] **useGeotabVehicles** - Hook de gestión ✅
+- [ ] **Optimización de queries** - Invalidación mejorada
+- [ ] **Historial de ubicaciones** - Vista temporal
+- [ ] **Reportes de rutas** - Analytics básicos
+
+#### Fase 2: GPS Móvil de Conductores (PENDIENTE)
+- [ ] **Configuración Capacitor** - Setup móvil nativo
+  - Configurar @capacitor/core, @capacitor/cli
+  - Setup iOS/Android platforms
+  - Configuración de hot-reload
+
+- [ ] **App Móvil del Conductor** - Frontend mobile
+  - Login de conductor seguro
+  - Selector de equipo asignado  
+  - Control de turno (Iniciar/Terminar)
+  - Interface de tracking GPS
+  - Modo offline con sincronización
+
+- [ ] **Sistema GPS Backend** - Infraestructura tracking
+  - Edge function: driver-location-update
+  - Tabla: driver_shifts, driver_locations
+  - WebSockets para tiempo real
+  - Optimización de batería móvil
+
+- [ ] **Dashboard Web Tracking** - Monitoreo central
+  - Mapa en tiempo real de flota
+  - Panel de alertas inteligentes
+  - Filtros por conductor/equipo/estado
+  - Métricas de rendimiento live
+
+#### Fase 3: Funcionalidades Avanzadas (FUTURO)
+- [ ] **Geofencing** - Zonas geográficas
+- [ ] **Alertas Inteligentes** - IA para patrones
+- [ ] **Optimización de Rutas** - ML routing
+- [ ] **Reportes Analytics** - Business intelligence
+- [ ] **API Externa** - Integración terceros
+
 ### Integración de Email Marketing
 - [ ] **Integración Resend-Supabase** - SMTP personalizado para emails de autenticación
   - Emails de confirmación branded y profesionales  
@@ -105,7 +147,8 @@
 |------|----------|-------------------|----------------|-----|
 | Fase 1 | 20% | 4 | 20 | 2 semanas |
 | Fase 2 | 0% | 0 | 25 | TBD |
-| Fase 3 | 0% | 0 | 20 | TBD |
+| Tracking Geotab | 70% | 4 | 7 | 1 semana |
+| Tracking GPS Mobile | 0% | 0 | 15 | 6-8 semanas |
 
 ---
 
