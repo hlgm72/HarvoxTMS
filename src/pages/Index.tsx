@@ -1,13 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useFleetNotifications } from '@/components/notifications';
 import { Loader2 } from 'lucide-react';
 import Dashboard from './Dashboard';
 
 export default function Index() {
   const navigate = useNavigate();
-  const { showSuccess } = useFleetNotifications();
   const { 
     user, 
     userRole, 
@@ -32,10 +30,7 @@ export default function Index() {
     const loginSuccess = localStorage.getItem('loginSuccess');
     if (loginSuccess === 'true') {
       localStorage.removeItem('loginSuccess');
-      showSuccess(
-        "¡Bienvenido de vuelta!",
-        "Has iniciado sesión exitosamente en FleetNest"
-      );
+      console.log('🏠 Welcome back! Login successful');
     }
 
     // Wait for auth context to fully initialize before redirecting
