@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { AlertCircle, Calendar, Download, FileText, MoreVertical, Trash2 } from "lucide-react";
+import { AlertCircle, Calendar, Download, FileText, MoreVertical, Archive, ArchiveRestore } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -32,15 +32,19 @@ interface CompanyDocument {
 interface DocumentCardProps {
   document: CompanyDocument;
   predefinedTypes: Record<string, DocumentCategory>;
-  onDelete: (id: string) => void;
+  onArchive?: (id: string) => void;
+  onRestore?: (id: string) => void;
   getExpiryStatus: (expiresAt?: string) => string;
+  isArchived?: boolean;
 }
 
 export function DocumentCard({ 
   document, 
   predefinedTypes, 
-  onDelete, 
-  getExpiryStatus 
+  onArchive, 
+  onRestore,
+  getExpiryStatus,
+  isArchived = false
 }: DocumentCardProps) {
   // Find document type info
   const getDocumentTypeInfo = () => {
@@ -118,13 +122,27 @@ export function DocumentCard({
                 <Download className="h-4 w-4 mr-2" />
                 Descargar
               </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onDelete(document.id)}
-                className="text-red-600"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Eliminar
-              </DropdownMenuItem>
+              {isArchived ? (
+                onRestore && (
+                  <DropdownMenuItem 
+                    onClick={() => onRestore(document.id)}
+                    className="text-green-600"
+                  >
+                    <ArchiveRestore className="h-4 w-4 mr-2" />
+                    Restaurar
+                  </DropdownMenuItem>
+                )
+              ) : (
+                onArchive && (
+                  <DropdownMenuItem 
+                    onClick={() => onArchive(document.id)}
+                    className="text-amber-600"
+                  >
+                    <Archive className="h-4 w-4 mr-2" />
+                    Archivar
+                  </DropdownMenuItem>
+                )
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

@@ -74,6 +74,9 @@ interface CompanyDocument {
   file_size?: number;
   content_type?: string;
   uploaded_by?: string;
+  is_active: boolean;
+  archived_at?: string;
+  archived_by?: string;
 }
 
 export default function Documents() {
@@ -102,29 +105,55 @@ export default function Documents() {
     }
   });
 
-  // Delete document mutation
-  const deleteMutation = useMutation({
+  // Archive document mutation
+  const archiveMutation = useMutation({
     mutationFn: async (documentId: string) => {
-      const { error } = await supabase
-        .from("company_documents")
-        .delete()
-        .eq("id", documentId);
+      const { data, error } = await supabase.rpc('archive_company_document', {
+        document_id: documentId
+      });
 
       if (error) throw error;
+      if (!(data as any).success) throw new Error((data as any).message);
       return documentId;
     },
-    onSuccess: (deletedDocumentId) => {
+    onSuccess: (archivedDocumentId) => {
       queryClient.invalidateQueries({ queryKey: ["company-documents"] });
-      showSuccess("Documento eliminado", "El documento ha sido eliminado exitosamente");
+      showSuccess("Documento archivado", "El documento ha sido archivado exitosamente");
       // Remove from selection if it was selected
       setSelectedDocuments(prev => {
         const newSet = new Set(prev);
-        newSet.delete(deletedDocumentId);
+        newSet.delete(archivedDocumentId);
         return newSet;
       });
     },
-    onError: (error) => {
-      showError("Error", "No se pudo eliminar el documento");
+    onError: (error: any) => {
+      showError("Error", error.message || "No se pudo archivar el documento");
+    }
+  });
+
+  // Restore document mutation
+  const restoreMutation = useMutation({
+    mutationFn: async (documentId: string) => {
+      const { data, error } = await supabase.rpc('restore_company_document', {
+        document_id: documentId
+      });
+
+      if (error) throw error;
+      if (!(data as any).success) throw new Error((data as any).message);
+      return documentId;
+    },
+    onSuccess: (restoredDocumentId) => {
+      queryClient.invalidateQueries({ queryKey: ["company-documents"] });
+      showSuccess("Documento restaurado", "El documento ha sido restaurado exitosamente");
+      // Remove from selection if it was selected
+      setSelectedDocuments(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(restoredDocumentId);
+        return newSet;
+      });
+    },
+    onError: (error: any) => {
+      showError("Error", error.message || "No se pudo restaurar el documento");
     }
   });
 
@@ -364,8 +393,10 @@ export default function Documents() {
                   <DocumentCard
                     document={document}
                     predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                    onDelete={(id) => deleteMutation.mutate(id)}
+                    onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
+                    onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
                     getExpiryStatus={getExpiryStatus}
+                    isArchived={showArchived}
                   />
                 </div>
               ))}
@@ -378,8 +409,10 @@ export default function Documents() {
                 selectedDocuments={selectedDocuments}
                 onSelectDocument={handleSelectDocument}
                 onSelectAll={handleSelectAll}
-                onDelete={(id) => deleteMutation.mutate(id)}
+                onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
+                onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
                 getExpiryStatus={getExpiryStatus}
+                isArchived={showArchived}
               />
             </div>
           )}
@@ -428,8 +461,10 @@ export default function Documents() {
                     <DocumentCard
                       document={document}
                       predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                      onDelete={(id) => deleteMutation.mutate(id)}
+                      onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
+                      onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
                       getExpiryStatus={getExpiryStatus}
+                      isArchived={showArchived}
                     />
                   </div>
                 ))}
@@ -442,8 +477,10 @@ export default function Documents() {
                   selectedDocuments={selectedDocuments}
                   onSelectDocument={handleSelectDocument}
                   onSelectAll={handleSelectAll}
-                  onDelete={(id) => deleteMutation.mutate(id)}
+                  onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
+                  onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
                   getExpiryStatus={getExpiryStatus}
+                  isArchived={showArchived}
                 />
               </div>
             )}
@@ -499,8 +536,10 @@ export default function Documents() {
                     <DocumentCard
                       document={document}
                       predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                      onDelete={(id) => deleteMutation.mutate(id)}
+                      onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
+                      onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
                       getExpiryStatus={getExpiryStatus}
+                      isArchived={showArchived}
                     />
                   </div>
                 ))}
@@ -515,8 +554,10 @@ export default function Documents() {
                 selectedDocuments={selectedDocuments}
                 onSelectDocument={handleSelectDocument}
                 onSelectAll={handleSelectAll}
-                onDelete={(id) => deleteMutation.mutate(id)}
+                onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
+                onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
                 getExpiryStatus={getExpiryStatus}
+                isArchived={showArchived}
               />
             </div>
           )}

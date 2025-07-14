@@ -227,6 +227,8 @@ export type Database = {
       }
       company_documents: {
         Row: {
+          archived_at: string | null
+          archived_by: string | null
           company_id: string
           content_type: string | null
           created_at: string
@@ -242,6 +244,8 @@ export type Database = {
           uploaded_by: string | null
         }
         Insert: {
+          archived_at?: string | null
+          archived_by?: string | null
           company_id: string
           content_type?: string | null
           created_at?: string
@@ -257,6 +261,8 @@ export type Database = {
           uploaded_by?: string | null
         }
         Update: {
+          archived_at?: string | null
+          archived_by?: string | null
           company_id?: string
           content_type?: string | null
           created_at?: string
@@ -495,6 +501,8 @@ export type Database = {
       }
       equipment_documents: {
         Row: {
+          archived_at: string | null
+          archived_by: string | null
           content_type: string | null
           created_at: string
           document_name: string
@@ -513,6 +521,8 @@ export type Database = {
           uploaded_by: string | null
         }
         Insert: {
+          archived_at?: string | null
+          archived_by?: string | null
           content_type?: string | null
           created_at?: string
           document_name: string
@@ -531,6 +541,8 @@ export type Database = {
           uploaded_by?: string | null
         }
         Update: {
+          archived_at?: string | null
+          archived_by?: string | null
           content_type?: string | null
           created_at?: string
           document_name?: string
@@ -1127,6 +1139,8 @@ export type Database = {
       }
       load_documents: {
         Row: {
+          archived_at: string | null
+          archived_by: string | null
           content_type: string | null
           created_at: string
           document_type: string
@@ -1138,6 +1152,8 @@ export type Database = {
           uploaded_by: string | null
         }
         Insert: {
+          archived_at?: string | null
+          archived_by?: string | null
           content_type?: string | null
           created_at?: string
           document_type: string
@@ -1149,6 +1165,8 @@ export type Database = {
           uploaded_by?: string | null
         }
         Update: {
+          archived_at?: string | null
+          archived_by?: string | null
           content_type?: string | null
           created_at?: string
           document_type?: string
@@ -2247,6 +2265,10 @@ export type Database = {
       }
     }
     Functions: {
+      archive_company_document: {
+        Args: { document_id: string }
+        Returns: Json
+      }
       assign_first_superadmin: {
         Args: { target_user_id: string }
         Returns: Json
@@ -2347,6 +2369,10 @@ export type Database = {
           reference_num?: string
           payment_notes?: string
         }
+        Returns: Json
+      }
+      restore_company_document: {
+        Args: { document_id: string }
         Returns: Json
       }
       use_reset_token: {

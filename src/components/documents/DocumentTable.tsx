@@ -28,7 +28,8 @@ import {
   Calendar, 
   Download, 
   MoreVertical, 
-  Trash2, 
+  Archive,
+  ArchiveRestore,
   ArrowUpDown,
   ArrowUp,
   ArrowDown
@@ -57,6 +58,9 @@ interface CompanyDocument {
   file_size?: number;
   content_type?: string;
   uploaded_by?: string;
+  is_active: boolean;
+  archived_at?: string;
+  archived_by?: string;
 }
 
 interface DocumentTableProps {
@@ -65,8 +69,10 @@ interface DocumentTableProps {
   selectedDocuments: Set<string>;
   onSelectDocument: (documentId: string, selected: boolean) => void;
   onSelectAll: () => void;
-  onDelete: (id: string) => void;
+  onArchive?: (id: string) => void;
+  onRestore?: (id: string) => void;
   getExpiryStatus: (expiresAt?: string) => string;
+  isArchived?: boolean;
 }
 
 type SortField = 'file_name' | 'document_type' | 'created_at' | 'expires_at' | 'file_size';
@@ -78,8 +84,10 @@ export function DocumentTable({
   selectedDocuments,
   onSelectDocument,
   onSelectAll,
-  onDelete,
-  getExpiryStatus
+  onArchive,
+  onRestore,
+  getExpiryStatus,
+  isArchived = false
 }: DocumentTableProps) {
   const [sortField, setSortField] = useState<SortField>('created_at');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -375,13 +383,27 @@ export function DocumentTable({
                               <Download className="h-4 w-4 mr-2" />
                               Descargar
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => onDelete(document.id)}
-                              className="text-red-600"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Eliminar
-                            </DropdownMenuItem>
+                            {isArchived ? (
+                              onRestore && (
+                                <DropdownMenuItem 
+                                  onClick={() => onRestore(document.id)}
+                                  className="text-green-600"
+                                >
+                                  <ArchiveRestore className="h-4 w-4 mr-2" />
+                                  Restaurar
+                                </DropdownMenuItem>
+                              )
+                            ) : (
+                              onArchive && (
+                                <DropdownMenuItem 
+                                  onClick={() => onArchive(document.id)}
+                                  className="text-amber-600"
+                                >
+                                  <Archive className="h-4 w-4 mr-2" />
+                                  Archivar
+                                </DropdownMenuItem>
+                              )
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
