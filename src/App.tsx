@@ -24,6 +24,7 @@ import Settings from "./pages/Settings";
 import Clients from "./pages/Clients";
 import Documents from "./pages/Documents";
 import EagleDemo from "./pages/EagleDemo";
+import DriverMobile from "./pages/DriverMobile";
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/layout/Layout";
@@ -111,6 +112,16 @@ function AppContent() {
               <Layout>
                 <DriverDashboard />
               </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Mobile driver interface */}
+        <Route 
+          path="/mobile/driver" 
+          element={
+            <ProtectedRoute requiredRole="driver">
+              <DriverMobile />
             </ProtectedRoute>
           } 
         />
