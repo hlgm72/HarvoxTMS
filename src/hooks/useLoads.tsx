@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useMemo } from 'react';
+import { useCompanyCache } from './useCompanyCache';
 
 export interface Load {
   id: string;
@@ -186,19 +187,24 @@ const getRelevantPeriodIds = async (
 
 export const useLoads = (filters?: LoadsFilters) => {
   const { user } = useAuth();
+  const { userCompany, companyUsers, isLoading: cacheLoading, error: cacheError } = useCompanyCache();
 
-  // Memoizar el queryKey para evitar re-renders innecesarios
+  // Memoizar el queryKey para evitar re-renders innecesarios y deduplicar queries
   const queryKey = useMemo(() => {
     return ['loads', user?.id, filters?.periodFilter?.type, filters?.periodFilter?.periodId, filters?.periodFilter?.startDate, filters?.periodFilter?.endDate];
   }, [user?.id, filters?.periodFilter?.type, filters?.periodFilter?.periodId, filters?.periodFilter?.startDate, filters?.periodFilter?.endDate]);
 
   return useQuery({
     queryKey,
-    retry: 1, // Reducir reintentos
-    retryDelay: 500,
-    staleTime: 120000, // Cache más agresivo - 2 minutos
-    gcTime: 300000, // 5 minutos en cache
+    retry: 1, // Reducir reintentos para evitar ERR_INSUFFICIENT_RESOURCES
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Backoff exponencial
+    staleTime: 300000, // Cache muy agresivo - 5 minutos
+    gcTime: 600000, // 10 minutos en cache
     refetchOnWindowFocus: false, // Evitar refetch innecesario
+    refetchOnReconnect: false, // Evitar múltiples queries al reconectar
+    refetchInterval: false, // Desactivar polling
+    // Deduplicar queries - crucial para ERR_INSUFFICIENT_RESOURCES
+    networkMode: 'online',
     queryFn: async (): Promise<Load[]> => {
       console.log('🔄 useLoads iniciando con filtros:', filters);
       console.time('useLoads-TOTAL-TIME');
@@ -208,61 +214,24 @@ export const useLoads = (filters?: LoadsFilters) => {
         throw new Error('User not authenticated');
       }
 
+      // Verificar errores de cache
+      if (cacheError) {
+        console.error('❌ Error en cache de compañía:', cacheError);
+        throw new Error('Error obteniendo datos de compañía');
+      }
+
+      // Esperar a que el cache esté listo
+      if (cacheLoading || !userCompany || companyUsers.length === 0) {
+        console.log('⏳ Esperando cache de compañía...');
+        throw new Error('Cargando datos de compañía...');
+      }
+
       try {
-        // PASO 1: Obtener compañía y usuarios (con cache optimizado)
-        console.time('step-1-company-users');
-        
-        // Cache de company_id por user_id (evita consulta repetida)
-        const companyUserCacheKey = `company_user_${user.id}`;
-        let userCompanyRole = null;
-        
-        try {
-          const { data, error: companyError } = await supabase
-            .from('user_company_roles')
-            .select('company_id')
-            .eq('user_id', user.id)
-            .eq('is_active', true)
-            .limit(1)
-            .maybeSingle();
-            
-          userCompanyRole = data;
-          if (companyError) throw companyError;
-        } catch (error) {
-          console.error('Error en consulta user_company_roles:', error);
-          throw new Error('No se pudo obtener la compañía del usuario');
-        }
-
-        if (!userCompanyRole) {
-          console.timeEnd('step-1-company-users');
-          console.timeEnd('useLoads-TOTAL-TIME');
-          throw new Error('Usuario no tiene compañía asignada');
-        }
-
-        // Cache de usuarios de compañía (evita consulta repetida)
-        const companyUsersCacheKey = `company_users_${userCompanyRole.company_id}`;
-        let companyUsers = null;
-        
-        try {
-          const { data, error: usersError } = await supabase
-            .from('user_company_roles')
-            .select('user_id')
-            .eq('company_id', userCompanyRole.company_id)
-            .eq('is_active', true);
-            
-          companyUsers = data;
-          if (usersError) throw usersError;
-        } catch (error) {
-          console.error('Error en consulta company users:', error);
-          throw new Error('Error obteniendo usuarios de la compañía');
-        }
-
-        const userIds = companyUsers?.map(u => u.user_id) || [];
-        console.log(`👥 Usuarios encontrados: ${userIds.length}`);
-        console.timeEnd('step-1-company-users');
+        console.log(`👥 Usuarios desde cache: ${companyUsers.length}`);
 
         // PASO 2: Obtener period_ids relevantes según el filtro (OPTIMIZACIÓN CLAVE)
         console.time('step-2-period-filtering');
-        const relevantPeriodIds = await getRelevantPeriodIds(userIds, filters?.periodFilter);
+        const relevantPeriodIds = await getRelevantPeriodIds(companyUsers, filters?.periodFilter);
         console.timeEnd('step-2-period-filtering');
         
         // PASO 3: Construir query optimizada de cargas
@@ -270,7 +239,7 @@ export const useLoads = (filters?: LoadsFilters) => {
         let loadsQuery = supabase
           .from('loads')
           .select('*')
-          .in('driver_user_id', userIds)
+          .in('driver_user_id', companyUsers)
           .order('created_at', { ascending: false });
 
         // Aplicar filtro de períodos si hay alguno
