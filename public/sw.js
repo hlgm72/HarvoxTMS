@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v2.2.0-' + Date.now(); // Force cache bust with timestamp
+const CACHE_VERSION = 'v3.0.0-' + Date.now(); // Force complete cache reset
 const STATIC_CACHE = 'fleetnest-static-' + CACHE_VERSION;
 const DYNAMIC_CACHE = 'fleetnest-dynamic-' + CACHE_VERSION;
 
