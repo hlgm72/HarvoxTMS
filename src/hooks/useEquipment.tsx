@@ -190,43 +190,25 @@ export function useEquipment() {
 
   // Set up real-time subscription to automatically refresh equipment list
   useEffect(() => {
-    if (!user?.id) {
-      console.log('🔧 User not authenticated, skipping realtime setup');
-      return;
-    }
+    if (!user?.id) return;
 
-    console.log('🔧 Setting up equipment realtime subscription for user:', user.id);
-    
     const channel = supabase
-      .channel('equipment-realtime-updates')
+      .channel('equipment-changes')
       .on(
         'postgres_changes',
         {
-          event: '*', // Listen to INSERT, UPDATE, DELETE
+          event: '*',
           schema: 'public',
           table: 'company_equipment'
         },
-        (payload) => {
-          console.log('🔧 Equipment change detected:', payload.eventType, payload);
-          
+        () => {
           // Invalidate and refetch the equipment query
           queryClient.invalidateQueries({ queryKey: ["equipment"] });
-          
-          // Also manually refetch to ensure immediate update
-          queryClient.refetchQueries({ queryKey: ["equipment"] });
         }
       )
-      .subscribe((status) => {
-        console.log('🔧 Equipment subscription status:', status);
-        if (status === 'SUBSCRIBED') {
-          console.log('🔧 ✅ Equipment realtime subscription active');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('🔧 ❌ Equipment subscription error');
-        }
-      });
+      .subscribe();
 
     return () => {
-      console.log('🔧 Cleaning up equipment subscription...');
       supabase.removeChannel(channel);
     };
   }, [user?.id, queryClient]);
