@@ -1,15 +1,20 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useFleetNotifications } from "@/components/notifications";
-import { Upload, FileText, Calendar, AlertTriangle, Copy, Replace } from "lucide-react";
+import { Upload, FileText, Calendar as CalendarIcon2, AlertTriangle, Copy, Replace } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface PredefinedDocumentType {
@@ -37,7 +42,7 @@ export function CompanyDocumentUpload({
   const [documentType, setDocumentType] = useState(selectedType || "");
   const [customDocumentName, setCustomDocumentName] = useState("");
   const [file, setFile] = useState<File | null>(null);
-  const [expiryDate, setExpiryDate] = useState("");
+  const [expiryDate, setExpiryDate] = useState<Date | undefined>();
   const [notes, setNotes] = useState("");
   const [uploading, setUploading] = useState(false);
   const [existingDocument, setExistingDocument] = useState<any>(null);
@@ -181,7 +186,7 @@ export function CompanyDocumentUpload({
       setFile(null);
       setDocumentType("");
       setCustomDocumentName("");
-      setExpiryDate("");
+      setExpiryDate(undefined);
       setNotes("");
       setShowDuplicateDialog(false);
       setExistingDocument(null);
@@ -248,7 +253,7 @@ export function CompanyDocumentUpload({
         file,
         documentType,
         customDocumentName,
-        expiryDate,
+        expiryDate: expiryDate ? expiryDate.toISOString().split('T')[0] : undefined,
         notes
       });
     } catch (error) {
@@ -268,7 +273,7 @@ export function CompanyDocumentUpload({
       file: file!,
       documentType,
       customDocumentName,
-      expiryDate,
+      expiryDate: expiryDate ? expiryDate.toISOString().split('T')[0] : undefined,
       notes,
       action: duplicateAction
     });
@@ -379,13 +384,33 @@ export function CompanyDocumentUpload({
 
       {/* Expiry Date */}
       <div className="space-y-2">
-        <Label htmlFor="expiry-date">Fecha de Vencimiento (Opcional)</Label>
-        <Input
-          type="date"
-          id="expiry-date"
-          value={expiryDate}
-          onChange={(e) => setExpiryDate(e.target.value)}
-        />
+        <Label>Fecha de Vencimiento (Opcional)</Label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                !expiryDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {expiryDate ? format(expiryDate, "PPP") : <span>Seleccionar fecha</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0">
+            <Calendar
+              mode="single"
+              selected={expiryDate}
+              onSelect={setExpiryDate}
+              initialFocus
+              className="pointer-events-auto"
+              captionLayout="dropdown"
+              fromYear={2000}
+              toYear={2030}
+            />
+          </PopoverContent>
+        </Popover>
         <p className="text-xs text-muted-foreground">
           Si el documento tiene fecha de vencimiento, te notificaremos antes de que expire
         </p>
