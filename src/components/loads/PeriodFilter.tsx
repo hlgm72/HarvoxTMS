@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -23,6 +23,7 @@ interface PeriodFilterProps {
 }
 
 export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilterProps) {
+  const [open, setOpen] = useState(false);
   const { data: allPeriods = [] } = usePaymentPeriods({ includeDriverName: true });
   const { data: currentPeriod } = useCurrentPaymentPeriod();
 
@@ -139,6 +140,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         endDate: dateRange.endDate,
         label: dateRange.label
       });
+      setOpen(false);
     }
   };
 
@@ -151,9 +153,14 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
     onChange({ type: 'current' });
   };
 
+  const handleOptionSelect = (option: PeriodFilterValue) => {
+    onChange(option);
+    setOpen(false);
+  };
+
   return (
     <div className="flex items-center gap-2">
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button 
             variant="outline" 
@@ -180,7 +187,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
               <Button
                 variant={value.type === 'current' ? 'default' : 'ghost'}
                 className="w-full justify-start"
-                onClick={() => onChange({ type: 'current' })}
+                onClick={() => handleOptionSelect({ type: 'current' })}
               >
                 <Clock className="h-4 w-4 mr-2" />
                 Período Actual
@@ -194,7 +201,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
               <Button
                 variant={value.type === 'all' ? 'default' : 'ghost'}
                 className="w-full justify-start"
-                onClick={() => onChange({ type: 'all' })}
+                onClick={() => handleOptionSelect({ type: 'all' })}
               >
                 <CalendarDays className="h-4 w-4 mr-2" />
                 Todos los períodos
@@ -290,7 +297,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     key={period.id}
                     variant={value.periodId === period.id ? 'default' : 'ghost'}
                     className="w-full justify-start text-left"
-                    onClick={() => onChange({ 
+                    onClick={() => handleOptionSelect({ 
                       type: 'specific', 
                       periodId: period.id,
                       startDate: period.period_start_date,
@@ -329,7 +336,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     key={period.id}
                     variant={value.periodId === period.id ? 'default' : 'ghost'}
                     className="w-full justify-start text-left"
-                    onClick={() => onChange({ 
+                    onClick={() => handleOptionSelect({ 
                       type: 'specific', 
                       periodId: period.id,
                       startDate: period.period_start_date,
@@ -363,7 +370,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     key={period.id}
                     variant={value.periodId === period.id ? 'default' : 'ghost'}
                     className="w-full justify-start text-left"
-                    onClick={() => onChange({ 
+                    onClick={() => handleOptionSelect({ 
                       type: 'specific', 
                       periodId: period.id,
                       startDate: period.period_start_date,
