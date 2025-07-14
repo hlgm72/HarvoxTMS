@@ -113,6 +113,7 @@ export function useGeotabVehicles() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      queryClient.invalidateQueries({ queryKey: ["equipment-with-geotab"] });
       queryClient.invalidateQueries({ queryKey: ["geotab-vehicles"] });
       showSuccess(
         t("equipment.geotab.linked.title", "Vinculación exitosa"),
