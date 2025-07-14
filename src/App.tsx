@@ -23,6 +23,7 @@ import Settings from "./pages/Settings";
 import Clients from "./pages/Clients";
 import Documents from "./pages/Documents";
 import Payments from "./pages/Payments";
+import Loads from "./pages/Loads";
 import EagleDemo from "./pages/EagleDemo";
 import DriverMobile from "./pages/DriverMobile";
 
@@ -170,7 +171,7 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <Layout>
-                <div>Loads page coming soon</div>
+                <Loads />
               </Layout>
             </ProtectedRoute>
           } 
