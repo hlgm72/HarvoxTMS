@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, TrendingUp, Clock, FileText } from "lucide-react";
-import modernTruckImage from "@/assets/modern-truck-illustration-transparent.png";
 
 interface EmptyLoadsStateProps {
   onCreateLoad: () => void;
@@ -34,7 +33,7 @@ export function EmptyLoadsState({ onCreateLoad }: EmptyLoadsStateProps) {
         <div className="text-center space-y-6">
           <div className="relative">
             <img 
-              src={modernTruckImage} 
+              src="/lovable-uploads/18be73f2-b0d0-4690-b3e3-d14c20b255e6.png" 
               alt="Modern truck illustration"
               className="w-64 h-48 mx-auto object-contain animate-fade-in bg-transparent"
             />
