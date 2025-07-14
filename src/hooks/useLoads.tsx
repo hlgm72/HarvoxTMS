@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { useMemo } from 'react';
 
 export interface Load {
   id: string;
@@ -186,12 +187,18 @@ const getRelevantPeriodIds = async (
 export const useLoads = (filters?: LoadsFilters) => {
   const { user } = useAuth();
 
+  // Memoizar el queryKey para evitar re-renders innecesarios
+  const queryKey = useMemo(() => {
+    return ['loads', user?.id, filters?.periodFilter?.type, filters?.periodFilter?.periodId, filters?.periodFilter?.startDate, filters?.periodFilter?.endDate];
+  }, [user?.id, filters?.periodFilter?.type, filters?.periodFilter?.periodId, filters?.periodFilter?.startDate, filters?.periodFilter?.endDate]);
+
   return useQuery({
-    queryKey: ['loads', user?.id, JSON.stringify(filters)], // Serializar filtros para evitar problemas de referencia
-    retry: 2,
-    retryDelay: 1000,
-    staleTime: 30000, // Reducir stale time
-    gcTime: 120000, // Reducir garbage collection time
+    queryKey,
+    retry: 1, // Reducir reintentos
+    retryDelay: 500,
+    staleTime: 120000, // Cache más agresivo - 2 minutos
+    gcTime: 300000, // 5 minutos en cache
+    refetchOnWindowFocus: false, // Evitar refetch innecesario
     queryFn: async (): Promise<Load[]> => {
       console.log('🔄 useLoads iniciando con filtros:', filters);
       console.time('useLoads-TOTAL-TIME');
