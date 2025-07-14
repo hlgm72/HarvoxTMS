@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useToast } from '@/hooks/use-toast';
+import { ClientLogoUpload } from '@/components/clients/ClientLogoUpload';
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -30,10 +31,12 @@ const dispatcherSchema = z.object({
 const createBrokerSchema = z.object({
   name: z.string().min(1, "Nombre del broker requerido"),
   alias: z.string().optional(),
+  phone: z.string().optional(),
   dot_number: z.string().optional(),
   mc_number: z.string().optional(),
   address: z.string().optional(),
   email_domain: z.string().optional(),
+  logo_url: z.string().optional(),
   notes: z.string().optional(),
   dispatchers: z.array(dispatcherSchema).optional(),
 });
@@ -58,10 +61,12 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
     defaultValues: {
       name: '',
       alias: '',
+      phone: '',
       dot_number: '',
       mc_number: '',
       address: '',
       email_domain: '',
+      logo_url: '',
       notes: '',
       dispatchers: [],
     },
@@ -85,8 +90,12 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
           company_id: userCompany.company_id,
           name: data.name,
           alias: data.alias || null,
+          phone: data.phone || null,
+          dot_number: data.dot_number || null,
+          mc_number: data.mc_number || null,
           address: data.address || null,
           email_domain: data.email_domain || null,
+          logo_url: data.logo_url || null,
           notes: data.notes || null,
           is_active: true,
         }])
@@ -212,6 +221,26 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                   <CardTitle className="text-lg">Información del Broker</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* Logo Upload Section */}
+                  <FormField
+                    control={form.control}
+                    name="logo_url"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Logo del Cliente</FormLabel>
+                        <FormControl>
+                          <ClientLogoUpload
+                            logoUrl={field.value || undefined}
+                            clientName={form.watch("name") || form.watch("alias")}
+                            emailDomain={form.watch("email_domain")}
+                            onLogoChange={(url) => field.onChange(url || "")}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -243,6 +272,34 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
 
                     <FormField
                       control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Teléfono Principal</FormLabel>
+                          <FormControl>
+                            <Input placeholder="(555) 123-4567" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="email_domain"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Dominio de Email</FormLabel>
+                          <FormControl>
+                            <Input placeholder="abclogistics.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
                       name="dot_number"
                       render={({ field }) => (
                         <FormItem>
@@ -263,20 +320,6 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                           <FormLabel>Número MC</FormLabel>
                           <FormControl>
                             <Input placeholder="MC-123456" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="email_domain"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Dominio de Email</FormLabel>
-                          <FormControl>
-                            <Input placeholder="@abclogistics.com" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
