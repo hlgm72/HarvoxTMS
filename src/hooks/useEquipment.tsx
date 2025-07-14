@@ -90,15 +90,30 @@ export function useEquipment() {
       // Use the first company_id (or you could add logic to select the preferred company)
       const userRole = userRoles[0];
 
+      // Clean up data - convert empty strings to null for optional date fields
+      const cleanedData = {
+        ...newEquipment,
+        company_id: userRole.company_id,
+        status: newEquipment.status || "active",
+        fuel_type: newEquipment.fuel_type || "diesel",
+        equipment_type: newEquipment.equipment_type || "truck",
+        // Convert empty strings to null for date fields
+        license_plate_expiry_date: newEquipment.license_plate_expiry_date || null,
+        registration_expiry_date: newEquipment.registration_expiry_date || null,
+        insurance_expiry_date: newEquipment.insurance_expiry_date || null,
+        annual_inspection_expiry_date: newEquipment.annual_inspection_expiry_date || null,
+        purchase_date: newEquipment.purchase_date || null,
+        // Convert empty strings to null for other optional fields
+        make: newEquipment.make || null,
+        model: newEquipment.model || null,
+        vin_number: newEquipment.vin_number || null,
+        license_plate: newEquipment.license_plate || null,
+        notes: newEquipment.notes || null,
+      };
+
       const { data, error } = await supabase
         .from("company_equipment")
-        .insert({
-          ...newEquipment,
-          company_id: userRole.company_id,
-          status: newEquipment.status || "active",
-          fuel_type: newEquipment.fuel_type || "diesel",
-          equipment_type: newEquipment.equipment_type || "truck",
-        })
+        .insert(cleanedData)
         .select()
         .single();
 
