@@ -135,7 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Force update function
   const _forceUpdate = () => {
-    // Simple force update without state
+    // Empty function for compatibility
   };
 
   // Computed properties
