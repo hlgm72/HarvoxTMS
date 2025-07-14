@@ -105,6 +105,7 @@ const handler = async (req: Request): Promise<Response> => {
     
     // Download and prepare attachments
     const attachments = [];
+    const failedDocuments = [];
     let totalSize = 0;
 
     for (const doc of documents) {
@@ -116,6 +117,10 @@ const handler = async (req: Request): Promise<Response> => {
         const bucketIndex = urlParts.findIndex(part => part === 'company-documents');
         if (bucketIndex === -1 || bucketIndex === urlParts.length - 1) {
           console.error(`Invalid file URL format: ${doc.file_url}`);
+          failedDocuments.push({
+            name: doc.file_name,
+            reason: "Formato de URL inválido"
+          });
           continue;
         }
         
@@ -129,6 +134,10 @@ const handler = async (req: Request): Promise<Response> => {
 
         if (downloadError) {
           console.error(`Error downloading ${doc.file_name}:`, downloadError);
+          failedDocuments.push({
+            name: doc.file_name,
+            reason: `Error de descarga: ${downloadError.message}`
+          });
           continue;
         }
 
@@ -138,13 +147,22 @@ const handler = async (req: Request): Promise<Response> => {
         
         // Check individual file size limit
         if (uint8Array.length > MAX_FILE_SIZE) {
-          console.warn(`Skipping ${doc.file_name} - file too large (${(uint8Array.length / (1024 * 1024)).toFixed(1)}MB > 10MB)`);
+          const sizeMB = (uint8Array.length / (1024 * 1024)).toFixed(1);
+          console.warn(`Skipping ${doc.file_name} - file too large (${sizeMB}MB > 10MB)`);
+          failedDocuments.push({
+            name: doc.file_name,
+            reason: `Archivo muy grande (${sizeMB}MB, máximo 10MB)`
+          });
           continue;
         }
         
         // Check total size limit
         if (totalSize + uint8Array.length > MAX_TOTAL_SIZE) {
           console.warn(`Skipping ${doc.file_name} - would exceed total size limit`);
+          failedDocuments.push({
+            name: doc.file_name,
+            reason: "Excedería el límite de tamaño total (20MB)"
+          });
           continue;
         }
 
@@ -163,6 +181,10 @@ const handler = async (req: Request): Promise<Response> => {
         console.log(`Successfully prepared attachment: ${doc.file_name} (${uint8Array.length} bytes)`);
       } catch (error) {
         console.error(`Error processing document ${doc.file_name}:`, error);
+        failedDocuments.push({
+          name: doc.file_name,
+          reason: `Error de procesamiento: ${error.message}`
+        });
       }
     }
 
@@ -265,10 +287,14 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Documentos enviados exitosamente",
+        message: failedDocuments.length > 0 
+          ? `${attachments.length} documentos enviados exitosamente. ${failedDocuments.length} documentos no se pudieron enviar.`
+          : "Documentos enviados exitosamente",
         emailId: emailResponse.data?.id,
         attachmentCount: attachments.length,
-        recipients: recipientList.length
+        recipients: recipientList.length,
+        failedDocuments: failedDocuments,
+        totalRequested: documents.length
       }),
       {
         status: 200,

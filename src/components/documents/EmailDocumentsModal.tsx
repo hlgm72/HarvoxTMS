@@ -72,11 +72,21 @@ export function EmailDocumentsModal({
       if (error) throw error;
       return result;
     },
-    onSuccess: () => {
-      showSuccess(
-        "Documentos enviados",
-        `Se enviaron ${selectedDocuments.length} documentos por email exitosamente`
-      );
+    onSuccess: (result) => {
+      const { failedDocuments = [], attachmentCount, totalRequested } = result;
+      
+      if (failedDocuments.length > 0) {
+        showError(
+          "Envío parcial completado",
+          `Se enviaron ${attachmentCount} de ${totalRequested} documentos. Los siguientes no se pudieron enviar: ${failedDocuments.map((f: any) => `${f.name} (${f.reason})`).join(', ')}`
+        );
+      } else {
+        showSuccess(
+          "Documentos enviados",
+          `Se enviaron ${attachmentCount} documentos por email exitosamente`
+        );
+      }
+      
       onSuccess();
       onOpenChange(false);
       // Reset form
