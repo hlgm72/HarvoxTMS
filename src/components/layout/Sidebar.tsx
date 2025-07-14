@@ -501,9 +501,9 @@ export function AppSidebar() {
     if (sectionItems.length === 0) return null;
 
      return (
-      <div key={sectionName} className="mb-2">
+      <div key={sectionName} className="mb-1">
         {!collapsed && (
-          <div className="px-4 py-2 text-xs font-normal text-white/70 uppercase tracking-wide" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal' }}>
+          <div className="px-4 py-1 text-xs font-normal text-white/70 uppercase tracking-wide" style={{ fontFamily: 'system-ui', fontWeight: 400, fontStyle: 'normal' }}>
             {sectionLabel}
           </div>
         )}
