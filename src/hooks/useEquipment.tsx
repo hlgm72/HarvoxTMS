@@ -134,6 +134,7 @@ export function useEquipment() {
       });
       // Also invalidate for consistency
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      queryClient.invalidateQueries({ queryKey: ["equipment-with-geotab"] });
       showSuccess(
         t("equipment.created.title", "Equipo creado"),
         t("equipment.created.description", "El equipo se ha registrado exitosamente")
@@ -166,6 +167,7 @@ export function useEquipment() {
       console.log('🔧 Equipment updated successfully:', data);
       // Force immediate refresh of equipment list
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      queryClient.invalidateQueries({ queryKey: ["equipment-with-geotab"] });
       queryClient.refetchQueries({ queryKey: ["equipment"] });
       showSuccess(
         t("equipment.updated.title", "Equipo actualizado"),
@@ -201,6 +203,7 @@ export function useEquipment() {
       });
       // Also invalidate for consistency
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      queryClient.invalidateQueries({ queryKey: ["equipment-with-geotab"] });
       showSuccess(
         t("equipment.deleted.title", "Equipo eliminado"),
         t("equipment.deleted.description", "El equipo se ha eliminado exitosamente")
@@ -230,6 +233,7 @@ export function useEquipment() {
         () => {
           // Invalidate and refetch the equipment query
           queryClient.invalidateQueries({ queryKey: ["equipment"] });
+          queryClient.invalidateQueries({ queryKey: ["equipment-with-geotab"] });
         }
       )
       .subscribe();
