@@ -76,6 +76,7 @@ export function CompanyDocumentUpload({
     const baseName = originalName.replace(`.${fileExt}`, '');
     return `${baseName}_v${timestamp}.${fileExt}`;
   };
+  
   const uploadMutation = useMutation({
     mutationFn: async (formData: {
       file: File;
