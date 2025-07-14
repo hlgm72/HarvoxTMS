@@ -1,8 +1,29 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Geolocation, Position } from '@capacitor/geolocation';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useToast } from './use-toast';
+
+// Global Capacitor interface declaration
+declare global {
+  interface Window {
+    Capacitor?: {
+      isNativePlatform(): boolean;
+    };
+  }
+}
+
+// Capacitor types for web compatibility
+interface Position {
+  timestamp: number;
+  coords: {
+    latitude: number;
+    longitude: number;
+    accuracy: number;
+    altitude?: number | null;
+    speed?: number | null;
+    heading?: number | null;
+  };
+}
 
 interface GPSTrackingState {
   position: Position | null;
@@ -28,20 +49,38 @@ export const useGPSTracking = () => {
   // Check and request permissions
   const requestPermissions = useCallback(async () => {
     try {
-      const permissions = await Geolocation.requestPermissions();
-      const isGranted = permissions.location === 'granted';
-      
-      setState(prev => ({ ...prev, isPermissionGranted: isGranted }));
-      
-      if (!isGranted) {
-        toast({
-          title: "Permisos de ubicación requeridos",
-          description: "Para rastrear el vehículo necesitamos acceso a la ubicación",
-          variant: "destructive"
-        });
+      // Check if we're in a Capacitor environment
+      if (window.Capacitor?.isNativePlatform()) {
+        const { Geolocation } = await import('@capacitor/geolocation');
+        const permissions = await Geolocation.requestPermissions();
+        const isGranted = permissions.location === 'granted';
+        
+        setState(prev => ({ ...prev, isPermissionGranted: isGranted }));
+        
+        if (!isGranted) {
+          toast({
+            title: "Permisos de ubicación requeridos",
+            description: "Para rastrear el vehículo necesitamos acceso a la ubicación",
+            variant: "destructive"
+          });
+        }
+        
+        return isGranted;
+      } else {
+        // Web environment - check navigator.geolocation
+        if (!navigator.geolocation) {
+          toast({
+            title: "Geolocalización no disponible",
+            description: "Tu navegador no soporta geolocalización",
+            variant: "destructive"
+          });
+          return false;
+        }
+        
+        // For web, we assume permission is granted if geolocation is available
+        setState(prev => ({ ...prev, isPermissionGranted: true }));
+        return true;
       }
-      
-      return isGranted;
     } catch (error) {
       console.error('Error requesting permissions:', error);
       toast({
@@ -56,11 +95,38 @@ export const useGPSTracking = () => {
   // Get current position
   const getCurrentPosition = useCallback(async () => {
     try {
-      const position = await Geolocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000
-      });
+      let position: Position;
+      
+      if (window.Capacitor?.isNativePlatform()) {
+        const { Geolocation } = await import('@capacitor/geolocation');
+        position = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 60000
+        });
+      } else {
+        // Use web Geolocation API
+        const webPosition = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 60000
+          });
+        });
+        
+        // Convert web position to our format
+        position = {
+          timestamp: webPosition.timestamp,
+          coords: {
+            latitude: webPosition.coords.latitude,
+            longitude: webPosition.coords.longitude,
+            accuracy: webPosition.coords.accuracy,
+            altitude: webPosition.coords.altitude,
+            speed: webPosition.coords.speed,
+            heading: webPosition.coords.heading
+          }
+        };
+      }
       
       setState(prev => ({ 
         ...prev, 
@@ -117,29 +183,68 @@ export const useGPSTracking = () => {
     }
 
     try {
-      const watchId = await Geolocation.watchPosition({
-        enableHighAccuracy: true,
-        timeout: 30000,
-        maximumAge: 30000
-      }, (position, err) => {
-        if (err) {
-          console.error('Watch position error:', err);
-          return;
-        }
+      let watchId: string | number;
+      
+      if (window.Capacitor?.isNativePlatform()) {
+        const { Geolocation } = await import('@capacitor/geolocation');
+        watchId = await Geolocation.watchPosition({
+          enableHighAccuracy: true,
+          timeout: 30000,
+          maximumAge: 30000
+        }, (position, err) => {
+          if (err) {
+            console.error('Watch position error:', err);
+            return;
+          }
 
-        if (position) {
-          setState(prev => ({ 
-            ...prev, 
-            position,
-            accuracy: position.coords.accuracy,
-            speed: position.coords.speed,
-            heading: position.coords.heading
-          }));
-          
-          // Save to database every position update
-          saveLocationToDatabase(position);
-        }
-      });
+          if (position) {
+            setState(prev => ({ 
+              ...prev, 
+              position,
+              accuracy: position.coords.accuracy,
+              speed: position.coords.speed,
+              heading: position.coords.heading
+            }));
+            
+            saveLocationToDatabase(position);
+          }
+        });
+      } else {
+        // Use web Geolocation API
+        watchId = navigator.geolocation.watchPosition(
+          (webPosition) => {
+            const position: Position = {
+              timestamp: webPosition.timestamp,
+              coords: {
+                latitude: webPosition.coords.latitude,
+                longitude: webPosition.coords.longitude,
+                accuracy: webPosition.coords.accuracy,
+                altitude: webPosition.coords.altitude,
+                speed: webPosition.coords.speed,
+                heading: webPosition.coords.heading
+              }
+            };
+            
+            setState(prev => ({ 
+              ...prev, 
+              position,
+              accuracy: position.coords.accuracy,
+              speed: position.coords.speed,
+              heading: position.coords.heading
+            }));
+            
+            saveLocationToDatabase(position);
+          },
+          (error) => {
+            console.error('Watch position error:', error);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 30000,
+            maximumAge: 30000
+          }
+        );
+      }
 
       setState(prev => ({ ...prev, isTracking: true }));
       
@@ -148,7 +253,7 @@ export const useGPSTracking = () => {
         description: "La ubicación del vehículo se está rastreando"
       });
 
-      return watchId;
+      return watchId.toString();
     } catch (error) {
       console.error('Error starting tracking:', error);
       toast({
@@ -162,7 +267,13 @@ export const useGPSTracking = () => {
   // Stop tracking
   const stopTracking = useCallback(async (watchId: string) => {
     try {
-      await Geolocation.clearWatch({ id: watchId });
+      if (window.Capacitor?.isNativePlatform()) {
+        const { Geolocation } = await import('@capacitor/geolocation');
+        await Geolocation.clearWatch({ id: watchId });
+      } else {
+        navigator.geolocation.clearWatch(parseInt(watchId));
+      }
+      
       setState(prev => ({ ...prev, isTracking: false }));
       
       toast({
@@ -178,11 +289,21 @@ export const useGPSTracking = () => {
   useEffect(() => {
     const checkPermissions = async () => {
       try {
-        const permissions = await Geolocation.checkPermissions();
-        setState(prev => ({ 
-          ...prev, 
-          isPermissionGranted: permissions.location === 'granted' 
-        }));
+        if (window.Capacitor?.isNativePlatform()) {
+          const { Geolocation } = await import('@capacitor/geolocation');
+          const permissions = await Geolocation.checkPermissions();
+          setState(prev => ({ 
+            ...prev, 
+            isPermissionGranted: permissions.location === 'granted' 
+          }));
+        } else {
+          // For web, check if geolocation is available
+          const isAvailable = !!navigator.geolocation;
+          setState(prev => ({ 
+            ...prev, 
+            isPermissionGranted: isAvailable 
+          }));
+        }
       } catch (error) {
         console.error('Error checking permissions:', error);
       }
