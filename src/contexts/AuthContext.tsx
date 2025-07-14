@@ -50,7 +50,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userRoles, setUserRoles] = useState<UserRole[] | null>(null);
   const [currentRole, setCurrentRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [forceUpdateFlag, setForceUpdateFlag] = useState(0);
 
   // Fetch user roles
   const fetchUserRoles = async (userId: string) => {
@@ -136,7 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Force update function
   const _forceUpdate = () => {
-    setForceUpdateFlag(prev => prev + 1);
+    // Simple force update without state
   };
 
   // Computed properties
