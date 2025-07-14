@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { NotificationItem, FleetNotification, NotificationType } from './NotificationItem';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { useToast } from "@/hooks/use-toast";
 
 interface NotificationContextType {
   showNotification: (
-    type: NotificationType,
+    type: 'success' | 'error' | 'warning' | 'info',
     title: string,
     message?: string,
     options?: {
@@ -36,14 +36,10 @@ interface NotificationProviderProps {
 }
 
 export function NotificationProvider({ children }: NotificationProviderProps) {
-  const [notifications, setNotifications] = useState<FleetNotification[]>([]);
+  const { toast } = useToast();
 
-  const removeNotification = useCallback((id: string) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
-  }, []);
-
-  const showNotification = useCallback((
-    type: NotificationType,
+  const showNotification = (
+    type: 'success' | 'error' | 'warning' | 'info',
     title: string,
     message?: string,
     options?: {
@@ -54,73 +50,46 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
       persistent?: boolean;
     }
   ) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    const notification: FleetNotification = {
-      id,
-      type,
+    toast({
       title,
-      message,
+      description: message,
+      variant: type === 'error' ? 'destructive' : 'default',
       duration: options?.duration || 5000,
-      showAction: options?.showAction || false,
-      actionText: options?.actionText,
-      onAction: options?.onAction,
-      persistent: options?.persistent || false
-    };
+    });
+  };
 
-    setNotifications(prev => [...prev, notification]);
-
-    // Auto-remove after duration (unless persistent)
-    if (!notification.persistent) {
-      setTimeout(() => {
-        removeNotification(id);
-      }, notification.duration);
-    }
-  }, [removeNotification]);
-
-  const showSuccess = useCallback((title: string, message?: string) => {
+  const showSuccess = (title: string, message?: string) => {
     showNotification('success', title, message);
-  }, [showNotification]);
+  };
 
-  const showError = useCallback((title: string, message?: string) => {
+  const showError = (title: string, message?: string) => {
     showNotification('error', title, message);
-  }, [showNotification]);
+  };
 
-  const showWarning = useCallback((title: string, message?: string) => {
+  const showWarning = (title: string, message?: string) => {
     showNotification('warning', title, message);
-  }, [showNotification]);
+  };
 
-  const showInfo = useCallback((title: string, message?: string) => {
+  const showInfo = (title: string, message?: string) => {
     showNotification('info', title, message);
-  }, [showNotification]);
+  };
 
-  const clearAll = useCallback(() => {
-    setNotifications([]);
-  }, []);
+  const clearAll = () => {
+    // Toast doesn't have a clearAll method, but individual toasts auto-dismiss
+  };
+
+  const value: NotificationContextType = {
+    showNotification,
+    showSuccess,
+    showError,
+    showWarning,
+    showInfo,
+    clearAll
+  };
 
   return (
-    <NotificationContext.Provider
-      value={{
-        showNotification,
-        showSuccess,
-        showError,
-        showWarning,
-        showInfo,
-        clearAll
-      }}
-    >
+    <NotificationContext.Provider value={value}>
       {children}
-      
-      {/* Notification Container */}
-      <div className="fixed bottom-4 right-4 z-50 space-y-3 pointer-events-none">
-        {notifications.map((notification) => (
-          <div key={notification.id} className="pointer-events-auto">
-            <NotificationItem
-              notification={notification}
-              onClose={removeNotification}
-            />
-          </div>
-        ))}
-      </div>
     </NotificationContext.Provider>
   );
 }
