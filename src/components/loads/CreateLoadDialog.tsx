@@ -4,18 +4,20 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCompanyDrivers, CompanyDriver } from "@/hooks/useCompanyDrivers";
-import { useCompanyBrokers } from "@/hooks/useCompanyBrokers";
+import { useCompanyBrokers, CompanyBroker } from "@/hooks/useCompanyBrokers";
 import { useCreateLoad } from "@/hooks/useCreateLoad";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Circle, ArrowRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { BrokerCombobox } from "@/components/brokers/BrokerCombobox";
+import { DispatcherSelect } from "@/components/brokers/DispatcherSelect";
+import { CreateBrokerDialog } from "@/components/brokers/CreateBrokerDialog";
 
 const createLoadSchema = z.object({
   // Phase 1: Essential Information
@@ -48,9 +50,10 @@ interface CreateLoadDialogProps {
 export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   const { t } = useTranslation();
   const [currentPhase, setCurrentPhase] = useState(1);
-  const [selectedBroker, setSelectedBroker] = useState<string>("");
+  const [selectedBroker, setSelectedBroker] = useState<CompanyBroker | null>(null);
+  const [showCreateBroker, setShowCreateBroker] = useState(false);
   const { drivers } = useCompanyDrivers();
-  const { brokers } = useCompanyBrokers();
+  const { brokers, loading: brokersLoading } = useCompanyBrokers();
   const createLoadMutation = useCreateLoad();
 
   const form = useForm<z.infer<typeof createLoadSchema>>({
@@ -108,13 +111,11 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
       onSuccess: () => {
         form.reset();
         setCurrentPhase(1);
-        setSelectedBroker("");
+        setSelectedBroker(null);
         onClose();
       }
     });
   };
-
-  const selectedBrokerData = brokerOptions.find(b => b.id === selectedBroker);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -179,27 +180,23 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Broker / Cliente *</FormLabel>
-                          <Select 
-                            onValueChange={(value) => {
-                              field.onChange(value);
-                              setSelectedBroker(value);
-                              form.setValue("dispatcher_id", ""); // Reset dispatcher
-                            }}
-                            value={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Seleccionar broker" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {brokers.map((broker) => (
-                                <SelectItem key={broker.id} value={broker.id}>
-                                  {broker.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <FormControl>
+                            <BrokerCombobox
+                              brokers={brokers}
+                              loading={brokersLoading}
+                              value={field.value}
+                              onValueChange={(value) => {
+                                field.onChange(value);
+                                const broker = brokers.find(b => b.id === value);
+                                setSelectedBroker(broker || null);
+                                form.setValue("dispatcher_id", ""); // Reset dispatcher
+                              }}
+                              onCreateNew={() => setShowCreateBroker(true)}
+                              onBrokerSelect={setSelectedBroker}
+                              placeholder="Buscar broker por nombre, DOT, MC..."
+                              className="w-full"
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -212,24 +209,15 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Dispatcher</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange}
-                            value={field.value}
-                            disabled={!selectedBroker}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Seleccionar dispatcher" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {selectedBrokerData?.dispatchers.map((dispatcher) => (
-                                <SelectItem key={dispatcher.id} value={dispatcher.id}>
-                                  {dispatcher.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <FormControl>
+                            <DispatcherSelect
+                              dispatchers={selectedBroker?.dispatchers || []}
+                              value={field.value}
+                              onValueChange={field.onChange}
+                              placeholder="Seleccionar dispatcher"
+                              disabled={!selectedBroker}
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -381,6 +369,18 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
             </div>
           </form>
         </Form>
+
+        {/* Create Broker Dialog */}
+        <CreateBrokerDialog
+          isOpen={showCreateBroker}
+          onClose={() => setShowCreateBroker(false)}
+          onSuccess={(brokerId) => {
+            // Auto-seleccionar el broker recién creado
+            form.setValue("broker_id", brokerId);
+            const newBroker = brokers.find(b => b.id === brokerId);
+            setSelectedBroker(newBroker || null);
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

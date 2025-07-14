@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useCompanyCache } from './useCompanyCache';
+import { useMemo } from 'react';
 
 export interface CompanyBroker {
   id: string;
@@ -13,65 +15,118 @@ export interface CompanyBroker {
   notes?: string;
   is_active: boolean;
   created_at: string;
+  // Campos adicionales para búsqueda
+  dot_number?: string;
+  mc_number?: string;
+  dispatchers?: BrokerDispatcher[];
+}
+
+export interface BrokerDispatcher {
+  id: string;
+  broker_id: string;
+  name: string;
+  email?: string;
+  phone_office?: string;
+  phone_mobile?: string;
+  extension?: string;
+  notes?: string;
+  is_active: boolean;
 }
 
 export const useCompanyBrokers = () => {
-  const [brokers, setBrokers] = useState<CompanyBroker[]>([]);
-  const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const { toast } = useToast();
+  const { userCompany, isLoading: cacheLoading, error: cacheError } = useCompanyCache();
 
-  useEffect(() => {
-    const fetchCompanyBrokers = async () => {
+  // Memoizar queryKey para cache eficiente
+  const queryKey = useMemo(() => {
+    return ['company-brokers', user?.id, userCompany?.company_id];
+  }, [user?.id, userCompany?.company_id]);
+
+  const brokersQuery = useQuery({
+    queryKey,
+    retry: 1,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 300000, // Cache agresivo - 5 minutos
+    gcTime: 600000, // 10 minutos en cache
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: false,
+    networkMode: 'online',
+    queryFn: async (): Promise<CompanyBroker[]> => {
+      console.log('🔄 useCompanyBrokers iniciando...');
+      console.time('useCompanyBrokers-TIME');
+      
       if (!user) {
-        setLoading(false);
-        return;
+        console.log('❌ Usuario no autenticado');
+        throw new Error('User not authenticated');
+      }
+
+      // Verificar errores de cache
+      if (cacheError) {
+        console.error('❌ Error en cache de compañía:', cacheError);
+        throw new Error('Error obteniendo datos de compañía');
+      }
+
+      // Esperar a que el cache esté listo
+      if (cacheLoading || !userCompany) {
+        console.log('⏳ Esperando cache de compañía...');
+        throw new Error('Cargando datos de compañía...');
       }
 
       try {
-        // Obtener la compañía del usuario actual
-        const { data: userCompanyRole, error: companyError } = await supabase
-          .from('user_company_roles')
-          .select('company_id')
-          .eq('user_id', user.id)
-          .eq('is_active', true)
-          .limit(1)
-          .single();
+        // Obtener brokers y dispatchers en paralelo
+        const [brokersResult, dispatchersResult] = await Promise.allSettled([
+          supabase
+            .from('company_brokers')
+            .select('*')
+            .eq('company_id', userCompany.company_id)
+            .eq('is_active', true)
+            .order('name'),
+          
+          supabase
+            .from('company_broker_dispatchers')
+            .select(`
+              id,
+              broker_id,
+              name,
+              email,
+              phone_office,
+              phone_mobile,
+              extension,
+              notes,
+              is_active
+            `)
+            .eq('is_active', true)
+        ]);
 
-        if (companyError || !userCompanyRole) {
-          console.error('Error obteniendo compañía del usuario:', companyError);
-          return;
-        }
+        const brokers = brokersResult.status === 'fulfilled' ? brokersResult.value.data || [] : [];
+        const dispatchers = dispatchersResult.status === 'fulfilled' ? dispatchersResult.value.data || [] : [];
 
-        // Obtener todos los brokers de la compañía
-        const { data: brokers, error: brokersError } = await supabase
-          .from('company_brokers')
-          .select('*')
-          .eq('company_id', userCompanyRole.company_id)
-          .eq('is_active', true)
-          .order('name');
+        // Enriquecer brokers con sus dispatchers
+        const enrichedBrokers: CompanyBroker[] = brokers.map(broker => ({
+          ...broker,
+          dispatchers: dispatchers.filter(d => d.broker_id === broker.id)
+        }));
 
-        if (brokersError) {
-          console.error('Error obteniendo brokers:', brokersError);
-          return;
-        }
+        console.log(`👥 Brokers encontrados: ${enrichedBrokers.length}`);
+        console.timeEnd('useCompanyBrokers-TIME');
+        
+        return enrichedBrokers;
 
-        setBrokers(brokers || []);
-
-      } catch (error) {
-        console.error('Error general obteniendo brokers:', error);
-        toast({
-          title: "Error",
-          description: "No se pudieron cargar los brokers",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
+      } catch (error: any) {
+        console.error('Error en useCompanyBrokers:', error);
+        console.timeEnd('useCompanyBrokers-TIME');
+        throw error;
       }
-    };
+    },
+    enabled: !!user,
+  });
 
-    fetchCompanyBrokers();
-  }, [user, toast]);
-
-  return { brokers, loading, refetch: () => setLoading(true) };
+  return { 
+    brokers: brokersQuery.data || [], 
+    loading: brokersQuery.isLoading, 
+    error: brokersQuery.error,
+    refetch: brokersQuery.refetch 
+  };
 };
