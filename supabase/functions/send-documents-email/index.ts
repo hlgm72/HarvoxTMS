@@ -168,8 +168,20 @@ const handler = async (req: Request): Promise<Response> => {
 
         totalSize += uint8Array.length;
 
-        // Convert to base64
-        const base64 = btoa(String.fromCharCode(...uint8Array));
+        // Convert to base64 using a method that handles large files
+        let base64 = '';
+        const chunkSize = 8192; // Process in chunks to avoid stack overflow
+        
+        if (uint8Array.length < chunkSize) {
+          // Small files: use the fast method
+          base64 = btoa(String.fromCharCode(...uint8Array));
+        } else {
+          // Large files: process in chunks
+          for (let i = 0; i < uint8Array.length; i += chunkSize) {
+            const chunk = uint8Array.slice(i, i + chunkSize);
+            base64 += btoa(String.fromCharCode(...chunk));
+          }
+        }
 
         attachments.push({
           filename: doc.file_name,
