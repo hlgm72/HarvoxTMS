@@ -21,7 +21,7 @@ import {
   ChevronDown, Command, Users, Truck, Package, MapPin, Building2, 
   CreditCard, BarChart3, FileText, Target, Activity, Shield, 
   Heart, TrendingUp, Headphones, Settings, FileBarChart, 
-  Lock, Home, Navigation, Zap, Dot
+  Lock, Home, Navigation, Zap, Dot, DollarSign
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -96,6 +96,13 @@ const getCompanyOwnerNavigationItems = (driversCount: number, equipmentCount: nu
     url: "/billing", 
     icon: CreditCard,
     description: "Facturación y pagos",
+    section: "commercial"
+  },
+  { 
+    title: "Pagos de Conductores", 
+    url: "/payments", 
+    icon: DollarSign,
+    description: "Gestión de pagos",
     section: "commercial"
   },
   
@@ -194,6 +201,13 @@ const getOperationsManagerNavigationItems = (driversCount: number, equipmentCoun
     url: "/documents", 
     icon: FileText,
     description: "Documentos de la compañía",
+    section: "reports"
+  },
+  { 
+    title: "Pagos de Conductores", 
+    url: "/payments", 
+    icon: DollarSign,
+    description: "Gestión de pagos",
     section: "reports"
   },
   { 

@@ -22,6 +22,7 @@ import Drivers from "./pages/Drivers";
 import Settings from "./pages/Settings";
 import Clients from "./pages/Clients";
 import Documents from "./pages/Documents";
+import Payments from "./pages/Payments";
 import EagleDemo from "./pages/EagleDemo";
 import DriverMobile from "./pages/DriverMobile";
 
@@ -202,6 +203,16 @@ function AppContent() {
             <ProtectedRoute>
               <Layout>
                 <div>Billing page coming soon</div>
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/payments" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Payments />
               </Layout>
             </ProtectedRoute>
           } 
