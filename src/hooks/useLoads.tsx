@@ -87,8 +87,12 @@ export const useLoads = (filters?: LoadsFilters) => {
           .from('loads')
           .select('*')
           .in('driver_user_id', userIds)
-          .order('created_at', { ascending: false })
-          .limit(200);
+          .order('created_at', { ascending: false });
+
+        // Aplicar límites según el tipo de filtro
+        const isHistoricalView = filters?.periodFilter?.type === 'all';
+        const limit = isHistoricalView ? 50 : 200; // Menos cargas para vista histórica
+        loadsQuery = loadsQuery.limit(limit);
 
         // PASO 4: Aplicar filtros de período ANTES de la consulta para optimizar
         if (filters?.periodFilter) {
