@@ -406,8 +406,8 @@ export function CompanyDocumentUpload({
               initialFocus
               className="pointer-events-auto"
               captionLayout="dropdown"
-              fromYear={2000}
-              toYear={2030}
+              fromYear={2020}
+              toYear={2035}
             />
           </PopoverContent>
         </Popover>
