@@ -2305,6 +2305,10 @@ export type Database = {
         }
         Returns: Json
       }
+      delete_company_document_permanently: {
+        Args: { document_id: string }
+        Returns: Json
+      }
       delete_test_company: {
         Args: { company_id_param: string }
         Returns: Json

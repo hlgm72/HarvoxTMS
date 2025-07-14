@@ -1,8 +1,22 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { AlertCircle, Calendar, Download, FileText, MoreVertical, Archive, ArchiveRestore } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { AlertCircle, Calendar, Download, FileText, MoreVertical, Archive, ArchiveRestore, Trash2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -46,6 +60,7 @@ export function DocumentCard({
   getExpiryStatus,
   isArchived = false
 }: DocumentCardProps) {
+  const { isCompanyOwner } = useAuth();
   // Find document type info
   const getDocumentTypeInfo = () => {
     for (const category of Object.values(predefinedTypes)) {
@@ -95,6 +110,48 @@ export function DocumentCard({
     window.document.body.removeChild(link);
   };
 
+  const handlePermanentDelete = async () => {
+    try {
+      const { data, error } = await supabase.rpc('delete_company_document_permanently', {
+        document_id: document.id
+      });
+
+      if (error) {
+        console.error('Error al eliminar documento:', error);
+        toast({
+          title: "Error",
+          description: "Hubo un error al eliminar el documento",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data && typeof data === 'object' && 'success' in data && !data.success) {
+        toast({
+          title: "Error",
+          description: typeof data === 'object' && 'message' in data ? String(data.message) : "Error desconocido",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Documento eliminado",
+        description: "El documento ha sido eliminado permanentemente",
+      });
+      
+      // Refresh the parent component
+      window.location.reload();
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Hubo un error al eliminar el documento",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
@@ -142,6 +199,45 @@ export function DocumentCard({
                     Archivar
                   </DropdownMenuItem>
                 )
+              )}
+              
+              {isCompanyOwner && (
+                <>
+                  <DropdownMenuSeparator />
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <DropdownMenuItem 
+                        onSelect={(e) => e.preventDefault()}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Eliminar permanentemente
+                      </DropdownMenuItem>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>¿Eliminar documento permanentemente?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Esta acción no se puede deshacer. El documento será eliminado permanentemente 
+                          de nuestros servidores y se registrará en el log de auditoría.
+                          <br /><br />
+                          <strong>Archivo:</strong> {document.file_name}
+                          <br />
+                          <strong>Tipo:</strong> {document.document_type}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction 
+                          onClick={handlePermanentDelete}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Eliminar permanentemente
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </>
               )}
             </DropdownMenuContent>
           </DropdownMenu>

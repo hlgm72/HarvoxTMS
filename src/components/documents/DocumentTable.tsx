@@ -14,8 +14,20 @@ import {
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { 
   Select,
   SelectContent,
@@ -32,8 +44,12 @@ import {
   ArchiveRestore,
   ArrowUpDown,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Trash2
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -89,6 +105,7 @@ export function DocumentTable({
   getExpiryStatus,
   isArchived = false
 }: DocumentTableProps) {
+  const { isCompanyOwner } = useAuth();
   const [sortField, setSortField] = useState<SortField>('created_at');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [groupBy, setGroupBy] = useState<'none' | 'type'>('none');
@@ -134,6 +151,48 @@ export function DocumentTable({
     window.document.body.appendChild(link);
     link.click();
     window.document.body.removeChild(link);
+  };
+
+  const handlePermanentDelete = async (documentId: string) => {
+    try {
+      const { data, error } = await supabase.rpc('delete_company_document_permanently', {
+        document_id: documentId
+      });
+
+      if (error) {
+        console.error('Error al eliminar documento:', error);
+        toast({
+          title: "Error",
+          description: "Hubo un error al eliminar el documento",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data && typeof data === 'object' && 'success' in data && !data.success) {
+        toast({
+          title: "Error",
+          description: typeof data === 'object' && 'message' in data ? String(data.message) : "Error desconocido",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Documento eliminado",
+        description: "El documento ha sido eliminado permanentemente",
+      });
+      
+      // Refresh the parent component
+      window.location.reload();
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Hubo un error al eliminar el documento",
+        variant: "destructive",
+      });
+    }
   };
 
   // Sorting logic
@@ -378,33 +437,72 @@ export function DocumentTable({
                               <MoreVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleDownload(document)}>
-                              <Download className="h-4 w-4 mr-2" />
-                              Descargar
-                            </DropdownMenuItem>
-                            {isArchived ? (
-                              onRestore && (
-                                <DropdownMenuItem 
-                                  onClick={() => onRestore(document.id)}
-                                  className="text-green-600"
-                                >
-                                  <ArchiveRestore className="h-4 w-4 mr-2" />
-                                  Restaurar
-                                </DropdownMenuItem>
-                              )
-                            ) : (
-                              onArchive && (
-                                <DropdownMenuItem 
-                                  onClick={() => onArchive(document.id)}
-                                  className="text-amber-600"
-                                >
-                                  <Archive className="h-4 w-4 mr-2" />
-                                  Archivar
-                                </DropdownMenuItem>
-                              )
-                            )}
-                          </DropdownMenuContent>
+                           <DropdownMenuContent align="end">
+                             <DropdownMenuItem onClick={() => handleDownload(document)}>
+                               <Download className="h-4 w-4 mr-2" />
+                               Descargar
+                             </DropdownMenuItem>
+                             {isArchived ? (
+                               onRestore && (
+                                 <DropdownMenuItem 
+                                   onClick={() => onRestore(document.id)}
+                                   className="text-green-600"
+                                 >
+                                   <ArchiveRestore className="h-4 w-4 mr-2" />
+                                   Restaurar
+                                 </DropdownMenuItem>
+                               )
+                             ) : (
+                               onArchive && (
+                                 <DropdownMenuItem 
+                                   onClick={() => onArchive(document.id)}
+                                   className="text-amber-600"
+                                 >
+                                   <Archive className="h-4 w-4 mr-2" />
+                                   Archivar
+                                 </DropdownMenuItem>
+                               )
+                             )}
+                             
+                             {isCompanyOwner && (
+                               <>
+                                 <DropdownMenuSeparator />
+                                 <AlertDialog>
+                                   <AlertDialogTrigger asChild>
+                                     <DropdownMenuItem 
+                                       onSelect={(e) => e.preventDefault()}
+                                       className="text-destructive focus:text-destructive"
+                                     >
+                                       <Trash2 className="h-4 w-4 mr-2" />
+                                       Eliminar permanentemente
+                                     </DropdownMenuItem>
+                                   </AlertDialogTrigger>
+                                   <AlertDialogContent>
+                                     <AlertDialogHeader>
+                                       <AlertDialogTitle>¿Eliminar documento permanentemente?</AlertDialogTitle>
+                                       <AlertDialogDescription>
+                                         Esta acción no se puede deshacer. El documento será eliminado permanentemente 
+                                         de nuestros servidores y se registrará en el log de auditoría.
+                                         <br /><br />
+                                         <strong>Archivo:</strong> {document.file_name}
+                                         <br />
+                                         <strong>Tipo:</strong> {document.document_type}
+                                       </AlertDialogDescription>
+                                     </AlertDialogHeader>
+                                     <AlertDialogFooter>
+                                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                       <AlertDialogAction 
+                                         onClick={() => handlePermanentDelete(document.id)}
+                                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                       >
+                                         Eliminar permanentemente
+                                       </AlertDialogAction>
+                                     </AlertDialogFooter>
+                                   </AlertDialogContent>
+                                 </AlertDialog>
+                               </>
+                             )}
+                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
                     </TableRow>
