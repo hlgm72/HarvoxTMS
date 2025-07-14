@@ -1,14 +1,15 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar, CalendarDays, ChevronDown, Clock, X } from 'lucide-react';
+import { Calendar, CalendarDays, ChevronDown, Clock, X, TrendingUp, FileText } from 'lucide-react';
 import { usePaymentPeriods, useCurrentPaymentPeriod } from '@/hooks/usePaymentPeriods';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 export interface PeriodFilterValue {
-  type: 'current' | 'all' | 'specific' | 'custom';
+  type: 'current' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
   periodId?: string;
   startDate?: string;
   endDate?: string;
@@ -24,6 +25,54 @@ export function PeriodFilter({ value, onChange }: PeriodFilterProps) {
   const { data: allPeriods = [] } = usePaymentPeriods({ includeDriverName: true });
   const { data: currentPeriod } = useCurrentPaymentPeriod();
 
+  const getDateRangeForType = (type: string) => {
+    const now = new Date();
+    
+    switch (type) {
+      case 'this_month':
+        return {
+          startDate: format(startOfMonth(now), 'yyyy-MM-dd'),
+          endDate: format(endOfMonth(now), 'yyyy-MM-dd'),
+          label: `Este mes (${format(now, 'MMMM yyyy', { locale: es })})`
+        };
+      case 'last_month':
+        const lastMonth = subMonths(now, 1);
+        return {
+          startDate: format(startOfMonth(lastMonth), 'yyyy-MM-dd'),
+          endDate: format(endOfMonth(lastMonth), 'yyyy-MM-dd'),
+          label: `Mes pasado (${format(lastMonth, 'MMMM yyyy', { locale: es })})`
+        };
+      case 'this_quarter':
+        return {
+          startDate: format(startOfQuarter(now), 'yyyy-MM-dd'),
+          endDate: format(endOfQuarter(now), 'yyyy-MM-dd'),
+          label: `Este trimestre (Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()})`
+        };
+      case 'last_quarter':
+        const lastQuarter = subQuarters(now, 1);
+        return {
+          startDate: format(startOfQuarter(lastQuarter), 'yyyy-MM-dd'),
+          endDate: format(endOfQuarter(lastQuarter), 'yyyy-MM-dd'),
+          label: `Trimestre pasado (Q${Math.ceil((lastQuarter.getMonth() + 1) / 3)} ${lastQuarter.getFullYear()})`
+        };
+      case 'this_year':
+        return {
+          startDate: format(startOfYear(now), 'yyyy-MM-dd'),
+          endDate: format(endOfYear(now), 'yyyy-MM-dd'),
+          label: `Este año (${now.getFullYear()})`
+        };
+      case 'last_year':
+        const lastYear = subYears(now, 1);
+        return {
+          startDate: format(startOfYear(lastYear), 'yyyy-MM-dd'),
+          endDate: format(endOfYear(lastYear), 'yyyy-MM-dd'),
+          label: `Año pasado (${lastYear.getFullYear()})`
+        };
+      default:
+        return null;
+    }
+  };
+
   const getFilterLabel = () => {
     switch (value.type) {
       case 'current':
@@ -37,6 +86,14 @@ export function PeriodFilter({ value, onChange }: PeriodFilterProps) {
         return selectedPeriod 
           ? `${format(parseISO(selectedPeriod.period_start_date), 'dd/MM', { locale: es })} - ${format(parseISO(selectedPeriod.period_end_date), 'dd/MM/yy', { locale: es })}`
           : 'Período específico';
+      case 'this_month':
+      case 'last_month':
+      case 'this_quarter':
+      case 'last_quarter':
+      case 'this_year':
+      case 'last_year':
+        const dateRange = getDateRangeForType(value.type);
+        return dateRange?.label || 'Rango de fechas';
       case 'custom':
         return value.label || 'Rango personalizado';
       default:
@@ -69,6 +126,18 @@ export function PeriodFilter({ value, onChange }: PeriodFilterProps) {
       case 'paid': return 'Pagado';
       case 'locked': return 'Bloqueado';
       default: return status;
+    }
+  };
+
+  const handleDateRangeSelect = (type: string) => {
+    const dateRange = getDateRangeForType(type);
+    if (dateRange) {
+      onChange({
+        type: type as any,
+        startDate: dateRange.startDate,
+        endDate: dateRange.endDate,
+        label: dateRange.label
+      });
     }
   };
 
@@ -122,6 +191,83 @@ export function PeriodFilter({ value, onChange }: PeriodFilterProps) {
                 Todos los períodos
                 <Badge variant="secondary" className="ml-auto text-xs">
                   {allPeriods.length}
+                </Badge>
+              </Button>
+            </div>
+
+            {/* Filtros por fechas inteligentes */}
+            <div className="space-y-2">
+              <h4 className="font-medium text-sm text-muted-foreground">Por fechas</h4>
+              
+              <Button
+                variant={value.type === 'this_month' ? 'default' : 'ghost'}
+                className="w-full justify-start"
+                onClick={() => handleDateRangeSelect('this_month')}
+              >
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Este mes
+                <Badge variant="secondary" className="ml-auto text-xs">
+                  {format(new Date(), 'MMM', { locale: es })}
+                </Badge>
+              </Button>
+
+              <Button
+                variant={value.type === 'last_month' ? 'default' : 'ghost'}
+                className="w-full justify-start"
+                onClick={() => handleDateRangeSelect('last_month')}
+              >
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Mes pasado
+                <Badge variant="secondary" className="ml-auto text-xs">
+                  {format(subMonths(new Date(), 1), 'MMM', { locale: es })}
+                </Badge>
+              </Button>
+
+              <Button
+                variant={value.type === 'this_quarter' ? 'default' : 'ghost'}
+                className="w-full justify-start"
+                onClick={() => handleDateRangeSelect('this_quarter')}
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Este trimestre
+                <Badge variant="secondary" className="ml-auto text-xs">
+                  Q{Math.ceil((new Date().getMonth() + 1) / 3)}
+                </Badge>
+              </Button>
+
+              <Button
+                variant={value.type === 'last_quarter' ? 'default' : 'ghost'}
+                className="w-full justify-start"
+                onClick={() => handleDateRangeSelect('last_quarter')}
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Trimestre pasado
+                <Badge variant="secondary" className="ml-auto text-xs">
+                  Q{Math.ceil((subQuarters(new Date(), 1).getMonth() + 1) / 3)}
+                </Badge>
+              </Button>
+
+              <Button
+                variant={value.type === 'this_year' ? 'default' : 'ghost'}
+                className="w-full justify-start"
+                onClick={() => handleDateRangeSelect('this_year')}
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Este año
+                <Badge variant="secondary" className="ml-auto text-xs">
+                  {new Date().getFullYear()}
+                </Badge>
+              </Button>
+
+              <Button
+                variant={value.type === 'last_year' ? 'default' : 'ghost'}
+                className="w-full justify-start"
+                onClick={() => handleDateRangeSelect('last_year')}
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Año pasado
+                <Badge variant="secondary" className="ml-auto text-xs">
+                  {subYears(new Date(), 1).getFullYear()}
                 </Badge>
               </Button>
             </div>

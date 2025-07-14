@@ -36,7 +36,7 @@ export interface Load {
 
 interface LoadsFilters {
   periodFilter?: {
-    type: 'current' | 'all' | 'specific' | 'custom';
+    type: 'current' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
     periodId?: string;
     startDate?: string;
     endDate?: string;
@@ -168,8 +168,14 @@ export const useLoads = (filters?: LoadsFilters) => {
             }
             break;
             
+          case 'this_month':
+          case 'last_month':
+          case 'this_quarter':
+          case 'last_quarter':
+          case 'this_year':
+          case 'last_year':
           case 'custom':
-            // Filtrar por rango de fechas personalizado
+            // Filtrar por rango de fechas personalizado o predefinido
             if (periodFilter.startDate && periodFilter.endDate) {
               return enrichedLoads.filter(load => {
                 if (!load.pickup_date) return false;

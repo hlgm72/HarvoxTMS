@@ -62,7 +62,13 @@ interface LoadsFloatingActionsProps {
     broker: string;
     dateRange: { from: Date | undefined; to: Date | undefined };
   };
-  periodFilter?: { type: string; periodId?: string; };
+  periodFilter?: { 
+    type: 'current' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
+    periodId?: string; 
+    startDate?: string;
+    endDate?: string;
+    label?: string;
+  };
   onFiltersChange: (filters: any) => void;
   onPeriodFilterChange?: (filter: any) => void;
 }
@@ -152,6 +158,22 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
       hasIndicator: false
     }
   ];
+
+  const getPeriodLabel = (type?: string) => {
+    switch (type) {
+      case 'current': return 'Período Actual';
+      case 'all': return 'Todos los Períodos';
+      case 'this_month': return 'Este Mes';
+      case 'last_month': return 'Mes Pasado';
+      case 'this_quarter': return 'Este Trimestre';
+      case 'last_quarter': return 'Trimestre Pasado';
+      case 'this_year': return 'Este Año';
+      case 'last_year': return 'Año Pasado';
+      case 'specific': return 'Período Específico';
+      case 'custom': return 'Rango Personalizado';
+      default: return 'Período Actual';
+    }
+  };
 
   return (
     <>
@@ -284,7 +306,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                     </Select>
                   </div>
 
-                  {/* Period Filter */}
+                  {/* Period Filter - Enhanced */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Período de Pago</label>
                     <Select 
@@ -297,9 +319,21 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                       <SelectContent>
                         <SelectItem value="current">Período Actual</SelectItem>
                         <SelectItem value="all">Todos los Períodos</SelectItem>
+                        <SelectItem value="this_month">Este Mes</SelectItem>
+                        <SelectItem value="last_month">Mes Pasado</SelectItem>
+                        <SelectItem value="this_quarter">Este Trimestre</SelectItem>
+                        <SelectItem value="last_quarter">Trimestre Pasado</SelectItem>
+                        <SelectItem value="this_year">Este Año</SelectItem>
+                        <SelectItem value="last_year">Año Pasado</SelectItem>
                         <SelectItem value="specific">Período Específico...</SelectItem>
                       </SelectContent>
                     </Select>
+                    {periodFilter?.type && periodFilter.type !== 'current' && (
+                      <div className="text-xs text-muted-foreground">
+                        {getPeriodLabel(periodFilter.type)}
+                        {periodFilter.label && ` - ${periodFilter.label}`}
+                      </div>
+                    )}
                   </div>
 
                   {/* Date Range Filter */}
