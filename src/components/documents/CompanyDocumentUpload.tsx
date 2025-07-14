@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useFleetNotifications } from "@/components/notifications";
-import { Upload, FileText, Calendar } from "lucide-react";
+import { Upload, FileText, Calendar, AlertTriangle, Copy, Replace } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface PredefinedDocumentType {
@@ -38,6 +40,9 @@ export function CompanyDocumentUpload({
   const [expiryDate, setExpiryDate] = useState("");
   const [notes, setNotes] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [existingDocument, setExistingDocument] = useState<any>(null);
+  const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+  const [duplicateAction, setDuplicateAction] = useState<'replace' | 'version' | 'cancel'>('replace');
   const { showSuccess, showError } = useFleetNotifications();
 
   // Get all predefined types for the select
@@ -49,6 +54,28 @@ export function CompanyDocumentUpload({
     }))
   );
 
+  // Function to check for existing documents
+  const checkExistingDocument = async (docType: string, companyId: string) => {
+    const { data: existing } = await supabase
+      .from("company_documents")
+      .select("*")
+      .eq("company_id", companyId)
+      .eq("document_type", docType)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    
+    return existing;
+  };
+
+  // Function to generate versioned filename
+  const generateVersionedFilename = (originalName: string, docType: string) => {
+    const timestamp = Date.now();
+    const fileExt = originalName.split('.').pop();
+    const baseName = originalName.replace(`.${fileExt}`, '');
+    return `${baseName}_v${timestamp}.${fileExt}`;
+  };
   const uploadMutation = useMutation({
     mutationFn: async (formData: {
       file: File;
@@ -56,8 +83,9 @@ export function CompanyDocumentUpload({
       customDocumentName?: string;
       expiryDate?: string;
       notes?: string;
+      action?: 'replace' | 'version';
     }) => {
-      const { file, documentType, customDocumentName, expiryDate, notes } = formData;
+      const { file, documentType, customDocumentName, expiryDate, notes, action = 'version' } = formData;
 
       // Get user and company info
       const { data: { user } } = await supabase.auth.getUser();
@@ -75,9 +103,26 @@ export function CompanyDocumentUpload({
 
       const companyId = userRoles.company_id;
 
-      // Upload file to storage
+      // Check for existing document if not replacing
+      const existing = await checkExistingDocument(documentType, companyId);
+      
+      if (existing && action === 'replace') {
+        // Archive the existing document instead of deleting
+        await supabase
+          .from("company_documents")
+          .update({ is_active: false })
+          .eq("id", existing.id);
+      }
+
+      // Generate filename
       const fileExt = file.name.split('.').pop();
-      const fileName = `${companyId}/${documentType}-${Date.now()}.${fileExt}`;
+      let fileName;
+      
+      if (action === 'version' && existing) {
+        fileName = `${companyId}/${generateVersionedFilename(file.name, documentType)}`;
+      } else {
+        fileName = `${companyId}/${documentType}-${Date.now()}.${fileExt}`;
+      }
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from("company-documents")
@@ -102,18 +147,34 @@ export function CompanyDocumentUpload({
           content_type: file.type,
           expires_at: expiryDate || null,
           uploaded_by: user.id,
+          is_active: true,
           ...(notes && { notes })
         });
 
       if (insertError) throw insertError;
 
-      return { fileName, publicUrl };
+      return { fileName, publicUrl, action, wasReplaced: !!existing };
     },
-    onSuccess: () => {
-      showSuccess(
-        "Documento subido exitosamente",
-        "El documento se ha guardado correctamente"
-      );
+    onSuccess: (data) => {
+      const { action, wasReplaced } = data;
+      
+      if (wasReplaced && action === 'replace') {
+        showSuccess(
+          "Documento reemplazado exitosamente",
+          "El documento anterior se archivó y el nuevo se guardó correctamente"
+        );
+      } else if (action === 'version') {
+        showSuccess(
+          "Nueva versión guardada",
+          "Se creó una nueva versión del documento manteniendo la anterior"
+        );
+      } else {
+        showSuccess(
+          "Documento subido exitosamente",
+          "El documento se ha guardado correctamente"
+        );
+      }
+      
       onSuccess();
       // Reset form
       setFile(null);
@@ -121,6 +182,8 @@ export function CompanyDocumentUpload({
       setCustomDocumentName("");
       setExpiryDate("");
       setNotes("");
+      setShowDuplicateDialog(false);
+      setExistingDocument(null);
     },
     onError: (error) => {
       console.error("Error uploading document:", error);
