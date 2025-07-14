@@ -112,6 +112,62 @@ export const usePaymentPeriods = (driverUserId?: string) => {
     },
   });
 
+  const reassignElementMutation = useMutation({
+    mutationFn: async ({ 
+      elementType, 
+      elementId, 
+      newPeriodId 
+    }: { 
+      elementType: string; 
+      elementId: string; 
+      newPeriodId: string; 
+    }) => {
+      const { data, error } = await supabase.rpc("reassign_to_payment_period", {
+        element_type: elementType,
+        element_id: elementId,
+        new_period_id: newPeriodId
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["payment-periods"] });
+      queryClient.invalidateQueries({ queryKey: ["loads"] });
+      const result = data as { success: boolean; message: string };
+      toast({
+        title: result.success ? "Éxito" : "Error",
+        description: result.message,
+        variant: result.success ? "default" : "destructive",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const getPeriodElementsMutation = useMutation({
+    mutationFn: async (periodId: string) => {
+      const { data, error } = await supabase.rpc("get_payment_period_elements", {
+        period_id_param: periodId
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   return {
     paymentPeriods,
     isLoading,
@@ -120,5 +176,10 @@ export const usePaymentPeriods = (driverUserId?: string) => {
     isGeneratingPeriods: generatePeriodsMutation.isPending,
     getCurrentPeriod: getCurrentPeriodMutation.mutate,
     isGettingCurrentPeriod: getCurrentPeriodMutation.isPending,
+    reassignElement: reassignElementMutation.mutate,
+    isReassigningElement: reassignElementMutation.isPending,
+    getPeriodElements: getPeriodElementsMutation.mutate,
+    isGettingPeriodElements: getPeriodElementsMutation.isPending,
+    periodElementsData: getPeriodElementsMutation.data,
   };
 };

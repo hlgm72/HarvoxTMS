@@ -2328,6 +2328,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_payment_period_elements: {
+        Args: { period_id_param: string }
+        Returns: Json
+      }
       get_real_companies: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -2375,6 +2379,15 @@ export type Database = {
       needs_initial_setup: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      reassign_to_payment_period: {
+        Args: {
+          element_type: string
+          element_id: string
+          new_period_id: string
+          reassigned_by?: string
+        }
+        Returns: Json
       }
       report_payment_and_lock: {
         Args: {

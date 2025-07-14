@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Edit, Truck, MapPin, DollarSign, Calendar } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Eye, Edit, Truck, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useLoads } from "@/hooks/useLoads";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
+import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
 
 // Mock data - later will be replaced with real data from Supabase
 const mockLoads = [
@@ -75,6 +78,10 @@ interface LoadsListProps {
 export function LoadsList({ filters }: LoadsListProps) {
   const { t } = useTranslation();
   const { data: loads = [], isLoading, error } = useLoads();
+  const [reassignmentDialog, setReassignmentDialog] = useState<{
+    isOpen: boolean;
+    load?: any;
+  }>({ isOpen: false });
   
   // Aplicar filtros a los datos reales
   const filteredLoads = loads.filter(load => {
@@ -205,7 +212,7 @@ export function LoadsList({ filters }: LoadsListProps) {
                 Creada: {format(new Date(load.created_at), "dd/MM/yyyy HH:mm", { locale: es })}
               </div>
               
-              <div className="flex gap-2">
+               <div className="flex gap-2">
                 <Button variant="outline" size="sm">
                   <Eye className="h-3 w-3 mr-1" />
                   Ver
@@ -214,11 +221,45 @@ export function LoadsList({ filters }: LoadsListProps) {
                   <Edit className="h-3 w-3 mr-1" />
                   Editar
                 </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <MoreHorizontal className="h-3 w-3" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem 
+                      onClick={() => setReassignmentDialog({ 
+                        isOpen: true, 
+                        load 
+                      })}
+                    >
+                      <ArrowRightLeft className="h-3 w-3 mr-2" />
+                      Reasignar Período
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </CardContent>
         </Card>
       ))}
+      
+      {/* Dialog de reasignación */}
+      {reassignmentDialog.load && (
+        <PeriodReassignmentDialog
+          isOpen={reassignmentDialog.isOpen}
+          onClose={() => setReassignmentDialog({ isOpen: false })}
+          element={{
+            id: reassignmentDialog.load.id,
+            type: 'load',
+            name: reassignmentDialog.load.load_number,
+            amount: reassignmentDialog.load.total_amount,
+            currentPeriodId: reassignmentDialog.load.payment_period_id,
+            driverUserId: reassignmentDialog.load.driver_user_id
+          }}
+        />
+      )}
     </div>
   );
 }
