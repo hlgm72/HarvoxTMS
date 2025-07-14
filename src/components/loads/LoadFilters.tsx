@@ -10,7 +10,7 @@ import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 
 const statusOptions = [
-  { value: "", label: "Todos los estados" },
+  { value: "all", label: "Todos los estados" },
   { value: "created", label: "Creada" },
   { value: "route_planned", label: "Ruta Planificada" },
   { value: "assigned", label: "Asignada" },
@@ -21,14 +21,14 @@ const statusOptions = [
 
 // Mock data - will be replaced with real data
 const driverOptions = [
-  { value: "", label: "Todos los conductores" },
+  { value: "all", label: "Todos los conductores" },
   { value: "driver1", label: "María García" },
   { value: "driver2", label: "Carlos Rodríguez" },
   { value: "driver3", label: "Ana Martínez" }
 ];
 
 const brokerOptions = [
-  { value: "", label: "Todos los brokers" },
+  { value: "all", label: "Todos los brokers" },
   { value: "broker1", label: "ABC Logistics" },
   { value: "broker2", label: "XYZ Freight" },
   { value: "broker3", label: "Global Transport" }
@@ -56,9 +56,9 @@ export function LoadFilters({ filters, onFiltersChange }: LoadFiltersProps) {
 
   const clearFilters = () => {
     onFiltersChange({
-      status: "",
-      driver: "",
-      broker: "",
+      status: "all",
+      driver: "all",
+      broker: "all",
       dateRange: { from: undefined, to: undefined }
     });
   };
