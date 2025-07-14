@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useFleetNotifications } from "@/components/notifications";
 import { useTranslation } from "react-i18next";
 
 export interface Equipment {
@@ -51,7 +51,7 @@ export interface CreateEquipmentData {
 }
 
 export function useEquipment() {
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
@@ -107,17 +107,16 @@ export function useEquipment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
-      toast({
-        title: t("equipment.created.title", "Equipo creado"),
-        description: t("equipment.created.description", "El equipo se ha registrado exitosamente"),
-      });
+      showSuccess(
+        t("equipment.created.title", "Equipo creado"),
+        t("equipment.created.description", "El equipo se ha registrado exitosamente")
+      );
     },
     onError: (error: any) => {
-      toast({
-        title: t("equipment.error.title", "Error"),
-        description: error.message || t("equipment.error.description", "No se pudo crear el equipo"),
-        variant: "destructive",
-      });
+      showError(
+        t("equipment.error.title", "Error"),
+        error.message || t("equipment.error.description", "No se pudo crear el equipo")
+      );
     },
   });
 
@@ -138,17 +137,16 @@ export function useEquipment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
-      toast({
-        title: t("equipment.updated.title", "Equipo actualizado"),
-        description: t("equipment.updated.description", "Los cambios se han guardado exitosamente"),
-      });
+      showSuccess(
+        t("equipment.updated.title", "Equipo actualizado"),
+        t("equipment.updated.description", "Los cambios se han guardado exitosamente")
+      );
     },
     onError: (error: any) => {
-      toast({
-        title: t("equipment.error.title", "Error"),
-        description: error.message || t("equipment.error.updateDescription", "No se pudo actualizar el equipo"),
-        variant: "destructive",
-      });
+      showError(
+        t("equipment.error.title", "Error"),
+        error.message || t("equipment.error.updateDescription", "No se pudo actualizar el equipo")
+      );
     },
   });
 
@@ -165,17 +163,16 @@ export function useEquipment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
-      toast({
-        title: t("equipment.deleted.title", "Equipo eliminado"),
-        description: t("equipment.deleted.description", "El equipo se ha eliminado exitosamente"),
-      });
+      showSuccess(
+        t("equipment.deleted.title", "Equipo eliminado"),
+        t("equipment.deleted.description", "El equipo se ha eliminado exitosamente")
+      );
     },
     onError: (error: any) => {
-      toast({
-        title: t("equipment.error.title", "Error"),
-        description: error.message || t("equipment.error.deleteDescription", "No se pudo eliminar el equipo"),
-        variant: "destructive",
-      });
+      showError(
+        t("equipment.error.title", "Error"),
+        error.message || t("equipment.error.deleteDescription", "No se pudo eliminar el equipo")
+      );
     },
   });
 
