@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "sonner";
 import Index from "./pages/Index";
 import Setup from "./pages/Setup";
 import Auth from "./pages/Auth";
@@ -274,6 +275,19 @@ const App = () => {
         <UserProfileProvider>
           <NotificationProvider>
             <AppContent />
+            <Toaster 
+              position="top-right" 
+              richColors 
+              closeButton 
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: 'hsl(var(--background))',
+                  border: '1px solid hsl(var(--border))',
+                  color: 'hsl(var(--foreground))',
+                },
+              }}
+            />
           </NotificationProvider>
         </UserProfileProvider>
       </AuthProvider>

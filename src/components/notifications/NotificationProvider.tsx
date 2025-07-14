@@ -1,4 +1,5 @@
 import React, { createContext, useContext, ReactNode } from 'react';
+import { toast } from 'sonner';
 
 interface NotificationContextType {
   showNotification: (
@@ -25,14 +26,42 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export function useFleetNotifications() {
   const context = useContext(NotificationContext);
   if (!context) {
-    // Return a safe fallback instead of throwing
+    // Return a safe fallback that uses toast directly
     return {
-      showNotification: () => console.log('Notification context not available'),
-      showSuccess: () => console.log('Success notification'),
-      showError: () => console.log('Error notification'),
-      showWarning: () => console.log('Warning notification'),
-      showInfo: () => console.log('Info notification'),
-      clearAll: () => console.log('Clear all notifications')
+      showNotification: (type: 'success' | 'error' | 'warning' | 'info', title: string, message?: string) => {
+        const fullMessage = message ? `${title}: ${message}` : title;
+        switch (type) {
+          case 'success':
+            toast.success(fullMessage);
+            break;
+          case 'error':
+            toast.error(fullMessage);
+            break;
+          case 'warning':
+            toast.warning(fullMessage);
+            break;
+          case 'info':
+            toast.info(fullMessage);
+            break;
+        }
+      },
+      showSuccess: (title: string, message?: string) => {
+        const fullMessage = message ? `${title}: ${message}` : title;
+        toast.success(fullMessage);
+      },
+      showError: (title: string, message?: string) => {
+        const fullMessage = message ? `${title}: ${message}` : title;
+        toast.error(fullMessage);
+      },
+      showWarning: (title: string, message?: string) => {
+        const fullMessage = message ? `${title}: ${message}` : title;
+        toast.warning(fullMessage);
+      },
+      showInfo: (title: string, message?: string) => {
+        const fullMessage = message ? `${title}: ${message}` : title;
+        toast.info(fullMessage);
+      },
+      clearAll: () => toast.dismiss()
     };
   }
   return context;
@@ -43,7 +72,6 @@ interface NotificationProviderProps {
 }
 
 export function NotificationProvider({ children }: NotificationProviderProps) {
-  // Use simple console logging instead of complex state management
   const showNotification = (
     type: 'success' | 'error' | 'warning' | 'info',
     title: string,
@@ -56,32 +84,47 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
       persistent?: boolean;
     }
   ) => {
-    console.log(`${type.toUpperCase()}: ${title}${message ? ` - ${message}` : ''}`);
+    const fullMessage = message ? `${title}: ${message}` : title;
+    const duration = options?.persistent ? Infinity : (options?.duration || 4000);
     
-    // Create a simple browser notification for now
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(title, { body: message });
+    switch (type) {
+      case 'success':
+        toast.success(fullMessage, { duration });
+        break;
+      case 'error':
+        toast.error(fullMessage, { duration });
+        break;
+      case 'warning':
+        toast.warning(fullMessage, { duration });
+        break;
+      case 'info':
+        toast.info(fullMessage, { duration });
+        break;
     }
   };
 
   const showSuccess = (title: string, message?: string) => {
-    showNotification('success', title, message);
+    const fullMessage = message ? `${title}: ${message}` : title;
+    toast.success(fullMessage);
   };
 
   const showError = (title: string, message?: string) => {
-    showNotification('error', title, message);
+    const fullMessage = message ? `${title}: ${message}` : title;
+    toast.error(fullMessage);
   };
 
   const showWarning = (title: string, message?: string) => {
-    showNotification('warning', title, message);
+    const fullMessage = message ? `${title}: ${message}` : title;
+    toast.warning(fullMessage);
   };
 
   const showInfo = (title: string, message?: string) => {
-    showNotification('info', title, message);
+    const fullMessage = message ? `${title}: ${message}` : title;
+    toast.info(fullMessage);
   };
 
   const clearAll = () => {
-    console.log('Clear all notifications');
+    toast.dismiss();
   };
 
   const value: NotificationContextType = {
