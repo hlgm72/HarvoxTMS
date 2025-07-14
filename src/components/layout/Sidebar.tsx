@@ -711,7 +711,7 @@ export function AppSidebar() {
                          {selectedCompany.name}
                        </p>
                        <p className="text-xs text-slate-500 capitalize leading-tight">
-                         {currentRole?.role.replace('_', ' ') || 'Sin rol'}
+                         {currentRole?.replace('_', ' ') || 'Sin rol'}
                        </p>
                      </div>
                      <ChevronDown className="h-4 w-4 text-slate-400 ml-2 flex-shrink-0" />

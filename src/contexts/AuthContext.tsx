@@ -1,9 +1,6 @@
-import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-
-// Cache for user roles to avoid redundant queries
-const rolesCache = new Map<string, UserRole[]>();
 
 interface UserRole {
   role: string;
@@ -12,560 +9,242 @@ interface UserRole {
   id: string;
 }
 
-interface AuthState {
+interface AuthContextType {
   user: User | null;
   session: Session | null;
-  userRoles: UserRole[];
-  currentRole: UserRole | null;
-  loading: boolean;
-  forceUpdate: number;
-}
-
-type AuthAction = 
-  | { type: 'SET_SESSION'; session: Session | null; user: User | null }
-  | { type: 'SET_ROLES'; userRoles: UserRole[]; currentRole: UserRole | null }
-  | { type: 'SET_LOADING'; loading: boolean }
-  | { type: 'FORCE_UPDATE' };
-
-const authReducer = (state: AuthState, action: AuthAction): AuthState => {
-  switch (action.type) {
-    case 'SET_SESSION':
-      console.log('🔧 AuthReducer SET_SESSION');
-      return { ...state, session: action.session, user: action.user };
-    case 'SET_ROLES':
-      console.log('🔧 AuthReducer SET_ROLES - Current role changing from:', state.currentRole?.role, 'to:', action.currentRole?.role);
-      console.log('🔧 AuthReducer SET_ROLES - New current role:', action.currentRole);
-      return { 
-        ...state, 
-        userRoles: [...action.userRoles], 
-        currentRole: action.currentRole ? { ...action.currentRole } : null,
-        loading: false,
-        forceUpdate: Date.now()
-      };
-    case 'SET_LOADING':
-      console.log('🔧 AuthReducer SET_LOADING:', action.loading);
-      return { ...state, loading: action.loading };
-    case 'FORCE_UPDATE':
-      console.log('🔧 AuthReducer FORCE_UPDATE');
-      return { ...state, forceUpdate: Date.now() };
-    default:
-      return state;
-  }
-};
-
-interface AuthContextType extends AuthState {
+  userRoles: UserRole[] | null;
+  currentRole: string | null;
   signOut: () => Promise<void>;
-  switchRole: (role: UserRole) => void;
-  refreshRoles: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, metadata?: any) => Promise<{ error: any }>;
+  loading: boolean;
+  
+  // Additional properties for compatibility
   userRole: UserRole | null;
   isAuthenticated: boolean;
+  availableRoles: UserRole[];
+  hasMultipleRoles: boolean;
   isSuperAdmin: boolean;
   isCompanyOwner: boolean;
   isOperationsManager: boolean;
   isDispatcher: boolean;
   isDriver: boolean;
-  isSafetyManager: boolean;
-  isGeneralManager: boolean;
-  isSeniorDispatcher: boolean;
-  hasRole: (role: string) => boolean;
-  hasMultipleRoles: boolean;
-  availableRoles: UserRole[];
-  _forceUpdate: number;
-  _debug: {
-    rolesCount: number;
-    currentRoleId?: string;
-  };
+  switchRole: (roleId: string) => void;
+  refreshRoles: () => Promise<void>;
+  _forceUpdate: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [authState, dispatch] = useReducer(authReducer, {
-    user: null,
-    session: null,
-    userRoles: [],
-    currentRole: null,
-    loading: true,
-    forceUpdate: 0,
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [userRoles, setUserRoles] = useState<UserRole[] | null>(null);
+  const [currentRole, setCurrentRole] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [forceUpdateFlag, setForceUpdateFlag] = useState(0);
 
-  const fetchUserRoles = async (userId: string): Promise<UserRole[]> => {
-    console.log('🔍 Starting fetchUserRoles for userId:', userId);
-    
-    // Temporary hard-coded roles for user 087a825c-94ea-42d9-8388-5087a19d776f while fixing DB issue
-    if (userId === '087a825c-94ea-42d9-8388-5087a19d776f') {
-      console.log('🎯 Using hard-coded roles for user (temporary fix)');
-      
-      const hardCodedRoles = [
-        {
-          id: 'e81bbb5d-2e79-48b5-835b-f8b03edb0dd1',
-          role: 'driver',
-          company_id: 'e5d52767-ca59-4c28-94e4-058aff6a037b',
-          is_active: true
-        },
-        {
-          id: '2557a45d-7a2a-4128-a289-0de3bea73c5d',
-          role: 'dispatcher',
-          company_id: 'e5d52767-ca59-4c28-94e4-058aff6a037b',
-          is_active: true
-        },
-        {
-          id: 'fc7a85af-9e15-4f75-8781-081c5daee1ca',
-          role: 'company_owner',
-          company_id: 'e5d52767-ca59-4c28-94e4-058aff6a037b',
-          is_active: true
-        }
-      ];
-      console.log('✅ Returning hard-coded roles:', hardCodedRoles.map(r => `${r.role} (${r.id})`));
-      return hardCodedRoles;
-    }
-    
+  // Fetch user roles
+  const fetchUserRoles = async (userId: string) => {
     try {
-      console.log('🔍 Using direct query to user_company_roles...');
-      
-      // Use direct query with timeout
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Query timeout after 10 seconds')), 10000)
-      );
-      
-      const queryPromise = supabase
+      const { data, error } = await supabase
         .from('user_company_roles')
-        .select('id, role, company_id, is_active')
+        .select('*')
         .eq('user_id', userId)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
-      
-      console.log('🔍 Query completed. Data:', data, 'Error:', error);
+        .eq('is_active', true);
 
       if (error) {
-        console.error('❌ Error fetching user roles:', error);
+        console.error('Error fetching user roles:', error);
         return [];
       }
 
-      console.log('✅ Successfully fetched roles:', data || []);
       return data || [];
     } catch (error) {
-      console.error('💥 Exception in fetchUserRoles:', error);
+      console.error('Error in fetchUserRoles:', error);
       return [];
     }
   };
 
-  const getCurrentRoleFromStorage = (roles: UserRole[]): UserRole | null => {
-    console.log('🔍 getCurrentRoleFromStorage called with roles:', roles.map(r => ({ id: r.id, role: r.role })));
-    console.log('🔍 Tab location:', window.location.href);
-    console.log('🔍 Current timestamp:', new Date().toISOString());
-    
+  // Sign in function
+  const signIn = async (email: string, password: string) => {
     try {
-      // Intentar múltiples fuentes de persistencia en orden de prioridad
-      const sources = [
-        { name: 'localStorage:currentRole', value: localStorage.getItem('currentRole') },
-        { name: 'localStorage:lastActiveRole', value: localStorage.getItem('lastActiveRole') },
-        { name: 'sessionStorage:activeRole', value: sessionStorage.getItem('activeRole') }
-      ];
-      
-      console.log('🔍 Buscando rol activo en múltiples fuentes...');
-      console.log('🔍 Storage values:', sources.map(s => ({ name: s.name, hasValue: !!s.value, value: s.value ? s.value.substring(0, 50) + '...' : null })));
-      
-      for (const source of sources) {
-        if (source.value) {
-          console.log(`✅ Encontrado en ${source.name}:`, source.value);
-          
-          try {
-            const storedRole = JSON.parse(source.value);
-            console.log('🔍 Parsed stored role:', storedRole);
-            
-            // Buscar por ID exacto primero
-            let validRole = roles.find(r => r.id === storedRole.id);
-            console.log('🔍 Searching by ID:', storedRole.id, 'found:', validRole);
-            
-            // Si no encuentra por ID, buscar por role y company_id
-            if (!validRole) {
-              validRole = roles.find(r => 
-                r.role === storedRole.role && 
-                r.company_id === storedRole.company_id
-              );
-              console.log('🔍 Searching by role+company:', storedRole.role, storedRole.company_id, 'found:', validRole);
-            }
-            
-            if (validRole) {
-              console.log(`🎯 ROL VÁLIDO ENCONTRADO EN ${source.name}:`, validRole);
-              console.log('🎯 RETORNANDO ESTE ROL COMO ACTIVO');
-              
-              // Asegurar que el rol encontrado se guarde en todas las fuentes para sincronización
-              const roleString = JSON.stringify(validRole);
-              localStorage.setItem('currentRole', roleString);
-              localStorage.setItem('lastActiveRole', roleString);
-              sessionStorage.setItem('activeRole', roleString);
-              console.log('🔒 Rol válido re-guardado en todas las fuentes para sincronización');
-              
-              return validRole;
-            } else {
-              console.log(`⚠️ Rol en ${source.name} no es válido para roles disponibles`);
-              console.log('⚠️ Available roles:', roles.map(r => ({ id: r.id, role: r.role })));
-              console.log('⚠️ Stored role details:', { id: storedRole.id, role: storedRole.role, company_id: storedRole.company_id });
-            }
-          } catch (parseError) {
-            console.warn(`⚠️ Error parsing ${source.name}:`, parseError);
-          }
-        } else {
-          console.log(`❌ No encontrado en ${source.name}`);
-        }
-      }
-      
-      console.log('🔄 No se encontró rol activo válido, usando rol con jerarquía más alta');
-      console.log('🔄 Available roles for hierarchy selection:', roles.map(r => ({ id: r.id, role: r.role })));
-      
-      // Usar jerarquía de roles en lugar del primer rol disponible
-      const roleHierarchy = [
-        'superadmin',
-        'company_owner', 
-        'general_manager',
-        'operations_manager',
-        'safety_manager',
-        'senior_dispatcher',
-        'dispatcher',
-        'driver'
-      ];
-      
-      for (const hierarchyRole of roleHierarchy) {
-        const foundRole = roles.find(r => r.role === hierarchyRole);
-        if (foundRole) {
-          console.log('🎯 Usando rol por jerarquía:', foundRole);
-          
-          // Guardar este rol como el activo
-          const roleString = JSON.stringify(foundRole);
-          localStorage.setItem('currentRole', roleString);
-          localStorage.setItem('lastActiveRole', roleString);
-          sessionStorage.setItem('activeRole', roleString);
-          console.log('🔒 Rol por jerarquía guardado en storage');
-          
-          return foundRole;
-        }
-      }
-      
-      // Si no encuentra ninguno por jerarquía, usar el primero disponible
-      const fallbackRole = roles.length > 0 ? roles[0] : null;
-      console.log('🔄 Fallback al primer rol disponible:', fallbackRole);
-      
-      if (fallbackRole) {
-        const roleString = JSON.stringify(fallbackRole);
-        localStorage.setItem('currentRole', roleString);
-        localStorage.setItem('lastActiveRole', roleString);
-        sessionStorage.setItem('activeRole', roleString);
-        console.log('🔒 Rol fallback guardado en storage');
-      }
-      
-      return fallbackRole;
-    } catch (error) {
-      console.error('💥 Error general en getCurrentRoleFromStorage:', error);
-      return roles.length > 0 ? roles[0] : null;
-    }
-  };
-
-  const cleanupAuthStorage = () => {
-    // Remove todas las claves de rol de ambos storages
-    localStorage.removeItem('currentRole');
-    localStorage.removeItem('lastActiveRole');
-    sessionStorage.removeItem('currentRole');
-    sessionStorage.removeItem('activeRole');
-    
-    console.log('🧹 Limpieza completa de storage completada');
-    
-    // Remove any potentially conflicting Supabase auth keys
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        // Don't remove the actual session, just conflicting data
-        if (!key.includes('token') && !key.includes('session')) {
-          localStorage.removeItem(key);
-        }
-      }
-    });
-  };
-
-  const storeRoleWithBackup = (role: UserRole) => {
-    const roleString = JSON.stringify(role);
-    
-    // Guardar en múltiples lugares para máxima persistencia
-    localStorage.setItem('currentRole', roleString);
-    localStorage.setItem('lastActiveRole', roleString);
-    sessionStorage.setItem('activeRole', roleString);
-    
-    console.log('💾 Rol guardado en múltiples ubicaciones:', role.role);
-    console.log('   - localStorage:currentRole ✅');
-    console.log('   - localStorage:lastActiveRole ✅');
-    console.log('   - sessionStorage:activeRole ✅');
-  };
-
-  const switchRole = (role: UserRole) => {
-    console.log('🔄 SWITCHING ROLE FROM:', authState.currentRole?.role, 'TO:', role.role);
-    console.log('🔄 Switch role called with:', role);
-    dispatch({ type: 'SET_ROLES', userRoles: authState.userRoles, currentRole: role });
-    
-    // Guardar con sistema de respaldo
-    storeRoleWithBackup(role);
-    console.log('🔄 Role switched and stored with backup:', role.role);
-    
-    // Force an update to trigger re-renders
-    dispatch({ type: 'FORCE_UPDATE' });
-  };
-
-  const refreshRoles = async () => {
-    if (authState.user) {
-      // Clear cache to force fresh data
-      rolesCache.delete(authState.user.id);
-      const roles = await fetchUserRoles(authState.user.id);
-      const currentRole = getCurrentRoleFromStorage(roles) || (roles.length > 0 ? roles[0] : null);
-      
-      // Update stored role first
-      if (currentRole) {
-        localStorage.setItem('currentRole', JSON.stringify(currentRole));
-      } else {
-        localStorage.removeItem('currentRole');
-      }
-
-      // Use reducer to update state
-      dispatch({ 
-        type: 'SET_ROLES', 
-        userRoles: roles, 
-        currentRole 
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
+      return { error };
+    } catch (error) {
+      return { error };
     }
   };
 
+  // Sign up function
+  const signUp = async (email: string, password: string, metadata?: any) => {
+    try {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: metadata
+        }
+      });
+      return { error };
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  // Sign out function
   const signOut = async () => {
     try {
-      console.log('🚪 Starting signOut process...');
-      
-      // Clean up all auth-related storage FIRST
-      cleanupAuthStorage();
-      localStorage.removeItem('currentRole');
-      console.log('🧹 Local storage cleaned');
-      
-      // Try to sign out from server, but don't fail if it doesn't work
-      try {
-        console.log('🔄 Attempting server signout...');
-        const { error } = await supabase.auth.signOut({ scope: 'global' });
-        if (error && error.message !== 'Auth session missing!' && !error.message.includes('session_not_found')) {
-          console.warn('⚠️ Server signout warning (continuing anyway):', error);
-        } else {
-          console.log('✅ Server signout successful');
-        }
-      } catch (serverError: any) {
-        console.warn('⚠️ Server signout failed (continuing anyway):', serverError);
-        // Continue with local cleanup even if server signout fails
-      }
-      
-      console.log('🔄 Forcing redirect to auth page...');
-      // Force page refresh to ensure completely clean state
-      setTimeout(() => {
-        window.location.href = '/auth';
-      }, 100);
+      await supabase.auth.signOut();
+      setUser(null);
+      setSession(null);
+      setUserRoles(null);
+      setCurrentRole(null);
     } catch (error) {
-      console.error('💥 Critical error in signOut, forcing redirect:', error);
-      // Force redirect even if everything fails
-      window.location.href = '/auth';
+      console.error('Error signing out:', error);
     }
   };
 
-  // Usar una clave única para evitar conflictos entre pestañas
-  const initKey = 'auth_initialized_' + Date.now();
+  // Switch role function
+  const switchRole = (roleId: string) => {
+    const role = userRoles?.find(r => r.id === roleId);
+    if (role) {
+      setCurrentRole(role.role);
+    }
+  };
 
-  // Listener para detectar cambios en localStorage y sincronizar entre pestañas
+  // Refresh roles function
+  const refreshRoles = async () => {
+    if (user) {
+      const roles = await fetchUserRoles(user.id);
+      setUserRoles(roles);
+    }
+  };
+
+  // Force update function
+  const _forceUpdate = () => {
+    setForceUpdateFlag(prev => prev + 1);
+  };
+
+  // Computed properties
+  const userRole = userRoles?.find(r => r.role === currentRole) || userRoles?.[0] || null;
+  const isAuthenticated = !!user && !!session;
+  const availableRoles = userRoles || [];
+  const hasMultipleRoles = (userRoles?.length || 0) > 1;
+  const isSuperAdmin = userRoles?.some(r => r.role === 'superadmin') || false;
+  const isCompanyOwner = userRoles?.some(r => r.role === 'company_owner') || false;
+  const isOperationsManager = userRoles?.some(r => r.role === 'operations_manager') || false;
+  const isDispatcher = userRoles?.some(r => r.role === 'dispatcher') || false;
+  const isDriver = userRoles?.some(r => r.role === 'driver') || false;
+
+  // Initialize auth state
   useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'currentRole' || e.key === 'lastActiveRole') {
-        console.log('🔄 localStorage rol cambió externamente:');
-        console.log('  - Clave:', e.key);
-        console.log('  - Valor anterior:', e.oldValue);
-        console.log('  - Valor nuevo:', e.newValue);
-        console.log('  - URL que hizo el cambio:', window.location.href);
-        
-        // Si hay un nuevo valor y tenemos roles disponibles, sincronizar
-        if (e.newValue && authState.userRoles.length > 0) {
-          try {
-            const newRole = JSON.parse(e.newValue);
-            const validRole = authState.userRoles.find(r => 
-              r.id === newRole.id || 
-              (r.role === newRole.role && r.company_id === newRole.company_id)
-            );
-            
-            if (validRole && authState.currentRole?.id !== validRole.id) {
-              console.log('🔄 Sincronizando rol desde otra pestaña:', validRole.role);
-              dispatch({ type: 'SET_ROLES', userRoles: authState.userRoles, currentRole: validRole });
-            }
-          } catch (error) {
-            console.error('Error sincronizando rol:', error);
-          }
-        }
-      }
-    };
+    let mounted = true;
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [authState.userRoles, authState.currentRole]);
-
-  const hasInitializedRef = useRef(false);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const handleSession = async (session: Session | null) => {
-      if (!isMounted) return;
-      
-      console.log('🚀 HandleSession called for user:', session?.user?.id);
-      console.log('🚀 Session exists:', !!session);
-      console.log('🚀 hasInitialized:', hasInitializedRef.current);
-      
-      // Marcar como inicializado INMEDIATAMENTE para evitar múltiples ejecuciones
-      hasInitializedRef.current = true;
-      
+    const initializeAuth = async () => {
       try {
-        dispatch({ type: 'SET_SESSION', session, user: session?.user ?? null });
-
-        if (session?.user) {
-          console.log('📡 Fetching roles for user:', session.user.id);
-          const roles = await fetchUserRoles(session.user.id);
-          console.log('✅ Fetched roles for session:', roles, 'Count:', roles.length);
-          
-          if (roles && roles.length > 0) {
-            const storedRole = getCurrentRoleFromStorage(roles);
-            console.log('💾 Stored role from localStorage:', storedRole);
-            
-            let selectedRole: UserRole | null = storedRole || roles[0];
-            console.log('🎯 Final role selection logic:');
-            console.log('  - storedRole:', storedRole);
-            console.log('  - roles[0] (fallback):', roles[0]);
-            console.log('  - selectedRole (final):', selectedRole);
-            console.log('  - All available roles:', roles.map(r => ({ id: r.id, role: r.role })));
-            
-            // Guardar con sistema de respaldo
-            storeRoleWithBackup(selectedRole);
-            console.log('💾 Rol inicial guardado con sistema de respaldo:', selectedRole.role);
-            
-            dispatch({ 
-              type: 'SET_ROLES', 
-              userRoles: roles, 
-              currentRole: selectedRole 
-            });
-            
-            console.log('🏁 State updated with role:', selectedRole.role, '- LOADING SET TO FALSE');
-            console.log('🏁 AuthState after dispatch:', {
-              loading: false,
-              user: session.user.id,
-              currentRole: selectedRole.role,
-              userRoles: roles.length
-            });
-          } else {
-            console.log('❌ No roles available, setting loading to false');
-            dispatch({ type: 'SET_LOADING', loading: false });
-          }
-        } else {
-          console.log('🚪 No session user, clearing roles and setting loading to false');
-          cleanupAuthStorage();
-          dispatch({ 
-            type: 'SET_ROLES', 
-            userRoles: [], 
-            currentRole: null 
-          });
-        }
+        // Get initial session
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
         
-        console.log('✅ Session handling completed, hasInitialized:', hasInitializedRef.current);
+        if (mounted) {
+          setSession(initialSession);
+          setUser(initialSession?.user ?? null);
+          
+          if (initialSession?.user) {
+            const roles = await fetchUserRoles(initialSession.user.id);
+            setUserRoles(roles);
+            setCurrentRole(roles.length > 0 ? roles[0].role : null);
+          }
+          
+          setLoading(false);
+        }
       } catch (error) {
-        console.error('💥 Error in handleSession:', error);
-        dispatch({ 
-          type: 'SET_ROLES', 
-          userRoles: [], 
-          currentRole: null 
-        });
-        dispatch({ type: 'SET_LOADING', loading: false });
+        console.error('Error initializing auth:', error);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state change:', event, session?.user?.id);
+        if (!mounted) return;
+
+        console.log('Auth state changed:', event, session?.user?.email);
         
-        if (event === 'SIGNED_OUT') {
-          hasInitializedRef.current = false;
+        setSession(session);
+        setUser(session?.user ?? null);
+
+        if (session?.user) {
+          // Fetch roles when user signs in
+          setTimeout(async () => {
+            if (mounted) {
+              const roles = await fetchUserRoles(session.user.id);
+              setUserRoles(roles);
+              setCurrentRole(roles.length > 0 ? roles[0].role : null);
+            }
+          }, 0);
+        } else {
+          // Clear roles when user signs out
+          setUserRoles(null);
+          setCurrentRole(null);
         }
-        
-        if (!hasInitializedRef.current) {
-          await handleSession(session);
+
+        if (mounted) {
+          setLoading(false);
         }
       }
     );
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session && isMounted && !hasInitializedRef.current) {
-        handleSession(session);
-      } else if (!session && !hasInitializedRef.current) {
-        // No session, stop loading
-        dispatch({ type: 'SET_LOADING', loading: false });
-        hasInitializedRef.current = true;
-      }
-    });
+    initializeAuth();
 
     return () => {
-      isMounted = false;
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
 
-
-  const contextValue: AuthContextType = {
-    ...authState,
+  const value: AuthContextType = {
+    user,
+    session,
+    userRoles,
+    currentRole,
     signOut,
+    signIn,
+    signUp,
+    loading,
+    
+    // Additional properties
+    userRole,
+    isAuthenticated,
+    availableRoles,
+    hasMultipleRoles,
+    isSuperAdmin,
+    isCompanyOwner,
+    isOperationsManager,
+    isDispatcher,
+    isDriver,
     switchRole,
     refreshRoles,
-    // Backwards compatibility
-    userRole: authState.currentRole,
-    // New properties
-    isAuthenticated: !!authState.user,
-    isSuperAdmin: authState.currentRole?.role === 'superadmin',
-    isCompanyOwner: authState.currentRole?.role === 'company_owner',
-    isOperationsManager: authState.currentRole?.role === 'operations_manager',
-    isDispatcher: authState.currentRole?.role === 'dispatcher',
-    isDriver: authState.currentRole?.role === 'driver',
-    isSafetyManager: authState.currentRole?.role === 'safety_manager',
-    isGeneralManager: authState.currentRole?.role === 'general_manager',
-    isSeniorDispatcher: authState.currentRole?.role === 'senior_dispatcher',
-    // Helper functions
-    hasRole: (role: string) => authState.userRoles.some(r => r.role === role),
-    hasMultipleRoles: authState.userRoles.length > 1,
-    availableRoles: authState.userRoles,
-    // Debug info
-    _forceUpdate: authState.forceUpdate,
-    _debug: {
-      rolesCount: authState.userRoles.length,
-      currentRoleId: authState.currentRole?.id,
-    }
+    _forceUpdate,
   };
-  
-  // Log context value changes for debugging
-  if (authState.user && authState.currentRole) {
-    console.log('🔍 AuthContext providing values:', {
-      isAuthenticated: contextValue.isAuthenticated,
-      loading: contextValue.loading,
-      userRole: contextValue.userRole?.role,
-      currentRole: contextValue.currentRole?.role,
-      forceUpdate: contextValue._forceUpdate
-    });
-  }
 
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

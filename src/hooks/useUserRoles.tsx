@@ -15,7 +15,7 @@ interface UseUserRolesReturn {
 
 export const useUserRoles = (): UseUserRolesReturn => {
   const [loading, setLoading] = useState(false);
-  const { user, currentRole, refreshRoles } = useAuth();
+  const { user, currentRole, userRole, refreshRoles } = useAuth();
 
   const assignRole = async (userId: string, companyId: string, role: UserRole) => {
     if (!user || !currentRole) {
@@ -23,7 +23,7 @@ export const useUserRoles = (): UseUserRolesReturn => {
     }
 
     // Only company owners and superadmins can assign roles
-    if (currentRole.role !== 'company_owner' && currentRole.role !== 'superadmin') {
+    if (currentRole !== 'company_owner' && currentRole !== 'superadmin') {
       return { success: false, error: 'No tienes permisos para asignar roles' };
     }
 
@@ -106,12 +106,12 @@ export const useUserRoles = (): UseUserRolesReturn => {
     }
 
     // Only company owners and superadmins can remove roles
-    if (currentRole.role !== 'company_owner' && currentRole.role !== 'superadmin') {
+    if (currentRole !== 'company_owner' && currentRole !== 'superadmin') {
       return { success: false, error: 'No tienes permisos para remover roles' };
     }
 
     // Prevent removing company_owner role from others (only superadmin can do this)
-    if (role === 'company_owner' && currentRole.role !== 'superadmin') {
+    if (role === 'company_owner' && currentRole !== 'superadmin') {
       return { success: false, error: 'Solo un Super Administrador puede remover el rol de Propietario' };
     }
 
@@ -148,11 +148,11 @@ export const useUserRoles = (): UseUserRolesReturn => {
     }
 
     // Only company owners can assign themselves additional roles
-    if (currentRole.role !== 'company_owner') {
+    if (currentRole !== 'company_owner') {
       return { success: false, error: 'Solo el propietario puede asignarse roles adicionales' };
     }
 
-    const result = await assignRole(user.id, currentRole.company_id, role);
+    const result = await assignRole(user.id, userRole?.company_id || '', role);
     return result;
   };
 
@@ -166,7 +166,7 @@ export const useUserRoles = (): UseUserRolesReturn => {
       return { success: false, error: 'No puedes remover tu propio rol de Propietario' };
     }
 
-    const result = await removeRole(user.id, currentRole.company_id, role);
+    const result = await removeRole(user.id, userRole?.company_id || '', role);
     return result;
   };
 

@@ -37,7 +37,7 @@ type CreateClientForm = Omit<Client, "id" | "created_at" | "updated_at"> & {
 
 export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogProps) {
   const [currentStep, setCurrentStep] = useState(1);
-  const { currentRole } = useAuth();
+  const { currentRole, userRole } = useAuth();
   const createClient = useCreateClient();
   const createDispatcher = useCreateDispatcher();
   
@@ -50,7 +50,7 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
       notes: "",
       logo_url: "",
       is_active: true,
-      company_id: currentRole?.company_id || "",
+      company_id: userRole?.company_id || "",
       dispatchers: [],
     },
   });
@@ -64,7 +64,7 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
     try {
       // Ensure company_id is set
       const { dispatchers, ...clientData } = data;
-      clientData.company_id = currentRole?.company_id || "";
+      clientData.company_id = userRole?.company_id || "";
       
       if (!clientData.company_id) {
         throw new Error("No se pudo obtener el ID de la empresa");

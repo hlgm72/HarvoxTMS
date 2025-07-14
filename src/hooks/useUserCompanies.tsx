@@ -144,7 +144,7 @@ export const useUserCompanies = () => {
     
     if (correspondingRole) {
       console.log('Switching to role:', correspondingRole);
-      switchRole(correspondingRole);
+      switchRole(correspondingRole.id);
       
       // Navigate to the appropriate dashboard for the new role
       const dashboardRoute = getDashboardRoute(company.role);

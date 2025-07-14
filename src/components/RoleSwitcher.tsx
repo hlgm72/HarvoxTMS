@@ -100,7 +100,7 @@ export const RoleSwitcher = () => {
       <div className="flex items-center gap-2 px-3 py-2 rounded-md border bg-muted/50">
         <User className="h-4 w-4" />
         <span className="text-sm font-medium">
-          {roleLabels[currentRole.role as keyof typeof roleLabels] || currentRole.role}
+          {roleLabels[currentRole as keyof typeof roleLabels] || currentRole}
         </span>
       </div>
     );
@@ -113,7 +113,7 @@ export const RoleSwitcher = () => {
           <div className="flex items-center gap-2">
             <User className="h-4 w-4" />
             <span className="text-sm font-medium">
-              {roleLabels[currentRole.role as keyof typeof roleLabels] || currentRole.role}
+              {roleLabels[currentRole as keyof typeof roleLabels] || currentRole}
             </span>
             <Badge variant="secondary" className="text-xs">
               {availableRoles.length}
@@ -152,7 +152,7 @@ export const RoleSwitcher = () => {
             key={role.id}
             onClick={() => handleRoleChange(role)}
             className={`cursor-pointer ${
-              currentRole.id === role.id 
+               role.role === currentRole
                 ? 'bg-primary/10 text-primary font-medium' 
                 : 'hover:bg-muted'
             }`}
@@ -161,7 +161,7 @@ export const RoleSwitcher = () => {
               <span>
                 {roleLabels[role.role as keyof typeof roleLabels] || role.role}
               </span>
-              {currentRole.id === role.id && (
+              {role.role === currentRole && (
                 <Badge 
                   className={`text-xs ${roleColors[role.role as keyof typeof roleColors] || 'bg-gray-500 text-white'}`}
                 >
