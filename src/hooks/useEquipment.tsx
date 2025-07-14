@@ -90,7 +90,7 @@ export function useEquipment() {
       // Use the first company_id (or you could add logic to select the preferred company)
       const userRole = userRoles[0];
 
-      // Clean up data - convert empty strings to null for optional date fields
+      // Clean up data - convert empty strings to null for optional fields
       const cleanedData = {
         ...newEquipment,
         company_id: userRole.company_id,
@@ -98,17 +98,20 @@ export function useEquipment() {
         fuel_type: newEquipment.fuel_type || "diesel",
         equipment_type: newEquipment.equipment_type || "truck",
         // Convert empty strings to null for date fields
-        license_plate_expiry_date: newEquipment.license_plate_expiry_date || null,
-        registration_expiry_date: newEquipment.registration_expiry_date || null,
-        insurance_expiry_date: newEquipment.insurance_expiry_date || null,
-        annual_inspection_expiry_date: newEquipment.annual_inspection_expiry_date || null,
-        purchase_date: newEquipment.purchase_date || null,
+        license_plate_expiry_date: newEquipment.license_plate_expiry_date === "" ? null : newEquipment.license_plate_expiry_date,
+        registration_expiry_date: newEquipment.registration_expiry_date === "" ? null : newEquipment.registration_expiry_date,
+        insurance_expiry_date: newEquipment.insurance_expiry_date === "" ? null : newEquipment.insurance_expiry_date,
+        annual_inspection_expiry_date: newEquipment.annual_inspection_expiry_date === "" ? null : newEquipment.annual_inspection_expiry_date,
+        purchase_date: newEquipment.purchase_date === "" ? null : newEquipment.purchase_date,
         // Convert empty strings to null for other optional fields
-        make: newEquipment.make || null,
-        model: newEquipment.model || null,
-        vin_number: newEquipment.vin_number || null,
-        license_plate: newEquipment.license_plate || null,
-        notes: newEquipment.notes || null,
+        make: newEquipment.make === "" ? null : newEquipment.make,
+        model: newEquipment.model === "" ? null : newEquipment.model,
+        vin_number: newEquipment.vin_number === "" ? null : newEquipment.vin_number,
+        license_plate: newEquipment.license_plate === "" ? null : newEquipment.license_plate,
+        notes: newEquipment.notes === "" ? null : newEquipment.notes,
+        year: newEquipment.year || null,
+        current_mileage: newEquipment.current_mileage || null,
+        purchase_price: newEquipment.purchase_price || null,
       };
 
       const { data, error } = await supabase
