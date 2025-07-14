@@ -248,7 +248,21 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                       <FormItem>
                         <FormLabel>{t("equipment.vin", "Número VIN")}</FormLabel>
                         <FormControl>
-                          <Input placeholder="1HGBH41JXMN109186" {...field} />
+                          <Input 
+                            placeholder="1HGBH41JXMN109186" 
+                            {...field}
+                            onChange={(e) => {
+                              // Remove all spaces from VIN input
+                              const value = e.target.value.replace(/\s/g, '');
+                              field.onChange(value);
+                            }}
+                            onKeyPress={(e) => {
+                              // Prevent space key from being typed
+                              if (e.key === ' ') {
+                                e.preventDefault();
+                              }
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
