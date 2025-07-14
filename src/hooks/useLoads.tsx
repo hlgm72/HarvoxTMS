@@ -34,11 +34,20 @@ export interface Load {
   period_status?: string;
 }
 
-export const useLoads = () => {
+interface LoadsFilters {
+  periodFilter?: {
+    type: 'current' | 'all' | 'specific' | 'custom';
+    periodId?: string;
+    startDate?: string;
+    endDate?: string;
+  };
+}
+
+export const useLoads = (filters?: LoadsFilters) => {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ['loads', user?.id],
+    queryKey: ['loads', user?.id, filters],
     queryFn: async (): Promise<Load[]> => {
       if (!user) throw new Error('User not authenticated');
 
@@ -138,6 +147,43 @@ export const useLoads = () => {
           period_status: paymentPeriod?.status
         };
       });
+
+      // Aplicar filtros por período si se especifican
+      if (filters?.periodFilter) {
+        const { periodFilter } = filters;
+        
+        switch (periodFilter.type) {
+          case 'current':
+            // Filtrar solo cargas del período actual
+            const currentDate = new Date().toISOString().split('T')[0];
+            return enrichedLoads.filter(load => {
+              if (!load.period_start_date || !load.period_end_date) return false;
+              return load.period_start_date <= currentDate && load.period_end_date >= currentDate;
+            });
+            
+          case 'specific':
+            // Filtrar cargas de un período específico
+            if (periodFilter.periodId) {
+              return enrichedLoads.filter(load => load.payment_period_id === periodFilter.periodId);
+            }
+            break;
+            
+          case 'custom':
+            // Filtrar por rango de fechas personalizado
+            if (periodFilter.startDate && periodFilter.endDate) {
+              return enrichedLoads.filter(load => {
+                if (!load.pickup_date) return false;
+                return load.pickup_date >= periodFilter.startDate! && load.pickup_date <= periodFilter.endDate!;
+              });
+            }
+            break;
+            
+          case 'all':
+          default:
+            // No filtrar, devolver todas las cargas
+            break;
+        }
+      }
 
       return enrichedLoads;
     },

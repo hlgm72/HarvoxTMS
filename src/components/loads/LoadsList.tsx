@@ -9,6 +9,7 @@ import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useLoads } from "@/hooks/useLoads";
+import { PeriodFilterValue } from "./PeriodFilter";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
 import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
 import { EmptyLoadsState } from "./EmptyLoadsState";
@@ -74,12 +75,24 @@ interface LoadsListProps {
     broker: string;
     dateRange: { from: Date | undefined; to: Date | undefined };
   };
+  periodFilter?: PeriodFilterValue;
   onCreateLoad?: () => void;
 }
 
-export function LoadsList({ filters, onCreateLoad }: LoadsListProps) {
+export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProps) {
   const { t } = useTranslation();
-  const { data: loads = [], isLoading, error } = useLoads();
+  
+  // Convertir el filtro de períodos al formato que espera el hook useLoads
+  const loadsFilters = periodFilter ? {
+    periodFilter: {
+      type: periodFilter.type,
+      periodId: periodFilter.periodId,
+      startDate: periodFilter.startDate,
+      endDate: periodFilter.endDate
+    }
+  } : undefined;
+  
+  const { data: loads = [], isLoading, error } = useLoads(loadsFilters);
   const [reassignmentDialog, setReassignmentDialog] = useState<{
     isOpen: boolean;
     load?: any;
