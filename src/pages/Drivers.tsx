@@ -92,10 +92,17 @@ const DriverSkeleton = () => (
 );
 
 export default function Drivers() {
+  console.log('🎯 Drivers page rendering...');
+  console.time('drivers-page-render');
+  
   const { drivers, loading, refetch } = useCompanyDrivers();
   const [showInviteDialog, setShowInviteDialog] = useState(false);
+  
+  console.log('🎯 Drivers page - state:', { driversCount: drivers.length, loading });
 
   if (loading) {
+    console.log('⏳ Mostrando skeleton de conductores...');
+    console.timeEnd('drivers-page-render');
     return (
       <>
         <PageToolbar 
@@ -121,6 +128,8 @@ export default function Drivers() {
   }
 
   if (drivers.length === 0) {
+    console.log('📋 Sin conductores registrados');
+    console.timeEnd('drivers-page-render');
     return (
       <>
         <PageToolbar 
@@ -150,6 +159,9 @@ export default function Drivers() {
       </>
     );
   }
+
+  console.log(`✅ Renderizando lista de ${drivers.length} conductores`);
+  console.timeEnd('drivers-page-render');
 
   return (
       <>

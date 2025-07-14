@@ -1,81 +1,81 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { useCompanyCache } from './useCompanyCache';
+import { useMemo } from 'react';
 
 export const useDriversCount = () => {
-  const [driversCount, setDriversCount] = useState(0);
-  const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const { userCompany, isLoading: cacheLoading, error: cacheError } = useCompanyCache();
 
-  const fetchDriversCount = async () => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+  // Memoizar queryKey para cache eficiente
+  const queryKey = useMemo(() => {
+    return ['drivers-count', user?.id, userCompany?.company_id];
+  }, [user?.id, userCompany?.company_id]);
 
-    try {
-      // Get user's company roles to find their company
-      const { data: userRoles, error: rolesError } = await supabase
-        .from('user_company_roles')
-        .select('company_id')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .limit(1);
-
-      if (rolesError) throw rolesError;
-
-      if (!userRoles || userRoles.length === 0) {
-        setDriversCount(0);
-        setLoading(false);
-        return;
+  const driversCountQuery = useQuery({
+    queryKey,
+    retry: 1,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 300000, // Cache agresivo - 5 minutos
+    gcTime: 600000, // 10 minutos en cache
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: false,
+    networkMode: 'online',
+    queryFn: async (): Promise<number> => {
+      console.log('🔄 useDriversCount iniciando...');
+      console.time('useDriversCount-TIME');
+      
+      if (!user) {
+        console.log('❌ Usuario no autenticado');
+        throw new Error('User not authenticated');
       }
 
-      const companyId = userRoles[0].company_id;
+      // Verificar errores de cache
+      if (cacheError) {
+        console.error('❌ Error en cache de compañía:', cacheError);
+        throw new Error('Error obteniendo datos de compañía');
+      }
 
-      // Get count of active drivers in the same company
-      const { count, error: countError } = await supabase
-        .from('user_company_roles')
-        .select('*', { count: 'exact', head: true })
-        .eq('company_id', companyId)
-        .eq('role', 'driver')
-        .eq('is_active', true);
+      // Esperar a que el cache esté listo
+      if (cacheLoading || !userCompany) {
+        console.log('⏳ Esperando cache de compañía...');
+        throw new Error('Cargando datos de compañía...');
+      }
 
-      if (countError) throw countError;
+      try {
+        // Get count of active drivers using company from cache
+        const { count, error: countError } = await supabase
+          .from('user_company_roles')
+          .select('*', { count: 'exact', head: true })
+          .eq('company_id', userCompany.company_id)
+          .eq('role', 'driver')
+          .eq('is_active', true);
 
-      setDriversCount(count || 0);
-    } catch (error) {
-      console.error('Error fetching drivers count:', error);
-      setDriversCount(0);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDriversCount();
-
-    // Set up real-time subscription for user_company_roles changes
-    const channel = supabase
-      .channel('drivers-count-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // Listen to all changes (INSERT, UPDATE, DELETE)
-          schema: 'public',
-          table: 'user_company_roles',
-          filter: `role=eq.driver`
-        },
-        () => {
-          // Refresh count when there are changes to driver roles
-          fetchDriversCount();
+        if (countError) {
+          console.error('Error obteniendo conteo de drivers:', countError);
+          throw countError;
         }
-      )
-      .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user]);
+        const finalCount = count || 0;
+        console.log(`👥 Conteo de conductores: ${finalCount}`);
+        console.timeEnd('useDriversCount-TIME');
+        
+        return finalCount;
 
-  return { driversCount, loading, refreshCount: fetchDriversCount };
+      } catch (error: any) {
+        console.error('Error en useDriversCount:', error);
+        console.timeEnd('useDriversCount-TIME');
+        throw error;
+      }
+    },
+    enabled: !!user,
+  });
+
+  return { 
+    driversCount: driversCountQuery.data || 0, 
+    loading: driversCountQuery.isLoading, 
+    refreshCount: driversCountQuery.refetch 
+  };
 };
