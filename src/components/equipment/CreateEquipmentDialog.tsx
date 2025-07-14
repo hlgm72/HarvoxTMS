@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -17,6 +17,8 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useEquipment, type CreateEquipmentData } from "@/hooks/useEquipment";
+import { ComboboxField } from "@/components/ui/ComboboxField";
+import { getBrandsByEquipmentType } from "@/constants/equipmentBrands";
 
 const equipmentSchema = z.object({
   equipment_number: z.string().min(1, "El número de equipo es requerido"),
@@ -48,6 +50,7 @@ interface CreateEquipmentDialogProps {
 export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDialogProps) {
   const { t } = useTranslation();
   const { createEquipment, isCreating } = useEquipment();
+  const [currentEquipmentType, setCurrentEquipmentType] = useState("truck");
 
   const form = useForm<EquipmentFormData>({
     resolver: zodResolver(equipmentSchema),
@@ -57,6 +60,21 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
       status: "active",
     },
   });
+
+  // Obtener marcas basadas en el tipo de equipo seleccionado
+  const availableBrands = getBrandsByEquipmentType(currentEquipmentType);
+
+  // Escuchar cambios en el tipo de equipo para actualizar las marcas disponibles
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === "equipment_type" && value.equipment_type) {
+        setCurrentEquipmentType(value.equipment_type);
+        // Limpiar la marca seleccionada cuando cambie el tipo
+        form.setValue("make", "");
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   const onSubmit = (data: EquipmentFormData) => {
     const equipmentData: CreateEquipmentData = {
@@ -81,6 +99,7 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
 
     createEquipment(equipmentData);
     form.reset();
+    setCurrentEquipmentType("truck");
     onOpenChange(false);
   };
 
@@ -175,9 +194,15 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t("equipment.make", "Marca")}</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Volvo" {...field} />
-                        </FormControl>
+                        <ComboboxField
+                          options={availableBrands}
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder={t("equipment.selectMake", "Selecciona una marca...")}
+                          emptyText={t("equipment.noMakesFound", "No se encontraron marcas.")}
+                          allowCustom={true}
+                          customText={t("equipment.addCustomMake", "Agregar marca personalizada")}
+                        />
                         <FormMessage />
                       </FormItem>
                     )}
