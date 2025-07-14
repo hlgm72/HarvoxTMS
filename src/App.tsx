@@ -9,6 +9,7 @@ import AuthCallback from "./pages/AuthCallback";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import Companies from "./pages/Companies";
 import PaymentSystem from "./pages/PaymentSystem";
+import Equipment from "./pages/Equipment";
 import Invitation from "./pages/Invitation";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
@@ -180,7 +181,7 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <Layout>
-                <div>Equipment page coming soon</div>
+                <Equipment />
               </Layout>
             </ProtectedRoute>
           } 
