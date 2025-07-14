@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { useState, useCallback, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,9 +13,9 @@ import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { LogOut, Users, LayoutDashboard, Truck, Settings, User, Building2, FileText, Wrench } from "lucide-react";
+import { LogOut, Settings, User } from "lucide-react";
 import { useFleetNotifications } from '@/components/notifications';
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MenuToggle } from "./MenuToggle";
 
 export function Header() {
@@ -25,78 +24,6 @@ export function Header() {
   const { getUserInitials, getFullName, user, profile } = useUserProfile();
   const { showSuccess, showError } = useFleetNotifications();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // Función para obtener información de la página actual
-  const getPageInfo = () => {
-    const path = location.pathname;
-    
-    switch (path) {
-      case '/users':
-        return {
-          icon: Users,
-          title: 'Gestión de Usuarios',
-          subtitle: 'Administra los usuarios de tu empresa'
-        };
-      case '/dashboard':
-        return {
-          icon: LayoutDashboard,
-          title: 'Centro de Comando FleetNest',
-          subtitle: 'Operaciones en tiempo real'
-        };
-      case '/drivers':
-        return {
-          icon: Truck,
-          title: 'Gestión de Conductores',
-          subtitle: 'Administra tu flota de conductores'
-        };
-      case '/companies':
-        return {
-          icon: Building2,
-          title: 'Gestión de Empresas',
-          subtitle: 'Administra las empresas del sistema'
-        };
-      case '/clients':
-        return {
-          icon: Building2,
-          title: 'Gestión de Clientes',
-          subtitle: 'Administra tus clientes y brokers'
-        };
-      case '/documents':
-        return {
-          icon: FileText,
-          title: 'Gestión de Documentos',
-          subtitle: 'Administra los documentos de tu empresa'
-        };
-      case '/equipment':
-        return {
-          icon: Wrench,
-          title: 'Gestión de Equipos',
-          subtitle: 'Administra todos los vehículos y equipos de tu flota'
-        };
-      case '/settings':
-        return {
-          icon: Settings,
-          title: 'Configuración',
-          subtitle: 'Ajustes del sistema'
-        };
-      case '/profile':
-        return {
-          icon: User,
-          title: 'Perfil de Usuario',
-          subtitle: 'Gestiona tu información personal'
-        };
-      default:
-        return {
-          icon: LayoutDashboard,
-          title: 'Centro de Comando FleetNest',
-          subtitle: 'Operaciones en tiempo real'
-        };
-    }
-  };
-
-  const pageInfo = getPageInfo();
-  const IconComponent = pageInfo.icon;
 
   const handleLogout = async () => {
     try {
@@ -116,28 +43,9 @@ export function Header() {
   
   return (
     <header className="h-14 md:h-16 border-b border-border bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 shadow-sm">
-      <div className="flex h-full items-center justify-between pr-3 md:pr-6">
-        <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
-          {/* Botón menú independiente - NO MÁS PROBLEMAS */}
-          <MenuToggle />
-          
-          {/* Título responsivo */}
-          <div className="border-l border-border/20 pl-2 md:pl-4 flex-1 min-w-0">
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="p-1.5 md:p-2 bg-gradient-fleet rounded-lg flex-shrink-0">
-                <IconComponent className="h-4 w-4 md:h-5 md:w-5 text-white" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-base md:text-xl font-bold bg-gradient-fleet bg-clip-text text-transparent tracking-tight truncate">
-                  {pageInfo.title}
-                </h1>
-                <p className="text-xs md:text-sm text-muted-foreground font-medium truncate hidden sm:block">
-                  {pageInfo.subtitle}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="flex h-full items-center justify-between pl-2 md:pl-4 pr-3 md:pr-6">
+        {/* Menu Toggle */}
+        <MenuToggle />
 
         <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
           {/* Controles responsivos - ocultos en móvil muy pequeño */}
