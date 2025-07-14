@@ -74,7 +74,9 @@ export default function Equipment() {
   return (
     <div>
       <PageToolbar 
+        icon={Wrench}
         title="Gestión de Equipos"
+        subtitle={`${equipment?.length || 0} equipos • ${activeCount} activos • ${maintenanceCount} en mantenimiento`}
         actions={
           <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
             <Plus className="h-4 w-4" />

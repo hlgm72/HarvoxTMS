@@ -1,3 +1,4 @@
+import { Truck, UserPlus } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { UserPlus } from "lucide-react";
 import { useState } from "react";
 import { InviteDriverDialog } from "@/components/drivers/InviteDriverDialog";
 
@@ -99,7 +99,9 @@ export default function Drivers() {
     return (
       <>
         <PageToolbar 
+          icon={Truck}
           title="Gestión de Conductores"
+          subtitle="Cargando información de conductores..."
           actions={
             <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />
@@ -122,7 +124,9 @@ export default function Drivers() {
     return (
       <>
         <PageToolbar 
+          icon={Truck}
           title="Gestión de Conductores"
+          subtitle="No hay conductores registrados en el sistema"
           actions={
             <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />
@@ -150,7 +154,9 @@ export default function Drivers() {
   return (
       <>
         <PageToolbar 
-          title={`Gestión de Conductores (${drivers.length})`}
+          icon={Truck}
+          title={`Gestión de Conductores`}
+          subtitle={`${drivers.length} conductores • ${drivers.filter(d => d.current_status === 'available').length} disponibles • ${drivers.filter(d => d.current_status === 'on_route').length} en ruta`}
           actions={
             <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />

@@ -241,7 +241,9 @@ export default function Documents() {
   return (
     <div>
       <PageToolbar 
+        icon={FileText}
         title="Documentos de la Compañía"
+        subtitle="Gestiona certificados, permisos y documentación legal"
         actions={
           <div className="flex gap-2">
             <Button 

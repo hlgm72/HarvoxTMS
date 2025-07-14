@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
+import { LucideIcon } from "lucide-react";
 
 interface PageToolbarProps {
+  icon?: LucideIcon;
   title: string | ReactNode;
   subtitle?: string | ReactNode;
   actions?: ReactNode;
@@ -8,6 +10,7 @@ interface PageToolbarProps {
 }
 
 export function PageToolbar({ 
+  icon: Icon,
   title,
   subtitle,
   actions, 
@@ -19,14 +22,23 @@ export function PageToolbar({
         {/* Title and Actions Row */}
         <div className="flex items-start justify-between gap-2 md:gap-4">
           <div className="min-w-0 flex-1">
-            <h1 className="text-xl md:text-2xl font-semibold text-foreground truncate">
-              {title}
-            </h1>
-            {subtitle && (
-              <p className="text-sm md:text-base text-muted-foreground mt-1 truncate">
-                {subtitle}
-              </p>
-            )}
+            <div className="flex items-center gap-3">
+              {Icon && (
+                <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0">
+                  <Icon className="h-5 w-5 text-primary" />
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl md:text-2xl font-semibold text-foreground truncate">
+                  {title}
+                </h1>
+                {subtitle && (
+                  <p className="text-sm md:text-base text-muted-foreground mt-1 truncate">
+                    {subtitle}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
             {viewToggle}

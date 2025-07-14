@@ -255,7 +255,9 @@ export default function Profile() {
   return (
     <>
       <PageToolbar 
+        icon={User}
         title="Mi Perfil"
+        subtitle="Gestiona tu información personal y configuración de cuenta"
       />
       <div className="container mx-auto p-3 md:p-6 max-w-6xl">
 

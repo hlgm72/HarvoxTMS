@@ -37,8 +37,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { 
-  UserPlus, Mail, Shield, Edit, Trash2, Users as UsersIcon, Eye,
-  Activity, Clock, AlertCircle, TrendingUp, Search, Filter, X, Grid, List,
+  Users as UsersIcon, Grid, List,
+  Activity, Clock, AlertCircle, TrendingUp, Search, Filter, X, UserPlus, Mail, Shield, Edit, Trash2, Eye,
   Truck
 } from "lucide-react";
 import { toast } from "sonner";
@@ -499,15 +499,9 @@ export default function Users() {
     <div>
       {/* Page Toolbar */}
       <PageToolbar
-        title={
-          <span className="flex items-center gap-2">
-            <span className="hidden sm:inline">Usuarios de la Empresa</span>
-            <span className="sm:hidden">Usuarios</span>
-            <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-medium bg-primary text-primary-foreground rounded-full">
-              {filteredUsers.length}
-            </span>
-          </span>
-        }
+        icon={UsersIcon}
+        title="Usuarios de la Empresa"
+        subtitle={`${filteredUsers.length} usuarios • ${filteredUsers.filter(u => u.status === 'active').length} activos • ${new Set(filteredUsers.map(u => u.role)).size} roles diferentes`}
         actions={
           <div className="flex items-center gap-2">
             <UserFiltersSheet

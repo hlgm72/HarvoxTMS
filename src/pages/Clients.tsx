@@ -106,7 +106,9 @@ export default function Clients() {
   return (
     <Layout>
       <PageToolbar
+        icon={Building2}
         title="Gestión de Clientes"
+        subtitle="Administra tus clientes y brokers de carga"
         actions={
           <Button 
             onClick={() => setShowCreateDialog(true)}

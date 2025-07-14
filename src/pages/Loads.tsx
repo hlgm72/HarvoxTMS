@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Plus, Package } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { LoadsList } from "@/components/loads/LoadsList";
 import { LoadFilters } from "@/components/loads/LoadFilters";
@@ -20,7 +20,9 @@ export default function Loads() {
   return (
     <>
       <PageToolbar 
+        icon={Package}
         title={t("loads.title", "Gestión de Cargas")}
+        subtitle="12 cargas activas • $45,230 en tránsito • 3 pendientes asignación"
         actions={
           <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
             <Plus className="h-4 w-4" />

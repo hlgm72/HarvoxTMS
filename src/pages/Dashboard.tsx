@@ -8,6 +8,7 @@ import { DispatchPanel } from "@/components/dashboard/DispatchPanel";
 import { FleetStatus } from "@/components/dashboard/FleetStatus";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { PWAInstallBanner } from "@/components/ui/PWAInstallBanner";
+import { LayoutDashboard } from "lucide-react";
 
 export default function Dashboard() {
   // Mock data para las nuevas cards
@@ -33,7 +34,9 @@ export default function Dashboard() {
   return (
     <>
       <PageToolbar 
+        icon={LayoutDashboard}
         title="Centro de Comando"
+        subtitle="Operaciones en tiempo real • Monitoreo de flota activo"
       />
       <div className="p-3 md:p-6 space-y-4 md:space-y-6">
         {/* PWA Install Banner */}

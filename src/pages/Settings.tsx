@@ -225,7 +225,9 @@ export default function Settings() {
   return (
     <>
       <PageToolbar 
+        icon={SettingsIcon}
         title="Configuración"
+        subtitle="Configuración del sistema y preferencias de la empresa"
       />
       <div className="p-6 min-h-screen bg-gradient-subtle">
         {/* Content */}

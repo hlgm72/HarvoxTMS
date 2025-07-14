@@ -54,6 +54,7 @@ export default function Payments() {
   return (
     <div className="space-y-6">
       <PageToolbar 
+        icon={DollarSign}
         title="Gestión de Pagos"
         subtitle={isDriver ? "Mis ingresos y deducciones" : "Administración de pagos de conductores"}
       />
