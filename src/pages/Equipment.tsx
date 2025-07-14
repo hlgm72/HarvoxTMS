@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Search, Filter, Grid3X3, List, Wrench } from "lucide-react";
+import { Plus, Search, Filter, Grid3X3, List, Wrench, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +14,7 @@ import { EquipmentFilters } from "@/components/equipment/EquipmentFilters";
 import { EquipmentStats } from "@/components/equipment/EquipmentStats";
 import { useEquipment } from "@/hooks/useEquipment";
 import { PageToolbar } from "@/components/layout/PageToolbar";
+import { EquipmentLocationMap } from "@/components/equipment/EquipmentLocationMap";
 
 export default function Equipment() {
   const { t } = useTranslation();
@@ -21,6 +22,7 @@ export default function Equipment() {
   const [showFilters, setShowFilters] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [activeTab, setActiveTab] = useState("equipment");
   
   const { equipment, isLoading, error } = useEquipment();
 
@@ -50,110 +52,132 @@ export default function Equipment() {
         {/* Stats Cards */}
         <EquipmentStats equipment={equipment} />
 
-      {/* Search and Filters */}
-      <Card>
-        <CardHeader className="pb-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder={t("equipment.searchPlaceholder", "Buscar por número, marca, modelo o placa...")}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowFilters(!showFilters)}
-                className="gap-2"
-              >
-                <Filter className="h-4 w-4" />
-                {t("common.filters", "Filtros")}
-              </Button>
-              
-              <div className="flex rounded-md border">
-                <Button
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                  className="rounded-r-none"
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === "grid" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("grid")}
-                  className="rounded-l-none"
-                >
-                  <Grid3X3 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-          
-          {showFilters && (
-            <div className="mt-4 p-4 border rounded-lg bg-muted/50">
-              <EquipmentFilters />
-            </div>
-          )}
-        </CardHeader>
-      </Card>
+        {/* Main Content with Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="equipment" className="gap-2">
+              <Wrench className="h-4 w-4" />
+              {t("equipment.tabs.equipment", "Equipos")}
+            </TabsTrigger>
+            <TabsTrigger value="locations" className="gap-2">
+              <MapPin className="h-4 w-4" />
+              {t("equipment.tabs.locations", "Ubicaciones")}
+            </TabsTrigger>
+          </TabsList>
 
-      {/* Equipment List/Grid */}
-      <Card>
-        <CardContent className="p-0">
-          {isLoading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-                <p className="text-muted-foreground">{t("common.loading", "Cargando...")}</p>
-              </div>
-            </div>
-          ) : error ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="text-center">
-                <p className="text-destructive mb-2">{t("common.error", "Error al cargar los datos")}</p>
-                <p className="text-sm text-muted-foreground">{error.message}</p>
-              </div>
-            </div>
-          ) : filteredEquipment.length === 0 ? (
-            <div className="text-center py-12">
-              <Wrench className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">
-                {searchQuery 
-                  ? t("equipment.noResults", "No se encontraron equipos")
-                  : t("equipment.noEquipment", "No hay equipos registrados")
-                }
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                {searchQuery 
-                  ? t("equipment.noResultsDescription", "Intenta ajustar los criterios de búsqueda para encontrar equipos")
-                  : t("equipment.noEquipmentDescription", "Comienza agregando el primer vehículo o equipo de tu flota")
-                }
-              </p>
-              {!searchQuery && (
-                <Button onClick={() => setShowCreateDialog(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  {t("equipment.addFirst", "Agregar Primer Equipo")}
-                </Button>
-              )}
-            </div>
-          ) : (
-            <>
-              {viewMode === "list" ? (
-                <EquipmentList equipment={filteredEquipment} />
-              ) : (
-                <EquipmentGrid equipment={filteredEquipment} />
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
+          {/* Equipment Tab */}
+          <TabsContent value="equipment" className="space-y-6">
+            {/* Search and Filters */}
+            <Card>
+              <CardHeader className="pb-4">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <Input
+                      placeholder={t("equipment.searchPlaceholder", "Buscar por número, marca, modelo o placa...")}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowFilters(!showFilters)}
+                      className="gap-2"
+                    >
+                      <Filter className="h-4 w-4" />
+                      {t("common.filters", "Filtros")}
+                    </Button>
+                    
+                    <div className="flex rounded-md border">
+                      <Button
+                        variant={viewMode === "list" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setViewMode("list")}
+                        className="rounded-r-none"
+                      >
+                        <List className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant={viewMode === "grid" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setViewMode("grid")}
+                        className="rounded-l-none"
+                      >
+                        <Grid3X3 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                
+                {showFilters && (
+                  <div className="mt-4 p-4 border rounded-lg bg-muted/50">
+                    <EquipmentFilters />
+                  </div>
+                )}
+              </CardHeader>
+            </Card>
+
+            {/* Equipment List/Grid */}
+            <Card>
+              <CardContent className="p-0">
+                {isLoading ? (
+                  <div className="flex items-center justify-center h-64">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                      <p className="text-muted-foreground">{t("common.loading", "Cargando...")}</p>
+                    </div>
+                  </div>
+                ) : error ? (
+                  <div className="flex items-center justify-center h-64">
+                    <div className="text-center">
+                      <p className="text-destructive mb-2">{t("common.error", "Error al cargar los datos")}</p>
+                      <p className="text-sm text-muted-foreground">{error.message}</p>
+                    </div>
+                  </div>
+                ) : filteredEquipment.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Wrench className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-medium mb-2">
+                      {searchQuery 
+                        ? t("equipment.noResults", "No se encontraron equipos")
+                        : t("equipment.noEquipment", "No hay equipos registrados")
+                      }
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      {searchQuery 
+                        ? t("equipment.noResultsDescription", "Intenta ajustar los criterios de búsqueda para encontrar equipos")
+                        : t("equipment.noEquipmentDescription", "Comienza agregando el primer vehículo o equipo de tu flota")
+                      }
+                    </p>
+                    {!searchQuery && (
+                      <Button onClick={() => setShowCreateDialog(true)}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        {t("equipment.addFirst", "Agregar Primer Equipo")}
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    {viewMode === "list" ? (
+                      <EquipmentList equipment={filteredEquipment} />
+                    ) : (
+                      <EquipmentGrid equipment={filteredEquipment} />
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Locations Tab */}
+          <TabsContent value="locations">
+            <EquipmentLocationMap />
+          </TabsContent>
+        </Tabs>
 
         {/* Create Equipment Dialog */}
         <CreateEquipmentDialog 

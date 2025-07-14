@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import type { Equipment } from "@/hooks/useEquipment";
+import { EquipmentLocationStatus } from "./EquipmentLocationStatus";
+import { useGeotabVehicles } from "@/hooks/useGeotabVehicles";
 
 interface EquipmentListProps {
   equipment: Equipment[];
@@ -15,6 +17,7 @@ interface EquipmentListProps {
 
 export function EquipmentList({ equipment }: EquipmentListProps) {
   const { t } = useTranslation();
+  const { equipmentWithGeotab, isLoadingEquipmentWithGeotab } = useGeotabVehicles();
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
@@ -72,16 +75,19 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
     );
   }
 
+  // Use equipmentWithGeotab data if available, otherwise fallback to regular equipment
+  const displayEquipment = equipmentWithGeotab || equipment;
+
   return (
     <div className="space-y-4 p-6">
-      {equipment.map((item) => {
+      {displayEquipment.map((item) => {
         const statusInfo = getStatusBadge(item.status);
         const nextExpiry = getNextExpiryDate(item);
         
         return (
           <Card key={item.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-lg font-semibold text-foreground">
@@ -95,22 +101,25 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                     </Badge>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
+                    {/* Basic Info */}
                     <div>
                       <p><strong>{t("equipment.make", "Marca")}:</strong> {item.make || "N/A"}</p>
                       <p><strong>{t("equipment.model", "Modelo")}:</strong> {item.model || "N/A"}</p>
                       <p><strong>{t("equipment.year", "Año")}:</strong> {item.year || "N/A"}</p>
                     </div>
                     
+                    {/* Vehicle Details */}
                     <div>
                       <p><strong>{t("equipment.licensePlate", "Placa")}:</strong> {item.license_plate || "N/A"}</p>
                       <p><strong>{t("equipment.vin", "VIN")}:</strong> {item.vin_number ? item.vin_number.substring(0, 10) + "..." : "N/A"}</p>
                       <p><strong>{t("equipment.mileage", "Kilometraje")}:</strong> {item.current_mileage ? `${item.current_mileage.toLocaleString()} km` : "N/A"}</p>
                     </div>
                     
+                    {/* Expiry Info */}
                     <div>
                       {nextExpiry && (
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 mb-2">
                           <Calendar className="h-3 w-3" />
                           <span className={nextExpiry.isExpiring ? "text-destructive font-medium" : ""}>
                             <strong>{nextExpiry.type}:</strong> {new Date(nextExpiry.date!).toLocaleDateString()}
@@ -118,12 +127,17 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                           </span>
                         </div>
                       )}
-                      <p className="text-xs mt-1">
+                      <p className="text-xs">
                         {t("equipment.createdAt", "Creado")}: {formatDistanceToNow(new Date(item.created_at), { 
                           addSuffix: true, 
                           locale: es 
                         })}
                       </p>
+                    </div>
+                    
+                    {/* Location Status - New Column */}
+                    <div>
+                      <EquipmentLocationStatus equipment={item} />
                     </div>
                   </div>
                 </div>
