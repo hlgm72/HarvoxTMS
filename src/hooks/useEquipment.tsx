@@ -61,22 +61,17 @@ export function useEquipment() {
   const equipmentQuery = useQuery({
     queryKey: ["equipment"],
     queryFn: async () => {
-      console.log('🔧 Fetching equipment data...');
       const { data, error } = await supabase
         .from("company_equipment")
         .select("*")
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error('🔧 Error fetching equipment:', error);
         throw error;
       }
 
-      console.log('🔧 Equipment data fetched:', data?.length, 'items');
       return data as Equipment[];
     },
-    staleTime: 30000, // Cache for 30 seconds
-    refetchOnWindowFocus: true, // Refetch when window gains focus
   });
 
   const createEquipmentMutation = useMutation({
