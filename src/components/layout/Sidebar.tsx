@@ -606,7 +606,7 @@ export function AppSidebar() {
         <div className={`flex items-center transition-all duration-300 ${collapsed ? 'justify-center' : 'gap-4'}`}>
           {/* Logo Container with Professional Styling */}
           <div className="relative group">
-            <div className={`${collapsed ? 'w-14 h-14' : 'w-20 h-20'} bg-gradient-to-br from-white/20 to-white/5 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 animate-[scale-in_0.8s_cubic-bezier(0.4,0,0.2,1)]`}>
+            <div className={`${collapsed ? 'w-14 h-14' : 'w-20 h-20'} bg-black rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 animate-[scale-in_0.8s_cubic-bezier(0.4,0,0.2,1)]`}>
               <img 
                 src="/lovable-uploads/9cb5d526-098e-49f2-9a9c-817e5fb96a70.png" 
                 alt="FleetNest Logo" 
