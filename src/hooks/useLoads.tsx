@@ -68,18 +68,10 @@ export const useLoads = () => {
 
       const userIds = companyUsers.map(u => u.user_id);
 
-      // Obtener cargas con información de períodos de pago
+      // Obtener cargas primero
       const { data: loads, error: loadsError } = await supabase
         .from('loads')
-        .select(`
-          *,
-          payment_periods:payment_period_id (
-            period_start_date,
-            period_end_date,
-            period_frequency,
-            status
-          )
-        `)
+        .select('*')
         .in('driver_user_id', userIds)
         .order('created_at', { ascending: false });
 
@@ -90,6 +82,7 @@ export const useLoads = () => {
       // Obtener información adicional para enriquecer las cargas
       const driverIds = [...new Set(loads.map(l => l.driver_user_id))];
       const brokerIds = [...new Set(loads.map(l => l.broker_id).filter(Boolean))];
+      const periodIds = [...new Set(loads.map(l => l.payment_period_id).filter(Boolean))];
 
       // Obtener nombres de conductores
       const { data: profiles } = await supabase
@@ -102,6 +95,12 @@ export const useLoads = () => {
         .from('company_brokers')
         .select('id, name')
         .in('id', brokerIds) : { data: [] };
+
+      // Obtener información de períodos de pago
+      const { data: paymentPeriods } = periodIds.length > 0 ? await supabase
+        .from('payment_periods')
+        .select('id, period_start_date, period_end_date, period_frequency, status')
+        .in('id', periodIds) : { data: [] };
 
       // Obtener paradas de carga para pickup/delivery
       const loadIds = loads.map(l => l.id);
@@ -124,10 +123,8 @@ export const useLoads = () => {
           .filter(s => s.stop_type === 'delivery')
           .sort((a, b) => b.stop_number - a.stop_number)[0];
 
-        // Extraer información del período de pago
-        const paymentPeriod = Array.isArray(load.payment_periods) 
-          ? load.payment_periods[0] 
-          : load.payment_periods;
+        // Obtener información del período de pago
+        const paymentPeriod = paymentPeriods?.find(p => p.id === load.payment_period_id);
 
         return {
           ...load,
