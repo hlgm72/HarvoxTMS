@@ -74,9 +74,6 @@ export default function Equipment() {
   return (
     <div>
       <PageToolbar 
-        breadcrumbs={[
-          { label: "Equipos" }
-        ]}
         title="Gestión de Equipos"
         actions={
           <Button onClick={() => setShowCreateDialog(true)} className="gap-2">

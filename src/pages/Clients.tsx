@@ -106,7 +106,6 @@ export default function Clients() {
   return (
     <Layout>
       <PageToolbar
-        breadcrumbs={breadcrumbs}
         title="Gestión de Clientes"
         actions={
           <Button 

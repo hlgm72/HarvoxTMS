@@ -20,9 +20,6 @@ export default function Loads() {
   return (
     <>
       <PageToolbar 
-        breadcrumbs={[
-          { label: t("loads.title", "Gestión de Cargas") }
-        ]}
         title={t("loads.title", "Gestión de Cargas")}
         actions={
           <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">

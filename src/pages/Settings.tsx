@@ -225,9 +225,7 @@ export default function Settings() {
   return (
     <>
       <PageToolbar 
-        breadcrumbs={[
-          { label: "Configuración" }
-        ]}
+        title="Configuración"
       />
       <div className="p-6 min-h-screen bg-gradient-subtle">
         {/* Content */}

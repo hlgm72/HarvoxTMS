@@ -16,9 +16,7 @@ export default function OperationsManagerDashboard() {
   return (
     <>
       <PageToolbar 
-        breadcrumbs={[
-          { label: "Dashboard Operacional" }
-        ]}
+        title="Dashboard Operacional"
       />
       <div className="p-6 space-y-6">
 

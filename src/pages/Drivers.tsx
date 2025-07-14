@@ -99,9 +99,7 @@ export default function Drivers() {
     return (
       <>
         <PageToolbar 
-          breadcrumbs={[
-            { label: "Gestión de Conductores" }
-          ]}
+          title="Gestión de Conductores"
           actions={
             <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />
@@ -124,9 +122,7 @@ export default function Drivers() {
     return (
       <>
         <PageToolbar 
-          breadcrumbs={[
-            { label: "Gestión de Conductores" }
-          ]}
+          title="Gestión de Conductores"
           actions={
             <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />
@@ -154,9 +150,6 @@ export default function Drivers() {
   return (
       <>
         <PageToolbar 
-          breadcrumbs={[
-            { label: "Gestión de Conductores" }
-          ]}
           title={`Gestión de Conductores (${drivers.length})`}
           actions={
             <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>

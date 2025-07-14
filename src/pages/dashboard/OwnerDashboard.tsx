@@ -263,9 +263,7 @@ export default function OwnerDashboard() {
   return (
     <>
       <PageToolbar 
-        breadcrumbs={[
-          { label: "Dashboard Ejecutivo" }
-        ]}
+        title="Dashboard Ejecutivo"
       />
       <div className="p-6 pt-2 min-h-screen bg-gradient-subtle">
         {/* Content */}

@@ -16,9 +16,7 @@ export default function DispatcherDashboard() {
   return (
     <>
       <PageToolbar 
-        breadcrumbs={[
-          { label: "Panel de Despacho" }
-        ]}
+        title="Panel de Despacho"
       />
       <div className="p-6 space-y-6">
 

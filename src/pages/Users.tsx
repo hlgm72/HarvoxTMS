@@ -499,9 +499,6 @@ export default function Users() {
     <div>
       {/* Page Toolbar */}
       <PageToolbar
-        breadcrumbs={[
-          { label: "Gestión de Usuarios" }
-        ]}
         title={
           <span className="flex items-center gap-2">
             <span className="hidden sm:inline">Usuarios de la Empresa</span>

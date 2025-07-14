@@ -255,9 +255,7 @@ export default function Profile() {
   return (
     <>
       <PageToolbar 
-        breadcrumbs={[
-          { label: "Mi Perfil" }
-        ]}
+        title="Mi Perfil"
       />
       <div className="container mx-auto p-3 md:p-6 max-w-6xl">
 

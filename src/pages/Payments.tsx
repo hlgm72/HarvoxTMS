@@ -54,18 +54,8 @@ export default function Payments() {
   return (
     <div className="space-y-6">
       <PageToolbar 
-        breadcrumbs={[
-          { label: "Inicio", href: "/" },
-          { label: "Gestión de Pagos" }
-        ]}
-        title={
-          <div>
-            <h1 className="text-2xl font-bold">Gestión de Pagos</h1>
-            <p className="text-muted-foreground">
-              {isDriver ? "Mis ingresos y deducciones" : "Administración de pagos de conductores"}
-            </p>
-          </div>
-        }
+        title="Gestión de Pagos"
+        subtitle={isDriver ? "Mis ingresos y deducciones" : "Administración de pagos de conductores"}
       />
 
       {/* Resumen de período actual */}

@@ -33,9 +33,7 @@ export default function Dashboard() {
   return (
     <>
       <PageToolbar 
-        breadcrumbs={[
-          { label: "Centro de Comando" }
-        ]}
+        title="Centro de Comando"
       />
       <div className="p-3 md:p-6 space-y-4 md:space-y-6">
         {/* PWA Install Banner */}

@@ -12,9 +12,7 @@ export default function DriverDashboard() {
   return (
     <>
       <PageToolbar 
-        breadcrumbs={[
-          { label: "Mi Dashboard" }
-        ]}
+        title="Mi Dashboard"
       />
       <div className="p-6 space-y-6">
 

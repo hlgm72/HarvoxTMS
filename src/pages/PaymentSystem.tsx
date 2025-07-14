@@ -5,9 +5,7 @@ export default function PaymentSystem() {
   return (
     <>
       <PageToolbar 
-        breadcrumbs={[
-          { label: "Sistema de Pagos" }
-        ]}
+        title="Sistema de Pagos"
       />
       <div className="container mx-auto p-6 space-y-8">
         <PaymentSystemDemo />

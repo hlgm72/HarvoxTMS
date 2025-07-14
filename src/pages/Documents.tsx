@@ -241,9 +241,6 @@ export default function Documents() {
   return (
     <div>
       <PageToolbar 
-        breadcrumbs={[
-          { label: "Documentos" }
-        ]}
         title="Documentos de la Compañía"
         actions={
           <div className="flex gap-2">
