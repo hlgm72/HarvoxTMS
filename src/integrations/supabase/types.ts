@@ -181,10 +181,12 @@ export type Database = {
           alias: string | null
           company_id: string
           created_at: string
+          dot_number: string | null
           email_domain: string | null
           id: string
           is_active: boolean
           logo_url: string | null
+          mc_number: string | null
           name: string
           notes: string | null
           updated_at: string
@@ -194,10 +196,12 @@ export type Database = {
           alias?: string | null
           company_id: string
           created_at?: string
+          dot_number?: string | null
           email_domain?: string | null
           id?: string
           is_active?: boolean
           logo_url?: string | null
+          mc_number?: string | null
           name: string
           notes?: string | null
           updated_at?: string
@@ -207,10 +211,12 @@ export type Database = {
           alias?: string | null
           company_id?: string
           created_at?: string
+          dot_number?: string | null
           email_domain?: string | null
           id?: string
           is_active?: boolean
           logo_url?: string | null
+          mc_number?: string | null
           name?: string
           notes?: string | null
           updated_at?: string
