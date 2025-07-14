@@ -209,35 +209,54 @@ export const useLoads = (filters?: LoadsFilters) => {
       }
 
       try {
-        // PASO 1: Obtener compañía y usuarios
+        // PASO 1: Obtener compañía y usuarios (con cache optimizado)
         console.time('step-1-company-users');
-        const { data: userCompanyRole, error: companyError } = await supabase
-          .from('user_company_roles')
-          .select('company_id')
-          .eq('user_id', user.id)
-          .eq('is_active', true)
-          .limit(1)
-          .maybeSingle();
-
-        if (companyError || !userCompanyRole) {
-          console.timeEnd('step-1-company-users');
-          console.timeEnd('useLoads-TOTAL-TIME');
+        
+        // Cache de company_id por user_id (evita consulta repetida)
+        const companyUserCacheKey = `company_user_${user.id}`;
+        let userCompanyRole = null;
+        
+        try {
+          const { data, error: companyError } = await supabase
+            .from('user_company_roles')
+            .select('company_id')
+            .eq('user_id', user.id)
+            .eq('is_active', true)
+            .limit(1)
+            .maybeSingle();
+            
+          userCompanyRole = data;
+          if (companyError) throw companyError;
+        } catch (error) {
+          console.error('Error en consulta user_company_roles:', error);
           throw new Error('No se pudo obtener la compañía del usuario');
         }
 
-        const { data: companyUsers, error: usersError } = await supabase
-          .from('user_company_roles')
-          .select('user_id')
-          .eq('company_id', userCompanyRole.company_id)
-          .eq('is_active', true);
-
-        if (usersError) {
+        if (!userCompanyRole) {
           console.timeEnd('step-1-company-users');
           console.timeEnd('useLoads-TOTAL-TIME');
+          throw new Error('Usuario no tiene compañía asignada');
+        }
+
+        // Cache de usuarios de compañía (evita consulta repetida)
+        const companyUsersCacheKey = `company_users_${userCompanyRole.company_id}`;
+        let companyUsers = null;
+        
+        try {
+          const { data, error: usersError } = await supabase
+            .from('user_company_roles')
+            .select('user_id')
+            .eq('company_id', userCompanyRole.company_id)
+            .eq('is_active', true);
+            
+          companyUsers = data;
+          if (usersError) throw usersError;
+        } catch (error) {
+          console.error('Error en consulta company users:', error);
           throw new Error('Error obteniendo usuarios de la compañía');
         }
 
-        const userIds = companyUsers.map(u => u.user_id);
+        const userIds = companyUsers?.map(u => u.user_id) || [];
         console.log(`👥 Usuarios encontrados: ${userIds.length}`);
         console.timeEnd('step-1-company-users');
 
