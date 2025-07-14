@@ -142,7 +142,7 @@ export function LoadsActionSheet({ filters, onFiltersChange }: LoadsActionSheetP
           <Filter className="h-4 w-4 mr-2" />
           Filtros
           {hasActiveFilters && (
-            <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
+            <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs">
               !
             </Badge>
           )}
