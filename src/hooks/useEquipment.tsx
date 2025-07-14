@@ -110,9 +110,12 @@ export function useEquipment() {
     },
     onSuccess: (data) => {
       console.log('🔧 Equipment created successfully:', data);
-      // Force immediate refresh of equipment list
+      // Update cache immediately by adding the new equipment to the list
+      queryClient.setQueryData(["equipment"], (oldData: Equipment[] | undefined) => {
+        return oldData ? [data, ...oldData] : [data];
+      });
+      // Also invalidate for consistency
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
-      queryClient.refetchQueries({ queryKey: ["equipment"] });
       showSuccess(
         t("equipment.created.title", "Equipo creado"),
         t("equipment.created.description", "El equipo se ha registrado exitosamente")
@@ -169,12 +172,17 @@ export function useEquipment() {
       if (error) {
         throw error;
       }
+      
+      return id; // Return the deleted id
     },
-    onSuccess: () => {
+    onSuccess: (deletedId) => {
       console.log('🔧 Equipment deleted successfully');
-      // Force immediate refresh of equipment list
+      // Update cache immediately by removing the equipment from the list
+      queryClient.setQueryData(["equipment"], (oldData: Equipment[] | undefined) => {
+        return oldData ? oldData.filter(equipment => equipment.id !== deletedId) : [];
+      });
+      // Also invalidate for consistency
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
-      queryClient.refetchQueries({ queryKey: ["equipment"] });
       showSuccess(
         t("equipment.deleted.title", "Equipo eliminado"),
         t("equipment.deleted.description", "El equipo se ha eliminado exitosamente")
