@@ -2313,6 +2313,14 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: Json
       }
+      generate_payment_periods: {
+        Args: { company_id_param: string; from_date: string; to_date: string }
+        Returns: Json
+      }
+      get_current_payment_period: {
+        Args: { driver_user_id_param: string; target_date?: string }
+        Returns: string
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
