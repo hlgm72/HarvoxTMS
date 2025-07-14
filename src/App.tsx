@@ -263,10 +263,10 @@ const App = () => {
       <AuthProvider>
         <UserProfileProvider>
           <NotificationProvider>
-            <Toaster />
-            <Sonner />
             <AppContent />
           </NotificationProvider>
+          <Toaster />
+          <Sonner />
         </UserProfileProvider>
       </AuthProvider>
     </QueryClientProvider>
