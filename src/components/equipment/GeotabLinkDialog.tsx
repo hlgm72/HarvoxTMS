@@ -26,9 +26,10 @@ export function GeotabLinkDialog({ open, onOpenChange, equipment }: GeotabLinkDi
   } = useGeotabVehicles();
 
   const handleLink = () => {
+    const vehicleId = selectedVehicleId === "no-link" ? null : selectedVehicleId;
     linkEquipment({ 
       equipmentId: equipment.id, 
-      geotabVehicleId: selectedVehicleId || null 
+      geotabVehicleId: vehicleId 
     });
     onOpenChange(false);
   };
@@ -110,7 +111,7 @@ export function GeotabLinkDialog({ open, onOpenChange, equipment }: GeotabLinkDi
                   <SelectValue placeholder={t("equipment.geotab.selectPlaceholder", "Selecciona un vehículo...")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">
+                  <SelectItem value="no-link">
                     {t("equipment.geotab.noLink", "No vincular")}
                   </SelectItem>
                   {availableVehicles.map((vehicle) => (
