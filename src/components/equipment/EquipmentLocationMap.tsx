@@ -10,113 +10,46 @@ import {
   AlertTriangle,
   RefreshCw
 } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { useGeotabVehicles } from "@/hooks/useGeotabVehicles";
 
 export function EquipmentLocationMap() {
-  const { t } = useTranslation();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<google.maps.Map | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [selectedEquipment, setSelectedEquipment] = useState<any>(null);
+  const markersRef = useRef<google.maps.Marker[]>([]);
   
   const { equipmentWithGeotab, isLoadingEquipmentWithGeotab } = useGeotabVehicles();
 
-  // Initialize Google Maps
-  useEffect(() => {
-    const initMap = async () => {
-      if (!mapContainer.current || map.current) return;
-
-      try {
-        // You would need to configure the Google Maps API key in your Supabase secrets
-        // For now, we'll show a placeholder message
-        const { Loader } = await import("@googlemaps/js-api-loader");
-        
-        const loader = new Loader({
-          apiKey: "YOUR_GOOGLE_MAPS_API_KEY", // This should come from Supabase secrets
-          version: "weekly",
-          libraries: ["places"]
-        });
-
-        const google = await loader.load();
-        
-        map.current = new google.maps.Map(mapContainer.current, {
-          center: { lat: 39.8283, lng: -98.5795 }, // Center of USA
-          zoom: 5,
-          mapTypeId: google.maps.MapTypeId.ROADMAP,
-        });
-
-        setIsMapLoaded(true);
-      } catch (error) {
-        console.error("Error loading Google Maps:", error);
-      }
-    };
-
-    initMap();
-  }, []);
-
-  // Add markers for equipment with locations
-  useEffect(() => {
-    if (!map.current || !isMapLoaded || !equipmentWithGeotab) return;
-
-    // Clear existing markers
-    const markers: google.maps.Marker[] = [];
-    
-    equipmentWithGeotab.forEach((equipment) => {
-      const geotabVehicle = equipment.geotab_vehicle;
-      const position = geotabVehicle?.latest_position;
-      
-      if (position && window.google) {
-        const marker = new window.google.maps.Marker({
-          position: { 
-            lat: position.latitude, 
-            lng: position.longitude 
-          },
-          map: map.current,
-          title: equipment.equipment_number,
-          icon: {
-            url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
-                <path d="M15 18H9"/>
-                <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>
-                <circle cx="17" cy="18" r="2"/>
-                <circle cx="7" cy="18" r="2"/>
-              </svg>
-            `),
-            scaledSize: new window.google.maps.Size(32, 32),
-          }
-        });
-
-        const infoWindow = new window.google.maps.InfoWindow({
-          content: `
-            <div style="padding: 8px; min-width: 200px;">
-              <h3 style="margin: 0 0 8px 0; font-weight: bold;">${equipment.equipment_number}</h3>
-              <p style="margin: 4px 0;"><strong>Tipo:</strong> ${equipment.equipment_type}</p>
-              <p style="margin: 4px 0;"><strong>Marca:</strong> ${equipment.make || 'N/A'}</p>
-              <p style="margin: 4px 0;"><strong>Modelo:</strong> ${equipment.model || 'N/A'}</p>
-              <p style="margin: 4px 0;"><strong>Velocidad:</strong> ${Math.round(position.speed || 0)} km/h</p>
-              <p style="margin: 4px 0;"><strong>Última actualización:</strong> ${new Date(position.date_time).toLocaleString()}</p>
-            </div>
-          `
-        });
-
-        marker.addListener("click", () => {
-          infoWindow.open(map.current, marker);
-          setSelectedEquipment(equipment);
-        });
-
-        markers.push(marker);
+  // Cleanup function
+  const cleanupMarkers = () => {
+    markersRef.current.forEach(marker => {
+      if (marker && marker.setMap) {
+        marker.setMap(null);
       }
     });
+    markersRef.current = [];
+  };
 
-    // Cleanup function to remove markers
-    return () => {
-      markers.forEach(marker => {
-        marker.setMap(null);
-      });
+  // Initialize simplified map view (placeholder)
+  useEffect(() => {
+    const initMapPlaceholder = () => {
+      if (!mapContainer.current) return;
+
+      // For now, we'll use a simple placeholder instead of loading Google Maps
+      // This avoids API key issues and potential React conflicts
+      setIsMapLoaded(true);
     };
-  }, [equipmentWithGeotab, isMapLoaded]);
+
+    initMapPlaceholder();
+
+    // Cleanup on unmount
+    return () => {
+      cleanupMarkers();
+      map.current = null;
+      setIsMapLoaded(false);
+    };
+  }, []);
 
   const equipmentWithLocation = equipmentWithGeotab?.filter(eq => 
     eq.geotab_vehicle?.latest_position
@@ -126,6 +59,11 @@ export function EquipmentLocationMap() {
     !eq.geotab_vehicle?.latest_position
   ) || [];
 
+  const refreshData = () => {
+    // This would trigger a refresh of the equipment data
+    window.location.reload();
+  };
+
   return (
     <div className="space-y-6">
       {/* Map Section */}
@@ -133,29 +71,43 @@ export function EquipmentLocationMap() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            {t("equipment.location.map.title", "Mapa de Equipos")}
+            Mapa de Ubicaciones
             <Badge variant="secondary" className="ml-auto">
               {equipmentWithLocation.length} con ubicación
             </Badge>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={refreshData}
+              className="ml-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {/* Placeholder for Google Maps - requires API key configuration */}
+          {/* Simplified map placeholder */}
           <div 
             ref={mapContainer}
-            className="w-full h-96 bg-muted rounded-lg flex items-center justify-center"
+            className="w-full h-96 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-muted-foreground/25"
           >
-            {!isMapLoaded && (
-              <div className="text-center text-muted-foreground">
-                <MapPin className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-medium mb-2">
-                  {t("equipment.location.map.placeholder", "Mapa de Ubicaciones")}
+            <div className="text-center text-muted-foreground">
+              <MapPin className="h-16 w-16 mx-auto mb-4 opacity-50" />
+              <h3 className="text-lg font-medium mb-2">
+                Vista de Mapa Interactivo
+              </h3>
+              <p className="text-sm mb-4">
+                La integración completa de Google Maps estará disponible próximamente
+              </p>
+              <div className="space-y-2">
+                <p className="text-xs">
+                  📍 {equipmentWithLocation.length} equipos con ubicación rastreada
                 </p>
-                <p className="text-sm">
-                  {t("equipment.location.map.setup", "Configure la API de Google Maps para ver las ubicaciones en tiempo real")}
+                <p className="text-xs">
+                  🚚 {equipmentWithoutLocation.length} equipos sin ubicación
                 </p>
               </div>
-            )}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -167,17 +119,23 @@ export function EquipmentLocationMap() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Navigation className="h-5 w-5 text-green-600" />
-              {t("equipment.location.withLocation", "Con Ubicación")}
+              Equipos Con Ubicación
               <Badge variant="default" className="ml-auto">
                 {equipmentWithLocation.length}
               </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {equipmentWithLocation.length === 0 ? (
+            {isLoadingEquipmentWithGeotab ? (
+              <div className="text-center py-6">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                <p className="text-sm text-muted-foreground">Cargando datos de ubicación...</p>
+              </div>
+            ) : equipmentWithLocation.length === 0 ? (
               <div className="text-center py-6 text-muted-foreground">
                 <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p>{t("equipment.location.noLocationData", "No hay equipos con datos de ubicación")}</p>
+                <p>No hay equipos con datos de ubicación</p>
+                <p className="text-xs mt-1">Sincroniza con Geotab para obtener ubicaciones</p>
               </div>
             ) : (
               equipmentWithLocation.map((equipment) => {
@@ -196,20 +154,33 @@ export function EquipmentLocationMap() {
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <Truck className="h-4 w-4" />
+                        <Truck className="h-4 w-4 text-primary" />
                         <span className="font-medium">{equipment.equipment_number}</span>
                       </div>
-                      <Badge variant={hoursAgo && hoursAgo < 1 ? "default" : "secondary"}>
-                        {hoursAgo === 0 ? "Ahora" : `${hoursAgo}h`}
+                      <Badge variant={hoursAgo !== null && hoursAgo < 1 ? "default" : "secondary"}>
+                        {hoursAgo === 0 ? "Ahora" : hoursAgo !== null ? `${hoursAgo}h` : "N/A"}
                       </Badge>
                     </div>
-                    <div className="text-sm text-muted-foreground">
-                      <p>{equipment.geotab_vehicle?.name}</p>
+                    <div className="text-sm text-muted-foreground space-y-1">
+                      <p className="flex items-center gap-1">
+                        <span>🚛</span>
+                        {equipment.geotab_vehicle?.name || equipment.make + ' ' + equipment.model}
+                      </p>
                       {position && (
-                        <p className="flex items-center gap-1">
-                          <Navigation className="h-3 w-3" />
-                          {Math.round(position.speed || 0)} km/h
-                        </p>
+                        <>
+                          <p className="flex items-center gap-1">
+                            <Navigation className="h-3 w-3" />
+                            Velocidad: {Math.round(position.speed || 0)} km/h
+                          </p>
+                          <p className="flex items-center gap-1">
+                            <MapPin className="h-3 w-3" />
+                            {position.latitude.toFixed(4)}, {position.longitude.toFixed(4)}
+                          </p>
+                          <p className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {lastUpdate?.toLocaleString()}
+                          </p>
+                        </>
                       )}
                     </div>
                   </div>
@@ -224,42 +195,54 @@ export function EquipmentLocationMap() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-amber-600" />
-              {t("equipment.location.withoutLocation", "Sin Ubicación")}
+              Equipos Sin Ubicación
               <Badge variant="outline" className="ml-auto">
                 {equipmentWithoutLocation.length}
               </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {equipmentWithoutLocation.length === 0 ? (
+            {isLoadingEquipmentWithGeotab ? (
+              <div className="text-center py-6">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                <p className="text-sm text-muted-foreground">Verificando equipos...</p>
+              </div>
+            ) : equipmentWithoutLocation.length === 0 ? (
               <div className="text-center py-6 text-muted-foreground">
-                <Truck className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p>{t("equipment.location.allTracked", "Todos los equipos están siendo rastreados")}</p>
+                <Truck className="h-8 w-8 mx-auto mb-2 opacity-50 text-green-600" />
+                <p className="text-green-600 font-medium">¡Excelente!</p>
+                <p>Todos los equipos están siendo rastreados</p>
               </div>
             ) : (
               equipmentWithoutLocation.map((equipment) => (
                 <div 
                   key={equipment.id}
-                  className="p-3 border rounded-lg"
+                  className="p-3 border rounded-lg border-amber-200 bg-amber-50"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Truck className="h-4 w-4" />
+                      <Truck className="h-4 w-4 text-amber-600" />
                       <span className="font-medium">{equipment.equipment_number}</span>
                     </div>
-                    <Badge variant="outline">
+                    <Badge variant="outline" className="text-amber-600 border-amber-600">
                       {equipment.geotab_vehicle_id ? "Sin datos" : "No vinculado"}
                     </Badge>
                   </div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground space-y-1">
                     <p>{equipment.make} {equipment.model}</p>
                     <p className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {equipment.geotab_vehicle_id 
-                        ? "Esperando datos de ubicación" 
+                        ? "Esperando datos de Geotab" 
                         : "Requiere vinculación con Geotab"
                       }
                     </p>
+                    {equipment.status && (
+                      <p className="flex items-center gap-1">
+                        <span>📋</span>
+                        Estado: {equipment.status}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))
@@ -267,6 +250,53 @@ export function EquipmentLocationMap() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Selected Equipment Details */}
+      {selectedEquipment && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Truck className="h-5 w-5" />
+              Detalles del Equipo: {selectedEquipment.equipment_number}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div>
+                <h4 className="font-medium text-sm text-muted-foreground mb-1">Información General</h4>
+                <div className="space-y-1 text-sm">
+                  <p><strong>Tipo:</strong> {selectedEquipment.equipment_type}</p>
+                  <p><strong>Marca:</strong> {selectedEquipment.make || 'N/A'}</p>
+                  <p><strong>Modelo:</strong> {selectedEquipment.model || 'N/A'}</p>
+                  <p><strong>Año:</strong> {selectedEquipment.year || 'N/A'}</p>
+                </div>
+              </div>
+              
+              {selectedEquipment.geotab_vehicle && (
+                <div>
+                  <h4 className="font-medium text-sm text-muted-foreground mb-1">Datos Geotab</h4>
+                  <div className="space-y-1 text-sm">
+                    <p><strong>Nombre:</strong> {selectedEquipment.geotab_vehicle.name}</p>
+                    <p><strong>VIN:</strong> {selectedEquipment.geotab_vehicle.vin || 'N/A'}</p>
+                    <p><strong>Placa:</strong> {selectedEquipment.geotab_vehicle.license_plate || 'N/A'}</p>
+                  </div>
+                </div>
+              )}
+              
+              {selectedEquipment.geotab_vehicle?.latest_position && (
+                <div>
+                  <h4 className="font-medium text-sm text-muted-foreground mb-1">Última Posición</h4>
+                  <div className="space-y-1 text-sm">
+                    <p><strong>Velocidad:</strong> {Math.round(selectedEquipment.geotab_vehicle.latest_position.speed || 0)} km/h</p>
+                    <p><strong>Coordenadas:</strong> {selectedEquipment.geotab_vehicle.latest_position.latitude.toFixed(4)}, {selectedEquipment.geotab_vehicle.latest_position.longitude.toFixed(4)}</p>
+                    <p><strong>Última actualización:</strong> {new Date(selectedEquipment.geotab_vehicle.latest_position.date_time).toLocaleString()}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
