@@ -14,19 +14,10 @@ export default function Loads() {
   const { t } = useTranslation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   
-  // Inicializar el período actual con las fechas correspondientes
+  // Inicializar con período actual simple (sin fechas pre-calculadas)
   const getCurrentPeriodWithDates = (): PeriodFilterValue => {
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay()); // Domingo de esta semana
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // Sábado de esta semana
-    
     return {
-      type: 'current',
-      startDate: format(startOfWeek, 'yyyy-MM-dd'),
-      endDate: format(endOfWeek, 'yyyy-MM-dd'),
-      label: 'Período Actual'
+      type: 'current'
     };
   };
   
