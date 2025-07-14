@@ -42,6 +42,123 @@ interface LoadsFilters {
   };
 }
 
+interface DateRange {
+  startDate: string;
+  endDate: string;
+}
+
+/**
+ * Calcula el rango de fechas según el tipo de filtro de período
+ */
+const calculateDateRange = (filterType: LoadsFilters['periodFilter']['type']): DateRange | null => {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+  const currentQuarter = Math.floor(currentMonth / 3);
+
+  switch (filterType) {
+    case 'current':
+      // Para período actual, usar un rango amplio que capture cualquier período activo
+      const thirtyDaysAgo = new Date(now);
+      thirtyDaysAgo.setDate(now.getDate() - 30);
+      const thirtyDaysFromNow = new Date(now);
+      thirtyDaysFromNow.setDate(now.getDate() + 30);
+      return {
+        startDate: thirtyDaysAgo.toISOString().split('T')[0],
+        endDate: thirtyDaysFromNow.toISOString().split('T')[0]
+      };
+
+    case 'this_month':
+      return {
+        startDate: new Date(currentYear, currentMonth, 1).toISOString().split('T')[0],
+        endDate: new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0]
+      };
+
+    case 'last_month':
+      return {
+        startDate: new Date(currentYear, currentMonth - 1, 1).toISOString().split('T')[0],
+        endDate: new Date(currentYear, currentMonth, 0).toISOString().split('T')[0]
+      };
+
+    case 'this_quarter':
+      const quarterStart = currentQuarter * 3;
+      return {
+        startDate: new Date(currentYear, quarterStart, 1).toISOString().split('T')[0],
+        endDate: new Date(currentYear, quarterStart + 3, 0).toISOString().split('T')[0]
+      };
+
+    case 'last_quarter':
+      const lastQuarterStart = (currentQuarter - 1) * 3;
+      const lastQuarterYear = currentQuarter === 0 ? currentYear - 1 : currentYear;
+      const adjustedQuarterStart = currentQuarter === 0 ? 9 : lastQuarterStart;
+      return {
+        startDate: new Date(lastQuarterYear, adjustedQuarterStart, 1).toISOString().split('T')[0],
+        endDate: new Date(lastQuarterYear, adjustedQuarterStart + 3, 0).toISOString().split('T')[0]
+      };
+
+    case 'this_year':
+      return {
+        startDate: new Date(currentYear, 0, 1).toISOString().split('T')[0],
+        endDate: new Date(currentYear, 11, 31).toISOString().split('T')[0]
+      };
+
+    case 'last_year':
+      return {
+        startDate: new Date(currentYear - 1, 0, 1).toISOString().split('T')[0],
+        endDate: new Date(currentYear - 1, 11, 31).toISOString().split('T')[0]
+      };
+
+    case 'all':
+    default:
+      return null; // Sin filtro de fechas
+  }
+};
+
+/**
+ * Obtiene los period_ids relevantes según el filtro de fechas
+ */
+const getRelevantPeriodIds = async (
+  userIds: string[], 
+  periodFilter: LoadsFilters['periodFilter']
+): Promise<string[]> => {
+  if (!periodFilter) return [];
+
+  // Caso específico: período único
+  if (periodFilter.type === 'specific' && periodFilter.periodId) {
+    return [periodFilter.periodId];
+  }
+
+  // Calcular rango de fechas según el tipo de filtro
+  let dateRange: DateRange | null = null;
+  
+  if (periodFilter.type === 'custom' && periodFilter.startDate && periodFilter.endDate) {
+    dateRange = {
+      startDate: periodFilter.startDate,
+      endDate: periodFilter.endDate
+    };
+  } else {
+    dateRange = calculateDateRange(periodFilter.type);
+  }
+
+  // Sin filtro de fechas para 'all'
+  if (!dateRange) return [];
+
+  // Buscar períodos que se solapen con el rango de fechas
+  const { data: periodsInRange, error } = await supabase
+    .from('payment_periods')
+    .select('id')
+    .in('driver_user_id', userIds)
+    .lte('period_start_date', dateRange.endDate)
+    .gte('period_end_date', dateRange.startDate);
+
+  if (error) {
+    console.error('Error obteniendo períodos:', error);
+    throw new Error('Error consultando períodos de pago');
+  }
+
+  return periodsInRange?.map(p => p.id) || [];
+};
+
 export const useLoads = (filters?: LoadsFilters) => {
   const { user } = useAuth();
 
@@ -55,7 +172,7 @@ export const useLoads = (filters?: LoadsFilters) => {
       try {
         console.time('useLoads-total');
 
-        // PASO 1: Obtener compañía del usuario (más rápido)
+        // PASO 1: Obtener compañía y usuarios
         const { data: userCompanyRole, error: companyError } = await supabase
           .from('user_company_roles')
           .select('company_id')
@@ -68,7 +185,6 @@ export const useLoads = (filters?: LoadsFilters) => {
           throw new Error('No se pudo obtener la compañía del usuario');
         }
 
-        // PASO 2: Obtener usuarios de la compañía
         const { data: companyUsers, error: usersError } = await supabase
           .from('user_company_roles')
           .select('user_id')
@@ -81,62 +197,28 @@ export const useLoads = (filters?: LoadsFilters) => {
 
         const userIds = companyUsers.map(u => u.user_id);
 
-        // PASO 3: Construir query de cargas con filtros optimizados
+        // PASO 2: Obtener period_ids relevantes según el filtro (OPTIMIZACIÓN CLAVE)
+        const relevantPeriodIds = await getRelevantPeriodIds(userIds, filters?.periodFilter);
+        
+        // PASO 3: Construir query optimizada de cargas
         let loadsQuery = supabase
           .from('loads')
           .select('*')
           .in('driver_user_id', userIds)
           .order('created_at', { ascending: false });
 
-        // Aplicar límites según el tipo de filtro
-        const isHistoricalView = filters?.periodFilter?.type === 'all';
-        const limit = isHistoricalView ? 50 : 200; // Menos cargas para vista histórica
-        loadsQuery = loadsQuery.limit(limit);
-
-        // PASO 4: Aplicar filtros de período ANTES de la consulta para optimizar
-        if (filters?.periodFilter) {
-          const { periodFilter } = filters;
-          
-          if (periodFilter.type === 'specific' && periodFilter.periodId) {
-            loadsQuery = loadsQuery.eq('payment_period_id', periodFilter.periodId);
-          } else if (periodFilter.type === 'current') {
-            // Para período actual, buscar por fechas del período actual
-            const currentDate = new Date().toISOString().split('T')[0];
-            // Buscar cargas que tengan payment_period_id de un período que contenga la fecha actual
-            // Esto es más eficiente que filtrar todas las cargas después
-            const { data: currentPeriods } = await supabase
-              .from('payment_periods')
-              .select('id')
-              .in('driver_user_id', userIds)
-              .lte('period_start_date', currentDate)
-              .gte('period_end_date', currentDate);
-            
-            if (currentPeriods && currentPeriods.length > 0) {
-              const currentPeriodIds = currentPeriods.map(p => p.id);
-              loadsQuery = loadsQuery.in('payment_period_id', currentPeriodIds);
-            } else {
-              // Si no hay período actual, no devolver nada
-              loadsQuery = loadsQuery.eq('id', '00000000-0000-0000-0000-000000000000'); // ID imposible
-            }
-          } else if (periodFilter.startDate && periodFilter.endDate) {
-            // Para rangos de fechas, buscar períodos que se solapen con el rango
-            const { data: periodsInRange } = await supabase
-              .from('payment_periods')
-              .select('id')
-              .in('driver_user_id', userIds)
-              .lte('period_start_date', periodFilter.endDate)
-              .gte('period_end_date', periodFilter.startDate);
-            
-            if (periodsInRange && periodsInRange.length > 0) {
-              const periodIds = periodsInRange.map(p => p.id);
-              loadsQuery = loadsQuery.in('payment_period_id', periodIds);
-            } else {
-              // Si no hay períodos en el rango, no devolver nada
-              loadsQuery = loadsQuery.eq('id', '00000000-0000-0000-0000-000000000000');
-            }
-          }
-          // Para 'all', no aplicar filtros
+        // Aplicar filtro de períodos si hay alguno
+        if (relevantPeriodIds.length > 0) {
+          loadsQuery = loadsQuery.in('payment_period_id', relevantPeriodIds);
+        } else if (filters?.periodFilter?.type !== 'all' && filters?.periodFilter) {
+          // Si hay filtro pero no hay períodos relevantes, no devolver cargas
+          loadsQuery = loadsQuery.eq('id', '00000000-0000-0000-0000-000000000000');
         }
+
+        // Aplicar límites inteligentes
+        const isHistoricalView = filters?.periodFilter?.type === 'all';
+        const limit = isHistoricalView ? 50 : 200;
+        loadsQuery = loadsQuery.limit(limit);
 
         const { data: loads, error: loadsError } = await loadsQuery;
 
@@ -153,70 +235,52 @@ export const useLoads = (filters?: LoadsFilters) => {
 
         console.log(`📊 Procesando ${loads.length} cargas encontradas`);
 
-        // PASO 5: Obtener datos relacionados EN PARALELO solo si hay cargas
-        const driverIds = [...new Set(loads.map(l => l.driver_user_id))];
-        const brokerIds = [...new Set(loads.map(l => l.broker_id).filter(Boolean))];
-        const periodIds = [...new Set(loads.map(l => l.payment_period_id).filter(Boolean))];
-        const loadIds = loads.map(l => l.id);
+        // PASO 4: Enriquecer datos relacionados en paralelo
+        const [driverIds, brokerIds, periodIds, loadIds] = [
+          [...new Set(loads.map(l => l.driver_user_id))],
+          [...new Set(loads.map(l => l.broker_id).filter(Boolean))],
+          [...new Set(loads.map(l => l.payment_period_id).filter(Boolean))],
+          loads.map(l => l.id)
+        ];
 
         console.time('parallel-queries');
         
-        // Optimización: Solo hacer consultas si hay IDs para consultar
-        const queries = [];
-        
-        // Perfiles de conductores
-        if (driverIds.length > 0) {
-          queries.push(supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', driverIds));
-        } else {
-          queries.push(Promise.resolve({ data: [] }));
-        }
-        
-        // Brokers
-        if (brokerIds.length > 0) {
-          queries.push(supabase.from('company_brokers').select('id, name').in('id', brokerIds));
-        } else {
-          queries.push(Promise.resolve({ data: [] }));
-        }
-        
-        // Períodos de pago
-        if (periodIds.length > 0) {
-          queries.push(supabase.from('payment_periods').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds));
-        } else {
-          queries.push(Promise.resolve({ data: [] }));
-        }
-        
-        // Paradas (solo pickup y delivery cities)
-        if (loadIds.length > 0) {
-          queries.push(supabase.from('load_stops').select('load_id, stop_type, city, stop_number').in('load_id', loadIds).in('stop_type', ['pickup', 'delivery']));
-        } else {
-          queries.push(Promise.resolve({ data: [] }));
-        }
-
-        const [profilesResult, brokersResult, periodsResult, stopsResult] = await Promise.allSettled(queries);
+        const [profilesResult, brokersResult, periodsResult, stopsResult] = await Promise.allSettled([
+          driverIds.length > 0 
+            ? supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', driverIds)
+            : Promise.resolve({ data: [] }),
+          brokerIds.length > 0 
+            ? supabase.from('company_brokers').select('id, name').in('id', brokerIds)
+            : Promise.resolve({ data: [] }),
+          periodIds.length > 0 
+            ? supabase.from('payment_periods').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds)
+            : Promise.resolve({ data: [] }),
+          loadIds.length > 0 
+            ? supabase.from('load_stops').select('load_id, stop_type, city, stop_number').in('load_id', loadIds).in('stop_type', ['pickup', 'delivery'])
+            : Promise.resolve({ data: [] })
+        ]);
 
         console.timeEnd('parallel-queries');
 
-        // Extraer datos de los resultados
-        const profiles = profilesResult.status === 'fulfilled' ? profilesResult.value.data || [] : [];
-        const brokers = brokersResult.status === 'fulfilled' ? brokersResult.value.data || [] : [];
-        const periods = periodsResult.status === 'fulfilled' ? periodsResult.value.data || [] : [];
-        const stops = stopsResult.status === 'fulfilled' ? stopsResult.value.data || [] : [];
+        // PASO 5: Procesar y enriquecer datos
+        const [profiles, brokers, periods, stops] = [
+          profilesResult.status === 'fulfilled' ? profilesResult.value.data || [] : [],
+          brokersResult.status === 'fulfilled' ? brokersResult.value.data || [] : [],
+          periodsResult.status === 'fulfilled' ? periodsResult.value.data || [] : [],
+          stopsResult.status === 'fulfilled' ? stopsResult.value.data || [] : []
+        ];
 
         console.time('data-enrichment');
 
-        // PASO 6: Enriquecer cargas con datos relacionados (optimizado)
         const enrichedLoads: Load[] = loads.map(load => {
           const profile = profiles.find(p => p.user_id === load.driver_user_id);
           const broker = brokers.find(b => b.id === load.broker_id);
           const period = periods.find(p => p.id === load.payment_period_id);
           
-          // Optimización: pre-filtrar paradas por load_id
           const loadStops = stops.filter(s => s.load_id === load.id);
-          
           const pickupStop = loadStops
             .filter(s => s.stop_type === 'pickup')
             .sort((a, b) => a.stop_number - b.stop_number)[0];
-          
           const deliveryStop = loadStops
             .filter(s => s.stop_type === 'delivery')
             .sort((a, b) => b.stop_number - a.stop_number)[0];
@@ -235,14 +299,10 @@ export const useLoads = (filters?: LoadsFilters) => {
         });
 
         console.timeEnd('data-enrichment');
-
-        // PASO 7: Aplicar filtros de período finales si es necesario
-        const filteredLoads = applyPeriodFilter(enrichedLoads, filters?.periodFilter);
-
         console.timeEnd('useLoads-total');
-        console.log(`✅ useLoads completado: ${filteredLoads.length} cargas procesadas`);
+        console.log(`✅ useLoads completado: ${enrichedLoads.length} cargas procesadas`);
 
-        return filteredLoads;
+        return enrichedLoads;
 
       } catch (error: any) {
         console.error('Error en useLoads:', error);
@@ -259,32 +319,3 @@ export const useLoads = (filters?: LoadsFilters) => {
     gcTime: 300000, // Mantener en cache por 5 minutos
   });
 };
-
-// Función auxiliar para aplicar filtros de período
-function applyPeriodFilter(loads: Load[], periodFilter?: LoadsFilters['periodFilter']): Load[] {
-  if (!periodFilter) return loads;
-  
-  switch (periodFilter.type) {
-    case 'current':
-      // Ya filtrado por SQL usando payment_period_id
-      return loads;
-      
-    case 'specific':
-      // Ya filtrado por SQL usando payment_period_id
-      return loads;
-      
-    case 'this_month':
-    case 'last_month':
-    case 'this_quarter':
-    case 'last_quarter':
-    case 'this_year':
-    case 'last_year':
-    case 'custom':
-      // Ya filtrado por SQL usando payment_period_id
-      return loads;
-      
-    case 'all':
-    default:
-      return loads;
-  }
-}
