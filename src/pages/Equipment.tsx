@@ -13,6 +13,7 @@ import { CreateEquipmentDialog } from "@/components/equipment/CreateEquipmentDia
 import { EquipmentFilters } from "@/components/equipment/EquipmentFilters";
 import { EquipmentStats } from "@/components/equipment/EquipmentStats";
 import { useEquipment } from "@/hooks/useEquipment";
+import { PageToolbar } from "@/components/layout/PageToolbar";
 
 export default function Equipment() {
   const { t } = useTranslation();
@@ -31,25 +32,23 @@ export default function Equipment() {
   ) || [];
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {t("equipment.title", "Gestión de Equipos")}
-          </h1>
-          <p className="text-muted-foreground">
-            {t("equipment.subtitle", "Administra todos los vehículos y equipos de tu flota")}
-          </p>
-        </div>
-        
-        <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
-          <Plus className="h-4 w-4" />
-          {t("equipment.addNew", "Agregar Equipo")}
-        </Button>
-      </div>
-
-      {/* Stats Cards */}
-      <EquipmentStats equipment={equipment} />
+    <div>
+      <PageToolbar 
+        breadcrumbs={[
+          { label: "Equipos" }
+        ]}
+        title="Gestión de Equipos"
+        actions={
+          <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            {t("equipment.addNew", "Agregar Equipo")}
+          </Button>
+        }
+      />
+      
+      <div className="container mx-auto p-6 space-y-6">
+        {/* Stats Cards */}
+        <EquipmentStats equipment={equipment} />
 
       {/* Search and Filters */}
       <Card>
@@ -151,11 +150,12 @@ export default function Equipment() {
         </CardContent>
       </Card>
 
-      {/* Create Equipment Dialog */}
-      <CreateEquipmentDialog 
-        open={showCreateDialog} 
-        onOpenChange={setShowCreateDialog}
-      />
+        {/* Create Equipment Dialog */}
+        <CreateEquipmentDialog 
+          open={showCreateDialog} 
+          onOpenChange={setShowCreateDialog}
+        />
+      </div>
     </div>
   );
 }

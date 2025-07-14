@@ -14,7 +14,7 @@ import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { LogOut, Users, LayoutDashboard, Truck, Settings, User, Building2, FileText } from "lucide-react";
+import { LogOut, Users, LayoutDashboard, Truck, Settings, User, Building2, FileText, Wrench } from "lucide-react";
 import { useFleetNotifications } from '@/components/notifications';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { MenuToggle } from "./MenuToggle";
@@ -67,6 +67,12 @@ export function Header() {
           icon: FileText,
           title: 'Gestión de Documentos',
           subtitle: 'Administra los documentos de tu empresa'
+        };
+      case '/equipment':
+        return {
+          icon: Wrench,
+          title: 'Gestión de Equipos',
+          subtitle: 'Administra todos los vehículos y equipos de tu flota'
         };
       case '/settings':
         return {
