@@ -54,6 +54,27 @@ export const useEquipmentCount = () => {
   useEffect(() => {
     if (user?.id) {
       fetchEquipmentCount();
+
+      // Set up real-time subscription for company_equipment changes
+      const channel = supabase
+        .channel('equipment-count-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*', // Listen to all changes (INSERT, UPDATE, DELETE)
+            schema: 'public',
+            table: 'company_equipment'
+          },
+          () => {
+            // Refresh count when there are changes to equipment
+            fetchEquipmentCount();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     } else {
       setEquipmentCount(0);
     }
