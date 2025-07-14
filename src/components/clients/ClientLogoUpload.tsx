@@ -99,7 +99,7 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, onLogoChang
 
   return (
     <div className="space-y-4">
-      <div className="flex items-start gap-4">
+      <div className="flex items-center gap-4">
         <Avatar className="h-16 w-16 flex-shrink-0">
           <AvatarImage src={logoUrl} alt={clientName} />
           <AvatarFallback>
@@ -107,61 +107,58 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, onLogoChang
           </AvatarFallback>
         </Avatar>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-w-0">
-          {/* Upload Section */}
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={disabled || uploading}
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              {uploading ? 'Cargando...' : logoUrl ? 'Cambiar Logo' : 'Cargar Logo'}
+            </Button>
+
+            {logoUrl && (
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => fileInputRef.current?.click()}
+                onClick={removeLogo}
                 disabled={disabled || uploading}
               >
-                <Upload className="h-4 w-4 mr-2" />
-                {uploading ? 'Cargando...' : logoUrl ? 'Cambiar Logo' : 'Cargar Logo'}
+                <X className="h-4 w-4 mr-2" />
+                Eliminar
               </Button>
-
-              {logoUrl && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={removeLogo}
-                  disabled={disabled || uploading}
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Eliminar
-                </Button>
-              )}
-            </div>
-
-            <p className="text-xs text-muted-foreground">
-              PNG, JPG hasta 5MB
-            </p>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              className="hidden"
-            />
+            )}
           </div>
 
-          {/* Smart Logo Search Section */}
-          {clientName && (
-            <div className="flex-1 border-l pl-6">
-              <SmartLogoSearch
-                companyName={clientName}
-                emailDomain={emailDomain}
-                currentLogoUrl={logoUrl}
-                onLogoSelect={onLogoChange}
-              />
-            </div>
-          )}
+          <p className="text-xs text-muted-foreground">
+            PNG, JPG hasta 5MB
+          </p>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
         </div>
       </div>
+
+      {/* Smart Logo Search Section - Debajo del logo */}
+      {clientName && (
+        <div className="border-t pt-4">
+          <SmartLogoSearch
+            companyName={clientName}
+            emailDomain={emailDomain}
+            currentLogoUrl={logoUrl}
+            onLogoSelect={onLogoChange}
+          />
+        </div>
+      )}
     </div>
   );
 }
