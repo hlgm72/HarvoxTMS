@@ -189,6 +189,7 @@ export type Database = {
           mc_number: string | null
           name: string
           notes: string | null
+          phone: string | null
           updated_at: string
         }
         Insert: {
@@ -204,6 +205,7 @@ export type Database = {
           mc_number?: string | null
           name: string
           notes?: string | null
+          phone?: string | null
           updated_at?: string
         }
         Update: {
@@ -219,6 +221,7 @@ export type Database = {
           mc_number?: string | null
           name?: string
           notes?: string | null
+          phone?: string | null
           updated_at?: string
         }
         Relationships: [
