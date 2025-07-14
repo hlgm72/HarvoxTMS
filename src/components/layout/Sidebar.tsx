@@ -421,7 +421,7 @@ export function AppSidebar() {
   // Escuchar eventos del botón independiente solo para desktop
   useEffect(() => {
     const handleIndependentToggle = (event: CustomEvent) => {
-      console.log('📡 Sidebar received independent toggle:', event.detail);
+      // console.log('📡 Sidebar received independent toggle:', event.detail);
       // Solo aplicar en desktop, en móvil el MenuToggle maneja directamente el contexto
       if (window.innerWidth >= 768) {
         setOpen(event.detail.open);

@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserRoles = useCallback(async (userId: string) => {
     try {
-      console.log('🔍 Fetching roles for user:', userId);
+      // console.log('🔍 Fetching roles for user:', userId);
       const { data: roles, error } = await supabase
         .from('user_company_roles')
         .select('*')
@@ -79,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return [];
       }
 
-      console.log('📋 User roles found:', roles);
+      // console.log('📋 User roles found:', roles);
       return roles || [];
     } catch (error) {
       console.error('Error in fetchUserRoles:', error);
@@ -97,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const parsedRole = JSON.parse(storedRole);
         const validRole = roles.find(r => r.role === parsedRole.role && r.company_id === parsedRole.company_id);
         if (validRole) {
-          console.log('🎯 Using stored role:', validRole.role);
+          // console.log('🎯 Using stored role:', validRole.role);
           return validRole.role;
         }
       } catch (e) {
@@ -111,7 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     for (const roleType of roleHierarchy) {
       const role = roles.find(r => r.role === roleType);
       if (role) {
-        console.log('🎯 Auto-selected role:', role.role);
+        // console.log('🎯 Auto-selected role:', role.role);
         return role.role;
       }
     }
@@ -132,7 +132,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const switchRole = useCallback((roleId: string) => {
     const role = userRoles?.find(r => r.id === roleId);
     if (role) {
-      console.log('🔄 Switching to role:', role.role);
+      // console.log('🔄 Switching to role:', role.role);
       setCurrentRole(role.role);
       
       // Store role preference
@@ -152,11 +152,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Initialize auth state
   useEffect(() => {
-    console.log('🔐 AuthProvider initializing...');
+    // console.log('🔐 AuthProvider initializing...');
     
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔐 Auth state changed:', event, session?.user?.id);
+      // console.log('🔐 Auth state changed:', event, session?.user?.id);
       
       setSession(session);
       setUser(session?.user ?? null);
@@ -181,7 +181,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('🔐 Initial session:', session?.user?.id);
+      // console.log('🔐 Initial session:', session?.user?.id);
       
       setSession(session);
       setUser(session?.user ?? null);
