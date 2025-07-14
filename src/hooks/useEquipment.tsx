@@ -74,16 +74,18 @@ export function useEquipment() {
   const createEquipmentMutation = useMutation({
     mutationFn: async (newEquipment: CreateEquipmentData) => {
       // Get user's company_id from user_company_roles
-      const { data: userRole, error: roleError } = await supabase
+      const { data: userRoles, error: roleError } = await supabase
         .from("user_company_roles")
         .select("company_id")
         .eq("user_id", (await supabase.auth.getUser()).data.user?.id)
-        .eq("is_active", true)
-        .single();
+        .eq("is_active", true);
 
-      if (roleError || !userRole) {
+      if (roleError || !userRoles || userRoles.length === 0) {
         throw new Error("No se pudo obtener información de la compañía");
       }
+
+      // Use the first company_id (or you could add logic to select the preferred company)
+      const userRole = userRoles[0];
 
       const { data, error } = await supabase
         .from("company_equipment")
