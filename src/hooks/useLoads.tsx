@@ -96,13 +96,32 @@ export const useLoads = (filters?: LoadsFilters) => {
           
           if (periodFilter.type === 'specific' && periodFilter.periodId) {
             loadsQuery = loadsQuery.eq('payment_period_id', periodFilter.periodId);
+          } else if (periodFilter.type === 'current') {
+            // Para período actual, buscar por fechas del período actual
+            const currentDate = new Date().toISOString().split('T')[0];
+            // Buscar cargas que tengan payment_period_id de un período que contenga la fecha actual
+            // Esto es más eficiente que filtrar todas las cargas después
+            const { data: currentPeriods } = await supabase
+              .from('payment_periods')
+              .select('id')
+              .in('driver_user_id', userIds)
+              .lte('period_start_date', currentDate)
+              .gte('period_end_date', currentDate);
+            
+            if (currentPeriods && currentPeriods.length > 0) {
+              const currentPeriodIds = currentPeriods.map(p => p.id);
+              loadsQuery = loadsQuery.in('payment_period_id', currentPeriodIds);
+            } else {
+              // Si no hay período actual, no devolver nada
+              loadsQuery = loadsQuery.eq('id', '00000000-0000-0000-0000-000000000000'); // ID imposible
+            }
           } else if (periodFilter.startDate && periodFilter.endDate) {
             // Para rangos de fechas, filtrar por pickup_date
             loadsQuery = loadsQuery
               .gte('pickup_date', periodFilter.startDate)
               .lte('pickup_date', periodFilter.endDate);
           }
-          // Para 'current' y 'all', filtraremos después de obtener los datos
+          // Para 'all', no aplicar filtros
         }
 
         const { data: loads, error: loadsError } = await loadsQuery;
