@@ -349,7 +349,7 @@ export default function Documents() {
           )}
           
           {viewMode === "cards" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-white rounded-lg shadow-sm">
               {documents.map((document) => (
                 <div key={document.id} className="relative">
                   <div className="absolute top-2 left-2 z-10">
@@ -371,15 +371,17 @@ export default function Documents() {
               ))}
             </div>
           ) : (
-            <DocumentTable
-              documents={documents}
-              predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-              selectedDocuments={selectedDocuments}
-              onSelectDocument={handleSelectDocument}
-              onSelectAll={handleSelectAll}
-              onDelete={(id) => deleteMutation.mutate(id)}
-              getExpiryStatus={getExpiryStatus}
-            />
+            <div className="bg-white rounded-lg shadow-sm">
+              <DocumentTable
+                documents={documents}
+                predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                selectedDocuments={selectedDocuments}
+                onSelectDocument={handleSelectDocument}
+                onSelectAll={handleSelectAll}
+                onDelete={(id) => deleteMutation.mutate(id)}
+                getExpiryStatus={getExpiryStatus}
+              />
+            </div>
           )}
           {documents.length === 0 && (
             <div className="text-center py-12">
@@ -411,7 +413,7 @@ export default function Documents() {
             </div>
             
 {viewMode === "cards" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-white rounded-lg shadow-sm">
                 {getDocumentsByCategory(categoryKey).map((document) => (
                   <div key={document.id} className="relative">
                     <div className="absolute top-2 left-2 z-10">
@@ -433,15 +435,17 @@ export default function Documents() {
                 ))}
               </div>
             ) : (
-              <DocumentTable
-                documents={getDocumentsByCategory(categoryKey)}
-                predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                selectedDocuments={selectedDocuments}
-                onSelectDocument={handleSelectDocument}
-                onSelectAll={handleSelectAll}
-                onDelete={(id) => deleteMutation.mutate(id)}
-                getExpiryStatus={getExpiryStatus}
-              />
+              <div className="bg-white rounded-lg shadow-sm">
+                <DocumentTable
+                  documents={getDocumentsByCategory(categoryKey)}
+                  predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                  selectedDocuments={selectedDocuments}
+                  onSelectDocument={handleSelectDocument}
+                  onSelectAll={handleSelectAll}
+                  onDelete={(id) => deleteMutation.mutate(id)}
+                  getExpiryStatus={getExpiryStatus}
+                />
+              </div>
             )}
 
             {getDocumentsByCategory(categoryKey).length === 0 && (
@@ -476,7 +480,7 @@ export default function Documents() {
           </div>
           
 {viewMode === "cards" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-white rounded-lg shadow-sm">
               {documents
                 .filter(doc => !Object.values(PREDEFINED_DOCUMENT_TYPES)
                   .flatMap(cat => cat.types.map(t => t.value))
@@ -502,17 +506,19 @@ export default function Documents() {
                 ))}
             </div>
           ) : (
-            <DocumentTable
-              documents={documents.filter(doc => !Object.values(PREDEFINED_DOCUMENT_TYPES)
-                .flatMap(cat => cat.types.map(t => t.value))
-                .includes(doc.document_type))}
-              predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-              selectedDocuments={selectedDocuments}
-              onSelectDocument={handleSelectDocument}
-              onSelectAll={handleSelectAll}
-              onDelete={(id) => deleteMutation.mutate(id)}
-              getExpiryStatus={getExpiryStatus}
-            />
+            <div className="bg-white rounded-lg shadow-sm">
+              <DocumentTable
+                documents={documents.filter(doc => !Object.values(PREDEFINED_DOCUMENT_TYPES)
+                  .flatMap(cat => cat.types.map(t => t.value))
+                  .includes(doc.document_type))}
+                predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                selectedDocuments={selectedDocuments}
+                onSelectDocument={handleSelectDocument}
+                onSelectAll={handleSelectAll}
+                onDelete={(id) => deleteMutation.mutate(id)}
+                getExpiryStatus={getExpiryStatus}
+              />
+            </div>
           )}
         </TabsContent>
       </Tabs>
