@@ -194,7 +194,7 @@ export function CompanyDocumentUpload({
     }
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!file || !documentType) {
@@ -213,12 +213,63 @@ export function CompanyDocumentUpload({
       return;
     }
 
+    // Check for existing documents before uploading
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        showError("Error", "Usuario no autenticado");
+        return;
+      }
+
+      const { data: userRoles } = await supabase
+        .from("user_company_roles")
+        .select("company_id")
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .limit(1)
+        .maybeSingle();
+
+      if (!userRoles) {
+        showError("Error", "No se pudo obtener la información de la compañía");
+        return;
+      }
+
+      const existing = await checkExistingDocument(documentType, userRoles.company_id);
+      
+      if (existing) {
+        setExistingDocument(existing);
+        setShowDuplicateDialog(true);
+        return;
+      }
+
+      // No existing document, proceed with upload
+      uploadMutation.mutate({
+        file,
+        documentType,
+        customDocumentName,
+        expiryDate,
+        notes
+      });
+    } catch (error) {
+      console.error("Error checking existing documents:", error);
+      showError("Error", "Error al verificar documentos existentes");
+    }
+  };
+
+  const handleDuplicateAction = () => {
+    if (duplicateAction === 'cancel') {
+      setShowDuplicateDialog(false);
+      setExistingDocument(null);
+      return;
+    }
+
     uploadMutation.mutate({
-      file,
+      file: file!,
       documentType,
       customDocumentName,
       expiryDate,
-      notes
+      notes,
+      action: duplicateAction
     });
   };
 
@@ -370,6 +421,99 @@ export function CompanyDocumentUpload({
           )}
         </Button>
       </div>
+
+      {/* Duplicate Document Dialog */}
+      <Dialog open={showDuplicateDialog} onOpenChange={setShowDuplicateDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
+              <span>Documento Existente Detectado</span>
+            </DialogTitle>
+            <DialogDescription>
+              Ya tienes un documento de tipo "{allPredefinedTypes.find(t => t.value === documentType)?.label || documentType}" 
+              subido {existingDocument && new Date(existingDocument.created_at).toLocaleDateString()}.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="p-3 bg-muted rounded-lg">
+              <div className="flex items-center space-x-2 text-sm">
+                <FileText className="w-4 h-4" />
+                <span className="font-medium">{existingDocument?.file_name}</span>
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                Subido el {existingDocument && new Date(existingDocument.created_at).toLocaleString()}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">¿Qué deseas hacer?</Label>
+              <RadioGroup value={duplicateAction} onValueChange={(value: 'replace' | 'version' | 'cancel') => setDuplicateAction(value)}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="replace" id="replace" />
+                  <Label htmlFor="replace" className="flex items-center space-x-2 cursor-pointer">
+                    <Replace className="w-4 h-4 text-red-500" />
+                    <div>
+                      <div className="font-medium">Reemplazar documento existente</div>
+                      <div className="text-xs text-muted-foreground">El documento anterior se archivará</div>
+                    </div>
+                  </Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="version" id="version" />
+                  <Label htmlFor="version" className="flex items-center space-x-2 cursor-pointer">
+                    <Copy className="w-4 h-4 text-blue-500" />
+                    <div>
+                      <div className="font-medium">Mantener ambos (agregar versión)</div>
+                      <div className="text-xs text-muted-foreground">Se creará una nueva versión del documento</div>
+                    </div>
+                  </Label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="cancel" id="cancel" />
+                  <Label htmlFor="cancel" className="flex items-center space-x-2 cursor-pointer">
+                    <AlertTriangle className="w-4 h-4 text-gray-500" />
+                    <div>
+                      <div className="font-medium">Cancelar subida</div>
+                      <div className="text-xs text-muted-foreground">No subir el nuevo documento</div>
+                    </div>
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
+
+          <DialogFooter className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowDuplicateDialog(false)}
+            >
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleDuplicateAction}
+              disabled={uploadMutation.isPending}
+              variant={duplicateAction === 'replace' ? 'destructive' : 'default'}
+            >
+              {uploadMutation.isPending ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Procesando...
+                </>
+              ) : (
+                <>
+                  {duplicateAction === 'replace' && 'Reemplazar'}
+                  {duplicateAction === 'version' && 'Crear Versión'}
+                  {duplicateAction === 'cancel' && 'Cancelar'}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }

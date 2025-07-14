@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useFleetNotifications } from "@/components/notifications";
-import { Upload, FileText, Download, Trash2, AlertCircle, CheckCircle, Calendar, Plus, Mail, CheckSquare, Square } from "lucide-react";
+import { Upload, FileText, Download, Trash2, AlertCircle, CheckCircle, Calendar, Plus, Mail, CheckSquare, Square, Archive, ArchiveX } from "lucide-react";
 import { CompanyDocumentUpload } from "@/components/documents/CompanyDocumentUpload";
 import { DocumentCard } from "@/components/documents/DocumentCard";
 import { DocumentTable } from "@/components/documents/DocumentTable";
@@ -83,16 +83,18 @@ export default function Documents() {
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string>("");
   const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(new Set());
+  const [showArchived, setShowArchived] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
 
   // Fetch company documents
   const { data: documents = [], isLoading } = useQuery({
-    queryKey: ["company-documents"],
+    queryKey: ["company-documents", showArchived],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("company_documents")
         .select("*")
+        .eq("is_active", !showArchived)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -216,6 +218,23 @@ export default function Documents() {
         title="Documentos de la Compañía"
         actions={
           <div className="flex gap-2">
+            <Button 
+              variant={showArchived ? "default" : "outline"} 
+              size="sm"
+              onClick={() => setShowArchived(!showArchived)}
+            >
+              {showArchived ? (
+                <>
+                  <ArchiveX className="w-4 h-4 mr-2" />
+                  Ver Activos
+                </>
+              ) : (
+                <>
+                  <Archive className="w-4 h-4 mr-2" />
+                  Ver Archivados
+                </>
+              )}
+            </Button>
             <DocumentViewToggle 
               currentView={viewMode} 
               onViewChange={setViewMode} 
