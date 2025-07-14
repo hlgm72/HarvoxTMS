@@ -227,13 +227,14 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                     name="logo_url"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Logo del Cliente</FormLabel>
+                        <FormLabel>Logo del Broker</FormLabel>
                         <FormControl>
                           <ClientLogoUpload
                             logoUrl={field.value || undefined}
                             clientName={form.watch("name") || form.watch("alias")}
                             emailDomain={form.watch("email_domain")}
                             onLogoChange={(url) => field.onChange(url || "")}
+                            disabled={createBrokerMutation.isPending}
                           />
                         </FormControl>
                         <FormMessage />
