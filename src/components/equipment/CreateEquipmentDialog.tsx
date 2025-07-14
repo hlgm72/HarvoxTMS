@@ -55,9 +55,23 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
   const form = useForm<EquipmentFormData>({
     resolver: zodResolver(equipmentSchema),
     defaultValues: {
+      equipment_number: "",
       equipment_type: "truck",
+      make: "",
+      model: "",
+      year: undefined,
+      vin_number: "",
+      license_plate: "",
+      license_plate_expiry_date: "",
+      registration_expiry_date: "",
+      insurance_expiry_date: "",
+      annual_inspection_expiry_date: "",
       fuel_type: "diesel",
       status: "active",
+      current_mileage: undefined,
+      purchase_date: "",
+      purchase_price: undefined,
+      notes: "",
     },
   });
 
