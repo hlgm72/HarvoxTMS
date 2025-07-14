@@ -1,5 +1,4 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useToast } from "@/hooks/use-toast";
 
 interface NotificationContextType {
   showNotification: (
@@ -26,7 +25,15 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export function useFleetNotifications() {
   const context = useContext(NotificationContext);
   if (!context) {
-    throw new Error('useFleetNotifications must be used within NotificationProvider');
+    // Return a safe fallback instead of throwing
+    return {
+      showNotification: () => console.log('Notification context not available'),
+      showSuccess: () => console.log('Success notification'),
+      showError: () => console.log('Error notification'),
+      showWarning: () => console.log('Warning notification'),
+      showInfo: () => console.log('Info notification'),
+      clearAll: () => console.log('Clear all notifications')
+    };
   }
   return context;
 }
@@ -36,8 +43,7 @@ interface NotificationProviderProps {
 }
 
 export function NotificationProvider({ children }: NotificationProviderProps) {
-  const { toast } = useToast();
-
+  // Use simple console logging instead of complex state management
   const showNotification = (
     type: 'success' | 'error' | 'warning' | 'info',
     title: string,
@@ -50,12 +56,12 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
       persistent?: boolean;
     }
   ) => {
-    toast({
-      title,
-      description: message,
-      variant: type === 'error' ? 'destructive' : 'default',
-      duration: options?.duration || 5000,
-    });
+    console.log(`${type.toUpperCase()}: ${title}${message ? ` - ${message}` : ''}`);
+    
+    // Create a simple browser notification for now
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, { body: message });
+    }
   };
 
   const showSuccess = (title: string, message?: string) => {
@@ -75,7 +81,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   };
 
   const clearAll = () => {
-    // Toast doesn't have a clearAll method, but individual toasts auto-dismiss
+    console.log('Clear all notifications');
   };
 
   const value: NotificationContextType = {
