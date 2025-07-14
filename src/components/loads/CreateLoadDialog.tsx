@@ -3,6 +3,9 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useCompanyDrivers, CompanyDriver } from "@/hooks/useCompanyDrivers";
+import { useCompanyBrokers } from "@/hooks/useCompanyBrokers";
+import { useCreateLoad } from "@/hooks/useCreateLoad";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +51,9 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   const { t } = useTranslation();
   const [currentPhase, setCurrentPhase] = useState(1);
   const [selectedBroker, setSelectedBroker] = useState<string>("");
+  const { drivers } = useCompanyDrivers();
+  const { brokers } = useCompanyBrokers();
+  const createLoadMutation = useCreateLoad();
 
   const form = useForm<z.infer<typeof createLoadSchema>>({
     resolver: zodResolver(createLoadSchema),
@@ -91,31 +97,27 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
     }
   ];
 
-  const onSubmit = async (values: z.infer<typeof createLoadSchema>) => {
-    try {
-      // Here we would save to Supabase
-      console.log("Creating load with values:", values);
-      
-      // Generate load number (this would be done server-side)
-      const loadNumber = `LD-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
-      
-      toast({
-        title: "Carga creada exitosamente",
-        description: `Carga ${loadNumber} ha sido registrada en el sistema`,
-      });
-      
-      onClose();
-      form.reset();
-      setCurrentPhase(1);
-      setSelectedBroker("");
-    } catch (error) {
-      console.error("Error creating load:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo crear la carga. Intenta nuevamente.",
-        variant: "destructive",
-      });
-    }
+  const onSubmit = (values: z.infer<typeof createLoadSchema>) => {
+    const loadNumber = `LD-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
+    
+    createLoadMutation.mutate({
+      load_number: loadNumber,
+      driver_user_id: drivers[0]?.user_id || '', // Temporal - luego permitir selección
+      broker_id: values.broker_id,
+      total_amount: values.total_amount,
+      commodity: values.commodity,
+      pickup_date: values.pickup_date,
+      delivery_date: values.delivery_date,
+      weight_lbs: values.weight_lbs,
+      notes: '',
+    }, {
+      onSuccess: () => {
+        form.reset();
+        setCurrentPhase(1);
+        setSelectedBroker("");
+        onClose();
+      }
+    });
   };
 
   const selectedBrokerData = brokerOptions.find(b => b.id === selectedBroker);
@@ -197,7 +199,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {brokerOptions.map((broker) => (
+                              {brokers.map((broker) => (
                                 <SelectItem key={broker.id} value={broker.id}>
                                   {broker.name}
                                 </SelectItem>

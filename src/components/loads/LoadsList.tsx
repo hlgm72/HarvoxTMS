@@ -6,6 +6,7 @@ import { Eye, Edit, Truck, MapPin, DollarSign, Calendar } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { useLoads } from "@/hooks/useLoads";
 
 // Mock data - later will be replaced with real data from Supabase
 const mockLoads = [
@@ -72,9 +73,38 @@ interface LoadsListProps {
 
 export function LoadsList({ filters }: LoadsListProps) {
   const { t } = useTranslation();
+  const { data: loads = [], isLoading, error } = useLoads();
+  
+  // Aplicar filtros a los datos reales
+  const filteredLoads = loads.filter(load => {
+    if (filters.status !== "all" && load.status !== filters.status) return false;
+    if (filters.driver !== "all" && load.driver_name !== filters.driver) return false;
+    if (filters.broker !== "all" && load.broker_name !== filters.broker) return false;
+    
+    // Filtro por rango de fechas
+    if (filters.dateRange.from && filters.dateRange.to) {
+      const loadDate = new Date(load.created_at);
+      if (loadDate < filters.dateRange.from || loadDate > filters.dateRange.to) return false;
+    }
+    
+    return true;
+  });
 
-  // Filter logic will be implemented here when connected to real data
-  const filteredLoads = mockLoads;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-muted-foreground">Cargando cargas...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-destructive">Error cargando cargas: {error.message}</div>
+      </div>
+    );
+  }
 
   if (filteredLoads.length === 0) {
     return (
@@ -133,7 +163,7 @@ export function LoadsList({ filters }: LoadsListProps) {
                   Broker / Cliente
                 </label>
                 <p className="text-sm font-medium">{load.broker_name}</p>
-                <p className="text-xs text-muted-foreground">{load.dispatcher_name}</p>
+                <p className="text-xs text-muted-foreground">Dispatcher</p>
               </div>
               
               <div>
