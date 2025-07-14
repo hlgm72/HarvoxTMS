@@ -48,31 +48,28 @@ export const useLoads = (filters?: LoadsFilters) => {
 
   return useQuery({
     queryKey: ['loads', user?.id, filters],
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    retry: 2,
+    retryDelay: 1000,
     queryFn: async (): Promise<Load[]> => {
       if (!user) throw new Error('User not authenticated');
 
       try {
-        // Obtener la compañía del usuario
+        console.time('useLoads-total');
+
+        // PASO 1: Obtener compañía del usuario (más rápido)
         const { data: userCompanyRole, error: companyError } = await supabase
           .from('user_company_roles')
           .select('company_id')
           .eq('user_id', user.id)
           .eq('is_active', true)
           .limit(1)
-          .single();
+          .maybeSingle();
 
-        if (companyError) {
-          console.error('Error obteniendo compañía del usuario:', companyError);
-          throw new Error('Error de conexión. Por favor intenta nuevamente.');
+        if (companyError || !userCompanyRole) {
+          throw new Error('No se pudo obtener la compañía del usuario');
         }
 
-        if (!userCompanyRole) {
-          throw new Error('No se encontró información de la compañía para este usuario.');
-        }
-
-        // Obtener todos los usuarios de la compañía para filtrar cargas
+        // PASO 2: Obtener usuarios de la compañía
         const { data: companyUsers, error: usersError } = await supabase
           .from('user_company_roles')
           .select('user_id')
@@ -80,59 +77,95 @@ export const useLoads = (filters?: LoadsFilters) => {
           .eq('is_active', true);
 
         if (usersError) {
-          console.error('Error obteniendo usuarios de la compañía:', usersError);
-          throw new Error('Error de conexión obteniendo usuarios. Por favor intenta nuevamente.');
+          throw new Error('Error obteniendo usuarios de la compañía');
         }
 
         const userIds = companyUsers.map(u => u.user_id);
 
-        // Obtener cargas primero
-        const { data: loads, error: loadsError } = await supabase
+        // PASO 3: Construir query de cargas con filtros optimizados
+        let loadsQuery = supabase
           .from('loads')
           .select('*')
           .in('driver_user_id', userIds)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false })
+          .limit(200);
+
+        // PASO 4: Aplicar filtros de período ANTES de la consulta para optimizar
+        if (filters?.periodFilter) {
+          const { periodFilter } = filters;
+          
+          if (periodFilter.type === 'specific' && periodFilter.periodId) {
+            loadsQuery = loadsQuery.eq('payment_period_id', periodFilter.periodId);
+          } else if (periodFilter.startDate && periodFilter.endDate) {
+            // Para rangos de fechas, filtrar por pickup_date
+            loadsQuery = loadsQuery
+              .gte('pickup_date', periodFilter.startDate)
+              .lte('pickup_date', periodFilter.endDate);
+          }
+          // Para 'current' y 'all', filtraremos después de obtener los datos
+        }
+
+        const { data: loads, error: loadsError } = await loadsQuery;
 
         if (loadsError) {
           console.error('Error obteniendo cargas:', loadsError);
-          throw new Error('Error de conexión obteniendo cargas. Por favor intenta nuevamente.');
+          throw new Error('Error de conexión obteniendo cargas');
         }
 
-        // Obtener información adicional para enriquecer las cargas
+        if (!loads || loads.length === 0) {
+          console.timeEnd('useLoads-total');
+          return [];
+        }
+
+        // PASO 5: Obtener datos relacionados EN PARALELO (clave para velocidad)
         const driverIds = [...new Set(loads.map(l => l.driver_user_id))];
         const brokerIds = [...new Set(loads.map(l => l.broker_id).filter(Boolean))];
         const periodIds = [...new Set(loads.map(l => l.payment_period_id).filter(Boolean))];
-
-        // Obtener nombres de conductores
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('user_id, first_name, last_name')
-          .in('user_id', driverIds);
-
-        // Obtener nombres de brokers
-        const { data: brokers } = brokerIds.length > 0 ? await supabase
-          .from('company_brokers')
-          .select('id, name')
-          .in('id', brokerIds) : { data: [] };
-
-        // Obtener información de períodos de pago
-        const { data: paymentPeriods } = periodIds.length > 0 ? await supabase
-          .from('payment_periods')
-          .select('id, period_start_date, period_end_date, period_frequency, status')
-          .in('id', periodIds) : { data: [] };
-
-        // Obtener paradas de carga para pickup/delivery
         const loadIds = loads.map(l => l.id);
-        const { data: stops } = await supabase
-          .from('load_stops')
-          .select('load_id, stop_type, city, stop_number')
-          .in('load_id', loadIds);
 
-        // Enriquecer cargas con información adicional
+        console.time('parallel-queries');
+        
+        // Todas las consultas en paralelo para máxima velocidad
+        const [profilesResult, brokersResult, periodsResult, stopsResult] = await Promise.allSettled([
+          // Perfiles de conductores
+          driverIds.length > 0 
+            ? supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', driverIds)
+            : Promise.resolve({ data: [] }),
+          
+          // Brokers
+          brokerIds.length > 0 
+            ? supabase.from('company_brokers').select('id, name').in('id', brokerIds)
+            : Promise.resolve({ data: [] }),
+          
+          // Períodos de pago
+          periodIds.length > 0 
+            ? supabase.from('payment_periods').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds)
+            : Promise.resolve({ data: [] }),
+          
+          // Paradas (solo pickup y delivery cities)
+          loadIds.length > 0 
+            ? supabase.from('load_stops').select('load_id, stop_type, city, stop_number').in('load_id', loadIds).in('stop_type', ['pickup', 'delivery'])
+            : Promise.resolve({ data: [] })
+        ]);
+
+        console.timeEnd('parallel-queries');
+
+        // Extraer datos de los resultados
+        const profiles = profilesResult.status === 'fulfilled' ? profilesResult.value.data || [] : [];
+        const brokers = brokersResult.status === 'fulfilled' ? brokersResult.value.data || [] : [];
+        const periods = periodsResult.status === 'fulfilled' ? periodsResult.value.data || [] : [];
+        const stops = stopsResult.status === 'fulfilled' ? stopsResult.value.data || [] : [];
+
+        console.time('data-enrichment');
+
+        // PASO 6: Enriquecer cargas con datos relacionados (optimizado)
         const enrichedLoads: Load[] = loads.map(load => {
-          const profile = profiles?.find(p => p.user_id === load.driver_user_id);
-          const broker = brokers?.find(b => b.id === load.broker_id);
-          const loadStops = stops?.filter(s => s.load_id === load.id) || [];
+          const profile = profiles.find(p => p.user_id === load.driver_user_id);
+          const broker = brokers.find(b => b.id === load.broker_id);
+          const period = periods.find(p => p.id === load.payment_period_id);
+          
+          // Optimización: pre-filtrar paradas por load_id
+          const loadStops = stops.filter(s => s.load_id === load.id);
           
           const pickupStop = loadStops
             .filter(s => s.stop_type === 'pickup')
@@ -142,68 +175,33 @@ export const useLoads = (filters?: LoadsFilters) => {
             .filter(s => s.stop_type === 'delivery')
             .sort((a, b) => b.stop_number - a.stop_number)[0];
 
-          // Obtener información del período de pago
-          const paymentPeriod = paymentPeriods?.find(p => p.id === load.payment_period_id);
-
           return {
             ...load,
             driver_name: profile ? `${profile.first_name} ${profile.last_name}` : 'Sin asignar',
             broker_name: broker?.name || 'Sin broker',
             pickup_city: pickupStop?.city || 'Sin definir',
             delivery_city: deliveryStop?.city || 'Sin definir',
-            period_start_date: paymentPeriod?.period_start_date,
-            period_end_date: paymentPeriod?.period_end_date,
-            period_frequency: paymentPeriod?.period_frequency,
-            period_status: paymentPeriod?.status
+            period_start_date: period?.period_start_date,
+            period_end_date: period?.period_end_date,
+            period_frequency: period?.period_frequency,
+            period_status: period?.status
           };
         });
 
-        // Aplicar filtros por período si se especifican
-        if (filters?.periodFilter) {
-          const { periodFilter } = filters;
-          
-          switch (periodFilter.type) {
-            case 'current':
-              // Filtrar solo cargas del período actual
-              const currentDate = new Date().toISOString().split('T')[0];
-              return enrichedLoads.filter(load => {
-                if (!load.period_start_date || !load.period_end_date) return false;
-                return load.period_start_date <= currentDate && load.period_end_date >= currentDate;
-              });
-              
-            case 'specific':
-              // Filtrar cargas de un período específico
-              if (periodFilter.periodId) {
-                return enrichedLoads.filter(load => load.payment_period_id === periodFilter.periodId);
-              }
-              break;
-              
-            case 'this_month':
-            case 'last_month':
-            case 'this_quarter':
-            case 'last_quarter':
-            case 'this_year':
-            case 'last_year':
-            case 'custom':
-              // Filtrar por rango de fechas personalizado o predefinido
-              if (periodFilter.startDate && periodFilter.endDate) {
-                return enrichedLoads.filter(load => {
-                  if (!load.pickup_date) return false;
-                  return load.pickup_date >= periodFilter.startDate! && load.pickup_date <= periodFilter.endDate!;
-                });
-              }
-              break;
-              
-            case 'all':
-            default:
-              // No filtrar, devolver todas las cargas
-              break;
-          }
-        }
+        console.timeEnd('data-enrichment');
 
-        return enrichedLoads;
+        // PASO 7: Aplicar filtros de período finales si es necesario
+        const filteredLoads = applyPeriodFilter(enrichedLoads, filters?.periodFilter);
+
+        console.timeEnd('useLoads-total');
+        console.log(`✅ useLoads completado: ${filteredLoads.length} cargas procesadas`);
+
+        return filteredLoads;
+
       } catch (error: any) {
         console.error('Error en useLoads:', error);
+        console.timeEnd('useLoads-total');
+        
         if (error.message?.includes('Failed to fetch')) {
           throw new Error('Error de conexión con el servidor. Verifica tu conexión a internet e intenta nuevamente.');
         }
@@ -211,5 +209,48 @@ export const useLoads = (filters?: LoadsFilters) => {
       }
     },
     enabled: !!user,
+    staleTime: 60000, // Cachear por 1 minuto
+    gcTime: 300000, // Mantener en cache por 5 minutos
   });
 };
+
+// Función auxiliar para aplicar filtros de período
+function applyPeriodFilter(loads: Load[], periodFilter?: LoadsFilters['periodFilter']): Load[] {
+  if (!periodFilter) return loads;
+  
+  switch (periodFilter.type) {
+    case 'current':
+      const currentDate = new Date().toISOString().split('T')[0];
+      return loads.filter(load => {
+        if (!load.period_start_date || !load.period_end_date) return false;
+        return load.period_start_date <= currentDate && load.period_end_date >= currentDate;
+      });
+      
+    case 'specific':
+      if (periodFilter.periodId) {
+        return loads.filter(load => load.payment_period_id === periodFilter.periodId);
+      }
+      break;
+      
+    case 'this_month':
+    case 'last_month':
+    case 'this_quarter':
+    case 'last_quarter':
+    case 'this_year':
+    case 'last_year':
+    case 'custom':
+      if (periodFilter.startDate && periodFilter.endDate) {
+        return loads.filter(load => {
+          if (!load.pickup_date) return false;
+          return load.pickup_date >= periodFilter.startDate! && load.pickup_date <= periodFilter.endDate!;
+        });
+      }
+      break;
+      
+    case 'all':
+    default:
+      break;
+  }
+  
+  return loads;
+}
