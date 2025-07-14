@@ -11,38 +11,40 @@ export default function Loads() {
   const { t } = useTranslation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [filters, setFilters] = useState({
-    status: "",
-    driver: "",
-    broker: "",
+    status: "all",
+    driver: "all", 
+    broker: "all",
     dateRange: { from: undefined, to: undefined }
   });
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <>
       <PageToolbar 
         breadcrumbs={[
           { label: t("loads.title", "Gestión de Cargas") }
         ]}
         title={t("loads.title", "Gestión de Cargas")}
         actions={
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
+          <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
             {t("loads.create.button", "Nueva Carga")}
           </Button>
         }
       />
 
-      <LoadFilters 
-        filters={filters}
-        onFiltersChange={setFilters}
-      />
+      <div className="p-2 md:p-4 space-y-6">
+        <LoadFilters 
+          filters={filters}
+          onFiltersChange={setFilters}
+        />
 
-      <LoadsList filters={filters} />
+        <LoadsList filters={filters} />
 
-      <CreateLoadDialog 
-        isOpen={isCreateDialogOpen}
-        onClose={() => setIsCreateDialogOpen(false)}
-      />
-    </div>
+        <CreateLoadDialog 
+          isOpen={isCreateDialogOpen}
+          onClose={() => setIsCreateDialogOpen(false)}
+        />
+      </div>
+    </>
   );
 }
