@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Plus, Package } from "lucide-react";
+import { Plus, Package, Clock } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { LoadsList } from "@/components/loads/LoadsList";
 import { LoadsFloatingActions } from "@/components/loads/LoadsFloatingActions";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 export default function Loads() {
   const { t } = useTranslation();
@@ -19,12 +21,56 @@ export default function Loads() {
     dateRange: { from: undefined, to: undefined }
   });
 
+  const getPeriodDescription = () => {
+    if (!periodFilter) return 'Período Actual';
+    
+    switch (periodFilter.type) {
+      case 'current':
+        return 'Período Actual';
+      case 'all':
+        return 'Histórico Completo';
+      case 'this_month':
+        return 'Este Mes';
+      case 'last_month':
+        return 'Mes Pasado';
+      case 'this_quarter':
+        return 'Este Trimestre';
+      case 'last_quarter':
+        return 'Trimestre Pasado';
+      case 'this_year':
+        return 'Este Año';
+      case 'last_year':
+        return 'Año Pasado';
+      case 'specific':
+        return 'Período Específico';
+      case 'custom':
+        return 'Rango Personalizado';
+      default:
+        return 'Período Seleccionado';
+    }
+  };
+
+  const getPeriodDateRange = () => {
+    if (!periodFilter) return '';
+    
+    if (periodFilter.startDate && periodFilter.endDate) {
+      const startDate = new Date(periodFilter.startDate);
+      const endDate = new Date(periodFilter.endDate);
+      return `${format(startDate, 'dd/MM/yy', { locale: es })} - ${format(endDate, 'dd/MM/yy', { locale: es })}`;
+    }
+    
+    return '';
+  };
+
+  const periodDateRange = getPeriodDateRange();
+  const periodDescription = getPeriodDescription();
+
   return (
     <>
       <PageToolbar 
         icon={Package}
         title={t("loads.title", "Gestión de Cargas")}
-        subtitle="12 cargas activas • $45,230 en tránsito • 3 pendientes asignación"
+        subtitle={`12 cargas activas • $45,230 en tránsito • 3 pendientes asignación${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`}
         actions={
           <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
             <Plus className="h-4 w-4" />
@@ -40,8 +86,19 @@ export default function Loads() {
             value={periodFilter} 
             onChange={setPeriodFilter} 
           />
-          <div className="text-sm text-muted-foreground">
-            Mostrando cargas del {periodFilter.type === 'current' ? 'período actual' : periodFilter.type === 'all' ? 'histórico completo' : 'período seleccionado'}
+          <div className="text-sm text-muted-foreground animate-fade-in">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              <span>
+                Mostrando cargas de <strong>{periodDescription}</strong>
+                {periodDateRange && (
+                  <>
+                    <br />
+                    <span className="text-xs">({periodDateRange})</span>
+                  </>
+                )}
+              </span>
+            </div>
           </div>
         </div>
 
