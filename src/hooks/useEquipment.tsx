@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/hooks/useAuth";
 
 export interface Equipment {
   id: string;
@@ -54,6 +56,7 @@ export function useEquipment() {
   const { showSuccess, showError } = useFleetNotifications();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const equipmentQuery = useQuery({
     queryKey: ["equipment"],
@@ -105,7 +108,8 @@ export function useEquipment() {
 
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('🔧 Equipment created successfully:', data);
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
       showSuccess(
         t("equipment.created.title", "Equipo creado"),
@@ -135,7 +139,8 @@ export function useEquipment() {
 
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('🔧 Equipment updated successfully:', data);
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
       showSuccess(
         t("equipment.updated.title", "Equipo actualizado"),
@@ -162,6 +167,7 @@ export function useEquipment() {
       }
     },
     onSuccess: () => {
+      console.log('🔧 Equipment deleted successfully');
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
       showSuccess(
         t("equipment.deleted.title", "Equipo eliminado"),
@@ -175,6 +181,38 @@ export function useEquipment() {
       );
     },
   });
+
+  // Set up real-time subscription to automatically refresh equipment list
+  useEffect(() => {
+    if (!user?.id) return;
+
+    console.log('🔧 Setting up equipment realtime subscription...');
+    
+    const channel = supabase
+      .channel('equipment-realtime-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'company_equipment'
+        },
+        (payload) => {
+          console.log('🔧 Equipment change detected:', payload.eventType, payload);
+          
+          // Invalidate and refetch the equipment query
+          queryClient.invalidateQueries({ queryKey: ["equipment"] });
+        }
+      )
+      .subscribe((status) => {
+        console.log('🔧 Equipment subscription status:', status);
+      });
+
+    return () => {
+      console.log('🔧 Cleaning up equipment subscription...');
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient]);
 
   return {
     equipment: equipmentQuery.data,
