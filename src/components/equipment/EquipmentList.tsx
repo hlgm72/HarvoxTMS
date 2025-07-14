@@ -3,11 +3,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { MoreHorizontal, Edit, Eye, Trash2, FileText, MapPin, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import type { Equipment } from "@/hooks/useEquipment";
+import { useEquipment } from "@/hooks/useEquipment";
 import { EquipmentLocationStatus } from "./EquipmentLocationStatus";
 import { useGeotabVehicles } from "@/hooks/useGeotabVehicles";
 
@@ -18,6 +20,8 @@ interface EquipmentListProps {
 export function EquipmentList({ equipment }: EquipmentListProps) {
   const { t } = useTranslation();
   const { equipmentWithGeotab, isLoadingEquipmentWithGeotab } = useGeotabVehicles();
+  const { deleteEquipment, isDeleting } = useEquipment();
+  const [equipmentToDelete, setEquipmentToDelete] = useState<Equipment | null>(null);
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
@@ -63,6 +67,21 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
       ...nextExpiry,
       isExpiring: isExpiringSoon(nextExpiry.date),
     };
+  };
+
+  const handleDeleteClick = (equipment: Equipment) => {
+    setEquipmentToDelete(equipment);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (equipmentToDelete) {
+      deleteEquipment(equipmentToDelete.id);
+      setEquipmentToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setEquipmentToDelete(null);
   };
 
   if (equipment.length === 0) {
@@ -166,7 +185,11 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                         <MapPin className="mr-2 h-4 w-4" />
                         {t("equipment.location", "Ubicación")}
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">
+                      <DropdownMenuItem 
+                        className="text-destructive"
+                        onClick={() => handleDeleteClick(item)}
+                        disabled={isDeleting}
+                      >
                         <Trash2 className="mr-2 h-4 w-4" />
                         {t("common.delete", "Eliminar")}
                       </DropdownMenuItem>
@@ -178,6 +201,34 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
           </Card>
         );
       })}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!equipmentToDelete} onOpenChange={handleDeleteCancel}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("equipment.delete.title", "¿Eliminar equipo?")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("equipment.delete.description", 
+                "Esta acción no se puede deshacer. Se eliminará permanentemente el equipo"
+              )} <strong>{equipmentToDelete?.equipment_number}</strong>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleDeleteCancel}>
+              {t("common.cancel", "Cancelar")}
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isDeleting}
+            >
+              {isDeleting ? t("common.deleting", "Eliminando...") : t("common.delete", "Eliminar")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
