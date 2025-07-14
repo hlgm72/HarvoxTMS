@@ -13,7 +13,24 @@ import { es } from "date-fns/locale";
 export default function Loads() {
   const { t } = useTranslation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [periodFilter, setPeriodFilter] = useState<PeriodFilterValue>({ type: 'current' });
+  
+  // Inicializar el período actual con las fechas correspondientes
+  const getCurrentPeriodWithDates = (): PeriodFilterValue => {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay()); // Domingo de esta semana
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // Sábado de esta semana
+    
+    return {
+      type: 'current',
+      startDate: format(startOfWeek, 'yyyy-MM-dd'),
+      endDate: format(endOfWeek, 'yyyy-MM-dd'),
+      label: 'Período Actual'
+    };
+  };
+  
+  const [periodFilter, setPeriodFilter] = useState<PeriodFilterValue>(getCurrentPeriodWithDates());
   const [filters, setFilters] = useState({
     status: "all",
     driver: "all", 
@@ -21,7 +38,10 @@ export default function Loads() {
     dateRange: { from: undefined, to: undefined }
   });
 
+  console.log('🎯 Loads component - periodFilter state:', periodFilter);
+
   const getPeriodDescription = () => {
+    console.log('🔍 getPeriodDescription - periodFilter:', periodFilter);
     if (!periodFilter) return 'Período Actual';
     
     switch (periodFilter.type) {
@@ -51,19 +71,26 @@ export default function Loads() {
   };
 
   const getPeriodDateRange = () => {
+    console.log('📅 getPeriodDateRange - periodFilter:', periodFilter);
     if (!periodFilter) return '';
     
     if (periodFilter.startDate && periodFilter.endDate) {
+      console.log('📅 Dates found:', periodFilter.startDate, periodFilter.endDate);
       const startDate = new Date(periodFilter.startDate);
       const endDate = new Date(periodFilter.endDate);
-      return `${format(startDate, 'dd/MM/yy', { locale: es })} - ${format(endDate, 'dd/MM/yy', { locale: es })}`;
+      const formatted = `${format(startDate, 'dd/MM/yy', { locale: es })} - ${format(endDate, 'dd/MM/yy', { locale: es })}`;
+      console.log('📅 Formatted range:', formatted);
+      return formatted;
     }
     
+    console.log('📅 No dates available');
     return '';
   };
 
   const periodDateRange = getPeriodDateRange();
   const periodDescription = getPeriodDescription();
+  
+  console.log('🎯 Final values:', { periodDateRange, periodDescription, periodFilter });
 
   return (
     <>
