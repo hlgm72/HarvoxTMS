@@ -36,8 +36,12 @@ import './i18n/config';
 const queryClient = new QueryClient();
 
 function AppContent() {
+  console.log('🔥 AppContent rendering...');
+  
   // Sincronizar idioma del perfil con i18n
   useLanguageSync();
+  
+  console.log('✅ AppContent hooks loaded successfully');
 
   return (
     <BrowserRouter>
@@ -252,20 +256,24 @@ function AppContent() {
   );
 }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <UserProfileProvider>
-        <NotificationProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <AppContent />
-          </TooltipProvider>
-        </NotificationProvider>
-      </UserProfileProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  console.log('🚀 App component rendering...');
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <UserProfileProvider>
+          <NotificationProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <AppContent />
+            </TooltipProvider>
+          </NotificationProvider>
+        </UserProfileProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
