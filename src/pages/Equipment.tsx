@@ -9,6 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { EquipmentList } from "@/components/equipment/EquipmentList";
 import { EquipmentGrid } from "@/components/equipment/EquipmentGrid";
+import { EquipmentOverviewCard } from "@/components/equipment/EquipmentOverviewCard";
+import { EquipmentLocationCard } from "@/components/equipment/EquipmentLocationCard";
+import { MaintenanceScheduleCard } from "@/components/equipment/MaintenanceScheduleCard";
 import { CreateEquipmentDialog } from "@/components/equipment/CreateEquipmentDialog";
 import { EquipmentFilters } from "@/components/equipment/EquipmentFilters";
 import { EquipmentStats } from "@/components/equipment/EquipmentStats";
@@ -33,6 +36,41 @@ export default function Equipment() {
     item.license_plate?.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
+  // Mock data para las cards avanzadas
+  const mockEquipmentData = equipment?.map(item => ({
+    id: item.id,
+    equipmentNumber: item.equipment_number,
+    make: item.make || "Unknown",
+    model: item.model || "Unknown",
+    status: item.status as "active" | "maintenance" | "inactive",
+    mileage: item.current_mileage,
+    nextMaintenance: "Próximo: 2024-08-15"
+  })) || [];
+
+  const mockLocationData = equipment?.slice(0, 5).map((item, index) => ({
+    id: item.id,
+    equipmentNumber: item.equipment_number,
+    location: index % 3 === 0 ? "Houston, TX" : index % 3 === 1 ? "Dallas, TX" : "Austin, TX",
+    lastUpdate: "2 min ago",
+    status: (index % 3 === 0 ? "moving" : index % 3 === 1 ? "parked" : "offline") as "moving" | "parked" | "offline"
+  })) || [];
+
+  const mockMaintenanceData = equipment?.slice(0, 4).map((item, index) => ({
+    id: item.id,
+    equipmentNumber: item.equipment_number,
+    maintenanceType: index % 3 === 0 ? "Inspección Anual" : index % 3 === 1 ? "Cambio de Aceite" : "Revisión General",
+    dueDate: index % 2 === 0 ? "2024-08-15" : "2024-08-22",
+    priority: (index % 3 === 0 ? "high" : index % 3 === 1 ? "medium" : "low") as "high" | "medium" | "low",
+    overdue: index === 0
+  })) || [];
+
+  const activeCount = equipment?.filter(item => item.status === 'active').length || 0;
+  const maintenanceCount = equipment?.filter(item => item.status === 'maintenance').length || 0;
+  const onlineCount = Math.floor((equipment?.length || 0) * 0.8);
+  const movingCount = Math.floor((equipment?.length || 0) * 0.3);
+  const overdueCount = mockMaintenanceData.filter(item => item.overdue).length;
+  const thisWeekCount = Math.floor(mockMaintenanceData.length * 0.6);
+
   return (
     <div>
       <PageToolbar 
@@ -51,6 +89,26 @@ export default function Equipment() {
       <div className="container mx-auto p-6 space-y-6">
         {/* Stats Cards */}
         <EquipmentStats equipment={equipment} />
+
+        {/* Advanced Equipment Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+          <EquipmentOverviewCard
+            totalEquipment={equipment?.length || 0}
+            activeCount={activeCount}
+            maintenanceCount={maintenanceCount}
+            equipment={mockEquipmentData}
+          />
+          <EquipmentLocationCard
+            locations={mockLocationData}
+            onlineCount={onlineCount}
+            movingCount={movingCount}
+          />
+          <MaintenanceScheduleCard
+            upcomingMaintenance={mockMaintenanceData}
+            overdueCount={overdueCount}
+            thisWeekCount={thisWeekCount}
+          />
+        </div>
 
         {/* Main Content with Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

@@ -1,4 +1,7 @@
 import { StatsCard } from "@/components/dashboard/StatsCard";
+import { ActiveLoadsCard } from "@/components/dashboard/ActiveLoadsCard";
+import { DriverMobileCard } from "@/components/dashboard/DriverMobileCard";
+import { ReversMobileCard } from "@/components/dashboard/ReversMobileCard";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { CommandMap } from "@/components/dashboard/CommandMap";
 import { DispatchPanel } from "@/components/dashboard/DispatchPanel";
@@ -7,7 +10,26 @@ import { PageToolbar } from "@/components/layout/PageToolbar";
 import { PWAInstallBanner } from "@/components/ui/PWAInstallBanner";
 
 export default function Dashboard() {
-  
+  // Mock data para las nuevas cards
+  const mockLoads = [
+    { id: "1", driverName: "Me alvari-2...n", vehicleNumber: "Volrus", status: "on-time" as const, statusText: "En Ruta" },
+    { id: "2", driverName: "Carlos Rodriguez", vehicleNumber: "FL-001", status: "delayed" as const, statusText: "Retrasado" },
+    { id: "3", driverName: "Ana Martinez", vehicleNumber: "TX-205", status: "delivered" as const, statusText: "Entregado" },
+  ];
+
+  const mockVehicles = [
+    { id: "1", driverName: "Madner", vehicleType: "Madner", vehicleImage: "", mileage: "0.16/VA1FT", rate: "269.46", status: "active" as const },
+    { id: "2", driverName: "Milomery", vehicleType: "Milomery", vehicleImage: "", mileage: "0.24/VA1OE", rate: "412.62", status: "active" as const },
+    { id: "3", driverName: "Evobule", vehicleType: "Evobule", vehicleImage: "", mileage: "0.10/VA1OE", rate: "204.35", status: "maintenance" as const },
+  ];
+
+  const mockReversItems = [
+    { id: "1", name: "Feriat", description: "Yerri's Lbr Evendvs", icon: "▶️", iconColor: "#ff6b35", action: "❌" },
+    { id: "2", name: "Deuel Trunius", description: "Yend of Brididng", icon: "💻", iconColor: "#4f46e5" },
+    { id: "3", name: "Stovers", description: "irena D'uammistar", icon: "🔻", iconColor: "#dc2626" },
+    { id: "4", name: "Malagrim", description: "Yemiy Ehaive fluseviana", icon: "☰", iconColor: "#6b7280" },
+  ];
+
   return (
     <>
       <PageToolbar 
@@ -48,6 +70,23 @@ export default function Dashboard() {
             icon="📦"
             trend={{ value: 8.7, isPositive: true }}
             variant="warning"
+          />
+        </div>
+
+        {/* Advanced Cards Grid - Estilo de la imagen */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+          <ActiveLoadsCard
+            totalLoads={24}
+            trendValue={12}
+            isPositive={true}
+            loads={mockLoads}
+          />
+          <DriverMobileCard
+            totalDrivers={8}
+            vehicles={mockVehicles}
+          />
+          <ReversMobileCard
+            items={mockReversItems}
           />
         </div>
 
