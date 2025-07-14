@@ -38,6 +38,7 @@ export function EmailDocumentsModal({
   const [recipients, setRecipients] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
   const { showSuccess, showError } = useFleetNotifications();
 
   // Validation rules (in bytes)
@@ -95,15 +96,26 @@ export function EmailDocumentsModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Clear previous validation errors
+    setValidationErrors({});
+    const errors: {[key: string]: string} = {};
+    
     // Validate form
     if (!recipients.trim()) {
-      showError("Email requerido", "Por favor ingresa al menos un destinatario");
-      return;
+      errors.recipients = "Por favor ingresa al menos un destinatario";
+    } else {
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailList = recipients.split(',').map(email => email.trim());
+      const invalidEmails = emailList.filter(email => !emailRegex.test(email));
+      
+      if (invalidEmails.length > 0) {
+        errors.recipients = `Emails inválidos: ${invalidEmails.join(', ')}`;
+      }
     }
 
     if (!subject.trim()) {
-      showError("Asunto requerido", "Por favor ingresa un asunto para el email");
-      return;
+      errors.subject = "Por favor ingresa un asunto para el email";
     }
 
     // Enhanced validations
@@ -133,13 +145,9 @@ export function EmailDocumentsModal({
       return;
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const emailList = recipients.split(',').map(email => email.trim());
-    const invalidEmails = emailList.filter(email => !emailRegex.test(email));
-    
-    if (invalidEmails.length > 0) {
-      showError("Emails inválidos", `Los siguientes emails no son válidos: ${invalidEmails.join(', ')}`);
+    // If there are validation errors, show them and return
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
       return;
     }
 
@@ -349,10 +357,23 @@ export function EmailDocumentsModal({
             <Input
               id="recipients"
               value={recipients}
-              onChange={(e) => setRecipients(e.target.value)}
+              onChange={(e) => {
+                setRecipients(e.target.value);
+                if (validationErrors.recipients) {
+                  const newErrors = { ...validationErrors };
+                  delete newErrors.recipients;
+                  setValidationErrors(newErrors);
+                }
+              }}
               placeholder="email1@empresa.com, email2@empresa.com"
               disabled={sendEmailMutation.isPending}
+              className={validationErrors.recipients ? "border-red-500" : ""}
             />
+            {validationErrors.recipients && (
+              <p className="text-xs text-red-600 bg-red-50 p-2 rounded">
+                {validationErrors.recipients}
+              </p>
+            )}
             <p className="text-xs text-muted-foreground">
               Separa múltiples emails con comas
             </p>
@@ -364,10 +385,23 @@ export function EmailDocumentsModal({
             <Input
               id="subject"
               value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+              onChange={(e) => {
+                setSubject(e.target.value);
+                if (validationErrors.subject) {
+                  const newErrors = { ...validationErrors };
+                  delete newErrors.subject;
+                  setValidationErrors(newErrors);
+                }
+              }}
               placeholder="Documentos de la empresa"
               disabled={sendEmailMutation.isPending}
+              className={validationErrors.subject ? "border-red-500" : ""}
             />
+            {validationErrors.subject && (
+              <p className="text-xs text-red-600 bg-red-50 p-2 rounded">
+                {validationErrors.subject}
+              </p>
+            )}
           </div>
 
           {/* Message */}
