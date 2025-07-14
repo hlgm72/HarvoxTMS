@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, TrendingUp, Clock, FileText } from "lucide-react";
-import modernTruckImage from "@/assets/modern-truck-illustration.png";
+import modernTruckImage from "@/assets/modern-truck-illustration-transparent.png";
 
 interface EmptyLoadsStateProps {
   onCreateLoad: () => void;
