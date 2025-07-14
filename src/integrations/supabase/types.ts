@@ -1185,6 +1185,13 @@ export type Database = {
             referencedRelation: "loads"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "load_documents_load_id_fkey"
+            columns: ["load_id"]
+            isOneToOne: false
+            referencedRelation: "loads_with_calculated_dates"
+            referencedColumns: ["id"]
+          },
         ]
       }
       load_stops: {
@@ -1257,6 +1264,13 @@ export type Database = {
             columns: ["load_id"]
             isOneToOne: false
             referencedRelation: "loads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "load_stops_load_id_fkey"
+            columns: ["load_id"]
+            isOneToOne: false
+            referencedRelation: "loads_with_calculated_dates"
             referencedColumns: ["id"]
           },
         ]
@@ -2263,6 +2277,35 @@ export type Database = {
           updated_by?: string | null
           vin_number?: string | null
           year?: number | null
+        }
+        Relationships: []
+      }
+      loads_with_calculated_dates: {
+        Row: {
+          actual_delivery_date: string | null
+          actual_pickup_date: string | null
+          broker_id: string | null
+          calculated_delivery_date: string | null
+          calculated_pickup_date: string | null
+          commodity: string | null
+          created_at: string | null
+          created_by: string | null
+          currency: string | null
+          customer_name: string | null
+          delivery_date: string | null
+          dispatching_percentage: number | null
+          driver_user_id: string | null
+          factoring_percentage: number | null
+          id: string | null
+          leasing_percentage: number | null
+          load_number: string | null
+          notes: string | null
+          payment_period_id: string | null
+          pickup_date: string | null
+          status: string | null
+          total_amount: number | null
+          updated_at: string | null
+          weight_lbs: number | null
         }
         Relationships: []
       }

@@ -9,8 +9,6 @@ export interface CreateLoadData {
   broker_id?: string;
   total_amount: number;
   commodity?: string;
-  pickup_date?: string;
-  delivery_date?: string;
   weight_lbs?: number;
   notes?: string;
   customer_name?: string;
@@ -49,8 +47,6 @@ export const useCreateLoad = () => {
           broker_id: data.broker_id || null,
           total_amount: data.total_amount,
           commodity: data.commodity || null,
-          pickup_date: data.pickup_date || null,
-          delivery_date: data.delivery_date || null,
           weight_lbs: data.weight_lbs || null,
           notes: data.notes || null,
           customer_name: data.customer_name || null,
@@ -80,7 +76,7 @@ export const useCreateLoad = () => {
           state: data.pickup_state,
           zip_code: data.pickup_zip || null,
           company_name: data.pickup_company || null,
-          scheduled_date: data.pickup_date || null
+          scheduled_date: null // Se definirá en la fase de paradas
         });
       }
 
@@ -94,7 +90,7 @@ export const useCreateLoad = () => {
           state: data.delivery_state,
           zip_code: data.delivery_zip || null,
           company_name: data.delivery_company || null,
-          scheduled_date: data.delivery_date || null
+          scheduled_date: null // Se definirá en la fase de paradas
         });
       }
 

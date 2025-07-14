@@ -26,8 +26,6 @@ const createLoadSchema = z.object({
   pu_number: z.string().optional(),
   commodity: z.string().min(1, "Especifica el commodity"),
   weight_lbs: z.number().optional(),
-  pickup_date: z.string().optional(),
-  delivery_date: z.string().optional(),
 });
 
 // Mock data - will be replaced with real data
@@ -65,8 +63,6 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
       pu_number: "",
       commodity: "",
       weight_lbs: undefined,
-      pickup_date: "",
-      delivery_date: "",
     },
   });
 
@@ -106,8 +102,6 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
       broker_id: values.broker_id,
       total_amount: values.total_amount,
       commodity: values.commodity,
-      pickup_date: values.pickup_date,
-      delivery_date: values.delivery_date,
       weight_lbs: values.weight_lbs,
       notes: '',
     }, {
@@ -327,34 +321,15 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                       )}
                     />
 
-                    {/* Tentative Dates */}
-                    <FormField
-                      control={form.control}
-                      name="pickup_date"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Fecha Pickup (Tentativa)</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="delivery_date"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Fecha Delivery (Tentativa)</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    {/* Las fechas se calculan automáticamente desde las paradas */}
+                    <div className="col-span-2">
+                      <div className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
+                        <p className="text-sm font-medium text-foreground">📍 Fechas automáticas</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Las fechas de pickup y delivery se calcularán automáticamente basándose en las paradas que definas en la siguiente fase.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
