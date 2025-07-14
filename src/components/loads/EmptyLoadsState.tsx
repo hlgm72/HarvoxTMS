@@ -36,7 +36,7 @@ export function EmptyLoadsState({ onCreateLoad }: EmptyLoadsStateProps) {
             <img 
               src={modernTruckImage} 
               alt="Modern truck illustration"
-              className="w-64 h-48 mx-auto object-contain animate-fade-in"
+              className="w-64 h-48 mx-auto object-contain animate-fade-in bg-transparent"
             />
             <div className="absolute -top-2 -right-2">
               <Badge variant="secondary" className="animate-pulse">
