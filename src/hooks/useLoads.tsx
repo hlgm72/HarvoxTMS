@@ -121,14 +121,24 @@ const getRelevantPeriodIds = async (
   userIds: string[], 
   periodFilter: LoadsFilters['periodFilter']
 ): Promise<string[]> => {
-  if (!periodFilter) return [];
+  console.log('🔍 getRelevantPeriodIds iniciando con:', { userIds: userIds.length, periodFilter });
+  console.time('getRelevantPeriodIds');
+  
+  if (!periodFilter) {
+    console.log('📤 Sin filtro de período');
+    console.timeEnd('getRelevantPeriodIds');
+    return [];
+  }
 
   // Caso específico: período único
   if (periodFilter.type === 'specific' && periodFilter.periodId) {
+    console.log('📤 Período específico:', periodFilter.periodId);
+    console.timeEnd('getRelevantPeriodIds');
     return [periodFilter.periodId];
   }
 
   // Calcular rango de fechas según el tipo de filtro
+  console.time('calculateDateRange');
   let dateRange: DateRange | null = null;
   
   if (periodFilter.type === 'custom' && periodFilter.startDate && periodFilter.endDate) {
@@ -139,40 +149,61 @@ const getRelevantPeriodIds = async (
   } else {
     dateRange = calculateDateRange(periodFilter.type);
   }
+  console.timeEnd('calculateDateRange');
 
   // Sin filtro de fechas para 'all'
-  if (!dateRange) return [];
+  if (!dateRange) {
+    console.log('📤 Sin rango de fechas para "all"');
+    console.timeEnd('getRelevantPeriodIds');
+    return [];
+  }
+
+  console.log('📅 Rango calculado:', dateRange);
 
   // Buscar períodos que se solapen con el rango de fechas
+  console.time('supabase-payment-periods-query');
   const { data: periodsInRange, error } = await supabase
     .from('payment_periods')
     .select('id')
     .in('driver_user_id', userIds)
     .lte('period_start_date', dateRange.endDate)
     .gte('period_end_date', dateRange.startDate);
+  console.timeEnd('supabase-payment-periods-query');
 
   if (error) {
-    console.error('Error obteniendo períodos:', error);
+    console.error('❌ Error obteniendo períodos:', error);
+    console.timeEnd('getRelevantPeriodIds');
     throw new Error('Error consultando períodos de pago');
   }
 
-  return periodsInRange?.map(p => p.id) || [];
+  const periodIds = periodsInRange?.map(p => p.id) || [];
+  console.log(`📤 Períodos encontrados: ${periodIds.length}`);
+  console.timeEnd('getRelevantPeriodIds');
+  
+  return periodIds;
 };
 
 export const useLoads = (filters?: LoadsFilters) => {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ['loads', user?.id, filters],
+    queryKey: ['loads', user?.id, JSON.stringify(filters)], // Serializar filtros para evitar problemas de referencia
     retry: 2,
     retryDelay: 1000,
+    staleTime: 30000, // Reducir stale time
+    gcTime: 120000, // Reducir garbage collection time
     queryFn: async (): Promise<Load[]> => {
-      if (!user) throw new Error('User not authenticated');
+      console.log('🔄 useLoads iniciando con filtros:', filters);
+      console.time('useLoads-TOTAL-TIME');
+      
+      if (!user) {
+        console.log('❌ Usuario no autenticado');
+        throw new Error('User not authenticated');
+      }
 
       try {
-        console.time('useLoads-total');
-
         // PASO 1: Obtener compañía y usuarios
+        console.time('step-1-company-users');
         const { data: userCompanyRole, error: companyError } = await supabase
           .from('user_company_roles')
           .select('company_id')
@@ -182,6 +213,8 @@ export const useLoads = (filters?: LoadsFilters) => {
           .maybeSingle();
 
         if (companyError || !userCompanyRole) {
+          console.timeEnd('step-1-company-users');
+          console.timeEnd('useLoads-TOTAL-TIME');
           throw new Error('No se pudo obtener la compañía del usuario');
         }
 
@@ -192,15 +225,22 @@ export const useLoads = (filters?: LoadsFilters) => {
           .eq('is_active', true);
 
         if (usersError) {
+          console.timeEnd('step-1-company-users');
+          console.timeEnd('useLoads-TOTAL-TIME');
           throw new Error('Error obteniendo usuarios de la compañía');
         }
 
         const userIds = companyUsers.map(u => u.user_id);
+        console.log(`👥 Usuarios encontrados: ${userIds.length}`);
+        console.timeEnd('step-1-company-users');
 
         // PASO 2: Obtener period_ids relevantes según el filtro (OPTIMIZACIÓN CLAVE)
+        console.time('step-2-period-filtering');
         const relevantPeriodIds = await getRelevantPeriodIds(userIds, filters?.periodFilter);
+        console.timeEnd('step-2-period-filtering');
         
         // PASO 3: Construir query optimizada de cargas
+        console.time('step-3-loads-query');
         let loadsQuery = supabase
           .from('loads')
           .select('*')
@@ -209,9 +249,10 @@ export const useLoads = (filters?: LoadsFilters) => {
 
         // Aplicar filtro de períodos si hay alguno
         if (relevantPeriodIds.length > 0) {
+          console.log(`🎯 Filtrando por ${relevantPeriodIds.length} period_ids`);
           loadsQuery = loadsQuery.in('payment_period_id', relevantPeriodIds);
         } else if (filters?.periodFilter?.type !== 'all' && filters?.periodFilter) {
-          // Si hay filtro pero no hay períodos relevantes, no devolver cargas
+          console.log('🚫 No hay períodos relevantes, devolviendo consulta vacía');
           loadsQuery = loadsQuery.eq('id', '00000000-0000-0000-0000-000000000000');
         }
 
@@ -221,6 +262,7 @@ export const useLoads = (filters?: LoadsFilters) => {
         loadsQuery = loadsQuery.limit(limit);
 
         const { data: loads, error: loadsError } = await loadsQuery;
+        console.timeEnd('step-3-loads-query');
 
         if (loadsError) {
           console.error('Error obteniendo cargas:', loadsError);
@@ -228,7 +270,7 @@ export const useLoads = (filters?: LoadsFilters) => {
         }
 
         if (!loads || loads.length === 0) {
-          console.timeEnd('useLoads-total');
+          console.timeEnd('useLoads-TOTAL-TIME');
           console.log('✅ useLoads completado: Sin cargas encontradas');
           return [];
         }
@@ -299,14 +341,14 @@ export const useLoads = (filters?: LoadsFilters) => {
         });
 
         console.timeEnd('data-enrichment');
-        console.timeEnd('useLoads-total');
+        console.timeEnd('useLoads-TOTAL-TIME');
         console.log(`✅ useLoads completado: ${enrichedLoads.length} cargas procesadas`);
 
         return enrichedLoads;
 
       } catch (error: any) {
         console.error('Error en useLoads:', error);
-        console.timeEnd('useLoads-total');
+        console.timeEnd('useLoads-TOTAL-TIME');
         
         if (error.message?.includes('Failed to fetch')) {
           throw new Error('Error de conexión con el servidor. Verifica tu conexión a internet e intenta nuevamente.');
@@ -315,7 +357,5 @@ export const useLoads = (filters?: LoadsFilters) => {
       }
     },
     enabled: !!user,
-    staleTime: 60000, // Cachear por 1 minuto
-    gcTime: 300000, // Mantener en cache por 5 minutos
   });
 };
