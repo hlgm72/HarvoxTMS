@@ -1,4 +1,6 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 
 interface UserRole {
   role: string;
@@ -8,8 +10,8 @@ interface UserRole {
 }
 
 interface AuthContextType {
-  user: any | null;
-  session: any | null;
+  user: User | null;
+  session: Session | null;
   userRoles: UserRole[] | null;
   currentRole: string | null;
   signOut: () => Promise<void>;
@@ -32,48 +34,237 @@ interface AuthContextType {
   _forceUpdate: () => void;
 }
 
-// Simple mock implementation to avoid useState issues
-const mockAuthContext: AuthContextType = {
-  user: null,
-  session: null,
-  userRoles: null,
-  currentRole: null,
-  signOut: async () => { console.log('Sign out'); },
-  signIn: async (email: string, password: string) => {
-    console.log('Sign in attempt:', email);
-    return { error: null };
-  },
-  signUp: async (email: string, password: string) => {
-    console.log('Sign up attempt:', email);
-    return { error: null };
-  },
-  loading: false,
-  userRole: null,
-  isAuthenticated: false,
-  availableRoles: [],
-  hasMultipleRoles: false,
-  isSuperAdmin: false,
-  isCompanyOwner: false,
-  isOperationsManager: false,
-  isDispatcher: false,
-  isDriver: false,
-  switchRole: (roleId: string) => console.log('Switch role:', roleId),
-  refreshRoles: async () => console.log('Refresh roles'),
-  _forceUpdate: () => console.log('Force update')
-};
-
-const AuthContext = createContext<AuthContextType>(mockAuthContext);
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  return context || mockAuthContext;
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  console.log('🔐 AuthProvider rendering with simplified implementation');
-  
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [userRoles, setUserRoles] = useState<UserRole[] | null>(null);
+  const [currentRole, setCurrentRole] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [forceUpdateCounter, setForceUpdateCounter] = useState(0);
+
+  // Get current active role from roles array
+  const userRole = userRoles?.find(role => role.role === currentRole) || null;
+  const isAuthenticated = !!user && !!session;
+  const availableRoles = userRoles || [];
+  const hasMultipleRoles = availableRoles.length > 1;
+
+  // Role checks
+  const isSuperAdmin = userRole?.role === 'superadmin';
+  const isCompanyOwner = userRole?.role === 'company_owner';
+  const isOperationsManager = userRole?.role === 'operations_manager';
+  const isDispatcher = userRole?.role === 'dispatcher';
+  const isDriver = userRole?.role === 'driver';
+
+  const fetchUserRoles = useCallback(async (userId: string) => {
+    try {
+      console.log('🔍 Fetching roles for user:', userId);
+      const { data: roles, error } = await supabase
+        .from('user_company_roles')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('is_active', true);
+
+      if (error) {
+        console.error('Error fetching user roles:', error);
+        return [];
+      }
+
+      console.log('📋 User roles found:', roles);
+      return roles || [];
+    } catch (error) {
+      console.error('Error in fetchUserRoles:', error);
+      return [];
+    }
+  }, []);
+
+  const determineCurrentRole = useCallback((roles: UserRole[]) => {
+    if (!roles || roles.length === 0) return null;
+
+    // Check for stored role preference
+    const storedRole = localStorage.getItem('currentRole');
+    if (storedRole) {
+      try {
+        const parsedRole = JSON.parse(storedRole);
+        const validRole = roles.find(r => r.role === parsedRole.role && r.company_id === parsedRole.company_id);
+        if (validRole) {
+          console.log('🎯 Using stored role:', validRole.role);
+          return validRole.role;
+        }
+      } catch (e) {
+        console.warn('Error parsing stored role:', e);
+      }
+    }
+
+    // Role hierarchy for automatic selection
+    const roleHierarchy = ['superadmin', 'company_owner', 'operations_manager', 'dispatcher', 'driver'];
+    
+    for (const roleType of roleHierarchy) {
+      const role = roles.find(r => r.role === roleType);
+      if (role) {
+        console.log('🎯 Auto-selected role:', role.role);
+        return role.role;
+      }
+    }
+
+    return roles[0]?.role || null;
+  }, []);
+
+  const refreshRoles = useCallback(async () => {
+    if (!user?.id) return;
+    
+    const roles = await fetchUserRoles(user.id);
+    setUserRoles(roles);
+    
+    const selectedRole = determineCurrentRole(roles);
+    setCurrentRole(selectedRole);
+  }, [user?.id, fetchUserRoles, determineCurrentRole]);
+
+  const switchRole = useCallback((roleId: string) => {
+    const role = userRoles?.find(r => r.id === roleId);
+    if (role) {
+      console.log('🔄 Switching to role:', role.role);
+      setCurrentRole(role.role);
+      
+      // Store role preference
+      localStorage.setItem('currentRole', JSON.stringify({
+        role: role.role,
+        company_id: role.company_id
+      }));
+      
+      // Force update
+      setForceUpdateCounter(prev => prev + 1);
+    }
+  }, [userRoles]);
+
+  const _forceUpdate = useCallback(() => {
+    setForceUpdateCounter(prev => prev + 1);
+  }, []);
+
+  // Initialize auth state
+  useEffect(() => {
+    console.log('🔐 AuthProvider initializing...');
+    
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔐 Auth state changed:', event, session?.user?.id);
+      
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        // Defer role fetching to avoid potential conflicts
+        setTimeout(async () => {
+          const roles = await fetchUserRoles(session.user.id);
+          setUserRoles(roles);
+          
+          const selectedRole = determineCurrentRole(roles);
+          setCurrentRole(selectedRole);
+          setLoading(false);
+        }, 100);
+      } else {
+        setUserRoles(null);
+        setCurrentRole(null);
+        localStorage.removeItem('currentRole');
+        setLoading(false);
+      }
+    });
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('🔐 Initial session:', session?.user?.id);
+      
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        fetchUserRoles(session.user.id).then(roles => {
+          setUserRoles(roles);
+          const selectedRole = determineCurrentRole(roles);
+          setCurrentRole(selectedRole);
+          setLoading(false);
+        });
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [fetchUserRoles, determineCurrentRole]);
+
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      return { error };
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  const signUp = async (email: string, password: string, metadata?: any) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata,
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
+      return { error };
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      localStorage.removeItem('currentRole');
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const value: AuthContextType = {
+    user,
+    session,
+    userRoles,
+    currentRole,
+    signOut,
+    signIn,
+    signUp,
+    loading,
+    userRole,
+    isAuthenticated,
+    availableRoles,
+    hasMultipleRoles,
+    isSuperAdmin,
+    isCompanyOwner,
+    isOperationsManager,
+    isDispatcher,
+    isDriver,
+    switchRole,
+    refreshRoles,
+    _forceUpdate
+  };
+
   return (
-    <AuthContext.Provider value={mockAuthContext}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
