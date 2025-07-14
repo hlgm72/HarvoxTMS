@@ -1,5 +1,5 @@
-import React, { createContext, useContext, ReactNode } from 'react';
-import { toast } from 'sonner';
+import React, { createContext, useContext, ReactNode, useState, useCallback } from 'react';
+import { NotificationItem, FleetNotification, NotificationType } from './NotificationItem';
 
 interface NotificationContextType {
   showNotification: (
@@ -19,6 +19,7 @@ interface NotificationContextType {
   showWarning: (title: string, message?: string) => void;
   showInfo: (title: string, message?: string) => void;
   clearAll: () => void;
+  notifications: FleetNotification[];
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -26,43 +27,7 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export function useFleetNotifications() {
   const context = useContext(NotificationContext);
   if (!context) {
-    // Return a safe fallback that uses toast directly
-    return {
-      showNotification: (type: 'success' | 'error' | 'warning' | 'info', title: string, message?: string) => {
-        const fullMessage = message ? `${title}: ${message}` : title;
-        switch (type) {
-          case 'success':
-            toast.success(fullMessage);
-            break;
-          case 'error':
-            toast.error(fullMessage);
-            break;
-          case 'warning':
-            toast.warning(fullMessage);
-            break;
-          case 'info':
-            toast.info(fullMessage);
-            break;
-        }
-      },
-      showSuccess: (title: string, message?: string) => {
-        const fullMessage = message ? `${title}: ${message}` : title;
-        toast.success(fullMessage);
-      },
-      showError: (title: string, message?: string) => {
-        const fullMessage = message ? `${title}: ${message}` : title;
-        toast.error(fullMessage);
-      },
-      showWarning: (title: string, message?: string) => {
-        const fullMessage = message ? `${title}: ${message}` : title;
-        toast.warning(fullMessage);
-      },
-      showInfo: (title: string, message?: string) => {
-        const fullMessage = message ? `${title}: ${message}` : title;
-        toast.info(fullMessage);
-      },
-      clearAll: () => toast.dismiss()
-    };
+    throw new Error('useFleetNotifications must be used within a NotificationProvider');
   }
   return context;
 }
@@ -72,8 +37,29 @@ interface NotificationProviderProps {
 }
 
 export function NotificationProvider({ children }: NotificationProviderProps) {
-  const showNotification = (
-    type: 'success' | 'error' | 'warning' | 'info',
+  const [notifications, setNotifications] = useState<FleetNotification[]>([]);
+
+  const addNotification = useCallback((notification: Omit<FleetNotification, 'id'>) => {
+    const id = Math.random().toString(36).substring(2, 9);
+    const newNotification: FleetNotification = { ...notification, id };
+    
+    setNotifications(prev => [...prev, newNotification]);
+
+    // Auto-remove notification after duration
+    if (!notification.persistent) {
+      const duration = notification.duration || 4000;
+      setTimeout(() => {
+        removeNotification(id);
+      }, duration);
+    }
+  }, []);
+
+  const removeNotification = useCallback((id: string) => {
+    setNotifications(prev => prev.filter(notif => notif.id !== id));
+  }, []);
+
+  const showNotification = useCallback((
+    type: NotificationType,
     title: string,
     message?: string,
     options?: {
@@ -84,48 +70,37 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
       persistent?: boolean;
     }
   ) => {
-    const fullMessage = message ? `${title}: ${message}` : title;
-    const duration = options?.persistent ? Infinity : (options?.duration || 4000);
-    
-    switch (type) {
-      case 'success':
-        toast.success(fullMessage, { duration });
-        break;
-      case 'error':
-        toast.error(fullMessage, { duration });
-        break;
-      case 'warning':
-        toast.warning(fullMessage, { duration });
-        break;
-      case 'info':
-        toast.info(fullMessage, { duration });
-        break;
-    }
-  };
+    addNotification({
+      type,
+      title,
+      message,
+      duration: options?.duration,
+      showAction: options?.showAction,
+      actionText: options?.actionText,
+      onAction: options?.onAction,
+      persistent: options?.persistent
+    });
+  }, [addNotification]);
 
-  const showSuccess = (title: string, message?: string) => {
-    const fullMessage = message ? `${title}: ${message}` : title;
-    toast.success(fullMessage);
-  };
+  const showSuccess = useCallback((title: string, message?: string) => {
+    showNotification('success', title, message);
+  }, [showNotification]);
 
-  const showError = (title: string, message?: string) => {
-    const fullMessage = message ? `${title}: ${message}` : title;
-    toast.error(fullMessage);
-  };
+  const showError = useCallback((title: string, message?: string) => {
+    showNotification('error', title, message);
+  }, [showNotification]);
 
-  const showWarning = (title: string, message?: string) => {
-    const fullMessage = message ? `${title}: ${message}` : title;
-    toast.warning(fullMessage);
-  };
+  const showWarning = useCallback((title: string, message?: string) => {
+    showNotification('warning', title, message);
+  }, [showNotification]);
 
-  const showInfo = (title: string, message?: string) => {
-    const fullMessage = message ? `${title}: ${message}` : title;
-    toast.info(fullMessage);
-  };
+  const showInfo = useCallback((title: string, message?: string) => {
+    showNotification('info', title, message);
+  }, [showNotification]);
 
-  const clearAll = () => {
-    toast.dismiss();
-  };
+  const clearAll = useCallback(() => {
+    setNotifications([]);
+  }, []);
 
   const value: NotificationContextType = {
     showNotification,
@@ -133,12 +108,25 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     showError,
     showWarning,
     showInfo,
-    clearAll
+    clearAll,
+    notifications
   };
 
   return (
     <NotificationContext.Provider value={value}>
       {children}
+      
+      {/* Notification Container */}
+      <div className="fixed top-4 right-4 z-[100] flex flex-col gap-3 pointer-events-none">
+        {notifications.map((notification) => (
+          <div key={notification.id} className="pointer-events-auto">
+            <NotificationItem
+              notification={notification}
+              onClose={removeNotification}
+            />
+          </div>
+        ))}
+      </div>
     </NotificationContext.Provider>
   );
 }
