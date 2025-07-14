@@ -7,6 +7,7 @@ import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useLoads } from "@/hooks/useLoads";
+import PaymentPeriodInfo from "./PaymentPeriodInfo";
 
 // Mock data - later will be replaced with real data from Supabase
 const mockLoads = [
@@ -184,6 +185,19 @@ export function LoadsList({ filters }: LoadsListProps) {
                 <p className="text-sm font-medium">{load.commodity}</p>
                 <p className="text-xs text-muted-foreground">{load.weight_lbs?.toLocaleString()} lbs</p>
               </div>
+            </div>
+            
+            {/* Información del período de pago */}
+            <div className="mb-3 pb-3 border-b border-border">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
+                Período de Pago
+              </label>
+              <PaymentPeriodInfo
+                periodStartDate={load.period_start_date}
+                periodEndDate={load.period_end_date}
+                periodFrequency={load.period_frequency}
+                periodStatus={load.period_status}
+              />
             </div>
             
             <div className="flex items-center justify-between">

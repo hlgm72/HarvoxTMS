@@ -1277,6 +1277,7 @@ export type Database = {
           leasing_percentage: number | null
           load_number: string
           notes: string | null
+          payment_period_id: string | null
           pickup_date: string | null
           status: string
           total_amount: number
@@ -1298,6 +1299,7 @@ export type Database = {
           leasing_percentage?: number | null
           load_number: string
           notes?: string | null
+          payment_period_id?: string | null
           pickup_date?: string | null
           status?: string
           total_amount: number
@@ -1319,6 +1321,7 @@ export type Database = {
           leasing_percentage?: number | null
           load_number?: string
           notes?: string | null
+          payment_period_id?: string | null
           pickup_date?: string | null
           status?: string
           total_amount?: number

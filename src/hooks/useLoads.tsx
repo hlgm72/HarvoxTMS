@@ -21,12 +21,17 @@ export interface Load {
   dispatching_percentage: number | null;
   leasing_percentage: number | null;
   currency: string;
+  payment_period_id: string | null;
   
   // Datos relacionados
   driver_name?: string;
   broker_name?: string;
   pickup_city?: string;
   delivery_city?: string;
+  period_start_date?: string;
+  period_end_date?: string;
+  period_frequency?: string;
+  period_status?: string;
 }
 
 export const useLoads = () => {
@@ -63,10 +68,18 @@ export const useLoads = () => {
 
       const userIds = companyUsers.map(u => u.user_id);
 
-      // Obtener cargas
+      // Obtener cargas con información de períodos de pago
       const { data: loads, error: loadsError } = await supabase
         .from('loads')
-        .select('*')
+        .select(`
+          *,
+          payment_periods:payment_period_id (
+            period_start_date,
+            period_end_date,
+            period_frequency,
+            status
+          )
+        `)
         .in('driver_user_id', userIds)
         .order('created_at', { ascending: false });
 
@@ -111,12 +124,21 @@ export const useLoads = () => {
           .filter(s => s.stop_type === 'delivery')
           .sort((a, b) => b.stop_number - a.stop_number)[0];
 
+        // Extraer información del período de pago
+        const paymentPeriod = Array.isArray(load.payment_periods) 
+          ? load.payment_periods[0] 
+          : load.payment_periods;
+
         return {
           ...load,
           driver_name: profile ? `${profile.first_name} ${profile.last_name}` : 'Sin asignar',
           broker_name: broker?.name || 'Sin broker',
           pickup_city: pickupStop?.city || 'Sin definir',
-          delivery_city: deliveryStop?.city || 'Sin definir'
+          delivery_city: deliveryStop?.city || 'Sin definir',
+          period_start_date: paymentPeriod?.period_start_date,
+          period_end_date: paymentPeriod?.period_end_date,
+          period_frequency: paymentPeriod?.period_frequency,
+          period_status: paymentPeriod?.status
         };
       });
 
