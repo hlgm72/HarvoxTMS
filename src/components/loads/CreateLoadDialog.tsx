@@ -264,15 +264,27 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                     <FormField
                       control={form.control}
                       name="commodity"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Commodity *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Electronics, Food Products, etc." {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      render={({ field }) => {
+                        const textHandlers = createTextHandlers(
+                          (value) => field.onChange(value),
+                          'text'
+                        );
+                        
+                        return (
+                          <FormItem>
+                            <FormLabel>Commodity *</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="Electronics, Food Products, etc." 
+                                value={field.value || ''}
+                                onChange={textHandlers.onChange}
+                                onBlur={textHandlers.onBlur}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
                     />
 
                     {/* PO Number */}
