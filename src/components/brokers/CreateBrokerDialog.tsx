@@ -134,7 +134,7 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
       return broker;
     },
     onSuccess: (broker) => {
-      // Invalidar cache de brokers
+      // Invalidar TODAS las queries relacionadas con brokers
       queryClient.invalidateQueries({ queryKey: ['company-brokers'] });
       
       toast({
@@ -158,11 +158,8 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
     },
   });
 
-  const onSubmit = (data: CreateBrokerForm) => {
-    // Solo ejecutar si estamos en el paso 2
-    if (currentStep === 2) {
-      createBrokerMutation.mutate(data);
-    }
+  const handleSubmitForm = (data: CreateBrokerForm) => {
+    createBrokerMutation.mutate(data);
   };
 
   const addDispatcher = () => {
@@ -180,6 +177,10 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
     form.reset();
     setCurrentStep(1);
     onClose();
+  };
+
+  const handleNextStep = () => {
+    setCurrentStep(2);
   };
 
   return (
@@ -219,9 +220,9 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Step 1: Broker Information */}
-            {currentStep === 1 && (
+          {currentStep === 1 && (
+            <div className="space-y-6">
+              {/* Step 1: Broker Information */}
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -239,7 +240,6 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-
                   {/* Logo Upload Section */}
                   <FormField
                     control={form.control}
@@ -436,10 +436,29 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                   />
                 </CardContent>
               </Card>
-            )}
 
-            {/* Step 2: Dispatchers */}
-            {currentStep === 2 && (
+              {/* Action Buttons for Step 1 */}
+              <div className="flex justify-between">
+                <div></div>
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" onClick={handleClose}>
+                    Cancelar
+                  </Button>
+                  
+                  <Button
+                    type="button"
+                    onClick={handleNextStep}
+                  >
+                    Siguiente
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 2 && (
+            <form onSubmit={form.handleSubmit(handleSubmitForm)} className="space-y-6">
+              {/* Step 2: Dispatchers */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
@@ -462,115 +481,124 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                 <CardContent className="space-y-4">
                   {fields.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
-                      <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p className="text-sm">No hay dispatchers agregados</p>
-                      <p className="text-xs">Los dispatchers son opcionales y se pueden agregar después</p>
+                      <User className="mx-auto h-8 w-8 mb-2" />
+                      <p>No hay dispatchers agregados</p>
+                      <p className="text-sm">Puedes agregar dispatchers o continuar sin ellos</p>
                     </div>
                   ) : (
                     fields.map((field, index) => (
                       <Card key={field.id} className="p-4">
                         <div className="flex items-center justify-between mb-4">
-                          <Badge variant="outline">Dispatcher {index + 1}</Badge>
+                          <h4 className="font-medium">Dispatcher {index + 1}</h4>
                           <Button
                             type="button"
                             variant="ghost"
                             size="sm"
                             onClick={() => remove(index)}
-                            className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10"
+                            className="text-destructive hover:text-destructive"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                           <FormField
-                             control={form.control}
-                             name={`dispatchers.${index}.name`}
-                             render={({ field }) => {
-                               const handlers = createTextHandlers(field.onChange, 'text');
-                               return (
-                                 <FormItem>
-                                   <FormLabel>Nombre *</FormLabel>
-                                   <FormControl>
-                                     <Input 
-                                       placeholder="Juan Pérez" 
-                                       value={field.value}
-                                       onChange={handlers.onChange}
-                                       onBlur={handlers.onBlur}
-                                     />
-                                   </FormControl>
-                                   <FormMessage />
-                                 </FormItem>
-                               );
-                             }}
-                           />
+                          <FormField
+                            control={form.control}
+                            name={`dispatchers.${index}.name`}
+                            render={({ field }) => {
+                              const handlers = createTextHandlers(field.onChange, 'text');
+                              return (
+                                <FormItem>
+                                  <FormLabel>Nombre *</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="Juan Pérez"
+                                      value={field.value}
+                                      onChange={handlers.onChange}
+                                      onBlur={handlers.onBlur}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              );
+                            }}
+                          />
 
-                           <FormField
-                             control={form.control}
-                             name={`dispatchers.${index}.email`}
-                             render={({ field }) => {
-                               const handlers = createTextHandlers(field.onChange, 'email');
-                               return (
-                                 <FormItem>
-                                   <FormLabel>Email</FormLabel>
-                                   <FormControl>
-                                     <Input 
-                                       type="email" 
-                                       placeholder="juan@abclogistics.com" 
-                                       value={field.value}
-                                       onChange={handlers.onChange}
-                                       onBlur={handlers.onBlur}
-                                     />
-                                   </FormControl>
-                                   <FormMessage />
-                                 </FormItem>
-                               );
-                             }}
-                           />
+                          <FormField
+                            control={form.control}
+                            name={`dispatchers.${index}.email`}
+                            render={({ field }) => {
+                              const handlers = createTextHandlers(field.onChange, 'email');
+                              return (
+                                <FormItem>
+                                  <FormLabel>Email</FormLabel>
+                                  <FormControl>
+                                    <div className="flex">
+                                      <Mail className="mr-2 h-4 w-4 self-center text-muted-foreground" />
+                                      <Input
+                                        type="email"
+                                        placeholder="juan@empresa.com"
+                                        value={field.value}
+                                        onChange={handlers.onChange}
+                                        onBlur={handlers.onBlur}
+                                      />
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              );
+                            }}
+                          />
 
-                           <FormField
-                             control={form.control}
-                             name={`dispatchers.${index}.phone_office`}
-                             render={({ field }) => {
-                               const handlers = createPhoneHandlers(field.onChange);
-                               return (
-                                 <FormItem>
-                                   <FormLabel>Teléfono Oficina</FormLabel>
-                                   <FormControl>
-                                     <Input 
-                                       placeholder="(555) 123-4567" 
-                                       value={field.value}
-                                       onChange={handlers.onChange}
-                                       onKeyPress={handlers.onKeyPress}
-                                     />
-                                   </FormControl>
-                                   <FormMessage />
-                                 </FormItem>
-                               );
-                             }}
-                           />
+                          <FormField
+                            control={form.control}
+                            name={`dispatchers.${index}.phone_office`}
+                            render={({ field }) => {
+                              const handlers = createPhoneHandlers(field.onChange);
+                              return (
+                                <FormItem>
+                                  <FormLabel>Teléfono Oficina</FormLabel>
+                                  <FormControl>
+                                    <div className="flex">
+                                      <Phone className="mr-2 h-4 w-4 self-center text-muted-foreground" />
+                                      <Input
+                                        placeholder="(555) 123-4567"
+                                        value={field.value}
+                                        onChange={handlers.onChange}
+                                        onKeyPress={handlers.onKeyPress}
+                                      />
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              );
+                            }}
+                          />
 
-                           <FormField
-                             control={form.control}
-                             name={`dispatchers.${index}.phone_mobile`}
-                             render={({ field }) => {
-                               const handlers = createPhoneHandlers(field.onChange);
-                               return (
-                                 <FormItem>
-                                   <FormLabel>Teléfono Móvil</FormLabel>
-                                   <FormControl>
-                                     <Input 
-                                       placeholder="(555) 987-6543" 
-                                       value={field.value}
-                                       onChange={handlers.onChange}
-                                       onKeyPress={handlers.onKeyPress}
-                                     />
-                                   </FormControl>
-                                   <FormMessage />
-                                 </FormItem>
-                               );
-                             }}
-                           />
+                          <FormField
+                            control={form.control}
+                            name={`dispatchers.${index}.phone_mobile`}
+                            render={({ field }) => {
+                              const handlers = createPhoneHandlers(field.onChange);
+                              return (
+                                <FormItem>
+                                  <FormLabel>Teléfono Móvil</FormLabel>
+                                  <FormControl>
+                                    <div className="flex">
+                                      <Phone className="mr-2 h-4 w-4 self-center text-muted-foreground" />
+                                      <Input
+                                        placeholder="(555) 987-6543"
+                                        value={field.value}
+                                        onChange={handlers.onChange}
+                                        onKeyPress={handlers.onKeyPress}
+                                      />
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              );
+                            }}
+                          />
 
                           <FormField
                             control={form.control}
@@ -579,7 +607,10 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                               <FormItem>
                                 <FormLabel>Extensión</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="123" {...field} />
+                                  <Input
+                                    placeholder="123"
+                                    {...field}
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -590,10 +621,14 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                             control={form.control}
                             name={`dispatchers.${index}.notes`}
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="md:col-span-2">
                                 <FormLabel>Notas</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Información adicional..." {...field} />
+                                  <Textarea
+                                    placeholder="Información adicional..."
+                                    className="min-h-[60px]"
+                                    {...field}
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -605,43 +640,32 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                   )}
                 </CardContent>
               </Card>
-            )}
 
-            {/* Action Buttons */}
-            <div className="flex justify-between">
-              {currentStep > 1 && (
+              {/* Action Buttons for Step 2 */}
+              <div className="flex justify-between">
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setCurrentStep(currentStep - 1)}
+                  onClick={() => setCurrentStep(1)}
                 >
                   Anterior
                 </Button>
-              )}
 
-              <div className={`flex gap-2 ${currentStep === 1 ? 'ml-auto' : ''}`}>
-                <Button type="button" variant="outline" onClick={handleClose}>
-                  Cancelar
-                </Button>
-                
-                {currentStep < 2 ? (
-                  <Button
-                    type="button"
-                    onClick={() => setCurrentStep(currentStep + 1)}
-                  >
-                    Siguiente
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" onClick={handleClose}>
+                    Cancelar
                   </Button>
-                ) : (
+                  
                   <Button 
                     type="submit" 
                     disabled={createBrokerMutation.isPending}
                   >
                     {createBrokerMutation.isPending ? 'Creando...' : 'Crear Broker'}
                   </Button>
-                )}
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
+          )}
         </Form>
       </DialogContent>
 
