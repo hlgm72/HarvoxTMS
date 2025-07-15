@@ -20,15 +20,20 @@ serve(async (req) => {
     const { searchQuery, searchType } = await req.json()
     console.log('Search query:', searchQuery, 'Type:', searchType)
 
-    // Return test data first to ensure function works
+    // Return test data in the correct format that the component expects
     const testData = {
-      name: 'TRANSPORT COMPANY LLC',
-      address: '123 Main St, Chicago, IL 60601',
-      dotNumber: searchQuery,
-      mcNumber: searchType === 'MC' ? searchQuery : 'MC-123456',
-      phone: '(555) 123-4567',
-      safetyRating: 'SATISFACTORY'
+      success: true,
+      data: {
+        name: 'TRANSPORT COMPANY LLC',
+        address: '123 Main St, Chicago, IL 60601',
+        dotNumber: searchQuery,
+        mcNumber: searchType === 'MC' ? searchQuery : 'MC-123456',
+        phone: '(555) 123-4567',
+        safetyRating: 'SATISFACTORY'
+      }
     }
+
+    console.log('Returning test data:', testData)
 
     return new Response(
       JSON.stringify(testData),
