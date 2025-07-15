@@ -329,7 +329,7 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                        control={form.control}
                        name="email_domain"
                        render={({ field }) => {
-                         const handlers = createTextHandlers(field.onChange, 'email');
+                         const handlers = createTextHandlers((value) => field.onChange(value.toLowerCase()), 'email');
                          return (
                            <FormItem>
                              <FormLabel>Dominio de Email</FormLabel>
