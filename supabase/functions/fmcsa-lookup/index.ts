@@ -31,7 +31,8 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     if (searchType === 'DOT') {
       url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_param=USDOT&query_string=${cleanQuery}`;
     } else if (searchType === 'MC') {
-      url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_param=MC_MX&query_string=${cleanQuery}`;
+      // Use the same format that works: query_type=queryCarrierSnapshot&query_param=MC_MX
+      url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_type=queryCarrierSnapshot&query_param=MC_MX&original_query_param=MC_MX&query_string=${cleanQuery}`;
     } else if (searchType === 'NAME') {
       url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_param=NAME&query_string=${encodeURIComponent(searchQuery)}`;
     }
