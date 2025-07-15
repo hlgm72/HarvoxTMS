@@ -56,56 +56,54 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     // Parse the HTML response to extract company information
     const companyData: FMCSACompanyData = {};
 
-    console.log('HTML snippet for debugging:', html.substring(0, 2000));
+    console.log('Full HTML response length:', html.length);
+    console.log('HTML snippet for debugging:', html.substring(0, 3000));
 
-    // Extract Legal Name - based on the screenshot, it should be in a table cell
-    const nameMatch = html.match(/Legal Name:<\/[^>]*>\s*<[^>]*>([^<]+)</i) || 
-                      html.match(/>([^<]+)<[^>]*USDOT Number:/i);
+    // Check if we got an error page
+    if (html.includes('Missing Parameter') || html.includes('WARNING')) {
+      console.log('FMCSA returned an error or warning page');
+      return null;
+    }
+
+    // Look for the company name in various formats
+    let nameMatch = html.match(/Legal Name:[^>]*>([^<]+)</i) ||
+                    html.match(/>([A-Z][A-Z\s&.,'-]+INC?\.?|[A-Z][A-Z\s&.,'-]+LLC\.?|[A-Z][A-Z\s&.,'-]+CORP\.?)<[^>]*USDOT/i) ||
+                    html.match(/Company Snapshot[^>]*>([^<]+)</i);
+    
     if (nameMatch) {
       companyData.name = nameMatch[1].trim();
+      console.log('Found company name:', companyData.name);
     }
 
-    // Extract DOT Number - look for USDOT Number pattern
-    const dotMatch = html.match(/USDOT Number:<\/[^>]*>\s*<[^>]*>([^<]+)</i) ||
-                     html.match(/USDOT Number:\s*([0-9]+)/i);
+    // Look for DOT number
+    const dotMatch = html.match(/USDOT Number:\s*([0-9]+)/i);
     if (dotMatch) {
       companyData.dotNumber = dotMatch[1].trim();
+      console.log('Found DOT number:', companyData.dotNumber);
     }
 
-    // Extract MC Number - look for MC/MX/FF Number pattern
-    const mcMatch = html.match(/MC\/MX\/FF Number[^:]*:<\/[^>]*>\s*<[^>]*>([^<]+)</i) ||
-                    html.match(/MC-?([0-9]+)/i);
+    // Look for MC number 
+    const mcMatch = html.match(/MC[\/\-]?([0-9]+)/i);
     if (mcMatch) {
-      const mcNumber = mcMatch[1].trim().replace(/^MC-?/, '');
-      companyData.mcNumber = mcNumber;
+      companyData.mcNumber = mcMatch[1].trim();
+      console.log('Found MC number:', companyData.mcNumber);
     }
 
-    // Extract Physical Address
-    const addressMatch = html.match(/Physical Address:<\/[^>]*>\s*<[^>]*>([^<]+)</i) ||
-                         html.match(/Physical Address:\s*([^<\n]+)/i);
+    // Look for address patterns
+    const addressMatch = html.match(/Physical Address:\s*([^<\n]+)/i) ||
+                         html.match(/Mailing Address:\s*([^<\n]+)/i) ||
+                         html.match(/([0-9]+\s+[^<\n]+(?:DRIVE|DR|STREET|ST|AVENUE|AVE|ROAD|RD|LANE|LN|BOULEVARD|BLVD|SUITE|STE)[^<\n]*)/i);
     if (addressMatch) {
       companyData.address = addressMatch[1].trim().replace(/\s+/g, ' ');
+      console.log('Found address:', companyData.address);
     }
 
-    // Extract Phone
-    const phoneMatch = html.match(/Phone:<\/[^>]*>\s*<[^>]*>([^<]+)</i) ||
-                       html.match(/Phone:\s*([^<\n]+)/i);
+    // Look for phone
+    const phoneMatch = html.match(/Phone:\s*([^<\n]+)/i) ||
+                       html.match(/\(([0-9]{3})\)\s*([0-9]{3})-?([0-9]{4})/);
     if (phoneMatch) {
-      companyData.phone = phoneMatch[1].trim();
-    }
-
-    // Extract Mailing Address if Physical Address not found
-    if (!companyData.address) {
-      const mailingMatch = html.match(/Mailing Address:<\/[^>]*>\s*<[^>]*>([^<]+)</i);
-      if (mailingMatch) {
-        companyData.address = mailingMatch[1].trim().replace(/\s+/g, ' ');
-      }
-    }
-
-    // Extract Operating Authority Status
-    const authorityMatch = html.match(/Operating Authority Status:<\/[^>]*>\s*<[^>]*>([^<]+)</i);
-    if (authorityMatch) {
-      companyData.safetyRating = authorityMatch[1].trim();
+      companyData.phone = phoneMatch[1] ? phoneMatch[1].trim() : `(${phoneMatch[1]}) ${phoneMatch[2]}-${phoneMatch[3]}`;
+      console.log('Found phone:', companyData.phone);
     }
 
     // Extract Power Units (vehicles)
