@@ -67,9 +67,37 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     console.log('FMCSA response received, HTML length:', html.length);
     console.log('First 1000 chars of HTML:', html.substring(0, 1000));
     
-    // Check if the response indicates no results
-    if (html.includes('No carriers') || html.includes('not found') || html.includes('No results') || html.includes('Your search returned 0 records')) {
+    // More detailed checks for common FMCSA no-results patterns
+    const noResultsPatterns = [
+      'No carriers',
+      'not found', 
+      'No results',
+      'Your search returned 0 records',
+      'No records found',
+      'Missing Parameter',
+      'ERROR',
+      'No data available',
+      'Search returned no results',
+      'carrier information not found'
+    ];
+    
+    let foundNoResultsPattern = false;
+    for (const pattern of noResultsPatterns) {
+      if (html.toLowerCase().includes(pattern.toLowerCase())) {
+        console.log(`FMCSA no results pattern found: "${pattern}"`);
+        foundNoResultsPattern = true;
+        break;
+      }
+    }
+    
+    if (foundNoResultsPattern) {
       console.log('FMCSA response indicates no results found');
+      return null;
+    }
+    
+    // Let's also check if we got a valid HTML page
+    if (!html.includes('<html') && !html.includes('<HTML')) {
+      console.log('Response does not appear to be HTML:', html.substring(0, 200));
       return null;
     }
 
