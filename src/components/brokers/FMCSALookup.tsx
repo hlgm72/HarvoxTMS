@@ -267,21 +267,6 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
           </div>
         )}
 
-        {/* Debug HTML Section */}
-        {debugData && debugData.rawHtml && (
-          <div className="border-t pt-4">
-            <h4 className="font-medium mb-3">HTML Completo de FMCSA (Debug)</h4>
-            <div className="text-xs bg-muted p-4 rounded border max-h-96 overflow-y-auto">
-              <pre className="whitespace-pre-wrap break-words font-mono">
-                {debugData.rawHtml}
-              </pre>
-            </div>
-            <div className="mt-2 text-xs text-muted-foreground">
-              Tamaño total: {debugData.htmlLength} caracteres (HTML completo)
-            </div>
-          </div>
-        )}
-
         <div className="text-xs text-muted-foreground flex items-start gap-2">
           <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0" />
           <span>
