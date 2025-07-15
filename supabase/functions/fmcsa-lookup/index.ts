@@ -61,11 +61,8 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     const html = await response.text();
     console.log(`📄 Received HTML response (${html.length} characters)`);
     
-    // Log the complete HTML for user analysis
-    console.log('🔍 COMPLETE HTML RECEIVED FROM FMCSA:');
-    console.log('='.repeat(80));
-    console.log(html);
-    console.log('='.repeat(80));
+    // Store HTML globally for access in the main function
+    (globalThis as any).lastHtml = html;
 
     // Convert HTML to plain text and clean it properly
     const text = html
@@ -173,26 +170,6 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       }
     }
 
-    // Log the HTML snippet for debugging
-    console.log('📋 HTML snippet (first 800 chars):', html.substring(0, 800));
-    console.log('📋 HTML snippet (around USDOT):', html.substring(Math.max(0, html.indexOf('USDOT') - 150), html.indexOf('USDOT') + 300));
-    
-    // Log specific search sections to understand the HTML structure
-    const safetySection = html.match(/safety.{0,200}/gi);
-    if (safetySection) {
-      console.log('🔍 Safety sections found:', safetySection);
-    }
-    
-    const statusSection = html.match(/operating.{0,200}/gi);
-    if (statusSection) {
-      console.log('🔍 Operating sections found:', statusSection);
-    }
-    
-    const driversSection = html.match(/drivers.{0,200}/gi);
-    if (driversSection) {
-      console.log('🔍 Drivers sections found:', driversSection);
-    }
-
     // Extract additional fields using the same method
     
     // Extract Operating Status - try multiple variations
@@ -203,7 +180,6 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       companyData.operatingStatus = operatingText.replace(/\s+/g, ' ').trim();
       console.log('✅ Found operating status:', companyData.operatingStatus);
     }
-
 
     // Extract Entity Type (sometimes shows business type)
     const entityText = extractField('Entity Type:', text);
@@ -229,25 +205,6 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     if (outOfServiceText && outOfServiceText.trim() !== 'None' && outOfServiceText.trim() !== '') {
       companyData.outOfServiceDate = outOfServiceText.trim();
       console.log('✅ Found out of service date:', companyData.outOfServiceDate);
-    }
-
-    // Log the complete HTML for detailed analysis (first 2000 characters)
-    console.log('🔍 Complete HTML sample for analysis:', html.substring(0, 2000));
-    
-    // Also log key sections that might contain our data
-    const phoneSection = html.match(/phone[^<]*<[^>]*>([^<]*)/gi);
-    if (phoneSection) {
-      console.log('📞 Phone sections found:', phoneSection);
-    }
-    
-    const addressSection = html.match(/address[^<]*<[^>]*>([^<]*)/gi);
-    if (addressSection) {
-      console.log('🏠 Address sections found:', addressSection);
-    }
-    
-    const nameSection = html.match(/legal name[^<]*<[^>]*>([^<]*)/gi);
-    if (nameSection) {
-      console.log('👤 Name sections found:', nameSection);
     }
 
     console.log('📊 Final extracted data:', companyData);
@@ -310,6 +267,7 @@ Deno.serve(async (req) => {
 
     // Call the real FMCSA scraping function
     const companyData = await searchFMCSA(searchQuery, searchType as 'DOT' | 'MC' | 'NAME')
+    const html = (globalThis as any).lastHtml || ''
 
     if (!companyData) {
       console.log('No company data found')
@@ -320,6 +278,8 @@ Deno.serve(async (req) => {
           debug: {
             searchQuery,
             searchType,
+            htmlLength: html.length,
+            rawHtml: html.substring(0, 5000),
             timestamp: new Date().toISOString()
           }
         }),
@@ -334,7 +294,13 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true, 
-        data: companyData 
+        data: companyData,
+        debug: {
+          searchQuery,
+          searchType,
+          htmlLength: html.length,
+          rawHtml: html.substring(0, 5000)
+        }
       }),
       { 
         status: 200,
