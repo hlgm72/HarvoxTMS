@@ -179,7 +179,7 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen && !showFMCSAModal} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -555,19 +555,21 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
         </Form>
       </DialogContent>
 
-      {/* FMCSA Lookup Modal */}
-      <FMCSALookupModal
-        isOpen={showFMCSAModal}
-        onClose={() => setShowFMCSAModal(false)}
-        onDataFound={(data) => {
-          // Aplicar los datos al formulario
-          Object.entries(data).forEach(([key, value]) => {
-            if (value && typeof value === 'string') {
-              form.setValue(key as keyof CreateBrokerForm, value);
-            }
-          });
-        }}
-      />
+      {/* FMCSA Lookup Modal - Renderizado independiente */}
+      {isOpen && (
+        <FMCSALookupModal
+          isOpen={showFMCSAModal}
+          onClose={() => setShowFMCSAModal(false)}
+          onDataFound={(data) => {
+            // Aplicar los datos al formulario
+            Object.entries(data).forEach(([key, value]) => {
+              if (value && typeof value === 'string') {
+                form.setValue(key as keyof CreateBrokerForm, value);
+              }
+            });
+          }}
+        />
+      )}
     </Dialog>
   );
 }
