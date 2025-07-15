@@ -22,21 +22,18 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
   try {
     console.log(`Searching FMCSA for ${searchType}: ${searchQuery}`);
     
-    // Prepare the search form data
+    // Prepare the search form data based on FMCSA form structure
     const formData = new FormData();
     
     if (searchType === 'DOT') {
-      formData.append('query_type', 'queryCarrierSnapshot');
-      formData.append('query_param', 'USDOT');
-      formData.append('query_string', searchQuery);
+      formData.append('searchtype', 'USDOT');
+      formData.append('query', searchQuery);
     } else if (searchType === 'MC') {
-      formData.append('query_type', 'queryCarrierSnapshot');
-      formData.append('query_param', 'MC_MX');
-      formData.append('query_string', searchQuery);
+      formData.append('searchtype', 'MC_MX');
+      formData.append('query', searchQuery);
     } else if (searchType === 'NAME') {
-      formData.append('query_type', 'queryCarrierSnapshot');
-      formData.append('query_param', 'NAME');
-      formData.append('query_string', searchQuery);
+      formData.append('searchtype', 'Company_Name');
+      formData.append('query', searchQuery);
     }
 
     // Make the request to FMCSA
