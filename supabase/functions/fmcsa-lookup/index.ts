@@ -12,7 +12,10 @@ interface FMCSACompanyData {
   dotNumber?: string;
   mcNumber?: string;
   phone?: string;
+  email?: string;
   safetyRating?: string;
+  operatingStatus?: string;
+  outOfServiceDate?: string;
   totalDrivers?: string;
   totalVehicles?: string;
   operationClassification?: string[];
@@ -224,9 +227,103 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       }
     }
 
-    console.log('📊 Final parsed company data:', companyData);
+    // Extract Phone Number
+    console.log('🔍 Searching for phone number...');
+    const phonePatterns = [
+      /Phone:\s*<[^>]*>([^<]+)/i,
+      /Telephone:\s*<[^>]*>([^<]+)/i,
+      /Phone Number:\s*<[^>]*>([^<]+)/i,
+      /<td[^>]*>Phone:<\/td>\s*<td[^>]*>([^<]+)<\/td>/i,
+      /\((\d{3})\)\s*(\d{3})-(\d{4})/,
+      /(\d{3})-(\d{3})-(\d{4})/,
+      /(\d{3})\.(\d{3})\.(\d{4})/
+    ];
     
-    // Return data if we found at least one key field
+    for (const pattern of phonePatterns) {
+      const match = html.match(pattern);
+      if (match) {
+        if (match.length === 4) {
+          // Format from regex groups (xxx) xxx-xxxx
+          companyData.phone = `(${match[1]}) ${match[2]}-${match[3]}`;
+        } else if (match[1]) {
+          companyData.phone = match[1].trim();
+        }
+        if (companyData.phone) {
+          console.log('✅ Found phone:', companyData.phone);
+          break;
+        }
+      }
+    }
+
+    // Extract Email
+    console.log('🔍 Searching for email...');
+    const emailPatterns = [
+      /Email:\s*<[^>]*>([^<]+)/i,
+      /E-mail:\s*<[^>]*>([^<]+)/i,
+      /<td[^>]*>Email:<\/td>\s*<td[^>]*>([^<]+)<\/td>/i,
+      /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/
+    ];
+    
+    for (const pattern of emailPatterns) {
+      const match = html.match(pattern);
+      if (match && match[1] && match[1].includes('@')) {
+        companyData.email = match[1].trim();
+        console.log('✅ Found email:', companyData.email);
+        break;
+      }
+    }
+
+    // Extract Safety Rating
+    console.log('🔍 Searching for safety rating...');
+    const safetyPatterns = [
+      /Safety Rating:\s*<[^>]*>([^<]+)/i,
+      /Overall Safety Rating:\s*<[^>]*>([^<]+)/i,
+      /<td[^>]*>Safety Rating:<\/td>\s*<td[^>]*>([^<]+)<\/td>/i
+    ];
+    
+    for (const pattern of safetyPatterns) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        companyData.safetyRating = match[1].trim();
+        console.log('✅ Found safety rating:', companyData.safetyRating);
+        break;
+      }
+    }
+
+    // Extract Operating Status
+    console.log('🔍 Searching for operating status...');
+    const statusPatterns = [
+      /Operating Status:\s*<[^>]*>([^<]+)/i,
+      /Carrier Operation:\s*<[^>]*>([^<]+)/i,
+      /<td[^>]*>Operating Status:<\/td>\s*<td[^>]*>([^<]+)<\/td>/i
+    ];
+    
+    for (const pattern of statusPatterns) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        companyData.operatingStatus = match[1].trim();
+        console.log('✅ Found operating status:', companyData.operatingStatus);
+        break;
+      }
+    }
+
+    // Extract Out of Service Date if applicable
+    console.log('🔍 Searching for out of service date...');
+    const oosPatterns = [
+      /Out of Service Date:\s*<[^>]*>([^<]+)/i,
+      /<td[^>]*>Out of Service Date:<\/td>\s*<td[^>]*>([^<]+)<\/td>/i
+    ];
+    
+    for (const pattern of oosPatterns) {
+      const match = html.match(pattern);
+      if (match && match[1] && !match[1].trim().toLowerCase().includes('none')) {
+        companyData.outOfServiceDate = match[1].trim();
+        console.log('✅ Found out of service date:', companyData.outOfServiceDate);
+        break;
+      }
+    }
+
+    console.log('📊 Final parsed company data:', companyData);
     if (companyData.name || companyData.dotNumber || companyData.mcNumber) {
       console.log('✅ Successfully parsed company data');
       return companyData;
