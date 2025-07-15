@@ -16,6 +16,9 @@ interface FMCSAData {
   mailingAddress: string | null;
   phone: string | null;
   email: string | null;
+  dba: string | null;  // Doing Business As
+  entityType: string | null;  // CARRIER, etc.
+  usdotStatus: string | null;  // ACTIVE, INACTIVE, etc.
   carrierOperation: string | null;
   stateOfOperation: string | null;
   cargoCarried: string[];
@@ -204,120 +207,61 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
         {/* Search Results */}
         {data && (
           <div className="mt-6 p-4 bg-muted rounded-lg">
-            <h3 className="font-semibold mb-3">Información encontrada:</h3>
+            <h3 className="font-semibold mb-4 text-lg">🧾 Información general extraída</h3>
             
-            {/* Basic Info */}
-            <div className="grid grid-cols-2 gap-3 text-sm mb-4">
-              <div>
-                <strong>Nombre Legal:</strong> {data.legalName || 'No disponible'}
-              </div>
-              <div>
-                <strong>Teléfono:</strong> {data.phone || 'No disponible'}
-              </div>
-              <div>
-                <strong>DOT:</strong> {data.dotNumber || 'No disponible'}
-              </div>
-              <div>
-                <strong>MC:</strong> {data.mcNumber || 'No disponible'}
-              </div>
-              <div className="col-span-2">
-                <strong>Dirección Física:</strong> {data.physicalAddress || 'No disponible'}
-              </div>
-              {data.mailingAddress && data.mailingAddress !== data.physicalAddress && (
-                <div className="col-span-2">
-                  <strong>Dirección Postal:</strong> {data.mailingAddress}
-                </div>
-              )}
-              {data.email && (
-                <div className="col-span-2">
-                  <strong>Email:</strong> {data.email}
-                </div>
-              )}
-              {data.carrierOperation && (
+            {/* Información Básica */}
+            <div className="space-y-3 mb-6">
+              <h4 className="font-medium text-primary">🏢 Empresa</h4>
+              <div className="grid grid-cols-1 gap-3 text-sm pl-4">
                 <div>
-                  <strong>Operación:</strong> {data.carrierOperation}
+                  <span className="font-medium">Nombre legal:</span> {data.legalName || 'No disponible'}
                 </div>
-              )}
-              {data.stateOfOperation && (
                 <div>
-                  <strong>Estados:</strong> {data.stateOfOperation}
+                  <span className="font-medium">MC Number:</span> {data.mcNumber || 'No disponible'}
                 </div>
-              )}
+                <div>
+                  <span className="font-medium">USDOT Number:</span> {data.dotNumber || 'No disponible'}
+                </div>
+                <div>
+                  <span className="font-medium">Entidad:</span> {data.entityType || 'No disponible'}
+                </div>
+                <div>
+                  <span className="font-medium">DBA (Doing Business As):</span> {data.dba || 'No aplica / vacío'}
+                </div>
+              </div>
             </div>
 
-            {/* Cargo Carried */}
-            {data.cargoCarried && data.cargoCarried.length > 0 && (
-              <div className="mb-4">
-                <strong>Carga Transportada:</strong>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {data.cargoCarried.map((cargo, index) => (
-                    <span key={index} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-                      {cargo}
-                    </span>
-                  ))}
+            {/* Dirección */}
+            <div className="space-y-3 mb-6">
+              <h4 className="font-medium text-primary">📍 Dirección</h4>
+              <div className="grid grid-cols-1 gap-3 text-sm pl-4">
+                <div>
+                  <span className="font-medium">Dirección física:</span>
+                  <br />
+                  {data.physicalAddress || 'No disponible'}
+                </div>
+                <div>
+                  <span className="font-medium">Teléfono:</span> {data.phone || 'No disponible'}
                 </div>
               </div>
-            )}
+            </div>
 
-            {/* Safety Rating */}
-            {data.safetyRating && (
-              <div className="mb-4 p-3 bg-background rounded border">
-                <strong>Safety Rating:</strong>
-                <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
-                  <div>Rating: {data.safetyRating.rating || 'N/A'}</div>
-                  <div>Tipo: {data.safetyRating.type || 'N/A'}</div>
-                  <div>Fecha Rating: {data.safetyRating.ratingDate || 'N/A'}</div>
-                  <div>Fecha Review: {data.safetyRating.reviewDate || 'N/A'}</div>
+            {/* Estado de Operación */}
+            <div className="space-y-3 mb-6">
+              <h4 className="font-medium text-primary">🚛 Estado de operación</h4>
+              <div className="grid grid-cols-1 gap-3 text-sm pl-4">
+                <div>
+                  <span className="font-medium">USDOT Status:</span> {data.usdotStatus || 'No disponible'}
                 </div>
               </div>
-            )}
-
-            {/* Inspections */}
-            {data.inspections && (
-              <div className="mb-4 p-3 bg-background rounded border">
-                <strong>Inspecciones (últimos 24 meses):</strong>
-                <div className="grid grid-cols-4 gap-2 mt-2 text-xs">
-                  <div className="font-medium">Tipo</div>
-                  <div className="font-medium">Vehículo</div>
-                  <div className="font-medium">Conductor</div>
-                  <div className="font-medium">Hazmat</div>
-                  
-                  <div>Total:</div>
-                  <div>{data.inspections.inspections.vehicle}</div>
-                  <div>{data.inspections.inspections.driver}</div>
-                  <div>{data.inspections.inspections.hazmat}</div>
-                  
-                  <div>OOS:</div>
-                  <div>{data.inspections.outOfService.vehicle}</div>
-                  <div>{data.inspections.outOfService.driver}</div>
-                  <div>{data.inspections.outOfService.hazmat}</div>
-                  
-                  <div>OOS%:</div>
-                  <div>{data.inspections.outOfServiceRate.vehicle}</div>
-                  <div>{data.inspections.outOfServiceRate.driver}</div>
-                  <div>{data.inspections.outOfServiceRate.hazmat}</div>
-                </div>
-              </div>
-            )}
-
-            {/* Crashes */}
-            {data.crashes && (
-              <div className="mb-4 p-3 bg-background rounded border">
-                <strong>Accidentes (últimos 24 meses):</strong>
-                <div className="grid grid-cols-4 gap-2 mt-2 text-xs">
-                  <div>Fatal: {data.crashes.fatal}</div>
-                  <div>Lesión: {data.crashes.injury}</div>
-                  <div>Remolque: {data.crashes.tow}</div>
-                  <div>Total: {data.crashes.total}</div>
-                </div>
-              </div>
-            )}
+            </div>
 
             <Button 
               onClick={handleApplyData} 
-              className="mt-4 w-full"
+              className="mt-6 w-full"
               size="sm"
             >
+              <CheckCircle className="h-4 w-4 mr-2" />
               Aplicar datos al formulario
             </Button>
           </div>
