@@ -36,6 +36,7 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
   const [searchType, setSearchType] = useState<"DOT" | "MC" | "NAME">("DOT");
   const [loading, setLoading] = useState(false);
   const [lastSearchData, setLastSearchData] = useState<FMCSAData | null>(null);
+  const [debugData, setDebugData] = useState<any>(null);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
@@ -69,6 +70,7 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
 
       const fmcsaData = data.data as FMCSAData;
       setLastSearchData(fmcsaData);
+      setDebugData(data.debug);
       toast.success("Información encontrada en FMCSA");
       setLoading(false);
 
@@ -276,6 +278,21 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Debug HTML Section */}
+        {debugData && debugData.rawHtml && (
+          <div className="border-t pt-4">
+            <h4 className="font-medium mb-3">HTML Completo de FMCSA (Debug)</h4>
+            <div className="text-xs bg-muted p-4 rounded border max-h-96 overflow-y-auto">
+              <pre className="whitespace-pre-wrap break-words font-mono">
+                {debugData.rawHtml}
+              </pre>
+            </div>
+            <div className="mt-2 text-xs text-muted-foreground">
+              Tamaño total: {debugData.htmlLength} caracteres (mostrando primeros 5000)
             </div>
           </div>
         )}
