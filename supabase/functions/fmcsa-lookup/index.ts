@@ -102,9 +102,21 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     if (!phoneMatch) {
       phoneMatch = html.match(/\(([0-9]{3})\)\s*([0-9]{3}-[0-9]{4})/);
     }
+    if (!phoneMatch) {
+      phoneMatch = html.match(/Phone[^:]*:\s*([0-9\-\(\)\s]+)/i);
+    }
+    if (!phoneMatch) {
+      phoneMatch = html.match(/Telephone[^:]*:\s*([0-9\-\(\)\s]+)/i);
+    }
     if (phoneMatch) {
-      companyData.phone = `(${phoneMatch[1]}) ${phoneMatch[2]}`;
+      if (phoneMatch[2]) {
+        companyData.phone = `(${phoneMatch[1]}) ${phoneMatch[2]}`;
+      } else {
+        companyData.phone = phoneMatch[1].trim();
+      }
       console.log('✅ Found phone:', companyData.phone);
+    } else {
+      console.log('❌ No phone number found in HTML');
     }
 
     // Extract address - try multiple patterns
