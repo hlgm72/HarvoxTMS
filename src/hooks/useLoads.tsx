@@ -194,10 +194,14 @@ export const useLoads = (filters?: LoadsFilters) => {
       // Verificar errores de cache
       if (cacheError) {
         console.error('❌ Error en cache de compañía:', cacheError);
-        throw new Error('Error obteniendo datos de compañía');
+        throw new Error(`Error cargando cargas: ${cacheError.message || 'Error de base de datos'}`);
       }
 
       // Esperar a que el cache esté listo
+      if (cacheLoading) {
+        console.log('⏳ Esperando datos de compañía...');
+        throw new Error('Cargando datos de compañía...');
+      }
       if (cacheLoading || !userCompany || companyUsers.length === 0) {
         throw new Error('Cargando datos de compañía...');
       }
