@@ -200,6 +200,22 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     
     console.log('❌ No key company data found in response');
     
+    // Log more details about what we received
+    console.log('🔍 Analyzing response structure...');
+    console.log('Response contains "company" text:', html.toLowerCase().includes('company'));
+    console.log('Response contains "motor carrier" text:', html.toLowerCase().includes('motor carrier'));
+    console.log('Response contains "dot" text:', html.toLowerCase().includes('dot'));
+    console.log('Response contains "mc-" text:', html.toLowerCase().includes('mc-'));
+    console.log('Response contains table tags:', html.toLowerCase().includes('<table'));
+    console.log('Response contains form tags:', html.toLowerCase().includes('<form'));
+    
+    // Check if we got an error page or empty result
+    if (html.toLowerCase().includes('no records found') || 
+        html.toLowerCase().includes('no companies found') ||
+        html.toLowerCase().includes('search returned no results')) {
+      console.log('🚫 FMCSA returned explicit "no results" message');
+    }
+    
     // If we didn't find anything, let's look for common table structures
     const tableMatches = html.match(/<table[\s\S]*?<\/table>/gi);
     if (tableMatches) {
