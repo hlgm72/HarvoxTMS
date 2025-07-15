@@ -55,6 +55,7 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
       if (error) {
         console.error('FMCSA lookup error:', error);
         toast.error("Error al buscar en FMCSA");
+        setLoading(false);
         return;
       }
 
@@ -62,17 +63,18 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
         const errorMessage = data?.error || "No se encontró información en FMCSA";
         toast.error(errorMessage);
         console.log('FMCSA search failed:', errorMessage);
+        setLoading(false);
         return;
       }
 
       const fmcsaData = data.data as FMCSAData;
       setLastSearchData(fmcsaData);
       toast.success("Información encontrada en FMCSA");
+      setLoading(false);
 
     } catch (error) {
       console.error('Error calling FMCSA function:', error);
       toast.error("Error al buscar en FMCSA");
-    } finally {
       setLoading(false);
     }
   };
