@@ -1,25 +1,166 @@
+import * as cheerio from 'cheerio';
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
 }
 
+// Enhanced FMCSA Company Data interface
 interface FMCSACompanyData {
-  name?: string;
-  address?: string;
-  dotNumber?: string;
-  mcNumber?: string;
-  phone?: string;
-  email?: string;
-  
-  operatingStatus?: string;
-  outOfServiceDate?: string;
-  totalDrivers?: string;
-  totalVehicles?: string;
-  operationClassification?: string[];
-  cargoCarried?: string[];
+  legalName: string | null;
+  dotNumber: string | null;
+  mcNumber: string | null;
+  physicalAddress: string | null;
+  mailingAddress: string | null;
+  phone: string | null;
+  email: string | null;
+  carrierOperation: string | null;
+  stateOfOperation: string | null;
+  cargoCarried: string[];
+  inspections: {
+    inspections: {
+      vehicle: string;
+      driver: string;
+      hazmat: string;
+      iep: string;
+    };
+    outOfService: {
+      vehicle: string;
+      driver: string;
+      hazmat: string;
+      iep: string;
+    };
+    outOfServiceRate: {
+      vehicle: string;
+      driver: string;
+      hazmat: string;
+      iep: string;
+    };
+  } | null;
+  crashes: {
+    fatal: string;
+    injury: string;
+    tow: string;
+    total: string;
+  } | null;
+  safetyRating: {
+    ratingDate: string | null;
+    reviewDate: string | null;
+    rating: string | null;
+    type: string | null;
+  } | null;
 }
 
+// Enhanced FMCSA HTML Parser function
+function parseFMCSA_HTML(html: string): FMCSACompanyData {
+  const $ = cheerio.load(html);
+
+  const getTextAfterLabel = (label: string): string | null => {
+    const el = $("td.queryfield").filter((_, el) =>
+      $(el).text().includes(label)
+    ).first();
+
+    const next = el.next();
+    return next.length ? next.text().trim() : null;
+  };
+
+  const extractCargoCarried = (): string[] => {
+    const cargo: string[] = [];
+    $('td font').each((_, el) => {
+      const text = $(el).text().trim();
+      if (
+        text &&
+        !["SAFER Layout", "Carrier Operation:", "Cargo Carried:"].includes(text)
+      ) {
+        cargo.push(text);
+      }
+    });
+    return [...new Set(cargo)];
+  };
+
+  const parseInspections = () => {
+    const rows = $("table[summary='Inspections']").first().find("tr");
+    if (rows.length < 4) return null;
+
+    const getCellText = (rowIndex: number, colIndex: number) =>
+      $(rows[rowIndex]).find("td").eq(colIndex).text().trim() || "0";
+
+    return {
+      inspections: {
+        vehicle: getCellText(1, 1),
+        driver: getCellText(1, 2),
+        hazmat: getCellText(1, 3),
+        iep: getCellText(1, 4),
+      },
+      outOfService: {
+        vehicle: getCellText(2, 1),
+        driver: getCellText(2, 2),
+        hazmat: getCellText(2, 3),
+        iep: getCellText(2, 4),
+      },
+      outOfServiceRate: {
+        vehicle: getCellText(3, 1),
+        driver: getCellText(3, 2),
+        hazmat: getCellText(3, 3),
+        iep: getCellText(3, 4),
+      },
+    };
+  };
+
+  const parseCrashes = () => {
+    const row = $("table[summary='Crashes']").first().find("tr").eq(1);
+    if (!row.length) return null;
+    
+    const get = (i: number) => row.find("td").eq(i).text().trim() || "0";
+
+    return {
+      fatal: get(0),
+      injury: get(1),
+      tow: get(2),
+      total: get(3),
+    };
+  };
+
+  const parseSafetyRating = () => {
+    const ratingTable = $("table").filter((_, el) =>
+      $(el).text().includes("Rating Date:")
+    ).first();
+
+    if (!ratingTable.length) return null;
+
+    const rows = ratingTable.find("tr");
+    const getCell = (row: number, cell: number) =>
+      rows.eq(row).find("td").eq(cell).text().trim() || null;
+
+    return {
+      ratingDate: getCell(1, 0),
+      reviewDate: getCell(1, 1),
+      rating: getCell(2, 0),
+      type: getCell(2, 1),
+    };
+  };
+
+  const fullText = $.root().text();
+
+  return {
+    legalName: $("td.queryfield b").first().text().trim() || null,
+    dotNumber: fullText.match(/USDOT\s+(\d+)/)?.[1] || null,
+    mcNumber: fullText.match(/\bMC\s+(\d+)/)?.[1] || null,
+    physicalAddress: getTextAfterLabel("Physical Address:"),
+    mailingAddress: getTextAfterLabel("Mailing Address:"),
+    phone: fullText.match(/Phone:\s*([0-9\-\(\)\s]+)/)?.[1]?.trim() || null,
+    email: fullText.match(/Email:\s*([^\s]+)/)?.[1]?.trim() || null,
+    carrierOperation: getTextAfterLabel("Carrier Operation:"),
+    stateOfOperation: getTextAfterLabel("State Carrier Operates In:"),
+    cargoCarried: extractCargoCarried(),
+    inspections: parseInspections(),
+    crashes: parseCrashes(),
+    safetyRating: parseSafetyRating(),
+  };
+}
+
+// Enhanced FMCSA search function
 async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME'): Promise<FMCSACompanyData | null> {
   try {
     console.log(`🔍 Starting FMCSA search for ${searchType}: "${searchQuery}"`);
@@ -64,153 +205,14 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     // Store HTML globally for access in the main function
     (globalThis as any).lastHtml = html;
 
-    // Convert HTML to plain text and clean it properly
-    const text = html
-      .replace(/<[^>]*>/g, ' ')           // Remove HTML tags
-      .replace(/&nbsp;/g, ' ')           // Replace &nbsp; with spaces
-      .replace(/&#160;/g, ' ')           // Replace &#160; with spaces
-      .replace(/&amp;/g, '&')            // Replace &amp; with &
-      .replace(/\s+/g, ' ')              // Replace multiple spaces with single space
-      .trim();
+    // Use the enhanced parser
+    console.log('Parsing HTML with enhanced parser...');
+    const companyData = parseFMCSA_HTML(html);
     
-    console.log('📝 Cleaned text sample (first 800 chars):', text.substring(0, 800));
-
-    // Improved helper function to extract data with better boundaries
-    function extractField(label: string, text: string): string | null {
-      const index = text.indexOf(label);
-      if (index !== -1) {
-        const start = index + label.length;
-        
-        // Define common field labels to know where to stop
-        const fieldLabels = [
-          'Legal Name:', 'DBA Name:', 'Physical Address:', 'Mailing Address:',
-          'Phone:', 'Operating Status:', 'Entity Type:', 'USDOT Number:',
-          'MC/MX/FF Number(s):', 'Safety Rating:', 'Out of Service Date:',
-          'Total Drivers:', 'Total Vehicles:', 'DUNS Number:', 'Power Units:',
-          'Review Information:', 'Rating Date:', 'Review Date:'
-        ];
-        
-        // Find the next field label or reasonable text boundary
-        let end = text.length;
-        for (const nextLabel of fieldLabels) {
-          const nextIndex = text.indexOf(nextLabel, start + 1);
-          if (nextIndex > start && nextIndex < end) {
-            end = nextIndex;
-          }
-        }
-        
-        // If no field boundary found, limit to reasonable length
-        if (end === text.length) {
-          end = Math.min(start + 150, text.length);
-        }
-        
-        const extracted = text.substring(start, end).trim();
-        
-        // Clean up common artifacts
-        return extracted
-          .replace(/^\s*[\s:]+/, '')      // Remove leading spaces and colons
-          .replace(/\s+$/, '')            // Remove trailing spaces
-          .replace(/^[:\s]*/, '')         // Remove leading colons and spaces
-          .trim();
-      }
-      return null;
-    }
-
-    // Parse the text to extract company information using ChatGPT's approach
-    const companyData: FMCSACompanyData = {};
-
-    // Extract Legal Name
-    let name = extractField('Legal Name:', text);
-    if (!name) {
-      name = extractField('DBA Name:', text);
-    }
-    if (name) {
-      companyData.name = name.replace(/\s+/g, ' ').trim();
-      console.log('✅ Found name:', companyData.name);
-    }
-
-    // Extract DOT number
-    const dotText = extractField('USDOT Number:', text);
-    if (dotText) {
-      const dotMatch = dotText.match(/([0-9]+)/);
-      if (dotMatch) {
-        companyData.dotNumber = dotMatch[1];
-        console.log('✅ Found DOT:', companyData.dotNumber);
-      }
-    }
-
-    // Extract MC number
-    const mcText = extractField('MC/MX/FF Number(s):', text);
-    if (mcText) {
-      const mcMatch = mcText.match(/(MC[A-Z]*-?[0-9]+)/i);
-      if (mcMatch) {
-        companyData.mcNumber = mcMatch[1].toUpperCase();
-        console.log('✅ Found MC:', companyData.mcNumber);
-      }
-    }
-
-    // Extract Phone number
-    const phoneText = extractField('Phone:', text);
-    if (phoneText) {
-      const phoneMatch = phoneText.match(/(\([0-9]{3}\)\s*[0-9]{3}-[0-9]{4}|[0-9]{3}-[0-9]{3}-[0-9]{4}|\([0-9]{3}\)\s*[0-9]{7})/);
-      if (phoneMatch) {
-        companyData.phone = phoneMatch[1].trim();
-        console.log('✅ Found phone:', companyData.phone);
-      }
-    }
-
-    // Extract Physical Address
-    const addressText = extractField('Physical Address:', text);
-    if (addressText) {
-      // Clean up the address
-      const cleanAddress = addressText.replace(/\s+/g, ' ').trim();
-      if (cleanAddress.length > 10) { // Basic validation
-        companyData.address = cleanAddress;
-        console.log('✅ Found address:', companyData.address);
-      }
-    }
-
-    // Extract additional fields using the same method
-    
-    // Extract Operating Status - try multiple variations
-    let operatingText = extractField('Operating Status:', text) || 
-                       extractField('USDOT Status:', text) ||
-                       extractField('Carrier Status:', text);
-    if (operatingText) {
-      companyData.operatingStatus = operatingText.replace(/\s+/g, ' ').trim();
-      console.log('✅ Found operating status:', companyData.operatingStatus);
-    }
-
-    // Extract Entity Type (sometimes shows business type)
-    const entityText = extractField('Entity Type:', text);
-    if (entityText) {
-      console.log('✅ Found entity type:', entityText.trim());
-    }
-
-    // Extract DBA Name if different from Legal Name
-    const dbaText = extractField('DBA Name:', text);
-    if (dbaText && dbaText.trim() !== companyData.name) {
-      console.log('✅ Found DBA name:', dbaText.trim());
-    }
-
-    // Try to extract email from the text
-    const emailMatch = text.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
-    if (emailMatch) {
-      companyData.email = emailMatch[1].trim();
-      console.log('✅ Found email:', companyData.email);
-    }
-
-    // Extract additional fields if they exist in the text
-    const outOfServiceText = extractField('Out of Service Date:', text);
-    if (outOfServiceText && outOfServiceText.trim() !== 'None' && outOfServiceText.trim() !== '') {
-      companyData.outOfServiceDate = outOfServiceText.trim();
-      console.log('✅ Found out of service date:', companyData.outOfServiceDate);
-    }
-
     console.log('📊 Final extracted data:', companyData);
-
+    
     // Return null if no essential data was found
-    if (!companyData.name && !companyData.dotNumber && !companyData.mcNumber) {
+    if (!companyData.legalName && !companyData.dotNumber && !companyData.mcNumber) {
       console.log('❌ No essential company data found');
       return null;
     }
@@ -279,7 +281,7 @@ Deno.serve(async (req) => {
             searchQuery,
             searchType,
             htmlLength: html.length,
-            rawHtml: html, // Mostrar HTML completo
+            rawHtml: html,
             timestamp: new Date().toISOString()
           }
         }),
@@ -290,7 +292,7 @@ Deno.serve(async (req) => {
       )
     }
 
-    console.log('✅ Returning real data:', companyData)
+    console.log('✅ Returning enhanced data:', companyData)
     return new Response(
       JSON.stringify({ 
         success: true, 
@@ -299,7 +301,7 @@ Deno.serve(async (req) => {
           searchQuery,
           searchType,
           htmlLength: html.length,
-          rawHtml: html // Mostrar HTML completo
+          rawHtml: html
         }
       }),
       { 

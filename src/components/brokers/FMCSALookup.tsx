@@ -9,16 +9,48 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface FMCSAData {
-  name?: string;
-  address?: string;
-  dotNumber?: string;
-  mcNumber?: string;
-  phone?: string;
-  safetyRating?: string;
-  totalDrivers?: string;
-  totalVehicles?: string;
-  operationClassification?: string[];
-  cargoCarried?: string[];
+  legalName: string | null;
+  dotNumber: string | null;
+  mcNumber: string | null;
+  physicalAddress: string | null;
+  mailingAddress: string | null;
+  phone: string | null;
+  email: string | null;
+  carrierOperation: string | null;
+  stateOfOperation: string | null;
+  cargoCarried: string[];
+  inspections: {
+    inspections: {
+      vehicle: string;
+      driver: string;
+      hazmat: string;
+      iep: string;
+    };
+    outOfService: {
+      vehicle: string;
+      driver: string;
+      hazmat: string;
+      iep: string;
+    };
+    outOfServiceRate: {
+      vehicle: string;
+      driver: string;
+      hazmat: string;
+      iep: string;
+    };
+  } | null;
+  crashes: {
+    fatal: string;
+    injury: string;
+    tow: string;
+    total: string;
+  } | null;
+  safetyRating: {
+    ratingDate: string | null;
+    reviewDate: string | null;
+    rating: string | null;
+    type: string | null;
+  } | null;
 }
 
 interface FMCSALookupProps {
@@ -28,6 +60,7 @@ interface FMCSALookupProps {
     phone: string;
     dot_number: string;
     mc_number: string;
+    email: string;
   }>) => void;
 }
 
@@ -35,7 +68,7 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState<"DOT" | "MC" | "NAME">("DOT");
   const [loading, setLoading] = useState(false);
-  const [lastSearchData, setLastSearchData] = useState<FMCSAData | null>(null);
+  const [data, setData] = useState<FMCSAData | null>(null);
   const [debugData, setDebugData] = useState<any>(null);
 
   const handleSearch = async () => {
@@ -46,7 +79,7 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('fmcsa-lookup', {
+      const { data: responseData, error } = await supabase.functions.invoke('fmcsa-lookup', {
         body: {
           searchQuery: searchQuery.trim(),
           searchType
@@ -60,17 +93,19 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
         return;
       }
 
-      if (!data || !data.success) {
-        const errorMessage = data?.error || "No se encontró información en FMCSA";
+      if (!responseData || !responseData.success) {
+        const errorMessage = responseData?.error || "No se encontró información en FMCSA";
         toast.error(errorMessage);
         console.log('FMCSA search failed:', errorMessage);
+        setData(null);
+        setDebugData(responseData?.debug || null);
         setLoading(false);
         return;
       }
 
-      const fmcsaData = data.data as FMCSAData;
-      setLastSearchData(fmcsaData);
-      setDebugData(data.debug);
+      const fmcsaData = responseData.data as FMCSAData;
+      setData(fmcsaData);
+      setDebugData(responseData.debug);
       toast.success("Información encontrada en FMCSA");
       setLoading(false);
 
@@ -82,24 +117,17 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
   };
 
   const handleApplyData = () => {
-    if (!lastSearchData) return;
-
-    const formData: Partial<{
-      name: string;
-      address: string;
-      phone: string;
-      dot_number: string;
-      mc_number: string;
-    }> = {};
-
-    if (lastSearchData.name) formData.name = lastSearchData.name;
-    if (lastSearchData.address) formData.address = lastSearchData.address;
-    if (lastSearchData.phone) formData.phone = lastSearchData.phone;
-    if (lastSearchData.dotNumber) formData.dot_number = lastSearchData.dotNumber;
-    if (lastSearchData.mcNumber) formData.mc_number = lastSearchData.mcNumber;
-
-    onDataFound(formData);
-    toast.success("Información aplicada al formulario");
+    if (data && onDataFound) {
+      onDataFound({
+        name: data.legalName || "",
+        address: data.physicalAddress || data.mailingAddress || "",
+        phone: data.phone || "",
+        dot_number: data.dotNumber || "",
+        mc_number: data.mcNumber || "",
+        email: data.email || "",
+      });
+      toast.success("Información aplicada al formulario");
+    }
   };
 
   return (
@@ -174,111 +202,124 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
         </div>
 
         {/* Search Results */}
-        {lastSearchData && (
-          <div className="space-y-3 border-t pt-4">
-            <div className="flex items-center justify-between">
-              <h4 className="font-medium flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                Información Encontrada
-              </h4>
-              <Button
-                type="button"
-                onClick={handleApplyData}
-                size="sm"
-              >
-                Aplicar al Formulario
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-              {lastSearchData.name && (
+        {data && (
+          <div className="mt-6 p-4 bg-muted rounded-lg">
+            <h3 className="font-semibold mb-3">Información encontrada:</h3>
+            
+            {/* Basic Info */}
+            <div className="grid grid-cols-2 gap-3 text-sm mb-4">
+              <div>
+                <strong>Nombre Legal:</strong> {data.legalName || 'No disponible'}
+              </div>
+              <div>
+                <strong>Teléfono:</strong> {data.phone || 'No disponible'}
+              </div>
+              <div>
+                <strong>DOT:</strong> {data.dotNumber || 'No disponible'}
+              </div>
+              <div>
+                <strong>MC:</strong> {data.mcNumber || 'No disponible'}
+              </div>
+              <div className="col-span-2">
+                <strong>Dirección Física:</strong> {data.physicalAddress || 'No disponible'}
+              </div>
+              {data.mailingAddress && data.mailingAddress !== data.physicalAddress && (
+                <div className="col-span-2">
+                  <strong>Dirección Postal:</strong> {data.mailingAddress}
+                </div>
+              )}
+              {data.email && (
+                <div className="col-span-2">
+                  <strong>Email:</strong> {data.email}
+                </div>
+              )}
+              {data.carrierOperation && (
                 <div>
-                  <Label className="text-xs text-muted-foreground">Nombre</Label>
-                  <p className="font-medium">{lastSearchData.name}</p>
+                  <strong>Operación:</strong> {data.carrierOperation}
                 </div>
               )}
-
-              {lastSearchData.dotNumber && (
+              {data.stateOfOperation && (
                 <div>
-                  <Label className="text-xs text-muted-foreground">DOT #</Label>
-                  <p className="font-medium">{lastSearchData.dotNumber}</p>
-                </div>
-              )}
-
-              {lastSearchData.mcNumber && (
-                <div>
-                  <Label className="text-xs text-muted-foreground">MC #</Label>
-                  <p className="font-medium">{lastSearchData.mcNumber}</p>
-                </div>
-              )}
-
-              {lastSearchData.phone && (
-                <div>
-                  <Label className="text-xs text-muted-foreground">Teléfono</Label>
-                  <p className="font-medium">{lastSearchData.phone}</p>
-                </div>
-              )}
-
-              {lastSearchData.address && (
-                <div className="md:col-span-2">
-                  <Label className="text-xs text-muted-foreground">Dirección</Label>
-                  <p className="font-medium">{lastSearchData.address}</p>
-                </div>
-              )}
-
-              {lastSearchData.safetyRating && (
-                <div>
-                  <Label className="text-xs text-muted-foreground">Calificación de Seguridad</Label>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={
-                      lastSearchData.safetyRating.toLowerCase().includes('satisfactory') ? 'default' :
-                      lastSearchData.safetyRating.toLowerCase().includes('conditional') ? 'secondary' :
-                      lastSearchData.safetyRating.toLowerCase().includes('unsatisfactory') ? 'destructive' :
-                      'outline'
-                    }>
-                      {lastSearchData.safetyRating}
-                    </Badge>
-                  </div>
-                </div>
-              )}
-
-              {(lastSearchData.totalDrivers || lastSearchData.totalVehicles) && (
-                <div>
-                  <Label className="text-xs text-muted-foreground">Flota</Label>
-                  <p className="font-medium">
-                    {lastSearchData.totalDrivers && `${lastSearchData.totalDrivers} conductores`}
-                    {lastSearchData.totalDrivers && lastSearchData.totalVehicles && ', '}
-                    {lastSearchData.totalVehicles && `${lastSearchData.totalVehicles} vehículos`}
-                  </p>
-                </div>
-              )}
-
-              {lastSearchData.operationClassification && lastSearchData.operationClassification.length > 0 && (
-                <div className="md:col-span-2">
-                  <Label className="text-xs text-muted-foreground">Clasificación de Operación</Label>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {lastSearchData.operationClassification.map((classification, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
-                        {classification}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {lastSearchData.cargoCarried && lastSearchData.cargoCarried.length > 0 && (
-                <div className="md:col-span-2">
-                  <Label className="text-xs text-muted-foreground">Carga Transportada</Label>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {lastSearchData.cargoCarried.map((cargo, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
-                        {cargo}
-                      </Badge>
-                    ))}
-                  </div>
+                  <strong>Estados:</strong> {data.stateOfOperation}
                 </div>
               )}
             </div>
+
+            {/* Cargo Carried */}
+            {data.cargoCarried && data.cargoCarried.length > 0 && (
+              <div className="mb-4">
+                <strong>Carga Transportada:</strong>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {data.cargoCarried.map((cargo, index) => (
+                    <span key={index} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                      {cargo}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Safety Rating */}
+            {data.safetyRating && (
+              <div className="mb-4 p-3 bg-background rounded border">
+                <strong>Safety Rating:</strong>
+                <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
+                  <div>Rating: {data.safetyRating.rating || 'N/A'}</div>
+                  <div>Tipo: {data.safetyRating.type || 'N/A'}</div>
+                  <div>Fecha Rating: {data.safetyRating.ratingDate || 'N/A'}</div>
+                  <div>Fecha Review: {data.safetyRating.reviewDate || 'N/A'}</div>
+                </div>
+              </div>
+            )}
+
+            {/* Inspections */}
+            {data.inspections && (
+              <div className="mb-4 p-3 bg-background rounded border">
+                <strong>Inspecciones (últimos 24 meses):</strong>
+                <div className="grid grid-cols-4 gap-2 mt-2 text-xs">
+                  <div className="font-medium">Tipo</div>
+                  <div className="font-medium">Vehículo</div>
+                  <div className="font-medium">Conductor</div>
+                  <div className="font-medium">Hazmat</div>
+                  
+                  <div>Total:</div>
+                  <div>{data.inspections.inspections.vehicle}</div>
+                  <div>{data.inspections.inspections.driver}</div>
+                  <div>{data.inspections.inspections.hazmat}</div>
+                  
+                  <div>OOS:</div>
+                  <div>{data.inspections.outOfService.vehicle}</div>
+                  <div>{data.inspections.outOfService.driver}</div>
+                  <div>{data.inspections.outOfService.hazmat}</div>
+                  
+                  <div>OOS%:</div>
+                  <div>{data.inspections.outOfServiceRate.vehicle}</div>
+                  <div>{data.inspections.outOfServiceRate.driver}</div>
+                  <div>{data.inspections.outOfServiceRate.hazmat}</div>
+                </div>
+              </div>
+            )}
+
+            {/* Crashes */}
+            {data.crashes && (
+              <div className="mb-4 p-3 bg-background rounded border">
+                <strong>Accidentes (últimos 24 meses):</strong>
+                <div className="grid grid-cols-4 gap-2 mt-2 text-xs">
+                  <div>Fatal: {data.crashes.fatal}</div>
+                  <div>Lesión: {data.crashes.injury}</div>
+                  <div>Remolque: {data.crashes.tow}</div>
+                  <div>Total: {data.crashes.total}</div>
+                </div>
+              </div>
+            )}
+
+            <Button 
+              onClick={handleApplyData} 
+              className="mt-4 w-full"
+              size="sm"
+            >
+              Aplicar datos al formulario
+            </Button>
           </div>
         )}
 
