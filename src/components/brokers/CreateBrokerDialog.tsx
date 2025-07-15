@@ -606,16 +606,17 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
 
             {/* Action Buttons */}
             <div className="flex justify-between">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
-                disabled={currentStep === 1}
-              >
-                Anterior
-              </Button>
+              {currentStep > 1 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCurrentStep(currentStep - 1)}
+                >
+                  Anterior
+                </Button>
+              )}
 
-              <div className="flex gap-2">
+              <div className={`flex gap-2 ${currentStep === 1 ? 'ml-auto' : ''}`}>
                 <Button type="button" variant="outline" onClick={handleClose}>
                   Cancelar
                 </Button>
