@@ -58,6 +58,13 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
 
     const html = await response.text();
     console.log('FMCSA response received, HTML length:', html.length);
+    console.log('First 500 chars of HTML:', html.substring(0, 500));
+    
+    // Check if the response indicates no results
+    if (html.includes('No carriers') || html.includes('not found') || html.includes('No results') || html.includes('Your search returned 0 records')) {
+      console.log('FMCSA response indicates no results found');
+      return null;
+    }
 
     // Parse the HTML response to extract company information
     const companyData: FMCSACompanyData = {};
