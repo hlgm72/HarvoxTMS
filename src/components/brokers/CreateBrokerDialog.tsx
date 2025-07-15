@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useToast } from '@/hooks/use-toast';
 import { ClientLogoUpload } from '@/components/clients/ClientLogoUpload';
-import { FMCSALookup } from '@/components/brokers/FMCSALookup';
+import { FMCSALookupModal } from '@/components/brokers/FMCSALookupModal';
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Building2, User, Plus, Trash2, Phone, Mail } from 'lucide-react';
+import { Building2, User, Plus, Trash2, Phone, Mail, Search } from 'lucide-react';
 
 const dispatcherSchema = z.object({
   name: z.string().min(1, "Nombre requerido"),
@@ -56,6 +56,7 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(1);
+  const [showFMCSAModal, setShowFMCSAModal] = useState(false);
 
   const form = useForm<CreateBrokerForm>({
     resolver: zodResolver(createBrokerSchema),
@@ -222,17 +223,18 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                   <CardTitle className="text-lg">Información del Broker</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {/* FMCSA Lookup Section */}
-                  <FMCSALookup
-                    onDataFound={(data) => {
-                      // Aplicar los datos al formulario
-                      Object.entries(data).forEach(([key, value]) => {
-                        if (value && typeof value === 'string') {
-                          form.setValue(key as keyof CreateBrokerForm, value);
-                        }
-                      });
-                    }}
-                  />
+                  {/* FMCSA Search Button */}
+                  <div className="flex justify-center">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowFMCSAModal(true)}
+                      className="gap-2"
+                    >
+                      <Search className="h-4 w-4" />
+                      Buscar en FMCSA
+                    </Button>
+                  </div>
 
                   {/* Logo Upload Section */}
                   <FormField
@@ -552,6 +554,20 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
           </form>
         </Form>
       </DialogContent>
+
+      {/* FMCSA Lookup Modal */}
+      <FMCSALookupModal
+        isOpen={showFMCSAModal}
+        onClose={() => setShowFMCSAModal(false)}
+        onDataFound={(data) => {
+          // Aplicar los datos al formulario
+          Object.entries(data).forEach(([key, value]) => {
+            if (value && typeof value === 'string') {
+              form.setValue(key as keyof CreateBrokerForm, value);
+            }
+          });
+        }}
+      />
     </Dialog>
   );
 }
