@@ -283,10 +283,16 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'No company data found in FMCSA database' 
+          error: 'No company data found in FMCSA database',
+          debug: {
+            searchQuery,
+            searchType,
+            timestamp: new Date().toISOString(),
+            suggestion: 'Try checking if the number is correct or search by company name instead'
+          }
         }),
         { 
-          status: 200, // Cambiar de 404 a 200
+          status: 200, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       )
