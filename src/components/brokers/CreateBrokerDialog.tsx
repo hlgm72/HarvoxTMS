@@ -220,14 +220,12 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
             {currentStep === 1 && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Información del Broker</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* FMCSA Search Button */}
-                  <div className="flex justify-center">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">Información del Broker</CardTitle>
                     <Button
                       type="button"
                       variant="outline"
+                      size="sm"
                       onClick={() => setShowFMCSAModal(true)}
                       className="gap-2"
                     >
@@ -235,6 +233,8 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                       Buscar en FMCSA
                     </Button>
                   </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
 
                   {/* Logo Upload Section */}
                   <FormField

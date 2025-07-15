@@ -72,6 +72,7 @@ interface FMCSALookupModalProps {
     dot_number: string;
     mc_number: string;
     email: string;
+    alias: string;
   }>) => void;
 }
 
@@ -126,14 +127,21 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
 
   const handleApplyData = () => {
     if (data && onDataFound) {
-      onDataFound({
+      const mappedData: any = {
         name: data.legalName || "",
         address: data.physicalAddress || data.mailingAddress || "",
         phone: data.phone || "",
         dot_number: data.dotNumber || "",
         mc_number: data.mcNumber || "",
         email: data.email || "",
-      });
+      };
+      
+      // Solo agregar alias si DBA tiene información válida
+      if (data.dba && data.dba.trim() && !data.dba.toLowerCase().includes('no aplica') && !data.dba.toLowerCase().includes('vacío')) {
+        mappedData.alias = data.dba;
+      }
+      
+      onDataFound(mappedData);
       toast.success("Información aplicada al formulario");
       
       // Limpiar datos y cerrar modal
