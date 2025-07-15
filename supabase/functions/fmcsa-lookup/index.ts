@@ -430,66 +430,72 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       return null;
     }
     
-    // Para búsquedas por nombre, verificar si es una página de resultados intermedios
-    if (searchType === 'NAME' && html.includes('Company or Broker')) {
-      console.log('📋 Detected intermediate results page for name search');
-      
-      // Parsear la tabla de resultados y tomar el primer resultado válido
+    // Para búsquedas por nombre, verificar si es una página de resultados intermedios o snapshot directo
+    if (searchType === 'NAME') {
       const $ = cheerio.load(html);
-      const resultTable = $('table').filter((_, el) => {
-        return $(el).html()?.includes('Company or Broker') || $(el).html()?.includes('USDOT');
-      });
+      const title = $('head > title').text();
+      const isSnapshot = title.includes('SAFER Web - Company Snapshot');
       
-      if (resultTable.length > 0) {
-        console.log('🔍 Found results table, looking for first valid company link...');
-        
-        // Buscar links que apunten a CompanySnapshot.aspx
-        const snapshotLinks = resultTable.find('a[href*="CompanySnapshot.aspx"]');
-        if (snapshotLinks.length > 0) {
-          const firstLink = snapshotLinks.first();
-          const href = firstLink.attr('href');
-          
-          if (href) {
-            console.log(`🔗 Found snapshot link: ${href}`);
-            
-            // Construir la URL completa del snapshot
-            const snapshotUrl = href.startsWith('http') ? href : `https://safer.fmcsa.dot.gov/${href}`;
-            console.log(`🌐 Making request to snapshot URL: ${snapshotUrl}`);
-            
-            // Hacer una nueva petición al snapshot directo
-            const snapshotResponse = await fetch(snapshotUrl, {
-              method: 'GET',
-              headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.5',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Connection': 'keep-alive',
-                'Upgrade-Insecure-Requests': '1',
-              },
-            });
-            
-            if (snapshotResponse.ok) {
-              const snapshotHtml = await snapshotResponse.text();
-              console.log(`📄 Received snapshot HTML (${snapshotHtml.length} characters)`);
-              
-              // Store the snapshot HTML for parsing
-              (globalThis as any).lastHtml = snapshotHtml;
-              
-              // Parse the snapshot page
-              const companyData = parseFMCSA_HTML(snapshotHtml);
-              console.log('📊 Final extracted data from snapshot:', companyData);
-              
-              return companyData;
-            } else {
-              console.error(`❌ Failed to fetch snapshot: ${snapshotResponse.status}`);
-            }
-          }
-        } else {
-          console.log('❌ No snapshot links found in results table');
-        }
+      console.log(`📋 Page title: "${title}"`);
+      console.log(`📋 Is direct snapshot: ${isSnapshot}`);
+      
+      if (isSnapshot) {
+        console.log('✅ Direct snapshot page detected');
+        // Es un snapshot directo, procesar normalmente
       } else {
-        console.log('❌ No results table found in intermediate page');
+        console.log('📋 Detected intermediate results page for name search');
+        
+        // Buscar enlaces que contengan MC_MX o MC- en la página de resultados
+        const mcLinks = $('a[href*="MC_MX"], a[href*="MC-"]').map((_, a) => $(a).attr('href')).get();
+        
+        console.log(`🔍 Found ${mcLinks.length} MC links:`, mcLinks);
+        
+        if (mcLinks.length === 0) {
+          console.log('❌ No MC links found in results page');
+          return null;
+        }
+        
+        // Tomar el primer enlace
+        const firstLink = mcLinks[0];
+        const snapshotUrl = firstLink.startsWith('http') ? firstLink : `https://safer.fmcsa.dot.gov/${firstLink}`;
+        
+        console.log(`🔗 Navigating to first result: ${snapshotUrl}`);
+        
+        // Hacer una nueva petición al snapshot directo
+        const snapshotResponse = await fetch(snapshotUrl, {
+          method: 'GET',
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+          },
+        });
+        
+        if (snapshotResponse.ok) {
+          const snapshotHtml = await snapshotResponse.text();
+          console.log(`📄 Received snapshot HTML (${snapshotHtml.length} characters)`);
+          
+          // Store the snapshot HTML for parsing
+          (globalThis as any).lastHtml = snapshotHtml;
+          
+          // Parse the snapshot page
+          const companyData = parseFMCSA_HTML(snapshotHtml);
+          console.log('📊 Final extracted data from snapshot:', companyData);
+          
+          // Return null if no essential data was found
+          if (!companyData.legalName && !companyData.dotNumber && !companyData.mcNumber) {
+            console.log('❌ No essential company data found in snapshot');
+            return null;
+          }
+          
+          return companyData;
+        } else {
+          console.error(`❌ Failed to fetch snapshot: ${snapshotResponse.status}`);
+          return null;
+        }
       }
     }
     
