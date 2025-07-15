@@ -6,6 +6,7 @@ import { z } from "zod";
 import { useCompanyDrivers, CompanyDriver } from "@/hooks/useCompanyDrivers";
 import { useCompanyBrokers, CompanyBroker } from "@/hooks/useCompanyBrokers";
 import { useCreateLoad } from "@/hooks/useCreateLoad";
+import { useATMInput } from "@/hooks/useATMInput";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,6 +70,13 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
       commodity: "",
       weight_lbs: undefined,
     },
+  });
+
+  const atmInput = useATMInput({
+    initialValue: 0,
+    onValueChange: (value) => {
+      form.setValue("total_amount", value);
+    }
   });
 
   const phases = [
@@ -236,11 +244,14 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                           <FormLabel>Monto Total ($) *</FormLabel>
                           <FormControl>
                             <Input 
-                              type="number" 
-                              step="0.01"
-                              placeholder="2500.00"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                              type="text"
+                              value={atmInput.displayValue}
+                              onKeyDown={atmInput.handleKeyDown}
+                              onPaste={atmInput.handlePaste}
+                              placeholder="$0.00"
+                              className="text-right font-mono"
+                              autoComplete="off"
+                              readOnly
                             />
                           </FormControl>
                           <FormMessage />
