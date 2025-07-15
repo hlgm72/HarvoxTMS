@@ -189,8 +189,10 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
 
     // Extract additional fields using the same method
     
-    // Extract Operating Status
-    const operatingText = extractField('Operating Status:', text);
+    // Extract Operating Status - try multiple variations
+    let operatingText = extractField('Operating Status:', text) || 
+                       extractField('USDOT Status:', text) ||
+                       extractField('Carrier Status:', text);
     if (operatingText) {
       companyData.operatingStatus = operatingText.replace(/\s+/g, ' ').trim();
       console.log('✅ Found operating status:', companyData.operatingStatus);
