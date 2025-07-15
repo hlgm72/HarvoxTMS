@@ -227,7 +227,15 @@ export const useDeleteDispatcher = () => {
       return { broker_id };
     },
     onSuccess: (data) => {
+      // Invalidar cache de dispatchers del cliente específico
       queryClient.invalidateQueries({ queryKey: ["client-dispatchers", data.broker_id] });
+      
+      // Invalidar cache de company-brokers para actualizar el wizard de cargas
+      queryClient.invalidateQueries({ 
+        queryKey: ['company-brokers'],
+        exact: false
+      });
+      
       showSuccess("Contacto eliminado", "El contacto ha sido eliminado exitosamente.");
     },
     onError: (error) => {
