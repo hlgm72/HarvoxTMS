@@ -45,11 +45,7 @@ export const useCompanyDrivers = () => {
     refetchInterval: false,
     networkMode: 'online',
     queryFn: async (): Promise<CompanyDriver[]> => {
-      console.log('🔄 useCompanyDrivers iniciando...');
-      console.time('useCompanyDrivers-TOTAL-TIME');
-      
       if (!user) {
-        console.log('❌ Usuario no autenticado');
         throw new Error('User not authenticated');
       }
 
@@ -61,22 +57,11 @@ export const useCompanyDrivers = () => {
 
       // Esperar a que el cache esté listo
       if (cacheLoading || !userCompany || companyUsers.length === 0) {
-        console.log('⏳ Esperando cache de compañía...');
         throw new Error('Cargando datos de compañía...');
       }
 
       try {
-        // Filtrar solo usuarios que son conductores
-        console.time('step-1-filter-drivers');
-        const driverUserIds = companyUsers.filter(userId => {
-          // Solo incluir usuarios que tengan rol de driver
-          // Esta información ya viene del cache
-          return true; // El cache ya filtra por company_id, aquí necesitamos verificar rol
-        });
-        console.timeEnd('step-1-filter-drivers');
-
         // PASO 1: Obtener roles de conductores de la empresa (usando cache)
-        console.time('step-2-driver-roles');
         const { data: driverRoles, error: rolesError } = await supabase
           .from('user_company_roles')
           .select('user_id')
@@ -90,18 +75,12 @@ export const useCompanyDrivers = () => {
         }
 
         if (!driverRoles || driverRoles.length === 0) {
-          console.timeEnd('step-2-driver-roles');
-          console.timeEnd('useCompanyDrivers-TOTAL-TIME');
-          console.log('✅ useCompanyDrivers completado: Sin conductores encontrados');
           return [];
         }
 
         const finalDriverUserIds = driverRoles.map(role => role.user_id);
-        console.log(`👥 Conductores encontrados: ${finalDriverUserIds.length}`);
-        console.timeEnd('step-2-driver-roles');
 
         // PASO 2: Obtener datos relacionados en paralelo
-        console.time('step-3-parallel-queries');
         const [profilesResult, driverProfilesResult, activeLoadsResult] = await Promise.allSettled([
           supabase
             .from('profiles')
@@ -129,10 +108,8 @@ export const useCompanyDrivers = () => {
             .in('driver_user_id', finalDriverUserIds)
             .in('status', ['assigned', 'in_transit', 'pickup', 'delivery'])
         ]);
-        console.timeEnd('step-3-parallel-queries');
 
         // PASO 3: Procesar y enriquecer datos
-        console.time('step-4-data-enrichment');
         const [profiles, driverProfiles, activeLoads] = [
           profilesResult.status === 'fulfilled' ? profilesResult.value.data || [] : [],
           driverProfilesResult.status === 'fulfilled' ? driverProfilesResult.value.data || [] : [],
@@ -177,15 +154,10 @@ export const useCompanyDrivers = () => {
           };
         });
 
-        console.timeEnd('step-4-data-enrichment');
-        console.timeEnd('useCompanyDrivers-TOTAL-TIME');
-        console.log(`✅ useCompanyDrivers completado: ${combinedDrivers.length} conductores procesados`);
-
         return combinedDrivers;
 
       } catch (error: any) {
         console.error('Error en useCompanyDrivers:', error);
-        console.timeEnd('useCompanyDrivers-TOTAL-TIME');
         
         if (error.message?.includes('Failed to fetch')) {
           throw new Error('Error de conexión con el servidor. Verifica tu conexión a internet e intenta nuevamente.');

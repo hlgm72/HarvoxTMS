@@ -55,7 +55,7 @@ export const useCompanyBrokers = () => {
     networkMode: 'online',
     queryFn: async (): Promise<CompanyBroker[]> => {
       console.log('🔄 useCompanyBrokers iniciando...');
-      console.time('useCompanyBrokers-TIME');
+      
       
       if (!user) {
         console.log('❌ Usuario no autenticado');
@@ -110,13 +110,12 @@ export const useCompanyBrokers = () => {
         }));
 
         console.log(`👥 Brokers encontrados: ${enrichedBrokers.length}`);
-        console.timeEnd('useCompanyBrokers-TIME');
         
         return enrichedBrokers;
 
       } catch (error: any) {
         console.error('Error en useCompanyBrokers:', error);
-        console.timeEnd('useCompanyBrokers-TIME');
+        
         throw error;
       }
     },

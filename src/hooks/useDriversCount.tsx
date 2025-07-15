@@ -24,27 +24,18 @@ export const useDriversCount = () => {
     refetchInterval: false,
     networkMode: 'online',
     queryFn: async (): Promise<number> => {
-      const timerName = `useDriversCount-${Date.now()}-${Math.random()}`;
-      console.log('🔄 useDriversCount iniciando...');
-      console.time(timerName);
-      
       if (!user) {
-        console.log('❌ Usuario no autenticado');
-        console.timeEnd(timerName);
         throw new Error('User not authenticated');
       }
 
       // Verificar errores de cache
       if (cacheError) {
         console.error('❌ Error en cache de compañía:', cacheError);
-        console.timeEnd(timerName);
         throw new Error('Error obteniendo datos de compañía');
       }
 
       // Esperar a que el cache esté listo
       if (cacheLoading || !userCompany) {
-        console.log('⏳ Esperando cache de compañía...');
-        console.timeEnd(timerName);
         throw new Error('Cargando datos de compañía...');
       }
 
@@ -59,19 +50,14 @@ export const useDriversCount = () => {
 
         if (countError) {
           console.error('Error obteniendo conteo de drivers:', countError);
-          console.timeEnd(timerName);
           throw countError;
         }
 
         const finalCount = count || 0;
-        console.log(`👥 Conteo de conductores: ${finalCount}`);
-        console.timeEnd(timerName);
-        
         return finalCount;
 
       } catch (error: any) {
         console.error('Error en useDriversCount:', error);
-        console.timeEnd(timerName);
         throw error;
       }
     },

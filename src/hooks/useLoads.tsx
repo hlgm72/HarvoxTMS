@@ -123,24 +123,16 @@ const getRelevantPeriodIds = async (
   userIds: string[], 
   periodFilter: LoadsFilters['periodFilter']
 ): Promise<string[]> => {
-  console.log('🔍 getRelevantPeriodIds iniciando con:', { userIds: userIds.length, periodFilter });
-  console.time('getRelevantPeriodIds');
-  
   if (!periodFilter) {
-    console.log('📤 Sin filtro de período');
-    console.timeEnd('getRelevantPeriodIds');
     return [];
   }
 
   // Caso específico: período único
   if (periodFilter.type === 'specific' && periodFilter.periodId) {
-    console.log('📤 Período específico:', periodFilter.periodId);
-    console.timeEnd('getRelevantPeriodIds');
     return [periodFilter.periodId];
   }
 
   // Calcular rango de fechas según el tipo de filtro
-  console.time('calculateDateRange');
   let dateRange: DateRange | null = null;
   
   if (periodFilter.type === 'custom' && periodFilter.startDate && periodFilter.endDate) {
@@ -151,37 +143,26 @@ const getRelevantPeriodIds = async (
   } else {
     dateRange = calculateDateRange(periodFilter.type);
   }
-  console.timeEnd('calculateDateRange');
 
   // Sin filtro de fechas para 'all'
   if (!dateRange) {
-    console.log('📤 Sin rango de fechas para "all"');
-    console.timeEnd('getRelevantPeriodIds');
     return [];
   }
 
-  console.log('📅 Rango calculado:', dateRange);
-
   // Buscar períodos que se solapen con el rango de fechas
-  console.time('supabase-payment-periods-query');
   const { data: periodsInRange, error } = await supabase
     .from('payment_periods')
     .select('id')
     .in('driver_user_id', userIds)
     .lte('period_start_date', dateRange.endDate)
     .gte('period_end_date', dateRange.startDate);
-  console.timeEnd('supabase-payment-periods-query');
 
   if (error) {
     console.error('❌ Error obteniendo períodos:', error);
-    console.timeEnd('getRelevantPeriodIds');
     throw new Error('Error consultando períodos de pago');
   }
 
   const periodIds = periodsInRange?.map(p => p.id) || [];
-  console.log(`📤 Períodos encontrados: ${periodIds.length}`);
-  console.timeEnd('getRelevantPeriodIds');
-  
   return periodIds;
 };
 
@@ -206,11 +187,7 @@ export const useLoads = (filters?: LoadsFilters) => {
     // Deduplicar queries - crucial para ERR_INSUFFICIENT_RESOURCES
     networkMode: 'online',
     queryFn: async (): Promise<Load[]> => {
-      console.log('🔄 useLoads iniciando con filtros:', filters);
-      console.time('useLoads-TOTAL-TIME');
-      
       if (!user) {
-        console.log('❌ Usuario no autenticado');
         throw new Error('User not authenticated');
       }
 
@@ -222,20 +199,14 @@ export const useLoads = (filters?: LoadsFilters) => {
 
       // Esperar a que el cache esté listo
       if (cacheLoading || !userCompany || companyUsers.length === 0) {
-        console.log('⏳ Esperando cache de compañía...');
         throw new Error('Cargando datos de compañía...');
       }
 
       try {
-        console.log(`👥 Usuarios desde cache: ${companyUsers.length}`);
-
         // PASO 2: Obtener period_ids relevantes según el filtro (OPTIMIZACIÓN CLAVE)
-        console.time('step-2-period-filtering');
         const relevantPeriodIds = await getRelevantPeriodIds(companyUsers, filters?.periodFilter);
-        console.timeEnd('step-2-period-filtering');
         
         // PASO 3: Construir query optimizada de cargas
-        console.time('step-3-loads-query');
         let loadsQuery = supabase
           .from('loads')
           .select('*')
@@ -244,10 +215,8 @@ export const useLoads = (filters?: LoadsFilters) => {
 
         // Aplicar filtro de períodos si hay alguno
         if (relevantPeriodIds.length > 0) {
-          console.log(`🎯 Filtrando por ${relevantPeriodIds.length} period_ids`);
           loadsQuery = loadsQuery.in('payment_period_id', relevantPeriodIds);
         } else if (filters?.periodFilter?.type !== 'all' && filters?.periodFilter) {
-          console.log('🚫 No hay períodos relevantes, devolviendo consulta vacía');
           loadsQuery = loadsQuery.eq('id', '00000000-0000-0000-0000-000000000000');
         }
 
@@ -257,7 +226,6 @@ export const useLoads = (filters?: LoadsFilters) => {
         loadsQuery = loadsQuery.limit(limit);
 
         const { data: loads, error: loadsError } = await loadsQuery;
-        console.timeEnd('step-3-loads-query');
 
         if (loadsError) {
           console.error('Error obteniendo cargas:', loadsError);
@@ -265,12 +233,8 @@ export const useLoads = (filters?: LoadsFilters) => {
         }
 
         if (!loads || loads.length === 0) {
-          console.timeEnd('useLoads-TOTAL-TIME');
-          console.log('✅ useLoads completado: Sin cargas encontradas');
           return [];
         }
-
-        console.log(`📊 Procesando ${loads.length} cargas encontradas`);
 
         // PASO 4: Enriquecer datos relacionados en paralelo
         const [driverIds, brokerIds, periodIds, loadIds] = [
@@ -279,8 +243,6 @@ export const useLoads = (filters?: LoadsFilters) => {
           [...new Set(loads.map(l => l.payment_period_id).filter(Boolean))],
           loads.map(l => l.id)
         ];
-
-        console.time('parallel-queries');
         
         const [profilesResult, brokersResult, periodsResult, stopsResult] = await Promise.allSettled([
           driverIds.length > 0 
@@ -297,8 +259,6 @@ export const useLoads = (filters?: LoadsFilters) => {
             : Promise.resolve({ data: [] })
         ]);
 
-        console.timeEnd('parallel-queries');
-
         // PASO 5: Procesar y enriquecer datos
         const [profiles, brokers, periods, stops] = [
           profilesResult.status === 'fulfilled' ? profilesResult.value.data || [] : [],
@@ -306,8 +266,6 @@ export const useLoads = (filters?: LoadsFilters) => {
           periodsResult.status === 'fulfilled' ? periodsResult.value.data || [] : [],
           stopsResult.status === 'fulfilled' ? stopsResult.value.data || [] : []
         ];
-
-        console.time('data-enrichment');
 
         const enrichedLoads: Load[] = loads.map(load => {
           const profile = profiles.find(p => p.user_id === load.driver_user_id);
@@ -335,15 +293,10 @@ export const useLoads = (filters?: LoadsFilters) => {
           };
         });
 
-        console.timeEnd('data-enrichment');
-        console.timeEnd('useLoads-TOTAL-TIME');
-        console.log(`✅ useLoads completado: ${enrichedLoads.length} cargas procesadas`);
-
         return enrichedLoads;
 
       } catch (error: any) {
         console.error('Error en useLoads:', error);
-        console.timeEnd('useLoads-TOTAL-TIME');
         
         if (error.message?.includes('Failed to fetch')) {
           throw new Error('Error de conexión con el servidor. Verifica tu conexión a internet e intenta nuevamente.');
