@@ -86,13 +86,13 @@ export function CreateDispatcherDialog({
 
       if (error) throw error;
 
-      // Invalidar cache de brokers
-      queryClient.invalidateQueries({ 
+      // Invalidar cache de brokers y refetch para actualizar dispatchers
+      await queryClient.invalidateQueries({ 
         queryKey: ['company-brokers'],
         exact: false
       });
       
-      queryClient.refetchQueries({ 
+      await queryClient.refetchQueries({ 
         queryKey: ['company-brokers'],
         exact: false
       });
