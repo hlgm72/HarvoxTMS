@@ -52,33 +52,156 @@ interface FMCSACompanyData {
   } | null;
 }
 
-// Enhanced FMCSA HTML Parser function
+// Enhanced FMCSA HTML Parser function - Hybrid approach
 function parseFMCSA_HTML(html: string): FMCSACompanyData {
   const $ = cheerio.load(html);
+  
+  // Get clean text version for regex parsing
+  const fullText = html
+    .replace(/<[^>]*>/g, ' ')           // Remove HTML tags
+    .replace(/&nbsp;/g, ' ')           // Replace &nbsp; with spaces
+    .replace(/&#160;/g, ' ')           // Replace &#160; with spaces
+    .replace(/&amp;/g, '&')            // Replace &amp; with &
+    .replace(/\s+/g, ' ')              // Replace multiple spaces with single space
+    .trim();
 
-  const getTextAfterLabel = (label: string): string | null => {
-    const el = $("td.queryfield").filter((_, el) =>
-      $(el).text().includes(label)
-    ).first();
-
-    const next = el.next();
-    return next.length ? next.text().trim() : null;
-  };
-
-  const extractCargoCarried = (): string[] => {
-    const cargo: string[] = [];
-    $('td font').each((_, el) => {
-      const text = $(el).text().trim();
-      if (
-        text &&
-        !["SAFER Layout", "Carrier Operation:", "Cargo Carried:"].includes(text)
-      ) {
-        cargo.push(text);
+  // Helper function to extract text using boundaries
+  const extractField = (label: string, text: string): string | null => {
+    const index = text.indexOf(label);
+    if (index !== -1) {
+      const start = index + label.length;
+      
+      // Define common field labels to know where to stop
+      const fieldLabels = [
+        'Legal Name:', 'DBA Name:', 'Physical Address:', 'Mailing Address:',
+        'Phone:', 'Operating Status:', 'Entity Type:', 'USDOT Number:',
+        'MC/MX/FF Number(s):', 'Safety Rating:', 'Out of Service Date:',
+        'Total Drivers:', 'Total Vehicles:', 'DUNS Number:', 'Power Units:',
+        'Review Information:', 'Rating Date:', 'Review Date:', 'Carrier Operation:',
+        'State Carrier Operates In:', 'Cargo Carried:', 'SMS Results'
+      ];
+      
+      // Find the next field label or reasonable text boundary
+      let end = text.length;
+      for (const nextLabel of fieldLabels) {
+        const nextIndex = text.indexOf(nextLabel, start + 1);
+        if (nextIndex > start && nextIndex < end) {
+          end = nextIndex;
+        }
       }
-    });
-    return [...new Set(cargo)];
+      
+      // If no field boundary found, limit to reasonable length
+      if (end === text.length) {
+        end = Math.min(start + 150, text.length);
+      }
+      
+      const extracted = text.substring(start, end).trim();
+      
+      // Clean up common artifacts
+      return extracted
+        .replace(/^\s*[\s:]+/, '')      // Remove leading spaces and colons
+        .replace(/\s+$/, '')            // Remove trailing spaces
+        .replace(/^[:\s]*/, '')         // Remove leading colons and spaces
+        .trim();
+    }
+    return null;
   };
 
+  // Extract Legal Name - look for company name near USDOT
+  let legalName: string | null = null;
+  
+  // Method 1: Look for pattern "COMPANY NAME USDOT Number:"
+  const nameUsdotMatch = fullText.match(/([A-Z][A-Z\s&,.-]+?)\s+USDOT\s+Number:/i);
+  if (nameUsdotMatch) {
+    legalName = nameUsdotMatch[1].trim();
+  }
+  
+  // Method 2: Try to find in title or specific patterns
+  if (!legalName) {
+    const titleMatch = html.match(/<title[^>]*>SAFER Web - Company Snapshot\s+([^<]+)</i);
+    if (titleMatch) {
+      legalName = titleMatch[1].trim();
+    }
+  }
+  
+  // Method 3: Look for Legal Name field
+  if (!legalName) {
+    legalName = extractField('Legal Name:', fullText);
+  }
+
+  // Extract DOT number with multiple patterns
+  let dotNumber: string | null = null;
+  const dotPatterns = [
+    /USDOT\s+Number:\s*(\d+)/i,
+    /USDOT\s+(\d+)/i,
+    /DOT\s*#?\s*:?\s*(\d+)/i
+  ];
+  
+  for (const pattern of dotPatterns) {
+    const match = fullText.match(pattern);
+    if (match) {
+      dotNumber = match[1];
+      break;
+    }
+  }
+
+  // Extract MC number with multiple patterns
+  let mcNumber: string | null = null;
+  const mcPatterns = [
+    /MC\/MX\/FF\s+Number\(s\):\s*MC[A-Z]*-?(\d+)/i,
+    /MC\s*#?\s*:?\s*(\d+)/i,
+    /MC-(\d+)/i
+  ];
+  
+  for (const pattern of mcPatterns) {
+    const match = fullText.match(pattern);
+    if (match) {
+      mcNumber = match[1];
+      break;
+    }
+  }
+
+  // Extract Phone
+  let phone: string | null = null;
+  const phoneMatch = fullText.match(/Phone:\s*([0-9\-\(\)\s]+)/i);
+  if (phoneMatch) {
+    phone = phoneMatch[1].trim();
+  }
+
+  // Extract Physical Address
+  let physicalAddress = extractField('Physical Address:', fullText);
+  
+  // Extract Mailing Address
+  let mailingAddress = extractField('Mailing Address:', fullText);
+
+  // Extract Email
+  let email: string | null = null;
+  const emailMatch = fullText.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+  if (emailMatch) {
+    email = emailMatch[1].trim();
+  }
+
+  // Extract Carrier Operation
+  let carrierOperation = extractField('Carrier Operation:', fullText);
+
+  // Extract State of Operation
+  let stateOfOperation = extractField('State Carrier Operates In:', fullText);
+
+  // Extract Cargo Carried - look for list after "Cargo Carried:"
+  const cargoCarried: string[] = [];
+  const cargoIndex = fullText.indexOf('Cargo Carried:');
+  if (cargoIndex !== -1) {
+    const cargoSection = fullText.substring(cargoIndex, cargoIndex + 500);
+    const cargoLines = cargoSection.split('\n').slice(1, 10); // Take next few lines
+    for (const line of cargoLines) {
+      const cleaned = line.trim();
+      if (cleaned && !cleaned.includes(':') && cleaned.length > 2 && cleaned.length < 50) {
+        cargoCarried.push(cleaned);
+      }
+    }
+  }
+
+  // Parse Inspections using table parsing
   const parseInspections = () => {
     const rows = $("table[summary='Inspections']").first().find("tr");
     if (rows.length < 4) return null;
@@ -108,6 +231,7 @@ function parseFMCSA_HTML(html: string): FMCSACompanyData {
     };
   };
 
+  // Parse Crashes using table parsing
   const parseCrashes = () => {
     const row = $("table[summary='Crashes']").first().find("tr").eq(1);
     if (!row.length) return null;
@@ -122,6 +246,7 @@ function parseFMCSA_HTML(html: string): FMCSACompanyData {
     };
   };
 
+  // Parse Safety Rating
   const parseSafetyRating = () => {
     const ratingTable = $("table").filter((_, el) =>
       $(el).text().includes("Rating Date:")
@@ -141,19 +266,17 @@ function parseFMCSA_HTML(html: string): FMCSACompanyData {
     };
   };
 
-  const fullText = $.root().text();
-
   return {
-    legalName: $("td.queryfield b").first().text().trim() || null,
-    dotNumber: fullText.match(/USDOT\s+(\d+)/)?.[1] || null,
-    mcNumber: fullText.match(/\bMC\s+(\d+)/)?.[1] || null,
-    physicalAddress: getTextAfterLabel("Physical Address:"),
-    mailingAddress: getTextAfterLabel("Mailing Address:"),
-    phone: fullText.match(/Phone:\s*([0-9\-\(\)\s]+)/)?.[1]?.trim() || null,
-    email: fullText.match(/Email:\s*([^\s]+)/)?.[1]?.trim() || null,
-    carrierOperation: getTextAfterLabel("Carrier Operation:"),
-    stateOfOperation: getTextAfterLabel("State Carrier Operates In:"),
-    cargoCarried: extractCargoCarried(),
+    legalName,
+    dotNumber,
+    mcNumber,
+    physicalAddress,
+    mailingAddress,
+    phone,
+    email,
+    carrierOperation,
+    stateOfOperation,
+    cargoCarried,
     inspections: parseInspections(),
     crashes: parseCrashes(),
     safetyRating: parseSafetyRating(),
