@@ -147,9 +147,18 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       const match = html.match(pattern);
       console.log(`Pattern ${i + 1} result:`, match ? `Found: "${match[1]?.trim()}"` : 'No match');
       if (match && match[1] && match[1].trim().length > 3) {
-        companyData.name = match[1].trim();
-        console.log('✅ Found company name:', companyData.name);
-        break;
+        let name = match[1].trim();
+        
+        // Clean up the name by removing SAFER Web prefixes and common artifacts
+        name = name.replace(/^SAFER Web\s*-?\s*Company Snapshot\s*/i, '');
+        name = name.replace(/^Company Snapshot\s*/i, '');
+        name = name.replace(/^\s*-\s*/, ''); // Remove leading dashes
+        
+        if (name.length > 2) { // Make sure we still have a valid name after cleaning
+          companyData.name = name;
+          console.log('✅ Found and cleaned company name:', companyData.name);
+          break;
+        }
       }
     }
 
