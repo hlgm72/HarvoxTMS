@@ -117,11 +117,11 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     // Extract Legal Name with multiple patterns
     console.log('🔍 Searching for company name...');
     const namePatterns = [
-      // New pattern for current FMCSA structure - company name appears in bold after the spacer
-      /<br>\*\*([^*]+)\*\*<br>USDOT Number:/i,
-      // Pattern for the structure we saw: **PROJECT FREIGHT TRANSPORTATION INCORPORATED**<br>USDOT Number:
-      /\*\*([^*]+)\*\*<br>USDOT Number:/i,
-      // Additional patterns from before
+      // Try to extract company name from markdown-like format
+      /\*\*([^*]+)\*\*.*?USDOT Number:/is,
+      // Try plain text patterns  
+      /([A-Z][A-Z\s&.,'-]+)\s*USDOT Number:/i,
+      // Previous patterns
       /Legal Name:\s*<[^>]*>([^<]+)/i,
       /Entity Name:\s*<[^>]*>([^<]+)/i,
       /Legal Name:<\/[^>]*>\s*<[^>]*>([^<]+)/i,
@@ -129,8 +129,11 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       /<td[^>]*>Legal Name:<\/td>\s*<td[^>]*>([^<]+)<\/td>/i
     ];
     
-    for (const pattern of namePatterns) {
+    console.log('🔍 Trying to extract company name with multiple patterns...');
+    for (let i = 0; i < namePatterns.length; i++) {
+      const pattern = namePatterns[i];
       const match = html.match(pattern);
+      console.log(`Pattern ${i + 1} result:`, match ? `Found: "${match[1]?.trim()}"` : 'No match');
       if (match && match[1]) {
         companyData.name = match[1].trim();
         console.log('✅ Found company name:', companyData.name);
@@ -149,8 +152,11 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       /<td[^>]*>USDOT Number:<\/td>\s*<td[^>]*>([0-9]+)<\/td>/i
     ];
     
-    for (const pattern of dotPatterns) {
+    console.log('🔍 Trying to extract DOT number with multiple patterns...');
+    for (let i = 0; i < dotPatterns.length; i++) {
+      const pattern = dotPatterns[i];
       const match = html.match(pattern);
+      console.log(`DOT Pattern ${i + 1} result:`, match ? `Found: "${match[1]?.trim()}"` : 'No match');
       if (match && match[1]) {
         companyData.dotNumber = match[1].trim();
         console.log('✅ Found DOT number:', companyData.dotNumber);
