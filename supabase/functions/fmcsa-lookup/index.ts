@@ -25,6 +25,7 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     // Construct the URL based on ChatGPT's suggestion
     let url = '';
     const cleanQuery = searchQuery.replace(/^(MC-?|DOT-?)/, ''); // Remove MC- or DOT- prefix
+    console.log(`Original query: "${searchQuery}" -> Clean query: "${cleanQuery}"`);
     
     if (searchType === 'DOT') {
       url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_param=USDOT&query_string=${cleanQuery}`;
