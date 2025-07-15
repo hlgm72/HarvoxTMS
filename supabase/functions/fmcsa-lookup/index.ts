@@ -393,10 +393,10 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     } else if (searchType === 'MC') {
       url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_type=queryCarrierSnapshot&query_param=MC_MX&original_query_param=MC_MX&query_string=${cleanQuery}`;
     } else if (searchType === 'NAME') {
-      // Para búsqueda por nombre, usar formato similar al que funciona para MC pero con parámetros NAME
-      const nameQuery = searchQuery.trim();
-      url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_type=queryCarrierSnapshot&query_param=NAME&original_query_param=NAME&query_string=${encodeURIComponent(nameQuery)}`;
-      console.log(`🏷️ Name search - Original: "${searchQuery}", URL: "${url}"`);
+      // Para búsqueda por nombre, usar el formato exacto que sugirió ChatGPT
+      const nameQuery = searchQuery.trim().replace(/\s+/g, '+');
+      url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=name&query=${nameQuery}`;
+      console.log(`🏷️ Name search - Original: "${searchQuery}", URL Query: "${nameQuery}", Final URL: "${url}"`);
     }
 
     console.log('🌐 Final URL:', url);
