@@ -11,7 +11,7 @@ interface FMCSACompanyData {
   mcNumber?: string;
   phone?: string;
   email?: string;
-  safetyRating?: string;
+  
   operatingStatus?: string;
   outOfServiceDate?: string;
   totalDrivers?: string;
@@ -196,36 +196,6 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       console.log('✅ Found operating status:', companyData.operatingStatus);
     }
 
-    // Extract Safety Rating with improved parsing
-    const safetyText = extractField('Safety Rating:', text);
-    if (safetyText) {
-      // Try to extract specific rating patterns
-      const ratingPatterns = [
-        /Rating:\s*(Satisfactory|Conditional|Unsatisfactory|None|Not Rated)/i,
-        /Type:\s*(Satisfactory|Conditional|Unsatisfactory|None|Not Rated)/i,
-        /(Satisfactory|Conditional|Unsatisfactory|None|Not Rated)\s*Type:/i,
-        /(Satisfactory|Conditional|Unsatisfactory|None|Not Rated)/i
-      ];
-      
-      let rating = null;
-      for (const pattern of ratingPatterns) {
-        const match = safetyText.match(pattern);
-        if (match && match[1]) {
-          rating = match[1];
-          break;
-        }
-      }
-      
-      if (rating) {
-        companyData.safetyRating = rating;
-        console.log('✅ Found safety rating:', companyData.safetyRating);
-      } else {
-        // Fallback: just take first few words if no pattern matches
-        const fallback = safetyText.split(' ').slice(0, 5).join(' ');
-        companyData.safetyRating = fallback;
-        console.log('✅ Found safety rating (fallback):', companyData.safetyRating);
-      }
-    }
 
     // Extract Entity Type (sometimes shows business type)
     const entityText = extractField('Entity Type:', text);
