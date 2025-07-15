@@ -1,4 +1,4 @@
-import * as cheerio from 'cheerio';
+import * as cheerio from 'npm:cheerio@1.0.0-rc.12';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
