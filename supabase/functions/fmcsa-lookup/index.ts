@@ -15,6 +15,9 @@ interface FMCSACompanyData {
   mailingAddress: string | null;
   phone: string | null;
   email: string | null;
+  dba: string | null;  // Doing Business As
+  entityType: string | null;  // CARRIER, etc.
+  usdotStatus: string | null;  // ACTIVE, INACTIVE, etc.
   carrierOperation: string | null;
   stateOfOperation: string | null;
   cargoCarried: string[];
@@ -243,6 +246,36 @@ function parseFMCSA_HTML(html: string): FMCSACompanyData {
     }
   }
 
+  // Extract DBA (Doing Business As)
+  let dba = extractField('DBA Name:', fullText);
+  if (!dba || dba.toLowerCase().includes('no') || dba.toLowerCase().includes('none') || dba.trim() === '') {
+    dba = null;
+  }
+
+  // Extract Entity Type
+  let entityType = extractField('Entity Type:', fullText);
+  if (!entityType) {
+    // Look for patterns like "CARRIER" in the text
+    const entityMatch = fullText.match(/Entity\s+Type:\s*(\w+)/i);
+    if (entityMatch) {
+      entityType = entityMatch[1].toUpperCase();
+    } else if (fullText.includes('CARRIER')) {
+      entityType = 'CARRIER';
+    }
+  }
+
+  // Extract USDOT Status
+  let usdotStatus = extractField('Operating Status:', fullText);
+  if (!usdotStatus) {
+    // Look for status patterns
+    const statusMatch = fullText.match(/Operating\s+Status:\s*(\w+)/i);
+    if (statusMatch) {
+      usdotStatus = statusMatch[1].toUpperCase();
+    } else if (fullText.includes('ACTIVE')) {
+      usdotStatus = 'ACTIVE';
+    }
+  }
+
   // Extract State of Operation
   let stateOfOperation = extractField('State Carrier Operates In:', fullText);
 
@@ -333,6 +366,9 @@ function parseFMCSA_HTML(html: string): FMCSACompanyData {
     mailingAddress,
     phone,
     email,
+    dba,
+    entityType,
+    usdotStatus,
     carrierOperation,
     stateOfOperation,
     cargoCarried,
