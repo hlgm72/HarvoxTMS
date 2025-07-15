@@ -20,12 +20,12 @@ interface FMCSACompanyData {
 
 async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME'): Promise<FMCSACompanyData | null> {
   try {
-    console.log(`Searching FMCSA for ${searchType}: ${searchQuery}`);
+    console.log(`🔍 Starting FMCSA search for ${searchType}: "${searchQuery}"`);
     
-    // Construct the URL based on ChatGPT's suggestion
+    // Construct the URL
     let url = '';
     const cleanQuery = searchQuery.replace(/^(MC-?|DOT-?)/, ''); // Remove MC- or DOT- prefix
-    console.log(`Original query: "${searchQuery}" -> Clean query: "${cleanQuery}"`);
+    console.log(`📝 Original query: "${searchQuery}" -> Clean query: "${cleanQuery}"`);
     
     if (searchType === 'DOT') {
       url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_param=USDOT&query_string=${cleanQuery}`;
@@ -35,12 +35,10 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_param=NAME&query_string=${encodeURIComponent(searchQuery)}`;
     }
 
-    console.log('=== FMCSA SEARCH DEBUG ===');
-    console.log('Search Query:', searchQuery);
-    console.log('Search Type:', searchType);
-    console.log('Requesting URL:', url);
+    console.log('🌐 Final URL:', url);
 
     // Make the request to FMCSA SAFER
+    console.log('📡 Making request to FMCSA...');
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -54,20 +52,34 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       }
     });
 
-    console.log('Response status:', response.status);
-    console.log('Response status text:', response.statusText);
-    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+    console.log('📈 Response received:');
+    console.log('  Status:', response.status);
+    console.log('  Status Text:', response.statusText);
+    console.log('  Headers:', Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
-      console.error('FMCSA request failed:', response.status, response.statusText);
+      console.error('❌ FMCSA request failed:', response.status, response.statusText);
       return null;
     }
 
     const html = await response.text();
-    console.log('FMCSA response received, HTML length:', html.length);
-    console.log('First 1000 chars of HTML:', html.substring(0, 1000));
+    console.log('📄 HTML Response Analysis:');
+    console.log('  Length:', html.length);
+    console.log('  Content Type:', response.headers.get('content-type'));
     
-    // More detailed checks for common FMCSA no-results patterns
+    // Log the first 2000 characters for better debugging
+    console.log('📖 First 2000 chars of HTML:');
+    console.log(html.substring(0, 2000));
+    console.log('📖 Last 500 chars of HTML:');
+    console.log(html.substring(Math.max(0, html.length - 500)));
+    
+    // Check if we got a valid HTML page
+    if (!html.includes('<html') && !html.includes('<HTML')) {
+      console.log('⚠️ Response does not appear to be HTML');
+      return null;
+    }
+
+    // More comprehensive no-results patterns
     const noResultsPatterns = [
       'No carriers',
       'not found', 
@@ -78,125 +90,129 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       'ERROR',
       'No data available',
       'Search returned no results',
-      'carrier information not found'
+      'carrier information not found',
+      'no matches found',
+      'search criteria did not return any records'
     ];
     
-    let foundNoResultsPattern = false;
+    let foundNoResultsPattern = null;
     for (const pattern of noResultsPatterns) {
       if (html.toLowerCase().includes(pattern.toLowerCase())) {
-        console.log(`FMCSA no results pattern found: "${pattern}"`);
-        foundNoResultsPattern = true;
+        foundNoResultsPattern = pattern;
         break;
       }
     }
     
     if (foundNoResultsPattern) {
-      console.log('FMCSA response indicates no results found');
+      console.log(`❌ FMCSA no results pattern found: "${foundNoResultsPattern}"`);
       return null;
     }
-    
-    // Let's also check if we got a valid HTML page
-    if (!html.includes('<html') && !html.includes('<HTML')) {
-      console.log('Response does not appear to be HTML:', html.substring(0, 200));
-      return null;
-    }
+
+    console.log('✅ No "no results" patterns found, proceeding to parse...');
 
     // Parse the HTML response to extract company information
     const companyData: FMCSACompanyData = {};
 
-    // Log a snippet for debugging
-    console.log('HTML snippet (first 1000 chars):', html.substring(0, 1000));
-
-    // Check if we got an error page or no results
-    if (html.includes('No records found') || html.includes('Missing Parameter') || html.includes('ERROR')) {
-      console.log('FMCSA returned no results or error');
-      return null;
-    }
-
-    // Extract Legal Name - more specific patterns
-    let nameMatch = html.match(/Legal Name:\s*<[^>]*>([^<]+)</i) ||
-                    html.match(/Entity Name:\s*<[^>]*>([^<]+)</i) ||
-                    html.match(/Legal Name:<\/[^>]*>\s*<[^>]*>([^<]+)</i);
+    // Extract Legal Name with multiple patterns
+    console.log('🔍 Searching for company name...');
+    const namePatterns = [
+      /Legal Name:\s*<[^>]*>([^<]+)/i,
+      /Entity Name:\s*<[^>]*>([^<]+)/i,
+      /Legal Name:<\/[^>]*>\s*<[^>]*>([^<]+)/i,
+      /DBA Name:\s*<[^>]*>([^<]+)/i,
+      /<td[^>]*>Legal Name:<\/td>\s*<td[^>]*>([^<]+)<\/td>/i
+    ];
     
-    if (nameMatch && nameMatch[1]) {
-      companyData.name = nameMatch[1].trim();
-      console.log('Found company name:', companyData.name);
+    for (const pattern of namePatterns) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        companyData.name = match[1].trim();
+        console.log('✅ Found company name:', companyData.name);
+        break;
+      }
     }
 
-    // Extract DOT Number - look for specific patterns
-    const dotMatch = html.match(/USDOT Number:\s*<[^>]*>([0-9]+)</i) ||
-                     html.match(/USDOT\s*#?\s*:?\s*([0-9]+)/i) ||
-                     html.match(/DOT\s*#?\s*:?\s*([0-9]+)/i);
-    if (dotMatch && dotMatch[1]) {
-      companyData.dotNumber = dotMatch[1].trim();
-      console.log('Found DOT number:', companyData.dotNumber);
+    // Extract DOT Number with multiple patterns
+    console.log('🔍 Searching for DOT number...');
+    const dotPatterns = [
+      /USDOT Number:\s*<[^>]*>([0-9]+)/i,
+      /USDOT\s*#?\s*:?\s*([0-9]+)/i,
+      /DOT\s*#?\s*:?\s*([0-9]+)/i,
+      /<td[^>]*>USDOT Number:<\/td>\s*<td[^>]*>([0-9]+)<\/td>/i
+    ];
+    
+    for (const pattern of dotPatterns) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        companyData.dotNumber = match[1].trim();
+        console.log('✅ Found DOT number:', companyData.dotNumber);
+        break;
+      }
     }
 
-    // Extract MC Number - more specific patterns  
-    const mcMatch = html.match(/MC\/MX\/FF Number\(s\):\s*<[^>]*>([^<]+)</i) ||
-                    html.match(/MC-?([0-9]+)/i) ||
-                    html.match(/MC\s*#?\s*:?\s*([0-9]+)/i);
-    if (mcMatch && mcMatch[1]) {
-      companyData.mcNumber = mcMatch[1].trim().replace(/[^\d]/g, '');
-      console.log('Found MC number:', companyData.mcNumber);
+    // Extract MC Number with multiple patterns  
+    console.log('🔍 Searching for MC number...');
+    const mcPatterns = [
+      /MC\/MX\/FF Number\(s\):\s*<[^>]*>([^<]+)/i,
+      /MC-?([0-9]+)/i,
+      /MC\s*#?\s*:?\s*([0-9]+)/i,
+      /<td[^>]*>MC\/MX\/FF Number\(s\):<\/td>\s*<td[^>]*>([^<]+)<\/td>/i
+    ];
+    
+    for (const pattern of mcPatterns) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        companyData.mcNumber = match[1].trim().replace(/[^\d]/g, '');
+        console.log('✅ Found MC number:', companyData.mcNumber);
+        break;
+      }
     }
 
     // Extract Physical Address
-    const addressMatch = html.match(/Physical Address:\s*<[^>]*>([^<]+(?:<br\s*\/?>[\s\S]*?)+)/i) ||
-                         html.match(/Mailing Address:\s*<[^>]*>([^<]+(?:<br\s*\/?>[\s\S]*?)+)/i);
-    if (addressMatch && addressMatch[1]) {
-      companyData.address = addressMatch[1]
-        .replace(/<br\s*\/?>/gi, ', ')
-        .replace(/<[^>]*>/g, '')
-        .trim()
-        .replace(/\s+/g, ' ');
-      console.log('Found address:', companyData.address);
-    }
-
-    // Extract Phone Number
-    const phoneMatch = html.match(/Phone:\s*<[^>]*>([^<]+)</i) ||
-                       html.match(/\(([0-9]{3})\)\s*([0-9]{3})-?([0-9]{4})/);
-    if (phoneMatch) {
-      if (phoneMatch[1] && phoneMatch[2] && phoneMatch[3]) {
-        companyData.phone = `(${phoneMatch[1]}) ${phoneMatch[2]}-${phoneMatch[3]}`;
-      } else if (phoneMatch[1]) {
-        companyData.phone = phoneMatch[1].trim();
-      }
-      console.log('Found phone:', companyData.phone);
-    }
-
-    // Extract Power Units (vehicles)
-    const powerUnitsMatch = html.match(/Power Units:\s*<[^>]*>([^<]+)</i);
-    if (powerUnitsMatch && powerUnitsMatch[1]) {
-      companyData.totalVehicles = powerUnitsMatch[1].trim();
-      console.log('Found vehicles:', companyData.totalVehicles);
-    }
-
-    // Extract Drivers
-    const driversMatch = html.match(/Drivers:\s*<[^>]*>([^<]+)</i);
-    if (driversMatch && driversMatch[1]) {
-      companyData.totalDrivers = driversMatch[1].trim();
-      console.log('Found drivers:', companyData.totalDrivers);
-    }
-
-    // Extract Safety Rating
-    const safetyMatch = html.match(/Safety Rating:\s*<[^>]*>([^<]+)</i);
-    if (safetyMatch && safetyMatch[1]) {
-      companyData.safetyRating = safetyMatch[1].trim();
-      console.log('Found safety rating:', companyData.safetyRating);
-    }
-
-    console.log('Final parsed company data:', companyData);
+    console.log('🔍 Searching for address...');
+    const addressPatterns = [
+      /Physical Address:\s*<[^>]*>([^<]+(?:<br\s*\/?>[\s\S]*?)+)/i,
+      /Mailing Address:\s*<[^>]*>([^<]+(?:<br\s*\/?>[\s\S]*?)+)/i,
+      /<td[^>]*>Physical Address:<\/td>\s*<td[^>]*>([\s\S]*?)<\/td>/i
+    ];
     
-    // Return data even if some fields are missing
+    for (const pattern of addressPatterns) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        companyData.address = match[1]
+          .replace(/<br\s*\/?>/gi, ', ')
+          .replace(/<[^>]*>/g, '')
+          .trim()
+          .replace(/\s+/g, ' ');
+        console.log('✅ Found address:', companyData.address);
+        break;
+      }
+    }
+
+    console.log('📊 Final parsed company data:', companyData);
+    
+    // Return data if we found at least one key field
     if (companyData.name || companyData.dotNumber || companyData.mcNumber) {
+      console.log('✅ Successfully parsed company data');
       return companyData;
+    }
+    
+    console.log('❌ No key company data found in response');
+    
+    // If we didn't find anything, let's look for common table structures
+    const tableMatches = html.match(/<table[\s\S]*?<\/table>/gi);
+    if (tableMatches) {
+      console.log(`🔍 Found ${tableMatches.length} table(s) in response`);
+      tableMatches.forEach((table, index) => {
+        console.log(`Table ${index + 1} content (first 500 chars):`, table.substring(0, 500));
+      });
     }
     
     return null;
 
   } catch (error) {
-    console.error('Error searching FMCSA:', error);
+    console.error('💥 Error searching FMCSA:', error);
+    console.error('Error stack:', error.stack);
     return null;
   }
 }
