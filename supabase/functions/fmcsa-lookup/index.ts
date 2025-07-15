@@ -117,6 +117,11 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     // Extract Legal Name with multiple patterns
     console.log('🔍 Searching for company name...');
     const namePatterns = [
+      // New pattern for current FMCSA structure - company name appears in bold after the spacer
+      /<br>\*\*([^*]+)\*\*<br>USDOT Number:/i,
+      // Pattern for the structure we saw: **PROJECT FREIGHT TRANSPORTATION INCORPORATED**<br>USDOT Number:
+      /\*\*([^*]+)\*\*<br>USDOT Number:/i,
+      // Additional patterns from before
       /Legal Name:\s*<[^>]*>([^<]+)/i,
       /Entity Name:\s*<[^>]*>([^<]+)/i,
       /Legal Name:<\/[^>]*>\s*<[^>]*>([^<]+)/i,
@@ -136,6 +141,8 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     // Extract DOT Number with multiple patterns
     console.log('🔍 Searching for DOT number...');
     const dotPatterns = [
+      // New pattern for current FMCSA structure: USDOT Number: 2243569
+      /USDOT Number:\s*([0-9]+)/i,
       /USDOT Number:\s*<[^>]*>([0-9]+)/i,
       /USDOT\s*#?\s*:?\s*([0-9]+)/i,
       /DOT\s*#?\s*:?\s*([0-9]+)/i,
