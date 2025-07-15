@@ -64,8 +64,14 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     // Parse the HTML to extract company information
     const companyData: FMCSACompanyData = {};
 
-    // Extract company name
-    const nameMatch = html.match(/<TD[^>]*><CENTER><B>([^<]+)<\/B><\/CENTER><\/TD>/i);
+    // Extract company name - try multiple patterns
+    let nameMatch = html.match(/<TD[^>]*><CENTER><B>([^<]+)<\/B><\/CENTER><\/TD>/i);
+    if (!nameMatch) {
+      nameMatch = html.match(/<b>([^<]+)<\/b>/i);
+    }
+    if (!nameMatch) {
+      nameMatch = html.match(/Legal Name:\s*([^<\n]+)/i);
+    }
     if (nameMatch) {
       companyData.name = nameMatch[1].trim();
       console.log('✅ Found name:', companyData.name);
@@ -78,26 +84,49 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       console.log('✅ Found DOT:', companyData.dotNumber);
     }
 
-    // Extract MC number  
-    const mcMatch = html.match(/MC\/MX\/FF Number\(s\):\s*([A-Z]+-?[0-9]+)/i);
+    // Extract MC number - try multiple patterns
+    let mcMatch = html.match(/MC\/MX\/FF Number\(s\):\s*([A-Z]+-?[0-9]+)/i);
+    if (!mcMatch) {
+      mcMatch = html.match(/MC-([0-9]+)/i);
+    }
+    if (!mcMatch) {
+      mcMatch = html.match(/MC([0-9]+)/i);
+    }
     if (mcMatch) {
-      companyData.mcNumber = mcMatch[1].trim();
+      companyData.mcNumber = mcMatch[1] ? `MC-${mcMatch[1]}` : mcMatch[0].trim();
       console.log('✅ Found MC:', companyData.mcNumber);
     }
 
-    // Extract phone number
-    const phoneMatch = html.match(/Phone:\s*\(([0-9]{3})\)\s*([0-9]{3}-[0-9]{4})/i);
+    // Extract phone number - try multiple patterns
+    let phoneMatch = html.match(/Phone:\s*\(([0-9]{3})\)\s*([0-9]{3}-[0-9]{4})/i);
+    if (!phoneMatch) {
+      phoneMatch = html.match(/\(([0-9]{3})\)\s*([0-9]{3}-[0-9]{4})/);
+    }
     if (phoneMatch) {
       companyData.phone = `(${phoneMatch[1]}) ${phoneMatch[2]}`;
       console.log('✅ Found phone:', companyData.phone);
     }
 
-    // Extract address
-    const addressMatch = html.match(/Physical Address:<\/TD[^>]*>\s*<TD[^>]*>([^<]+)<BR>([^<]+)<BR>([^<]+)<\/TD>/i);
+    // Extract address - try multiple patterns
+    let addressMatch = html.match(/Physical Address:<\/TD[^>]*>\s*<TD[^>]*>([^<]+)<BR>([^<]+)<BR>([^<]+)<\/TD>/i);
+    if (!addressMatch) {
+      addressMatch = html.match(/Physical Address:\s*([^<\n]+)\s*([^<\n]+)\s*([^<\n]+)/i);
+    }
+    if (!addressMatch) {
+      addressMatch = html.match(/Address:\s*([^<\n]+)/i);
+    }
     if (addressMatch) {
-      companyData.address = `${addressMatch[1].trim()}, ${addressMatch[2].trim()}, ${addressMatch[3].trim()}`;
+      if (addressMatch[3]) {
+        companyData.address = `${addressMatch[1].trim()}, ${addressMatch[2].trim()}, ${addressMatch[3].trim()}`;
+      } else {
+        companyData.address = addressMatch[1].trim();
+      }
       console.log('✅ Found address:', companyData.address);
     }
+
+    // Log the HTML snippet for debugging
+    console.log('📋 HTML snippet (first 500 chars):', html.substring(0, 500));
+    console.log('📋 HTML snippet (around USDOT):', html.substring(html.indexOf('USDOT') - 100, html.indexOf('USDOT') + 200));
 
     console.log('📊 Final extracted data:', companyData);
 
