@@ -60,6 +60,12 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
 
     const html = await response.text();
     console.log(`📄 Received HTML response (${html.length} characters)`);
+    
+    // Log the complete HTML for user analysis
+    console.log('🔍 COMPLETE HTML RECEIVED FROM FMCSA:');
+    console.log('='.repeat(80));
+    console.log(html);
+    console.log('='.repeat(80));
 
     // Convert HTML to plain text and clean it properly
     const text = html
