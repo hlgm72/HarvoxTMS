@@ -1,4 +1,6 @@
-// Simplified toast hook to avoid React context issues
+// Re-export from sonner for consistent toast usage across the app
+import { toast as sonnerToast } from "sonner";
+
 export interface Toast {
   id: string;
   title?: string;
@@ -8,37 +10,27 @@ export interface Toast {
   variant?: 'default' | 'destructive';
 }
 
-// Simple console-based implementation to avoid useState issues
 function useToast() {
   const toast = ({ title, description, variant, duration }: Omit<Toast, 'id'>) => {
-    const message = `${variant === 'destructive' ? 'ERROR' : 'INFO'}: ${title}${description ? ` - ${description}` : ''}`;
-    console.log(message);
-    
-    // Simple browser notification if available
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(title || 'Notification', { 
-        body: description,
-        icon: '/eagle-favicon.svg'
-      });
+    if (variant === 'destructive') {
+      sonnerToast.error(title || 'Error', { description, duration });
+    } else {
+      sonnerToast.success(title || 'Success', { description, duration });
     }
   };
 
   return {
     toast,
     toasts: [] as Toast[], // Empty array to satisfy existing code
-    dismiss: () => console.log('Toast dismissed')
+    dismiss: () => sonnerToast.dismiss()
   };
 }
 
 const toast = ({ title, description, variant, duration }: Omit<Toast, 'id'>) => {
-  const message = `${variant === 'destructive' ? 'ERROR' : 'INFO'}: ${title}${description ? ` - ${description}` : ''}`;
-  console.log(message);
-  
-  if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification(title || 'Notification', { 
-      body: description,
-      icon: '/eagle-favicon.svg'
-    });
+  if (variant === 'destructive') {
+    sonnerToast.error(title || 'Error', { description, duration });
+  } else {
+    sonnerToast.success(title || 'Success', { description, duration });
   }
 };
 
