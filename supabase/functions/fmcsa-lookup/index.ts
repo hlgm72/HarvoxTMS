@@ -393,7 +393,9 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     } else if (searchType === 'MC') {
       url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_type=queryCarrierSnapshot&query_param=MC_MX&original_query_param=MC_MX&query_string=${cleanQuery}`;
     } else if (searchType === 'NAME') {
-      url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_param=NAME&query_string=${encodeURIComponent(searchQuery)}`;
+      // Para búsqueda por nombre, usar los mismos parámetros que funcionan para MC/DOT
+      url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_type=queryCarrierSnapshot&query_param=NAME&original_query_param=NAME&query_string=${encodeURIComponent(searchQuery)}`;
+      console.log(`🏷️ Name search - Original: "${searchQuery}", Encoded: "${encodeURIComponent(searchQuery)}"`);
     }
 
     console.log('🌐 Final URL:', url);
@@ -420,6 +422,12 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     const html = await response.text();
     console.log(`📄 Received HTML response (${html.length} characters)`);
     
+    // Check if the response indicates no results found
+    if (html.includes("No records found") || html.includes("no entities were found") || html.includes("not found")) {
+      console.log('🚫 FMCSA returned "no results found" message');
+      return null;
+    }
+    
     // Store HTML globally for access in the main function
     (globalThis as any).lastHtml = html;
 
@@ -432,6 +440,7 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     // Return null if no essential data was found
     if (!companyData.legalName && !companyData.dotNumber && !companyData.mcNumber) {
       console.log('❌ No essential company data found');
+      console.log('🔍 HTML snippet for debugging:', html.substring(0, 500));
       return null;
     }
 
