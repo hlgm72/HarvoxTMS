@@ -128,6 +128,79 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     console.log('📋 HTML snippet (first 500 chars):', html.substring(0, 500));
     console.log('📋 HTML snippet (around USDOT):', html.substring(html.indexOf('USDOT') - 100, html.indexOf('USDOT') + 200));
 
+    // Extract additional valuable information
+    
+    // Extract Safety Rating
+    let safetyMatch = html.match(/Safety Rating:\s*([^<\n]+)/i);
+    if (!safetyMatch) {
+      safetyMatch = html.match(/Overall Rating:\s*([^<\n]+)/i);
+    }
+    if (safetyMatch) {
+      companyData.safetyRating = safetyMatch[1].trim();
+      console.log('✅ Found safety rating:', companyData.safetyRating);
+    }
+
+    // Extract Operating Status
+    let statusMatch = html.match(/Operating Status:\s*([^<\n]+)/i);
+    if (!statusMatch) {
+      statusMatch = html.match(/Status:\s*([^<\n]+)/i);
+    }
+    if (statusMatch) {
+      companyData.operatingStatus = statusMatch[1].trim();
+      console.log('✅ Found operating status:', companyData.operatingStatus);
+    }
+
+    // Extract Out of Service Date
+    const oosMatch = html.match(/Out of Service Date:\s*([^<\n]+)/i);
+    if (oosMatch && oosMatch[1].trim() !== 'None' && oosMatch[1].trim() !== '') {
+      companyData.outOfServiceDate = oosMatch[1].trim();
+      console.log('✅ Found out of service date:', companyData.outOfServiceDate);
+    }
+
+    // Extract Total Drivers
+    let driversMatch = html.match(/Total Drivers:\s*([0-9]+)/i);
+    if (!driversMatch) {
+      driversMatch = html.match(/Drivers:\s*([0-9]+)/i);
+    }
+    if (driversMatch) {
+      companyData.totalDrivers = driversMatch[1].trim();
+      console.log('✅ Found total drivers:', companyData.totalDrivers);
+    }
+
+    // Extract Total Vehicles  
+    let vehiclesMatch = html.match(/Total Vehicles:\s*([0-9]+)/i);
+    if (!vehiclesMatch) {
+      vehiclesMatch = html.match(/Vehicles:\s*([0-9]+)/i);
+    }
+    if (vehiclesMatch) {
+      companyData.totalVehicles = vehiclesMatch[1].trim();
+      console.log('✅ Found total vehicles:', companyData.totalVehicles);
+    }
+
+    // Extract Operation Classification
+    const opClassMatch = html.match(/Operation Classification:\s*([^<\n]+)/i);
+    if (opClassMatch) {
+      companyData.operationClassification = [opClassMatch[1].trim()];
+      console.log('✅ Found operation classification:', companyData.operationClassification);
+    }
+
+    // Extract Cargo Carried
+    const cargoMatch = html.match(/Cargo Carried:\s*([^<\n]+)/i);
+    if (cargoMatch) {
+      companyData.cargoCarried = [cargoMatch[1].trim()];
+      console.log('✅ Found cargo carried:', companyData.cargoCarried);
+    }
+
+    // Extract Email (if available)
+    const emailMatch = html.match(/Email:\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i);
+    if (emailMatch) {
+      companyData.email = emailMatch[1].trim();
+      console.log('✅ Found email:', companyData.email);
+    }
+
+    // Log the complete HTML for detailed analysis (first 1000 characters)
+    console.log('🔍 Complete HTML sample for analysis:', html.substring(0, 1000));
+
     console.log('📊 Final extracted data:', companyData);
 
     // Return null if no essential data was found
