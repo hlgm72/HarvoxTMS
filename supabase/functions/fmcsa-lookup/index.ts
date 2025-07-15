@@ -301,7 +301,7 @@ serve(async (req) => {
     const companyData = await searchFMCSA(searchQuery, searchType as 'DOT' | 'MC' | 'NAME')
 
     if (!companyData) {
-      console.log('No company data found, but returning 200 status')
+      console.log('No company data found, returning debug info')
       return new Response(
         JSON.stringify({ 
           success: false, 
