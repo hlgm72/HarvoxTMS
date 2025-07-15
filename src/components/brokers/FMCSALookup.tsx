@@ -58,8 +58,10 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
         return;
       }
 
-      if (!data.success || !data.data) {
-        toast.error("No se encontró información en FMCSA");
+      if (!data || !data.success) {
+        const errorMessage = data?.error || "No se encontró información en FMCSA";
+        toast.error(errorMessage);
+        console.log('FMCSA search failed:', errorMessage);
         return;
       }
 

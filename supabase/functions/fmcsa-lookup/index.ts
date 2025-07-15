@@ -203,13 +203,14 @@ serve(async (req) => {
     const companyData = await searchFMCSA(searchQuery, searchType as 'DOT' | 'MC' | 'NAME')
 
     if (!companyData) {
+      console.log('No company data found, but returning 200 status')
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'No company data found' 
+          error: 'No company data found in FMCSA database' 
         }),
         { 
-          status: 404, 
+          status: 200, // Cambiar de 404 a 200
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       )
