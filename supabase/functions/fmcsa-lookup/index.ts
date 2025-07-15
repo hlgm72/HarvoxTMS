@@ -279,7 +279,7 @@ Deno.serve(async (req) => {
             searchQuery,
             searchType,
             htmlLength: html.length,
-            rawHtml: html.substring(0, 5000),
+            rawHtml: html, // Mostrar HTML completo
             timestamp: new Date().toISOString()
           }
         }),
@@ -299,7 +299,7 @@ Deno.serve(async (req) => {
           searchQuery,
           searchType,
           htmlLength: html.length,
-          rawHtml: html.substring(0, 5000)
+          rawHtml: html // Mostrar HTML completo
         }
       }),
       { 

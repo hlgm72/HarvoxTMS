@@ -292,7 +292,7 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
               </pre>
             </div>
             <div className="mt-2 text-xs text-muted-foreground">
-              Tamaño total: {debugData.htmlLength} caracteres (mostrando primeros 5000)
+              Tamaño total: {debugData.htmlLength} caracteres (HTML completo)
             </div>
           </div>
         )}
