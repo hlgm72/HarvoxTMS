@@ -168,11 +168,6 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       
       return null;
 
-    } catch (error) {
-      console.error('Error in inner try block:', error);
-      return null;
-    }
-
   } catch (error) {
     console.error('Error searching FMCSA:', error);
     return null;
