@@ -198,8 +198,24 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       console.log('✅ Found email:', companyData.email);
     }
 
-    // Log the complete HTML for detailed analysis (first 1000 characters)
-    console.log('🔍 Complete HTML sample for analysis:', html.substring(0, 1000));
+    // Log the complete HTML for detailed analysis (first 2000 characters)
+    console.log('🔍 Complete HTML sample for analysis:', html.substring(0, 2000));
+    
+    // Also log key sections that might contain our data
+    const phoneSection = html.match(/phone[^<]*<[^>]*>([^<]*)/gi);
+    if (phoneSection) {
+      console.log('📞 Phone sections found:', phoneSection);
+    }
+    
+    const addressSection = html.match(/address[^<]*<[^>]*>([^<]*)/gi);
+    if (addressSection) {
+      console.log('🏠 Address sections found:', addressSection);
+    }
+    
+    const nameSection = html.match(/legal name[^<]*<[^>]*>([^<]*)/gi);
+    if (nameSection) {
+      console.log('👤 Name sections found:', nameSection);
+    }
 
     console.log('📊 Final extracted data:', companyData);
 
