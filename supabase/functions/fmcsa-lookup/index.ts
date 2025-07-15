@@ -430,6 +430,14 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       return null;
     }
     
+    // Para búsquedas por nombre, mostrar más información de debug
+    if (searchType === 'NAME') {
+      console.log('🔍 NAME SEARCH DEBUG - First 1000 chars of HTML:');
+      console.log(html.substring(0, 1000));
+      console.log('🔍 NAME SEARCH DEBUG - Last 500 chars of HTML:');
+      console.log(html.substring(html.length - 500));
+    }
+    
     // Para búsquedas por nombre, verificar si es una página de resultados intermedios o snapshot directo
     if (searchType === 'NAME') {
       const $ = cheerio.load(html);
