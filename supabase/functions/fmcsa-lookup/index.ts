@@ -61,32 +61,54 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     const html = await response.text();
     console.log(`📄 Received HTML response (${html.length} characters)`);
 
-    // Convert HTML to plain text (like ChatGPT's approach)
-    const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-    console.log('📝 Plain text sample (first 500 chars):', text.substring(0, 500));
+    // Convert HTML to plain text and clean it properly
+    const text = html
+      .replace(/<[^>]*>/g, ' ')           // Remove HTML tags
+      .replace(/&nbsp;/g, ' ')           // Replace &nbsp; with spaces
+      .replace(/&#160;/g, ' ')           // Replace &#160; with spaces
+      .replace(/&amp;/g, '&')            // Replace &amp; with &
+      .replace(/\s+/g, ' ')              // Replace multiple spaces with single space
+      .trim();
+    
+    console.log('📝 Cleaned text sample (first 800 chars):', text.substring(0, 800));
 
-    // Helper function to extract data using ChatGPT's method
+    // Improved helper function to extract data with better boundaries
     function extractField(label: string, text: string): string | null {
       const index = text.indexOf(label);
       if (index !== -1) {
         const start = index + label.length;
-        let end = text.indexOf('\n', start);
-        if (end === -1) {
-          // If no newline, try to find next field or take reasonable amount
-          const nextLabelIndex = Math.min(
-            text.indexOf('Legal Name:', start + 1),
-            text.indexOf('DBA Name:', start + 1),
-            text.indexOf('Physical Address:', start + 1),
-            text.indexOf('Phone:', start + 1),
-            text.indexOf('Operating Status:', start + 1),
-            text.indexOf('Entity Type:', start + 1),
-            text.indexOf('USDOT Number:', start + 1),
-            text.indexOf('MC/MX/FF Number(s):', start + 1),
-            start + 200 // fallback to 200 chars
-          );
-          end = nextLabelIndex > start ? nextLabelIndex : start + 200;
+        
+        // Define common field labels to know where to stop
+        const fieldLabels = [
+          'Legal Name:', 'DBA Name:', 'Physical Address:', 'Mailing Address:',
+          'Phone:', 'Operating Status:', 'Entity Type:', 'USDOT Number:',
+          'MC/MX/FF Number(s):', 'Safety Rating:', 'Out of Service Date:',
+          'Total Drivers:', 'Total Vehicles:', 'DUNS Number:', 'Power Units:',
+          'Review Information:', 'Rating Date:', 'Review Date:'
+        ];
+        
+        // Find the next field label or reasonable text boundary
+        let end = text.length;
+        for (const nextLabel of fieldLabels) {
+          const nextIndex = text.indexOf(nextLabel, start + 1);
+          if (nextIndex > start && nextIndex < end) {
+            end = nextIndex;
+          }
         }
-        return text.substring(start, end).trim();
+        
+        // If no field boundary found, limit to reasonable length
+        if (end === text.length) {
+          end = Math.min(start + 150, text.length);
+        }
+        
+        const extracted = text.substring(start, end).trim();
+        
+        // Clean up common artifacts
+        return extracted
+          .replace(/^\s*[\s:]+/, '')      // Remove leading spaces and colons
+          .replace(/\s+$/, '')            // Remove trailing spaces
+          .replace(/^[:\s]*/, '')         // Remove leading colons and spaces
+          .trim();
       }
       return null;
     }
@@ -174,11 +196,35 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       console.log('✅ Found operating status:', companyData.operatingStatus);
     }
 
-    // Extract Safety Rating
+    // Extract Safety Rating with improved parsing
     const safetyText = extractField('Safety Rating:', text);
     if (safetyText) {
-      companyData.safetyRating = safetyText.replace(/\s+/g, ' ').trim();
-      console.log('✅ Found safety rating:', companyData.safetyRating);
+      // Try to extract specific rating patterns
+      const ratingPatterns = [
+        /Rating:\s*(Satisfactory|Conditional|Unsatisfactory|None|Not Rated)/i,
+        /Type:\s*(Satisfactory|Conditional|Unsatisfactory|None|Not Rated)/i,
+        /(Satisfactory|Conditional|Unsatisfactory|None|Not Rated)\s*Type:/i,
+        /(Satisfactory|Conditional|Unsatisfactory|None|Not Rated)/i
+      ];
+      
+      let rating = null;
+      for (const pattern of ratingPatterns) {
+        const match = safetyText.match(pattern);
+        if (match && match[1]) {
+          rating = match[1];
+          break;
+        }
+      }
+      
+      if (rating) {
+        companyData.safetyRating = rating;
+        console.log('✅ Found safety rating:', companyData.safetyRating);
+      } else {
+        // Fallback: just take first few words if no pattern matches
+        const fallback = safetyText.split(' ').slice(0, 5).join(' ');
+        companyData.safetyRating = fallback;
+        console.log('✅ Found safety rating (fallback):', companyData.safetyRating);
+      }
     }
 
     // Extract Entity Type (sometimes shows business type)
