@@ -137,8 +137,24 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     }
 
     // Log the HTML snippet for debugging
-    console.log('📋 HTML snippet (first 500 chars):', html.substring(0, 500));
-    console.log('📋 HTML snippet (around USDOT):', html.substring(html.indexOf('USDOT') - 100, html.indexOf('USDOT') + 200));
+    console.log('📋 HTML snippet (first 800 chars):', html.substring(0, 800));
+    console.log('📋 HTML snippet (around USDOT):', html.substring(Math.max(0, html.indexOf('USDOT') - 150), html.indexOf('USDOT') + 300));
+    
+    // Log specific search sections to understand the HTML structure
+    const safetySection = html.match(/safety.{0,200}/gi);
+    if (safetySection) {
+      console.log('🔍 Safety sections found:', safetySection);
+    }
+    
+    const statusSection = html.match(/operating.{0,200}/gi);
+    if (statusSection) {
+      console.log('🔍 Operating sections found:', statusSection);
+    }
+    
+    const driversSection = html.match(/drivers.{0,200}/gi);
+    if (driversSection) {
+      console.log('🔍 Drivers sections found:', driversSection);
+    }
 
     // Extract additional valuable information
     
