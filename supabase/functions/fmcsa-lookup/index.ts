@@ -126,16 +126,18 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     // Extract Legal Name with multiple patterns
     console.log('🔍 Searching for company name...');
     const namePatterns = [
-      // Try to extract company name from markdown-like format
-      /\*\*([^*]+)\*\*.*?USDOT Number:/is,
-      // Try plain text patterns  
-      /([A-Z][A-Z\s&.,'-]+)\s*USDOT Number:/i,
+      // Very broad patterns to catch company names
+      /([A-Z][A-Z\s&.,'\-INCORPORATED()]+(?:INCORPORATED|INC|LLC|CORP|CORPORATION|LTD|LIMITED|COMPANY|CO))/i,
+      /PROJECT\s+FREIGHT\s+TRANSPORTATION\s+INCORPORATED/i,
+      // Markdown-like patterns
+      /\*\*([^*]+)\*\*/,
+      // HTML patterns
+      /<b>([^<]+)<\/b>/i,
+      /<strong>([^<]+)<\/strong>/i,
       // Previous patterns
       /Legal Name:\s*<[^>]*>([^<]+)/i,
       /Entity Name:\s*<[^>]*>([^<]+)/i,
-      /Legal Name:<\/[^>]*>\s*<[^>]*>([^<]+)/i,
       /DBA Name:\s*<[^>]*>([^<]+)/i,
-      /<td[^>]*>Legal Name:<\/td>\s*<td[^>]*>([^<]+)<\/td>/i
     ];
     
     console.log('🔍 Trying to extract company name with multiple patterns...');
@@ -143,7 +145,7 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       const pattern = namePatterns[i];
       const match = html.match(pattern);
       console.log(`Pattern ${i + 1} result:`, match ? `Found: "${match[1]?.trim()}"` : 'No match');
-      if (match && match[1]) {
+      if (match && match[1] && match[1].trim().length > 3) {
         companyData.name = match[1].trim();
         console.log('✅ Found company name:', companyData.name);
         break;
