@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useToast } from '@/hooks/use-toast';
 import { ClientLogoUpload } from '@/components/clients/ClientLogoUpload';
+import { FMCSALookup } from '@/components/brokers/FMCSALookup';
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -221,6 +222,18 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                   <CardTitle className="text-lg">Información del Broker</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* FMCSA Lookup Section */}
+                  <FMCSALookup
+                    onDataFound={(data) => {
+                      // Aplicar los datos al formulario
+                      Object.entries(data).forEach(([key, value]) => {
+                        if (value && typeof value === 'string') {
+                          form.setValue(key as keyof CreateBrokerForm, value);
+                        }
+                      });
+                    }}
+                  />
+
                   {/* Logo Upload Section */}
                   <FormField
                     control={form.control}
