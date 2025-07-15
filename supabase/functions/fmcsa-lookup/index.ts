@@ -65,6 +65,24 @@ function parseFMCSA_HTML(html: string): FMCSACompanyData {
     .replace(/\s+/g, ' ')              // Replace multiple spaces with single space
     .trim();
 
+  // Helper function to clean extracted text from navigation artifacts
+  const cleanExtractedText = (text: string): string => {
+    if (!text) return text;
+    
+    // Remove common SAFER navigation artifacts
+    const cleanText = text
+      .replace(/SAFER\s+Layout/gi, '')
+      .replace(/SAFER\s+Table\s+Layout/gi, '')
+      .replace(/Company\s+Snapshot/gi, '')
+      .replace(/X\s+Interstate/gi, 'Interstate')
+      .replace(/X\s+Intrastate/gi, 'Intrastate')
+      .replace(/\bX\b/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    return cleanText;
+  };
+
   // Helper function to extract text using boundaries
   const extractField = (label: string, text: string): string | null => {
     const index = text.indexOf(label);
@@ -78,7 +96,7 @@ function parseFMCSA_HTML(html: string): FMCSACompanyData {
         'MC/MX/FF Number(s):', 'Safety Rating:', 'Out of Service Date:',
         'Total Drivers:', 'Total Vehicles:', 'DUNS Number:', 'Power Units:',
         'Review Information:', 'Rating Date:', 'Review Date:', 'Carrier Operation:',
-        'State Carrier Operates In:', 'Cargo Carried:', 'SMS Results'
+        'State Carrier Operates In:', 'Cargo Carried:', 'SMS Results', 'Other Information'
       ];
       
       // Find the next field label or reasonable text boundary
@@ -98,35 +116,48 @@ function parseFMCSA_HTML(html: string): FMCSACompanyData {
       const extracted = text.substring(start, end).trim();
       
       // Clean up common artifacts
-      return extracted
+      const cleaned = extracted
         .replace(/^\s*[\s:]+/, '')      // Remove leading spaces and colons
         .replace(/\s+$/, '')            // Remove trailing spaces
         .replace(/^[:\s]*/, '')         // Remove leading colons and spaces
         .trim();
+        
+      return cleanExtractedText(cleaned);
     }
     return null;
   };
 
-  // Extract Legal Name - look for company name near USDOT
+  // Extract Legal Name - improved patterns with cleaning
   let legalName: string | null = null;
   
-  // Method 1: Look for pattern "COMPANY NAME USDOT Number:"
+  // Method 1: Look for pattern "COMPANY NAME USDOT Number:" - most reliable
   const nameUsdotMatch = fullText.match(/([A-Z][A-Z\s&,.-]+?)\s+USDOT\s+Number:/i);
   if (nameUsdotMatch) {
-    legalName = nameUsdotMatch[1].trim();
+    legalName = cleanExtractedText(nameUsdotMatch[1].trim());
   }
   
-  // Method 2: Try to find in title or specific patterns
+  // Method 2: Try to find in title
   if (!legalName) {
     const titleMatch = html.match(/<title[^>]*>SAFER Web - Company Snapshot\s+([^<]+)</i);
     if (titleMatch) {
-      legalName = titleMatch[1].trim();
+      legalName = cleanExtractedText(titleMatch[1].trim());
     }
   }
   
-  // Method 3: Look for Legal Name field
+  // Method 3: Look for Legal Name field with better boundaries
   if (!legalName) {
-    legalName = extractField('Legal Name:', fullText);
+    const legalField = extractField('Legal Name:', fullText);
+    if (legalField && legalField.length > 2 && legalField.length < 100) {
+      legalName = legalField;
+    }
+  }
+  
+  // Method 4: Extract from snapshot context if still not found
+  if (!legalName) {
+    const snapshotMatch = fullText.match(/Company\s+Snapshot\s+([A-Z][A-Z\s&,.-]+?)(?:\s+USDOT|\s+Other)/i);
+    if (snapshotMatch) {
+      legalName = cleanExtractedText(snapshotMatch[1].trim());
+    }
   }
 
   // Extract DOT number with multiple patterns
@@ -161,11 +192,21 @@ function parseFMCSA_HTML(html: string): FMCSACompanyData {
     }
   }
 
-  // Extract Phone
+  // Extract Phone with better pattern matching
   let phone: string | null = null;
-  const phoneMatch = fullText.match(/Phone:\s*([0-9\-\(\)\s]+)/i);
-  if (phoneMatch) {
-    phone = phoneMatch[1].trim();
+  const phonePatterns = [
+    /Phone:\s*(\([0-9]{3}\)\s*[0-9]{3}-[0-9]{4})/i,
+    /Phone:\s*([0-9]{3}-[0-9]{3}-[0-9]{4})/i,
+    /Phone:\s*(\([0-9]{3}\)\s*[0-9]{7})/i,
+    /Phone:\s*([0-9\-\(\)\s]{10,})/i
+  ];
+  
+  for (const pattern of phonePatterns) {
+    const match = fullText.match(pattern);
+    if (match) {
+      phone = match[1].trim();
+      break;
+    }
   }
 
   // Extract Physical Address
@@ -181,8 +222,26 @@ function parseFMCSA_HTML(html: string): FMCSACompanyData {
     email = emailMatch[1].trim();
   }
 
-  // Extract Carrier Operation
+  // Extract Carrier Operation with improved cleaning
   let carrierOperation = extractField('Carrier Operation:', fullText);
+  if (carrierOperation) {
+    // Special cleaning for carrier operation field
+    carrierOperation = carrierOperation
+      .replace(/SAFER\s+Layout/gi, '')
+      .replace(/X\s+(Interstate|Intrastate)/gi, '$1')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    // If it's too long or has artifacts, try to extract just the operation types
+    if (carrierOperation.length > 50) {
+      const operations = [];
+      if (carrierOperation.includes('Interstate')) operations.push('Interstate');
+      if (carrierOperation.includes('Intrastate')) operations.push('Intrastate');
+      if (operations.length > 0) {
+        carrierOperation = operations.join(', ');
+      }
+    }
+  }
 
   // Extract State of Operation
   let stateOfOperation = extractField('State Carrier Operates In:', fullText);
