@@ -56,64 +56,68 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     // Parse the HTML response to extract company information
     const companyData: FMCSACompanyData = {};
 
-    // Extract company name
-    const nameMatch = html.match(/<td[^>]*>\s*<b>Entity Type:<\/b>[^<]*<\/td>\s*<td[^>]*>\s*<b>Legal Name:<\/b>[^<]*<\/td>\s*<td[^>]*>([^<]+)<\/td>/i);
+    console.log('HTML snippet for debugging:', html.substring(0, 2000));
+
+    // Extract Legal Name - based on the screenshot, it should be in a table cell
+    const nameMatch = html.match(/Legal Name:<\/[^>]*>\s*<[^>]*>([^<]+)</i) || 
+                      html.match(/>([^<]+)<[^>]*USDOT Number:/i);
     if (nameMatch) {
       companyData.name = nameMatch[1].trim();
     }
 
-    // Extract DOT Number
-    const dotMatch = html.match(/<td[^>]*>\s*<b>USDOT Number:<\/b>[^<]*<\/td>\s*<td[^>]*>([^<]+)<\/td>/i);
+    // Extract DOT Number - look for USDOT Number pattern
+    const dotMatch = html.match(/USDOT Number:<\/[^>]*>\s*<[^>]*>([^<]+)</i) ||
+                     html.match(/USDOT Number:\s*([0-9]+)/i);
     if (dotMatch) {
       companyData.dotNumber = dotMatch[1].trim();
     }
 
-    // Extract MC Number
-    const mcMatch = html.match(/<td[^>]*>\s*<b>MC\/MX\/FF Number\(s\):<\/b>[^<]*<\/td>\s*<td[^>]*>([^<]+)<\/td>/i);
+    // Extract MC Number - look for MC/MX/FF Number pattern
+    const mcMatch = html.match(/MC\/MX\/FF Number[^:]*:<\/[^>]*>\s*<[^>]*>([^<]+)</i) ||
+                    html.match(/MC-?([0-9]+)/i);
     if (mcMatch) {
-      companyData.mcNumber = mcMatch[1].trim().replace(/MC-/, '');
+      const mcNumber = mcMatch[1].trim().replace(/^MC-?/, '');
+      companyData.mcNumber = mcNumber;
     }
 
     // Extract Physical Address
-    const addressMatch = html.match(/<td[^>]*>\s*<b>Physical Address:<\/b>[^<]*<\/td>\s*<td[^>]*>([^<]+)<\/td>/i);
+    const addressMatch = html.match(/Physical Address:<\/[^>]*>\s*<[^>]*>([^<]+)</i) ||
+                         html.match(/Physical Address:\s*([^<\n]+)/i);
     if (addressMatch) {
       companyData.address = addressMatch[1].trim().replace(/\s+/g, ' ');
     }
 
     // Extract Phone
-    const phoneMatch = html.match(/<td[^>]*>\s*<b>Phone:<\/b>[^<]*<\/td>\s*<td[^>]*>([^<]+)<\/td>/i);
+    const phoneMatch = html.match(/Phone:<\/[^>]*>\s*<[^>]*>([^<]+)</i) ||
+                       html.match(/Phone:\s*([^<\n]+)/i);
     if (phoneMatch) {
       companyData.phone = phoneMatch[1].trim();
     }
 
-    // Extract Safety Rating
-    const safetyMatch = html.match(/<td[^>]*>\s*<b>Safety Rating:<\/b>[^<]*<\/td>\s*<td[^>]*>([^<]+)<\/td>/i);
-    if (safetyMatch) {
-      companyData.safetyRating = safetyMatch[1].trim();
+    // Extract Mailing Address if Physical Address not found
+    if (!companyData.address) {
+      const mailingMatch = html.match(/Mailing Address:<\/[^>]*>\s*<[^>]*>([^<]+)</i);
+      if (mailingMatch) {
+        companyData.address = mailingMatch[1].trim().replace(/\s+/g, ' ');
+      }
     }
 
-    // Extract Total Drivers
-    const driversMatch = html.match(/<td[^>]*>\s*<b>Total Drivers:<\/b>[^<]*<\/td>\s*<td[^>]*>([^<]+)<\/td>/i);
+    // Extract Operating Authority Status
+    const authorityMatch = html.match(/Operating Authority Status:<\/[^>]*>\s*<[^>]*>([^<]+)</i);
+    if (authorityMatch) {
+      companyData.safetyRating = authorityMatch[1].trim();
+    }
+
+    // Extract Power Units (vehicles)
+    const powerUnitsMatch = html.match(/Power Units:<\/[^>]*>\s*<[^>]*>([^<]+)</i);
+    if (powerUnitsMatch) {
+      companyData.totalVehicles = powerUnitsMatch[1].trim();
+    }
+
+    // Extract Drivers
+    const driversMatch = html.match(/Drivers:<\/[^>]*>\s*<[^>]*>([^<]+)</i);
     if (driversMatch) {
       companyData.totalDrivers = driversMatch[1].trim();
-    }
-
-    // Extract Total Vehicles
-    const vehiclesMatch = html.match(/<td[^>]*>\s*<b>Total Power Units:<\/b>[^<]*<\/td>\s*<td[^>]*>([^<]+)<\/td>/i);
-    if (vehiclesMatch) {
-      companyData.totalVehicles = vehiclesMatch[1].trim();
-    }
-
-    // Extract Operation Classification
-    const operationMatch = html.match(/<td[^>]*>\s*<b>Operation Classification:<\/b>[^<]*<\/td>\s*<td[^>]*>([^<]+)<\/td>/i);
-    if (operationMatch) {
-      companyData.operationClassification = operationMatch[1].trim().split(',').map(s => s.trim());
-    }
-
-    // Extract Cargo Carried
-    const cargoMatch = html.match(/<td[^>]*>\s*<b>Cargo Carried:<\/b>[^<]*<\/td>\s*<td[^>]*>([^<]+)<\/td>/i);
-    if (cargoMatch) {
-      companyData.cargoCarried = cargoMatch[1].trim().split(',').map(s => s.trim());
     }
 
     console.log('Parsed company data:', companyData);
