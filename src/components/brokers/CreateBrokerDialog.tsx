@@ -135,10 +135,18 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
     },
     onSuccess: (broker) => {
       // Invalidar TODAS las queries relacionadas con brokers
-      queryClient.invalidateQueries({ queryKey: ['company-brokers'] });
+      queryClient.invalidateQueries({ 
+        queryKey: ['company-brokers'],
+        exact: false
+      });
+      // También refrescar directamente
+      queryClient.refetchQueries({ 
+        queryKey: ['company-brokers'],
+        exact: false
+      });
       
       toast({
-        title: "Broker creado exitosamente",
+        title: "Cliente creado exitosamente",
         description: `${broker.name} ha sido agregado al sistema`,
       });
 
