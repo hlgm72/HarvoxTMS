@@ -74,6 +74,15 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     console.log('📖 Last 500 chars of HTML:');
     console.log(html.substring(Math.max(0, html.length - 500)));
     
+    // DEBUGGING: Let's also check if we can find key indicators
+    console.log('🔍 HTML Content Analysis:');
+    console.log('- Contains "PROJECT FREIGHT": ', html.includes('PROJECT FREIGHT'));
+    console.log('- Contains "USDOT Number": ', html.includes('USDOT Number'));
+    console.log('- Contains "2243569": ', html.includes('2243569'));
+    console.log('- Contains asterisks (**): ', html.includes('**'));
+    console.log('- Contains "Company Snapshot": ', html.includes('Company Snapshot'));
+    
+    
     // Check if we got a valid HTML page
     if (!html.includes('<html') && !html.includes('<HTML')) {
       console.log('⚠️ Response does not appear to be HTML');
