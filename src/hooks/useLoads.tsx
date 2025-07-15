@@ -177,6 +177,7 @@ export const useLoads = (filters?: LoadsFilters) => {
 
   return useQuery({
     queryKey,
+    enabled: !!user && !cacheLoading && !!userCompany && !cacheError && companyUsers.length > 0, // Solo ejecutar cuando el cache esté listo
     retry: 1, // Reducir reintentos para evitar ERR_INSUFFICIENT_RESOURCES
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Backoff exponencial
     staleTime: 300000, // Cache muy agresivo - 5 minutos
@@ -197,13 +198,12 @@ export const useLoads = (filters?: LoadsFilters) => {
         throw new Error(`Error cargando cargas: ${cacheError.message || 'Error de base de datos'}`);
       }
 
-      // Esperar a que el cache esté listo
-      if (cacheLoading) {
-        console.log('⏳ Esperando datos de compañía...');
-        throw new Error('Cargando datos de compañía...');
-      }
-      if (cacheLoading || !userCompany || companyUsers.length === 0) {
-        throw new Error('Cargando datos de compañía...');
+      console.log('🚛 Cargando loads para compañía:', userCompany.company_id);
+
+      // Obtener IDs de usuarios de la compañía (conductores)
+      if (companyUsers.length === 0) {
+        console.log('⚠️ No hay usuarios en la compañía');
+        return [];
       }
 
       try {
@@ -308,6 +308,5 @@ export const useLoads = (filters?: LoadsFilters) => {
         throw error;
       }
     },
-    enabled: !!user,
   });
 };

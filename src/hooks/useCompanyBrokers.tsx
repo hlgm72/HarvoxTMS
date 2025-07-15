@@ -45,6 +45,7 @@ export const useCompanyBrokers = () => {
 
   const brokersQuery = useQuery({
     queryKey,
+    enabled: !!user && !cacheLoading && !!userCompany && !cacheError, // Solo ejecutar cuando el cache esté listo
     retry: 1,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     staleTime: 300000, // Cache agresivo - 5 minutos
@@ -56,22 +57,14 @@ export const useCompanyBrokers = () => {
     queryFn: async (): Promise<CompanyBroker[]> => {
       console.log('🔄 useCompanyBrokers iniciando...');
       
-      
       if (!user) {
         console.log('❌ Usuario no autenticado');
         throw new Error('User not authenticated');
       }
 
-      // Verificar errores de cache
-      if (cacheError) {
-        console.error('❌ Error en cache de compañía:', cacheError);
-        throw new Error('Error obteniendo datos de compañía');
-      }
-
-      // Esperar a que el cache esté listo
-      if (cacheLoading || !userCompany) {
-        console.log('⏳ Esperando cache de compañía...');
-        throw new Error('Cargando datos de compañía...');
+      if (!userCompany) {
+        console.log('❌ No hay datos de compañía');
+        throw new Error('No company data available');
       }
 
       try {
@@ -119,7 +112,6 @@ export const useCompanyBrokers = () => {
         throw error;
       }
     },
-    enabled: !!user,
   });
 
   return { 
