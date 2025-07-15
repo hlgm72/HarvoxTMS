@@ -85,6 +85,31 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     console.log('- Contains "2243569": ', html.includes('2243569'));
     console.log('- Contains asterisks (**): ', html.includes('**'));
     console.log('- Contains "Company Snapshot": ', html.includes('Company Snapshot'));
+    console.log('- Contains "Phone": ', html.includes('Phone'));
+    console.log('- Contains "Address": ', html.includes('Address'));
+    console.log('- Contains "Safety": ', html.includes('Safety'));
+    console.log('- Contains "Operating": ', html.includes('Operating'));
+    console.log('- Contains "Email": ', html.includes('Email'));
+    console.log('- Contains "@": ', html.includes('@'));
+    
+    // Log specific sections that might contain additional data
+    console.log('🔍 Looking for structured data patterns...');
+    const tableMatches = html.match(/<table[\s\S]*?<\/table>/gi);
+    if (tableMatches) {
+      console.log(`Found ${tableMatches.length} table(s)`);
+      tableMatches.forEach((table, index) => {
+        console.log(`Table ${index + 1} preview:`, table.substring(0, 800));
+      });
+    }
+    
+    // Look for any structured data sections
+    const tdMatches = html.match(/<td[^>]*>([^<]+):<\/td>\s*<td[^>]*>([^<]+)<\/td>/gi);
+    if (tdMatches) {
+      console.log('🔍 Found structured TD pairs:');
+      tdMatches.slice(0, 10).forEach(match => {
+        console.log('  -', match);
+      });
+    }
     
     
     // Check if we got a valid HTML page
