@@ -159,7 +159,10 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
   });
 
   const onSubmit = (data: CreateBrokerForm) => {
-    createBrokerMutation.mutate(data);
+    // Solo ejecutar si estamos en el paso 2
+    if (currentStep === 2) {
+      createBrokerMutation.mutate(data);
+    }
   };
 
   const addDispatcher = () => {
