@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+// Using Deno.serve (built-in)
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -390,7 +390,7 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
   }
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   console.log('FMCSA lookup function called - REAL VERSION')
   
   // Handle CORS preflight requests
