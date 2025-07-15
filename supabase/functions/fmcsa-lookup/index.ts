@@ -418,6 +418,16 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
 
     if (!response.ok) {
       console.error(`❌ HTTP error! status: ${response.status}`);
+      console.error(`❌ Status text: ${response.statusText}`);
+      console.error(`❌ Response headers:`, Object.fromEntries(response.headers.entries()));
+      
+      // Try to get response text even on error
+      try {
+        const errorText = await response.text();
+        console.error(`❌ Error response body: ${errorText.substring(0, 500)}`);
+      } catch (e) {
+        console.error(`❌ Could not read error response body`);
+      }
       return null;
     }
 
