@@ -61,79 +61,88 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     const html = await response.text();
     console.log(`📄 Received HTML response (${html.length} characters)`);
 
-    // Parse the HTML to extract company information
+    // Convert HTML to plain text (like ChatGPT's approach)
+    const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    console.log('📝 Plain text sample (first 500 chars):', text.substring(0, 500));
+
+    // Helper function to extract data using ChatGPT's method
+    function extractField(label: string, text: string): string | null {
+      const index = text.indexOf(label);
+      if (index !== -1) {
+        const start = index + label.length;
+        let end = text.indexOf('\n', start);
+        if (end === -1) {
+          // If no newline, try to find next field or take reasonable amount
+          const nextLabelIndex = Math.min(
+            text.indexOf('Legal Name:', start + 1),
+            text.indexOf('DBA Name:', start + 1),
+            text.indexOf('Physical Address:', start + 1),
+            text.indexOf('Phone:', start + 1),
+            text.indexOf('Operating Status:', start + 1),
+            text.indexOf('Entity Type:', start + 1),
+            text.indexOf('USDOT Number:', start + 1),
+            text.indexOf('MC/MX/FF Number(s):', start + 1),
+            start + 200 // fallback to 200 chars
+          );
+          end = nextLabelIndex > start ? nextLabelIndex : start + 200;
+        }
+        return text.substring(start, end).trim();
+      }
+      return null;
+    }
+
+    // Parse the text to extract company information using ChatGPT's approach
     const companyData: FMCSACompanyData = {};
 
-    // Extract company name - try multiple patterns
-    let nameMatch = html.match(/<TD[^>]*><CENTER><B>([^<]+)<\/B><\/CENTER><\/TD>/i);
-    if (!nameMatch) {
-      nameMatch = html.match(/<b>([^<]+)<\/b>/i);
+    // Extract Legal Name
+    let name = extractField('Legal Name:', text);
+    if (!name) {
+      name = extractField('DBA Name:', text);
     }
-    if (!nameMatch) {
-      nameMatch = html.match(/Legal Name:\s*([^<\n]+)/i);
-    }
-    if (nameMatch) {
-      companyData.name = nameMatch[1].trim();
+    if (name) {
+      companyData.name = name.replace(/\s+/g, ' ').trim();
       console.log('✅ Found name:', companyData.name);
     }
 
     // Extract DOT number
-    const dotMatch = html.match(/USDOT Number:\s*([0-9]+)/i);
-    if (dotMatch) {
-      companyData.dotNumber = dotMatch[1].trim();
-      console.log('✅ Found DOT:', companyData.dotNumber);
+    const dotText = extractField('USDOT Number:', text);
+    if (dotText) {
+      const dotMatch = dotText.match(/([0-9]+)/);
+      if (dotMatch) {
+        companyData.dotNumber = dotMatch[1];
+        console.log('✅ Found DOT:', companyData.dotNumber);
+      }
     }
 
-    // Extract MC number - try multiple patterns
-    let mcMatch = html.match(/MC\/MX\/FF Number\(s\):\s*([A-Z]+-?[0-9]+)/i);
-    if (!mcMatch) {
-      mcMatch = html.match(/MC-([0-9]+)/i);
-    }
-    if (!mcMatch) {
-      mcMatch = html.match(/MC([0-9]+)/i);
-    }
-    if (mcMatch) {
-      companyData.mcNumber = mcMatch[1] ? `MC-${mcMatch[1]}` : mcMatch[0].trim();
-      console.log('✅ Found MC:', companyData.mcNumber);
+    // Extract MC number
+    const mcText = extractField('MC/MX/FF Number(s):', text);
+    if (mcText) {
+      const mcMatch = mcText.match(/(MC[A-Z]*-?[0-9]+)/i);
+      if (mcMatch) {
+        companyData.mcNumber = mcMatch[1].toUpperCase();
+        console.log('✅ Found MC:', companyData.mcNumber);
+      }
     }
 
-    // Extract phone number - try multiple patterns
-    let phoneMatch = html.match(/Phone:\s*\(([0-9]{3})\)\s*([0-9]{3}-[0-9]{4})/i);
-    if (!phoneMatch) {
-      phoneMatch = html.match(/\(([0-9]{3})\)\s*([0-9]{3}-[0-9]{4})/);
-    }
-    if (!phoneMatch) {
-      phoneMatch = html.match(/Phone[^:]*:\s*([0-9\-\(\)\s]+)/i);
-    }
-    if (!phoneMatch) {
-      phoneMatch = html.match(/Telephone[^:]*:\s*([0-9\-\(\)\s]+)/i);
-    }
-    if (phoneMatch) {
-      if (phoneMatch[2]) {
-        companyData.phone = `(${phoneMatch[1]}) ${phoneMatch[2]}`;
-      } else {
+    // Extract Phone number
+    const phoneText = extractField('Phone:', text);
+    if (phoneText) {
+      const phoneMatch = phoneText.match(/(\([0-9]{3}\)\s*[0-9]{3}-[0-9]{4}|[0-9]{3}-[0-9]{3}-[0-9]{4}|\([0-9]{3}\)\s*[0-9]{7})/);
+      if (phoneMatch) {
         companyData.phone = phoneMatch[1].trim();
+        console.log('✅ Found phone:', companyData.phone);
       }
-      console.log('✅ Found phone:', companyData.phone);
-    } else {
-      console.log('❌ No phone number found in HTML');
     }
 
-    // Extract address - try multiple patterns
-    let addressMatch = html.match(/Physical Address:<\/TD[^>]*>\s*<TD[^>]*>([^<]+)<BR>([^<]+)<BR>([^<]+)<\/TD>/i);
-    if (!addressMatch) {
-      addressMatch = html.match(/Physical Address:\s*([^<\n]+)\s*([^<\n]+)\s*([^<\n]+)/i);
-    }
-    if (!addressMatch) {
-      addressMatch = html.match(/Address:\s*([^<\n]+)/i);
-    }
-    if (addressMatch) {
-      if (addressMatch[3]) {
-        companyData.address = `${addressMatch[1].trim()}, ${addressMatch[2].trim()}, ${addressMatch[3].trim()}`;
-      } else {
-        companyData.address = addressMatch[1].trim();
+    // Extract Physical Address
+    const addressText = extractField('Physical Address:', text);
+    if (addressText) {
+      // Clean up the address
+      const cleanAddress = addressText.replace(/\s+/g, ' ').trim();
+      if (cleanAddress.length > 10) { // Basic validation
+        companyData.address = cleanAddress;
+        console.log('✅ Found address:', companyData.address);
       }
-      console.log('✅ Found address:', companyData.address);
     }
 
     // Log the HTML snippet for debugging
@@ -156,74 +165,46 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       console.log('🔍 Drivers sections found:', driversSection);
     }
 
-    // Extract additional valuable information
+    // Extract additional fields using the same method
     
-    // Extract Safety Rating
-    let safetyMatch = html.match(/Safety Rating:\s*([^<\n]+)/i);
-    if (!safetyMatch) {
-      safetyMatch = html.match(/Overall Rating:\s*([^<\n]+)/i);
-    }
-    if (safetyMatch) {
-      companyData.safetyRating = safetyMatch[1].trim();
-      console.log('✅ Found safety rating:', companyData.safetyRating);
-    }
-
     // Extract Operating Status
-    let statusMatch = html.match(/Operating Status:\s*([^<\n]+)/i);
-    if (!statusMatch) {
-      statusMatch = html.match(/Status:\s*([^<\n]+)/i);
-    }
-    if (statusMatch) {
-      companyData.operatingStatus = statusMatch[1].trim();
+    const operatingText = extractField('Operating Status:', text);
+    if (operatingText) {
+      companyData.operatingStatus = operatingText.replace(/\s+/g, ' ').trim();
       console.log('✅ Found operating status:', companyData.operatingStatus);
     }
 
-    // Extract Out of Service Date
-    const oosMatch = html.match(/Out of Service Date:\s*([^<\n]+)/i);
-    if (oosMatch && oosMatch[1].trim() !== 'None' && oosMatch[1].trim() !== '') {
-      companyData.outOfServiceDate = oosMatch[1].trim();
-      console.log('✅ Found out of service date:', companyData.outOfServiceDate);
+    // Extract Safety Rating
+    const safetyText = extractField('Safety Rating:', text);
+    if (safetyText) {
+      companyData.safetyRating = safetyText.replace(/\s+/g, ' ').trim();
+      console.log('✅ Found safety rating:', companyData.safetyRating);
     }
 
-    // Extract Total Drivers
-    let driversMatch = html.match(/Total Drivers:\s*([0-9]+)/i);
-    if (!driversMatch) {
-      driversMatch = html.match(/Drivers:\s*([0-9]+)/i);
-    }
-    if (driversMatch) {
-      companyData.totalDrivers = driversMatch[1].trim();
-      console.log('✅ Found total drivers:', companyData.totalDrivers);
+    // Extract Entity Type (sometimes shows business type)
+    const entityText = extractField('Entity Type:', text);
+    if (entityText) {
+      console.log('✅ Found entity type:', entityText.trim());
     }
 
-    // Extract Total Vehicles  
-    let vehiclesMatch = html.match(/Total Vehicles:\s*([0-9]+)/i);
-    if (!vehiclesMatch) {
-      vehiclesMatch = html.match(/Vehicles:\s*([0-9]+)/i);
-    }
-    if (vehiclesMatch) {
-      companyData.totalVehicles = vehiclesMatch[1].trim();
-      console.log('✅ Found total vehicles:', companyData.totalVehicles);
+    // Extract DBA Name if different from Legal Name
+    const dbaText = extractField('DBA Name:', text);
+    if (dbaText && dbaText.trim() !== companyData.name) {
+      console.log('✅ Found DBA name:', dbaText.trim());
     }
 
-    // Extract Operation Classification
-    const opClassMatch = html.match(/Operation Classification:\s*([^<\n]+)/i);
-    if (opClassMatch) {
-      companyData.operationClassification = [opClassMatch[1].trim()];
-      console.log('✅ Found operation classification:', companyData.operationClassification);
-    }
-
-    // Extract Cargo Carried
-    const cargoMatch = html.match(/Cargo Carried:\s*([^<\n]+)/i);
-    if (cargoMatch) {
-      companyData.cargoCarried = [cargoMatch[1].trim()];
-      console.log('✅ Found cargo carried:', companyData.cargoCarried);
-    }
-
-    // Extract Email (if available)
-    const emailMatch = html.match(/Email:\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i);
+    // Try to extract email from the text
+    const emailMatch = text.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
     if (emailMatch) {
       companyData.email = emailMatch[1].trim();
       console.log('✅ Found email:', companyData.email);
+    }
+
+    // Extract additional fields if they exist in the text
+    const outOfServiceText = extractField('Out of Service Date:', text);
+    if (outOfServiceText && outOfServiceText.trim() !== 'None' && outOfServiceText.trim() !== '') {
+      companyData.outOfServiceDate = outOfServiceText.trim();
+      console.log('✅ Found out of service date:', companyData.outOfServiceDate);
     }
 
     // Log the complete HTML for detailed analysis (first 2000 characters)
