@@ -11,9 +11,10 @@ import { StopFormCard } from './StopFormCard';
 
 interface LoadStopsManagerProps {
   onStopsChange?: (stops: any[]) => void;
+  showValidation?: boolean;
 }
 
-export function LoadStopsManager({ onStopsChange }: LoadStopsManagerProps) {
+export function LoadStopsManager({ onStopsChange, showValidation = false }: LoadStopsManagerProps) {
   const {
     stops,
     addStop,
@@ -31,7 +32,7 @@ export function LoadStopsManager({ onStopsChange }: LoadStopsManagerProps) {
     })
   );
 
-  const validation = validateStops();
+  const validation = validateStops(showValidation);
   const { pickupDate, deliveryDate } = getCalculatedDates();
 
   const handleDragEnd = (event: any) => {
@@ -63,8 +64,8 @@ export function LoadStopsManager({ onStopsChange }: LoadStopsManagerProps) {
           Define las paradas de recogida y entrega. La primera debe ser pickup y la última delivery.
         </CardDescription>
         
-        {/* Validation Summary */}
-        {!validation.isValid && (
+        {/* Validation Summary - Solo mostrar si hay errores Y showValidation es true */}
+        {showValidation && !validation.isValid && (
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>

@@ -47,7 +47,7 @@ export function useLoadStops() {
     }
   ]);
 
-  const validateStops = useCallback((): LoadStopsValidation => {
+  const validateStops = useCallback((showFieldValidations: boolean = false): LoadStopsValidation => {
     const errors: string[] = [];
 
     // Minimum 2 stops
@@ -66,21 +66,23 @@ export function useLoadStops() {
       errors.push('La última parada debe ser una entrega (delivery)');
     }
 
-    // Validate each stop has required fields
-    stops.forEach((stop, index) => {
-      if (!stop.company_name.trim()) {
-        errors.push(`Parada ${index + 1}: Nombre de empresa es requerido`);
-      }
-      if (!stop.address.trim()) {
-        errors.push(`Parada ${index + 1}: Dirección es requerida`);
-      }
-      if (!stop.city.trim()) {
-        errors.push(`Parada ${index + 1}: Ciudad es requerida`);
-      }
-      if (!stop.state.trim()) {
-        errors.push(`Parada ${index + 1}: Estado es requerido`);
-      }
-    });
+    // Validate each stop has required fields (only if showFieldValidations is true)
+    if (showFieldValidations) {
+      stops.forEach((stop, index) => {
+        if (!stop.company_name.trim()) {
+          errors.push(`Parada ${index + 1}: Nombre de empresa es requerido`);
+        }
+        if (!stop.address.trim()) {
+          errors.push(`Parada ${index + 1}: Dirección es requerida`);
+        }
+        if (!stop.city.trim()) {
+          errors.push(`Parada ${index + 1}: Ciudad es requerida`);
+        }
+        if (!stop.state.trim()) {
+          errors.push(`Parada ${index + 1}: Estado es requerido`);
+        }
+      });
+    }
 
     // Date validations
     const stopsWithDates = stops.filter(stop => stop.scheduled_date && isValid(stop.scheduled_date));

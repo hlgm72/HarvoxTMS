@@ -58,6 +58,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   const [showCreateBroker, setShowCreateBroker] = useState(false);
   const [showCreateDispatcher, setShowCreateDispatcher] = useState(false);
   const [loadStops, setLoadStops] = useState<any[]>([]);
+  const [showStopsValidation, setShowStopsValidation] = useState(false);
   const { drivers } = useCompanyDrivers();
   const { brokers, loading: brokersLoading } = useCompanyBrokers();
   const createLoadMutation = useCreateLoad();
@@ -379,7 +380,10 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
 
             {/* Phase 2: Route Details */}
             {currentPhase === 2 && (
-              <LoadStopsManager onStopsChange={setLoadStops} />
+              <LoadStopsManager 
+                onStopsChange={setLoadStops} 
+                showValidation={showStopsValidation}
+              />
             )}
 
             {/* Placeholder for phases 3 and 4 */}
@@ -415,7 +419,15 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                 {currentPhase < phases.length ? (
                   <Button
                     type="button"
-                    onClick={() => setCurrentPhase(currentPhase + 1)}
+                    onClick={() => {
+                      // Si estamos en phase 2, activar validaciones antes de avanzar
+                      if (currentPhase === 2) {
+                        setShowStopsValidation(true);
+                        // Aquí puedes agregar validación de paradas si es necesario
+                        // Por ahora permitimos avanzar siempre
+                      }
+                      setCurrentPhase(currentPhase + 1);
+                    }}
                   >
                     Siguiente
                   </Button>
