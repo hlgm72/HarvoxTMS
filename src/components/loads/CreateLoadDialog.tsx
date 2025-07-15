@@ -21,6 +21,7 @@ import { BrokerCombobox } from "@/components/brokers/BrokerCombobox";
 import { DispatcherCombobox } from "@/components/brokers/DispatcherCombobox";
 import { CreateBrokerDialog } from "@/components/brokers/CreateBrokerDialog";
 import { CreateDispatcherDialog } from "@/components/brokers/CreateDispatcherDialog";
+import { LoadStopsManager } from "./LoadStopsManager";
 
 const createLoadSchema = z.object({
   // Phase 1: Essential Information
@@ -56,6 +57,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   const [selectedBroker, setSelectedBroker] = useState<CompanyBroker | null>(null);
   const [showCreateBroker, setShowCreateBroker] = useState(false);
   const [showCreateDispatcher, setShowCreateDispatcher] = useState(false);
+  const [loadStops, setLoadStops] = useState<any[]>([]);
   const { drivers } = useCompanyDrivers();
   const { brokers, loading: brokersLoading } = useCompanyBrokers();
   const createLoadMutation = useCreateLoad();
@@ -375,8 +377,13 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
               </Card>
             )}
 
-            {/* Placeholder for other phases */}
-            {currentPhase > 1 && (
+            {/* Phase 2: Route Details */}
+            {currentPhase === 2 && (
+              <LoadStopsManager onStopsChange={setLoadStops} />
+            )}
+
+            {/* Placeholder for phases 3 and 4 */}
+            {currentPhase > 2 && (
               <Card>
                 <CardContent className="py-8">
                   <div className="text-center text-muted-foreground">
