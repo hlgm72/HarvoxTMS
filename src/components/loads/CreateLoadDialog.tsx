@@ -7,6 +7,7 @@ import { useCompanyDrivers, CompanyDriver } from "@/hooks/useCompanyDrivers";
 import { useCompanyBrokers, CompanyBroker } from "@/hooks/useCompanyBrokers";
 import { useCreateLoad } from "@/hooks/useCreateLoad";
 import { useATMInput } from "@/hooks/useATMInput";
+import { createTextHandlers } from "@/lib/textUtils";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -278,30 +279,54 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                     <FormField
                       control={form.control}
                       name="po_number"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>PO #</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Purchase Order Number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      render={({ field }) => {
+                        const textHandlers = createTextHandlers(
+                          (value) => field.onChange(value.replace(/\s/g, '')), // Remove all spaces
+                          'text'
+                        );
+                        
+                        return (
+                          <FormItem>
+                            <FormLabel>PO #</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="Purchase Order Number" 
+                                value={field.value || ''}
+                                onChange={textHandlers.onChange}
+                                onBlur={textHandlers.onBlur}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
                     />
 
                     {/* PU Number */}
                     <FormField
                       control={form.control}
                       name="pu_number"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>PU #</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Pickup Number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      render={({ field }) => {
+                        const textHandlers = createTextHandlers(
+                          (value) => field.onChange(value.replace(/\s/g, '')), // Remove all spaces
+                          'text'
+                        );
+                        
+                        return (
+                          <FormItem>
+                            <FormLabel>PU #</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="Pickup Number" 
+                                value={field.value || ''}
+                                onChange={textHandlers.onChange}
+                                onBlur={textHandlers.onBlur}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
                     />
 
                     {/* Weight */}
