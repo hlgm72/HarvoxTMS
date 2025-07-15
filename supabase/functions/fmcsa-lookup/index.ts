@@ -393,10 +393,10 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     } else if (searchType === 'MC') {
       url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_type=queryCarrierSnapshot&query_param=MC_MX&original_query_param=MC_MX&query_string=${cleanQuery}`;
     } else if (searchType === 'NAME') {
-      // Para búsqueda por nombre, probar formato simple primero
-      const nameQuery = searchQuery.trim();
-      url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_param=NAME&query_string=${encodeURIComponent(nameQuery)}`;
-      console.log(`🏷️ Name search - Original: "${searchQuery}", Encoded: "${encodeURIComponent(nameQuery)}"`);
+      // Para búsqueda por nombre, usar el formato específico de FMCSA
+      const nameQuery = searchQuery.trim().replace(/\s+/g, '+');
+      url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=name&query=${nameQuery}`;
+      console.log(`🏷️ Name search - Original: "${searchQuery}", URL Query: "${nameQuery}"`);
     }
 
     console.log('🌐 Final URL:', url);
@@ -428,6 +428,69 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     if (html.includes("No records found") || html.includes("no entities were found") || html.includes("not found")) {
       console.log('🚫 FMCSA returned "no results found" message');
       return null;
+    }
+    
+    // Para búsquedas por nombre, verificar si es una página de resultados intermedios
+    if (searchType === 'NAME' && html.includes('Company or Broker')) {
+      console.log('📋 Detected intermediate results page for name search');
+      
+      // Parsear la tabla de resultados y tomar el primer resultado válido
+      const $ = cheerio.load(html);
+      const resultTable = $('table').filter((_, el) => {
+        return $(el).html()?.includes('Company or Broker') || $(el).html()?.includes('USDOT');
+      });
+      
+      if (resultTable.length > 0) {
+        console.log('🔍 Found results table, looking for first valid company link...');
+        
+        // Buscar links que apunten a CompanySnapshot.aspx
+        const snapshotLinks = resultTable.find('a[href*="CompanySnapshot.aspx"]');
+        if (snapshotLinks.length > 0) {
+          const firstLink = snapshotLinks.first();
+          const href = firstLink.attr('href');
+          
+          if (href) {
+            console.log(`🔗 Found snapshot link: ${href}`);
+            
+            // Construir la URL completa del snapshot
+            const snapshotUrl = href.startsWith('http') ? href : `https://safer.fmcsa.dot.gov/${href}`;
+            console.log(`🌐 Making request to snapshot URL: ${snapshotUrl}`);
+            
+            // Hacer una nueva petición al snapshot directo
+            const snapshotResponse = await fetch(snapshotUrl, {
+              method: 'GET',
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Connection': 'keep-alive',
+                'Upgrade-Insecure-Requests': '1',
+              },
+            });
+            
+            if (snapshotResponse.ok) {
+              const snapshotHtml = await snapshotResponse.text();
+              console.log(`📄 Received snapshot HTML (${snapshotHtml.length} characters)`);
+              
+              // Store the snapshot HTML for parsing
+              (globalThis as any).lastHtml = snapshotHtml;
+              
+              // Parse the snapshot page
+              const companyData = parseFMCSA_HTML(snapshotHtml);
+              console.log('📊 Final extracted data from snapshot:', companyData);
+              
+              return companyData;
+            } else {
+              console.error(`❌ Failed to fetch snapshot: ${snapshotResponse.status}`);
+            }
+          }
+        } else {
+          console.log('❌ No snapshot links found in results table');
+        }
+      } else {
+        console.log('❌ No results table found in intermediate page');
+      }
     }
     
     // Store HTML globally for access in the main function
