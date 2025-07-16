@@ -10,6 +10,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { StateCombobox } from '@/components/ui/StateCombobox';
+import { CityCombobox } from '@/components/ui/CityCombobox';
 import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
 import { createTextHandlers, createPhoneHandlers } from '@/lib/textUtils';
@@ -24,13 +26,6 @@ interface StopFormCardProps {
   dragHandleProps?: any;
 }
 
-const US_STATES = [
-  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
-  'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
-  'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
-  'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
-  'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
-];
 
 const TIME_OPTIONS = Array.from({ length: 24 }, (_, hour) => {
   const h = hour.toString().padStart(2, '0');
@@ -61,10 +56,6 @@ export function StopFormCard({
     'text'
   );
 
-  const cityHandlers = createTextHandlers(
-    (value) => onUpdate({ city: value }),
-    'text'
-  );
 
   const contactNameHandlers = createTextHandlers(
     (value) => onUpdate({ contact_name: value }),
@@ -180,31 +171,28 @@ export function StopFormCard({
           />
         </div>
 
-        {/* City, State, ZIP */}
+        {/* State, City, ZIP */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label htmlFor={`city-${stop.id}`}>Ciudad *</Label>
-            <Input
-              id={`city-${stop.id}`}
-              placeholder="Ciudad"
-              value={stop.city}
-              onChange={cityHandlers.onChange}
-              onBlur={cityHandlers.onBlur}
+            <Label>Estado *</Label>
+            <StateCombobox
+              value={stop.state}
+              onValueChange={(value) => {
+                onUpdate({ state: value, city: '' }); // Reset city when state changes
+              }}
+              placeholder="Selecciona estado..."
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor={`state-${stop.id}`}>Estado *</Label>
-            <Select value={stop.state} onValueChange={(value) => onUpdate({ state: value })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Estado" />
-              </SelectTrigger>
-              <SelectContent>
-                {US_STATES.map(state => (
-                  <SelectItem key={state} value={state}>{state}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label>Ciudad *</Label>
+            <CityCombobox
+              value={stop.city}
+              onValueChange={(value) => onUpdate({ city: value })}
+              stateId={stop.state}
+              placeholder="Selecciona ciudad..."
+              disabled={!stop.state}
+            />
           </div>
 
           <div className="space-y-2">
