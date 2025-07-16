@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -52,6 +52,8 @@ interface CreateLoadDialogProps {
   onClose: () => void;
 }
 
+const DRAFT_KEY = 'load_wizard_draft';
+
 export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   const { t } = useTranslation();
   const [currentPhase, setCurrentPhase] = useState(1);
@@ -84,6 +86,90 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
       form.setValue("total_amount", value);
     }
   });
+
+  // Funciones para persistencia de datos
+  const saveDraft = () => {
+    try {
+      const formData = form.getValues();
+      const draftData = {
+        formData,
+        currentPhase,
+        loadStops,
+        selectedBroker: selectedBroker ? { id: selectedBroker.id, name: selectedBroker.name } : null,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
+    } catch (error) {
+      console.error('Error saving draft:', error);
+    }
+  };
+
+  const loadDraft = () => {
+    try {
+      const savedDraft = localStorage.getItem(DRAFT_KEY);
+      if (savedDraft) {
+        const draftData = JSON.parse(savedDraft);
+        
+        // Cargar datos del formulario
+        Object.entries(draftData.formData).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            form.setValue(key as any, value);
+          }
+        });
+
+        // Restaurar fase actual
+        setCurrentPhase(draftData.currentPhase || 1);
+        
+        // Restaurar paradas
+        if (draftData.loadStops) {
+          setLoadStops(draftData.loadStops);
+        }
+
+        // Restaurar broker seleccionado (se buscará en la lista actual)
+        if (draftData.selectedBroker?.id) {
+          const broker = brokers.find(b => b.id === draftData.selectedBroker.id);
+          if (broker) {
+            setSelectedBroker(broker);
+          }
+        }
+
+        // Actualizar el ATM input con el valor guardado
+        if (draftData.formData.total_amount) {
+          atmInput.setValue(draftData.formData.total_amount);
+        }
+
+        toast({
+          title: "Borrador recuperado",
+          description: "Se ha restaurado tu trabajo anterior.",
+        });
+      }
+    } catch (error) {
+      console.error('Error loading draft:', error);
+    }
+  };
+
+  const clearDraft = () => {
+    try {
+      localStorage.removeItem(DRAFT_KEY);
+    } catch (error) {
+      console.error('Error clearing draft:', error);
+    }
+  };
+
+  // Cargar borrador al abrir el diálogo
+  useEffect(() => {
+    if (isOpen && brokers.length > 0) {
+      loadDraft();
+    }
+  }, [isOpen, brokers]);
+
+  // Guardar borrador cuando cambien los datos
+  useEffect(() => {
+    if (isOpen) {
+      const timeoutId = setTimeout(saveDraft, 1000); // Debounce de 1 segundo
+      return () => clearTimeout(timeoutId);
+    }
+  }, [form.watch(), currentPhase, loadStops, selectedBroker, isOpen]);
 
   const phases = [
     {
@@ -123,9 +209,13 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
       notes: '',
     }, {
       onSuccess: () => {
+        // Limpiar el borrador al crear exitosamente
+        clearDraft();
         form.reset();
         setCurrentPhase(1);
         setSelectedBroker(null);
+        setLoadStops([]);
+        atmInput.setValue(0);
         onClose();
       }
     });
