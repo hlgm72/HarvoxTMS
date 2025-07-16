@@ -27,6 +27,7 @@ const createLoadSchema = z.object({
   // Phase 1: Essential Information
   broker_id: z.string().min(1, "Selecciona un broker"),
   dispatcher_id: z.string().optional(),
+  load_number: z.string().min(1, "El número de carga es requerido"),
   total_amount: z.number().min(0.01, "El monto debe ser mayor a 0"),
   po_number: z.string().optional(),
   pu_number: z.string().optional(),
@@ -68,6 +69,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
     defaultValues: {
       broker_id: "",
       dispatcher_id: "",
+      load_number: "",
       total_amount: 0,
       po_number: "",
       pu_number: "",
@@ -111,10 +113,8 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   ];
 
   const onSubmit = (values: z.infer<typeof createLoadSchema>) => {
-    const loadNumber = `LD-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
-    
     createLoadMutation.mutate({
-      load_number: loadNumber,
+      load_number: values.load_number,
       driver_user_id: drivers[0]?.user_id || '', // Temporal - luego permitir selección
       broker_id: values.broker_id,
       total_amount: values.total_amount,
@@ -239,6 +239,33 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                       )}
                     />
 
+                    {/* Load Number */}
+                    <FormField
+                      control={form.control}
+                      name="load_number"
+                      render={({ field }) => {
+                        const textHandlers = createTextHandlers(
+                          (value) => field.onChange(value),
+                          'text'
+                        );
+                        
+                        return (
+                          <FormItem>
+                            <FormLabel>Número de Carga *</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="Ej: LD-001, 2024-001, etc." 
+                                value={field.value || ''}
+                                onChange={textHandlers.onChange}
+                                onBlur={textHandlers.onBlur}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+
                     {/* Total Amount */}
                     <FormField
                       control={form.control}
@@ -261,33 +288,6 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                           <FormMessage />
                         </FormItem>
                       )}
-                    />
-
-                    {/* Commodity */}
-                    <FormField
-                      control={form.control}
-                      name="commodity"
-                      render={({ field }) => {
-                        const textHandlers = createTextHandlers(
-                          (value) => field.onChange(value),
-                          'text'
-                        );
-                        
-                        return (
-                          <FormItem>
-                            <FormLabel>Commodity *</FormLabel>
-                            <FormControl>
-                              <Input 
-                                placeholder="Electronics, Food Products, etc." 
-                                value={field.value || ''}
-                                onChange={textHandlers.onChange}
-                                onBlur={textHandlers.onBlur}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
                     />
 
                     {/* PO Number */}
@@ -333,6 +333,33 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                             <FormControl>
                               <Input 
                                 placeholder="Pickup Number" 
+                                value={field.value || ''}
+                                onChange={textHandlers.onChange}
+                                onBlur={textHandlers.onBlur}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+
+                    {/* Commodity */}
+                    <FormField
+                      control={form.control}
+                      name="commodity"
+                      render={({ field }) => {
+                        const textHandlers = createTextHandlers(
+                          (value) => field.onChange(value),
+                          'text'
+                        );
+                        
+                        return (
+                          <FormItem>
+                            <FormLabel>Commodity *</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="Electronics, Food Products, etc." 
                                 value={field.value || ''}
                                 onChange={textHandlers.onChange}
                                 onBlur={textHandlers.onBlur}
