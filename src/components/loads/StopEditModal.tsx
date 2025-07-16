@@ -1,0 +1,353 @@
+import React, { useState } from 'react';
+import { format } from 'date-fns';
+import { CalendarIcon, MapPin, Clock, User, Phone, Building, FileText } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { StateCombobox } from '@/components/ui/StateCombobox';
+import { CityCombobox } from '@/components/ui/CityCombobox';
+import { cn } from '@/lib/utils';
+import { LoadStop } from '@/hooks/useLoadStops';
+import { createTextHandlers, createPhoneHandlers } from '@/lib/textUtils';
+
+interface StopEditModalProps {
+  stop: LoadStop | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (updates: Partial<LoadStop>) => void;
+  isFirst?: boolean;
+  isLast?: boolean;
+}
+
+const TIME_OPTIONS = Array.from({ length: 24 }, (_, hour) => {
+  const h = hour.toString().padStart(2, '0');
+  return [
+    `${h}:00`,
+    `${h}:30`
+  ];
+}).flat();
+
+export function StopEditModal({ 
+  stop, 
+  isOpen, 
+  onClose, 
+  onSave, 
+  isFirst = false, 
+  isLast = false 
+}: StopEditModalProps) {
+  const [formData, setFormData] = useState<Partial<LoadStop>>({});
+
+  // Initialize form data when stop changes
+  React.useEffect(() => {
+    if (stop) {
+      setFormData({ ...stop });
+    }
+  }, [stop]);
+
+  if (!stop) return null;
+
+  const updateField = (field: keyof LoadStop, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = () => {
+    onSave(formData);
+    onClose();
+  };
+
+  const getStopTypeLabel = () => {
+    if (isFirst) return 'Recogida (Pickup)';
+    if (isLast) return 'Entrega (Delivery)';
+    return stop.stop_type === 'pickup' ? 'Recogida (Pickup)' : 'Entrega (Delivery)';
+  };
+
+  const getStopTypeColor = () => {
+    return stop.stop_type === 'pickup' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
+  };
+
+  const companyNameHandlers = createTextHandlers(
+    (value) => updateField('company_name', value),
+    'text'
+  );
+
+  const addressHandlers = createTextHandlers(
+    (value) => updateField('address', value),
+    'text'
+  );
+
+  const contactNameHandlers = createTextHandlers(
+    (value) => updateField('contact_name', value),
+    'text'
+  );
+
+  const phoneHandlers = createPhoneHandlers(
+    (value) => updateField('contact_phone', value)
+  );
+
+  const referenceHandlers = createTextHandlers(
+    (value) => updateField('reference_number', value.replace(/\s/g, '')),
+    'text'
+  );
+
+  const zipHandlers = createTextHandlers(
+    (value) => updateField('zip_code', value.replace(/\D/g, '')),
+    'text'
+  );
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <div className="flex items-center gap-3">
+            <MapPin className="h-5 w-5 text-primary" />
+            <div>
+              <DialogTitle>Parada #{stop.stop_number}</DialogTitle>
+              <DialogDescription>
+                Complete la información de la parada
+              </DialogDescription>
+            </div>
+            <Badge className={cn("text-xs ml-auto", getStopTypeColor())}>
+              {getStopTypeLabel()}
+            </Badge>
+          </div>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          {/* Tipo de Parada */}
+          {!isFirst && !isLast && (
+            <div className="space-y-2">
+              <Label>Tipo de Parada</Label>
+              <Select
+                value={formData.stop_type || stop.stop_type}
+                onValueChange={(value: 'pickup' | 'delivery') => updateField('stop_type', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pickup">Recogida (Pickup)</SelectItem>
+                  <SelectItem value="delivery">Entrega (Delivery)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* Información Básica */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium flex items-center gap-2">
+              <Building className="h-4 w-4" />
+              Información de la Empresa
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="company">Empresa *</Label>
+                <Input
+                  id="company"
+                  placeholder="Nombre de la empresa"
+                  value={formData.company_name || ''}
+                  onChange={companyNameHandlers.onChange}
+                  onBlur={companyNameHandlers.onBlur}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="reference">Número de Referencia</Label>
+                <Input
+                  id="reference"
+                  placeholder="BOL, PO, etc."
+                  value={formData.reference_number || ''}
+                  onChange={referenceHandlers.onChange}
+                  onBlur={referenceHandlers.onBlur}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Dirección */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Dirección
+            </h3>
+            
+            <div className="space-y-2">
+              <Label htmlFor="address">Dirección *</Label>
+              <Input
+                id="address"
+                placeholder="Dirección completa"
+                value={formData.address || ''}
+                onChange={addressHandlers.onChange}
+                onBlur={addressHandlers.onBlur}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label>Estado *</Label>
+                <StateCombobox
+                  value={formData.state || ''}
+                  onValueChange={(value) => {
+                    updateField('state', value);
+                    updateField('city', ''); // Reset city when state changes
+                  }}
+                  placeholder="Selecciona estado..."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Ciudad *</Label>
+                <CityCombobox
+                  value={formData.city || ''}
+                  onValueChange={(value) => updateField('city', value)}
+                  stateId={formData.state || ''}
+                  placeholder="Selecciona ciudad..."
+                  disabled={!formData.state}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="zip">ZIP</Label>
+                <Input
+                  id="zip"
+                  placeholder="12345"
+                  value={formData.zip_code || ''}
+                  onChange={zipHandlers.onChange}
+                  onBlur={zipHandlers.onBlur}
+                  maxLength={5}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Fecha y Hora */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Programación
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Fecha Programada</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !formData.scheduled_date && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.scheduled_date ? format(formData.scheduled_date, "PPP") : "Seleccionar fecha"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={formData.scheduled_date || undefined}
+                      onSelect={(date) => updateField('scheduled_date', date)}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Hora Programada</Label>
+                <Select 
+                  value={formData.scheduled_time || ''} 
+                  onValueChange={(value) => updateField('scheduled_time', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar hora" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TIME_OPTIONS.map(time => (
+                      <SelectItem key={time} value={time}>{time}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Contacto */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium flex items-center gap-2">
+              <User className="h-4 w-4" />
+              Información de Contacto
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="contact">Nombre de Contacto</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="contact"
+                    placeholder="Nombre del contacto"
+                    className="pl-10"
+                    value={formData.contact_name || ''}
+                    onChange={contactNameHandlers.onChange}
+                    onBlur={contactNameHandlers.onBlur}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Teléfono de Contacto</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="phone"
+                    placeholder="(555) 123-4567"
+                    className="pl-10"
+                    value={formData.contact_phone || ''}
+                    onChange={phoneHandlers.onChange}
+                    onKeyPress={phoneHandlers.onKeyPress}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Instrucciones Especiales */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Instrucciones Especiales
+            </h3>
+            
+            <div className="space-y-2">
+              <Textarea
+                placeholder="Instrucciones especiales para esta parada..."
+                value={formData.special_instructions || ''}
+                onChange={(e) => updateField('special_instructions', e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex justify-end gap-3 pt-6 border-t">
+          <Button variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button onClick={handleSave}>
+            Guardar Cambios
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

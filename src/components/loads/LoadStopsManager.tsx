@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableStopItem';
+import { StopListItem } from './StopListItem';
+import { StopEditModal } from './StopEditModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Plus, MapPin, AlertTriangle, CheckCircle } from 'lucide-react';
-import { useLoadStops } from '@/hooks/useLoadStops';
-import { StopFormCard } from './StopFormCard';
+import { useLoadStops, LoadStop } from '@/hooks/useLoadStops';
 
 interface LoadStopsManagerProps {
   onStopsChange?: (stops: any[]) => void;
@@ -25,6 +26,9 @@ export function LoadStopsManager({ onStopsChange, showValidation = false }: Load
     getCalculatedDates
   } = useLoadStops();
 
+  const [editingStop, setEditingStop] = useState<LoadStop | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -35,6 +39,29 @@ export function LoadStopsManager({ onStopsChange, showValidation = false }: Load
   const validation = validateStops(showValidation);
   const { pickupDate, deliveryDate } = getCalculatedDates();
 
+  // Validate chronological order for drag and drop
+  const validateDragOrder = (oldIndex: number, newIndex: number) => {
+    const newStops = [...stops];
+    const [moved] = newStops.splice(oldIndex, 1);
+    newStops.splice(newIndex, 0, moved);
+
+    // Check if the new order respects chronological dates
+    for (let i = 1; i < newStops.length; i++) {
+      const prev = newStops[i - 1];
+      const curr = newStops[i];
+      
+      if (prev.scheduled_date && curr.scheduled_date) {
+        const prevDate = new Date(prev.scheduled_date);
+        const currDate = new Date(curr.scheduled_date);
+        
+        if (prevDate > currDate) {
+          return false; // Would violate chronological order
+        }
+      }
+    }
+    return true;
+  };
+
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
 
@@ -42,9 +69,53 @@ export function LoadStopsManager({ onStopsChange, showValidation = false }: Load
       const oldIndex = stops.findIndex(stop => stop.id === active.id);
       const newIndex = stops.findIndex(stop => stop.id === over.id);
       
-      reorderStops(oldIndex, newIndex);
+      if (validateDragOrder(oldIndex, newIndex)) {
+        reorderStops(oldIndex, newIndex);
+      } else {
+        // Could show a toast notification here about invalid order
+        console.warn('No se puede reordenar: las fechas deben estar en orden cronológico');
+      }
     }
   };
+
+  const handleEditStop = (stop: LoadStop) => {
+    setEditingStop(stop);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveStop = (updates: Partial<LoadStop>) => {
+    if (editingStop) {
+      updateStop(editingStop.id, updates);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setEditingStop(null);
+    setIsModalOpen(false);
+  };
+
+  // Check for date errors
+  const getDateErrors = () => {
+    const errors: { [key: string]: boolean } = {};
+    
+    for (let i = 1; i < stops.length; i++) {
+      const prev = stops[i - 1];
+      const curr = stops[i];
+      
+      if (prev.scheduled_date && curr.scheduled_date) {
+        const prevDate = new Date(prev.scheduled_date);
+        const currDate = new Date(curr.scheduled_date);
+        
+        if (prevDate > currDate) {
+          errors[curr.id] = true;
+        }
+      }
+    }
+    
+    return errors;
+  };
+
+  const dateErrors = getDateErrors();
 
   // Notify parent component of stops changes
   React.useEffect(() => {
@@ -100,16 +171,15 @@ export function LoadStopsManager({ onStopsChange, showValidation = false }: Load
           onDragEnd={handleDragEnd}
         >
           <SortableContext items={stops.map(s => s.id)} strategy={verticalListSortingStrategy}>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {stops.map((stop, index) => (
                 <SortableItem key={stop.id} id={stop.id}>
-                  <StopFormCard
+                  <StopListItem
                     stop={stop}
-                    onUpdate={(updates) => updateStop(stop.id, updates)}
-                    onRemove={() => removeStop(stop.id)}
-                    canRemove={stops.length > 2}
+                    onEdit={() => handleEditStop(stop)}
                     isFirst={index === 0}
                     isLast={index === stops.length - 1}
+                    hasDateError={dateErrors[stop.id]}
                   />
                 </SortableItem>
               ))}
@@ -132,11 +202,21 @@ export function LoadStopsManager({ onStopsChange, showValidation = false }: Load
 
         {/* Info */}
         <div className="text-sm text-muted-foreground text-center space-y-1">
+          <p>• Haz clic en una parada para editarla</p>
           <p>• Arrastra las paradas para reordenarlas</p>
-          <p>• Mínimo 2 paradas requeridas</p>
           <p>• Las fechas deben estar en orden cronológico</p>
         </div>
       </CardContent>
+
+      {/* Edit Modal */}
+      <StopEditModal
+        stop={editingStop}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveStop}
+        isFirst={editingStop ? stops.findIndex(s => s.id === editingStop.id) === 0 : false}
+        isLast={editingStop ? stops.findIndex(s => s.id === editingStop.id) === stops.length - 1 : false}
+      />
     </Card>
   );
 }
