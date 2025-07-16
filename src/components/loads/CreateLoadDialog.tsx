@@ -60,7 +60,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   const [loadStops, setLoadStops] = useState<any[]>([]);
   const [showStopsValidation, setShowStopsValidation] = useState(false);
   const { drivers } = useCompanyDrivers();
-  const { brokers, loading: brokersLoading } = useCompanyBrokers();
+  const { brokers, loading: brokersLoading, refetch: refetchBrokers } = useCompanyBrokers();
   const createLoadMutation = useCreateLoad();
 
   const form = useForm<z.infer<typeof createLoadSchema>>({
@@ -458,9 +458,34 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
           brokerId={selectedBroker?.id || ""}
           isOpen={showCreateDispatcher}
           onClose={() => setShowCreateDispatcher(false)}
-          onSuccess={(dispatcherId) => {
-            // Auto-seleccionar el dispatcher recién creado
-            form.setValue("dispatcher_id", dispatcherId);
+          onSuccess={async (dispatcherId) => {
+            try {
+              // Refrescar datos de brokers para obtener el nuevo dispatcher
+              const result = await refetchBrokers();
+              
+              // Buscar el broker actualizado con los nuevos dispatchers
+              if (result.data) {
+                const updatedBroker = result.data.find(b => b.id === selectedBroker?.id);
+                
+                if (updatedBroker) {
+                  setSelectedBroker(updatedBroker);
+                }
+              }
+              
+              // Auto-seleccionar el dispatcher recién creado
+              form.setValue("dispatcher_id", dispatcherId);
+              
+              // Confirmación adicional
+              toast({
+                title: "Dispatcher agregado al formulario",
+                description: `El dispatcher ha sido seleccionado automáticamente.`,
+              });
+              
+            } catch (error) {
+              console.error('Error refrescando brokers:', error);
+              // Aún así intentar preseleccionar el dispatcher
+              form.setValue("dispatcher_id", dispatcherId);
+            }
           }}
         />
       </DialogContent>
