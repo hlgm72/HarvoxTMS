@@ -49,6 +49,7 @@ export function useLoadStops() {
 
   const validateStops = useCallback((showFieldValidations: boolean = false): LoadStopsValidation => {
     const errors: string[] = [];
+    const stopErrors: { [key: number]: string[] } = {};
 
     // Minimum 2 stops
     if (stops.length < 2) {
@@ -69,18 +70,31 @@ export function useLoadStops() {
     // Validate each stop has required fields (only if showFieldValidations is true)
     if (showFieldValidations) {
       stops.forEach((stop, index) => {
+        const stopNumber = index + 1;
+        const fieldsErrors: string[] = [];
+        
         if (!stop.company_name.trim()) {
-          errors.push(`Parada ${index + 1}: Nombre de empresa es requerido`);
+          fieldsErrors.push('Empresa');
         }
         if (!stop.address.trim()) {
-          errors.push(`Parada ${index + 1}: Dirección es requerida`);
+          fieldsErrors.push('Dirección');
         }
         if (!stop.city.trim()) {
-          errors.push(`Parada ${index + 1}: Ciudad es requerida`);
+          fieldsErrors.push('Ciudad');
         }
         if (!stop.state.trim()) {
-          errors.push(`Parada ${index + 1}: Estado es requerido`);
+          fieldsErrors.push('Estado');
         }
+
+        if (fieldsErrors.length > 0) {
+          stopErrors[stopNumber] = fieldsErrors;
+        }
+      });
+
+      // Convertir errores agrupados en mensajes compactos
+      Object.entries(stopErrors).forEach(([stopNum, fieldErrors]) => {
+        const stopType = stops[parseInt(stopNum) - 1]?.stop_type === 'pickup' ? 'P' : 'D';
+        errors.push(`${stopType}${stopNum}: Faltan ${fieldErrors.join(', ')}`);
       });
     }
 
