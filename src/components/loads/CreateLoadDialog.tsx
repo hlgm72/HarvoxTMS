@@ -432,7 +432,14 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setCurrentPhase(Math.max(1, currentPhase - 1))}
+                onClick={() => {
+                  const newPhase = Math.max(1, currentPhase - 1);
+                  // Si salimos del paso 2, reseteamos las validaciones
+                  if (currentPhase === 2) {
+                    setShowStopsValidation(false);
+                  }
+                  setCurrentPhase(newPhase);
+                }}
                 disabled={currentPhase === 1}
               >
                 Anterior
@@ -452,8 +459,10 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                         setShowStopsValidation(true);
                         // Aquí puedes agregar validación de paradas si es necesario
                         // Por ahora permitimos avanzar siempre
+                        setCurrentPhase(currentPhase + 1);
+                      } else {
+                        setCurrentPhase(currentPhase + 1);
                       }
-                      setCurrentPhase(currentPhase + 1);
                     }}
                   >
                     Siguiente
