@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { createPhoneHandlers } from '@/lib/textUtils';
 
 interface DriverData {
   // Driver profile data
@@ -399,7 +400,14 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
                         <Input
                           id="business_phone"
                           value={driverData.business_phone}
-                          onChange={(e) => updateDriverData('business_phone', e.target.value)}
+                          onChange={(e) => {
+                            const handlers = createPhoneHandlers((value: string) => updateDriverData('business_phone', value));
+                            handlers.onChange(e);
+                          }}
+                          onKeyPress={(e) => {
+                            const handlers = createPhoneHandlers((value: string) => updateDriverData('business_phone', value));
+                            handlers.onKeyPress(e);
+                          }}
                           placeholder="(555) 123-4567"
                         />
                       </div>

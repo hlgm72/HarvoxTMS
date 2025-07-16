@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useCreateDispatcher, ClientDispatcher } from "@/hooks/useClients";
+import { createPhoneHandlers } from '@/lib/textUtils';
 
 interface CreateDispatcherDialogProps {
   clientId: string;
@@ -115,7 +116,11 @@ export function CreateDispatcherDialog({ clientId, open, onOpenChange }: CreateD
                   <FormItem>
                     <FormLabel>Teléfono Móvil</FormLabel>
                     <FormControl>
-                      <Input placeholder="(555) 123-4567" {...field} />
+                      <Input 
+                        placeholder="(555) 123-4567" 
+                        value={field.value || ''}
+                        {...createPhoneHandlers(field.onChange)}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -129,7 +134,11 @@ export function CreateDispatcherDialog({ clientId, open, onOpenChange }: CreateD
                   <FormItem>
                     <FormLabel>Teléfono Oficina</FormLabel>
                     <FormControl>
-                      <Input placeholder="(555) 987-6543" {...field} />
+                      <Input 
+                        placeholder="(555) 987-6543" 
+                        value={field.value || ''}
+                        {...createPhoneHandlers(field.onChange)}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { User, Phone, Mail, Building2 } from "lucide-react";
+import { createPhoneHandlers } from '@/lib/textUtils';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -195,7 +196,11 @@ export function CreateDispatcherDialog({
                       Teléfono Oficina
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="(555) 123-4567" {...field} />
+                      <Input 
+                        placeholder="(555) 123-4567" 
+                        value={field.value || ''}
+                        {...createPhoneHandlers(field.onChange)}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -212,7 +217,11 @@ export function CreateDispatcherDialog({
                       Teléfono Móvil
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="(555) 987-6543" {...field} />
+                      <Input 
+                        placeholder="(555) 987-6543" 
+                        value={field.value || ''}
+                        {...createPhoneHandlers(field.onChange)}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
