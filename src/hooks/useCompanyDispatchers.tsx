@@ -46,34 +46,48 @@ export const useCompanyDispatchers = () => {
 
       console.log('🔍 Querying dispatchers for company:', userCompany.company_id);
 
-      const { data, error } = await supabase
-        .from("user_company_roles")
-        .select(`
-          user_id,
-          is_active,
-          profiles (
-            first_name,
-            last_name,
-            phone
-          )
-        `)
-        .eq("company_id", userCompany.company_id)
-        .eq("role", "dispatcher")
-        .eq("is_active", true);
+      // PASO 1: Obtener roles de dispatchers de la empresa
+      const { data: dispatcherRoles, error: rolesError } = await supabase
+        .from('user_company_roles')
+        .select('user_id')
+        .eq('company_id', userCompany.company_id)
+        .eq('role', 'dispatcher')
+        .eq('is_active', true);
 
-      console.log('🔍 Query result:', { data, error });
+      console.log('🔍 Dispatcher roles result:', { dispatcherRoles, rolesError });
 
-      if (error) {
-        console.error('❌ Query error:', error);
-        throw error;
+      if (rolesError) {
+        console.error('❌ Roles query error:', rolesError);
+        throw rolesError;
       }
 
-      const result = (data || []).map((item: any) => ({
-        user_id: item.user_id,
-        first_name: item.profiles?.first_name || null,
-        last_name: item.profiles?.last_name || null,
-        phone: item.profiles?.phone || null,
-        is_active: item.is_active,
+      if (!dispatcherRoles || dispatcherRoles.length === 0) {
+        console.log('ℹ️ No dispatcher roles found');
+        return [];
+      }
+
+      const dispatcherUserIds = dispatcherRoles.map(role => role.user_id);
+      console.log('🔍 Dispatcher user IDs:', dispatcherUserIds);
+
+      // PASO 2: Obtener profiles de estos usuarios
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, first_name, last_name, phone')
+        .in('user_id', dispatcherUserIds);
+
+      console.log('🔍 Profiles result:', { profiles, profilesError });
+
+      if (profilesError) {
+        console.error('❌ Profiles query error:', profilesError);
+        throw profilesError;
+      }
+
+      const result = (profiles || []).map((profile: any) => ({
+        user_id: profile.user_id,
+        first_name: profile.first_name || null,
+        last_name: profile.last_name || null,
+        phone: profile.phone || null,
+        is_active: true, // Ya filtrado por is_active en la primera consulta
       })) as CompanyDispatcher[];
 
       console.log('✅ Final dispatchers result:', result);
