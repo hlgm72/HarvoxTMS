@@ -133,7 +133,7 @@ export function LoadAssignmentSection({
               <Select 
                 value={selectedDispatcher?.user_id || ""} 
                 onValueChange={(value) => {
-                  if (value) {
+                  if (value && value !== "none") {
                     const dispatcher = dispatchers.find(d => d.user_id === value);
                     onDispatcherSelect(dispatcher || null);
                   } else {
@@ -145,7 +145,7 @@ export function LoadAssignmentSection({
                   <SelectValue placeholder="Selecciona un dispatcher (opcional)..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">
+                  <SelectItem value="none">
                     <span className="text-muted-foreground">Sin dispatcher asignado</span>
                   </SelectItem>
                   {dispatchers.map((dispatcher) => (
