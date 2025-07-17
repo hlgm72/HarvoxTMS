@@ -10,6 +10,7 @@ import { useCreateLoad } from "@/hooks/useCreateLoad";
 import { useATMInput } from "@/hooks/useATMInput";
 import { createTextHandlers } from "@/lib/textUtils";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -67,6 +68,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   const [showStopsValidation, setShowStopsValidation] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState<CompanyDriver | null>(null);
   const [loadDocuments, setLoadDocuments] = useState<any[]>([]);
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
   const { drivers } = useCompanyDrivers();
   const { data: dispatchers = [] } = useCompanyDispatchers();
   const [selectedDispatcher, setSelectedDispatcher] = useState<any>(null);
@@ -163,6 +165,44 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
     }
   };
 
+  // Verificar si hay datos que podrían perderse
+  const hasUnsavedData = () => {
+    const formData = form.getValues();
+    return (
+      formData.load_number || 
+      formData.total_amount > 0 || 
+      formData.commodity || 
+      formData.broker_id || 
+      loadStops.length > 0 ||
+      selectedDriver ||
+      selectedDispatcher
+    );
+  };
+
+  // Manejar cierre con confirmación
+  const handleClose = () => {
+    if (hasUnsavedData()) {
+      setShowExitConfirmation(true);
+    } else {
+      onClose();
+    }
+  };
+
+  // Confirmar cierre y borrar borrador
+  const confirmExit = () => {
+    clearDraft();
+    form.reset();
+    setCurrentPhase(1);
+    setSelectedBroker(null);
+    setSelectedDriver(null);
+    setLoadStops([]);
+    setLoadDocuments([]);
+    setSelectedDispatcher(null);
+    atmInput.setValue(0);
+    setShowExitConfirmation(false);
+    onClose();
+  };
+
   // Cargar borrador al abrir el diálogo
   useEffect(() => {
     if (isOpen && brokers.length > 0) {
@@ -242,7 +282,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Nueva Carga</DialogTitle>
@@ -649,6 +689,28 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
           }}
         />
       </DialogContent>
+
+      {/* Confirmación de salida */}
+      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Descartar borrador?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tienes cambios sin guardar. Si sales ahora, se perderá toda la información introducida. 
+              ¿Estás seguro de que quieres continuar?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmExit}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Sí, descartar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
