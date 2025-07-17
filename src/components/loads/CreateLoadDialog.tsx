@@ -696,8 +696,8 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>¿Descartar borrador?</AlertDialogTitle>
             <AlertDialogDescription>
-              Tienes cambios sin guardar. Si sales ahora, se perdera toda la informacion introducida. 
-              ¿Estas seguro de que quieres continuar?
+              Tienes cambios sin guardar. Si sales ahora, se perderá toda la información introducida. 
+              ¿Estás seguro de que quieres continuar?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
