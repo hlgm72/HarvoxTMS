@@ -22,6 +22,8 @@ import { DispatcherCombobox } from "@/components/brokers/DispatcherCombobox";
 import { CreateBrokerDialog } from "@/components/brokers/CreateBrokerDialog";
 import { CreateDispatcherDialog } from "@/components/brokers/CreateDispatcherDialog";
 import { LoadStopsManager } from "./LoadStopsManager";
+import { LoadDocumentsSection } from "./LoadDocumentsSection";
+import { LoadAssignmentSection } from "./LoadAssignmentSection";
 
 const createLoadSchema = z.object({
   // Phase 1: Essential Information
@@ -62,6 +64,8 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   const [showCreateDispatcher, setShowCreateDispatcher] = useState(false);
   const [loadStops, setLoadStops] = useState<any[]>([]);
   const [showStopsValidation, setShowStopsValidation] = useState(false);
+  const [selectedDriver, setSelectedDriver] = useState<CompanyDriver | null>(null);
+  const [loadDocuments, setLoadDocuments] = useState<any[]>([]);
   const { drivers } = useCompanyDrivers();
   const { brokers, loading: brokersLoading, refetch: refetchBrokers } = useCompanyBrokers();
   const createLoadMutation = useCreateLoad();
@@ -199,9 +203,19 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   ];
 
   const onSubmit = (values: z.infer<typeof createLoadSchema>) => {
+    // Validar que se haya seleccionado un conductor
+    if (!selectedDriver) {
+      toast({
+        title: "Error",
+        description: "Debes seleccionar un conductor antes de crear la carga.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     createLoadMutation.mutate({
       load_number: values.load_number,
-      driver_user_id: drivers[0]?.user_id || '', // Temporal - luego permitir selección
+      driver_user_id: selectedDriver.user_id,
       broker_id: values.broker_id,
       total_amount: values.total_amount,
       commodity: values.commodity,
@@ -214,7 +228,9 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
         form.reset();
         setCurrentPhase(1);
         setSelectedBroker(null);
+        setSelectedDriver(null);
         setLoadStops([]);
+        setLoadDocuments([]);
         atmInput.setValue(0);
         onClose();
       }
@@ -503,18 +519,29 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
               />
             )}
 
-            {/* Placeholder for phases 3 and 4 */}
-            {currentPhase > 2 && (
-              <Card>
-                <CardContent className="py-8">
-                  <div className="text-center text-muted-foreground">
-                    <p className="text-lg font-medium mb-2">
-                      Fase {currentPhase} - {phases[currentPhase - 1].title}
-                    </p>
-                    <p className="text-sm">Esta funcionalidad será implementada próximamente</p>
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Phase 3: Driver Assignment */}
+            {currentPhase === 3 && (
+              <LoadAssignmentSection
+                drivers={drivers}
+                selectedDriver={selectedDriver}
+                onDriverSelect={setSelectedDriver}
+              />
+            )}
+
+            {/* Phase 4: Documents */}
+            {currentPhase === 4 && (
+              <LoadDocumentsSection
+                loadData={{
+                  load_number: form.getValues("load_number") || '',
+                  total_amount: form.getValues("total_amount") || 0,
+                  commodity: form.getValues("commodity") || '',
+                  weight_lbs: form.getValues("weight_lbs"),
+                  broker_name: selectedBroker?.name,
+                  driver_name: selectedDriver ? `${selectedDriver.first_name} ${selectedDriver.last_name}` : undefined,
+                  loadStops: loadStops
+                }}
+                onDocumentsChange={setLoadDocuments}
+              />
             )}
 
             {/* Action Buttons */}
