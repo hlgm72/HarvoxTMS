@@ -694,7 +694,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
       <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Descartar borrador?</AlertDialogTitle>
+            <AlertDialogTitle>¿Desea cancelar la carga?</AlertDialogTitle>
             <AlertDialogDescription>
               Tienes cambios sin guardar. Si sales ahora, se perderá toda la información introducida. 
               ¿Estás seguro de que quieres continuar?
