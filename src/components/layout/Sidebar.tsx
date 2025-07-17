@@ -627,8 +627,17 @@ export function AppSidebar() {
               <img 
                 src={eagleLogo} 
                 alt="FleetNest Logo" 
-                className={`${collapsed ? 'w-12 h-12' : 'w-18 h-18'} object-contain drop-shadow-md transition-all duration-500 group-hover:drop-shadow-lg group-hover:rotate-y-180 animate-[fade-in_1s_ease-out_0.3s_both] hover:scale-110`}
-                style={{ transformStyle: 'preserve-3d' }}
+                className={`${collapsed ? 'w-12 h-12' : 'w-18 h-18'} object-contain drop-shadow-md transition-all duration-500 group-hover:drop-shadow-lg animate-[fade-in_1s_ease-out_0.3s_both] hover:scale-110`}
+                style={{ 
+                  transformStyle: 'preserve-3d',
+                  transition: 'transform 0.5s ease-in-out'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'rotateY(180deg) scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'rotateY(0deg) scale(1)';
+                }}
               />
               {/* Subtle glow effect */}
               <div className="absolute inset-0 rounded-xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
