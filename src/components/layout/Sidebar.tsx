@@ -627,7 +627,7 @@ export function AppSidebar() {
               <img 
                 src={eagleLogo} 
                 alt="FleetNest Logo" 
-                className={`${collapsed ? 'w-10 h-10' : 'w-16 h-16'} object-contain drop-shadow-md transition-all duration-300 group-hover:drop-shadow-lg animate-[fade-in_1s_ease-out_0.3s_both]`}
+                className={`${collapsed ? 'w-12 h-12' : 'w-18 h-18'} object-contain drop-shadow-md transition-all duration-300 group-hover:drop-shadow-lg animate-[fade-in_1s_ease-out_0.3s_both]`}
               />
               {/* Subtle glow effect */}
               <div className="absolute inset-0 rounded-xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
