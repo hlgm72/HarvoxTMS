@@ -90,7 +90,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   const atmInput = useATMInput({
     initialValue: 0,
     onValueChange: (value) => {
-      form.setValue("total_amount", value);
+      form.setValue("total_amount", value, { shouldValidate: true });
     }
   });
 
