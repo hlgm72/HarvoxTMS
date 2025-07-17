@@ -1,9 +1,37 @@
-import React from 'react';
-import { ArrowLeft } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, Upload } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function IconsPreview() {
+  const [uploadedFiles, setUploadedFiles] = useState<Record<string, File>>({});
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, fileName: string, expectedSize: string) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor selecciona una imagen válida');
+      return;
+    }
+
+    // Validate dimensions
+    const img = new Image();
+    img.onload = () => {
+      const expectedDimensions = expectedSize.split('x').map(Number);
+      if (img.width !== expectedDimensions[0] || img.height !== expectedDimensions[1]) {
+        alert(`La imagen debe ser exactamente ${expectedSize} píxeles. Tu imagen es ${img.width}x${img.height}`);
+        return;
+      }
+
+      setUploadedFiles(prev => ({ ...prev, [fileName]: file }));
+    };
+    img.src = URL.createObjectURL(file);
+  };
+
   const icons = [
     {
       name: 'Favicon',
@@ -123,6 +151,177 @@ export default function IconsPreview() {
             </ul>
           </div>
         </div>
+      </div>
+
+      {/* Upload Section */}
+      <div className="mt-8 bg-primary/5 border border-primary/20 rounded-xl p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <Upload className="h-5 w-5 text-primary" />
+          <h2 className="font-heading font-semibold text-lg text-foreground">
+            Subir Nuevos Iconos
+          </h2>
+        </div>
+        <p className="text-sm text-muted-foreground mb-6">
+          Sube tus iconos personalizados con las dimensiones exactas requeridas
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Favicon Upload */}
+          <div className="space-y-3">
+            <Label htmlFor="favicon" className="text-sm font-medium">
+              Favicon (512x512)
+            </Label>
+            <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
+              <Input
+                id="favicon"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleFileUpload(e, 'favicon.png', '512x512')}
+              />
+              <Label htmlFor="favicon" className="cursor-pointer">
+                {uploadedFiles['favicon.png'] ? (
+                  <div className="space-y-2">
+                    <div className="w-12 h-12 mx-auto bg-green-100 rounded-full flex items-center justify-center">
+                      <Upload className="h-6 w-6 text-green-600" />
+                    </div>
+                    <p className="text-sm text-green-600 font-medium">
+                      {uploadedFiles['favicon.png'].name}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">
+                      Seleccionar favicon
+                    </p>
+                  </div>
+                )}
+              </Label>
+            </div>
+          </div>
+
+          {/* PWA Icon 512 Upload */}
+          <div className="space-y-3">
+            <Label htmlFor="pwa-512" className="text-sm font-medium">
+              PWA Icon (512x512)
+            </Label>
+            <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
+              <Input
+                id="pwa-512"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleFileUpload(e, 'pwa-icon-512.png', '512x512')}
+              />
+              <Label htmlFor="pwa-512" className="cursor-pointer">
+                {uploadedFiles['pwa-icon-512.png'] ? (
+                  <div className="space-y-2">
+                    <div className="w-12 h-12 mx-auto bg-green-100 rounded-full flex items-center justify-center">
+                      <Upload className="h-6 w-6 text-green-600" />
+                    </div>
+                    <p className="text-sm text-green-600 font-medium">
+                      {uploadedFiles['pwa-icon-512.png'].name}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">
+                      Seleccionar PWA 512
+                    </p>
+                  </div>
+                )}
+              </Label>
+            </div>
+          </div>
+
+          {/* PWA Maskable 512 Upload */}
+          <div className="space-y-3">
+            <Label htmlFor="pwa-maskable-512" className="text-sm font-medium">
+              PWA Maskable (512x512)
+            </Label>
+            <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
+              <Input
+                id="pwa-maskable-512"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleFileUpload(e, 'pwa-maskable-512.png', '512x512')}
+              />
+              <Label htmlFor="pwa-maskable-512" className="cursor-pointer">
+                {uploadedFiles['pwa-maskable-512.png'] ? (
+                  <div className="space-y-2">
+                    <div className="w-12 h-12 mx-auto bg-green-100 rounded-full flex items-center justify-center">
+                      <Upload className="h-6 w-6 text-green-600" />
+                    </div>
+                    <p className="text-sm text-green-600 font-medium">
+                      {uploadedFiles['pwa-maskable-512.png'].name}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">
+                      Seleccionar Maskable 512
+                    </p>
+                  </div>
+                )}
+              </Label>
+            </div>
+          </div>
+
+          {/* PWA Maskable 192 Upload */}
+          <div className="space-y-3">
+            <Label htmlFor="pwa-maskable-192" className="text-sm font-medium">
+              PWA Maskable (192x192)
+            </Label>
+            <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
+              <Input
+                id="pwa-maskable-192"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleFileUpload(e, 'pwa-maskable-192.png', '192x192')}
+              />
+              <Label htmlFor="pwa-maskable-192" className="cursor-pointer">
+                {uploadedFiles['pwa-maskable-192.png'] ? (
+                  <div className="space-y-2">
+                    <div className="w-12 h-12 mx-auto bg-green-100 rounded-full flex items-center justify-center">
+                      <Upload className="h-6 w-6 text-green-600" />
+                    </div>
+                    <p className="text-sm text-green-600 font-medium">
+                      {uploadedFiles['pwa-maskable-192.png'].name}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">
+                      Seleccionar Maskable 192
+                    </p>
+                  </div>
+                )}
+              </Label>
+            </div>
+          </div>
+        </div>
+
+        {Object.keys(uploadedFiles).length > 0 && (
+          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-sm text-green-700 font-medium mb-2">
+              Archivos listos para usar:
+            </p>
+            <ul className="text-sm text-green-600 space-y-1">
+              {Object.entries(uploadedFiles).map(([fileName, file]) => (
+                <li key={fileName}>• {fileName} - {file.name}</li>
+              ))}
+            </ul>
+            <p className="text-xs text-green-600 mt-3">
+              Los archivos están validados y listos. Ahora puedes usarlos directamente en tu aplicación.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Test Installation */}
