@@ -24,7 +24,13 @@
       "purpose": "maskable"
     },
     {
-      "src": "/eagle-logo.svg",
+      "src": "/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/trans-bg-eagle.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
@@ -32,9 +38,9 @@
   ],
   "screenshots": [
     {
-      "src": "/eagle-logo.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "form_factor": "wide"
     }
   ],
@@ -46,8 +52,9 @@
       "url": "/",
       "icons": [
         {
-          "src": "/eagle-logo.svg",
-          "sizes": "any"
+          "src": "/pwa-icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
         }
       ]
     },
@@ -58,8 +65,9 @@
       "url": "/drivers",
       "icons": [
         {
-          "src": "/eagle-logo.svg",
-          "sizes": "any"
+          "src": "/pwa-icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
         }
       ]
     }
