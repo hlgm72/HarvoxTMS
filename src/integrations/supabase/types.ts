@@ -1296,6 +1296,7 @@ export type Database = {
           driver_user_id: string
           factoring_percentage: number | null
           id: string
+          internal_dispatcher_id: string | null
           leasing_percentage: number | null
           load_number: string
           notes: string | null
@@ -1316,6 +1317,7 @@ export type Database = {
           driver_user_id: string
           factoring_percentage?: number | null
           id?: string
+          internal_dispatcher_id?: string | null
           leasing_percentage?: number | null
           load_number: string
           notes?: string | null
@@ -1336,6 +1338,7 @@ export type Database = {
           driver_user_id?: string
           factoring_percentage?: number | null
           id?: string
+          internal_dispatcher_id?: string | null
           leasing_percentage?: number | null
           load_number?: string
           notes?: string | null

@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 export interface CreateLoadData {
   load_number: string;
   driver_user_id: string;
+  internal_dispatcher_id?: string | null;
   broker_id?: string;
   total_amount: number;
   commodity?: string;
@@ -44,6 +45,7 @@ export const useCreateLoad = () => {
         .insert({
           load_number: data.load_number,
           driver_user_id: data.driver_user_id,
+          internal_dispatcher_id: data.internal_dispatcher_id,
           broker_id: data.broker_id || null,
           total_amount: data.total_amount,
           commodity: data.commodity || null,

@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCompanyDrivers, CompanyDriver } from "@/hooks/useCompanyDrivers";
+import { useCompanyDispatchers } from "@/hooks/useCompanyDispatchers";
 import { useCompanyBrokers, CompanyBroker } from "@/hooks/useCompanyBrokers";
 import { useCreateLoad } from "@/hooks/useCreateLoad";
 import { useATMInput } from "@/hooks/useATMInput";
@@ -67,6 +68,8 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   const [selectedDriver, setSelectedDriver] = useState<CompanyDriver | null>(null);
   const [loadDocuments, setLoadDocuments] = useState<any[]>([]);
   const { drivers } = useCompanyDrivers();
+  const { data: dispatchers = [] } = useCompanyDispatchers();
+  const [selectedDispatcher, setSelectedDispatcher] = useState<any>(null);
   const { brokers, loading: brokersLoading, refetch: refetchBrokers } = useCompanyBrokers();
   const createLoadMutation = useCreateLoad();
 
@@ -216,6 +219,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
     createLoadMutation.mutate({
       load_number: values.load_number,
       driver_user_id: selectedDriver.user_id,
+      internal_dispatcher_id: selectedDispatcher?.user_id || null,
       broker_id: values.broker_id,
       total_amount: values.total_amount,
       commodity: values.commodity,
@@ -521,11 +525,14 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
 
             {/* Phase 3: Driver Assignment */}
             {currentPhase === 3 && (
-              <LoadAssignmentSection
-                drivers={drivers}
-                selectedDriver={selectedDriver}
-                onDriverSelect={setSelectedDriver}
-              />
+          <LoadAssignmentSection
+            drivers={drivers}
+            selectedDriver={selectedDriver}
+            onDriverSelect={setSelectedDriver}
+            dispatchers={dispatchers}
+            selectedDispatcher={selectedDispatcher}
+            onDispatcherSelect={setSelectedDispatcher}
+          />
             )}
 
             {/* Phase 4: Documents */}
