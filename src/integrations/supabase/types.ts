@@ -1191,14 +1191,14 @@ export type Database = {
             foreignKeyName: "load_documents_load_id_fkey"
             columns: ["load_id"]
             isOneToOne: false
-            referencedRelation: "loads"
+            referencedRelation: "load_details_with_dates"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "load_documents_load_id_fkey"
             columns: ["load_id"]
             isOneToOne: false
-            referencedRelation: "loads_with_calculated_dates"
+            referencedRelation: "loads"
             referencedColumns: ["id"]
           },
         ]
@@ -1272,14 +1272,14 @@ export type Database = {
             foreignKeyName: "load_stops_load_id_fkey"
             columns: ["load_id"]
             isOneToOne: false
-            referencedRelation: "loads"
+            referencedRelation: "load_details_with_dates"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "load_stops_load_id_fkey"
             columns: ["load_id"]
             isOneToOne: false
-            referencedRelation: "loads_with_calculated_dates"
+            referencedRelation: "loads"
             referencedColumns: ["id"]
           },
         ]
@@ -2181,7 +2181,7 @@ export type Database = {
       }
     }
     Views: {
-      equipment_with_document_status: {
+      equipment_status_summary: {
         Row: {
           annual_inspection_expiry_date: string | null
           company_id: string | null
@@ -2217,7 +2217,7 @@ export type Database = {
         }
         Relationships: []
       }
-      loads_with_calculated_dates: {
+      load_details_with_dates: {
         Row: {
           actual_delivery_date: string | null
           actual_pickup_date: string | null
