@@ -48,14 +48,14 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222 84% 4%;
 
-    /* Primary: Fleet Blue */
-    --primary: 214 88% 54%;        /* #2563EB - Fleet Blue */
+    /* Primary: Navy Blue */
+    --primary: 209 86% 21%;        /* #0b3660 - Navy Blue */
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 214 88% 64%;   /* Lighter blue for effects */
-    --primary-light: 214 88% 95%;  /* Very light blue for backgrounds */
+    --primary-glow: 209 86% 31%;   /* Lighter navy for effects */
+    --primary-light: 209 86% 95%;  /* Very light navy for backgrounds */
 
     /* Secondary: Transport Orange */
-    --secondary: 16 100% 60%;      /* #FF6B35 - Transport Orange */
+    --secondary: 24 97% 52%;       /* #fb780c - Transport Orange */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 210 16% 93%;
@@ -74,44 +74,44 @@ All colors MUST be HSL.
     --warning-foreground: 0 0% 100%;
 
     /* FleetNest Specific Colors */
-    --fleet-orange: 16 100% 60%;   /* #FF6B35 - Primary transport orange */
-    --fleet-orange-dark: 16 100% 50%; /* Darker orange for hover states */
-    --fleet-blue: 214 88% 54%;     /* #2563EB - Fleet management blue */
-    --fleet-navy: 214 95% 20%;     /* Dark navy for headers */
-    --fleet-green: 142 76% 36%;    /* Success/active status */
-    --fleet-red: 0 84% 60%;        /* Alerts/critical status */
-    --fleet-sky: 199 89% 48%;      /* Info/secondary actions */
+    --fleet-orange: 24 97% 52%;     /* #fb780c - Primary transport orange */
+    --fleet-orange-dark: 24 97% 42%; /* Darker orange for hover states */
+    --fleet-blue: 209 86% 21%;      /* #0b3660 - Fleet management navy */
+    --fleet-navy: 209 86% 16%;      /* Darker navy for headers */
+    --fleet-green: 142 76% 36%;     /* Success/active status */
+    --fleet-red: 0 84% 60%;         /* Alerts/critical status */
+    --fleet-sky: 199 89% 48%;       /* Info/secondary actions */
     
     /* Command Center Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--fleet-blue)), hsl(var(--fleet-navy)));
     --gradient-fleet: linear-gradient(135deg, hsl(var(--fleet-blue)), hsl(var(--fleet-navy)));
     --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
     
-    /* Shadows with blue/orange theme */
+    /* Shadows with navy/orange theme */
     --shadow-fleet: 0 10px 30px -10px hsl(var(--fleet-blue) / 0.3);
     --shadow-glow: 0 0 40px hsl(var(--fleet-blue) / 0.4);
     --shadow-blue: 0 10px 30px -10px hsl(var(--fleet-blue) / 0.3);
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 214 88% 54%;            /* Blue ring for focus states */
+    --ring: 209 86% 21%;            /* Navy ring for focus states */
 
     /* Chart colors using fleet theme */
-    --chart-1: 214 88% 54%;         /* Fleet blue */
-    --chart-2: 16 100% 60%;         /* Fleet orange */
+    --chart-1: 209 86% 21%;         /* Fleet navy */
+    --chart-2: 24 97% 52%;          /* Fleet orange */
     --chart-3: 142 76% 36%;         /* Fleet green */
     --chart-4: 0 84% 60%;           /* Fleet red */
     --chart-5: 199 89% 48%;         /* Fleet sky */
 
     --radius: 0.5rem;
 
-    /* FleetNest Style Sidebar - Using primary blue as background */
-    --fleet-sidebar-primary: 214 88% 54%;    /* Fleet blue primary - main background */
-    --fleet-sidebar-darker: 214 88% 45%;     /* Darker blue for header */
-    --fleet-sidebar-hover: 214 88% 60%;      /* Lighter blue for hover */
-    --fleet-sidebar-active: 214 88% 70%;     /* Active state */
+    /* FleetNest Style Sidebar - Using new primary navy as background */
+    --fleet-sidebar-primary: 209 86% 21%;    /* Navy blue primary - main background */
+    --fleet-sidebar-darker: 209 86% 16%;     /* Darker navy for header */
+    --fleet-sidebar-hover: 209 86% 26%;      /* Lighter navy for hover */
+    --fleet-sidebar-active: 209 86% 31%;     /* Active state */
     --fleet-sidebar-text: 0 0% 100%;         /* Pure white text */
-    --fleet-sidebar-text-muted: 214 20% 85%; /* Light blue-grey text */
-    --fleet-sidebar-border: 214 88% 40%;     /* Darker blue for borders */
+    --fleet-sidebar-text-muted: 209 20% 85%; /* Light navy-grey text */
+    --fleet-sidebar-border: 209 86% 11%;     /* Darker navy for borders */
     
     /* Sidebar mapping to FleetNest blue theme */
     --sidebar-background: var(--fleet-sidebar-primary);
@@ -138,15 +138,15 @@ All colors MUST be HSL.
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    /* Primary stays blue in dark mode */
-    --primary: 214 88% 60%;         /* Slightly lighter blue for dark mode */
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --primary-glow: 214 88% 70%;
-    --primary-light: 214 88% 10%;
+    /* Primary stays navy in dark mode */
+    --primary: 209 86% 31%;         /* Slightly lighter navy for dark mode */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 209 86% 41%;
+    --primary-light: 209 86% 10%;
 
     /* Secondary: Orange adjusted for dark */
-    --secondary: 16 100% 65%;       /* Lighter orange for dark mode */
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 24 97% 62%;        /* Lighter orange for dark mode */
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
