@@ -23,7 +23,14 @@ export const useCompanyDispatchers = () => {
   return useQuery({
     queryKey,
     queryFn: async () => {
+      console.log('🔍 useCompanyDispatchers - Starting query');
+      console.log('🔍 User:', user?.id);
+      console.log('🔍 UserCompany:', userCompany);
+      console.log('🔍 CacheLoading:', cacheLoading);
+      console.log('🔍 CacheError:', cacheError);
+
       if (!user) {
+        console.log('❌ No user authenticated');
         throw new Error('User not authenticated');
       }
 
@@ -33,8 +40,11 @@ export const useCompanyDispatchers = () => {
       }
 
       if (cacheLoading || !userCompany) {
+        console.log('⏳ Waiting for company cache...');
         throw new Error('Cargando datos de compañía...');
       }
+
+      console.log('🔍 Querying dispatchers for company:', userCompany.company_id);
 
       const { data, error } = await supabase
         .from("user_company_roles")
@@ -51,15 +61,23 @@ export const useCompanyDispatchers = () => {
         .eq("role", "dispatcher")
         .eq("is_active", true);
 
-      if (error) throw error;
+      console.log('🔍 Query result:', { data, error });
 
-      return (data || []).map((item: any) => ({
+      if (error) {
+        console.error('❌ Query error:', error);
+        throw error;
+      }
+
+      const result = (data || []).map((item: any) => ({
         user_id: item.user_id,
         first_name: item.profiles?.first_name || null,
         last_name: item.profiles?.last_name || null,
         phone: item.profiles?.phone || null,
         is_active: item.is_active,
       })) as CompanyDispatcher[];
+
+      console.log('✅ Final dispatchers result:', result);
+      return result;
     },
     enabled: !!user && !cacheLoading && !!userCompany,
     staleTime: 300000, // 5 minutos
