@@ -188,7 +188,7 @@ export function StopEditModal({
               />
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>Estado *</Label>
                 <StateCombobox
@@ -212,7 +212,7 @@ export function StopEditModal({
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 sm:col-span-2 lg:col-span-1">
                 <Label htmlFor="zip">ZIP</Label>
                 <Input
                   id="zip"
