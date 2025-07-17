@@ -13,7 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useFleetNotifications } from '@/components/notifications';
 import { createTextHandlers } from '@/lib/textUtils';
-import { EagleLogo } from '@/components/ui/EagleLogo';
+import eagleLogo from "@/assets/trans-bg-eagle.svg";
 const fleetNestLogo = '/lovable-uploads/f2dc63b4-a93b-49bd-a347-e03a7c567905.png';
 
 export default function Auth() {
@@ -398,9 +398,10 @@ export default function Auth() {
           {/* Logo and Branding */}
           <div className="flex items-center space-x-4 mb-8">
             <div className="flex items-center space-x-4 p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20">
-              <EagleLogo 
-                className="h-16 w-16 filter drop-shadow-lg"
-                fill="white"
+              <img 
+                src={eagleLogo}
+                alt="FleetNest Logo" 
+                className="h-16 w-16 object-contain filter drop-shadow-lg"
               />
               <span className="text-3xl font-heading font-bold text-white drop-shadow-lg">{t('common:app.name')}</span>
             </div>
@@ -470,9 +471,10 @@ export default function Auth() {
             {/* Logo for Mobile */}
             <div className="flex justify-center mb-6 lg:hidden">
               <div className="flex items-center space-x-3 p-4 rounded-2xl bg-gradient-primary shadow-glow">
-                <EagleLogo 
-                  className="h-12 w-12 filter drop-shadow-lg"
-                  fill="white"
+                <img 
+                  src={eagleLogo}
+                  alt="FleetNest Logo" 
+                  className="h-12 w-12 object-contain filter drop-shadow-lg"
                 />
                 <span className="text-xl font-heading font-bold text-white drop-shadow-lg">{t('common:app.name')}</span>
               </div>
