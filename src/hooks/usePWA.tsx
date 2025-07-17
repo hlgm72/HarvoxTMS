@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications/NotificationProvider';
 
 interface PWAInstallPrompt extends Event {
   prompt: () => Promise<void>;
@@ -20,6 +21,7 @@ export const usePWA = (): PWAHook => {
   const [isInstalled, setIsInstalled] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const { toast } = useToast();
+  const { showNotification } = useFleetNotifications();
 
   useEffect(() => {
     // Check if app is installed
@@ -88,10 +90,19 @@ export const usePWA = (): PWAHook => {
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  toast({
-                    title: "Actualización disponible",
-                    description: "Una nueva versión de FleetNest está lista. Refresca la página para usar la versión más reciente.",
-                  });
+                  showNotification(
+                    'info',
+                    "🚀 Nueva versión disponible",
+                    "FleetNest se ha actualizado. Haz clic en 'Actualizar' para usar la nueva versión.",
+                    {
+                      persistent: true,
+                      showAction: true,
+                      actionText: "Actualizar",
+                      onAction: () => {
+                        window.location.reload();
+                      }
+                    }
+                  );
                 }
               });
             }
@@ -108,7 +119,7 @@ export const usePWA = (): PWAHook => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [toast]);
+  }, [toast, showNotification]);
 
   const promptInstall = async (): Promise<void> => {
     if (!deferredPrompt) {
