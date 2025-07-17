@@ -186,14 +186,14 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
     },
     {
       id: 3,
-      title: "Documentos",
-      description: "Rate confirmation y otros",
+      title: "Asignación",
+      description: "Conductor y activación",
       completed: false
     },
     {
       id: 4,
-      title: "Asignación",
-      description: "Conductor y activación",
+      title: "Documentos",
+      description: "Rate confirmation y Load Order",
       completed: false
     }
   ];
