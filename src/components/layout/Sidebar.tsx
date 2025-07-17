@@ -622,13 +622,17 @@ export function AppSidebar() {
       }}>
         <div className={`flex items-center transition-all duration-300 ${collapsed ? 'justify-center' : 'gap-4'}`}>
           {/* Logo Container with Professional Styling */}
-          <div className="relative group cursor-pointer">
-            <div className={`${collapsed ? 'w-14 h-14' : 'w-20 h-20'} bg-white rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg transition-all duration-300 group-hover:shadow-xl animate-[scale-in_0.8s_cubic-bezier(0.4,0,0.2,1)]`}>
+          <div className="relative group">
+            <div className={`${collapsed ? 'w-14 h-14' : 'w-20 h-20'} bg-white rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 animate-[scale-in_0.8s_cubic-bezier(0.4,0,0.2,1)]`}>
               <img 
                 src={eagleLogo} 
                 alt="FleetNest Logo" 
-                className={`${collapsed ? 'w-12 h-12' : 'w-18 h-18'} object-contain drop-shadow-md transition-transform duration-500 group-hover:scale-x-[-1] group-hover:scale-110 animate-[fade-in_1s_ease-out_0.3s_both]`}
+                className={`${collapsed ? 'w-12 h-12' : 'w-18 h-18'} object-contain drop-shadow-md transition-all duration-300 group-hover:drop-shadow-lg group-hover:scale-x-[-1] group-hover:scale-110 animate-[fade-in_1s_ease-out_0.3s_both]`}
               />
+              {/* Subtle glow effect */}
+              <div className="absolute inset-0 rounded-xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              {/* Impact glow on load */}
+              <div className="absolute inset-0 rounded-xl bg-white/10 animate-[scale-in_0.8s_cubic-bezier(0.4,0,0.2,1),fade-out_1.5s_ease-out_0.8s_forwards]"></div>
             </div>
           </div>
           
