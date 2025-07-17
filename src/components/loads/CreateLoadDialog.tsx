@@ -83,7 +83,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
       po_number: "",
       pu_number: "",
       commodity: "",
-      weight_lbs: undefined,
+      weight_lbs: 0,
     },
   });
 
