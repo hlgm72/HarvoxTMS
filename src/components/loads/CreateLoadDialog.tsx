@@ -610,7 +610,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
               </Button>
 
               <div className="flex gap-2">
-                <Button type="button" variant="outline" onClick={onClose}>
+                <Button type="button" variant="outline" onClick={handleClose}>
                   Cancelar
                 </Button>
                 
