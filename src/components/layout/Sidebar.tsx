@@ -23,6 +23,7 @@ import {
   Heart, TrendingUp, Headphones, Settings, FileBarChart, 
   Lock, Home, Navigation, Zap, Dot, DollarSign
 } from "lucide-react";
+import eagleLogo from "@/assets/trans-bg-eagle.svg";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -624,7 +625,7 @@ export function AppSidebar() {
           <div className="relative group">
             <div className={`${collapsed ? 'w-14 h-14' : 'w-20 h-20'} bg-black rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 animate-[scale-in_0.8s_cubic-bezier(0.4,0,0.2,1)]`}>
               <img 
-                src="/lovable-uploads/e876333a-57c3-43f2-80e0-d74900cf07d1.png" 
+                src={eagleLogo} 
                 alt="FleetNest Logo" 
                 className={`${collapsed ? 'w-10 h-10' : 'w-16 h-16'} object-contain drop-shadow-md transition-all duration-300 group-hover:drop-shadow-lg animate-[fade-in_1s_ease-out_0.3s_both]`}
               />
