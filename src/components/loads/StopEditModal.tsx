@@ -188,45 +188,48 @@ export function StopEditModal({
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label>Estado *</Label>
-                <StateCombobox
-                  value={formData.state || ''}
-                  onValueChange={(value) => {
-                    updateField('state', value);
-                    updateField('city', ''); // Reset city when state changes
-                  }}
-                  placeholder="Selecciona estado..."
-                />
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Estado *</Label>
+                  <StateCombobox
+                    value={formData.state || ''}
+                    onValueChange={(value) => {
+                      updateField('state', value);
+                      updateField('city', ''); // Reset city when state changes
+                    }}
+                    placeholder="Selecciona estado..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Ciudad *</Label>
+                  <CityCombobox
+                    value={formData.city || ''}
+                    onValueChange={(value) => updateField('city', value)}
+                    stateId={formData.state || ''}
+                    placeholder="Selecciona ciudad..."
+                    disabled={!formData.state}
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label>Ciudad *</Label>
-                <CityCombobox
-                  value={formData.city || ''}
-                  onValueChange={(value) => updateField('city', value)}
-                  stateId={formData.state || ''}
-                  placeholder="Selecciona ciudad..."
-                  disabled={!formData.state}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="zip">ZIP</Label>
-                <Input
-                  id="zip"
-                  placeholder="12345"
-                  value={formData.zip_code || ''}
-                  onChange={zipHandlers.onChange}
-                  onBlur={zipHandlers.onBlur}
-                  maxLength={5}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="zip">ZIP</Label>
+                  <Input
+                    id="zip"
+                    placeholder="12345"
+                    value={formData.zip_code || ''}
+                    onChange={zipHandlers.onChange}
+                    onBlur={zipHandlers.onBlur}
+                    maxLength={5}
+                  />
+                </div>
+                <div></div>
               </div>
             </div>
           </div>
-
-          {/* Fecha y Hora */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium flex items-center gap-2">
               <Clock className="h-4 w-4" />
