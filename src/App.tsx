@@ -27,6 +27,7 @@ import Loads from "./pages/Loads";
 import EagleDemo from "./pages/EagleDemo";
 import DriverMobile from "./pages/DriverMobile";
 
+import IconsPreview from "./pages/IconsPreview";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/layout/Layout";
 import { NotificationProvider } from "./components/notifications";
@@ -267,6 +268,16 @@ function AppContent() {
           } 
         />
         
+        {/* Temporary Icons Preview */}
+        <Route 
+          path="/icons-preview" 
+          element={
+            <ProtectedRoute>
+              <IconsPreview />
+            </ProtectedRoute>
+          } 
+        />
+
         {/* Catch-all route */}
         <Route path="*" element={<NotFound />} />
       </Routes>
