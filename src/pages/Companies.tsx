@@ -365,7 +365,7 @@ export default function Companies() {
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+          <h1 className="text-3xl font-heading font-bold tracking-tight flex items-center gap-2">
             <Building2 className="h-8 w-8" />
             {t('admin:pages.companies.title')}
           </h1>

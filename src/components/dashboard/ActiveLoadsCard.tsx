@@ -44,7 +44,7 @@ export function ActiveLoadsCard({
       <CardContent className="space-y-3">
         {/* Main stat display */}
         <div className="flex items-center gap-3">
-          <div className="text-3xl font-bold text-foreground">{totalLoads}</div>
+          <div className="text-3xl font-heading font-bold text-foreground">{totalLoads}</div>
           <Badge 
             variant={isPositive ? "default" : "destructive"}
             className="text-xs px-2 py-1"

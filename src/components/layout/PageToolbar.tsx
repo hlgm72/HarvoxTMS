@@ -29,11 +29,11 @@ export function PageToolbar({
                 </div>
               )}
               <div className="min-w-0 flex-1">
-                <h1 className="text-xl md:text-2xl font-semibold text-foreground truncate">
+                <h1 className="text-xl md:text-2xl font-heading font-semibold text-foreground truncate">
                   {title}
                 </h1>
                 {subtitle && (
-                  <p className="text-sm md:text-base text-muted-foreground mt-1 truncate">
+                  <p className="text-sm md:text-base font-body text-muted-foreground mt-1 truncate">
                     {subtitle}
                   </p>
                 )}

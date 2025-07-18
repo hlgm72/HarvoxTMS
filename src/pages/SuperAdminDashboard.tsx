@@ -713,7 +713,7 @@ export default function SuperAdminDashboard() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium text-muted-foreground">{t('admin:common.total_companies')}</p>
-                          <p className="text-3xl font-bold text-primary">{stats.total_companies}</p>
+                          <p className="text-3xl font-heading font-bold text-primary">{stats.total_companies}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             <TrendingUp className="h-3 w-3 inline mr-1" />
                             {t('admin:common.from_last_month')}
@@ -731,7 +731,7 @@ export default function SuperAdminDashboard() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium text-muted-foreground">{t('admin:common.total_users')}</p>
-                          <p className="text-3xl font-bold text-secondary">{stats.total_users}</p>
+                          <p className="text-3xl font-heading font-bold text-secondary">{stats.total_users}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             <TrendingUp className="h-3 w-3 inline mr-1" />
                             +8% from last month
@@ -749,7 +749,7 @@ export default function SuperAdminDashboard() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium text-muted-foreground">{t('admin:common.total_vehicles')}</p>
-                          <p className="text-3xl font-bold text-success">{stats.total_vehicles}</p>
+                          <p className="text-3xl font-heading font-bold text-success">{stats.total_vehicles}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             <TrendingUp className="h-3 w-3 inline mr-1" />
                             +15% from last month
@@ -767,7 +767,7 @@ export default function SuperAdminDashboard() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium text-muted-foreground">{t('admin:common.total_drivers')}</p>
-                          <p className="text-3xl font-bold text-warning">{stats.total_drivers}</p>
+                          <p className="text-3xl font-heading font-bold text-warning">{stats.total_drivers}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             <TrendingUp className="h-3 w-3 inline mr-1" />
                             +5% from last month

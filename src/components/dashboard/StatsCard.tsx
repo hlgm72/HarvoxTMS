@@ -27,18 +27,18 @@ export function StatsCard({
       variant === "destructive" && "border-destructive/20 bg-gradient-to-br from-destructive/5 to-destructive/10"
     )}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground leading-tight">
+        <CardTitle className="text-xs md:text-sm font-body font-medium text-muted-foreground leading-tight">
           {title}
         </CardTitle>
         <span className="text-lg md:text-2xl flex-shrink-0">{icon}</span>
       </CardHeader>
       <CardContent className="space-y-1">
-        <div className="text-xl md:text-2xl font-bold text-foreground">
+        <div className="text-xl md:text-2xl font-heading font-bold text-foreground">
           {value}
         </div>
         {trend && (
           <p className={cn(
-            "text-xs flex items-center gap-1",
+            "text-xs font-body flex items-center gap-1",
             trend.isPositive ? "text-success" : "text-destructive"
           )}>
             <span className={trend.isPositive ? "↗️" : "↘️"}>
