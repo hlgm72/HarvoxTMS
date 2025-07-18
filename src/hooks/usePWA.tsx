@@ -23,23 +23,48 @@ export const usePWA = (): PWAHook => {
   const { toast } = useToast();
   const { showNotification } = useFleetNotifications();
 
+  // Check if device is mobile and potentially installable
+  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isSamsungBrowser = /SamsungBrowser/i.test(navigator.userAgent);
+  
+  console.log('📱 PWA: Device info:', {
+    isMobile,
+    isSamsungBrowser,
+    userAgent: navigator.userAgent
+  });
+
   useEffect(() => {
+    console.log('🔧 PWA: Hook initialized');
+    
     // Check if app is installed
     const checkInstalled = () => {
       const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
       const isInWebAppMode = (window.navigator as any).standalone === true;
-      setIsInstalled(isInStandaloneMode || isInWebAppMode);
+      const isInstalled = isInStandaloneMode || isInWebAppMode;
+      
+      console.log('🔍 PWA: Installation check:', {
+        isInStandaloneMode,
+        isInWebAppMode,
+        isInstalled,
+        userAgent: navigator.userAgent,
+        displayMode: window.matchMedia('(display-mode: standalone)').matches
+      });
+      
+      setIsInstalled(isInstalled);
     };
 
     checkInstalled();
 
     // Listen for beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
-      console.log('PWA: Install prompt available');
+      console.log('🚀 PWA: Install prompt available!', e);
       e.preventDefault();
       setDeferredPrompt(e as PWAInstallPrompt);
       setIsInstallable(true);
     };
+
+    // Check if beforeinstallprompt is supported
+    console.log('🔍 PWA: Browser supports beforeinstallprompt?', 'onbeforeinstallprompt' in window);
 
     // Listen for app installed event
     const handleAppInstalled = () => {
