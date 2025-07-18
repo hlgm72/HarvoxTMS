@@ -23,7 +23,7 @@ import {
   Heart, TrendingUp, Headphones, Settings, FileBarChart, 
   Lock, Home, Navigation, Zap, Dot, DollarSign
 } from "lucide-react";
-import eagleLogo from "@/assets/high_res_eagle.svg";
+import eagleLogo from "/lovable-uploads/14d1a3f9-392d-4ce8-beae-9d16eb2c5913.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
