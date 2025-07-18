@@ -12,33 +12,39 @@
   "categories": ["business", "productivity"],
   "icons": [
     {
-      "src": "/lovable-uploads/a62304fc-8fd6-43ae-9fa7-c311351ae311.png",
+      "src": "/icons/icon-192-maskable.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/lovable-uploads/8522f6bd-e37d-423e-9fee-2082bacc010c.png",
+      "src": "/icons/icon-512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/lovable-uploads/e5c8efef-b0eb-4c43-9d75-068130d1d349.png",
+      "src": "/icons/icon-192-any.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512-any.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/trans-bg-eagle.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
       "purpose": "any"
     }
   ],
   "screenshots": [
     {
-      "src": "/lovable-uploads/e5c8efef-b0eb-4c43-9d75-068130d1d349.png",
+      "src": "/icons/icon-512-any.png",
       "sizes": "512x512",
       "type": "image/png",
       "form_factor": "wide"
@@ -52,8 +58,8 @@
       "url": "/",
       "icons": [
         {
-          "src": "/lovable-uploads/e5c8efef-b0eb-4c43-9d75-068130d1d349.png",
-          "sizes": "512x512",
+          "src": "/icons/icon-192-any.png",
+          "sizes": "192x192",
           "type": "image/png"
         }
       ]
@@ -65,8 +71,8 @@
       "url": "/drivers",
       "icons": [
         {
-          "src": "/lovable-uploads/e5c8efef-b0eb-4c43-9d75-068130d1d349.png",
-          "sizes": "512x512",
+          "src": "/icons/icon-192-any.png",
+          "sizes": "192x192",
           "type": "image/png"
         }
       ]
