@@ -157,49 +157,59 @@ export default function Auth() {
     'email'
   );
 
-  // Handle autofill detection for email field - Enhanced for Samsung Browser
+  // Enhanced autofill detection for Samsung Browser
   const handleEmailAutofill = (e: React.FocusEvent<HTMLInputElement>) => {
-    // Small delay to ensure autofill has completed
-    setTimeout(() => {
-      const emailValue = e.target.value;
+    // Multiple detection strategies for different browsers
+    const checkValue = () => {
+      const emailValue = e.target.value.trim();
+      console.log('Focus autofill check:', emailValue, 'Current state:', formData.email);
       if (emailValue && emailValue !== formData.email) {
         setFormData(prev => ({ ...prev, email: emailValue }));
         validateField('email', emailValue);
         if (error) setError(null);
       }
-    }, 100);
+    };
+    
+    // Immediate check
+    checkValue();
+    
+    // Delayed check for slower autofill
+    setTimeout(checkValue, 100);
+    setTimeout(checkValue, 300);
+    setTimeout(checkValue, 500);
   };
 
-  // Additional autofill detection specifically for Samsung Browser
+  // Input event handler for Samsung Browser
   const handleEmailInputEvent = (e: React.FormEvent<HTMLInputElement>) => {
-    const emailValue = e.currentTarget.value;
-    if (emailValue && emailValue !== formData.email) {
+    const emailValue = e.currentTarget.value.trim();
+    console.log('Input event triggered:', emailValue);
+    if (emailValue !== formData.email) {
       setFormData(prev => ({ ...prev, email: emailValue }));
       validateField('email', emailValue);
       if (error) setError(null);
     }
   };
 
-  // Periodic check for autofilled values (Samsung Browser fallback)
-  const checkAutofillValues = () => {
-    const emailInput = document.getElementById('email') as HTMLInputElement;
-    if (emailInput && emailInput.value && emailInput.value !== formData.email) {
-      setFormData(prev => ({ ...prev, email: emailInput.value }));
-      validateField('email', emailInput.value);
-      if (error) setError(null);
-    }
-  };
-
-  // Use interval to check for autofilled values in Samsung Browser
+  // Simplified periodic check for Samsung Browser
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (mounted) {
-      interval = setInterval(checkAutofillValues, 1000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
+    if (!mounted) return;
+    
+    const checkAutofillValues = () => {
+      const emailInput = document.getElementById('email') as HTMLInputElement;
+      if (emailInput && emailInput.value) {
+        const currentValue = emailInput.value.trim();
+        if (currentValue && currentValue !== formData.email) {
+          console.log('Periodic check found change:', currentValue, 'vs', formData.email);
+          setFormData(prev => ({ ...prev, email: currentValue }));
+          validateField('email', currentValue);
+          if (error) setError(null);
+        }
+      }
     };
-  }, [formData.email, mounted]);
+
+    const interval = setInterval(checkAutofillValues, 1000);
+    return () => clearInterval(interval);
+  }, [formData.email, mounted, error]);
 
   const firstNameHandlers = createTextHandlers((value) => {
     setFormData(prev => ({ ...prev, firstName: value }));
@@ -365,14 +375,26 @@ export default function Auth() {
     setError(null);
 
     try {
+      // Log form data being sent
+      console.log('Login attempt with data:', {
+        email: formData.email,
+        emailLength: formData.email.length,
+        hasSpaces: formData.email.includes(' '),
+        trimmedEmail: formData.email.trim(),
+        password: '***hidden***'
+      });
+
       if (isLogin) {
         // Sign in existing user
         const { data, error } = await supabase.auth.signInWithPassword({
-          email: formData.email,
+          email: formData.email.trim(),
           password: formData.password,
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase auth error:', error);
+          throw error;
+        }
 
         if (data.user) {
           console.log('User logged in successfully:', data.user.id);
