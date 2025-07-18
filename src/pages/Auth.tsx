@@ -157,7 +157,7 @@ export default function Auth() {
     'email'
   );
 
-  // Handle autofill detection for email field
+  // Handle autofill detection for email field - Enhanced for Samsung Browser
   const handleEmailAutofill = (e: React.FocusEvent<HTMLInputElement>) => {
     // Small delay to ensure autofill has completed
     setTimeout(() => {
@@ -169,6 +169,37 @@ export default function Auth() {
       }
     }, 100);
   };
+
+  // Additional autofill detection specifically for Samsung Browser
+  const handleEmailInputEvent = (e: React.FormEvent<HTMLInputElement>) => {
+    const emailValue = e.currentTarget.value;
+    if (emailValue && emailValue !== formData.email) {
+      setFormData(prev => ({ ...prev, email: emailValue }));
+      validateField('email', emailValue);
+      if (error) setError(null);
+    }
+  };
+
+  // Periodic check for autofilled values (Samsung Browser fallback)
+  const checkAutofillValues = () => {
+    const emailInput = document.getElementById('email') as HTMLInputElement;
+    if (emailInput && emailInput.value && emailInput.value !== formData.email) {
+      setFormData(prev => ({ ...prev, email: emailInput.value }));
+      validateField('email', emailInput.value);
+      if (error) setError(null);
+    }
+  };
+
+  // Use interval to check for autofilled values in Samsung Browser
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (mounted) {
+      interval = setInterval(checkAutofillValues, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [formData.email, mounted]);
 
   const firstNameHandlers = createTextHandlers((value) => {
     setFormData(prev => ({ ...prev, firstName: value }));
@@ -753,6 +784,7 @@ export default function Auth() {
                           validateField('email', cleanValue);
                           if (error) setError(null);
                         }}
+                        onInput={handleEmailInputEvent}
                         onKeyPress={(e) => {
                           // Prevent spaces from being typed
                           if (e.key === ' ') {
