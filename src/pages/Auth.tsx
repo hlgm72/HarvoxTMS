@@ -157,7 +157,7 @@ export default function Auth() {
     'email'
   );
 
-  // Enhanced autofill detection for Samsung Browser credentials
+  // Enhanced autofill detection specifically for Samsung Browser credentials
   const detectCredentialAutofill = () => {
     const emailInput = document.getElementById('email') as HTMLInputElement;
     const passwordInput = document.getElementById('password') as HTMLInputElement;
@@ -166,17 +166,24 @@ export default function Auth() {
       const emailValue = emailInput.value.trim();
       const passwordValue = passwordInput.value;
       
+      console.log('🔍 Credential check:', {
+        emailValue,
+        passwordValue: passwordValue ? '***filled***' : 'empty',
+        currentEmailState: formData.email,
+        currentPasswordState: formData.password ? '***filled***' : 'empty'
+      });
+      
       let hasChanges = false;
       
       if (emailValue && emailValue !== formData.email) {
-        console.log('Credential autofill detected - Email:', emailValue);
+        console.log('✅ Email autofill detected:', emailValue);
         setFormData(prev => ({ ...prev, email: emailValue }));
         validateField('email', emailValue);
         hasChanges = true;
       }
       
       if (passwordValue && passwordValue !== formData.password) {
-        console.log('Credential autofill detected - Password updated');
+        console.log('✅ Password autofill detected');
         setFormData(prev => ({ ...prev, password: passwordValue }));
         validateField('password', passwordValue);
         hasChanges = true;
@@ -188,25 +195,62 @@ export default function Auth() {
     }
   };
 
+  // MutationObserver to detect DOM changes from autofill
+  useEffect(() => {
+    if (!mounted) return;
+
+    const emailInput = document.getElementById('email') as HTMLInputElement;
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    
+    if (!emailInput || !passwordInput) return;
+
+    // Create mutation observer for value changes
+    const observer = new MutationObserver((mutations) => {
+      let needsCheck = false;
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && 
+            (mutation.attributeName === 'value' || mutation.attributeName === 'class')) {
+          needsCheck = true;
+        }
+      });
+      
+      if (needsCheck) {
+        console.log('🔄 DOM mutation detected, checking autofill');
+        setTimeout(detectCredentialAutofill, 50);
+      }
+    });
+
+    // Observe both inputs for attribute changes
+    observer.observe(emailInput, { 
+      attributes: true, 
+      attributeFilter: ['value', 'class'] 
+    });
+    observer.observe(passwordInput, { 
+      attributes: true, 
+      attributeFilter: ['value', 'class'] 
+    });
+
+    return () => observer.disconnect();
+  }, [mounted, formData.email, formData.password]);
+
   const handleEmailAutofill = (e: React.FocusEvent<HTMLInputElement>) => {
-    // Multiple detection strategies for different browsers
     const checkValue = () => {
       const emailValue = e.target.value.trim();
-      console.log('Focus autofill check:', emailValue, 'Current state:', formData.email);
+      console.log('📍 Focus autofill check:', emailValue, 'vs current:', formData.email);
       if (emailValue && emailValue !== formData.email) {
         setFormData(prev => ({ ...prev, email: emailValue }));
         validateField('email', emailValue);
         if (error) setError(null);
       }
-      // Also check for password autofill
+      // Always check for credential autofill
       detectCredentialAutofill();
     };
     
-    // Immediate check
+    // Multiple delayed checks
     checkValue();
-    
-    // Delayed checks for slower autofill
+    setTimeout(checkValue, 50);
     setTimeout(checkValue, 100);
+    setTimeout(checkValue, 200);
     setTimeout(checkValue, 300);
     setTimeout(checkValue, 500);
     setTimeout(checkValue, 1000);
@@ -215,7 +259,7 @@ export default function Auth() {
   // Input event handler for Samsung Browser
   const handleEmailInputEvent = (e: React.FormEvent<HTMLInputElement>) => {
     const emailValue = e.currentTarget.value.trim();
-    console.log('Input event triggered:', emailValue);
+    console.log('📝 Input event triggered:', emailValue);
     if (emailValue !== formData.email) {
       setFormData(prev => ({ ...prev, email: emailValue }));
       validateField('email', emailValue);
@@ -227,16 +271,22 @@ export default function Auth() {
 
   // Password autofill detection
   const handlePasswordFocus = () => {
+    console.log('🔐 Password field focused, checking autofill');
+    setTimeout(detectCredentialAutofill, 50);
     setTimeout(detectCredentialAutofill, 100);
+    setTimeout(detectCredentialAutofill, 200);
     setTimeout(detectCredentialAutofill, 300);
     setTimeout(detectCredentialAutofill, 500);
   };
 
-  // Enhanced periodic check for Samsung Browser credential autofill
+  // Enhanced periodic check every 500ms for Samsung Browser
   useEffect(() => {
     if (!mounted) return;
     
-    const interval = setInterval(detectCredentialAutofill, 1000);
+    const interval = setInterval(() => {
+      detectCredentialAutofill();
+    }, 500);
+    
     return () => clearInterval(interval);
   }, [formData.email, formData.password, mounted, error]);
 
