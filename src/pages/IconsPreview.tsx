@@ -41,21 +41,33 @@ export default function IconsPreview() {
     },
     {
       name: 'PWA Icon 512',
-      path: '/pwa-icon-512.png',
+      path: '/lovable-uploads/a62304fc-8fd6-43ae-9fa7-c311351ae311.png',
       description: 'Icono principal de PWA (512x512)',
       usage: 'Icono principal para instalación PWA'
     },
     {
       name: 'PWA Maskable 512',
-      path: '/pwa-maskable-512.png',
+      path: '/lovable-uploads/8522f6bd-e37d-423e-9fee-2082bacc010c.png',
       description: 'Icono PWA con zona segura (512x512)',
       usage: 'Compatible con formas adaptativas de Android'
     },
     {
       name: 'PWA Maskable 192',
-      path: '/pwa-maskable-192.png',
+      path: '/lovable-uploads/e5c8efef-b0eb-4c43-9d75-068130d1d349.png',
       description: 'Icono PWA con zona segura (192x192)',
       usage: 'Versión más pequeña para diferentes contextos'
+    },
+    {
+      name: 'Logo Principal',
+      path: '/lovable-uploads/14d1a3f9-392d-4ce8-beae-9d16eb2c5913.png',
+      description: 'Logo principal del escudo (PNG)',
+      usage: 'Se usa en Sidebar y página de Auth'
+    },
+    {
+      name: 'Apple Touch Icon',
+      path: '/lovable-uploads/60ba4962-a8fe-4412-8a45-79bc634d5cbd.png',
+      description: 'Icono para dispositivos Apple (180x180)',
+      usage: 'Icono para iOS/Safari cuando se agrega a pantalla inicio'
     }
   ];
 
