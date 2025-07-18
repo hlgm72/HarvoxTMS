@@ -13,7 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useFleetNotifications } from '@/components/notifications';
 import { createTextHandlers } from '@/lib/textUtils';
-import eagleLogo from "@/assets/high_res_eagle.svg";
+import eagleLogo from "/lovable-uploads/14d1a3f9-392d-4ce8-beae-9d16eb2c5913.png";
 const fleetNestLogo = '/lovable-uploads/f2dc63b4-a93b-49bd-a347-e03a7c567905.png';
 
 export default function Auth() {
