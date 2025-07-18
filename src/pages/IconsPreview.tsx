@@ -85,7 +85,7 @@ export default function IconsPreview() {
           <h1 className="text-3xl font-heading font-bold text-foreground">
             Vista Previa de Iconos
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-muted-foreground mt-1 font-body">
             Todos los iconos generados para PWA y favicon
           </p>
         </div>
@@ -122,10 +122,10 @@ export default function IconsPreview() {
               <h3 className="font-heading font-semibold text-lg text-foreground mb-2">
                 {icon.name}
               </h3>
-              <p className="text-sm text-muted-foreground mb-2">
+              <p className="text-sm text-muted-foreground mb-2 font-body">
                 {icon.description}
               </p>
-              <p className="text-xs text-muted-foreground bg-muted/50 rounded-md px-3 py-1 inline-block">
+              <p className="text-xs text-muted-foreground bg-muted/50 rounded-md px-3 py-1 inline-block font-body">
                 {icon.usage}
               </p>
             </div>
@@ -145,18 +145,18 @@ export default function IconsPreview() {
         <h2 className="font-heading font-semibold text-lg text-foreground mb-3">
           Información Técnica
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground font-body">
           <div>
-            <h3 className="font-medium text-foreground mb-2">Favicon</h3>
-            <ul className="space-y-1">
+            <h3 className="font-heading font-medium text-foreground mb-2">Favicon</h3>
+            <ul className="space-y-1 font-body">
               <li>• Formato: PNG con transparencia</li>
               <li>• Tamaño: 512x512 (escalable)</li>
               <li>• Ubicación: lovable-uploads/favicon</li>
             </ul>
           </div>
           <div>
-            <h3 className="font-medium text-foreground mb-2">Iconos PWA</h3>
-            <ul className="space-y-1">
+            <h3 className="font-heading font-medium text-foreground mb-2">Iconos PWA</h3>
+            <ul className="space-y-1 font-body">
               <li>• Compatibles con todos los dispositivos</li>
               <li>• Versiones maskable para Android</li>
               <li>• Optimizados para instalación</li>
@@ -173,7 +173,7 @@ export default function IconsPreview() {
             Subir Nuevos Iconos
           </h2>
         </div>
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-sm text-muted-foreground mb-6 font-body">
           Sube tus iconos personalizados con las dimensiones exactas requeridas
         </p>
         
@@ -338,7 +338,7 @@ export default function IconsPreview() {
 
       {/* Test Installation */}
       <div className="mt-6 text-center">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground font-body">
           Esta página es temporal. Los iconos están activos y funcionando en la aplicación.
         </p>
       </div>
