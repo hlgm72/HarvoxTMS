@@ -300,4 +300,24 @@ All colors MUST be HSL.
     backdrop-filter: blur(8px);
     background: rgba(0, 0, 0, 0.5);
   }
+  
+  /* Autofill detection for mobile devices */
+  @keyframes onAutoFillStart {
+    from {
+      /**/
+    }
+    to {
+      /**/
+    }
+  }
+  
+  input:-webkit-autofill {
+    animation-name: onAutoFillStart;
+    animation-duration: 0.001s;
+  }
+  
+  /* Additional autofill detection strategies */
+  input[type="email"] {
+    transition: background-color 0ms 50000s;
+  }
 }

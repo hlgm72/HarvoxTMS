@@ -147,7 +147,7 @@ export default function Auth() {
     setFieldErrors(errors);
   };
 
-  // Create text handlers for each field type
+  // Create text handlers for each field type with autofill detection
   const emailHandlers = createTextHandlers(
     (value) => {
       setFormData(prev => ({ ...prev, email: value }));
@@ -156,6 +156,19 @@ export default function Auth() {
     },
     'email'
   );
+
+  // Handle autofill detection for email field
+  const handleEmailAutofill = (e: React.FocusEvent<HTMLInputElement>) => {
+    // Small delay to ensure autofill has completed
+    setTimeout(() => {
+      const emailValue = e.target.value;
+      if (emailValue && emailValue !== formData.email) {
+        setFormData(prev => ({ ...prev, email: emailValue }));
+        validateField('email', emailValue);
+        if (error) setError(null);
+      }
+    }, 100);
+  };
 
   const firstNameHandlers = createTextHandlers((value) => {
     setFormData(prev => ({ ...prev, firstName: value }));
@@ -737,6 +750,7 @@ export default function Auth() {
                           const inputValue = e.target.value;
                           const cleanValue = inputValue.replace(/\s/g, '');
                           setFormData(prev => ({ ...prev, email: cleanValue }));
+                          validateField('email', cleanValue);
                           if (error) setError(null);
                         }}
                         onKeyPress={(e) => {
@@ -750,10 +764,25 @@ export default function Auth() {
                           setFormData(prev => ({ ...prev, email: trimmedValue }));
                           validateField('email', trimmedValue);
                         }}
+                        onFocus={handleEmailAutofill}
+                        onAnimationStart={(e) => {
+                          // Detect Chrome autofill animation
+                          if (e.animationName === 'onAutoFillStart') {
+                            setTimeout(() => {
+                              const emailValue = e.currentTarget.value;
+                              if (emailValue && emailValue !== formData.email) {
+                                setFormData(prev => ({ ...prev, email: emailValue }));
+                                validateField('email', emailValue);
+                                if (error) setError(null);
+                              }
+                            }, 100);
+                          }
+                        }}
                         placeholder={t('auth:form.email_placeholder')}
                         className={`auth-input pl-10 font-body ${fieldErrors.email ? 'border-destructive' : ''}`}
                         required
                         disabled={loading}
+                        autoComplete="email"
                       />
                     </div>
                     {fieldErrors.email && (
