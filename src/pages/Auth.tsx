@@ -157,7 +157,37 @@ export default function Auth() {
     'email'
   );
 
-  // Enhanced autofill detection for Samsung Browser
+  // Enhanced autofill detection for Samsung Browser credentials
+  const detectCredentialAutofill = () => {
+    const emailInput = document.getElementById('email') as HTMLInputElement;
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    
+    if (emailInput && passwordInput) {
+      const emailValue = emailInput.value.trim();
+      const passwordValue = passwordInput.value;
+      
+      let hasChanges = false;
+      
+      if (emailValue && emailValue !== formData.email) {
+        console.log('Credential autofill detected - Email:', emailValue);
+        setFormData(prev => ({ ...prev, email: emailValue }));
+        validateField('email', emailValue);
+        hasChanges = true;
+      }
+      
+      if (passwordValue && passwordValue !== formData.password) {
+        console.log('Credential autofill detected - Password updated');
+        setFormData(prev => ({ ...prev, password: passwordValue }));
+        validateField('password', passwordValue);
+        hasChanges = true;
+      }
+      
+      if (hasChanges && error) {
+        setError(null);
+      }
+    }
+  };
+
   const handleEmailAutofill = (e: React.FocusEvent<HTMLInputElement>) => {
     // Multiple detection strategies for different browsers
     const checkValue = () => {
@@ -168,15 +198,18 @@ export default function Auth() {
         validateField('email', emailValue);
         if (error) setError(null);
       }
+      // Also check for password autofill
+      detectCredentialAutofill();
     };
     
     // Immediate check
     checkValue();
     
-    // Delayed check for slower autofill
+    // Delayed checks for slower autofill
     setTimeout(checkValue, 100);
     setTimeout(checkValue, 300);
     setTimeout(checkValue, 500);
+    setTimeout(checkValue, 1000);
   };
 
   // Input event handler for Samsung Browser
@@ -188,28 +221,24 @@ export default function Auth() {
       validateField('email', emailValue);
       if (error) setError(null);
     }
+    // Check if both fields were filled (credential autofill)
+    setTimeout(detectCredentialAutofill, 50);
   };
 
-  // Simplified periodic check for Samsung Browser
+  // Password autofill detection
+  const handlePasswordFocus = () => {
+    setTimeout(detectCredentialAutofill, 100);
+    setTimeout(detectCredentialAutofill, 300);
+    setTimeout(detectCredentialAutofill, 500);
+  };
+
+  // Enhanced periodic check for Samsung Browser credential autofill
   useEffect(() => {
     if (!mounted) return;
     
-    const checkAutofillValues = () => {
-      const emailInput = document.getElementById('email') as HTMLInputElement;
-      if (emailInput && emailInput.value) {
-        const currentValue = emailInput.value.trim();
-        if (currentValue && currentValue !== formData.email) {
-          console.log('Periodic check found change:', currentValue, 'vs', formData.email);
-          setFormData(prev => ({ ...prev, email: currentValue }));
-          validateField('email', currentValue);
-          if (error) setError(null);
-        }
-      }
-    };
-
-    const interval = setInterval(checkAutofillValues, 1000);
+    const interval = setInterval(detectCredentialAutofill, 1000);
     return () => clearInterval(interval);
-  }, [formData.email, mounted, error]);
+  }, [formData.email, formData.password, mounted, error]);
 
   const firstNameHandlers = createTextHandlers((value) => {
     setFormData(prev => ({ ...prev, firstName: value }));
@@ -855,11 +884,13 @@ export default function Auth() {
                         type={showPassword ? "text" : "password"}
                         value={formData.password}
                         onChange={(e) => handleInputChange('password', e.target.value)}
+                        onFocus={handlePasswordFocus}
                         placeholder={isLogin ? t('auth:form.password_placeholder_login') : t('auth:form.password_placeholder_signup')}
                         className={`auth-input pl-10 pr-10 font-body ${fieldErrors.password ? 'border-destructive' : ''}`}
                         required
                         disabled={loading}
                         minLength={isLogin ? undefined : 8}
+                        autoComplete="current-password"
                       />
                       <button
                         type="button"
