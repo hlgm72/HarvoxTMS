@@ -38,7 +38,7 @@
   ],
   "screenshots": [
     {
-      "src": "/pwa-icon-512.png",
+      "src": "/lovable-uploads/e5c8efef-b0eb-4c43-9d75-068130d1d349.png",
       "sizes": "512x512",
       "type": "image/png",
       "form_factor": "wide"
@@ -52,7 +52,7 @@
       "url": "/",
       "icons": [
         {
-          "src": "/pwa-icon-512.png",
+          "src": "/lovable-uploads/e5c8efef-b0eb-4c43-9d75-068130d1d349.png",
           "sizes": "512x512",
           "type": "image/png"
         }
@@ -65,7 +65,7 @@
       "url": "/drivers",
       "icons": [
         {
-          "src": "/pwa-icon-512.png",
+          "src": "/lovable-uploads/e5c8efef-b0eb-4c43-9d75-068130d1d349.png",
           "sizes": "512x512",
           "type": "image/png"
         }
