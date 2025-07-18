@@ -910,7 +910,7 @@ export default function Auth() {
                     )}
                   </Button>
 
-                   {/* Temporarily disabled Google OAuth to avoid validation errors
+                   {/* Google OAuth Separator */}
                    <div className="relative my-6">
                      <div className="absolute inset-0 flex items-center">
                        <span className="w-full border-t border-border" />
@@ -920,12 +920,13 @@ export default function Auth() {
                      </div>
                    </div>
 
+                   {/* Google Sign In Button - Temporarily disabled */}
                    <Button
                      type="button"
                      variant="outline"
-                     className="w-full h-12 google-button font-body font-medium border-2 hover:border-primary/50"
-                     onClick={handleGoogleSignIn}
-                     disabled={loading}
+                     className="w-full h-12 google-button font-body font-medium border-2 opacity-50 cursor-not-allowed"
+                     disabled={true}
+                     title="Próximamente disponible"
                    >
                      <svg className="mr-3 h-5 w-5" viewBox="0 0 24 24">
                        <path
@@ -945,9 +946,8 @@ export default function Auth() {
                          fill="#EA4335"
                        />
                      </svg>
-                     <span>{t('auth:oauth.google_continue')}</span>
+                     <span>{t('auth:oauth.google_continue')} (Próximamente)</span>
                    </Button>
-                   */}
                 </form>
 
                 <div className="mt-8 text-center">
