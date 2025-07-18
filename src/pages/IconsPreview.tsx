@@ -35,8 +35,8 @@ export default function IconsPreview() {
   const icons = [
     {
       name: 'Favicon',
-      path: '/favicon.png',
-      description: 'Icono principal del sitio web (512x512)',
+      path: '/lovable-uploads/f3d83410-881e-4b9d-8ef2-bd9c40f8da4d.png',
+      description: 'Icono principal del sitio web (32x32)',
       usage: 'Se muestra en las pestañas del navegador'
     },
     {
@@ -139,7 +139,7 @@ export default function IconsPreview() {
             <ul className="space-y-1">
               <li>• Formato: PNG con transparencia</li>
               <li>• Tamaño: 512x512 (escalable)</li>
-              <li>• Ubicación: public/favicon.png</li>
+              <li>• Ubicación: lovable-uploads/favicon</li>
             </ul>
           </div>
           <div>
