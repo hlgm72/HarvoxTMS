@@ -105,13 +105,13 @@ All colors MUST be HSL.
     --radius: 0.5rem;
 
     /* FleetNest Style Sidebar - Using new primary navy as background */
-    --fleet-sidebar-primary: 215 100% 25%;   /* Navy blue primary - main background */
-    --fleet-sidebar-darker: 215 100% 20%;    /* Darker navy for header */
-    --fleet-sidebar-hover: 215 100% 30%;     /* Lighter navy for hover */
-    --fleet-sidebar-active: 215 100% 35%;    /* Active state */
+    --fleet-sidebar-primary: 210 100% 20%;   /* Deep Navy blue primary - main background */
+    --fleet-sidebar-darker: 210 100% 15%;    /* Darker navy for header */
+    --fleet-sidebar-hover: 210 100% 25%;     /* Lighter navy for hover */
+    --fleet-sidebar-active: 210 100% 30%;    /* Active state */
     --fleet-sidebar-text: 0 0% 100%;         /* Pure white text */
-    --fleet-sidebar-text-muted: 215 20% 85%; /* Light navy-grey text */
-    --fleet-sidebar-border: 215 100% 15%;    /* Darker navy for borders */
+    --fleet-sidebar-text-muted: 210 20% 85%; /* Light navy-grey text */
+    --fleet-sidebar-border: 210 100% 10%;    /* Darker navy for borders */
     
     /* Sidebar mapping to FleetNest blue theme */
     --sidebar-background: var(--fleet-sidebar-primary);
