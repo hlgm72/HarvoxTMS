@@ -48,11 +48,11 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222 84% 4%;
 
-    /* Primary: Navy Blue - #003F7D */
-    --primary: 215 100% 25%;       /* #003F7D - Navy Blue */
+    /* Primary: Deep Navy Blue - #003366 */
+    --primary: 210 100% 20%;       /* #003366 - Deep Navy Blue */
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 215 100% 35%;  /* Lighter navy for effects */
-    --primary-light: 215 100% 95%; /* Very light navy for backgrounds */
+    --primary-glow: 210 100% 30%;  /* Lighter navy for effects */
+    --primary-light: 210 100% 95%; /* Very light navy for backgrounds */
 
     /* Secondary: Orange - #FF6C1A */
     --secondary: 21 100% 55%;      /* #FF6C1A - Orange */
