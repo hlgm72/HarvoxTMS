@@ -76,9 +76,15 @@ export const useCreateLoad = () => {
         stops = data.stops.map(stop => ({
           ...stop,
           load_id: newLoad.id,
-          // Asegurar que los campos requeridos estén presentes
-          scheduled_date: stop.scheduled_date || null,
-          actual_date: stop.actual_date || null,
+          // Convertir fechas de Date a string si es necesario
+          scheduled_date: stop.scheduled_date ? 
+            (stop.scheduled_date instanceof Date ? 
+              stop.scheduled_date.toISOString().split('T')[0] : 
+              stop.scheduled_date) : null,
+          actual_date: stop.actual_date ? 
+            (stop.actual_date instanceof Date ? 
+              stop.actual_date.toISOString().split('T')[0] : 
+              stop.actual_date) : null,
           scheduled_time: stop.scheduled_time || null,
           actual_time: stop.actual_time || null
         }));
