@@ -13,6 +13,7 @@ import { PeriodFilterValue } from "./PeriodFilter";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
 import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
 import { EmptyLoadsState } from "./EmptyLoadsState";
+import { LoadWizardDialog } from "./LoadWizardDialog";
 
 // Componente de skeleton para cargas
 const LoadSkeleton = () => (
@@ -163,6 +164,11 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
     load?: any;
   }>({ isOpen: false });
   
+  const [editDialog, setEditDialog] = useState<{
+    isOpen: boolean;
+    load?: any;
+  }>({ isOpen: false });
+  
   // Aplicar filtros a los datos reales
   const filteredLoads = loads.filter(load => {
     if (filters.status !== "all" && load.status !== filters.status) return false;
@@ -290,7 +296,11 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   <Eye className="h-3 w-3 mr-1" />
                   Ver
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setEditDialog({ isOpen: true, load })}
+                >
                   <Edit className="h-3 w-3 mr-1" />
                   Editar
                 </Button>
@@ -331,6 +341,16 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
             currentPeriodId: reassignmentDialog.load.payment_period_id,
             driverUserId: reassignmentDialog.load.driver_user_id
           }}
+        />
+      )}
+      
+      {/* Dialog de edición */}
+      {editDialog.load && (
+        <LoadWizardDialog
+          isOpen={editDialog.isOpen}
+          onClose={() => setEditDialog({ isOpen: false })}
+          mode="edit"
+          loadData={editDialog.load}
         />
       )}
     </div>

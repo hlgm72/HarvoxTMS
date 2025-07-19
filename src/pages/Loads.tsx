@@ -5,7 +5,7 @@ import { Plus, Package, Clock } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { LoadsList } from "@/components/loads/LoadsList";
 import { LoadsFloatingActions } from "@/components/loads/LoadsFloatingActions";
-import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
+import { LoadWizardDialog } from "@/components/loads/LoadWizardDialog";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -127,9 +127,10 @@ export default function Loads() {
           onCreateLoad={() => setIsCreateDialogOpen(true)}
         />
 
-        <CreateLoadDialog
+        <LoadWizardDialog
           isOpen={isCreateDialogOpen}
           onClose={() => setIsCreateDialogOpen(false)}
+          mode="create"
         />
       </div>
 
