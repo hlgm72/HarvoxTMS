@@ -28,5 +28,5 @@ export default defineConfig(({ mode }) => ({
     assetsInlineLimit: 0,
     cssCodeSplit: false,
   },
-  base: './',
+  base: '/',
 }));
