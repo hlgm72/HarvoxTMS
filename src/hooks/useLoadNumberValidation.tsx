@@ -3,11 +3,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { useDebounce } from '@/hooks/useDebounce';
 
 export const useLoadNumberValidation = (loadNumber: string, skipValidation = false) => {
+  console.log('🔍 useLoadNumberValidation CALLED - loadNumber:', loadNumber, 'skipValidation:', skipValidation);
+  
   const [isValidating, setIsValidating] = useState(false);
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   const debouncedLoadNumber = useDebounce(loadNumber, 500);
+  
+  console.log('🔍 useLoadNumberValidation - debouncedLoadNumber:', debouncedLoadNumber, 'original:', loadNumber);
 
   useEffect(() => {
     const validateLoadNumber = async () => {
