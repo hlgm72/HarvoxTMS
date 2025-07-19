@@ -152,11 +152,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Initialize auth state
   useEffect(() => {
-    // console.log('🔐 AuthProvider initializing...');
+    let mounted = true;
     
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      // console.log('🔐 Auth state changed:', event, session?.user?.id);
+      if (!mounted) return;
       
       setSession(session);
       setUser(session?.user ?? null);
@@ -164,12 +164,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (session?.user) {
         // Defer role fetching to avoid potential conflicts
         setTimeout(async () => {
-          const roles = await fetchUserRoles(session.user.id);
-          setUserRoles(roles);
+          if (!mounted) return;
           
-          const selectedRole = determineCurrentRole(roles);
-          setCurrentRole(selectedRole);
-          setLoading(false);
+          try {
+            const { data: roles, error } = await supabase
+              .from('user_company_roles')
+              .select('*')
+              .eq('user_id', session.user.id)
+              .eq('is_active', true);
+
+            if (error) {
+              console.error('Error fetching user roles:', error);
+              setUserRoles([]);
+              setCurrentRole(null);
+              setLoading(false);
+              return;
+            }
+
+            const userRoles = roles || [];
+            setUserRoles(userRoles);
+            
+            // Determine current role
+            let selectedRole = null;
+            if (userRoles.length > 0) {
+              const storedRole = localStorage.getItem('currentRole');
+              if (storedRole) {
+                try {
+                  const parsedRole = JSON.parse(storedRole);
+                  const validRole = userRoles.find(r => r.role === parsedRole.role && r.company_id === parsedRole.company_id);
+                  if (validRole) {
+                    selectedRole = validRole.role;
+                  }
+                } catch (e) {
+                  console.warn('Error parsing stored role:', e);
+                }
+              }
+              
+              if (!selectedRole) {
+                const roleHierarchy = ['superadmin', 'company_owner', 'operations_manager', 'dispatcher', 'driver'];
+                for (const roleType of roleHierarchy) {
+                  const role = userRoles.find(r => r.role === roleType);
+                  if (role) {
+                    selectedRole = role.role;
+                    break;
+                  }
+                }
+                
+                if (!selectedRole) {
+                  selectedRole = userRoles[0]?.role || null;
+                }
+              }
+            }
+            
+            setCurrentRole(selectedRole);
+            setLoading(false);
+          } catch (error) {
+            console.error('Error in role fetching:', error);
+            setUserRoles([]);
+            setCurrentRole(null);
+            setLoading(false);
+          }
         }, 100);
       } else {
         setUserRoles(null);
@@ -181,27 +235,77 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      // console.log('🔐 Initial session:', session?.user?.id);
+      if (!mounted) return;
       
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        fetchUserRoles(session.user.id).then(roles => {
-          setUserRoles(roles);
-          const selectedRole = determineCurrentRole(roles);
-          setCurrentRole(selectedRole);
-          setLoading(false);
-        });
+        // Handle initial session roles
+        supabase
+          .from('user_company_roles')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .eq('is_active', true)
+          .then(({ data: roles, error }) => {
+            if (!mounted) return;
+            
+            if (error) {
+              console.error('Error fetching user roles:', error);
+              setUserRoles([]);
+              setCurrentRole(null);
+              setLoading(false);
+              return;
+            }
+
+            const userRoles = roles || [];
+            setUserRoles(userRoles);
+            
+            // Determine current role
+            let selectedRole = null;
+            if (userRoles.length > 0) {
+              const storedRole = localStorage.getItem('currentRole');
+              if (storedRole) {
+                try {
+                  const parsedRole = JSON.parse(storedRole);
+                  const validRole = userRoles.find(r => r.role === parsedRole.role && r.company_id === parsedRole.company_id);
+                  if (validRole) {
+                    selectedRole = validRole.role;
+                  }
+                } catch (e) {
+                  console.warn('Error parsing stored role:', e);
+                }
+              }
+              
+              if (!selectedRole) {
+                const roleHierarchy = ['superadmin', 'company_owner', 'operations_manager', 'dispatcher', 'driver'];
+                for (const roleType of roleHierarchy) {
+                  const role = userRoles.find(r => r.role === roleType);
+                  if (role) {
+                    selectedRole = role.role;
+                    break;
+                  }
+                }
+                
+                if (!selectedRole) {
+                  selectedRole = userRoles[0]?.role || null;
+                }
+              }
+            }
+            
+            setCurrentRole(selectedRole);
+            setLoading(false);
+          });
       } else {
         setLoading(false);
       }
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
-  }, [fetchUserRoles, determineCurrentRole]);
+  }, []); // Empty dependency array to prevent infinite loops
 
   const signIn = async (email: string, password: string) => {
     try {
