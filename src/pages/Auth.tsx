@@ -159,12 +159,24 @@ export default function Auth() {
 
   // Enhanced autofill detection specifically for Samsung Browser credentials
   const detectCredentialAutofill = () => {
-    const emailInput = document.getElementById('email') as HTMLInputElement;
-    const passwordInput = document.getElementById('password') as HTMLInputElement;
-    
-    if (emailInput && passwordInput) {
-      const emailValue = emailInput.value.trim();
-      const passwordValue = passwordInput.value;
+    try {
+      const emailInput = document.getElementById('email') as HTMLInputElement;
+      const passwordInput = document.getElementById('password') as HTMLInputElement;
+      
+      // Add safety checks for null elements
+      if (!emailInput || !passwordInput) {
+        console.log('🔍 Credential check: Elements not found, skipping...');
+        return;
+      }
+
+      // Additional safety check for the value property
+      if (!emailInput.hasOwnProperty('value') || !passwordInput.hasOwnProperty('value')) {
+        console.log('🔍 Credential check: Value property not available, skipping...');
+        return;
+      }
+      
+      const emailValue = emailInput.value?.trim() || '';
+      const passwordValue = passwordInput.value || '';
       
       console.log('🔍 Credential check:', {
         emailValue,
@@ -192,6 +204,8 @@ export default function Auth() {
       if (hasChanges && error) {
         setError(null);
       }
+    } catch (err) {
+      console.log('🔍 Credential check error (safely handled):', err);
     }
   };
 
