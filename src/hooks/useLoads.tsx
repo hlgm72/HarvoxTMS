@@ -27,6 +27,7 @@ export interface Load {
   // Datos relacionados calculados
   driver_name?: string;
   broker_name?: string;
+  broker_alias?: string;
   pickup_city?: string;
   delivery_city?: string;
   period_start_date?: string;
@@ -253,7 +254,7 @@ export const useLoads = (filters?: LoadsFilters) => {
             ? supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', driverIds)
             : Promise.resolve({ data: [] }),
           brokerIds.length > 0 
-            ? supabase.from('company_brokers').select('id, name').in('id', brokerIds)
+            ? supabase.from('company_brokers').select('id, name, alias').in('id', brokerIds)
             : Promise.resolve({ data: [] }),
           periodIds.length > 0 
             ? supabase.from('payment_periods').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds)
@@ -284,10 +285,14 @@ export const useLoads = (filters?: LoadsFilters) => {
             .filter(s => s.stop_type === 'delivery')
             .sort((a, b) => b.stop_number - a.stop_number)[0];
 
+          // Priorizar alias sobre nombre para el broker
+          const brokerDisplayName = broker ? (broker.alias && broker.alias.trim() ? broker.alias : broker.name) : 'Sin broker';
+
           return {
             ...load,
             driver_name: profile ? `${profile.first_name} ${profile.last_name}` : 'Sin asignar',
-            broker_name: broker?.name || 'Sin broker',
+            broker_name: brokerDisplayName,
+            broker_alias: broker?.alias,
             pickup_city: pickupStop?.city || 'Sin definir',
             delivery_city: deliveryStop?.city || 'Sin definir',
             period_start_date: period?.period_start_date,
