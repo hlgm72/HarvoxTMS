@@ -256,6 +256,10 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
       return;
     }
 
+    // Extraer datos de pickup y delivery de las paradas
+    const pickupStop = loadStops.find(stop => stop.stop_type === 'pickup');
+    const deliveryStop = loadStops.find(stop => stop.stop_type === 'delivery');
+
     createLoadMutation.mutate({
       load_number: values.load_number,
       driver_user_id: selectedDriver.user_id,
@@ -265,6 +269,19 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
       commodity: values.commodity,
       weight_lbs: values.weight_lbs,
       notes: '',
+      // Incluir datos de paradas para crear las paradas automáticamente
+      pickup_address: pickupStop?.address,
+      pickup_city: pickupStop?.city,
+      pickup_state: pickupStop?.state,
+      pickup_zip: pickupStop?.zip_code,
+      pickup_company: pickupStop?.company_name,
+      delivery_address: deliveryStop?.address,
+      delivery_city: deliveryStop?.city,
+      delivery_state: deliveryStop?.state,
+      delivery_zip: deliveryStop?.zip_code,
+      delivery_company: deliveryStop?.company_name,
+      // Enviar todas las paradas para crearlas
+      stops: loadStops
     }, {
       onSuccess: () => {
         // Limpiar el borrador al crear exitosamente

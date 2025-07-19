@@ -28,6 +28,9 @@ export interface CreateLoadData {
   delivery_state?: string;
   delivery_zip?: string;
   delivery_company?: string;
+  
+  // Array completo de paradas
+  stops?: any[];
 }
 
 export const useCreateLoad = () => {
@@ -66,34 +69,48 @@ export const useCreateLoad = () => {
       }
 
       // Crear paradas si se proporcionaron
-      const stops = [];
+      let stops = [];
       
-      if (data.pickup_address && data.pickup_city && data.pickup_state) {
-        stops.push({
+      // Priorizar el array completo de paradas si está disponible
+      if (data.stops && data.stops.length > 0) {
+        stops = data.stops.map(stop => ({
+          ...stop,
           load_id: newLoad.id,
-          stop_type: 'pickup',
-          stop_number: 1,
-          address: data.pickup_address,
-          city: data.pickup_city,
-          state: data.pickup_state,
-          zip_code: data.pickup_zip || null,
-          company_name: data.pickup_company || null,
-          scheduled_date: null // Se definirá en la fase de paradas
-        });
-      }
+          // Asegurar que los campos requeridos estén presentes
+          scheduled_date: stop.scheduled_date || null,
+          actual_date: stop.actual_date || null,
+          scheduled_time: stop.scheduled_time || null,
+          actual_time: stop.actual_time || null
+        }));
+      } else {
+        // Fallback: crear paradas básicas si solo se proporcionaron pickup/delivery
+        if (data.pickup_address && data.pickup_city && data.pickup_state) {
+          stops.push({
+            load_id: newLoad.id,
+            stop_type: 'pickup',
+            stop_number: 1,
+            address: data.pickup_address,
+            city: data.pickup_city,
+            state: data.pickup_state,
+            zip_code: data.pickup_zip || null,
+            company_name: data.pickup_company || null,
+            scheduled_date: null
+          });
+        }
 
-      if (data.delivery_address && data.delivery_city && data.delivery_state) {
-        stops.push({
-          load_id: newLoad.id,
-          stop_type: 'delivery',
-          stop_number: 2,
-          address: data.delivery_address,
-          city: data.delivery_city,
-          state: data.delivery_state,
-          zip_code: data.delivery_zip || null,
-          company_name: data.delivery_company || null,
-          scheduled_date: null // Se definirá en la fase de paradas
-        });
+        if (data.delivery_address && data.delivery_city && data.delivery_state) {
+          stops.push({
+            load_id: newLoad.id,
+            stop_type: 'delivery',
+            stop_number: 2,
+            address: data.delivery_address,
+            city: data.delivery_city,
+            state: data.delivery_state,
+            zip_code: data.delivery_zip || null,
+            company_name: data.delivery_company || null,
+            scheduled_date: null
+          });
+        }
       }
 
       if (stops.length > 0) {
@@ -103,7 +120,7 @@ export const useCreateLoad = () => {
 
         if (stopsError) {
           console.error('Error creando paradas:', stopsError);
-          // No lanzamos error porque la carga ya se creó
+          throw new Error(`Error creando paradas: ${stopsError.message}`);
         }
       }
 
