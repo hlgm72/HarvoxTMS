@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -40,14 +41,21 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Force cache refresh for production builds -->
+    <!-- Simplified cache management - only for production -->
     <script>
-      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      // Only clear cache if there are known issues in production
+      if (window.location.hostname !== 'localhost' && 
+          window.location.hostname !== '127.0.0.1' && 
+          window.location.search.includes('clear-cache')) {
+        
+        console.log('🧹 Clearing cache as requested...');
+        
         // Clear service worker cache if exists
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistrations().then(function(registrations) {
             for(let registration of registrations) {
               registration.unregister();
+              console.log('🧹 Service worker unregistered');
             }
           });
         }
@@ -57,9 +65,15 @@
           caches.keys().then(function(names) {
             for (let name of names) {
               caches.delete(name);
+              console.log('🧹 Cache deleted:', name);
             }
           });
         }
+        
+        // Remove the clear-cache parameter and reload
+        const url = new URL(window.location);
+        url.searchParams.delete('clear-cache');
+        window.history.replaceState({}, document.title, url.toString());
       }
     </script>
   </body>

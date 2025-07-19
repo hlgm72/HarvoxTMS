@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useFleetNotifications } from '@/components/notifications/NotificationProvider';
@@ -34,7 +35,7 @@ export const usePWA = (): PWAHook => {
   });
 
   useEffect(() => {
-    console.log('🔧 PWA: Hook initialized');
+    console.log('🔧 PWA: Hook initialized - Service Worker temporarily disabled');
     
     // Check if app is installed
     const checkInstalled = () => {
@@ -62,9 +63,6 @@ export const usePWA = (): PWAHook => {
       setDeferredPrompt(e as PWAInstallPrompt);
       setIsInstallable(true);
     };
-
-    // Check if beforeinstallprompt is supported
-    console.log('🔍 PWA: Browser supports beforeinstallprompt?', 'onbeforeinstallprompt' in window);
 
     // Listen for app installed event
     const handleAppInstalled = () => {
@@ -103,7 +101,9 @@ export const usePWA = (): PWAHook => {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Register service worker
+    // SERVICE WORKER TEMPORARILY DISABLED FOR DEBUGGING
+    // Uncomment the lines below once the loading issues are resolved
+    /*
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
@@ -137,6 +137,7 @@ export const usePWA = (): PWAHook => {
           console.error('PWA: Service Worker registration failed:', error);
         });
     }
+    */
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
