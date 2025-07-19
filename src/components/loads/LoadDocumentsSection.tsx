@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Upload, Download, Trash2, FileCheck, Plus } from "lucide-react";
+import { FileText, Upload, Download, Trash2, FileCheck, Plus, Eye } from "lucide-react";
 import { GenerateLoadOrderDialog } from "./GenerateLoadOrderDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -345,6 +345,22 @@ export function LoadDocumentsSection({ loadId, loadData, onDocumentsChange }: Lo
                          variant="ghost" 
                          size="sm"
                          onClick={() => uploadedDoc.url && window.open(uploadedDoc.url, '_blank')}
+                         title="Ver documento"
+                       >
+                         <Eye className="h-4 w-4" />
+                       </Button>
+                       <Button 
+                         variant="ghost" 
+                         size="sm"
+                         onClick={() => {
+                           if (uploadedDoc.url) {
+                             const link = document.createElement('a');
+                             link.href = uploadedDoc.url;
+                             link.download = uploadedDoc.fileName;
+                             link.click();
+                           }
+                         }}
+                         title="Descargar documento"
                        >
                          <Download className="h-4 w-4" />
                        </Button>
@@ -426,14 +442,31 @@ export function LoadDocumentsSection({ loadId, loadData, onDocumentsChange }: Lo
                   </div>
                   <div className="flex items-center gap-1">
                     {doc.url && (
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => window.open(doc.url, '_blank')}
-                        title="Descargar/Ver documento"
-                      >
-                        <Download className="h-4 w-4" />
-                      </Button>
+                      <>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => window.open(doc.url, '_blank')}
+                          title="Ver documento"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            if (doc.url) {
+                              const link = document.createElement('a');
+                              link.href = doc.url;
+                              link.download = doc.fileName;
+                              link.click();
+                            }
+                          }}
+                          title="Descargar documento"
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </>
                     )}
                     {doc.type !== 'load_order' && loadId && (
                       <Button 
