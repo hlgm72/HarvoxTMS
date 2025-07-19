@@ -356,17 +356,20 @@ export function LoadDocumentsSection({
                       {docType.description}
                     </p>
                     
-                     {uploadedDoc ? (
-                      <div className="flex items-center gap-2 text-sm">
-                        <FileCheck className="h-4 w-4 text-green-500" />
-                        <span>{uploadedDoc.fileName}</span>
-                        {uploadedDoc.fileSize && (
-                          <span className="text-muted-foreground">
-                            ({formatFileSize(uploadedDoc.fileSize)})
-                          </span>
-                        )}
-                      </div>
-                    ) : (
+                      {uploadedDoc || temporaryDocuments.find(doc => doc.type === docType.type) ? (
+                        <div className="flex items-center gap-2 text-sm">
+                          <FileCheck className="h-4 w-4 text-green-500" />
+                          <span>{uploadedDoc?.fileName || temporaryDocuments.find(doc => doc.type === docType.type)?.fileName}</span>
+                          {(uploadedDoc?.fileSize || temporaryDocuments.find(doc => doc.type === docType.type)?.fileSize) && (
+                            <span className="text-muted-foreground">
+                              ({formatFileSize(uploadedDoc?.fileSize || temporaryDocuments.find(doc => doc.type === docType.type)?.fileSize)})
+                            </span>
+                          )}
+                          {!loadId && (
+                            <Badge variant="secondary" className="text-xs">Pendiente</Badge>
+                          )}
+                        </div>
+                      ) : (
                       <div className="flex items-center gap-2">
                         <label className="cursor-pointer">
                           <input
@@ -392,40 +395,51 @@ export function LoadDocumentsSection({
                     )}
                   </div>
                   
-                   {uploadedDoc && (
-                     <div className="flex items-center gap-1">
-                       <Button 
-                         variant="ghost" 
-                         size="sm"
-                         onClick={() => uploadedDoc.url && window.open(uploadedDoc.url, '_blank')}
-                         title="Ver documento"
-                       >
-                         <Eye className="h-4 w-4" />
-                       </Button>
-                       <Button 
-                         variant="ghost" 
-                         size="sm"
-                         onClick={() => {
-                           if (uploadedDoc.url) {
-                             const link = document.createElement('a');
-                             link.href = uploadedDoc.url;
-                             link.download = uploadedDoc.fileName;
-                             link.click();
-                           }
-                         }}
-                         title="Descargar documento"
-                       >
-                         <Download className="h-4 w-4" />
-                       </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleRemoveDocument(uploadedDoc.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
+                   {(uploadedDoc || temporaryDocuments.find(doc => doc.type === docType.type)) && (
+                      <div className="flex items-center gap-1">
+                        {uploadedDoc && (
+                          <>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => uploadedDoc.url && window.open(uploadedDoc.url, '_blank')}
+                              title="Ver documento"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => {
+                                if (uploadedDoc.url) {
+                                  const link = document.createElement('a');
+                                  link.href = uploadedDoc.url;
+                                  link.download = uploadedDoc.fileName;
+                                  link.click();
+                                }
+                              }}
+                              title="Descargar documento"
+                            >
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            const tempDoc = temporaryDocuments.find(doc => doc.type === docType.type);
+                            if (uploadedDoc) {
+                              handleRemoveDocument(uploadedDoc.id);
+                            } else if (tempDoc) {
+                              handleRemoveTemporaryDocument(tempDoc.id);
+                            }
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
                 </div>
               </div>
             );
