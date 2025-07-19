@@ -193,18 +193,7 @@ export function useLoadStops() {
     setStops(currentStops => 
       currentStops.map(stop => {
         if (stop.id === stopId) {
-          // Ensure city is handled properly - if it's being set to a UUID-like string, clear it
-          const updatedStop = { ...stop, ...updates };
-          
-          // Check if city looks like a UUID and clear it if so
-          if (updatedStop.city && typeof updatedStop.city === 'string') {
-            const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(updatedStop.city);
-            if (isUUID) {
-              updatedStop.city = '';
-            }
-          }
-          
-          return updatedStop;
+          return { ...stop, ...updates };
         }
         return stop;
       })
