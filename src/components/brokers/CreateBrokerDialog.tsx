@@ -86,9 +86,9 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
         throw new Error('Usuario o compañía no encontrados');
       }
 
-      // 1. Crear el broker
-      const { data: broker, error: brokerError } = await supabase
-        .from('company_brokers')
+      // 1. Crear el cliente
+      const { data: client, error: clientError } = await supabase
+        .from('company_clients')
         .insert([{
           company_id: userCompany.company_id,
           name: data.name,
@@ -105,62 +105,62 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
         .select()
         .single();
 
-      if (brokerError) throw brokerError;
+      if (clientError) throw clientError;
 
-      // 2. Crear dispatchers si los hay
+      // 2. Crear contactos si los hay
       if (data.dispatchers && data.dispatchers.length > 0) {
-        const dispatchersToCreate = data.dispatchers
-          .filter(d => d.name.trim()) // Solo crear dispatchers con nombre
-          .map(dispatcher => ({
-            broker_id: broker.id,
-            name: dispatcher.name,
-            email: dispatcher.email || null,
-            phone_office: dispatcher.phone_office || null,
-            phone_mobile: dispatcher.phone_mobile || null,
-            extension: dispatcher.extension || null,
-            notes: dispatcher.notes || null,
+        const contactsToCreate = data.dispatchers
+          .filter(d => d.name.trim()) // Solo crear contactos con nombre
+          .map(contact => ({
+            client_id: client.id,
+            name: contact.name,
+            email: contact.email || null,
+            phone_office: contact.phone_office || null,
+            phone_mobile: contact.phone_mobile || null,
+            extension: contact.extension || null,
+            notes: contact.notes || null,
             is_active: true,
           }));
 
-        if (dispatchersToCreate.length > 0) {
-          const { error: dispatchersError } = await supabase
-            .from('company_broker_dispatchers')
-            .insert(dispatchersToCreate);
+        if (contactsToCreate.length > 0) {
+          const { error: contactsError } = await supabase
+            .from('company_client_contacts')
+            .insert(contactsToCreate);
 
-          if (dispatchersError) throw dispatchersError;
+          if (contactsError) throw contactsError;
         }
       }
 
-      return broker;
+      return client;
     },
-    onSuccess: (broker) => {
-      // Invalidar TODAS las queries relacionadas con brokers
+    onSuccess: (client) => {
+      // Invalidar TODAS las queries relacionadas con clientes
       queryClient.invalidateQueries({ 
-        queryKey: ['company-brokers'],
+        queryKey: ['company-clients'],
         exact: false
       });
       // También refrescar directamente
       queryClient.refetchQueries({ 
-        queryKey: ['company-brokers'],
+        queryKey: ['company-clients'],
         exact: false
       });
       
       toast({
         title: "Cliente creado exitosamente",
-        description: `${broker.name} ha sido agregado al sistema`,
+        description: `${client.name} ha sido agregado al sistema`,
       });
 
       // Resetear formulario y cerrar
       form.reset();
       setCurrentStep(1);
-      onSuccess?.(broker.id);
+      onSuccess?.(client.id);
       onClose();
     },
     onError: (error: any) => {
-      console.error('Error creando broker:', error);
+      console.error('Error creando cliente:', error);
       toast({
         title: "Error",
-        description: "No se pudo crear el broker. Intenta nuevamente.",
+        description: "No se pudo crear el cliente. Intenta nuevamente.",
         variant: "destructive",
       });
     },
@@ -197,10 +197,10 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
-            Crear Nuevo Broker
+            Crear Nuevo Cliente
           </DialogTitle>
           <DialogDescription>
-            Agrega un nuevo broker al sistema y opcionalmente sus dispatchers
+            Agrega un nuevo cliente al sistema y opcionalmente sus contactos
           </DialogDescription>
         </DialogHeader>
 
@@ -212,7 +212,7 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
             }`}>
               1
             </div>
-            <span className="text-sm font-medium">Información del Broker</span>
+            <span className="text-sm font-medium">Información del Cliente</span>
           </div>
           
           <div className="w-8 h-px bg-border" />
@@ -223,7 +223,7 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
             }`}>
               2
             </div>
-            <span className="text-sm font-medium">Dispatchers (Opcional)</span>
+            <span className="text-sm font-medium">Contactos (Opcional)</span>
           </div>
         </div>
 

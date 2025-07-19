@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useCompanyCache } from './useCompanyCache';
 import { useMemo } from 'react';
 
-export interface CompanyBroker {
+export interface CompanyClient {
   id: string;
   name: string;
   alias?: string;
@@ -18,10 +18,10 @@ export interface CompanyBroker {
   // Campos adicionales para búsqueda
   dot_number?: string;
   mc_number?: string;
-  dispatchers?: BrokerDispatcher[];
+  contacts?: ClientContact[];
 }
 
-export interface BrokerDispatcher {
+export interface ClientContact {
   id: string;
   client_id: string;
   name: string;
@@ -33,17 +33,17 @@ export interface BrokerDispatcher {
   is_active: boolean;
 }
 
-export const useCompanyBrokers = () => {
+export const useCompanyClients = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { userCompany, isLoading: cacheLoading, error: cacheError } = useCompanyCache();
 
   // Memoizar queryKey para cache eficiente
   const queryKey = useMemo(() => {
-    return ['company-brokers', user?.id, userCompany?.company_id];
+    return ['company-clients', user?.id, userCompany?.company_id];
   }, [user?.id, userCompany?.company_id]);
 
-  const brokersQuery = useQuery({
+  const clientsQuery = useQuery({
     queryKey,
     enabled: !!user && !cacheLoading && !!userCompany && !cacheError, // Solo ejecutar cuando el cache esté listo
     retry: 1,
@@ -54,8 +54,8 @@ export const useCompanyBrokers = () => {
     refetchOnReconnect: false,
     refetchInterval: false,
     networkMode: 'online',
-    queryFn: async (): Promise<CompanyBroker[]> => {
-      console.log('🔄 useCompanyBrokers iniciando...');
+    queryFn: async (): Promise<CompanyClient[]> => {
+      console.log('🔄 useCompanyClients iniciando...');
       
       if (!user) {
         console.log('❌ Usuario no autenticado');
@@ -68,8 +68,8 @@ export const useCompanyBrokers = () => {
       }
 
       try {
-        // Obtener brokers y dispatchers en paralelo
-        const [brokersResult, dispatchersResult] = await Promise.allSettled([
+        // Obtener clientes y contactos en paralelo
+        const [clientsResult, contactsResult] = await Promise.allSettled([
           supabase
             .from('company_clients')
             .select('*')
@@ -93,13 +93,13 @@ export const useCompanyBrokers = () => {
             .eq('is_active', true)
         ]);
 
-        const clients = brokersResult.status === 'fulfilled' ? brokersResult.value.data || [] : [];
-        const contacts = dispatchersResult.status === 'fulfilled' ? dispatchersResult.value.data || [] : [];
+        const clients = clientsResult.status === 'fulfilled' ? clientsResult.value.data || [] : [];
+        const contacts = contactsResult.status === 'fulfilled' ? contactsResult.value.data || [] : [];
 
         // Enriquecer clientes con sus contactos
-        const enrichedClients: CompanyBroker[] = clients.map(client => ({
+        const enrichedClients: CompanyClient[] = clients.map(client => ({
           ...client,
-          dispatchers: contacts.filter(c => c.client_id === client.id)
+          contacts: contacts.filter(c => c.client_id === client.id)
         }));
 
         console.log(`👥 Clientes encontrados: ${enrichedClients.length}`);
@@ -107,7 +107,7 @@ export const useCompanyBrokers = () => {
         return enrichedClients;
 
       } catch (error: any) {
-        console.error('Error en useCompanyBrokers:', error);
+        console.error('Error en useCompanyClients:', error);
         
         throw error;
       }
@@ -115,9 +115,9 @@ export const useCompanyBrokers = () => {
   });
 
   return { 
-    brokers: brokersQuery.data || [], 
-    loading: brokersQuery.isLoading, 
-    error: brokersQuery.error,
-    refetch: brokersQuery.refetch 
+    clients: clientsQuery.data || [], 
+    loading: clientsQuery.isLoading, 
+    error: clientsQuery.error,
+    refetch: clientsQuery.refetch 
   };
 };

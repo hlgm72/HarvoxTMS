@@ -125,9 +125,9 @@ export type Database = {
           },
         ]
       }
-      company_broker_dispatchers: {
+      company_client_contacts: {
         Row: {
-          broker_id: string
+          client_id: string
           created_at: string
           email: string | null
           extension: string | null
@@ -140,7 +140,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          broker_id: string
+          client_id: string
           created_at?: string
           email?: string | null
           extension?: string | null
@@ -153,7 +153,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          broker_id?: string
+          client_id?: string
           created_at?: string
           email?: string | null
           extension?: string | null
@@ -168,14 +168,14 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "company_broker_dispatchers_broker_id_fkey"
-            columns: ["broker_id"]
+            columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "company_brokers"
+            referencedRelation: "company_clients"
             referencedColumns: ["id"]
           },
         ]
       }
-      company_brokers: {
+      company_clients: {
         Row: {
           address: string | null
           alias: string | null
@@ -1286,8 +1286,8 @@ export type Database = {
       }
       loads: {
         Row: {
-          broker_dispatcher_id: string | null
-          broker_id: string | null
+          client_contact_id: string | null
+          client_id: string | null
           commodity: string | null
           created_at: string
           created_by: string | null
@@ -1310,8 +1310,8 @@ export type Database = {
           weight_lbs: number | null
         }
         Insert: {
-          broker_dispatcher_id?: string | null
-          broker_id?: string | null
+          client_contact_id?: string | null
+          client_id?: string | null
           commodity?: string | null
           created_at?: string
           created_by?: string | null
@@ -1334,8 +1334,8 @@ export type Database = {
           weight_lbs?: number | null
         }
         Update: {
-          broker_dispatcher_id?: string | null
-          broker_id?: string | null
+          client_contact_id?: string | null
+          client_id?: string | null
           commodity?: string | null
           created_at?: string
           created_by?: string | null
@@ -1360,9 +1360,9 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "loads_broker_dispatcher_id_fkey"
-            columns: ["broker_dispatcher_id"]
+            columns: ["client_contact_id"]
             isOneToOne: false
-            referencedRelation: "company_broker_dispatchers"
+            referencedRelation: "company_client_contacts"
             referencedColumns: ["id"]
           },
         ]

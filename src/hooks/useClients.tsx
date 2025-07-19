@@ -18,9 +18,9 @@ export interface Client {
   updated_at: string;
 }
 
-export interface ClientDispatcher {
+export interface ClientContact {
   id: string;
-  broker_id: string;
+  client_id: string;
   name: string;
   email?: string;
   phone_office?: string;
@@ -38,7 +38,7 @@ export const useClients = () => {
     queryKey: ["clients"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("company_brokers")
+        .from("company_clients")
         .select("id, name, alias, company_id, is_active, email_domain, address, notes, logo_url, mc_number, dot_number, created_at, updated_at")
         .order("name");
 
@@ -49,33 +49,33 @@ export const useClients = () => {
   });
 };
 
-// Fetch dispatchers for a specific client
-export const useClientDispatchers = (clientId: string) => {
+// Fetch contacts for a specific client
+export const useClientContacts = (clientId: string) => {
   return useQuery({
-    queryKey: ["client-dispatchers", clientId],
+    queryKey: ["client-contacts", clientId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("company_broker_dispatchers")
+        .from("company_client_contacts")
         .select("*")
-        .eq("broker_id", clientId)
+        .eq("client_id", clientId)
         .order("name");
 
       if (error) throw error;
-      return data as ClientDispatcher[];
+      return data as ClientContact[];
     },
     enabled: !!clientId,
   });
 };
 
-// Get dispatcher count for a specific client
-export const useClientDispatcherCount = (clientId: string) => {
+// Get contact count for a specific client
+export const useClientContactCount = (clientId: string) => {
   return useQuery({
-    queryKey: ["client-dispatcher-count", clientId],
+    queryKey: ["client-contact-count", clientId],
     queryFn: async () => {
       const { count, error } = await supabase
-        .from("company_broker_dispatchers")
+        .from("company_client_contacts")
         .select("*", { count: "exact", head: true })
-        .eq("broker_id", clientId);
+        .eq("client_id", clientId);
 
       if (error) throw error;
       return count || 0;
@@ -92,7 +92,7 @@ export const useCreateClient = () => {
   return useMutation({
     mutationFn: async (clientData: Omit<Client, "id" | "created_at" | "updated_at">) => {
       const { data, error } = await supabase
-        .from("company_brokers")
+        .from("company_clients")
         .insert([clientData])
         .select()
         .single();
@@ -118,7 +118,7 @@ export const useUpdateClient = () => {
   return useMutation({
     mutationFn: async ({ id, ...updateData }: Partial<Client> & { id: string }) => {
       const { data, error } = await supabase
-        .from("company_brokers")
+        .from("company_clients")
         .update(updateData)
         .eq("id", id)
         .select()
@@ -145,7 +145,7 @@ export const useDeleteClient = () => {
   return useMutation({
     mutationFn: async (clientId: string) => {
       const { error } = await supabase
-        .from("company_brokers")
+        .from("company_clients")
         .delete()
         .eq("id", clientId);
 
@@ -161,16 +161,16 @@ export const useDeleteClient = () => {
   });
 };
 
-// Create a new dispatcher
-export const useCreateDispatcher = () => {
+// Create a new contact
+export const useCreateContact = () => {
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useFleetNotifications();
 
   return useMutation({
-    mutationFn: async (dispatcherData: Omit<ClientDispatcher, "id" | "created_at" | "updated_at">) => {
+    mutationFn: async (contactData: Omit<ClientContact, "id" | "created_at" | "updated_at">) => {
       const { data, error } = await supabase
-        .from("company_broker_dispatchers")
-        .insert([dispatcherData])
+        .from("company_client_contacts")
+        .insert([contactData])
         .select()
         .single();
 
@@ -178,7 +178,7 @@ export const useCreateDispatcher = () => {
       return data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["client-dispatchers", variables.broker_id] });
+      queryClient.invalidateQueries({ queryKey: ["client-contacts", variables.client_id] });
       showSuccess("Contacto creado", "El contacto ha sido creado exitosamente.");
     },
     onError: (error) => {
@@ -187,15 +187,15 @@ export const useCreateDispatcher = () => {
   });
 };
 
-// Update a dispatcher
-export const useUpdateDispatcher = () => {
+// Update a contact
+export const useUpdateContact = () => {
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useFleetNotifications();
 
   return useMutation({
-    mutationFn: async ({ id, broker_id, ...updateData }: Partial<ClientDispatcher> & { id: string; broker_id: string }) => {
+    mutationFn: async ({ id, client_id, ...updateData }: Partial<ClientContact> & { id: string; client_id: string }) => {
       const { data, error } = await supabase
-        .from("company_broker_dispatchers")
+        .from("company_client_contacts")
         .update(updateData)
         .eq("id", id)
         .select()
@@ -205,7 +205,7 @@ export const useUpdateDispatcher = () => {
       return data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["client-dispatchers", variables.broker_id] });
+      queryClient.invalidateQueries({ queryKey: ["client-contacts", variables.client_id] });
       showSuccess("Contacto actualizado", "Los datos del contacto han sido actualizados exitosamente.");
     },
     onError: (error) => {
@@ -214,28 +214,28 @@ export const useUpdateDispatcher = () => {
   });
 };
 
-// Delete a dispatcher
-export const useDeleteDispatcher = () => {
+// Delete a contact
+export const useDeleteContact = () => {
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useFleetNotifications();
 
   return useMutation({
-    mutationFn: async ({ id, broker_id }: { id: string; broker_id: string }) => {
+    mutationFn: async ({ id, client_id }: { id: string; client_id: string }) => {
       const { error } = await supabase
-        .from("company_broker_dispatchers")
+        .from("company_client_contacts")
         .delete()
         .eq("id", id);
 
       if (error) throw error;
-      return { broker_id };
+      return { client_id };
     },
     onSuccess: (data) => {
-      // Invalidar cache de dispatchers del cliente específico
-      queryClient.invalidateQueries({ queryKey: ["client-dispatchers", data.broker_id] });
+      // Invalidar cache de contactos del cliente específico
+      queryClient.invalidateQueries({ queryKey: ["client-contacts", data.client_id] });
       
-      // Invalidar cache de company-brokers para actualizar el wizard de cargas
+      // Invalidar cache de company-clients para actualizar el wizard de cargas
       queryClient.invalidateQueries({ 
-        queryKey: ['company-brokers'],
+        queryKey: ['company-clients'],
         exact: false
       });
       
