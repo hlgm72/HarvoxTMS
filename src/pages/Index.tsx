@@ -5,7 +5,6 @@ import { Loader2 } from 'lucide-react';
 import Dashboard from './Dashboard';
 
 export default function Index() {
-  console.log('🏠 Index.tsx component rendering...');
   const navigate = useNavigate();
   const { 
     user, 
@@ -64,9 +63,6 @@ export default function Index() {
         console.log('🏠 Redirecting to driver dashboard');
         navigate('/dashboard/driver');
       }
-    } else if (!loading && !user) {
-      console.log('🏠 No user found, redirecting to auth');
-      navigate('/auth');
     } else {
       console.log('🏠 Still loading or no user:', { loading, hasUser: !!user });
     }

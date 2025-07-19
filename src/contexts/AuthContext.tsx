@@ -67,6 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserRoles = useCallback(async (userId: string) => {
     try {
+      // console.log('🔍 Fetching roles for user:', userId);
       const { data: roles, error } = await supabase
         .from('user_company_roles')
         .select('*')
@@ -78,6 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return [];
       }
 
+      // console.log('📋 User roles found:', roles);
       return roles || [];
     } catch (error) {
       console.error('Error in fetchUserRoles:', error);
@@ -150,33 +152,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Initialize auth state
   useEffect(() => {
-    console.log('🔐 AuthProvider initializing...');
-    
-    let mounted = true;
+    // console.log('🔐 AuthProvider initializing...');
     
     // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!mounted) return;
-      
-      console.log('🔐 Auth state changed:', event, session?.user?.id);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // console.log('🔐 Auth state changed:', event, session?.user?.id);
       
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        fetchUserRoles(session.user.id).then(roles => {
-          if (!mounted) return;
+        // Defer role fetching to avoid potential conflicts
+        setTimeout(async () => {
+          const roles = await fetchUserRoles(session.user.id);
           setUserRoles(roles);
+          
           const selectedRole = determineCurrentRole(roles);
           setCurrentRole(selectedRole);
           setLoading(false);
-        }).catch(error => {
-          console.error('Error fetching user roles:', error);
-          if (!mounted) return;
-          setLoading(false);
-        });
+        }, 100);
       } else {
-        if (!mounted) return;
         setUserRoles(null);
         setCurrentRole(null);
         localStorage.removeItem('currentRole');
@@ -184,23 +179,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     });
 
-    // Get initial session only once
+    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!mounted) return;
+      // console.log('🔐 Initial session:', session?.user?.id);
       
-      console.log('🔐 Initial session:', session?.user?.id);
+      setSession(session);
+      setUser(session?.user ?? null);
       
-      // Only set loading to false if no session (auth state change will handle it if there is a session)
-      if (!session) {
+      if (session?.user) {
+        fetchUserRoles(session.user.id).then(roles => {
+          setUserRoles(roles);
+          const selectedRole = determineCurrentRole(roles);
+          setCurrentRole(selectedRole);
+          setLoading(false);
+        });
+      } else {
         setLoading(false);
       }
     });
 
     return () => {
-      mounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [fetchUserRoles, determineCurrentRole]);
 
   const signIn = async (email: string, password: string) => {
     try {
