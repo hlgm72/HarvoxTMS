@@ -60,6 +60,7 @@ interface CreateLoadDialogProps {
 const DRAFT_KEY = 'load_wizard_draft';
 
 export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
+  console.log('🔍 CreateLoadDialog - isOpen:', isOpen);
   const { t } = useTranslation();
   const [currentPhase, setCurrentPhase] = useState(1);
   const [selectedBroker, setSelectedBroker] = useState<CompanyBroker | null>(null);
