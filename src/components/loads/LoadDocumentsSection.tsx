@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Upload, Download, Trash2, FileCheck, Plus } from "lucide-react";
 import { GenerateLoadOrderDialog } from "./GenerateLoadOrderDialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface LoadDocument {
   id: string;
@@ -17,6 +19,7 @@ interface LoadDocument {
 }
 
 interface LoadDocumentsSectionProps {
+  loadId?: string; // Optional for when creating a new load
   loadData: {
     load_number: string;
     total_amount: number;
@@ -53,34 +56,181 @@ const documentTypes = [
   }
 ];
 
-export function LoadDocumentsSection({ loadData, onDocumentsChange }: LoadDocumentsSectionProps) {
+export function LoadDocumentsSection({ loadId, loadData, onDocumentsChange }: LoadDocumentsSectionProps) {
   const [documents, setDocuments] = useState<LoadDocument[]>([]);
   const [showGenerateLoadOrder, setShowGenerateLoadOrder] = useState(false);
   const [hasLoadOrder, setHasLoadOrder] = useState(false);
+  const [uploading, setUploading] = useState<string | null>(null);
+  const { toast } = useToast();
 
-  const handleFileUpload = (type: LoadDocument['type'], files: FileList | null) => {
-    if (!files || files.length === 0) return;
+  // Load existing documents when loadId is available
+  useEffect(() => {
+    if (loadId) {
+      loadDocuments();
+    }
+  }, [loadId]);
 
-    const file = files[0];
-    const newDocument: LoadDocument = {
-      id: crypto.randomUUID(),
-      type,
-      name: documentTypes.find(dt => dt.type === type)?.label || type,
-      fileName: file.name,
-      fileSize: file.size,
-      uploadedAt: new Date(),
-      isRequired: type === 'rate_confirmation'
-    };
+  const loadDocuments = async () => {
+    if (!loadId) return;
 
-    const updatedDocuments = [...documents, newDocument];
-    setDocuments(updatedDocuments);
-    onDocumentsChange?.(updatedDocuments);
+    try {
+      const { data, error } = await supabase
+        .from('load_documents')
+        .select('*')
+        .eq('load_id', loadId)
+        .eq('archived_at', null);
+
+      if (error) throw error;
+
+      const loadDocuments: LoadDocument[] = data.map(doc => ({
+        id: doc.id,
+        type: doc.document_type as LoadDocument['type'],
+        name: doc.file_name,
+        fileName: doc.file_name,
+        fileSize: doc.file_size,
+        uploadedAt: new Date(doc.created_at),
+        url: doc.file_url,
+        isRequired: doc.document_type === 'rate_confirmation'
+      }));
+
+      setDocuments(loadDocuments);
+      setHasLoadOrder(loadDocuments.some(doc => doc.type === 'load_order'));
+      onDocumentsChange?.(loadDocuments);
+    } catch (error) {
+      console.error('Error loading documents:', error);
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar los documentos",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleRemoveDocument = (documentId: string) => {
-    const updatedDocuments = documents.filter(doc => doc.id !== documentId);
-    setDocuments(updatedDocuments);
-    onDocumentsChange?.(updatedDocuments);
+  const handleFileUpload = async (type: LoadDocument['type'], files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    if (!loadId) {
+      toast({
+        title: "Error",
+        description: "Debes guardar la carga primero antes de subir documentos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const file = files[0];
+    
+    // Validate file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "Error",
+        description: "El archivo es muy grande. Máximo 10MB permitido.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploading(type);
+
+    try {
+      // Create file path: load_id/document_type_timestamp.ext
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${type}_${Date.now()}.${fileExt}`;
+      const filePath = `${loadId}/${fileName}`;
+
+      // Upload file to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('load-documents')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('load-documents')
+        .getPublicUrl(filePath);
+
+      // Save document metadata to database
+      const { data: docData, error: docError } = await supabase
+        .from('load_documents')
+        .insert({
+          load_id: loadId,
+          document_type: type,
+          file_name: file.name,
+          file_url: urlData.publicUrl,
+          file_size: file.size,
+          content_type: file.type,
+          uploaded_by: (await supabase.auth.getUser()).data.user?.id
+        })
+        .select()
+        .single();
+
+      if (docError) throw docError;
+
+      // Add to local state
+      const newDocument: LoadDocument = {
+        id: docData.id,
+        type,
+        name: documentTypes.find(dt => dt.type === type)?.label || type,
+        fileName: file.name,
+        fileSize: file.size,
+        uploadedAt: new Date(),
+        url: urlData.publicUrl,
+        isRequired: type === 'rate_confirmation'
+      };
+
+      const updatedDocuments = [...documents, newDocument];
+      setDocuments(updatedDocuments);
+      onDocumentsChange?.(updatedDocuments);
+
+      toast({
+        title: "Éxito",
+        description: `${newDocument.name} subido correctamente`,
+      });
+
+    } catch (error) {
+      console.error('Error uploading document:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo subir el documento. Intenta nuevamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(null);
+    }
+  };
+
+  const handleRemoveDocument = async (documentId: string) => {
+    if (!loadId) return;
+
+    try {
+      // Archive document in database (soft delete)
+      const { error } = await supabase
+        .from('load_documents')
+        .update({ 
+          archived_at: new Date().toISOString(),
+          archived_by: (await supabase.auth.getUser()).data.user?.id
+        })
+        .eq('id', documentId);
+
+      if (error) throw error;
+
+      const updatedDocuments = documents.filter(doc => doc.id !== documentId);
+      setDocuments(updatedDocuments);
+      onDocumentsChange?.(updatedDocuments);
+
+      toast({
+        title: "Éxito",
+        description: "Documento eliminado correctamente",
+      });
+
+    } catch (error) {
+      console.error('Error removing document:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar el documento",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleLoadOrderGenerated = (loadOrderData: any) => {
@@ -171,10 +321,15 @@ export function LoadDocumentsSection({ loadData, onDocumentsChange }: LoadDocume
                             className="hidden"
                             accept=".pdf,.jpg,.jpeg,.png"
                             onChange={(e) => handleFileUpload(docType.type, e.target.files)}
+                            disabled={uploading === docType.type}
                           />
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            disabled={uploading === docType.type}
+                          >
                             <Upload className="h-4 w-4 mr-2" />
-                            Subir archivo
+                            {uploading === docType.type ? 'Subiendo...' : 'Subir archivo'}
                           </Button>
                         </label>
                         <span className="text-xs text-muted-foreground">
@@ -184,11 +339,15 @@ export function LoadDocumentsSection({ loadData, onDocumentsChange }: LoadDocume
                     )}
                   </div>
                   
-                  {uploadedDoc && (
-                    <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="sm">
-                        <Download className="h-4 w-4" />
-                      </Button>
+                   {uploadedDoc && (
+                     <div className="flex items-center gap-1">
+                       <Button 
+                         variant="ghost" 
+                         size="sm"
+                         onClick={() => uploadedDoc.url && window.open(uploadedDoc.url, '_blank')}
+                       >
+                         <Download className="h-4 w-4" />
+                       </Button>
                       <Button 
                         variant="ghost" 
                         size="sm"
