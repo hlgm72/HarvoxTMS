@@ -253,11 +253,11 @@ export function EditLoadDialog({ isOpen, onClose, load }: EditLoadDialogProps) {
                                 brokers={brokers}
                                 loading={brokersLoading}
                                 value={field.value}
-                                 onValueChange={(value) => {
-                                   field.onChange(value);
-                                   const broker = brokers.find(b => b.id === value);
-                                   setSelectedBroker(broker || null);
-                                 }}
+                                onValueChange={(value) => {
+                                  field.onChange(value);
+                                  const broker = brokers.find(b => b.id === value);
+                                  setSelectedBroker(broker || null);
+                                }}
                                 onCreateNew={() => {}} // No permitir crear brokers durante edición
                                 onBrokerSelect={setSelectedBroker}
                                 placeholder="Buscar broker por nombre, DOT, MC..."
