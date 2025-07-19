@@ -2304,7 +2304,13 @@ export type Database = {
         Returns: Json
       }
       generate_payment_periods: {
-        Args: { company_id_param: string; from_date: string; to_date: string }
+        Args:
+          | { company_id_param: string; from_date: string; to_date: string }
+          | {
+              company_id_param: string
+              from_date_param: string
+              to_date_param: string
+            }
         Returns: Json
       }
       get_current_payment_period: {
