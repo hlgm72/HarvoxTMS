@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Circle, ArrowRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { BrokerCombobox } from "@/components/brokers/BrokerCombobox";
-import { DispatcherCombobox } from "@/components/brokers/DispatcherCombobox";
+import { InternalDispatcherCombobox } from "@/components/dispatchers/InternalDispatcherCombobox";
 import { CreateBrokerDialog } from "@/components/brokers/CreateBrokerDialog";
 import { CreateDispatcherDialog } from "@/components/brokers/CreateDispatcherDialog";
 import { LoadStopsManager } from "./LoadStopsManager";
@@ -366,12 +366,11 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                               brokers={brokers}
                               loading={brokersLoading}
                               value={field.value}
-                              onValueChange={(value) => {
-                                field.onChange(value);
-                                const broker = brokers.find(b => b.id === value);
-                                setSelectedBroker(broker || null);
-                                form.setValue("dispatcher_id", ""); // Reset dispatcher
-                              }}
+                               onValueChange={(value) => {
+                                 field.onChange(value);
+                                 const broker = brokers.find(b => b.id === value);
+                                 setSelectedBroker(broker || null);
+                               }}
                               onCreateNew={() => setShowCreateBroker(true)}
                               onBrokerSelect={setSelectedBroker}
                               placeholder="Buscar broker por nombre, DOT, MC..."
@@ -383,21 +382,19 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                       )}
                     />
 
-                    {/* Dispatcher Selection */}
+                    {/* Internal Dispatcher Selection */}
                     <FormField
                       control={form.control}
                       name="dispatcher_id"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Dispatcher</FormLabel>
+                          <FormLabel>Dispatcher Interno</FormLabel>
                           <FormControl>
-                            <DispatcherCombobox
-                              dispatchers={selectedBroker?.dispatchers || []}
+                            <InternalDispatcherCombobox
+                              dispatchers={dispatchers}
                               value={field.value}
                               onValueChange={field.onChange}
-                              onCreateNew={() => setShowCreateDispatcher(true)}
-                              placeholder="Buscar dispatcher..."
-                              disabled={!selectedBroker}
+                              placeholder="Seleccionar dispatcher interno..."
                               className="w-full"
                             />
                           </FormControl>
