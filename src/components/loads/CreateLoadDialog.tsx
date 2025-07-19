@@ -92,6 +92,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         const broker = brokers.find(b => b.id === activeLoadData.broker_id);
         if (broker) {
           setSelectedBroker(broker);
+          
+          // Find and set broker dispatcher if available
+          if (activeLoadData.broker_dispatcher_id && broker.dispatchers) {
+            const brokerDispatcher = broker.dispatchers.find(d => d.id === activeLoadData.broker_dispatcher_id);
+            if (brokerDispatcher) {
+              form.setValue("dispatcher_id", brokerDispatcher.id);
+            }
+          }
         }
       }
 
@@ -196,6 +204,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       driver_user_id: selectedDriver.user_id,
       internal_dispatcher_id: selectedDispatcher?.user_id || null,
       broker_id: values.broker_id,
+      broker_dispatcher_id: values.dispatcher_id || null,
       customer_name: values.customer_name || '',
       total_amount: values.total_amount,
       commodity: values.commodity,

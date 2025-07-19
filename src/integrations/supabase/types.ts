@@ -1286,6 +1286,7 @@ export type Database = {
       }
       loads: {
         Row: {
+          broker_dispatcher_id: string | null
           broker_id: string | null
           commodity: string | null
           created_at: string
@@ -1309,6 +1310,7 @@ export type Database = {
           weight_lbs: number | null
         }
         Insert: {
+          broker_dispatcher_id?: string | null
           broker_id?: string | null
           commodity?: string | null
           created_at?: string
@@ -1332,6 +1334,7 @@ export type Database = {
           weight_lbs?: number | null
         }
         Update: {
+          broker_dispatcher_id?: string | null
           broker_id?: string | null
           commodity?: string | null
           created_at?: string
@@ -1354,7 +1357,15 @@ export type Database = {
           updated_at?: string
           weight_lbs?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "loads_broker_dispatcher_id_fkey"
+            columns: ["broker_dispatcher_id"]
+            isOneToOne: false
+            referencedRelation: "company_broker_dispatchers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       maintenance_records: {
         Row: {
