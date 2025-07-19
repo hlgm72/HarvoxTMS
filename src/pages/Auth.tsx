@@ -515,8 +515,9 @@ export default function Auth() {
           // Store success message for the dashboard to show
           localStorage.setItem('loginSuccess', 'true');
           
-          // Let the AuthContext handle the redirect through Index.tsx
-          console.log('Login successful, AuthContext will handle redirect...');
+          // Direct redirect to home page
+          console.log('Redirecting after successful login...');
+          window.location.href = '/';
         }
       } else {
         // Sign up new user
