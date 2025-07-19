@@ -92,7 +92,7 @@ export function LoadDocumentsSection({
         .from('load_documents')
         .select('*')
         .eq('load_id', loadId)
-        .eq('archived_at', null);
+        .is('archived_at', null);
 
       if (error) throw error;
 
