@@ -13,14 +13,15 @@ interface LoadDocument {
   name: string;
   fileName: string;
   fileSize?: number;
-  uploadedAt: Date;
+  uploadedAt: Date | string;
   url?: string;
   isRequired?: boolean;
+  file?: File; // For temporary documents
 }
 
 interface LoadDocumentsSectionProps {
-  loadId?: string; // Optional for when creating a new load
-  loadData: {
+  loadId?: string | null; // Optional for when creating a new load
+  loadData?: {
     load_number: string;
     total_amount: number;
     commodity: string;
@@ -30,6 +31,8 @@ interface LoadDocumentsSectionProps {
     loadStops: any[];
   };
   onDocumentsChange?: (documents: LoadDocument[]) => void;
+  temporaryDocuments?: LoadDocument[];
+  onTemporaryDocumentsChange?: (documents: LoadDocument[]) => void;
 }
 
 const documentTypes = [
@@ -56,7 +59,13 @@ const documentTypes = [
   }
 ];
 
-export function LoadDocumentsSection({ loadId, loadData, onDocumentsChange }: LoadDocumentsSectionProps) {
+export function LoadDocumentsSection({ 
+  loadId, 
+  loadData, 
+  onDocumentsChange,
+  temporaryDocuments = [],
+  onTemporaryDocumentsChange 
+}: LoadDocumentsSectionProps) {
   const [documents, setDocuments] = useState<LoadDocument[]>([]);
   const [showGenerateLoadOrder, setShowGenerateLoadOrder] = useState(false);
   const [hasLoadOrder, setHasLoadOrder] = useState(false);
@@ -108,12 +117,10 @@ export function LoadDocumentsSection({ loadId, loadData, onDocumentsChange }: Lo
 
   const handleFileUpload = async (type: LoadDocument['type'], files: FileList | null) => {
     if (!files || files.length === 0) return;
+    
+    // If no loadId, handle as temporary document
     if (!loadId) {
-      toast({
-        title: "Error",
-        description: "Debes guardar la carga primero antes de subir documentos",
-        variant: "destructive",
-      });
+      handleTemporaryFileUpload(type, files);
       return;
     }
 
@@ -197,6 +204,52 @@ export function LoadDocumentsSection({ loadId, loadData, onDocumentsChange }: Lo
     } finally {
       setUploading(null);
     }
+  };
+
+  const handleTemporaryFileUpload = (type: LoadDocument['type'], files: FileList) => {
+    const file = files[0];
+    
+    // Validate file size (50MB limit)
+    const maxSize = 50 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast({
+        title: "Error",
+        description: "El archivo es demasiado grande. Máximo 50MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Create temporary document with file data
+    const tempDocument: LoadDocument = {
+      id: `temp-${Date.now()}`,
+      type,
+      name: file.name,
+      fileName: file.name,
+      fileSize: file.size,
+      uploadedAt: new Date().toISOString(),
+      url: URL.createObjectURL(file), // Create blob URL for preview
+      isRequired: ['rate_confirmation', 'signed_contract'].includes(type),
+      file: file // Store the actual file for later upload
+    };
+
+    const updatedTempDocs = [...temporaryDocuments, tempDocument];
+    onTemporaryDocumentsChange?.(updatedTempDocs);
+
+    toast({
+      title: "Documento agregado",
+      description: `${file.name} se subirá cuando guardes la carga.`,
+    });
+  };
+
+  const handleRemoveTemporaryDocument = (documentId: string) => {
+    const updatedTempDocs = temporaryDocuments.filter(doc => doc.id !== documentId);
+    onTemporaryDocumentsChange?.(updatedTempDocs);
+    
+    toast({
+      title: "Documento removido",
+      description: "El documento temporal ha sido eliminado.",
+    });
   };
 
   const handleRemoveDocument = async (documentId: string) => {
@@ -303,7 +356,7 @@ export function LoadDocumentsSection({ loadId, loadData, onDocumentsChange }: Lo
                       {docType.description}
                     </p>
                     
-                    {uploadedDoc ? (
+                     {uploadedDoc ? (
                       <div className="flex items-center gap-2 text-sm">
                         <FileCheck className="h-4 w-4 text-green-500" />
                         <span>{uploadedDoc.fileName}</span>
@@ -333,7 +386,7 @@ export function LoadDocumentsSection({ loadId, loadData, onDocumentsChange }: Lo
                           </Button>
                         </label>
                         <span className="text-xs text-muted-foreground">
-                          PDF, JPG, PNG (máx. 10MB)
+                          {loadId ? 'PDF, JPG, PNG (máx. 10MB)' : 'Se subirá al guardar la carga'}
                         </span>
                       </div>
                     )}
@@ -412,6 +465,59 @@ export function LoadDocumentsSection({ loadId, loadData, onDocumentsChange }: Lo
           </div>
         </div>
 
+        {/* Temporary Documents */}
+        {temporaryDocuments.length > 0 && (
+          <div className="border-t pt-4">
+            <h4 className="text-sm font-medium text-muted-foreground mb-2">
+              Documentos pendientes ({temporaryDocuments.length})
+            </h4>
+            <div className="text-xs text-muted-foreground mb-3">
+              Estos documentos se subirán cuando guardes la carga
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              {temporaryDocuments.map((tempDoc) => (
+                <div key={tempDoc.id} className="flex items-center justify-between gap-2 text-sm p-3 bg-muted/30 rounded-lg border-dashed border">
+                  <div className="flex items-center gap-2 flex-1">
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{tempDoc.name}</span>
+                        <Badge variant="secondary" className="text-xs">
+                          Pendiente
+                        </Badge>
+                      </div>
+                      <span className="text-xs text-muted-foreground">{tempDoc.fileName}</span>
+                      {tempDoc.fileSize && (
+                        <span className="text-xs text-muted-foreground">
+                          {' • '}{formatFileSize(tempDoc.fileSize)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => tempDoc.url && window.open(tempDoc.url, '_blank')}
+                      title="Vista previa"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handleRemoveTemporaryDocument(tempDoc.id)}
+                      title="Eliminar documento"
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Documents Summary */}
         {documents.length > 0 && (
           <div className="border-t pt-4">
@@ -487,12 +593,14 @@ export function LoadDocumentsSection({ loadId, loadData, onDocumentsChange }: Lo
       </CardContent>
 
       {/* Generate Load Order Dialog */}
-      <GenerateLoadOrderDialog
-        isOpen={showGenerateLoadOrder}
-        onClose={() => setShowGenerateLoadOrder(false)}
-        loadData={loadData}
-        onLoadOrderGenerated={handleLoadOrderGenerated}
-      />
+      {loadData && (
+        <GenerateLoadOrderDialog
+          isOpen={showGenerateLoadOrder}
+          onClose={() => setShowGenerateLoadOrder(false)}
+          loadData={loadData}
+          onLoadOrderGenerated={handleLoadOrderGenerated}
+        />
+      )}
     </Card>
   );
 }

@@ -578,6 +578,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
             {/* Phase 4: Documents */}
             {currentPhase === 4 && (
               <LoadDocumentsSection
+                loadId={null}
                 loadData={{
                   load_number: form.getValues("load_number") || '',
                   total_amount: form.getValues("total_amount") || 0,
@@ -588,6 +589,8 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                   loadStops: loadStops
                 }}
                 onDocumentsChange={setLoadDocuments}
+                temporaryDocuments={loadDocuments}
+                onTemporaryDocumentsChange={setLoadDocuments}
               />
             )}
 
