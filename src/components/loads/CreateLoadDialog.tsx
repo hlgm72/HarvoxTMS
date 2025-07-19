@@ -92,6 +92,10 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   
   // Validación de número de carga duplicado
   const currentLoadNumber = form.watch("load_number");
+  
+  // Log básico para ver si el componente se ejecuta
+  console.log('🔍 CreateLoadDialog render - Load number:', currentLoadNumber);
+  
   const loadNumberValidation = useLoadNumberValidation(currentLoadNumber);
   
   // Debug log para ver el estado de validación
