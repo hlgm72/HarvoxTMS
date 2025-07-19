@@ -39,10 +39,11 @@ export const useClients = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("company_brokers")
-        .select("*")
+        .select("id, name, alias, company_id, is_active, email_domain, address, notes, logo_url, mc_number, dot_number, created_at, updated_at")
         .order("name");
 
       if (error) throw error;
+      console.log("🔍 Datos de clientes recibidos:", data);
       return data as Client[];
     },
   });
