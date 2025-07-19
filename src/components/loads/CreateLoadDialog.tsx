@@ -55,12 +55,14 @@ const brokerOptions = [
 interface CreateLoadDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  mode?: 'create' | 'edit';
+  loadData?: any; // Para modo de edición
 }
 
 const DRAFT_KEY = 'load_wizard_draft';
 
-export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
-  console.log('🔍 CreateLoadDialog - isOpen:', isOpen);
+export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }: CreateLoadDialogProps) {
+  console.log('🔍 CreateLoadDialog - mode:', mode, 'isOpen:', isOpen);
   const { t } = useTranslation();
   const [currentPhase, setCurrentPhase] = useState(1);
   const [selectedBroker, setSelectedBroker] = useState<CompanyBroker | null>(null);
@@ -97,7 +99,9 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   // Log básico para ver si el componente se ejecuta
   console.log('🔍 CreateLoadDialog render - Load number:', currentLoadNumber);
   
-  const loadNumberValidation = useLoadNumberValidation(currentLoadNumber);
+  const loadNumberValidation = mode === 'create' 
+    ? useLoadNumberValidation(currentLoadNumber) 
+    : { isDuplicate: false, isValidating: false, isValid: true, error: '' };
   
   // Debug log para ver el estado de validación
   useEffect(() => {
@@ -279,8 +283,8 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
       return;
     }
     
-    // Verificar que no haya número duplicado
-    if (loadNumberValidation.isDuplicate) {
+    // Verificar que no haya número duplicado (solo en modo crear)
+    if (mode === 'create' && loadNumberValidation.isDuplicate) {
       console.log('🚨 onSubmit blocked - duplicate load number');
       toast({
         title: "Error",
@@ -356,9 +360,12 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Nueva Carga</DialogTitle>
+          <DialogTitle>{mode === 'create' ? 'Nueva Carga' : 'Editar Carga'}</DialogTitle>
           <DialogDescription>
-            Crea una nueva carga siguiendo el proceso paso a paso
+            {mode === 'create' 
+              ? 'Crea una nueva carga siguiendo el proceso paso a paso'
+              : 'Modifica los datos de la carga existente'
+            }
           </DialogDescription>
         </DialogHeader>
 
@@ -743,7 +750,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                       form.handleSubmit(onSubmit)();
                     }}
                   >
-                    Crear Carga
+                    {mode === 'create' ? 'Crear Carga' : 'Guardar Cambios'}
                   </Button>
                 )}
               </div>

@@ -13,7 +13,7 @@ import { PeriodFilterValue } from "./PeriodFilter";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
 import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
 import { EmptyLoadsState } from "./EmptyLoadsState";
-import { LoadWizardDialog } from "./LoadWizardDialog";
+import { CreateLoadDialog } from "./CreateLoadDialog";
 
 // Componente de skeleton para cargas
 const LoadSkeleton = () => (
@@ -346,7 +346,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
       
       {/* Dialog de edición */}
       {editDialog.load && (
-        <LoadWizardDialog
+        <CreateLoadDialog
           isOpen={editDialog.isOpen}
           onClose={() => setEditDialog({ isOpen: false })}
           mode="edit"
