@@ -127,7 +127,6 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
               {client.mc_number && (
                 <div className="flex items-center gap-2 text-sm">
                   <Building2 className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-muted-foreground">MC#:</span>
                   <span className="truncate font-mono">{client.mc_number}</span>
                 </div>
               )}

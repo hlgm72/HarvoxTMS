@@ -103,7 +103,7 @@ export function ClientsList({ clients }: ClientsListProps) {
                   {client.mc_number && (
                     <div className="flex items-center gap-2">
                       <Building2 className="h-3 w-3 flex-shrink-0" />
-                      <span className="text-xs font-medium">MC# {client.mc_number}</span>
+                      <span className="text-xs font-medium">{client.mc_number}</span>
                     </div>
                   )}
                   {client.dot_number && (
@@ -190,7 +190,7 @@ export function ClientsList({ clients }: ClientsListProps) {
                       {client.mc_number && (
                         <div className="flex items-center gap-1 min-w-0">
                           <Building2 className="h-3 w-3 flex-shrink-0" />
-                          <span className="truncate font-mono">MC# {client.mc_number}</span>
+                          <span className="truncate font-mono">{client.mc_number}</span>
                         </div>
                       )}
                       {client.dot_number && (
