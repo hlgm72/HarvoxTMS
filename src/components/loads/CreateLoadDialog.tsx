@@ -7,6 +7,7 @@ import { useCompanyDrivers, CompanyDriver } from "@/hooks/useCompanyDrivers";
 import { useCompanyDispatchers } from "@/hooks/useCompanyDispatchers";
 import { useCompanyBrokers, CompanyBroker } from "@/hooks/useCompanyBrokers";
 import { useCreateLoad } from "@/hooks/useCreateLoad";
+import { useLoadNumberValidation } from "@/hooks/useLoadNumberValidation";
 import { useATMInput } from "@/hooks/useATMInput";
 import { createTextHandlers } from "@/lib/textUtils";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -17,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Circle, ArrowRight } from "lucide-react";
+import { CheckCircle, Circle, ArrowRight, Loader2, AlertTriangle, Check } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { BrokerCombobox } from "@/components/brokers/BrokerCombobox";
 import { DispatcherCombobox } from "@/components/brokers/DispatcherCombobox";
@@ -88,6 +89,9 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
       weight_lbs: 0,
     },
   });
+  
+  // Validación de número de carga duplicado
+  const loadNumberValidation = useLoadNumberValidation(form.watch("load_number"));
 
   const atmInput = useATMInput({
     initialValue: 0,
@@ -246,6 +250,16 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   ];
 
   const onSubmit = (values: z.infer<typeof createLoadSchema>) => {
+    // Verificar que no haya número duplicado
+    if (loadNumberValidation.isDuplicate) {
+      toast({
+        title: "Error",
+        description: "No se puede crear la carga con un número duplicado.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Validar que se haya seleccionado un conductor
     if (!selectedDriver) {
       toast({
@@ -420,14 +434,44 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                           <FormItem>
                             <FormLabel>Número de Carga *</FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="Ej: LD-001, 2024-001, etc." 
-                                value={field.value || ''}
-                                onChange={textHandlers.onChange}
-                                onBlur={textHandlers.onBlur}
-                              />
+                              <div className="relative">
+                                <Input 
+                                  placeholder="Ej: LD-001, 2024-001, etc." 
+                                  value={field.value || ''}
+                                  onChange={textHandlers.onChange}
+                                  onBlur={textHandlers.onBlur}
+                                  className={
+                                    loadNumberValidation.isDuplicate 
+                                      ? "border-destructive focus:border-destructive" 
+                                      : loadNumberValidation.isValid 
+                                      ? "border-green-500 focus:border-green-500" 
+                                      : ""
+                                  }
+                                />
+                                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                  {loadNumberValidation.isValidating && (
+                                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                  )}
+                                  {!loadNumberValidation.isValidating && loadNumberValidation.isDuplicate && (
+                                    <AlertTriangle className="h-4 w-4 text-destructive" />
+                                  )}
+                                  {!loadNumberValidation.isValidating && loadNumberValidation.isValid && (
+                                    <Check className="h-4 w-4 text-green-500" />
+                                  )}
+                                </div>
+                              </div>
                             </FormControl>
                             <FormMessage />
+                            {loadNumberValidation.isDuplicate && (
+                              <p className="text-sm text-destructive mt-1">
+                                Este número de carga ya existe. Por favor use un número diferente.
+                              </p>
+                            )}
+                            {loadNumberValidation.error && (
+                              <p className="text-sm text-destructive mt-1">
+                                {loadNumberValidation.error}
+                              </p>
+                            )}
                           </FormItem>
                         );
                       }}
