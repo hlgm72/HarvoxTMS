@@ -63,6 +63,9 @@ export default function Index() {
         console.log('🏠 Redirecting to driver dashboard');
         navigate('/dashboard/driver');
       }
+    } else if (!loading && !user) {
+      console.log('🏠 No user found, redirecting to auth');
+      navigate('/auth');
     } else {
       console.log('🏠 Still loading or no user:', { loading, hasUser: !!user });
     }
