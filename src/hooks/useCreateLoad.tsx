@@ -65,6 +65,10 @@ export const useCreateLoad = () => {
         .single();
 
       if (loadError) {
+        // Verificar si es un error de número de carga duplicado
+        if (loadError.code === '23505' && loadError.message.includes('loads_load_number_unique')) {
+          throw new Error(`El número de carga "${data.load_number}" ya existe. Por favor use un número diferente.`);
+        }
         throw new Error(`Error creando carga: ${loadError.message}`);
       }
 
