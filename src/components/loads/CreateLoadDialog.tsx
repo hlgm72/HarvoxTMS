@@ -1,23 +1,21 @@
+
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useCompanyDrivers, CompanyDriver } from "@/hooks/useCompanyDrivers";
 import { useCompanyDispatchers } from "@/hooks/useCompanyDispatchers";
 import { useCompanyBrokers, CompanyBroker } from "@/hooks/useCompanyBrokers";
 import { useCreateLoad } from "@/hooks/useCreateLoad";
 import { useLoadNumberValidation } from "@/hooks/useLoadNumberValidation";
+import { useLoadData } from "@/hooks/useLoadData";
+import { useLoadForm } from "@/hooks/useLoadForm";
 import { useATMInput } from "@/hooks/useATMInput";
 import { createTextHandlers } from "@/lib/textUtils";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Circle, ArrowRight, Loader2, AlertTriangle, Check } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { BrokerCombobox } from "@/components/brokers/BrokerCombobox";
@@ -28,46 +26,14 @@ import { LoadStopsManager } from "./LoadStopsManager";
 import { LoadDocumentsSection } from "./LoadDocumentsSection";
 import { LoadAssignmentSection } from "./LoadAssignmentSection";
 
-const createLoadSchema = z.object({
-  // Phase 1: Essential Information
-  broker_id: z.string().min(1, "Selecciona un broker"),
-  dispatcher_id: z.string().optional(),
-  load_number: z.string().min(1, "El número de carga es requerido"),
-  total_amount: z.number().min(0.01, "El monto debe ser mayor a 0"),
-  po_number: z.string().optional(),
-  pu_number: z.string().optional(),
-  commodity: z.string().min(1, "Especifica el commodity"),
-  weight_lbs: z.number().optional(),
-  customer_name: z.string().optional(),
-  notes: z.string().optional(),
-  factoring_percentage: z.number().optional(),
-  dispatching_percentage: z.number().optional(),
-  leasing_percentage: z.number().optional(),
-});
-
-// Mock data - will be replaced with real data
-const brokerOptions = [
-  { id: "1", name: "ABC Logistics", dispatchers: [
-    { id: "1", name: "Juan Pérez" },
-    { id: "2", name: "María González" }
-  ]},
-  { id: "2", name: "XYZ Freight", dispatchers: [
-    { id: "3", name: "Ana López" },
-    { id: "4", name: "Carlos Ruiz" }
-  ]},
-];
-
 interface CreateLoadDialogProps {
   isOpen: boolean;
   onClose: () => void;
   mode?: 'create' | 'edit';
-  loadData?: any; // Para modo de edición
+  loadData?: any;
 }
 
-const DRAFT_KEY = 'load_wizard_draft';
-
-export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }: CreateLoadDialogProps) {
-  console.log('🔍 CreateLoadDialog - mode:', mode, 'isOpen:', isOpen);
+export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: externalLoadData }: CreateLoadDialogProps) {
   const { t } = useTranslation();
   const [currentPhase, setCurrentPhase] = useState(1);
   const [selectedBroker, setSelectedBroker] = useState<CompanyBroker | null>(null);
@@ -78,54 +44,34 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
   const [selectedDriver, setSelectedDriver] = useState<CompanyDriver | null>(null);
   const [loadDocuments, setLoadDocuments] = useState<any[]>([]);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
+  const [selectedDispatcher, setSelectedDispatcher] = useState<any>(null);
+
+  // Hooks
   const { drivers } = useCompanyDrivers();
   const { data: dispatchers = [] } = useCompanyDispatchers();
-  const [selectedDispatcher, setSelectedDispatcher] = useState<any>(null);
   const { brokers, loading: brokersLoading, refetch: refetchBrokers } = useCompanyBrokers();
   const createLoadMutation = useCreateLoad();
 
-  const form = useForm<z.infer<typeof createLoadSchema>>({
-    resolver: zodResolver(createLoadSchema),
-    defaultValues: {
-      broker_id: "",
-      dispatcher_id: "",
-      load_number: "",
-      total_amount: 0,
-      po_number: "",
-      pu_number: "",
-      commodity: "",
-      weight_lbs: 0,
-      customer_name: "",
-      notes: "",
-      factoring_percentage: undefined,
-      dispatching_percentage: undefined,
-      leasing_percentage: undefined,
-    },
-  });
-  
-  // Validación de número de carga duplicado
+  // Load data hook for edit mode
+  const { loadData: fetchedLoadData, isLoading: loadDataLoading, error: loadDataError } = useLoadData(
+    mode === 'edit' ? externalLoadData?.id : undefined
+  );
+
+  // Use fetched data if available, otherwise use external data
+  const activeLoadData = fetchedLoadData || externalLoadData;
+
+  // Form hook
+  const { form, isFormReady } = useLoadForm(mode === 'edit' ? activeLoadData : null);
+
+  // Load number validation (skip in edit mode initially)
   const currentLoadNumber = form.watch("load_number");
-  
-  // Log básico para ver si el componente se ejecuta
-  console.log('🔍 CreateLoadDialog render - Load number:', currentLoadNumber);
-  
   const loadNumberValidation = useLoadNumberValidation(
     currentLoadNumber,
-    false, // No skip validation
-    mode === 'edit' ? loadData?.id : undefined // Excluir el ID actual cuando editamos
+    mode === 'edit' && !form.formState.dirtyFields.load_number, // Skip validation if in edit mode and field not dirty
+    mode === 'edit' ? activeLoadData?.id : undefined
   );
-  
-  // Debug log para ver el estado de validación
-  useEffect(() => {
-    console.log('🔍 Form validation state:', {
-      loadNumber: currentLoadNumber,
-      isValidating: loadNumberValidation.isValidating,
-      isDuplicate: loadNumberValidation.isDuplicate,
-      isValid: loadNumberValidation.isValid,
-      error: loadNumberValidation.error
-    });
-  }, [currentLoadNumber, loadNumberValidation.isValidating, loadNumberValidation.isDuplicate, loadNumberValidation.isValid, loadNumberValidation.error]);
 
+  // ATM Input
   const atmInput = useATMInput({
     initialValue: 0,
     onValueChange: (value) => {
@@ -133,218 +79,96 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
     }
   });
 
-  // Funciones para persistencia de datos
-  const saveDraft = () => {
-    try {
-      const formData = form.getValues();
-      const draftData = {
-        formData,
-        currentPhase,
-        loadStops,
-        selectedBroker: selectedBroker ? { id: selectedBroker.id, name: selectedBroker.name } : null,
-        timestamp: Date.now()
-      };
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
-    } catch (error) {
-      console.error('Error saving draft:', error);
-    }
-  };
-
-  const loadDraft = () => {
-    try {
-      const savedDraft = localStorage.getItem(DRAFT_KEY);
-      if (savedDraft) {
-        const draftData = JSON.parse(savedDraft);
-        
-        // Cargar datos del formulario
-        Object.entries(draftData.formData).forEach(([key, value]) => {
-          if (value !== undefined && value !== null && value !== '') {
-            form.setValue(key as any, value);
-          }
-        });
-
-        // Restaurar fase actual
-        setCurrentPhase(draftData.currentPhase || 1);
-        
-        // Restaurar paradas
-        if (draftData.loadStops) {
-          setLoadStops(draftData.loadStops);
-        }
-
-        // Restaurar broker seleccionado (se buscará en la lista actual)
-        if (draftData.selectedBroker?.id) {
-          const broker = brokers.find(b => b.id === draftData.selectedBroker.id);
-          if (broker) {
-            setSelectedBroker(broker);
-          }
-        }
-
-        // Actualizar el ATM input con el valor guardado
-        if (draftData.formData.total_amount) {
-          atmInput.setValue(draftData.formData.total_amount);
-        }
-
-        toast({
-          title: "Borrador recuperado",
-          description: "Se ha restaurado tu trabajo anterior.",
-        });
-      }
-    } catch (error) {
-      console.error('Error loading draft:', error);
-    }
-  };
-
-  const clearDraft = () => {
-    try {
-      localStorage.removeItem(DRAFT_KEY);
-    } catch (error) {
-      console.error('Error clearing draft:', error);
-    }
-  };
-
-  // Verificar si hay datos que podrían perderse
-  const hasUnsavedData = () => {
-    const formData = form.getValues();
-    return (
-      formData.load_number || 
-      formData.total_amount > 0 || 
-      formData.commodity || 
-      formData.broker_id || 
-      loadStops.length > 0 ||
-      selectedDriver ||
-      selectedDispatcher
-    );
-  };
-
-  // Manejar cierre con confirmación
-  const handleClose = () => {
-    if (hasUnsavedData()) {
-      setShowExitConfirmation(true);
-    } else {
-      onClose();
-    }
-  };
-
-  // Confirmar cierre y borrar borrador
-  const confirmExit = () => {
-    clearDraft();
-    form.reset();
-    setCurrentPhase(1);
-    setSelectedBroker(null);
-    setSelectedDriver(null);
-    setLoadStops([]);
-    setLoadDocuments([]);
-    setSelectedDispatcher(null);
-    atmInput.setValue(0);
-    setShowExitConfirmation(false);
-    onClose();
-  };
-
-  // Cargar datos para edición
+  // Initialize form and states when load data is available
   useEffect(() => {
-    if (isOpen && mode === 'edit' && loadData) {
-      console.log('🔍 Loading edit data:', loadData);
-      
-      // Limpiar formulario primero
-      form.reset();
-      
-      // Cargar datos básicos del formulario
-      form.setValue("load_number", loadData.load_number || '');
-      form.setValue("total_amount", loadData.total_amount || 0);
-      form.setValue("commodity", loadData.commodity || '');
-      form.setValue("weight_lbs", loadData.weight_lbs || 0);
-      form.setValue("customer_name", loadData.customer_name || '');
-      form.setValue("notes", loadData.notes || '');
-      form.setValue("broker_id", loadData.broker_id || '');
-      form.setValue("factoring_percentage", loadData.factoring_percentage);
-      form.setValue("dispatching_percentage", loadData.dispatching_percentage);
-      form.setValue("leasing_percentage", loadData.leasing_percentage);
-      
-      // Actualizar ATM input
-      atmInput.setValue(loadData.total_amount || 0);
-      
-      // Buscar y establecer el broker
-      if (loadData.broker_id && brokers.length > 0) {
-        const broker = brokers.find(b => b.id === loadData.broker_id);
+    if (mode === 'edit' && activeLoadData && isFormReady) {
+      console.log('🔄 CreateLoadDialog - Initializing edit mode with data:', activeLoadData);
+
+      // Update ATM input
+      atmInput.setValue(activeLoadData.total_amount || 0);
+
+      // Find and set broker
+      if (activeLoadData.broker_id && brokers.length > 0) {
+        const broker = brokers.find(b => b.id === activeLoadData.broker_id);
         if (broker) {
           setSelectedBroker(broker);
         }
       }
-      
-      // Buscar y establecer el conductor
-      if (loadData.driver_user_id && drivers.length > 0) {
-        const driver = drivers.find(d => d.user_id === loadData.driver_user_id);
+
+      // Find and set driver
+      if (activeLoadData.driver_user_id && drivers.length > 0) {
+        const driver = drivers.find(d => d.user_id === activeLoadData.driver_user_id);
         if (driver) {
           setSelectedDriver(driver);
         }
       }
-      
-      // Buscar y establecer el dispatcher
-      if (loadData.internal_dispatcher_id && dispatchers.length > 0) {
-        const dispatcher = dispatchers.find(d => d.user_id === loadData.internal_dispatcher_id);
+
+      // Find and set dispatcher
+      if (activeLoadData.internal_dispatcher_id && dispatchers.length > 0) {
+        const dispatcher = dispatchers.find(d => d.user_id === activeLoadData.internal_dispatcher_id);
         if (dispatcher) {
           setSelectedDispatcher(dispatcher);
         }
       }
-    }
-  }, [isOpen, mode, loadData, brokers, drivers, dispatchers]);
 
-  // Cargar borrador al abrir el diálogo (solo en modo create)
-  useEffect(() => {
-    if (isOpen && mode === 'create' && brokers.length > 0) {
-      loadDraft();
+      // Set stops
+      if (activeLoadData.stops && activeLoadData.stops.length > 0) {
+        console.log('📍 CreateLoadDialog - Setting stops from load data:', activeLoadData.stops);
+        setLoadStops(activeLoadData.stops);
+      }
     }
-  }, [isOpen, mode, brokers]);
+  }, [mode, activeLoadData, isFormReady, brokers, drivers, dispatchers]);
 
-  // Guardar borrador cuando cambien los datos
-  useEffect(() => {
-    if (isOpen) {
-      const timeoutId = setTimeout(saveDraft, 1000); // Debounce de 1 segundo
-      return () => clearTimeout(timeoutId);
-    }
-  }, [form.watch(), currentPhase, loadStops, selectedBroker, isOpen]);
+  // Show loading state
+  if (mode === 'edit' && loadDataLoading) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-md">
+          <div className="flex items-center justify-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin" />
+            <span className="ml-2">Cargando datos de la carga...</span>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Show error state
+  if (mode === 'edit' && loadDataError) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-md">
+          <div className="text-center p-8">
+            <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Error al cargar datos</h3>
+            <p className="text-sm text-muted-foreground mb-4">{loadDataError}</p>
+            <Button onClick={onClose}>Cerrar</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   const phases = [
-    {
-      id: 1,
-      title: "Información Esencial",
-      description: "Datos básicos de la carga",
-      completed: false
-    },
-    {
-      id: 2,
-      title: "Detalles de Ruta",
-      description: "Paradas y direcciones",
-      completed: false
-    },
-    {
-      id: 3,
-      title: "Asignación",
-      description: "Conductor y activación",
-      completed: false
-    },
-    {
-      id: 4,
-      title: "Documentos",
-      description: "Rate confirmation y Load Order",
-      completed: false
-    }
+    { id: 1, title: "Información Esencial", description: "Datos básicos de la carga", completed: false },
+    { id: 2, title: "Detalles de Ruta", description: "Paradas y direcciones", completed: false },
+    { id: 3, title: "Asignación", description: "Conductor y activación", completed: false },
+    { id: 4, title: "Documentos", description: "Rate confirmation y Load Order", completed: false }
   ];
 
-  const onSubmit = (values: z.infer<typeof createLoadSchema>) => {
-    console.log('🚨 onSubmit called - this should only happen when user clicks "Crear Carga"', { 
-      values, 
-      currentPhase, 
-      selectedDriver 
-    });
+  const handleClose = () => {
+    // Simple close for now, can add unsaved changes check later
+    onClose();
+  };
+
+  const onSubmit = (values: any) => {
+    console.log('🚨 onSubmit called with values:', values);
     
-    // Verificar que estamos en la fase final
     if (currentPhase !== 4) {
       console.log('🚨 onSubmit blocked - not in final phase');
       return;
     }
-    
-    // Verificar que no haya número duplicado (solo en modo crear)
+
     if (mode === 'create' && loadNumberValidation.isDuplicate) {
       console.log('🚨 onSubmit blocked - duplicate load number');
       toast({
@@ -355,7 +179,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
       return;
     }
 
-    // Validar que se haya seleccionado un conductor
     if (!selectedDriver) {
       console.log('🚨 onSubmit blocked - no driver selected');
       toast({
@@ -365,22 +188,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
       });
       return;
     }
-    
-    console.log('✅ All validations passed, creating load...');
-
-    // Extraer datos de pickup y delivery de las paradas
-    const pickupStop = loadStops.find(stop => stop.stop_type === 'pickup');
-    const deliveryStop = loadStops.find(stop => stop.stop_type === 'delivery');
-    
-    console.log('📦 CreateLoadDialog - About to create load with:', {
-      loadStops,
-      pickupStop,
-      deliveryStop,
-      stopsCount: loadStops.length
-    });
 
     const loadDataToSubmit = {
-      id: mode === 'edit' ? loadData?.id : undefined,
+      id: mode === 'edit' ? activeLoadData?.id : undefined,
       mode: mode,
       load_number: values.load_number,
       driver_user_id: selectedDriver.user_id,
@@ -391,16 +201,13 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
       commodity: values.commodity,
       weight_lbs: values.weight_lbs,
       notes: values.notes || '',
-      pickup_city: pickupStop ? `${pickupStop.city}, ${pickupStop.state}` : undefined,
-      delivery_city: deliveryStop ? `${deliveryStop.city}, ${deliveryStop.state}` : undefined,
       stops: loadStops,
       factoring_percentage: values.factoring_percentage,
       dispatching_percentage: values.dispatching_percentage,
       leasing_percentage: values.leasing_percentage,
     };
-    
-    console.log('📋 CreateLoadDialog - About to mutate with loadData:', loadDataToSubmit);
 
+    console.log('📋 CreateLoadDialog - Submitting load data:', loadDataToSubmit);
     createLoadMutation.mutate(loadDataToSubmit);
   };
 
@@ -479,7 +286,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
                                 field.onChange(value);
                                 const broker = brokers.find(b => b.id === value);
                                 setSelectedBroker(broker || null);
-                                form.setValue("dispatcher_id", ""); // Reset dispatcher
+                                form.setValue("dispatcher_id", "");
                               }}
                               onCreateNew={() => setShowCreateBroker(true)}
                               onBrokerSelect={setSelectedBroker}
@@ -550,7 +357,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
                                   {!loadNumberValidation.isValidating && loadNumberValidation.isDuplicate && (
                                     <AlertTriangle className="h-4 w-4 text-destructive" />
                                   )}
-                                  {!loadNumberValidation.isValidating && loadNumberValidation.isValid && (
+                                  {!loadNumberValidation.isValidating && loadNumberValidation.isValid && currentLoadNumber && (
                                     <Check className="h-4 w-4 text-green-500" />
                                   )}
                                 </div>
@@ -560,11 +367,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
                             {loadNumberValidation.isDuplicate && (
                               <p className="text-sm text-destructive mt-1">
                                 Este número de carga ya existe. Por favor use un número diferente.
-                              </p>
-                            )}
-                            {loadNumberValidation.error && (
-                              <p className="text-sm text-destructive mt-1">
-                                {loadNumberValidation.error}
                               </p>
                             )}
                           </FormItem>
@@ -594,60 +396,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
                           <FormMessage />
                         </FormItem>
                       )}
-                    />
-
-                    {/* PO Number */}
-                    <FormField
-                      control={form.control}
-                      name="po_number"
-                      render={({ field }) => {
-                        const textHandlers = createTextHandlers(
-                          (value) => field.onChange(value.replace(/\s/g, '')), // Remove all spaces
-                          'text'
-                        );
-                        
-                        return (
-                          <FormItem>
-                            <FormLabel>PO #</FormLabel>
-                            <FormControl>
-                              <Input 
-                                placeholder="Purchase Order Number" 
-                                value={field.value || ''}
-                                onChange={textHandlers.onChange}
-                                onBlur={textHandlers.onBlur}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-
-                    {/* PU Number */}
-                    <FormField
-                      control={form.control}
-                      name="pu_number"
-                      render={({ field }) => {
-                        const textHandlers = createTextHandlers(
-                          (value) => field.onChange(value.replace(/\s/g, '')), // Remove all spaces
-                          'text'
-                        );
-                        
-                        return (
-                          <FormItem>
-                            <FormLabel>PU #</FormLabel>
-                            <FormControl>
-                              <Input 
-                                placeholder="Pickup Number" 
-                                value={field.value || ''}
-                                onChange={textHandlers.onChange}
-                                onBlur={textHandlers.onBlur}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
                     />
 
                     {/* Commodity */}
@@ -696,16 +444,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
                         </FormItem>
                       )}
                     />
-
-                    {/* Las fechas se calculan automáticamente desde las paradas */}
-                    <div className="col-span-2">
-                      <div className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
-                        <p className="text-sm font-medium text-foreground">📍 Fechas automáticas</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Las fechas de pickup y delivery se calcularán automáticamente basándose en las paradas que definas en la siguiente fase.
-                        </p>
-                      </div>
-                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -716,25 +454,26 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
               <LoadStopsManager 
                 onStopsChange={setLoadStops} 
                 showValidation={showStopsValidation}
+                initialStops={loadStops}
               />
             )}
 
             {/* Phase 3: Driver Assignment */}
             {currentPhase === 3 && (
-          <LoadAssignmentSection
-            drivers={drivers}
-            selectedDriver={selectedDriver}
-            onDriverSelect={setSelectedDriver}
-            dispatchers={dispatchers}
-            selectedDispatcher={selectedDispatcher}
-            onDispatcherSelect={setSelectedDispatcher}
-          />
+              <LoadAssignmentSection
+                drivers={drivers}
+                selectedDriver={selectedDriver}
+                onDriverSelect={setSelectedDriver}
+                dispatchers={dispatchers}
+                selectedDispatcher={selectedDispatcher}
+                onDispatcherSelect={setSelectedDispatcher}
+              />
             )}
 
             {/* Phase 4: Documents */}
             {currentPhase === 4 && (
               <LoadDocumentsSection
-                loadId={null}
+                loadId={mode === 'edit' ? activeLoadData?.id : null}
                 loadData={{
                   load_number: form.getValues("load_number") || '',
                   total_amount: form.getValues("total_amount") || 0,
@@ -757,7 +496,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
                 variant="outline"
                 onClick={() => {
                   const newPhase = Math.max(1, currentPhase - 1);
-                  // Si salimos del paso 2, reseteamos las validaciones
                   if (currentPhase === 2) {
                     setShowStopsValidation(false);
                   }
@@ -777,15 +515,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
                   <Button
                     type="button"
                     onClick={() => {
-                      // Si estamos en phase 2, activar validaciones antes de avanzar
                       if (currentPhase === 2) {
                         setShowStopsValidation(true);
-                        // Aquí puedes agregar validación de paradas si es necesario
-                        // Por ahora permitimos avanzar siempre
-                        setCurrentPhase(currentPhase + 1);
-                      } else {
-                        setCurrentPhase(currentPhase + 1);
                       }
+                      setCurrentPhase(currentPhase + 1);
                     }}
                   >
                     Siguiente
@@ -793,11 +526,12 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
                 ) : (
                   <Button 
                     type="button"
-                    onClick={() => {
-                      console.log('🔄 Manual form submission triggered');
-                      form.handleSubmit(onSubmit)();
-                    }}
+                    onClick={() => form.handleSubmit(onSubmit)()}
+                    disabled={createLoadMutation.isPending}
                   >
+                    {createLoadMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : null}
                     {mode === 'create' ? 'Crear Carga' : 'Guardar Cambios'}
                   </Button>
                 )}
@@ -811,7 +545,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
           isOpen={showCreateBroker}
           onClose={() => setShowCreateBroker(false)}
           onSuccess={(brokerId) => {
-            // Auto-seleccionar el broker recién creado
             form.setValue("broker_id", brokerId);
             const newBroker = brokers.find(b => b.id === brokerId);
             setSelectedBroker(newBroker || null);
@@ -825,57 +558,25 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
           onClose={() => setShowCreateDispatcher(false)}
           onSuccess={async (dispatcherId) => {
             try {
-              // Refrescar datos de brokers para obtener el nuevo dispatcher
               const result = await refetchBrokers();
-              
-              // Buscar el broker actualizado con los nuevos dispatchers
               if (result.data) {
                 const updatedBroker = result.data.find(b => b.id === selectedBroker?.id);
-                
                 if (updatedBroker) {
                   setSelectedBroker(updatedBroker);
                 }
               }
-              
-              // Auto-seleccionar el dispatcher recién creado
               form.setValue("dispatcher_id", dispatcherId);
-              
-              // Confirmación adicional
               toast({
                 title: "Dispatcher agregado al formulario",
                 description: `El dispatcher ha sido seleccionado automáticamente.`,
               });
-              
             } catch (error) {
               console.error('Error refrescando brokers:', error);
-              // Aún así intentar preseleccionar el dispatcher
               form.setValue("dispatcher_id", dispatcherId);
             }
           }}
         />
       </DialogContent>
-
-      {/* Confirmación de salida */}
-      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Desea cancelar la carga?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tienes cambios sin guardar. Si sales ahora, se perderá toda la información introducida. 
-              ¿Estás seguro de que quieres continuar?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={confirmExit}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              Sí, descartar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </Dialog>
   );
 }
