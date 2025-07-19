@@ -165,25 +165,30 @@ export default function Auth() {
       
       // Add safety checks for null elements
       if (!emailInput || !passwordInput) {
-        console.log('🔍 Credential check: Elements not found, skipping...');
         return;
       }
 
       // Additional safety check for the value property
       if (!emailInput.hasOwnProperty('value') || !passwordInput.hasOwnProperty('value')) {
-        console.log('🔍 Credential check: Value property not available, skipping...');
         return;
       }
       
       const emailValue = emailInput.value?.trim() || '';
       const passwordValue = passwordInput.value || '';
       
-      console.log('🔍 Credential check:', {
-        emailValue,
-        passwordValue: passwordValue ? '***filled***' : 'empty',
-        currentEmailState: formData.email,
-        currentPasswordState: formData.password ? '***filled***' : 'empty'
-      });
+      // Only log when there are actual changes or when both fields have values
+      const shouldLog = emailValue !== formData.email || 
+                       passwordValue !== formData.password ||
+                       (emailValue && passwordValue);
+      
+      if (shouldLog) {
+        console.log('🔍 Credential check:', {
+          emailValue,
+          passwordValue: passwordValue ? '***filled***' : 'empty',
+          currentEmailState: formData.email,
+          currentPasswordState: formData.password ? '***filled***' : 'empty'
+        });
+      }
       
       let hasChanges = false;
       
@@ -293,16 +298,29 @@ export default function Auth() {
     setTimeout(detectCredentialAutofill, 500);
   };
 
-  // Enhanced periodic check every 500ms for Samsung Browser
+  // Enhanced periodic check for Samsung Browser (reduced frequency)
   useEffect(() => {
     if (!mounted) return;
     
+    let checkCount = 0;
+    const maxChecks = 20; // Stop after 10 seconds (20 * 500ms)
+    
     const interval = setInterval(() => {
-      detectCredentialAutofill();
+      checkCount++;
+      
+      // Only check if we haven't reached max attempts
+      if (checkCount <= maxChecks) {
+        detectCredentialAutofill();
+      }
+      
+      // Stop the interval after max checks or if form has data
+      if (checkCount >= maxChecks || (formData.email && formData.password)) {
+        clearInterval(interval);
+      }
     }, 500);
     
     return () => clearInterval(interval);
-  }, [formData.email, formData.password, mounted, error]);
+  }, [mounted]); // Remove dependencies to prevent restart
 
   const firstNameHandlers = createTextHandlers((value) => {
     setFormData(prev => ({ ...prev, firstName: value }));
