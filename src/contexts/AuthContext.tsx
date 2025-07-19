@@ -154,48 +154,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     console.log('🔐 AuthProvider initializing...');
     
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔐 Auth state changed:', event, session?.user?.id);
+    let initialized = false;
+    
+    const initializeAuth = async (session: any) => {
+      console.log('🔐 Initializing auth with session:', session?.user?.id);
       
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        // Defer role fetching to avoid potential conflicts
-        setTimeout(async () => {
+        try {
           const roles = await fetchUserRoles(session.user.id);
           setUserRoles(roles);
-          
           const selectedRole = determineCurrentRole(roles);
           setCurrentRole(selectedRole);
-          setLoading(false);
-        }, 100);
+        } catch (error) {
+          console.error('Error fetching user roles:', error);
+        }
       } else {
         setUserRoles(null);
         setCurrentRole(null);
         localStorage.removeItem('currentRole');
-        setLoading(false);
+      }
+      
+      setLoading(false);
+      initialized = true;
+    };
+    
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔐 Auth state changed:', event, session?.user?.id);
+      
+      // Only handle auth changes after initial setup to avoid conflicts
+      if (initialized) {
+        await initializeAuth(session);
       }
     });
 
-    // Get initial session
+    // Get initial session first
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('🔐 Initial session:', session?.user?.id);
-      
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        fetchUserRoles(session.user.id).then(roles => {
-          setUserRoles(roles);
-          const selectedRole = determineCurrentRole(roles);
-          setCurrentRole(selectedRole);
-          setLoading(false);
-        });
-      } else {
-        setLoading(false);
-      }
+      initializeAuth(session);
     });
 
     return () => {

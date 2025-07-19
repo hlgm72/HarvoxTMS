@@ -57,7 +57,9 @@ function AppContent() {
           path="/" 
           element={
             <ProtectedRoute>
-              <Index />
+              <Layout>
+                <Index />
+              </Layout>
             </ProtectedRoute>
           } 
         />
