@@ -40,6 +40,7 @@ export const useCreateLoad = () => {
 
   return useMutation({
     mutationFn: async (data: CreateLoadData): Promise<string> => {
+      console.log('🚛 useCreateLoad - Starting mutation with data:', data);
       if (!user) throw new Error('User not authenticated');
 
       // Crear la carga
@@ -65,6 +66,15 @@ export const useCreateLoad = () => {
         .single();
 
       if (loadError) {
+        console.error('❌ useCreateLoad - Error creating load:', {
+          loadError,
+          code: loadError.code,
+          message: loadError.message,
+          details: loadError.details,
+          hint: loadError.hint,
+          data: data
+        });
+        
         // Verificar si es un error de número de carga duplicado
         if (loadError.code === '23505' && loadError.message.includes('loads_load_number_unique')) {
           throw new Error(`El número de carga "${data.load_number}" ya existe. Por favor use un número diferente.`);
@@ -72,6 +82,7 @@ export const useCreateLoad = () => {
         throw new Error(`Error creando carga: ${loadError.message}`);
       }
 
+      console.log('✅ useCreateLoad - Load created successfully:', newLoad);
       // Crear paradas si se proporcionaron
       let stops = [];
       
@@ -129,7 +140,12 @@ export const useCreateLoad = () => {
           .insert(stops);
 
         if (stopsError) {
-          console.error('Error creando paradas:', stopsError);
+          console.error('❌ useCreateLoad - Error creating stops:', {
+            stopsError,
+            code: stopsError.code,
+            message: stopsError.message,
+            stops
+          });
           throw new Error(`Error creando paradas: ${stopsError.message}`);
         }
       }

@@ -38,6 +38,11 @@ const createLoadSchema = z.object({
   pu_number: z.string().optional(),
   commodity: z.string().min(1, "Especifica el commodity"),
   weight_lbs: z.number().optional(),
+  customer_name: z.string().optional(),
+  notes: z.string().optional(),
+  factoring_percentage: z.number().optional(),
+  dispatching_percentage: z.number().optional(),
+  leasing_percentage: z.number().optional(),
 });
 
 // Mock data - will be replaced with real data
@@ -90,6 +95,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
       pu_number: "",
       commodity: "",
       weight_lbs: 0,
+      customer_name: "",
+      notes: "",
+      factoring_percentage: undefined,
+      dispatching_percentage: undefined,
+      leasing_percentage: undefined,
     },
   });
   
@@ -318,42 +328,27 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
       stopsCount: loadStops.length
     });
 
-    createLoadMutation.mutate({
+    const loadData = {
       load_number: values.load_number,
       driver_user_id: selectedDriver.user_id,
       internal_dispatcher_id: selectedDispatcher?.user_id || null,
       broker_id: values.broker_id,
+      customer_name: values.customer_name || '',
       total_amount: values.total_amount,
       commodity: values.commodity,
       weight_lbs: values.weight_lbs,
-      notes: '',
-      // Incluir datos de paradas para crear las paradas automáticamente
-      pickup_address: pickupStop?.address,
-      pickup_city: pickupStop?.city,
-      pickup_state: pickupStop?.state,
-      pickup_zip: pickupStop?.zip_code,
-      pickup_company: pickupStop?.company_name,
-      delivery_address: deliveryStop?.address,
-      delivery_city: deliveryStop?.city,
-      delivery_state: deliveryStop?.state,
-      delivery_zip: deliveryStop?.zip_code,
-      delivery_company: deliveryStop?.company_name,
-      // Enviar todas las paradas para crearlas
-      stops: loadStops
-    }, {
-      onSuccess: () => {
-        // Limpiar el borrador al crear exitosamente
-        clearDraft();
-        form.reset();
-        setCurrentPhase(1);
-        setSelectedBroker(null);
-        setSelectedDriver(null);
-        setLoadStops([]);
-        setLoadDocuments([]);
-        atmInput.setValue(0);
-        onClose();
-      }
-    });
+      notes: values.notes || '',
+      pickup_city: pickupStop ? `${pickupStop.city}, ${pickupStop.state}` : undefined,
+      delivery_city: deliveryStop ? `${deliveryStop.city}, ${deliveryStop.state}` : undefined,
+      stops: loadStops,
+      factoring_percentage: values.factoring_percentage,
+      dispatching_percentage: values.dispatching_percentage,
+      leasing_percentage: values.leasing_percentage,
+    };
+    
+    console.log('📋 CreateLoadDialog - About to mutate with loadData:', loadData);
+
+    createLoadMutation.mutate(loadData);
   };
 
   return (
