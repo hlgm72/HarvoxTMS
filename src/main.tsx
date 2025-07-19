@@ -1,4 +1,4 @@
-import React from 'react'
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -14,9 +14,9 @@ try {
   const root = createRoot(rootElement);
   
   root.render(
-    <React.StrictMode>
+    <StrictMode>
       <App />
-    </React.StrictMode>
+    </StrictMode>
   );
 } catch (error) {
   console.error('❌ Error mounting app:', error);

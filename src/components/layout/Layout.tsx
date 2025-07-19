@@ -1,11 +1,11 @@
 
-import React from "react";
+import type { ReactNode, CSSProperties } from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./Sidebar";
 import { Header } from "./Header";
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
@@ -16,7 +16,7 @@ export function Layout({ children }: LayoutProps) {
         {
           "--sidebar-width": "280px",
           "--sidebar-width-mobile": "280px",
-        } as React.CSSProperties
+        } as CSSProperties
       }
     >
       <div className="min-h-screen flex w-full bg-background prevent-horizontal-scroll">
