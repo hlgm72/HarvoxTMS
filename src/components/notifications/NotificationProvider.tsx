@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode, useState, useCallback } from 'react';
+import { createContext, useContext, ReactNode, useState, useCallback } from 'react';
 import { NotificationItem, FleetNotification, NotificationType } from './NotificationItem';
 
 interface NotificationContextType {
