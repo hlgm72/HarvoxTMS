@@ -44,7 +44,7 @@
   ],
   "screenshots": [
     {
-      "src": "/icons/icon-512-any.png",
+      "src": "/lovable-uploads/054efb07-e7f4-4c0c-9185-f73d56e17e79.png",
       "sizes": "512x512",
       "type": "image/png",
       "form_factor": "wide"
@@ -58,7 +58,7 @@
       "url": "/",
       "icons": [
         {
-          "src": "/icons/icon-192-any.png",
+          "src": "/lovable-uploads/17c67690-6fd3-424e-b214-6cb9ef55941d.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -71,7 +71,7 @@
       "url": "/drivers",
       "icons": [
         {
-          "src": "/icons/icon-192-any.png",
+          "src": "/lovable-uploads/17c67690-6fd3-424e-b214-6cb9ef55941d.png",
           "sizes": "192x192",
           "type": "image/png"
         }
