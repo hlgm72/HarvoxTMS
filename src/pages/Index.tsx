@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react';
 import Dashboard from './Dashboard';
 
 export default function Index() {
+  console.log('🏠 Index.tsx component rendering...');
   const navigate = useNavigate();
   const { 
     user, 
