@@ -240,12 +240,61 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
     onClose();
   };
 
-  // Cargar borrador al abrir el diálogo
+  // Cargar datos para edición
   useEffect(() => {
-    if (isOpen && brokers.length > 0) {
+    if (isOpen && mode === 'edit' && loadData) {
+      console.log('🔍 Loading edit data:', loadData);
+      
+      // Limpiar formulario primero
+      form.reset();
+      
+      // Cargar datos básicos del formulario
+      form.setValue("load_number", loadData.load_number || '');
+      form.setValue("total_amount", loadData.total_amount || 0);
+      form.setValue("commodity", loadData.commodity || '');
+      form.setValue("weight_lbs", loadData.weight_lbs || 0);
+      form.setValue("customer_name", loadData.customer_name || '');
+      form.setValue("notes", loadData.notes || '');
+      form.setValue("broker_id", loadData.broker_id || '');
+      form.setValue("factoring_percentage", loadData.factoring_percentage);
+      form.setValue("dispatching_percentage", loadData.dispatching_percentage);
+      form.setValue("leasing_percentage", loadData.leasing_percentage);
+      
+      // Actualizar ATM input
+      atmInput.setValue(loadData.total_amount || 0);
+      
+      // Buscar y establecer el broker
+      if (loadData.broker_id && brokers.length > 0) {
+        const broker = brokers.find(b => b.id === loadData.broker_id);
+        if (broker) {
+          setSelectedBroker(broker);
+        }
+      }
+      
+      // Buscar y establecer el conductor
+      if (loadData.driver_user_id && drivers.length > 0) {
+        const driver = drivers.find(d => d.user_id === loadData.driver_user_id);
+        if (driver) {
+          setSelectedDriver(driver);
+        }
+      }
+      
+      // Buscar y establecer el dispatcher
+      if (loadData.internal_dispatcher_id && dispatchers.length > 0) {
+        const dispatcher = dispatchers.find(d => d.user_id === loadData.internal_dispatcher_id);
+        if (dispatcher) {
+          setSelectedDispatcher(dispatcher);
+        }
+      }
+    }
+  }, [isOpen, mode, loadData, brokers, drivers, dispatchers]);
+
+  // Cargar borrador al abrir el diálogo (solo en modo create)
+  useEffect(() => {
+    if (isOpen && mode === 'create' && brokers.length > 0) {
       loadDraft();
     }
-  }, [isOpen, brokers]);
+  }, [isOpen, mode, brokers]);
 
   // Guardar borrador cuando cambien los datos
   useEffect(() => {
