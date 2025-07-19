@@ -152,24 +152,6 @@ export function EditClientDialog({ client, open, onOpenChange }: EditClientDialo
 
               <FormField
                 control={form.control}
-                name="email_domain"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Dominio de Email</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="Ej. empresa.com" 
-                        {...field}
-                        onChange={(e) => field.onChange(e.target.value.toLowerCase())}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
                 name="dot_number"
                 render={({ field }) => {
                   const handlers = createDOTHandlers(field.onChange);
@@ -212,6 +194,24 @@ export function EditClientDialog({ client, open, onOpenChange }: EditClientDialo
                 }}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="email_domain"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Dominio de Email</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Ej. empresa.com" 
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.value.toLowerCase())}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
