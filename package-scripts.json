@@ -1,0 +1,10 @@
+{
+  "name": "fleetnest-tms",
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf dist .vite node_modules/.vite",
+    "fresh-install": "npm run clean && npm install",
+    "fresh-dev": "npm run clean && npm run dev",
+    "clear-cache": "rm -rf node_modules/.vite && rm -rf .vite"
+  }
+}
