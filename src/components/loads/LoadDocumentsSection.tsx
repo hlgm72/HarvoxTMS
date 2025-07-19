@@ -72,6 +72,11 @@ export function LoadDocumentsSection({
   const [uploading, setUploading] = useState<string | null>(null);
   const { toast } = useToast();
 
+  // Debug temporaryDocuments changes
+  useEffect(() => {
+    console.log('📋 LoadDocumentsSection - temporaryDocuments changed:', temporaryDocuments);
+  }, [temporaryDocuments]);
+
   // Load existing documents when loadId is available
   useEffect(() => {
     if (loadId) {
@@ -214,6 +219,8 @@ export function LoadDocumentsSection({
 
   const handleTemporaryFileUpload = (type: LoadDocument['type'], files: FileList) => {
     console.log('📂 handleTemporaryFileUpload called', { type, file: files[0]?.name });
+    console.log('📂 Current temporaryDocuments:', temporaryDocuments);
+    
     const file = files[0];
     
     // Validate file size (50MB limit)
@@ -240,7 +247,11 @@ export function LoadDocumentsSection({
       file: file // Store the actual file for later upload
     };
 
+    console.log('📂 Creating tempDocument:', tempDocument);
+
     const updatedTempDocs = [...temporaryDocuments, tempDocument];
+    console.log('📂 Updated temporaryDocuments:', updatedTempDocs);
+    
     onTemporaryDocumentsChange?.(updatedTempDocs);
 
     toast({
