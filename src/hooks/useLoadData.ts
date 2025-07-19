@@ -89,7 +89,10 @@ export const useLoadData = (loadId?: string) => {
 
         const loadWithStops: LoadData = {
           ...load,
-          stops: stops || []
+          stops: (stops || []).map(stop => ({
+            ...stop,
+            stop_type: stop.stop_type as 'pickup' | 'delivery'
+          }))
         };
 
         console.log('✅ useLoadData - Load data fetched successfully:', loadWithStops);

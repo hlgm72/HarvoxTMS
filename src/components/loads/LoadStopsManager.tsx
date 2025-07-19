@@ -13,6 +13,7 @@ import { useLoadStops, LoadStop } from '@/hooks/useLoadStops';
 interface LoadStopsManagerProps {
   onStopsChange?: (stops: any[]) => void;
   showValidation?: boolean;
+  initialStops?: any[];
 }
 
 export function LoadStopsManager({ onStopsChange, showValidation = false }: LoadStopsManagerProps) {
