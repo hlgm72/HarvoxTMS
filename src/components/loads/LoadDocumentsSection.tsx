@@ -402,16 +402,50 @@ export function LoadDocumentsSection({ loadId, loadData, onDocumentsChange }: Lo
             <h4 className="text-sm font-medium text-muted-foreground mb-2">
               Resumen de documentos ({documents.length})
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2">
               {documents.map((doc) => (
-                <div key={doc.id} className="flex items-center gap-2 text-sm p-2 bg-muted/30 rounded">
-                  <FileText className="h-4 w-4" />
-                  <span className="truncate">{doc.fileName}</span>
-                  {doc.type === 'load_order' && (
-                    <Badge variant="default" className="ml-auto text-xs">
-                      Principal
-                    </Badge>
-                  )}
+                <div key={doc.id} className="flex items-center justify-between gap-2 text-sm p-3 bg-muted/30 rounded-lg">
+                  <div className="flex items-center gap-2 flex-1">
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{doc.name}</span>
+                        {doc.type === 'load_order' && (
+                          <Badge variant="default" className="text-xs">
+                            Principal
+                          </Badge>
+                        )}
+                      </div>
+                      <span className="text-xs text-muted-foreground">{doc.fileName}</span>
+                      {doc.fileSize && (
+                        <span className="text-xs text-muted-foreground">
+                          {' • '}{formatFileSize(doc.fileSize)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {doc.url && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => window.open(doc.url, '_blank')}
+                        title="Descargar/Ver documento"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    )}
+                    {doc.type !== 'load_order' && loadId && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleRemoveDocument(doc.id)}
+                        title="Eliminar documento"
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
