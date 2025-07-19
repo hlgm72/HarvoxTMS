@@ -84,12 +84,17 @@ export default function OwnerDashboard() {
   ];
 
   useEffect(() => {
-    if (!loading && user && userRole?.company_id) {
-      fetchCompanyData();
-      fetchCompanyStats();
-      fetchDrivers();
+    if (!loading && user) {
+      if (userRole?.company_id) {
+        fetchCompanyData();
+        fetchCompanyStats();
+        fetchDrivers();
+      } else {
+        // If user is loaded but no role yet, just stop the loading spinner
+        setLoadingData(false);
+      }
     }
-  }, [loading, user, userRole]);
+  }, [loading, user, userRole?.company_id]);
 
   const fetchCompanyData = async () => {
     if (!userRole?.company_id) return;
