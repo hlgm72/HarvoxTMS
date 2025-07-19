@@ -13,7 +13,6 @@ import { PeriodFilterValue } from "./PeriodFilter";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
 import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
 import { EmptyLoadsState } from "./EmptyLoadsState";
-import { LoadDialog } from "./LoadDialog";
 
 // Componente de skeleton para cargas
 const LoadSkeleton = () => (
@@ -164,16 +163,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
     load?: any;
   }>({ isOpen: false });
   
-  const [editingLoad, setEditingLoad] = useState<any>(null);
-  
-  const handleEditLoad = (load: any) => {
-    setEditingLoad(load);
-  };
-
-  const handleCloseEditDialog = () => {
-    setEditingLoad(null);
-  };
-  
   // Aplicar filtros a los datos reales
   const filteredLoads = loads.filter(load => {
     if (filters.status !== "all" && load.status !== filters.status) return false;
@@ -301,14 +290,10 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   <Eye className="h-3 w-3 mr-1" />
                   Ver
                 </Button>
-                 <Button 
-                   variant="outline" 
-                   size="sm"
-                   onClick={() => handleEditLoad(load)}
-                 >
-                   <Edit className="h-3 w-3 mr-1" />
-                   Editar
-                 </Button>
+                <Button variant="outline" size="sm">
+                  <Edit className="h-3 w-3 mr-1" />
+                  Editar
+                </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
@@ -348,14 +333,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
           }}
         />
       )}
-      
-      {/* Dialog de edición de carga */}
-      <LoadDialog
-        isOpen={!!editingLoad}
-        onClose={handleCloseEditDialog}
-        mode="edit"
-        load={editingLoad}
-      />
     </div>
   );
 }

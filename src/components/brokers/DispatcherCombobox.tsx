@@ -6,7 +6,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { BrokerDispatcher } from "@/hooks/useCompanyBrokers";
 
-interface BrokerContactComboboxProps {
+interface DispatcherComboboxProps {
   dispatchers: BrokerDispatcher[];
   value?: string;
   onValueChange: (value: string) => void;
@@ -16,15 +16,15 @@ interface BrokerContactComboboxProps {
   className?: string;
 }
 
-export function BrokerContactCombobox({
+export function DispatcherCombobox({
   dispatchers,
   value,
   onValueChange,
   onCreateNew,
-  placeholder = "Seleccionar contacto del cliente...",
+  placeholder = "Seleccionar dispatcher...",
   disabled = false,
   className
-}: BrokerContactComboboxProps) {
+}: DispatcherComboboxProps) {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
@@ -70,7 +70,7 @@ export function BrokerContactCombobox({
               className="flex-1 justify-between text-muted-foreground"
               disabled={disabled}
             >
-              Sin contactos disponibles
+              Sin dispatchers disponibles
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
@@ -81,7 +81,7 @@ export function BrokerContactCombobox({
                   <div className="text-center">
                     <User className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
                     <p className="text-sm text-muted-foreground mb-3">
-                      No hay contactos para este cliente
+                      No hay dispatchers para este broker
                     </p>
                     {onCreateNew && (
                       <Button
@@ -90,7 +90,7 @@ export function BrokerContactCombobox({
                         className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
                       >
                         <Plus className="h-4 w-4 mr-2" />
-                        Agregar Contacto
+                        Agregar Dispatcher
                       </Button>
                     )}
                   </div>
@@ -128,7 +128,7 @@ export function BrokerContactCombobox({
         <PopoverContent className="w-full p-0" align="start">
           <Command>
             <CommandInput 
-              placeholder="Buscar contacto..." 
+              placeholder="Buscar dispatcher..." 
               value={searchValue}
               onValueChange={setSearchValue}
             />
@@ -137,7 +137,7 @@ export function BrokerContactCombobox({
                 <div className="text-center">
                   <User className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
                   <p className="text-sm text-muted-foreground mb-3">
-                    No se encontraron contactos que coincidan con "{searchValue}"
+                    No se encontraron dispatchers que coincidan con "{searchValue}"
                   </p>
                   {onCreateNew && (
                     <Button
@@ -146,7 +146,7 @@ export function BrokerContactCombobox({
                       className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
                     >
                       <Plus className="h-4 w-4 mr-2" />
-                      Crear Nuevo Contacto
+                      Crear Nuevo Dispatcher
                     </Button>
                   )}
                 </div>
@@ -161,10 +161,10 @@ export function BrokerContactCombobox({
                     <Plus className="mr-2 h-4 w-4 text-green-600" />
                     <div className="flex flex-col">
                       <span className="font-medium text-green-700 dark:text-green-400">
-                        Crear Nuevo Contacto
+                        Crear Nuevo Dispatcher
                       </span>
                       <span className="text-xs text-green-600 dark:text-green-500">
-                        Agregar un nuevo contacto para este cliente
+                        Agregar un nuevo contacto para este broker
                       </span>
                     </div>
                   </CommandItem>
