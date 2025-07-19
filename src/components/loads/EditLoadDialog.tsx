@@ -21,7 +21,7 @@ import { createTextHandlers } from "@/lib/textUtils";
 import { toast } from "@/hooks/use-toast";
 import { formatCurrency } from "@/lib/utils";
 import { BrokerCombobox } from "@/components/brokers/BrokerCombobox";
-import { DispatcherCombobox } from "@/components/brokers/DispatcherCombobox";
+import { InternalDispatcherCombobox } from "@/components/dispatchers/InternalDispatcherCombobox";
 
 const editLoadSchema = z.object({
   load_number: z.string().min(1, "El número de carga es requerido"),
@@ -253,12 +253,11 @@ export function EditLoadDialog({ isOpen, onClose, load }: EditLoadDialogProps) {
                                 brokers={brokers}
                                 loading={brokersLoading}
                                 value={field.value}
-                                onValueChange={(value) => {
-                                  field.onChange(value);
-                                  const broker = brokers.find(b => b.id === value);
-                                  setSelectedBroker(broker || null);
-                                  form.setValue("dispatcher_id", ""); // Reset dispatcher
-                                }}
+                                 onValueChange={(value) => {
+                                   field.onChange(value);
+                                   const broker = brokers.find(b => b.id === value);
+                                   setSelectedBroker(broker || null);
+                                 }}
                                 onCreateNew={() => {}} // No permitir crear brokers durante edición
                                 onBrokerSelect={setSelectedBroker}
                                 placeholder="Buscar broker por nombre, DOT, MC..."
@@ -270,20 +269,19 @@ export function EditLoadDialog({ isOpen, onClose, load }: EditLoadDialogProps) {
                         )}
                       />
 
-                      {/* Dispatcher Selection */}
+                      {/* Internal Dispatcher Selection */}
                       <FormField
                         control={form.control}
                         name="dispatcher_id"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Dispatcher</FormLabel>
+                            <FormLabel>Dispatcher Interno</FormLabel>
                             <FormControl>
-                              <DispatcherCombobox
-                                dispatchers={selectedBroker?.dispatchers || []}
+                              <InternalDispatcherCombobox
+                                dispatchers={dispatchers}
                                 value={field.value}
                                 onValueChange={field.onChange}
-                                placeholder="Buscar dispatcher..."
-                                disabled={!selectedBroker}
+                                placeholder="Seleccionar dispatcher interno..."
                                 className="w-full"
                               />
                             </FormControl>
