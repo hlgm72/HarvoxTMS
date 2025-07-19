@@ -8,20 +8,15 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    // Ensure SPA routing works correctly
-    historyApiFallback: {
-      rewrites: [
-        // Redirect root to preview for external previews
-        { from: /^\/$/, to: '/preview' },
-        // Keep other routes as SPA
-        { from: /^\/(?!.*\.).*$/, to: '/index.html' }
-      ]
-    },
     // Better CORS and external access
     strictPort: false,
     cors: true,
+    headers: {
+      'X-Frame-Options': 'ALLOWALL',
+      'Content-Security-Policy': "frame-ancestors *;"
+    },
     // Improve external preview compatibility
-    open: '/preview',
+    open: '/',
   },
   plugins: [
     react(),
@@ -48,7 +43,7 @@ export default defineConfig(({ mode }) => ({
     minify: 'esbuild',
   },
   // Set base to root for better preview compatibility
-  base: '/',
+  base: './',
   // Better development experience
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
@@ -61,7 +56,10 @@ export default defineConfig(({ mode }) => ({
   preview: {
     port: 8080,
     host: true,
-    open: '/preview',
     strictPort: false,
+    headers: {
+      'X-Frame-Options': 'ALLOWALL',
+      'Content-Security-Policy': "frame-ancestors *;"
+    }
   }
 }));
