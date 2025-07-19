@@ -254,7 +254,8 @@ export default function Auth() {
 
   const handleEmailAutofill = (e: React.FocusEvent<HTMLInputElement>) => {
     const checkValue = () => {
-      const emailValue = e.target.value.trim();
+      if (!e.target) return;
+      const emailValue = e.target.value?.trim() || '';
       console.log('📍 Focus autofill check:', emailValue, 'vs current:', formData.email);
       if (emailValue && emailValue !== formData.email) {
         setFormData(prev => ({ ...prev, email: emailValue }));
@@ -277,7 +278,8 @@ export default function Auth() {
 
   // Input event handler for Samsung Browser
   const handleEmailInputEvent = (e: React.FormEvent<HTMLInputElement>) => {
-    const emailValue = e.currentTarget.value.trim();
+    if (!e.currentTarget) return;
+    const emailValue = e.currentTarget.value?.trim() || '';
     console.log('📝 Input event triggered:', emailValue);
     if (emailValue !== formData.email) {
       setFormData(prev => ({ ...prev, email: emailValue }));
@@ -934,7 +936,8 @@ export default function Auth() {
                           // Detect Chrome autofill animation
                           if (e.animationName === 'onAutoFillStart') {
                             setTimeout(() => {
-                              const emailValue = e.currentTarget.value;
+                              if (!e.currentTarget) return;
+                              const emailValue = e.currentTarget.value || '';
                               if (emailValue && emailValue !== formData.email) {
                                 setFormData(prev => ({ ...prev, email: emailValue }));
                                 validateField('email', emailValue);
