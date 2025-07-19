@@ -16,7 +16,7 @@ export interface Load {
   customer_name: string | null;
   created_at: string;
   updated_at: string;
-  broker_id: string | null;
+  client_id: string | null;
   factoring_percentage: number | null;
   dispatching_percentage: number | null;
   leasing_percentage: number | null;
@@ -244,7 +244,7 @@ export const useLoads = (filters?: LoadsFilters) => {
         // PASO 4: Enriquecer datos relacionados en paralelo
         const [driverIds, brokerIds, periodIds, loadIds] = [
           [...new Set(loads.map(l => l.driver_user_id))],
-          [...new Set(loads.map(l => l.broker_id).filter(Boolean))],
+          [...new Set(loads.map(l => l.client_id).filter(Boolean))],
           [...new Set(loads.map(l => l.payment_period_id).filter(Boolean))],
           loads.map(l => l.id)
         ];
@@ -254,7 +254,7 @@ export const useLoads = (filters?: LoadsFilters) => {
             ? supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', driverIds)
             : Promise.resolve({ data: [] }),
           brokerIds.length > 0 
-            ? supabase.from('company_brokers').select('id, name, alias').in('id', brokerIds)
+            ? supabase.from('company_clients').select('id, name, alias').in('id', brokerIds)
             : Promise.resolve({ data: [] }),
           periodIds.length > 0 
             ? supabase.from('payment_periods').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds)
@@ -272,9 +272,9 @@ export const useLoads = (filters?: LoadsFilters) => {
           stopsResult.status === 'fulfilled' ? stopsResult.value.data || [] : []
         ];
 
-        const enrichedLoads: Load[] = loads.map(load => {
+        return loads.map(load => {
           const profile = profiles.find(p => p.user_id === load.driver_user_id);
-          const broker = brokers.find(b => b.id === load.broker_id);
+          const broker = brokers.find(b => b.id === load.client_id);
           const period = periods.find(p => p.id === load.payment_period_id);
           
           const loadStops = stops.filter(s => s.load_id === load.id);
@@ -286,10 +286,11 @@ export const useLoads = (filters?: LoadsFilters) => {
             .sort((a, b) => b.stop_number - a.stop_number)[0];
 
           // Priorizar alias sobre nombre para el broker
-          const brokerDisplayName = broker ? (broker.alias && broker.alias.trim() ? broker.alias : broker.name) : 'Sin broker';
+          const brokerDisplayName = broker ? (broker.alias && broker.alias.trim() ? broker.alias : broker.name) : 'Sin cliente';
 
           return {
             ...load,
+            broker_id: load.client_id, // Compatibility field
             driver_name: profile ? `${profile.first_name} ${profile.last_name}` : 'Sin asignar',
             broker_name: brokerDisplayName,
             broker_alias: broker?.alias,
@@ -301,8 +302,6 @@ export const useLoads = (filters?: LoadsFilters) => {
             period_status: period?.status
           };
         });
-
-        return enrichedLoads;
 
       } catch (error: any) {
         console.error('Error en useLoads:', error);

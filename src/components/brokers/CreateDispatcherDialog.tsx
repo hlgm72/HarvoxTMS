@@ -71,9 +71,9 @@ export function CreateDispatcherDialog({
     try {
       // Crear el dispatcher
       const { data: newDispatcher, error } = await supabase
-        .from('company_broker_dispatchers')
+        .from('company_client_contacts')
         .insert({
-          broker_id: brokerId,
+          client_id: brokerId,
           name: data.name,
           email: data.email || null,
           phone_office: data.phone_office || null,
@@ -87,14 +87,14 @@ export function CreateDispatcherDialog({
 
       if (error) throw error;
 
-      // Invalidar cache de brokers y refetch para actualizar dispatchers
+      // Invalidar cache de clientes y refetch para actualizar contactos
       await queryClient.invalidateQueries({ 
-        queryKey: ['company-brokers'],
+        queryKey: ['company-clients'],
         exact: false
       });
       
       await queryClient.refetchQueries({ 
-        queryKey: ['company-brokers'],
+        queryKey: ['company-clients'],
         exact: false
       });
 

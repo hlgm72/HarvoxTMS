@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { useCreateDispatcher, ClientDispatcher } from "@/hooks/useClients";
+import { useCreateContact, ClientContact } from "@/hooks/useClients";
 import { createPhoneHandlers } from '@/lib/textUtils';
 
 interface CreateDispatcherDialogProps {
@@ -29,14 +29,14 @@ interface CreateDispatcherDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-type CreateDispatcherForm = Omit<ClientDispatcher, "id" | "created_at" | "updated_at">;
+type CreateDispatcherForm = Omit<ClientContact, "id" | "created_at" | "updated_at">;
 
 export function CreateDispatcherDialog({ clientId, open, onOpenChange }: CreateDispatcherDialogProps) {
-  const createDispatcher = useCreateDispatcher();
+  const createDispatcher = useCreateContact();
   
   const form = useForm<CreateDispatcherForm>({
     defaultValues: {
-      broker_id: clientId,
+      client_id: clientId,
       name: "",
       email: "",
       phone_office: "",
@@ -51,7 +51,7 @@ export function CreateDispatcherDialog({ clientId, open, onOpenChange }: CreateD
     try {
       await createDispatcher.mutateAsync({
         ...data,
-        broker_id: clientId,
+        client_id: clientId,
       });
       form.reset();
       onOpenChange(false);
