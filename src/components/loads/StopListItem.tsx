@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapPin, Edit, Calendar, Clock, Building, Phone, FileText } from 'lucide-react';
@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { supabase } from '@/integrations/supabase/client';
 
 interface StopListItemProps {
   stop: LoadStop;
@@ -23,6 +24,36 @@ export function StopListItem({
   isLast = false, 
   hasDateError = false 
 }: StopListItemProps) {
+  const [cityName, setCityName] = useState<string>('');
+
+  useEffect(() => {
+    const fetchCityName = async () => {
+      if (stop.city && stop.city.includes('-') && stop.city.length > 30) {
+        // This looks like a UUID, fetch the city name
+        try {
+          const { data, error } = await supabase
+            .from('state_cities')
+            .select('name')
+            .eq('id', stop.city)
+            .single();
+
+          if (data && !error) {
+            setCityName(data.name);
+          } else {
+            setCityName('');
+          }
+        } catch {
+          setCityName('');
+        }
+      } else {
+        // This is already a city name or empty
+        setCityName(stop.city || '');
+      }
+    };
+
+    fetchCityName();
+  }, [stop.city]);
+
   const getStopTypeLabel = () => {
     if (isFirst) return 'Recogida';
     if (isLast) return 'Entrega';
@@ -41,12 +72,8 @@ export function StopListItem({
       parts.push(stop.address);
     }
     
-    if (stop.city) {
-      // Make sure we're displaying the city name, not an ID
-      const cityName = typeof stop.city === 'string' ? stop.city : '';
-      if (cityName && !cityName.includes('-') && cityName.length < 50) {
-        parts.push(cityName);
-      }
+    if (cityName) {
+      parts.push(cityName);
     }
     
     if (stop.state) {
