@@ -1,144 +1,159 @@
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { MapPin, Calendar, Clock, Building, AlertTriangle, Grip, Edit } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+
+import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { MapPin, Edit, Calendar, Clock, Building, Phone, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface StopListItemProps {
   stop: LoadStop;
   onEdit: () => void;
-  isFirst: boolean;
-  isLast: boolean;
-  dragHandleProps?: any;
+  isFirst?: boolean;
+  isLast?: boolean;
   hasDateError?: boolean;
 }
 
 export function StopListItem({ 
   stop, 
   onEdit, 
-  isFirst, 
-  isLast, 
-  dragHandleProps,
-  hasDateError = false
+  isFirst = false, 
+  isLast = false, 
+  hasDateError = false 
 }: StopListItemProps) {
-  const getStopTypeAbbreviation = () => {
-    return stop.stop_type === 'pickup' ? 'P' : 'D';
-  };
-
-  const getStopTypeColor = () => {
-    return stop.stop_type === 'pickup' 
-      ? 'bg-blue-500 text-white' 
-      : 'bg-green-500 text-white';
-  };
-
   const getStopTypeLabel = () => {
     if (isFirst) return 'Recogida';
     if (isLast) return 'Entrega';
     return stop.stop_type === 'pickup' ? 'Recogida' : 'Entrega';
   };
 
-  const formatDate = (date: Date | string | null) => {
-    if (!date) return null;
-    try {
-      const dateObj = typeof date === 'string' ? new Date(date) : date;
-      return format(dateObj, 'dd MMM', { locale: es });
-    } catch {
-      return null;
-    }
+  const getStopTypeColor = () => {
+    return stop.stop_type === 'pickup' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
   };
 
-  const hasRequiredInfo = stop.company_name && stop.address && stop.city && stop.state;
+  // Format the address properly, ensuring city is displayed correctly
+  const formatAddress = () => {
+    const parts = [];
+    
+    if (stop.address) {
+      parts.push(stop.address);
+    }
+    
+    if (stop.city) {
+      // Make sure we're displaying the city name, not an ID
+      const cityName = typeof stop.city === 'string' ? stop.city : '';
+      if (cityName && !cityName.includes('-') && cityName.length < 50) {
+        parts.push(cityName);
+      }
+    }
+    
+    if (stop.state) {
+      parts.push(stop.state);
+    }
+    
+    if (stop.zip_code) {
+      parts.push(stop.zip_code);
+    }
+    
+    return parts.join(', ') || 'Dirección incompleta';
+  };
 
   return (
-    <Card className={cn(
-      "transition-all duration-200 hover:shadow-md",
-      hasDateError && "border-destructive bg-destructive/5",
-      !hasRequiredInfo && "border-orange-200 bg-orange-50"
+    <div className={cn(
+      "border rounded-lg p-4 bg-background transition-colors",
+      hasDateError && "border-destructive bg-destructive/5"
     )}>
-      <CardContent className="p-4">
+      <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
-          {/* Drag Handle */}
-          <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing">
-            <Grip className="h-4 w-4 text-muted-foreground" />
-          </div>
-
-          {/* Stop Type Badge */}
           <div className="flex items-center gap-2">
-            <Badge className={cn("w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold p-0", getStopTypeColor())}>
-              {getStopTypeAbbreviation()}
+            <MapPin className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium">Parada #{stop.stop_number}</span>
+          </div>
+          <Badge className={cn("text-xs", getStopTypeColor())}>
+            {getStopTypeLabel()}
+          </Badge>
+          {hasDateError && (
+            <Badge variant="destructive" className="text-xs">
+              Error de fecha
             </Badge>
-            <span className="text-xs text-muted-foreground hidden sm:inline">
-              #{stop.stop_number}
+          )}
+        </div>
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onEdit}
+          className="h-8 px-2"
+        >
+          <Edit className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <div className="space-y-2 text-sm">
+        {/* Company */}
+        {stop.company_name && (
+          <div className="flex items-center gap-2">
+            <Building className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <span className="font-medium">{stop.company_name}</span>
+          </div>
+        )}
+
+        {/* Address */}
+        <div className="flex items-start gap-2">
+          <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+          <div className="text-muted-foreground">
+            {formatAddress()}
+          </div>
+        </div>
+
+        {/* Reference Number */}
+        {stop.reference_number && (
+          <div className="flex items-center gap-2">
+            <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">{stop.reference_number}</span>
+          </div>
+        )}
+
+        {/* Date and Time */}
+        {(stop.scheduled_date || stop.scheduled_time) && (
+          <div className="flex items-center gap-4 text-muted-foreground">
+            {stop.scheduled_date && (
+              <div className="flex items-center gap-1">
+                <Calendar className="h-4 w-4" />
+                <span>{format(stop.scheduled_date, 'dd MMM yyyy', { locale: es })}</span>
+              </div>
+            )}
+            {stop.scheduled_time && (
+              <div className="flex items-center gap-1">
+                <Clock className="h-4 w-4" />
+                <span>{stop.scheduled_time}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Contact Info */}
+        {(stop.contact_name || stop.contact_phone) && (
+          <div className="flex items-center gap-2">
+            <Phone className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">
+              {stop.contact_name && stop.contact_phone 
+                ? `${stop.contact_name} - ${stop.contact_phone}`
+                : stop.contact_name || stop.contact_phone
+              }
             </span>
           </div>
+        )}
 
-          {/* Main Info */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <Building className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-              <span className="text-sm font-medium truncate">
-                {stop.company_name || 'Sin empresa'}
-              </span>
-              {stop.reference_number && (
-                <Badge variant="outline" className="text-xs">
-                  {stop.reference_number}
-                </Badge>
-              )}
-            </div>
-            
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <MapPin className="h-3 w-3 flex-shrink-0" />
-              <span className="truncate">
-                {stop.city && stop.state ? `${stop.city}, ${stop.state}` : 'Sin dirección'}
-              </span>
-            </div>
-
-            {(stop.scheduled_date || stop.scheduled_time) && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                <Calendar className="h-3 w-3 flex-shrink-0" />
-                <span>
-                  {formatDate(stop.scheduled_date)}
-                  {stop.scheduled_time && ` • ${stop.scheduled_time}`}
-                </span>
-              </div>
-            )}
+        {/* Special Instructions */}
+        {stop.special_instructions && (
+          <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
+            <strong>Instrucciones:</strong> {stop.special_instructions}
           </div>
-
-          {/* Warnings */}
-          <div className="flex items-center gap-2">
-            {hasDateError && (
-              <div title="Error en orden de fechas">
-                <AlertTriangle className="h-4 w-4 text-destructive" />
-              </div>
-            )}
-            {!hasRequiredInfo && (
-              <div title="Información incompleta">
-                <AlertTriangle className="h-4 w-4 text-orange-500" />
-              </div>
-            )}
-            
-            {/* Edit Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onEdit}
-              className="h-8 w-8 p-0"
-            >
-              <Edit className="h-3 w-3" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Type Label on mobile */}
-        <div className="sm:hidden mt-2">
-          <span className="text-xs text-muted-foreground">
-            {getStopTypeLabel()}
-          </span>
-        </div>
-      </CardContent>
-    </Card>
+        )}
+      </div>
+    </div>
   );
 }

@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { format, isAfter, isBefore, isValid, differenceInDays } from 'date-fns';
 
@@ -186,15 +187,27 @@ export function useLoadStops() {
       }));
     
     setStops(newStops);
-  }, [stops]);
+  }, []);
 
   const updateStop = useCallback((stopId: string, updates: Partial<LoadStop>) => {
     setStops(currentStops => 
-      currentStops.map(stop => 
-        stop.id === stopId 
-          ? { ...stop, ...updates }
-          : stop
-      )
+      currentStops.map(stop => {
+        if (stop.id === stopId) {
+          // Ensure city is handled properly - if it's being set to a UUID-like string, clear it
+          const updatedStop = { ...stop, ...updates };
+          
+          // Check if city looks like a UUID and clear it if so
+          if (updatedStop.city && typeof updatedStop.city === 'string') {
+            const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(updatedStop.city);
+            if (isUUID) {
+              updatedStop.city = '';
+            }
+          }
+          
+          return updatedStop;
+        }
+        return stop;
+      })
     );
   }, []);
 
