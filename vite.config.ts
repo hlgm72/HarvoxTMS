@@ -8,15 +8,12 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    // Better CORS and external access
     strictPort: false,
     cors: true,
-    headers: {
-      'X-Frame-Options': 'ALLOWALL',
-      'Content-Security-Policy': "frame-ancestors *;"
-    },
-    // Improve external preview compatibility
     open: '/',
+    headers: {
+      'X-Frame-Options': 'SAMEORIGIN'
+    }
   },
   plugins: [
     react(),
@@ -42,8 +39,7 @@ export default defineConfig(({ mode }) => ({
     target: 'esnext',
     minify: 'esbuild',
   },
-  // Set base to root for better preview compatibility
-  base: './',
+  base: '/',
   // Better development experience
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
@@ -52,14 +48,9 @@ export default defineConfig(({ mode }) => ({
   css: {
     devSourcemap: mode === 'development',
   },
-  // Better preview handling
   preview: {
     port: 8080,
     host: true,
-    strictPort: false,
-    headers: {
-      'X-Frame-Options': 'ALLOWALL',
-      'Content-Security-Policy': "frame-ancestors *;"
-    }
+    strictPort: false
   }
 }));
