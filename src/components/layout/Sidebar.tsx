@@ -535,7 +535,7 @@ export function AppSidebar() {
                               className={`!h-4 !w-4 flex-shrink-0 transition-all duration-200 ${
                                 active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
                               }`} 
-                              style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px' }}
+                              style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px', lineHeight: '20px' }}
                             />
                             
                             {/* Active indicator - exacto como Limitless */}
@@ -565,7 +565,7 @@ export function AppSidebar() {
                           className={`!h-4 !w-4 flex-shrink-0 transition-all duration-200 ${
                             active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
                           }`} 
-                          style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px' }}
+                          style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px', lineHeight: '20px' }}
                         />
                        
                        {!collapsed && (
