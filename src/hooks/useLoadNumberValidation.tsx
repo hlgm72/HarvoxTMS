@@ -11,14 +11,18 @@ export const useLoadNumberValidation = (loadNumber: string, skipValidation = fal
 
   useEffect(() => {
     const validateLoadNumber = async () => {
+      console.log('🔍 Validating load number:', debouncedLoadNumber, 'skipValidation:', skipValidation);
+      
       // No validar si está vacío, muy corto o si se debe omitir
       if (!debouncedLoadNumber || debouncedLoadNumber.length < 2 || skipValidation) {
+        console.log('🔍 Skipping validation:', { debouncedLoadNumber, length: debouncedLoadNumber?.length, skipValidation });
         setIsDuplicate(false);
         setError(null);
         setIsValidating(false);
         return;
       }
 
+      console.log('🔍 Starting validation for:', debouncedLoadNumber);
       setIsValidating(true);
       setError(null);
 
@@ -30,13 +34,19 @@ export const useLoadNumberValidation = (loadNumber: string, skipValidation = fal
           .limit(1)
           .maybeSingle();
 
+        console.log('🔍 Validation result:', { data, queryError });
+
         if (queryError) {
+          console.error('🔍 Query error:', queryError);
           setError('Error al validar número de carga');
           setIsDuplicate(false);
         } else {
-          setIsDuplicate(!!data);
+          const isDuplicateResult = !!data;
+          console.log('🔍 Is duplicate?', isDuplicateResult);
+          setIsDuplicate(isDuplicateResult);
         }
       } catch (err) {
+        console.error('🔍 Validation error:', err);
         setError('Error al validar número de carga');
         setIsDuplicate(false);
       } finally {

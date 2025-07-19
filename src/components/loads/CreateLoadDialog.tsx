@@ -92,6 +92,15 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   
   // Validación de número de carga duplicado
   const loadNumberValidation = useLoadNumberValidation(form.watch("load_number"));
+  
+  // Debug log para ver el estado de validación
+  console.log('🔍 Form validation state:', {
+    loadNumber: form.watch("load_number"),
+    isValidating: loadNumberValidation.isValidating,
+    isDuplicate: loadNumberValidation.isDuplicate,
+    isValid: loadNumberValidation.isValid,
+    error: loadNumberValidation.error
+  });
 
   const atmInput = useATMInput({
     initialValue: 0,
