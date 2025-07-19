@@ -110,6 +110,33 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
                       <p className="text-base">{client.name}</p>
                     </div>
 
+                    {client.alias && (
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">Nombre Comercial / Alias</label>
+                        <p className="text-base">"{client.alias}"</p>
+                      </div>
+                    )}
+
+                    {client.mc_number && (
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">Número MC</label>
+                        <p className="text-base flex items-center gap-2">
+                          <Building2 className="h-4 w-4" />
+                          <span className="font-mono">{client.mc_number}</span>
+                        </p>
+                      </div>
+                    )}
+
+                    {client.dot_number && (
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">Número DOT</label>
+                        <p className="text-base flex items-center gap-2">
+                          <Building2 className="h-4 w-4" />
+                          <span className="font-mono">{client.dot_number}</span>
+                        </p>
+                      </div>
+                    )}
+
                     {client.email_domain && (
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">Dominio de Email</label>

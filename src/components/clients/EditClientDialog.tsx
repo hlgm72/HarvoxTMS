@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Building2 } from "lucide-react";
 import { ClientLogoUpload } from "./ClientLogoUpload";
+import { createTextHandlers, createPhoneHandlers, createMCHandlers, createDOTHandlers } from "@/lib/textUtils";
 import {
   Dialog,
   DialogContent,
@@ -45,6 +46,8 @@ export function EditClientDialog({ client, open, onOpenChange }: EditClientDialo
       address: client.address || "",
       notes: client.notes || "",
       logo_url: client.logo_url || "",
+      mc_number: client.mc_number || "",
+      dot_number: client.dot_number || "",
       is_active: client.is_active,
     },
   });
@@ -61,6 +64,8 @@ export function EditClientDialog({ client, open, onOpenChange }: EditClientDialo
         address: client.address || "",
         notes: client.notes || "",
         logo_url: client.logo_url || "",
+        mc_number: client.mc_number || "",
+        dot_number: client.dot_number || "",
         is_active: client.is_active,
       });
     }
@@ -161,6 +166,50 @@ export function EditClientDialog({ client, open, onOpenChange }: EditClientDialo
                     <FormMessage />
                   </FormItem>
                 )}
+              />
+
+              <FormField
+                control={form.control}
+                name="dot_number"
+                render={({ field }) => {
+                  const handlers = createDOTHandlers(field.onChange);
+                  return (
+                    <FormItem>
+                      <FormLabel>Número DOT</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="1234567" 
+                          value={field.value}
+                          onChange={handlers.onChange}
+                          onKeyPress={handlers.onKeyPress}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
+                name="mc_number"
+                render={({ field }) => {
+                  const handlers = createMCHandlers(field.onChange);
+                  return (
+                    <FormItem>
+                      <FormLabel>Número MC</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="MC-123456" 
+                          value={field.value}
+                          onChange={handlers.onChange}
+                          onKeyPress={handlers.onKeyPress}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
             </div>
 
