@@ -19,6 +19,17 @@ export const ProtectedRoute = ({
   const { user, userRole, loading, isAuthenticated, currentRole, _forceUpdate } = useAuth();
   const { t } = useTranslation('common');
 
+  // Debug log para ver el estado actual
+  console.log('🛡️ ProtectedRoute state:', {
+    loading,
+    isAuthenticated,
+    hasUser: !!user,
+    currentRole,
+    userRole: userRole?.role,
+    requiredRole,
+    requireAuth
+  });
+
   // Show loading spinner while checking authentication OR while role is being determined
   // Also wait for the AuthContext to complete its initialization cycle
   if (loading || (isAuthenticated && !currentRole)) {
