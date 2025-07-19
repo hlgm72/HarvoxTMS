@@ -26,6 +26,7 @@ import Payments from "./pages/Payments";
 import Loads from "./pages/Loads";
 import EagleDemo from "./pages/EagleDemo";
 import DriverMobile from "./pages/DriverMobile";
+import Preview from "./pages/Preview";
 
 import IconsPreview from "./pages/IconsPreview";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -47,6 +48,7 @@ function AppContent() {
       <Routes>
         {/* Public routes */}
         <Route path="/landing" element={<Landing />} />
+        <Route path="/preview" element={<Preview />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/invitation/:token" element={<Invitation />} />

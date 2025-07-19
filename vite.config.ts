@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -10,11 +9,19 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     // Ensure SPA routing works correctly
-    historyApiFallback: true,
-    // Improve error handling
+    historyApiFallback: {
+      rewrites: [
+        // Redirect root to preview for external previews
+        { from: /^\/$/, to: '/preview' },
+        // Keep other routes as SPA
+        { from: /^\/(?!.*\.).*$/, to: '/index.html' }
+      ]
+    },
+    // Better CORS and external access
     strictPort: false,
-    // Better CORS handling
     cors: true,
+    // Improve external preview compatibility
+    open: '/preview',
   },
   plugins: [
     react(),
@@ -40,6 +47,7 @@ export default defineConfig(({ mode }) => ({
     target: 'esnext',
     minify: 'esbuild',
   },
+  // Set base to root for better preview compatibility
   base: '/',
   // Better development experience
   optimizeDeps: {
@@ -49,4 +57,11 @@ export default defineConfig(({ mode }) => ({
   css: {
     devSourcemap: mode === 'development',
   },
+  // Better preview handling
+  preview: {
+    port: 8080,
+    host: true,
+    open: '/preview',
+    strictPort: false,
+  }
 }));

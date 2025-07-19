@@ -1,8 +1,9 @@
+
 {
   "name": "FleetNest - Sistema TMS",
   "short_name": "FleetNest",
   "description": "Sistema TMS profesional para compañías de transporte",
-  "start_url": "/",
+  "start_url": "/preview",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#003366",
@@ -65,10 +66,10 @@
       ]
     },
     {
-      "name": "Drivers",
-      "short_name": "Conductores",
-      "description": "Gestión de conductores",
-      "url": "/drivers",
+      "name": "Preview",
+      "short_name": "Vista Previa",
+      "description": "Vista previa de FleetNest",
+      "url": "/preview",
       "icons": [
         {
           "src": "/lovable-uploads/17c67690-6fd3-424e-b214-6cb9ef55941d.png",
