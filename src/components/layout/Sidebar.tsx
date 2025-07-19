@@ -523,8 +523,8 @@ export function AppSidebar() {
                              to={item.url} 
                              end
                              onClick={handleNavClick}
-                             className={`font-body group relative flex items-center gap-4 transition-all duration-200 ${
-                               collapsed ? 'px-3 py-3 justify-center' : 'px-5 py-3'
+                             className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
+                               collapsed ? 'px-3 py-2 justify-center' : 'px-4 py-2'
                              } ${
                                active 
                                  ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
@@ -532,10 +532,10 @@ export function AppSidebar() {
                              }`}
                           >
                             <IconComponent 
-                              className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
+                              className={`!h-4 !w-4 flex-shrink-0 transition-all duration-200 ${
                                 active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
                               }`} 
-                              style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }}
+                              style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px' }}
                             />
                             
                             {/* Active indicator - exacto como Limitless */}
@@ -553,8 +553,8 @@ export function AppSidebar() {
                            to={item.url} 
                            end
                            onClick={handleNavClick}
-                          className={`font-body group relative flex items-center gap-4 transition-all duration-200 ${
-                            collapsed ? 'px-3 py-3 justify-center' : 'px-5 py-3'
+                          className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
+                            collapsed ? 'px-3 py-2 justify-center' : 'px-4 py-2'
                           } ${
                             active 
                               ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
@@ -562,15 +562,15 @@ export function AppSidebar() {
                           }`}
                       >
                         <IconComponent 
-                          className={`!h-5 !w-5 flex-shrink-0 transition-all duration-200 ${
+                          className={`!h-4 !w-4 flex-shrink-0 transition-all duration-200 ${
                             active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
                           }`} 
-                          style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }}
+                          style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px' }}
                         />
                        
                        {!collapsed && (
                          <div className="flex items-center justify-between flex-1 min-w-0">
-                            <span className="truncate font-body">
+                            <span className="truncate font-body text-sm">
                               {item.title}
                             </span>
                            
