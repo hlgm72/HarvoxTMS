@@ -122,6 +122,22 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
             </CardHeader>
             
             <CardContent className="space-y-3">
+              {client.mc_number && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Building2 className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-muted-foreground">MC#:</span>
+                  <span className="truncate font-mono">{client.mc_number}</span>
+                </div>
+              )}
+              
+              {client.dot_number && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Building2 className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-muted-foreground">DOT#:</span>
+                  <span className="truncate font-mono">{client.dot_number}</span>
+                </div>
+              )}
+
               {client.email_domain && (
                 <div className="flex items-center gap-2 text-sm">
                   <Mail className="h-3 w-3 text-muted-foreground" />

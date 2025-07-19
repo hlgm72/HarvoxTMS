@@ -98,6 +98,18 @@ export function ClientsList({ clients }: ClientsListProps) {
               </div>
               
               <div className="space-y-2 text-sm text-muted-foreground">
+                {client.mc_number && (
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-3 w-3 flex-shrink-0" />
+                    <span className="text-xs font-medium">MC# {client.mc_number}</span>
+                  </div>
+                )}
+                {client.dot_number && (
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-3 w-3 flex-shrink-0" />
+                    <span className="text-xs font-medium">DOT# {client.dot_number}</span>
+                  </div>
+                )}
                 {client.email_domain && (
                   <div className="flex items-center gap-2">
                     <Mail className="h-3 w-3 flex-shrink-0" />
@@ -173,6 +185,18 @@ export function ClientsList({ clients }: ClientsListProps) {
                   </div>
                   
                   <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+                    {client.mc_number && (
+                      <div className="flex items-center gap-1 min-w-0">
+                        <Building2 className="h-3 w-3 flex-shrink-0" />
+                        <span className="truncate font-mono">MC# {client.mc_number}</span>
+                      </div>
+                    )}
+                    {client.dot_number && (
+                      <div className="flex items-center gap-1 min-w-0">
+                        <Building2 className="h-3 w-3 flex-shrink-0" />
+                        <span className="truncate font-mono">DOT# {client.dot_number}</span>
+                      </div>
+                    )}
                     {client.email_domain && (
                       <div className="flex items-center gap-1 min-w-0">
                         <Mail className="h-3 w-3 flex-shrink-0" />

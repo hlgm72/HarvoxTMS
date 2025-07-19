@@ -12,6 +12,8 @@ export interface Client {
   address?: string;
   notes?: string;
   logo_url?: string;
+  mc_number?: string;
+  dot_number?: string;
   created_at: string;
   updated_at: string;
 }
