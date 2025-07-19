@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useDebounce } from '@/hooks/useDebounce';
 
-export const useLoadNumberValidation = (loadNumber: string, skipValidation = false) => {
+export const useLoadNumberValidation = (loadNumber: string, skipValidation = false, excludeLoadId?: string) => {
   console.log('🔍 useLoadNumberValidation CALLED - loadNumber:', loadNumber, 'skipValidation:', skipValidation);
   
   const [isValidating, setIsValidating] = useState(false);
@@ -31,10 +31,17 @@ export const useLoadNumberValidation = (loadNumber: string, skipValidation = fal
       setError(null);
 
       try {
-        const { data, error: queryError } = await supabase
+        let query = supabase
           .from('loads')
           .select('id')
-          .eq('load_number', debouncedLoadNumber)
+          .eq('load_number', debouncedLoadNumber);
+        
+        // Si estamos editando, excluir la carga actual
+        if (excludeLoadId) {
+          query = query.neq('id', excludeLoadId);
+        }
+        
+        const { data, error: queryError } = await query
           .limit(1)
           .maybeSingle();
 

@@ -109,9 +109,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
   // Log básico para ver si el componente se ejecuta
   console.log('🔍 CreateLoadDialog render - Load number:', currentLoadNumber);
   
-  const loadNumberValidation = mode === 'create' 
-    ? useLoadNumberValidation(currentLoadNumber) 
-    : { isDuplicate: false, isValidating: false, isValid: true, error: '' };
+  const loadNumberValidation = useLoadNumberValidation(
+    currentLoadNumber,
+    false, // No skip validation
+    mode === 'edit' ? loadData?.id : undefined // Excluir el ID actual cuando editamos
+  );
   
   // Debug log para ver el estado de validación
   useEffect(() => {
