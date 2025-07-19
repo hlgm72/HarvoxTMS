@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => ({
     cors: true,
     open: '/',
     headers: {
-      'X-Frame-Options': 'SAMEORIGIN'
+      'X-Frame-Options': 'ALLOWALL'
     }
   },
   plugins: [
