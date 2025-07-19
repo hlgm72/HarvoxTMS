@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Circle, ArrowRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { BrokerCombobox } from "@/components/brokers/BrokerCombobox";
+import { BrokerContactCombobox } from "@/components/brokers/BrokerContactCombobox";
 import { InternalDispatcherCombobox } from "@/components/dispatchers/InternalDispatcherCombobox";
 import { CreateBrokerDialog } from "@/components/brokers/CreateBrokerDialog";
 import { CreateDispatcherDialog } from "@/components/brokers/CreateDispatcherDialog";
@@ -30,6 +31,7 @@ import { LoadAssignmentSection } from "./LoadAssignmentSection";
 const createLoadSchema = z.object({
   // Phase 1: Essential Information
   broker_id: z.string().min(1, "Selecciona un broker"),
+  broker_contact_id: z.string().optional(),
   dispatcher_id: z.string().optional(),
   load_number: z.string().min(1, "El número de carga es requerido"),
   total_amount: z.number().min(0.01, "El monto debe ser mayor a 0"),
@@ -79,6 +81,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
     resolver: zodResolver(createLoadSchema),
     defaultValues: {
       broker_id: "",
+      broker_contact_id: "",
       dispatcher_id: "",
       load_number: "",
       total_amount: 0,
@@ -375,6 +378,29 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                               onBrokerSelect={setSelectedBroker}
                               placeholder="Buscar broker por nombre, DOT, MC..."
                               className="w-full"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                     />
+
+                    {/* Broker Contact Selection */}
+                    <FormField
+                      control={form.control}
+                      name="broker_contact_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Contacto del Cliente</FormLabel>
+                          <FormControl>
+                            <BrokerContactCombobox
+                              dispatchers={selectedBroker?.dispatchers || []}
+                              value={field.value}
+                              onValueChange={field.onChange}
+                              placeholder="Seleccionar contacto del cliente..."
+                              className="w-full"
+                              disabled={!selectedBroker}
+                              onCreateNew={() => setShowCreateDispatcher(true)}
                             />
                           </FormControl>
                           <FormMessage />

@@ -21,11 +21,13 @@ import { createTextHandlers } from "@/lib/textUtils";
 import { toast } from "@/hooks/use-toast";
 import { formatCurrency } from "@/lib/utils";
 import { BrokerCombobox } from "@/components/brokers/BrokerCombobox";
+import { BrokerContactCombobox } from "@/components/brokers/BrokerContactCombobox";
 import { InternalDispatcherCombobox } from "@/components/dispatchers/InternalDispatcherCombobox";
 
 const editLoadSchema = z.object({
   load_number: z.string().min(1, "El número de carga es requerido"),
   broker_id: z.string().min(1, "Selecciona un broker"),
+  broker_contact_id: z.string().optional(),
   dispatcher_id: z.string().optional(),
   total_amount: z.number().min(0.01, "El monto debe ser mayor a 0"),
   commodity: z.string().min(1, "Especifica el commodity"),
@@ -56,6 +58,7 @@ export function EditLoadDialog({ isOpen, onClose, load }: EditLoadDialogProps) {
     defaultValues: {
       load_number: "",
       broker_id: "",
+      broker_contact_id: "",
       dispatcher_id: "",
       total_amount: 0,
       commodity: "",
@@ -77,6 +80,7 @@ export function EditLoadDialog({ isOpen, onClose, load }: EditLoadDialogProps) {
       // Cargar datos existentes en el formulario
       form.setValue("load_number", load.load_number || "");
       form.setValue("broker_id", load.broker_id || "");
+      form.setValue("broker_contact_id", load.broker_contact_id || "");
       form.setValue("dispatcher_id", load.internal_dispatcher_id || "");
       form.setValue("total_amount", load.total_amount || 0);
       form.setValue("commodity", load.commodity || "");
@@ -262,6 +266,28 @@ export function EditLoadDialog({ isOpen, onClose, load }: EditLoadDialogProps) {
                                 onBrokerSelect={setSelectedBroker}
                                 placeholder="Buscar broker por nombre, DOT, MC..."
                                 className="w-full"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                       />
+
+                      {/* Broker Contact Selection */}
+                      <FormField
+                        control={form.control}
+                        name="broker_contact_id"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Contacto del Cliente</FormLabel>
+                            <FormControl>
+                              <BrokerContactCombobox
+                                dispatchers={selectedBroker?.dispatchers || []}
+                                value={field.value}
+                                onValueChange={field.onChange}
+                                placeholder="Seleccionar contacto del cliente..."
+                                className="w-full"
+                                disabled={!selectedBroker}
                               />
                             </FormControl>
                             <FormMessage />
