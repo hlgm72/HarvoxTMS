@@ -11,30 +11,28 @@ export const useLanguageSync = () => {
   const { profile, loading } = useUserProfile();
 
   useEffect(() => {
-    // Solo ejecutar cuando ya se haya cargado el perfil y i18n esté inicializado
-    if (loading || !i18n.isInitialized) return;
+    // Solo ejecutar cuando ya se haya cargado el perfil
+    if (loading) return;
 
     if (profile?.preferred_language) {
       // Si el usuario tiene un idioma preferido en su perfil, usarlo
       if (profile.preferred_language !== i18n.language) {
-        i18n.changeLanguage(profile.preferred_language).catch(console.error);
+        i18n.changeLanguage(profile.preferred_language);
       }
     } else {
       // Si no hay idioma preferido en el perfil, usar el detectado por i18n (localStorage/navegador)
       // Esto permite que usuarios nuevos usen el idioma de su navegador
       const detectedLanguage = localStorage.getItem('i18nextLng') || 'en';
       if (detectedLanguage !== i18n.language) {
-        i18n.changeLanguage(detectedLanguage).catch(console.error);
+        i18n.changeLanguage(detectedLanguage);
       }
     }
-  }, [profile?.preferred_language, loading, i18n.isInitialized, i18n]);
+  }, [profile?.preferred_language, loading, i18n]);
 
   return {
     currentLanguage: i18n.language,
     changeLanguage: (language: string) => {
-      if (i18n.isInitialized) {
-        i18n.changeLanguage(language).catch(console.error);
-      }
+      i18n.changeLanguage(language);
     }
   };
 };

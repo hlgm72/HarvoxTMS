@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableStopItem';
@@ -118,7 +118,7 @@ export function LoadStopsManager({ onStopsChange, showValidation = false }: Load
   const dateErrors = getDateErrors();
 
   // Notify parent component of stops changes
-  useEffect(() => {
+  React.useEffect(() => {
     if (onStopsChange) {
       onStopsChange(stops);
     }

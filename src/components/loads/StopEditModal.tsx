@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { CalendarIcon, MapPin, Clock, User, Phone, Building, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -44,7 +44,7 @@ export function StopEditModal({
   const [formData, setFormData] = useState<Partial<LoadStop>>({});
 
   // Initialize form data when stop changes
-  useEffect(() => {
+  React.useEffect(() => {
     if (stop) {
       setFormData({ ...stop });
     }

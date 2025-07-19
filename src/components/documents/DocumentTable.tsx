@@ -1,4 +1,4 @@
-import { useState, useMemo, Fragment } from "react";
+import React, { useState, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -362,7 +362,7 @@ export function DocumentTable({
           </TableHeader>
           <TableBody>
             {groupedDocuments.map((group, groupIndex) => (
-              <Fragment key={groupIndex}>
+              <React.Fragment key={groupIndex}>
                 {/* Group header */}
                 {groupBy !== 'none' && group.title && (
                   <TableRow className="bg-muted/30">
@@ -508,7 +508,7 @@ export function DocumentTable({
                     </TableRow>
                   );
                 })}
-              </Fragment>
+              </React.Fragment>
             ))}
           </TableBody>
         </Table>
