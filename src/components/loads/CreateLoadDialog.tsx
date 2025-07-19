@@ -267,8 +267,21 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
   ];
 
   const onSubmit = (values: z.infer<typeof createLoadSchema>) => {
+    console.log('🚨 onSubmit called - this should only happen when user clicks "Crear Carga"', { 
+      values, 
+      currentPhase, 
+      selectedDriver 
+    });
+    
+    // Verificar que estamos en la fase final
+    if (currentPhase !== 4) {
+      console.log('🚨 onSubmit blocked - not in final phase');
+      return;
+    }
+    
     // Verificar que no haya número duplicado
     if (loadNumberValidation.isDuplicate) {
+      console.log('🚨 onSubmit blocked - duplicate load number');
       toast({
         title: "Error",
         description: "No se puede crear la carga con un número duplicado.",
@@ -279,6 +292,7 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
 
     // Validar que se haya seleccionado un conductor
     if (!selectedDriver) {
+      console.log('🚨 onSubmit blocked - no driver selected');
       toast({
         title: "Error",
         description: "Debes seleccionar un conductor antes de crear la carga.",
@@ -286,10 +300,19 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
       });
       return;
     }
+    
+    console.log('✅ All validations passed, creating load...');
 
     // Extraer datos de pickup y delivery de las paradas
     const pickupStop = loadStops.find(stop => stop.stop_type === 'pickup');
     const deliveryStop = loadStops.find(stop => stop.stop_type === 'delivery');
+    
+    console.log('📦 CreateLoadDialog - About to create load with:', {
+      loadStops,
+      pickupStop,
+      deliveryStop,
+      stopsCount: loadStops.length
+    });
 
     createLoadMutation.mutate({
       load_number: values.load_number,
@@ -713,7 +736,13 @@ export function CreateLoadDialog({ isOpen, onClose }: CreateLoadDialogProps) {
                     Siguiente
                   </Button>
                 ) : (
-                  <Button type="submit">
+                  <Button 
+                    type="button"
+                    onClick={() => {
+                      console.log('🔄 Manual form submission triggered');
+                      form.handleSubmit(onSubmit)();
+                    }}
+                  >
                     Crear Carga
                   </Button>
                 )}
