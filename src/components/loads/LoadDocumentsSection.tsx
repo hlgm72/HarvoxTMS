@@ -378,30 +378,33 @@ export function LoadDocumentsSection({
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <label className="cursor-pointer">
-                            <input
-                              type="file"
-                              className="hidden"
-                              accept=".pdf,.jpg,.jpeg,.png"
-                              onChange={(e) => {
-                                console.log('📎 File input onChange triggered', { 
-                                  type: docType.type, 
-                                  files: e.target.files?.length || 0 
-                                });
-                                handleFileUpload(docType.type, e.target.files);
-                              }}
-                              disabled={uploading === docType.type}
-                            />
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              disabled={uploading === docType.type}
-                              onClick={() => console.log('🖱️ Upload button clicked for:', docType.type)}
-                            >
-                              <Upload className="h-4 w-4 mr-2" />
-                              {uploading === docType.type ? 'Subiendo...' : 'Subir archivo'}
-                            </Button>
-                          </label>
+                          <input
+                            type="file"
+                            id={`file-upload-${docType.type}`}
+                            className="hidden"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={(e) => {
+                              console.log('📎 File input onChange triggered', { 
+                                type: docType.type, 
+                                files: e.target.files?.length || 0 
+                              });
+                              handleFileUpload(docType.type, e.target.files);
+                            }}
+                            disabled={uploading === docType.type}
+                          />
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            disabled={uploading === docType.type}
+                            onClick={() => {
+                              console.log('🖱️ Upload button clicked for:', docType.type);
+                              const fileInput = document.getElementById(`file-upload-${docType.type}`) as HTMLInputElement;
+                              fileInput?.click();
+                            }}
+                          >
+                            <Upload className="h-4 w-4 mr-2" />
+                            {uploading === docType.type ? 'Subiendo...' : 'Subir archivo'}
+                          </Button>
                           <span className="text-xs text-muted-foreground">
                             {loadId ? 'PDF, JPG, PNG (máx. 10MB)' : 'Se subirá al guardar la carga'}
                           </span>
