@@ -73,7 +73,9 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
   return (
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {clients.map((client) => (
+        {clients.map((client) => {
+          console.log('🔍 Cliente en grid:', client.name, 'MC:', client.mc_number, 'DOT:', client.dot_number);
+          return (
           <Card key={client.id} className="hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -170,7 +172,8 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
               </div>
             </CardContent>
           </Card>
-        ))}
+          );
+        })}
       </div>
 
       {/* Edit Dialog */}

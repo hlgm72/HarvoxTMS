@@ -72,71 +72,172 @@ export function ClientsList({ clients }: ClientsListProps) {
 
   return (
     <div className="space-y-4">
-      {clients.map((client) => (
-        <Card key={client.id} className="hover:shadow-md transition-shadow">
-          <CardContent className="p-4">
-            {/* Mobile Layout */}
-            <div className="block sm:hidden space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
+      {clients.map((client) => {
+        console.log('🔍 Cliente en lista:', client.name, 'MC:', client.mc_number, 'DOT:', client.dot_number);
+        return (
+          <Card key={client.id} className="hover:shadow-md transition-shadow">
+            <CardContent className="p-4">
+              {/* Mobile Layout */}
+              <div className="block sm:hidden space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={client.logo_url} alt={client.name} />
+                      <AvatarFallback>
+                        {getInitials(client.alias || client.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="font-semibold text-base">{client.name}</h3>
+                      {client.alias && (
+                        <p className="text-sm text-muted-foreground">"{client.alias}"</p>
+                      )}
+                    </div>
+                  </div>
+                  <Badge variant={client.is_active ? "default" : "secondary"} className="text-xs">
+                    {client.is_active ? "Activo" : "Inactivo"}
+                  </Badge>
+                </div>
+                
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  {client.mc_number && (
+                    <div className="flex items-center gap-2">
+                      <Building2 className="h-3 w-3 flex-shrink-0" />
+                      <span className="text-xs font-medium">MC# {client.mc_number}</span>
+                    </div>
+                  )}
+                  {client.dot_number && (
+                    <div className="flex items-center gap-2">
+                      <Building2 className="h-3 w-3 flex-shrink-0" />
+                      <span className="text-xs font-medium">DOT# {client.dot_number}</span>
+                    </div>
+                  )}
+                  {client.email_domain && (
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-3 w-3 flex-shrink-0" />
+                      <span className="truncate">{client.email_domain}</span>
+                    </div>
+                  )}
+                  {client.address && (
+                    <div className="flex items-start gap-2">
+                      <MapPin className="h-3 w-3 flex-shrink-0 mt-0.5" />
+                      <span className="text-xs leading-relaxed">{client.address}</span>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex items-center justify-between pt-2">
+                  <ClientDispatchersPopover 
+                    clientId={client.id} 
+                    clientName={client.alias || client.name}
+                  />
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleView(client)}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEdit(client)}>
+                          <Edit className="h-4 w-4 mr-2" />
+                          Editar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDelete(client)}
+                          className="text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Eliminar
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+              </div>
+
+              {/* Desktop Layout */}
+              <div className="hidden sm:flex items-center justify-between">
+                <div className="flex items-center space-x-4 flex-1 min-w-0">
+                  <Avatar className="h-12 w-12 flex-shrink-0">
                     <AvatarImage src={client.logo_url} alt={client.name} />
                     <AvatarFallback>
                       {getInitials(client.alias || client.name)}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
-                    <h3 className="font-semibold text-base">{client.name}</h3>
-                    {client.alias && (
-                      <p className="text-sm text-muted-foreground">"{client.alias}"</p>
-                    )}
+                  
+                  <div className="flex-1 space-y-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-lg truncate">{client.name}</h3>
+                        {client.alias && (
+                          <p className="text-sm text-muted-foreground truncate">"{client.alias}"</p>
+                        )}
+                      </div>
+                      <Badge variant={client.is_active ? "default" : "secondary"} className="flex-shrink-0">
+                        {client.is_active ? "Activo" : "Inactivo"}
+                      </Badge>
+                    </div>
+                    
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+                      {client.mc_number && (
+                        <div className="flex items-center gap-1 min-w-0">
+                          <Building2 className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate font-mono">MC# {client.mc_number}</span>
+                        </div>
+                      )}
+                      {client.dot_number && (
+                        <div className="flex items-center gap-1 min-w-0">
+                          <Building2 className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate font-mono">DOT# {client.dot_number}</span>
+                        </div>
+                      )}
+                      {client.email_domain && (
+                        <div className="flex items-center gap-1 min-w-0">
+                          <Mail className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">{client.email_domain}</span>
+                        </div>
+                      )}
+                      {client.address && (
+                        <div className="flex items-center gap-1 min-w-0">
+                          <MapPin className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">{client.address}</span>
+                        </div>
+                      )}
+                      <ClientDispatchersPopover 
+                        clientId={client.id} 
+                        clientName={client.alias || client.name}
+                      />
+                    </div>
                   </div>
                 </div>
-                <Badge variant={client.is_active ? "default" : "secondary"} className="text-xs">
-                  {client.is_active ? "Activo" : "Inactivo"}
-                </Badge>
-              </div>
-              
-              <div className="space-y-2 text-sm text-muted-foreground">
-                {client.mc_number && (
-                  <div className="flex items-center gap-2">
-                    <Building2 className="h-3 w-3 flex-shrink-0" />
-                    <span className="text-xs font-medium">MC# {client.mc_number}</span>
-                  </div>
-                )}
-                {client.dot_number && (
-                  <div className="flex items-center gap-2">
-                    <Building2 className="h-3 w-3 flex-shrink-0" />
-                    <span className="text-xs font-medium">DOT# {client.dot_number}</span>
-                  </div>
-                )}
-                {client.email_domain && (
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-3 w-3 flex-shrink-0" />
-                    <span className="truncate">{client.email_domain}</span>
-                  </div>
-                )}
-                {client.address && (
-                  <div className="flex items-start gap-2">
-                    <MapPin className="h-3 w-3 flex-shrink-0 mt-0.5" />
-                    <span className="text-xs leading-relaxed">{client.address}</span>
-                  </div>
-                )}
-              </div>
-              
-              <div className="flex items-center justify-between pt-2">
-                <ClientDispatchersPopover 
-                  clientId={client.id} 
-                  clientName={client.alias || client.name}
-                />
-                <div className="flex items-center gap-1">
+
+                <div className="flex items-center gap-2 flex-shrink-0 ml-4">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => handleView(client)}
+                    className="hidden md:flex"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Ver Detalles
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleView(client)}
+                    className="md:hidden"
                   >
                     <Eye className="h-4 w-4" />
                   </Button>
+
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm">
@@ -159,108 +260,10 @@ export function ClientsList({ clients }: ClientsListProps) {
                   </DropdownMenu>
                 </div>
               </div>
-            </div>
-
-            {/* Desktop Layout */}
-            <div className="hidden sm:flex items-center justify-between">
-              <div className="flex items-center space-x-4 flex-1 min-w-0">
-                <Avatar className="h-12 w-12 flex-shrink-0">
-                  <AvatarImage src={client.logo_url} alt={client.name} />
-                  <AvatarFallback>
-                    {getInitials(client.alias || client.name)}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div className="flex-1 space-y-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <div className="min-w-0">
-                      <h3 className="font-semibold text-lg truncate">{client.name}</h3>
-                      {client.alias && (
-                        <p className="text-sm text-muted-foreground truncate">"{client.alias}"</p>
-                      )}
-                    </div>
-                    <Badge variant={client.is_active ? "default" : "secondary"} className="flex-shrink-0">
-                      {client.is_active ? "Activo" : "Inactivo"}
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
-                    {client.mc_number && (
-                      <div className="flex items-center gap-1 min-w-0">
-                        <Building2 className="h-3 w-3 flex-shrink-0" />
-                        <span className="truncate font-mono">MC# {client.mc_number}</span>
-                      </div>
-                    )}
-                    {client.dot_number && (
-                      <div className="flex items-center gap-1 min-w-0">
-                        <Building2 className="h-3 w-3 flex-shrink-0" />
-                        <span className="truncate font-mono">DOT# {client.dot_number}</span>
-                      </div>
-                    )}
-                    {client.email_domain && (
-                      <div className="flex items-center gap-1 min-w-0">
-                        <Mail className="h-3 w-3 flex-shrink-0" />
-                        <span className="truncate">{client.email_domain}</span>
-                      </div>
-                    )}
-                    {client.address && (
-                      <div className="flex items-center gap-1 min-w-0">
-                        <MapPin className="h-3 w-3 flex-shrink-0" />
-                        <span className="truncate">{client.address}</span>
-                      </div>
-                    )}
-                    <ClientDispatchersPopover 
-                      clientId={client.id} 
-                      clientName={client.alias || client.name}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 flex-shrink-0 ml-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleView(client)}
-                  className="hidden md:flex"
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  Ver Detalles
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleView(client)}
-                  className="md:hidden"
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
-
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleEdit(client)}>
-                      <Edit className="h-4 w-4 mr-2" />
-                      Editar
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => handleDelete(client)}
-                      className="text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Eliminar
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+            </CardContent>
+          </Card>
+        );
+      })}
 
       {/* Edit Dialog */}
       {selectedClient && (
