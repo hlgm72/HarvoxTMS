@@ -116,10 +116,16 @@ export function LoadDocumentsSection({
   };
 
   const handleFileUpload = async (type: LoadDocument['type'], files: FileList | null) => {
-    if (!files || files.length === 0) return;
+    console.log('🔄 handleFileUpload called', { type, filesCount: files?.length || 0, loadId });
+    
+    if (!files || files.length === 0) {
+      console.log('❌ No files selected');
+      return;
+    }
     
     // If no loadId, handle as temporary document
     if (!loadId) {
+      console.log('📁 Handling as temporary document');
       handleTemporaryFileUpload(type, files);
       return;
     }
@@ -207,6 +213,7 @@ export function LoadDocumentsSection({
   };
 
   const handleTemporaryFileUpload = (type: LoadDocument['type'], files: FileList) => {
+    console.log('📂 handleTemporaryFileUpload called', { type, file: files[0]?.name });
     const file = files[0];
     
     // Validate file size (50MB limit)
@@ -370,28 +377,35 @@ export function LoadDocumentsSection({
                           )}
                         </div>
                       ) : (
-                      <div className="flex items-center gap-2">
-                        <label className="cursor-pointer">
-                          <input
-                            type="file"
-                            className="hidden"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            onChange={(e) => handleFileUpload(docType.type, e.target.files)}
-                            disabled={uploading === docType.type}
-                          />
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            disabled={uploading === docType.type}
-                          >
-                            <Upload className="h-4 w-4 mr-2" />
-                            {uploading === docType.type ? 'Subiendo...' : 'Subir archivo'}
-                          </Button>
-                        </label>
-                        <span className="text-xs text-muted-foreground">
-                          {loadId ? 'PDF, JPG, PNG (máx. 10MB)' : 'Se subirá al guardar la carga'}
-                        </span>
-                      </div>
+                        <div className="flex items-center gap-2">
+                          <label className="cursor-pointer">
+                            <input
+                              type="file"
+                              className="hidden"
+                              accept=".pdf,.jpg,.jpeg,.png"
+                              onChange={(e) => {
+                                console.log('📎 File input onChange triggered', { 
+                                  type: docType.type, 
+                                  files: e.target.files?.length || 0 
+                                });
+                                handleFileUpload(docType.type, e.target.files);
+                              }}
+                              disabled={uploading === docType.type}
+                            />
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              disabled={uploading === docType.type}
+                              onClick={() => console.log('🖱️ Upload button clicked for:', docType.type)}
+                            >
+                              <Upload className="h-4 w-4 mr-2" />
+                              {uploading === docType.type ? 'Subiendo...' : 'Subir archivo'}
+                            </Button>
+                          </label>
+                          <span className="text-xs text-muted-foreground">
+                            {loadId ? 'PDF, JPG, PNG (máx. 10MB)' : 'Se subirá al guardar la carga'}
+                          </span>
+                        </div>
                     )}
                   </div>
                   
