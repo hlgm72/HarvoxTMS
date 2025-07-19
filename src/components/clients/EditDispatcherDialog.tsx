@@ -21,24 +21,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { useUpdateDispatcher, ClientDispatcher } from "@/hooks/useClients";
+import { useUpdateContact, ClientContact } from "@/hooks/useClients";
 import { createPhoneHandlers } from '@/lib/textUtils';
 
 interface EditDispatcherDialogProps {
-  dispatcher: ClientDispatcher;
+  dispatcher: ClientContact;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-type UpdateDispatcherForm = Omit<ClientDispatcher, "created_at" | "updated_at">;
+type UpdateDispatcherForm = Omit<ClientContact, "created_at" | "updated_at">;
 
 export function EditDispatcherDialog({ dispatcher, open, onOpenChange }: EditDispatcherDialogProps) {
-  const updateDispatcher = useUpdateDispatcher();
+  const updateDispatcher = useUpdateContact();
   
   const form = useForm<UpdateDispatcherForm>({
     defaultValues: {
       id: dispatcher.id,
-      broker_id: dispatcher.broker_id,
+      client_id: dispatcher.client_id,
       name: dispatcher.name,
       email: dispatcher.email || "",
       phone_office: dispatcher.phone_office || "",
@@ -53,7 +53,7 @@ export function EditDispatcherDialog({ dispatcher, open, onOpenChange }: EditDis
     if (dispatcher) {
       form.reset({
         id: dispatcher.id,
-        broker_id: dispatcher.broker_id,
+        client_id: dispatcher.client_id,
         name: dispatcher.name,
         email: dispatcher.email || "",
         phone_office: dispatcher.phone_office || "",

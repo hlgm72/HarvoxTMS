@@ -27,7 +27,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Client, useClientDispatchers, useDeleteDispatcher, ClientDispatcher } from "@/hooks/useClients";
+import { Client, useClientContacts, useDeleteContact, ClientContact } from "@/hooks/useClients";
 import { CreateDispatcherDialog } from "./CreateDispatcherDialog";
 import { EditDispatcherDialog } from "./EditDispatcherDialog";
 
@@ -41,19 +41,19 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
   const [activeTab, setActiveTab] = useState("info");
   const [showCreateDispatcherDialog, setShowCreateDispatcherDialog] = useState(false);
   const [showEditDispatcherDialog, setShowEditDispatcherDialog] = useState(false);
-  const [selectedDispatcher, setSelectedDispatcher] = useState<ClientDispatcher | null>(null);
+  const [selectedDispatcher, setSelectedDispatcher] = useState<ClientContact | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [dispatcherToDelete, setDispatcherToDelete] = useState<ClientDispatcher | null>(null);
+  const [dispatcherToDelete, setDispatcherToDelete] = useState<ClientContact | null>(null);
 
-  const { data: dispatchers = [], isLoading: dispatchersLoading } = useClientDispatchers(client.id);
-  const deleteDispatcher = useDeleteDispatcher();
+  const { data: dispatchers = [], isLoading: dispatchersLoading } = useClientContacts(client.id);
+  const deleteDispatcher = useDeleteContact();
 
-  const handleEditDispatcher = (dispatcher: ClientDispatcher) => {
+  const handleEditDispatcher = (dispatcher: ClientContact) => {
     setSelectedDispatcher(dispatcher);
     setShowEditDispatcherDialog(true);
   };
 
-  const handleDeleteDispatcher = (dispatcher: ClientDispatcher) => {
+  const handleDeleteDispatcher = (dispatcher: ClientContact) => {
     setDispatcherToDelete(dispatcher);
     setShowDeleteDialog(true);
   };
@@ -62,7 +62,7 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
     if (dispatcherToDelete) {
       await deleteDispatcher.mutateAsync({
         id: dispatcherToDelete.id,
-        broker_id: client.id
+        client_id: client.id
       });
       setShowDeleteDialog(false);
       setDispatcherToDelete(null);

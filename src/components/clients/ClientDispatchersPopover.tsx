@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { useClientDispatchers, useClientDispatcherCount } from "@/hooks/useClients";
+import { useClientContacts, useClientContactCount } from "@/hooks/useClients";
 
 interface ClientDispatchersPopoverProps {
   clientId: string;
@@ -18,8 +18,8 @@ interface ClientDispatchersPopoverProps {
 
 export function ClientDispatchersPopover({ clientId, clientName }: ClientDispatchersPopoverProps) {
   const [open, setOpen] = useState(false);
-  const { data: dispatcherCount = 0 } = useClientDispatcherCount(clientId);
-  const { data: dispatchers = [], isLoading } = useClientDispatchers(clientId);
+  const { data: dispatcherCount = 0 } = useClientContactCount(clientId);
+  const { data: dispatchers = [], isLoading } = useClientContacts(clientId);
 
   const getInitials = (name: string) => {
     return name
