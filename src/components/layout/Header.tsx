@@ -28,10 +28,6 @@ export function Header() {
   const handleLogout = async () => {
     try {
       await signOut();
-      showSuccess(
-        "Sesión cerrada",
-        "Has cerrado sesión exitosamente."
-      );
       navigate('/auth');
     } catch (error) {
       showError(
