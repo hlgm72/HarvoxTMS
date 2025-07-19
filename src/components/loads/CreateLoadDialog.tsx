@@ -379,7 +379,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
       stopsCount: loadStops.length
     });
 
-    const loadData = {
+    const loadDataToSubmit = {
+      id: mode === 'edit' ? loadData?.id : undefined,
+      mode: mode,
       load_number: values.load_number,
       driver_user_id: selectedDriver.user_id,
       internal_dispatcher_id: selectedDispatcher?.user_id || null,
@@ -397,9 +399,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData }:
       leasing_percentage: values.leasing_percentage,
     };
     
-    console.log('📋 CreateLoadDialog - About to mutate with loadData:', loadData);
+    console.log('📋 CreateLoadDialog - About to mutate with loadData:', loadDataToSubmit);
 
-    createLoadMutation.mutate(loadData);
+    createLoadMutation.mutate(loadDataToSubmit);
   };
 
   return (
