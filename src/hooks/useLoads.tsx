@@ -267,14 +267,14 @@ export const useLoads = (filters?: LoadsFilters) => {
         }
 
         const stopsData = stopsResult.data || [];
-        const cityIds = [...new Set(stopsData.map(s => s.city).filter(Boolean))];
+        const cityNames = [...new Set(stopsData.map(s => s.city).filter(Boolean))];
 
-        // Obtener información de las ciudades
-        const citiesResult = cityIds.length > 0 
+        // Obtener información de las ciudades (buscar por nombre, no por id)
+        const citiesResult = cityNames.length > 0 
           ? await supabase
               .from('state_cities')
               .select('id, name, state_id')
-              .in('id', cityIds)
+              .in('name', cityNames)
           : { data: [], error: null };
 
         if (citiesResult.error) {

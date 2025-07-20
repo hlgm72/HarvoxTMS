@@ -88,19 +88,19 @@ export const useLoadData = (loadId?: string) => {
           // Don't throw error for stops, just log and continue
         }
 
-        // Get unique city IDs from stops and fetch city names
-        const cityIds = [...new Set((stops || []).map(s => s.city).filter(Boolean))];
+        // Get unique city names from stops and fetch city info
+        const cityNamesFromStops = [...new Set((stops || []).map(s => s.city).filter(Boolean))];
         let cityNames: { [key: string]: string } = {};
         
-        if (cityIds.length > 0) {
+        if (cityNamesFromStops.length > 0) {
           const { data: cities, error: citiesError } = await supabase
             .from('state_cities')
             .select('id, name')
-            .in('id', cityIds);
+            .in('name', cityNamesFromStops);
             
           if (!citiesError && cities) {
             cityNames = cities.reduce((acc, city) => {
-              acc[city.id] = city.name;
+              acc[city.name] = city.name; // Map city name to itself since we're already using names
               return acc;
             }, {} as { [key: string]: string });
           }
