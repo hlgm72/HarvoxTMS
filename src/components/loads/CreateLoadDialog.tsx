@@ -461,55 +461,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {/* Broker Selection */}
-                    <FormField
-                      control={form.control}
-                      name="broker_id"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Broker / Cliente *</FormLabel>
-                          <FormControl>
-                             <ClientCombobox
-                               clients={brokers}
-                               value={field.value}
-                               onValueChange={(value) => {
-                                 field.onChange(value);
-                                 const broker = brokers.find(b => b.id === value);
-                                 setSelectedBroker(broker || null);
-                                 form.setValue("dispatcher_id", "");
-                               }}
-                               onClientSelect={setSelectedBroker}
-                               placeholder="Buscar cliente por nombre, DOT, MC..."
-                               className="w-full"
-                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Dispatcher Selection */}
-                    <FormField
-                      control={form.control}
-                      name="dispatcher_id"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Contacto del Cliente</FormLabel>
-                          <FormControl>
-                             <ContactCombobox
-                               contacts={selectedBroker?.dispatchers || []}
-                               value={field.value}
-                               onValueChange={field.onChange}
-                               placeholder="Buscar contacto..."
-                               disabled={!selectedBroker}
-                               className="w-full"
-                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
                     {/* Load Number */}
                     <FormField
                       control={form.control}
@@ -580,6 +531,55 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                               autoComplete="off"
                               readOnly
                             />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Broker Selection */}
+                    <FormField
+                      control={form.control}
+                      name="broker_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Cliente / Broker *</FormLabel>
+                          <FormControl>
+                             <ClientCombobox
+                               clients={brokers}
+                               value={field.value}
+                               onValueChange={(value) => {
+                                 field.onChange(value);
+                                 const broker = brokers.find(b => b.id === value);
+                                 setSelectedBroker(broker || null);
+                                 form.setValue("dispatcher_id", "");
+                               }}
+                               onClientSelect={setSelectedBroker}
+                               placeholder="Buscar cliente por nombre, DOT, MC..."
+                               className="w-full"
+                             />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Dispatcher Selection */}
+                    <FormField
+                      control={form.control}
+                      name="dispatcher_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Contacto del Cliente</FormLabel>
+                          <FormControl>
+                             <ContactCombobox
+                               contacts={selectedBroker?.dispatchers || []}
+                               value={field.value}
+                               onValueChange={field.onChange}
+                               placeholder="Buscar contacto..."
+                               disabled={!selectedBroker}
+                               className="w-full"
+                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
