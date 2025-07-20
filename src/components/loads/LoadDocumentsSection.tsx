@@ -660,33 +660,9 @@ export function LoadDocumentsSection({
                                    });
                                    return;
                                  }
-                                 
-                                   try {
-                                     console.log('🌐 Opening document in browser PDF viewer...');
-                                     // Force browser's native PDF viewer in new tab
-                                     const pdfUrl = uploadedDoc.url + '#toolbar=1&navpanes=1&scrollbar=1&view=FitH';
-                                     
-                                     // Create link element to force browser viewer
-                                     const link = document.createElement('a');
-                                     link.href = pdfUrl;
-                                     link.target = '_blank';
-                                     link.rel = 'noopener noreferrer';
-                                     link.type = 'application/pdf';
-                                     
-                                     // Add to DOM temporarily and click
-                                     document.body.appendChild(link);
-                                     link.click();
-                                     document.body.removeChild(link);
-                                     
-                                     console.log('✅ Document opened in browser PDF viewer');
-                                  } catch (error) {
-                                    console.error('❌ Error opening document:', error);
-                                    toast({
-                                      title: "Error",
-                                      description: "No se pudo abrir el documento. Intenta nuevamente.",
-                                      variant: "destructive",
-                                    });
-                                  }
+                                  
+                                  // Open PDF directly in new tab with browser's native viewer
+                                  window.open(uploadedDoc.url, '_blank');
                                }}
                                title="Ver documento"
                              >
