@@ -410,6 +410,110 @@ export type Database = {
         }
         Relationships: []
       }
+      company_payment_periods: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          is_locked: boolean
+          locked_at: string | null
+          locked_by: string | null
+          period_end_date: string
+          period_frequency: string
+          period_start_date: string
+          period_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          is_locked?: boolean
+          locked_at?: string | null
+          locked_by?: string | null
+          period_end_date: string
+          period_frequency: string
+          period_start_date: string
+          period_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          is_locked?: boolean
+          locked_at?: string | null
+          locked_by?: string | null
+          period_end_date?: string
+          period_frequency?: string
+          period_start_date?: string
+          period_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      driver_period_calculations: {
+        Row: {
+          balance_alert_message: string | null
+          calculated_at: string | null
+          calculated_by: string | null
+          company_payment_period_id: string
+          created_at: string
+          driver_user_id: string
+          gross_earnings: number
+          has_negative_balance: boolean
+          id: string
+          net_payment: number
+          other_income: number
+          total_deductions: number
+          total_income: number
+          updated_at: string
+        }
+        Insert: {
+          balance_alert_message?: string | null
+          calculated_at?: string | null
+          calculated_by?: string | null
+          company_payment_period_id: string
+          created_at?: string
+          driver_user_id: string
+          gross_earnings?: number
+          has_negative_balance?: boolean
+          id?: string
+          net_payment?: number
+          other_income?: number
+          total_deductions?: number
+          total_income?: number
+          updated_at?: string
+        }
+        Update: {
+          balance_alert_message?: string | null
+          calculated_at?: string | null
+          calculated_by?: string | null
+          company_payment_period_id?: string
+          created_at?: string
+          driver_user_id?: string
+          gross_earnings?: number
+          has_negative_balance?: boolean
+          id?: string
+          net_payment?: number
+          other_income?: number
+          total_deductions?: number
+          total_income?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_period_calculations_company_payment_period_id_fkey"
+            columns: ["company_payment_period_id"]
+            isOneToOne: false
+            referencedRelation: "company_payment_periods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       driver_profiles: {
         Row: {
           cdl_class: string | null
@@ -2326,6 +2430,10 @@ export type Database = {
               to_date_param: string
             }
         Returns: Json
+      }
+      get_company_current_payment_period: {
+        Args: { company_id_param: string; target_date?: string }
+        Returns: string
       }
       get_current_payment_period: {
         Args: { driver_user_id_param: string; target_date?: string }
