@@ -29,6 +29,7 @@ export interface Load {
   broker_name?: string;
   broker_alias?: string;
   dispatcher_name?: string | null;
+  internal_dispatcher_name?: string | null;
   pickup_city?: string;
   delivery_city?: string;
   period_start_date?: string;
@@ -243,15 +244,16 @@ export const useLoads = (filters?: LoadsFilters) => {
         }
 
         // PASO 4: Enriquecer datos relacionados en paralelo
-        const [driverIds, brokerIds, contactIds, periodIds, loadIds] = [
+        const [driverIds, brokerIds, contactIds, dispatcherIds, periodIds, loadIds] = [
           [...new Set(loads.map(l => l.driver_user_id))],
           [...new Set(loads.map(l => l.client_id).filter(Boolean))],
           [...new Set(loads.map(l => l.client_contact_id).filter(Boolean))],
+          [...new Set(loads.map(l => l.internal_dispatcher_id).filter(Boolean))],
           [...new Set(loads.map(l => l.payment_period_id).filter(Boolean))],
           loads.map(l => l.id)
         ];
         
-        const [profilesResult, brokersResult, contactsResult, periodsResult, stopsResult] = await Promise.allSettled([
+        const [profilesResult, brokersResult, contactsResult, dispatchersResult, periodsResult, stopsResult] = await Promise.allSettled([
           driverIds.length > 0 
             ? supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', driverIds)
             : Promise.resolve({ data: [] }),
@@ -260,6 +262,9 @@ export const useLoads = (filters?: LoadsFilters) => {
             : Promise.resolve({ data: [] }),
           contactIds.length > 0 
             ? supabase.from('company_client_contacts').select('id, name, client_id').in('id', contactIds)
+            : Promise.resolve({ data: [] }),
+          dispatcherIds.length > 0 
+            ? supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', dispatcherIds)
             : Promise.resolve({ data: [] }),
           periodIds.length > 0 
             ? supabase.from('payment_periods').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds)
@@ -270,10 +275,11 @@ export const useLoads = (filters?: LoadsFilters) => {
         ]);
 
         // PASO 5: Procesar y enriquecer datos
-        const [profiles, brokers, contacts, periods, stops] = [
+        const [profiles, brokers, contacts, dispatchers, periods, stops] = [
           profilesResult.status === 'fulfilled' ? profilesResult.value.data || [] : [],
           brokersResult.status === 'fulfilled' ? brokersResult.value.data || [] : [],
           contactsResult.status === 'fulfilled' ? contactsResult.value.data || [] : [],
+          dispatchersResult.status === 'fulfilled' ? dispatchersResult.value.data || [] : [],
           periodsResult.status === 'fulfilled' ? periodsResult.value.data || [] : [],
           stopsResult.status === 'fulfilled' ? stopsResult.value.data || [] : []
         ];
@@ -282,6 +288,7 @@ export const useLoads = (filters?: LoadsFilters) => {
           const profile = profiles.find(p => p.user_id === load.driver_user_id);
           const broker = brokers.find(b => b.id === load.client_id);
           const contact = contacts.find(c => c.id === load.client_contact_id);
+          const dispatcher = dispatchers.find(d => d.user_id === load.internal_dispatcher_id);
           const period = periods.find(p => p.id === load.payment_period_id);
           
           const loadStops = stops.filter(s => s.load_id === load.id);
@@ -302,6 +309,7 @@ export const useLoads = (filters?: LoadsFilters) => {
             broker_name: brokerDisplayName,
             broker_alias: broker?.alias,
             dispatcher_name: contact?.name || null,
+            internal_dispatcher_name: dispatcher ? `${dispatcher.first_name} ${dispatcher.last_name}` : null,
             pickup_city: pickupStop?.city || 'Sin definir',
             delivery_city: deliveryStop?.city || 'Sin definir',
             period_start_date: period?.period_start_date,

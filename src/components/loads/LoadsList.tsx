@@ -264,6 +264,9 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     <span className="text-muted-foreground italic">Sin asignar</span>
                   )}
                 </p>
+                {load.internal_dispatcher_name && (
+                  <p className="text-xs text-muted-foreground">Dispatcher: {load.internal_dispatcher_name}</p>
+                )}
               </div>
               
               <div>
