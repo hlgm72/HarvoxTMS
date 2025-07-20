@@ -72,7 +72,7 @@ export function LoadDocumentsSection({
   const [uploading, setUploading] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Debug state changes
+  // Debug state changes - but don't close modal when loadData changes if it's open
   useEffect(() => {
     console.log('🔍 LoadDocumentsSection - loadData changed:', loadData);
     console.log('🔍 LoadDocumentsSection - showGenerateLoadOrder:', showGenerateLoadOrder);
@@ -575,14 +575,20 @@ export function LoadDocumentsSection({
       </CardContent>
 
       {/* Generate Load Order Dialog */}
-      {loadData && (
-        <GenerateLoadOrderDialog
-          isOpen={showGenerateLoadOrder}
-          onClose={() => setShowGenerateLoadOrder(false)}
-          loadData={loadData}
-          onLoadOrderGenerated={handleLoadOrderGenerated}
-        />
-      )}
+      <GenerateLoadOrderDialog
+        isOpen={showGenerateLoadOrder && !!loadData}
+        onClose={() => setShowGenerateLoadOrder(false)}
+        loadData={loadData || {
+          load_number: '',
+          total_amount: 0,
+          commodity: '',
+          weight_lbs: 0,
+          broker_name: '',
+          driver_name: '',
+          loadStops: []
+        }}
+        onLoadOrderGenerated={handleLoadOrderGenerated}
+      />
     </Card>
   );
 }
