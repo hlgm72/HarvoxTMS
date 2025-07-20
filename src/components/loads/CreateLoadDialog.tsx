@@ -628,7 +628,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
             {currentPhase === 4 && (
               <LoadDocumentsSection
                 loadId={mode === 'edit' ? activeLoadData?.id : null}
-                loadData={useMemo(() => ({
+                loadData={{
                   load_number: form.getValues("load_number") || '',
                   total_amount: form.getValues("total_amount") || 0,
                   commodity: form.getValues("commodity") || '',
@@ -636,15 +636,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                   broker_name: selectedBroker?.name,
                   driver_name: selectedDriver ? `${selectedDriver.first_name} ${selectedDriver.last_name}` : undefined,
                   loadStops: loadStops
-                }), [
-                  form.watch("load_number"),
-                  form.watch("total_amount"),
-                  form.watch("commodity"),
-                  form.watch("weight_lbs"),
-                  selectedBroker?.name,
-                  selectedDriver,
-                  loadStops
-                ])}
+                }}
                 onDocumentsChange={setLoadDocuments}
                 temporaryDocuments={loadDocuments}
                 onTemporaryDocumentsChange={setLoadDocuments}
