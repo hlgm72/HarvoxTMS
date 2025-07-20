@@ -10,8 +10,8 @@ export interface CreateLoadData {
   load_number: string;
   driver_user_id: string;
   internal_dispatcher_id?: string | null;
-  broker_id?: string;
-  broker_dispatcher_id?: string | null;
+  client_id?: string;
+  client_contact_id?: string | null;
   total_amount: number;
   commodity?: string;
   weight_lbs?: number;
@@ -43,8 +43,8 @@ export const useCreateLoad = () => {
         load_number: data.load_number,
         driver_user_id: data.driver_user_id,
         internal_dispatcher_id: data.internal_dispatcher_id,
-        broker_id: data.broker_id || null,
-        broker_dispatcher_id: data.broker_dispatcher_id || null,
+        client_id: data.client_id || null,
+        client_contact_id: data.client_contact_id || null,
         total_amount: data.total_amount,
         commodity: data.commodity || null,
         weight_lbs: data.weight_lbs || null,
