@@ -101,8 +101,23 @@ export function StopEditModal({
   );
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      // Solo cerrar si explícitamente se quiere cerrar, no por eventos de escape
+      if (!open) {
+        onClose();
+      }
+    }}>
+      <DialogContent 
+        className="max-w-2xl max-h-[90vh] overflow-y-auto"
+        onPointerDownOutside={(e) => {
+          // Prevenir que clicks fuera del modal cierren el dialog padre
+          e.preventDefault();
+        }}
+        onEscapeKeyDown={(e) => {
+          // Prevenir que escape cierre el dialog padre
+          e.stopPropagation();
+        }}
+      >
         <DialogHeader>
           <div className="flex items-center gap-3">
             <MapPin className="h-5 w-5 text-primary" />
