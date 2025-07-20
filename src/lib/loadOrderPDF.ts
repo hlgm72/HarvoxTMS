@@ -19,156 +19,319 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     
     // Configuración del documento
     const pageWidth = doc.internal.pageSize.width;
-    const margin = 20;
-    let yPosition = 30;
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 15;
+    let yPosition = 15;
 
-  // Header - Company Logo y Título
-  doc.setFontSize(24);
-  doc.setFont("helvetica", "bold");
-  doc.text("LOAD ORDER", pageWidth / 2, yPosition, { align: "center" });
-  
-  yPosition += 20;
-  
-  // Línea separadora
-  doc.setLineWidth(0.5);
-  doc.line(margin, yPosition, pageWidth - margin, yPosition);
-  yPosition += 15;
-
-  // Información básica del Load Order
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "normal");
-  
-  // Load Number y Fecha
-  doc.setFont("helvetica", "bold");
-  doc.text("Load Order #:", margin, yPosition);
-  doc.setFont("helvetica", "normal");
-  doc.text(data.load_number, margin + 40, yPosition);
-  
-  doc.setFont("helvetica", "bold");
-  doc.text("Fecha:", pageWidth - margin - 60, yPosition);
-  doc.setFont("helvetica", "normal");
-  doc.text(new Date().toLocaleDateString(), pageWidth - margin - 30, yPosition);
-  
-  yPosition += 20;
-
-  // Información del Conductor
-  if (data.driver_name) {
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "bold");
-    doc.text("INFORMACIÓN DEL CONDUCTOR", margin, yPosition);
-    yPosition += 15;
+    // ============ HEADER SECTION ============
     
+    // Top header con bordes
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.5);
+    doc.rect(margin, yPosition, pageWidth - 2 * margin, 25);
+    
+    // Page info (izquierda)
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("Page 1", margin + 5, yPosition + 8);
+    doc.text(new Date().toLocaleDateString('es-ES'), margin + 5, yPosition + 16);
+    
+    // Título central
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Work Order", pageWidth / 2, yPosition + 12, { align: "center" });
+    
+    // Load Number (derecha)
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("Load ID", pageWidth - margin - 35, yPosition + 8);
+    doc.setFont("helvetica", "bold");
+    doc.text(data.load_number, pageWidth - margin - 35, yPosition + 16);
+    
+    yPosition += 35;
+
+    // ============ COMPANY SECTION ============
+    
+    // Nombre de la empresa (centrado y prominente)
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.text("Jones Transport", pageWidth / 2, yPosition, { align: "center" });
+    yPosition += 10;
+    
+    // Información de contacto (centrado)
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("P: (800) 956-1151 • E: jlsupport@turvo.com", pageWidth / 2, yPosition, { align: "center" });
+    yPosition += 20;
+
+    // ============ ROUTE SECTION ============
+    
+    // Route header
     doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Conductor: ${data.driver_name}`, margin, yPosition);
-    yPosition += 10;
-  }
-
-  yPosition += 10;
-
-  // Detalles de la Carga
-  doc.setFontSize(14);
-  doc.setFont("helvetica", "bold");
-  doc.text("DETALLES DE LA CARGA", margin, yPosition);
-  yPosition += 15;
-
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "normal");
-  
-  // Monto
-  doc.setFont("helvetica", "bold");
-  doc.text("Monto Total:", margin, yPosition);
-  doc.setFont("helvetica", "normal");
-  doc.text(`$${data.customAmount.toFixed(2)}`, margin + 40, yPosition);
-  yPosition += 10;
-
-  // Commodity
-  doc.setFont("helvetica", "bold");
-  doc.text("Commodity:", margin, yPosition);
-  doc.setFont("helvetica", "normal");
-  doc.text(data.commodity, margin + 40, yPosition);
-  yPosition += 10;
-
-  // Peso
-  if (data.weight_lbs) {
     doc.setFont("helvetica", "bold");
-    doc.text("Peso:", margin, yPosition);
-    doc.setFont("helvetica", "normal");
-    doc.text(`${data.weight_lbs} lbs`, margin + 40, yPosition);
-    yPosition += 10;
-  }
-
-  yPosition += 15;
-
-  // Paradas (Pickup y Delivery)
-  if (data.loadStops && data.loadStops.length > 0) {
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "bold");
-    doc.text("PARADAS", margin, yPosition);
+    doc.text("Route", margin, yPosition);
     yPosition += 15;
 
-    data.loadStops.forEach((stop, index) => {
+    // Separar pickup y delivery
+    const pickupStops = data.loadStops?.filter(stop => stop.stop_type === 'pickup') || [];
+    const deliveryStops = data.loadStops?.filter(stop => stop.stop_type === 'delivery') || [];
+
+    // ============ PICKUP SECTION ============
+    if (pickupStops.length > 0) {
+      const pickup = pickupStops[0];
+      
+      // Pickup header con indicador visual
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
+      doc.text("Pickup", margin + 60, yPosition);
       
-      const stopTitle = stop.stop_type === 'pickup' ? 'PICKUP' : 'DELIVERY';
-      doc.text(`${index + 1}. ${stopTitle}`, margin, yPosition);
-      yPosition += 10;
-
+      // Círculo verde para pickup
+      doc.setFillColor(76, 175, 80); // Verde
+      doc.circle(margin + 50, yPosition - 2, 3, 'F');
+      
+      // Información de pickup en columna derecha
+      doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       
-      // Dirección
-      const address = `${stop.address}, ${stop.city}, ${stop.state} ${stop.zip_code || ''}`;
-      doc.text(`Dirección: ${address}`, margin + 10, yPosition);
-      yPosition += 8;
-
-      // Compañía
-      if (stop.company_name) {
-        doc.text(`Compañía: ${stop.company_name}`, margin + 10, yPosition);
-        yPosition += 8;
+      // Fecha y hora
+      if (pickup.scheduled_date) {
+        const date = new Date(pickup.scheduled_date);
+        doc.text(date.toLocaleDateString('es-ES'), margin + 60, yPosition + 10);
+        if (pickup.scheduled_time) {
+          doc.text(pickup.scheduled_time, margin + 60, yPosition + 18);
+        }
       }
-
-      // Fecha programada
-      if (stop.scheduled_date) {
-        doc.text(`Fecha: ${new Date(stop.scheduled_date).toLocaleDateString()}`, margin + 10, yPosition);
-        yPosition += 8;
+      
+      // Información de la empresa en la derecha
+      const rightColumnX = margin + 120;
+      doc.setFont("helvetica", "bold");
+      if (pickup.company_name) {
+        doc.text(pickup.company_name, rightColumnX, yPosition);
       }
-
-      // Contacto
-      if (stop.contact_name || stop.contact_phone) {
+      
+      doc.setFont("helvetica", "normal");
+      // Dirección completa
+      const address = `${pickup.address}, ${pickup.city}, ${pickup.state} ${pickup.zip_code || ''}`;
+      const addressLines = doc.splitTextToSize(address, pageWidth - rightColumnX - margin);
+      doc.text(addressLines, rightColumnX, yPosition + 8);
+      
+      // Información adicional
+      if (pickup.contact_name || pickup.contact_phone) {
         const contact = [];
-        if (stop.contact_name) contact.push(stop.contact_name);
-        if (stop.contact_phone) contact.push(stop.contact_phone);
-        doc.text(`Contacto: ${contact.join(' - ')}`, margin + 10, yPosition);
-        yPosition += 8;
+        if (pickup.contact_name) contact.push(pickup.contact_name);
+        if (pickup.contact_phone) contact.push(pickup.contact_phone);
+        doc.text(contact.join(' - '), rightColumnX, yPosition + 24);
       }
-
+      
       // Instrucciones especiales
-      if (stop.special_instructions) {
-        doc.text(`Instrucciones: ${stop.special_instructions}`, margin + 10, yPosition);
-        yPosition += 8;
+      if (pickup.special_instructions) {
+        doc.setFont("helvetica", "bold");
+        doc.text(`*${pickup.special_instructions}*`, rightColumnX, yPosition + 32);
       }
+      
+      yPosition += 50;
+    }
 
-      yPosition += 10;
-
-      // Verificar si necesitamos una nueva página
-      if (yPosition > doc.internal.pageSize.height - 40) {
-        doc.addPage();
-        yPosition = 30;
+    // ============ DELIVERY SECTION ============
+    if (deliveryStops.length > 0) {
+      const delivery = deliveryStops[0];
+      
+      // Delivery header con indicador visual
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.text("Delivery", margin + 60, yPosition);
+      
+      // Círculo rojo para delivery
+      doc.setFillColor(244, 67, 54); // Rojo
+      doc.circle(margin + 50, yPosition - 2, 3, 'F');
+      
+      // Información de delivery en columna derecha
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      
+      // Fecha y hora
+      if (delivery.scheduled_date) {
+        const date = new Date(delivery.scheduled_date);
+        doc.text(date.toLocaleDateString('es-ES'), margin + 60, yPosition + 10);
+        if (delivery.scheduled_time) {
+          doc.text(delivery.scheduled_time, margin + 60, yPosition + 18);
+        }
       }
-    });
-  }
+      
+      // Información de la empresa en la derecha
+      const rightColumnX = margin + 120;
+      doc.setFont("helvetica", "bold");
+      if (delivery.company_name) {
+        doc.text(delivery.company_name, rightColumnX, yPosition);
+      }
+      
+      doc.setFont("helvetica", "normal");
+      // Dirección completa
+      const address = `${delivery.address}, ${delivery.city}, ${delivery.state} ${delivery.zip_code || ''}`;
+      const addressLines = doc.splitTextToSize(address, pageWidth - rightColumnX - margin);
+      doc.text(addressLines, rightColumnX, yPosition + 8);
+      
+      // Información adicional
+      if (delivery.contact_name || delivery.contact_phone) {
+        const contact = [];
+        if (delivery.contact_name) contact.push(delivery.contact_name);
+        if (delivery.contact_phone) contact.push(delivery.contact_phone);
+        doc.text(contact.join(' - '), rightColumnX, yPosition + 24);
+      }
+      
+      // Instrucciones especiales
+      if (delivery.special_instructions) {
+        doc.setFont("helvetica", "bold");
+        doc.text(`*${delivery.special_instructions}*`, rightColumnX, yPosition + 32);
+      }
+      
+      yPosition += 50;
+    }
 
-  // Footer
-  yPosition = doc.internal.pageSize.height - 30;
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "italic");
-  doc.text(
-    `Generado el ${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}`,
-    pageWidth / 2,
-    yPosition,
-    { align: "center" }
-  );
+    // ============ ACTION BUTTONS SECTION ============
+    
+    // Simular botones de acción
+    doc.setFillColor(240, 240, 240); // Gris claro
+    doc.rect(margin, yPosition, 40, 8, 'F');
+    doc.rect(margin + 45, yPosition, 35, 8, 'F');
+    doc.rect(margin + 85, yPosition, 25, 8, 'F');
+    
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.text("Notify before arrival", margin + 2, yPosition + 5);
+    doc.text("GPS tracking", margin + 47, yPosition + 5);
+    doc.text("Straps", margin + 87, yPosition + 5);
+    
+    yPosition += 20;
+
+    // ============ EQUIPMENT SECTION ============
+    
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.text("Equipment", margin, yPosition);
+    yPosition += 12;
+    
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Flatbed or Step Deck", margin + 40, yPosition);
+    yPosition += 10;
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    if (data.weight_lbs) {
+      doc.text(`48 ft• ${data.weight_lbs.toLocaleString()}.00lbs`, margin + 40, yPosition);
+    }
+    yPosition += 20;
+
+    // ============ ITEMS SECTION ============
+    
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.text("Items", margin, yPosition);
+    yPosition += 12;
+    
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    // Extraer commodity principal
+    const commodityText = data.commodity || "Load Items";
+    doc.text(commodityText, margin + 40, yPosition);
+    yPosition += 10;
+    
+    // Descripción de ruta
+    if (pickupStops.length > 0 && deliveryStops.length > 0) {
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      const routeDescription = `${pickupStops[0].city}, ${pickupStops[0].state} > ${deliveryStops[0].city}, ${deliveryStops[0].state}`;
+      doc.text(routeDescription, margin + 40, yPosition);
+      yPosition += 8;
+    }
+    
+    // Información de peso y dimensiones
+    if (data.weight_lbs) {
+      doc.text(`${data.weight_lbs.toLocaleString()}lb• 48.0ft• 8.0ft• 6.0ft•`, margin + 40, yPosition);
+      yPosition += 8;
+      doc.text("1 Truckload", margin + 40, yPosition);
+      yPosition += 20;
+    }
+
+    // ============ DETAILS SECTION ============
+    
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.text("Details", margin, yPosition);
+    yPosition += 12;
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text("Customers", margin + 40, yPosition);
+    yPosition += 10;
+    
+    doc.setFont("helvetica", "normal");
+    if (data.broker_name) {
+      doc.text(`Broker: ${data.broker_name}`, margin + 40, yPosition);
+      yPosition += 8;
+    }
+    
+    // Amount
+    doc.text(`Amount: $${data.customAmount.toFixed(2)}`, margin + 40, yPosition);
+    yPosition += 20;
+
+    // ============ TERMS SECTION ============
+    
+    // Verificar si hay espacio suficiente para los términos
+    if (yPosition > pageHeight - 60) {
+      doc.addPage();
+      yPosition = 30;
+    }
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text("Terms and 3rd Party Bill to: Jones Transport", margin, yPosition);
+    yPosition += 12;
+    
+    doc.setFont("helvetica", "normal");
+    const termsText = "Accessorial charges will not be approved or paid without prior approval from Jones Transport";
+    const termsLines = doc.splitTextToSize(termsText, pageWidth - 2 * margin);
+    doc.text(termsLines, margin, yPosition);
+    yPosition += 20;
+
+    // ============ DRIVER INFO SECTION ============
+    
+    if (data.driver_name) {
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+      doc.text("Driver Information", margin, yPosition);
+      yPosition += 12;
+      
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Driver: ${data.driver_name}`, margin, yPosition);
+      yPosition += 20;
+    }
+
+    // ============ FOOTER ============
+    
+    // Línea separadora antes del footer
+    doc.setLineWidth(0.3);
+    doc.line(margin, pageHeight - 40, pageWidth - margin, pageHeight - 40);
+    
+    // Footer
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "italic");
+    doc.text(
+      `Generated on ${new Date().toLocaleDateString('en-US')} at ${new Date().toLocaleTimeString('en-US')}`,
+      pageWidth / 2,
+      pageHeight - 25,
+      { align: "center" }
+    );
+    
+    // Información adicional del footer
+    doc.text(
+      "This document is electronically generated and requires no signature",
+      pageWidth / 2,
+      pageHeight - 15,
+      { align: "center" }
+    );
 
   // Convertir a blob y crear URL
   console.log('🔗 generateLoadOrderPDF - Creating blob and URL...');
