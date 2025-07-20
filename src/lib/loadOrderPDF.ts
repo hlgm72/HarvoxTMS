@@ -9,6 +9,9 @@ interface LoadOrderData {
   broker_name?: string;
   driver_name?: string;
   loadStops: any[];
+  company_name?: string;
+  company_phone?: string;
+  company_email?: string;
 }
 
 export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string> {
@@ -39,7 +42,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     // Título central
     doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
-    doc.text("Work Order", pageWidth / 2, yPosition + 12, { align: "center" });
+    doc.text("Load Order", pageWidth / 2, yPosition + 12, { align: "center" });
     
     // Load Number (derecha)
     doc.setFontSize(10);
@@ -55,13 +58,18 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     // Nombre de la empresa (centrado y prominente)
     doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
-    doc.text("Jones Transport", pageWidth / 2, yPosition, { align: "center" });
+    const companyName = data.company_name || "Company Name";
+    doc.text(companyName, pageWidth / 2, yPosition, { align: "center" });
     yPosition += 10;
     
     // Información de contacto (centrado)
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text("P: (800) 956-1151 • E: jlsupport@turvo.com", pageWidth / 2, yPosition, { align: "center" });
+    const contactInfo = [];
+    if (data.company_phone) contactInfo.push(`P: ${data.company_phone}`);
+    if (data.company_email) contactInfo.push(`E: ${data.company_email}`);
+    const contactText = contactInfo.length > 0 ? contactInfo.join(' • ') : "Contact Information";
+    doc.text(contactText, pageWidth / 2, yPosition, { align: "center" });
     yPosition += 20;
 
     // ============ ROUTE SECTION ============
