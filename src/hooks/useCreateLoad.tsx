@@ -21,7 +21,112 @@ export interface CreateLoadData {
   dispatching_percentage?: number;
   leasing_percentage?: number;
   stops?: any[];
+  temporaryDocuments?: any[]; // Add temporary documents support
 }
+
+// Function to upload temporary documents to storage with custom names
+const uploadTemporaryDocuments = async (
+  documents: any[], 
+  loadId: string, 
+  loadNumber: string
+): Promise<void> => {
+  console.log('📄 uploadTemporaryDocuments - Starting upload process');
+  
+  for (const doc of documents) {
+    try {
+      console.log('📄 Processing document:', doc);
+      
+      // Generate custom filename based on document type and load number
+      let customFileName: string;
+      switch (doc.type) {
+        case 'load_order':
+          customFileName = `${loadNumber}_Load_Order.pdf`;
+          break;
+        case 'rate_confirmation':
+          customFileName = `${loadNumber}_Rate_Confirmation.${getFileExtension(doc.fileName)}`;
+          break;
+        case 'driver_instructions':
+          customFileName = `${loadNumber}_Driver_Instructions.${getFileExtension(doc.fileName)}`;
+          break;
+        case 'bol':
+          customFileName = `${loadNumber}_BOL.${getFileExtension(doc.fileName)}`;
+          break;
+        default:
+          customFileName = `${loadNumber}_${doc.fileName}`;
+      }
+
+      // Convert blob URL to file
+      let file: File;
+      if (doc.file) {
+        // If we have the original File object
+        file = new File([doc.file], customFileName, { type: doc.file.type });
+      } else if (doc.url) {
+        // If we have a blob URL, fetch it
+        const response = await fetch(doc.url);
+        const blob = await response.blob();
+        const mimeType = blob.type || 'application/octet-stream';
+        file = new File([blob], customFileName, { type: mimeType });
+      } else {
+        console.warn('⚠️ Document has no file or URL, skipping:', doc);
+        continue;
+      }
+
+      // Create storage path
+      const filePath = `${loadId}/${customFileName}`;
+      
+      console.log('⬆️ Uploading to storage:', filePath);
+      
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('load-documents')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error('❌ Upload error:', uploadError);
+        throw uploadError;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('load-documents')
+        .getPublicUrl(filePath);
+
+      console.log('🔗 Generated public URL:', urlData.publicUrl);
+
+      // Save document record in database
+      const { error: dbError } = await supabase
+        .from('load_documents')
+        .insert({
+          load_id: loadId,
+          document_type: doc.type,
+          file_name: customFileName, // Use custom filename
+          file_url: urlData.publicUrl,
+          file_size: file.size,
+          content_type: file.type,
+          uploaded_by: (await supabase.auth.getUser()).data.user?.id
+        });
+
+      if (dbError) {
+        console.error('❌ Database save error:', dbError);
+        throw dbError;
+      }
+
+      console.log('✅ Document successfully saved:', customFileName);
+      
+    } catch (error) {
+      console.error('❌ Error processing document:', doc, error);
+      // Continue with other documents even if one fails
+    }
+  }
+  
+  console.log('✅ uploadTemporaryDocuments - All documents processed');
+};
+
+// Helper function to get file extension
+const getFileExtension = (fileName: string): string => {
+  const parts = fileName.split('.');
+  return parts.length > 1 ? parts[parts.length - 1] : 'pdf';
+};
 
 export const useCreateLoad = () => {
   const { user } = useAuth();
@@ -187,6 +292,12 @@ export const useCreateLoad = () => {
           }
 
           console.log('✅ useCreateLoad - Stops created successfully');
+        }
+
+        // Handle temporary documents for new loads
+        if (data.temporaryDocuments && data.temporaryDocuments.length > 0) {
+          console.log('📄 useCreateLoad - Processing temporary documents:', data.temporaryDocuments);
+          await uploadTemporaryDocuments(data.temporaryDocuments, currentLoad.id, data.load_number);
         }
       }
 
