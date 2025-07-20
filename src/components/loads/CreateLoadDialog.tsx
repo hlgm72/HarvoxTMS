@@ -415,19 +415,24 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
           {phases.map((phase, index) => (
             <div key={phase.id} className="flex items-center">
               <div className="flex flex-col items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors ${
-                  currentPhase === phase.id 
-                    ? "border-primary bg-primary text-primary-foreground" 
-                    : phase.completed
-                    ? "border-green-500 bg-green-500 text-white"
-                    : "border-muted bg-background text-muted-foreground"
-                }`}>
+                <button
+                  type="button"
+                  onClick={() => setCurrentPhase(phase.id)}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-200 hover:scale-105 ${
+                    currentPhase === phase.id 
+                      ? "border-primary bg-primary text-primary-foreground" 
+                      : phase.completed
+                      ? "border-green-500 bg-green-500 text-white hover:border-green-600 hover:bg-green-600"
+                      : "border-muted bg-background text-muted-foreground hover:border-primary hover:text-primary"
+                  }`}
+                  title={`Ir al ${phase.title}`}
+                >
                   {phase.completed ? (
                     <CheckCircle className="h-4 w-4" />
                   ) : (
                     <span className="text-xs font-medium">{phase.id}</span>
                   )}
-                </div>
+                </button>
                 <div className="text-center mt-2">
                   <p className="text-xs font-medium">{phase.title}</p>
                   <p className="text-xs text-muted-foreground">{phase.description}</p>
