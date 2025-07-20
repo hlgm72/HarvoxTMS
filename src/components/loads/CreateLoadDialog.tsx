@@ -172,11 +172,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const onSubmit = (values: any) => {
     console.log('🚨 onSubmit called with values:', values);
     
-    if (currentPhase !== 4) {
-      console.log('🚨 onSubmit blocked - not in final phase');
+    // En modo edición, permitir guardar en cualquier fase
+    // En modo creación, solo permitir en la fase final
+    if (mode === 'create' && currentPhase !== 4) {
+      console.log('🚨 onSubmit blocked - not in final phase for create mode');
       return;
     }
 
+    // Solo validar número duplicado en modo creación
     if (mode === 'create' && loadNumberValidation.isDuplicate) {
       console.log('🚨 onSubmit blocked - duplicate load number');
       toast({
@@ -187,7 +190,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       return;
     }
 
-    if (!selectedDriver) {
+    // Solo validar conductor en modo creación o si estamos en la fase de asignación
+    if (mode === 'create' && !selectedDriver) {
       console.log('🚨 onSubmit blocked - no driver selected');
       toast({
         title: "Error",
@@ -198,16 +202,15 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
 
     const loadDataToSubmit = {
-      id: mode === 'edit' ? activeLoadData?.id : undefined,
-      mode: mode,
+      mode,
+      id: activeLoadData?.id,
       load_number: values.load_number,
-      driver_user_id: selectedDriver.user_id,
+      client_id: values.broker_id,
+      client_contact_id: values.dispatcher_id || null,
+      driver_user_id: selectedDriver?.user_id || activeLoadData?.driver_user_id,
       internal_dispatcher_id: selectedDispatcher?.user_id || null,
-      broker_id: values.broker_id,
-      broker_dispatcher_id: values.dispatcher_id || null,
-      customer_name: values.customer_name || '',
-      total_amount: values.total_amount,
-      commodity: values.commodity,
+      total_amount: parseFloat(values.total_amount) || 0,
+      commodity: values.commodity || null,
       weight_lbs: values.weight_lbs,
       notes: values.notes || '',
       stops: loadStops,
@@ -217,7 +220,12 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     };
 
     console.log('📋 CreateLoadDialog - Submitting load data:', loadDataToSubmit);
-    createLoadMutation.mutate(loadDataToSubmit);
+    createLoadMutation.mutate(loadDataToSubmit, {
+      onSuccess: () => {
+        console.log('✅ CreateLoadDialog - Load mutation successful, closing dialog');
+        onClose(); // Cerrar el diálogo después del éxito
+      }
+    });
   };
 
   return (
