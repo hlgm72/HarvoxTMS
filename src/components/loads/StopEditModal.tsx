@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { format } from 'date-fns';
 import { CalendarIcon, MapPin, Clock, User, Phone, Building, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -57,6 +58,7 @@ export function StopEditModal({
   };
 
   const handleSave = () => {
+    console.log('💾 StopEditModal - handleSave called with formData:', formData);
     onSave(formData);
     onClose();
   };
@@ -100,9 +102,9 @@ export function StopEditModal({
     'text'
   );
 
-  return (
+  const modalContent = (
     <Dialog open={isOpen} onOpenChange={(open) => {
-      // Solo cerrar si explícitamente se quiere cerrar, no por eventos de escape
+      console.log('🚪 StopEditModal - onOpenChange called with:', open);
       if (!open) {
         onClose();
       }
@@ -110,11 +112,11 @@ export function StopEditModal({
       <DialogContent 
         className="max-w-2xl max-h-[90vh] overflow-y-auto"
         onPointerDownOutside={(e) => {
-          // Prevenir que clicks fuera del modal cierren el dialog padre
+          console.log('👆 StopEditModal - onPointerDownOutside prevented');
           e.preventDefault();
         }}
         onEscapeKeyDown={(e) => {
-          // Prevenir que escape cierre el dialog padre
+          console.log('⌨️ StopEditModal - onEscapeKeyDown prevented');
           e.stopPropagation();
         }}
       >
@@ -370,4 +372,7 @@ export function StopEditModal({
       </DialogContent>
     </Dialog>
   );
+
+  // Render using portal to avoid modal nesting issues
+  return typeof window !== 'undefined' ? createPortal(modalContent, document.body) : null;
 }

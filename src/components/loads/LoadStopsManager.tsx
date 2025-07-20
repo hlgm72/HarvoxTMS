@@ -80,17 +80,22 @@ export function LoadStopsManager({ onStopsChange, showValidation = false }: Load
   };
 
   const handleEditStop = (stop: LoadStop) => {
+    console.log('🔧 LoadStopsManager - handleEditStop called for stop:', stop.id);
     setEditingStop(stop);
     setIsModalOpen(true);
   };
 
   const handleSaveStop = (updates: Partial<LoadStop>) => {
+    console.log('💾 LoadStopsManager - handleSaveStop called with updates:', updates);
     if (editingStop) {
       updateStop(editingStop.id, updates);
     }
+    setEditingStop(null);
+    setIsModalOpen(false);
   };
 
   const handleCloseModal = () => {
+    console.log('❌ LoadStopsManager - handleCloseModal called');
     setEditingStop(null);
     setIsModalOpen(false);
   };
