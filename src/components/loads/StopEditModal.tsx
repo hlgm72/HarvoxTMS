@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { createPortal } from 'react-dom';
 import { format } from 'date-fns';
 import { CalendarIcon, MapPin, Clock, User, Phone, Building, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -102,41 +101,35 @@ export function StopEditModal({
     'text'
   );
 
-  const modalContent = (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      console.log('🚪 StopEditModal - onOpenChange called with:', open);
-      if (!open) {
-        onClose();
-      }
-    }}>
-      <DialogContent 
-        className="max-w-2xl max-h-[90vh] overflow-y-auto"
-        onPointerDownOutside={(e) => {
-          console.log('👆 StopEditModal - onPointerDownOutside prevented');
-          e.preventDefault();
-        }}
-        onEscapeKeyDown={(e) => {
-          console.log('⌨️ StopEditModal - onEscapeKeyDown prevented');
-          e.stopPropagation();
-        }}
-      >
-        <DialogHeader>
+  
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/50" />
+      
+      {/* Modal Content */}
+      <div className="relative z-[101] bg-background rounded-lg border shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="flex flex-col space-y-1.5 text-center sm:text-left p-6 pb-0">
           <div className="flex items-center gap-3">
             <MapPin className="h-5 w-5 text-primary" />
             <div>
-              <DialogTitle>Parada #{stop.stop_number}</DialogTitle>
-              <DialogDescription>
+              <h2 className="text-lg font-semibold leading-none tracking-tight">
+                Parada #{stop.stop_number}
+              </h2>
+              <p className="text-sm text-muted-foreground">
                 Complete la información de la parada
-              </DialogDescription>
+              </p>
             </div>
             <Badge className={cn("text-xs ml-auto", getStopTypeColor())}>
               {getStopTypeLabel()}
             </Badge>
           </div>
-        </DialogHeader>
+        </div>
 
-        <div className="space-y-6">
-          {/* Programación - MOVIDO AL PRINCIPIO */}
+        <div className="p-6 space-y-6">
+          {/* Programación */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium flex items-center gap-2">
               <Clock className="h-4 w-4" />
@@ -361,7 +354,7 @@ export function StopEditModal({
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end gap-3 pt-6 border-t">
+        <div className="flex justify-end gap-3 p-6 pt-0 border-t">
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
@@ -369,10 +362,7 @@ export function StopEditModal({
             Guardar Cambios
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
-
-  // Render using portal to avoid modal nesting issues
-  return typeof window !== 'undefined' ? createPortal(modalContent, document.body) : null;
 }
