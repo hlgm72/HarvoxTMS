@@ -546,19 +546,20 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                         <FormItem>
                           <FormLabel>Cliente / Broker *</FormLabel>
                           <FormControl>
-                             <ClientCombobox
-                               clients={brokers}
-                               value={field.value}
-                               onValueChange={(value) => {
-                                 field.onChange(value);
-                                 const broker = brokers.find(b => b.id === value);
-                                 setSelectedBroker(broker || null);
-                                 form.setValue("dispatcher_id", "");
-                               }}
-                               onClientSelect={setSelectedBroker}
-                               placeholder="Buscar cliente por nombre, DOT, MC..."
-                               className="w-full"
-                             />
+                              <ClientCombobox
+                                clients={brokers}
+                                value={field.value}
+                                onValueChange={(value) => {
+                                  field.onChange(value);
+                                  const broker = brokers.find(b => b.id === value);
+                                  setSelectedBroker(broker || null);
+                                  form.setValue("dispatcher_id", "");
+                                }}
+                                onClientSelect={setSelectedBroker}
+                                placeholder="Buscar cliente por nombre, DOT, MC..."
+                                className="w-full"
+                                onCreateNew={() => setShowCreateBroker(true)}
+                              />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -573,14 +574,15 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                         <FormItem>
                           <FormLabel>Contacto del Cliente</FormLabel>
                           <FormControl>
-                             <ContactCombobox
-                               contacts={selectedBroker?.dispatchers || []}
-                               value={field.value}
-                               onValueChange={field.onChange}
-                               placeholder="Buscar contacto..."
-                               disabled={!selectedBroker}
-                               className="w-full"
-                             />
+                              <ContactCombobox
+                                contacts={selectedBroker?.dispatchers || []}
+                                value={field.value}
+                                onValueChange={field.onChange}
+                                placeholder="Buscar contacto..."
+                                disabled={!selectedBroker}
+                                className="w-full"
+                                onCreateNew={selectedBroker ? () => setShowCreateDispatcher(true) : undefined}
+                              />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -753,9 +755,12 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
           isOpen={showCreateBroker}
           onClose={() => setShowCreateBroker(false)}
           onSuccess={(brokerId) => {
-            form.setValue("broker_id", brokerId);
-            const newBroker = brokers.find(b => b.id === brokerId);
-            setSelectedBroker(newBroker || null);
+            // Refresh brokers list and select the new broker
+            refetchBrokers().then(() => {
+              form.setValue("broker_id", brokerId);
+              const newBroker = brokers.find(b => b.id === brokerId);
+              setSelectedBroker(newBroker || null);
+            });
           }}
         />
 

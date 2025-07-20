@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Check, ChevronsUpDown, Users } from "lucide-react";
+import { Check, ChevronsUpDown, Users, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ClientContact } from "@/hooks/useCompanyClients";
 
@@ -13,6 +13,7 @@ interface ContactComboboxProps {
   placeholder?: string;
   disabled?: boolean;
   className?: string;
+  onCreateNew?: () => void;
 }
 
 export const ContactCombobox: React.FC<ContactComboboxProps> = ({
@@ -21,7 +22,8 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
   onValueChange,
   placeholder = "Seleccionar contacto...",
   disabled = false,
-  className
+  className,
+  onCreateNew
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -72,6 +74,20 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
           <CommandInput placeholder="Buscar contacto..." />
           <CommandList>
             <CommandEmpty>No se encontraron contactos.</CommandEmpty>
+            {onCreateNew && (
+              <CommandGroup>
+                <CommandItem
+                  onSelect={() => {
+                    setOpen(false);
+                    onCreateNew();
+                  }}
+                  className="cursor-pointer border-b"
+                >
+                  <Plus className="mr-2 h-4 w-4 text-primary" />
+                  <span className="text-primary font-medium">Crear nuevo contacto</span>
+                </CommandItem>
+              </CommandGroup>
+            )}
             <CommandGroup>
               {contacts.map((contact) => (
                 <CommandItem

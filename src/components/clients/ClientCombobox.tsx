@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Check, ChevronsUpDown, Building2 } from "lucide-react";
+import { Check, ChevronsUpDown, Building2, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CompanyClient, ClientContact } from '@/hooks/useCompanyClients';
 
@@ -15,6 +15,7 @@ interface ClientComboboxProps {
   disabled?: boolean;
   className?: string;
   side?: "top" | "bottom" | "left" | "right";
+  onCreateNew?: () => void;
 }
 
 export const ClientCombobox: React.FC<ClientComboboxProps> = ({
@@ -25,7 +26,8 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
   placeholder = "Seleccionar cliente...",
   disabled = false,
   className,
-  side = "bottom"
+  side = "bottom",
+  onCreateNew
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -74,6 +76,20 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
           <CommandInput placeholder="Buscar cliente..." />
           <CommandList>
             <CommandEmpty>No se encontraron clientes.</CommandEmpty>
+            {onCreateNew && (
+              <CommandGroup>
+                <CommandItem
+                  onSelect={() => {
+                    setOpen(false);
+                    onCreateNew();
+                  }}
+                  className="cursor-pointer border-b"
+                >
+                  <Plus className="mr-2 h-4 w-4 text-primary" />
+                  <span className="text-primary font-medium">Crear nuevo cliente</span>
+                </CommandItem>
+              </CommandGroup>
+            )}
             <CommandGroup>
               {clients.map((client) => (
                 <CommandItem
