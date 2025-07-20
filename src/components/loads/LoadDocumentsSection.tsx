@@ -182,7 +182,7 @@ export function LoadDocumentsSection({
       const documentNameMap: Record<string, string> = {
         'rate_confirmation': 'Rate_Confirmation',
         'driver_instructions': 'Driver_Instructions', 
-        'bill_of_lading': 'Bill_of_Lading',
+        'bol': 'Bill_of_Lading',
         'load_order': 'Load_Order'
       };
       
