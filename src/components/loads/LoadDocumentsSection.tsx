@@ -510,7 +510,10 @@ export function LoadDocumentsSection({
             </div>
             
             <Button 
-              onClick={() => setShowGenerateLoadOrder(true)}
+              onClick={() => {
+                console.log('🔍 LoadDocumentsSection - Button clicked, setting showGenerateLoadOrder to true');
+                setShowGenerateLoadOrder(true);
+              }}
               variant={hasLoadOrder ? "secondary" : "default"}
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -577,7 +580,10 @@ export function LoadDocumentsSection({
       {/* Generate Load Order Dialog */}
       <GenerateLoadOrderDialog
         isOpen={showGenerateLoadOrder && !!loadData}
-        onClose={() => setShowGenerateLoadOrder(false)}
+        onClose={() => {
+          console.log('🔍 LoadDocumentsSection - onClose called, setting showGenerateLoadOrder to false');
+          setShowGenerateLoadOrder(false);
+        }}
         loadData={loadData || {
           load_number: '',
           total_amount: 0,

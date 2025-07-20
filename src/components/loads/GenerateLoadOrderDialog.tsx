@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -38,6 +38,13 @@ export function GenerateLoadOrderDialog({
   onLoadOrderGenerated 
 }: GenerateLoadOrderDialogProps) {
   const [isGenerating, setIsGenerating] = useState(false);
+  
+  console.log('🔍 GenerateLoadOrderDialog - Rendering with props:', { isOpen, loadData });
+  
+  // Watch for changes in isOpen
+  useEffect(() => {
+    console.log('🔍 GenerateLoadOrderDialog - isOpen changed to:', isOpen);
+  }, [isOpen]);
   
   const form = useForm<z.infer<typeof loadOrderSchema>>({
     resolver: zodResolver(loadOrderSchema),
