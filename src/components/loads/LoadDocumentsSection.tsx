@@ -636,7 +636,14 @@ export function LoadDocumentsSection({
                             <Button 
                               variant="ghost" 
                               size="sm"
-                              onClick={() => uploadedDoc.url && window.open(uploadedDoc.url, '_blank')}
+                              onClick={() => {
+                                console.log('👁️ Ver documento clicked:', { url: uploadedDoc.url, fileName: uploadedDoc.fileName });
+                                if (uploadedDoc.url) {
+                                  window.open(uploadedDoc.url, '_blank');
+                                } else {
+                                  console.error('❌ No URL found for document:', uploadedDoc);
+                                }
+                              }}
                               title="Ver documento"
                             >
                               <Eye className="h-4 w-4" />
@@ -645,11 +652,24 @@ export function LoadDocumentsSection({
                               variant="ghost" 
                               size="sm"
                               onClick={() => {
+                                console.log('⬇️ Descargar documento clicked:', { url: uploadedDoc.url, fileName: uploadedDoc.fileName });
                                 if (uploadedDoc.url) {
-                                  const link = document.createElement('a');
-                                  link.href = uploadedDoc.url;
-                                  link.download = uploadedDoc.fileName;
-                                  link.click();
+                                  try {
+                                    const link = document.createElement('a');
+                                    link.href = uploadedDoc.url;
+                                    link.download = uploadedDoc.fileName;
+                                    link.target = '_blank'; // Add target for cross-origin downloads
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                    console.log('✅ Download link clicked successfully');
+                                  } catch (error) {
+                                    console.error('❌ Error creating download link:', error);
+                                    // Fallback: open in new tab
+                                    window.open(uploadedDoc.url, '_blank');
+                                  }
+                                } else {
+                                  console.error('❌ No URL found for download:', uploadedDoc);
                                 }
                               }}
                               title="Descargar documento"
