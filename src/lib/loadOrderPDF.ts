@@ -149,20 +149,10 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     if (pickupStops.length > 0) {
       const pickup = pickupStops[0];
       
-      // Pickup header con fecha en la misma línea
+      // Pickup header con indicador visual
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
-      let pickupText = "Pickup";
-      if (pickup.scheduled_date) {
-        const date = new Date(pickup.scheduled_date);
-        const formattedDate = date.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          year: 'numeric' 
-        });
-        pickupText += ` - ${formattedDate}`;
-      }
-      doc.text(pickupText, margin + 60, yPosition + 8);
+      doc.text("Pickup", margin + 60, yPosition + 8);
       
       // Guardar posición Y del drop pin verde y agregarlo
       pickupPinY = yPosition + 6;
@@ -172,9 +162,18 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       
-      // Solo mostrar hora si existe
-      if (pickup.scheduled_time) {
-        doc.text(pickup.scheduled_time, margin + 60, yPosition + 16);
+      // Fecha debajo del título Pickup
+      if (pickup.scheduled_date) {
+        const date = new Date(pickup.scheduled_date);
+        const formattedDate = date.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+        doc.text(formattedDate, margin + 60, yPosition + 16);
+        if (pickup.scheduled_time) {
+          doc.text(pickup.scheduled_time, margin + 60, yPosition + 22);
+        }
       }
       
       // Información de la empresa en la derecha
@@ -223,20 +222,10 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     if (deliveryStops.length > 0) {
       const delivery = deliveryStops[0];
       
-      // Delivery header con fecha en la misma línea
+      // Delivery header con indicador visual
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
-      let deliveryText = "Delivery";
-      if (delivery.scheduled_date) {
-        const date = new Date(delivery.scheduled_date);
-        const formattedDate = date.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          year: 'numeric' 
-        });
-        deliveryText += ` - ${formattedDate}`;
-      }
-      doc.text(deliveryText, margin + 60, yPosition + 8);
+      doc.text("Delivery", margin + 60, yPosition + 8);
       
       // Guardar posición Y del drop pin rojo y agregarlo
       deliveryPinY = yPosition + 6;
@@ -246,9 +235,18 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       
-      // Solo mostrar hora si existe
-      if (delivery.scheduled_time) {
-        doc.text(delivery.scheduled_time, margin + 60, yPosition + 16);
+      // Fecha debajo del título Delivery
+      if (delivery.scheduled_date) {
+        const date = new Date(delivery.scheduled_date);
+        const formattedDate = date.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+        doc.text(formattedDate, margin + 60, yPosition + 16);
+        if (delivery.scheduled_time) {
+          doc.text(delivery.scheduled_time, margin + 60, yPosition + 22);
+        }
       }
       
       // Información de la empresa en la derecha
