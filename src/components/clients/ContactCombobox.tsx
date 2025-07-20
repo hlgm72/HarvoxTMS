@@ -40,9 +40,9 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
         disabled
         className={cn("justify-between", className)}
       >
-        <div className="flex items-center gap-2">
-          <Users className="h-4 w-4" />
-          Sin contactos disponibles
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <Users className="h-4 w-4 flex-shrink-0" />
+          <span className="truncate">Sin contactos disponibles</span>
         </div>
       </Button>
     );
@@ -58,14 +58,16 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
           className={cn("justify-between", className)}
           disabled={disabled}
         >
-          <div className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            {selectedContact ? selectedContact.name : placeholder}
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <Users className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">
+              {selectedContact ? selectedContact.name : placeholder}
+            </span>
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className="w-full min-w-[280px] p-0">
         <Command>
           <CommandInput placeholder="Buscar contacto..." />
           <CommandList>

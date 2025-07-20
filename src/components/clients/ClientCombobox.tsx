@@ -60,14 +60,16 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
           className={cn("justify-between", className)}
           disabled={disabled}
         >
-          <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4" />
-            {selectedClient ? formatClientDisplay(selectedClient) : placeholder}
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <Building2 className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">
+              {selectedClient ? formatClientDisplay(selectedClient) : placeholder}
+            </span>
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" side={side}>
+      <PopoverContent className="w-full min-w-[300px] p-0" side={side}>
         <Command>
           <CommandInput placeholder="Buscar cliente..." />
           <CommandList>
