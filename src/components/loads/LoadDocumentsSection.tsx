@@ -634,14 +634,25 @@ export function LoadDocumentsSection({
                         <Button 
                           variant="ghost" 
                           size="sm"
-                          onClick={() => {
+                          onClick={async () => {
                             const tempDoc = temporaryDocuments.find(doc => doc.type === docType.type);
+                            
+                            // If there's an uploaded document (in BD), remove it from BD/Storage
                             if (uploadedDoc) {
-                              handleRemoveDocument(uploadedDoc.id);
-                            } else if (tempDoc) {
+                              await handleRemoveDocument(uploadedDoc.id);
+                            }
+                            
+                            // If there's a temporary document, remove it from local state
+                            if (tempDoc) {
                               handleRemoveTemporaryDocument(tempDoc.id);
                             }
+                            
+                            // Update hasLoadOrder state if removing load_order
+                            if (docType.type === 'load_order') {
+                              setHasLoadOrder(false);
+                            }
                           }}
+                          title="Eliminar documento"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
