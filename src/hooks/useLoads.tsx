@@ -252,8 +252,38 @@ export const useLoads = (filters?: LoadsFilters) => {
           [...new Set(loads.map(l => l.payment_period_id).filter(Boolean))],
           loads.map(l => l.id)
         ];
+
+        // Obtener ciudades de las paradas para resolver los UUIDs
+        const stopsResult = loadIds.length > 0 
+          ? await supabase
+              .from('load_stops')
+              .select('load_id, stop_type, stop_number, city')
+              .in('load_id', loadIds)
+              .in('stop_type', ['pickup', 'delivery'])
+          : { data: [], error: null };
+
+        if (stopsResult.error) {
+          console.error('Error obteniendo paradas:', stopsResult.error);
+        }
+
+        const stopsData = stopsResult.data || [];
+        const cityIds = [...new Set(stopsData.map(s => s.city).filter(Boolean))];
+
+        // Obtener información de las ciudades
+        const citiesResult = cityIds.length > 0 
+          ? await supabase
+              .from('state_cities')
+              .select('id, name, state_id')
+              .in('id', cityIds)
+          : { data: [], error: null };
+
+        if (citiesResult.error) {
+          console.error('Error obteniendo ciudades:', citiesResult.error);
+        }
+
+        const cities = citiesResult.data || [];
         
-        const [profilesResult, brokersResult, contactsResult, dispatchersResult, periodsResult, stopsResult] = await Promise.allSettled([
+        const [profilesResult, brokersResult, contactsResult, dispatchersResult, periodsResult] = await Promise.allSettled([
           driverIds.length > 0 
             ? supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', driverIds)
             : Promise.resolve({ data: [] }),
@@ -268,20 +298,16 @@ export const useLoads = (filters?: LoadsFilters) => {
             : Promise.resolve({ data: [] }),
           periodIds.length > 0 
             ? supabase.from('company_payment_periods').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds)
-            : Promise.resolve({ data: [] }),
-          loadIds.length > 0 
-            ? supabase.from('load_stops').select('load_id, stop_type, city, stop_number').in('load_id', loadIds).in('stop_type', ['pickup', 'delivery'])
-            : Promise.resolve({ data: [] })
+             : Promise.resolve({ data: [] })
         ]);
 
         // PASO 5: Procesar y enriquecer datos
-        const [profiles, brokers, contacts, dispatchers, periods, stops] = [
+        const [profiles, brokers, contacts, dispatchers, periods] = [
           profilesResult.status === 'fulfilled' ? profilesResult.value.data || [] : [],
           brokersResult.status === 'fulfilled' ? brokersResult.value.data || [] : [],
           contactsResult.status === 'fulfilled' ? contactsResult.value.data || [] : [],
           dispatchersResult.status === 'fulfilled' ? dispatchersResult.value.data || [] : [],
-          periodsResult.status === 'fulfilled' ? periodsResult.value.data || [] : [],
-          stopsResult.status === 'fulfilled' ? stopsResult.value.data || [] : []
+          periodsResult.status === 'fulfilled' ? periodsResult.value.data || [] : []
         ];
 
         return loads.map(load => {
@@ -291,13 +317,17 @@ export const useLoads = (filters?: LoadsFilters) => {
           const dispatcher = dispatchers.find(d => d.user_id === load.internal_dispatcher_id);
           const period = periods.find(p => p.id === load.payment_period_id);
           
-          const loadStops = stops.filter(s => s.load_id === load.id);
+          const loadStops = stopsData.filter(s => s.load_id === load.id);
           const pickupStop = loadStops
             .filter(s => s.stop_type === 'pickup')
             .sort((a, b) => a.stop_number - b.stop_number)[0];
           const deliveryStop = loadStops
             .filter(s => s.stop_type === 'delivery')
             .sort((a, b) => b.stop_number - a.stop_number)[0];
+
+          // Resolver nombres de ciudades
+          const pickupCity = pickupStop ? cities.find(c => c.id === pickupStop.city) : null;
+          const deliveryCity = deliveryStop ? cities.find(c => c.id === deliveryStop.city) : null;
 
           // Priorizar alias sobre nombre para el broker
           const brokerDisplayName = broker ? (broker.alias && broker.alias.trim() ? broker.alias : broker.name) : 'Sin cliente';
@@ -310,8 +340,8 @@ export const useLoads = (filters?: LoadsFilters) => {
             broker_alias: broker?.alias,
             dispatcher_name: contact?.name || null,
             internal_dispatcher_name: dispatcher ? `${dispatcher.first_name} ${dispatcher.last_name}` : null,
-            pickup_city: pickupStop?.city || 'Sin definir',
-            delivery_city: deliveryStop?.city || 'Sin definir',
+            pickup_city: pickupCity ? `${pickupCity.name}, ${pickupCity.state_id}` : 'Sin definir',
+            delivery_city: deliveryCity ? `${deliveryCity.name}, ${deliveryCity.state_id}` : 'Sin definir',
             period_start_date: period?.period_start_date,
             period_end_date: period?.period_end_date,
             period_frequency: period?.period_frequency,
