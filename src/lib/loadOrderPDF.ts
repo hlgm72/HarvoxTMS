@@ -58,8 +58,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     // Nombre de la empresa (centrado y prominente)
     doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
-    const companyName = data.company_name || "Company Name";
-    doc.text(companyName, pageWidth / 2, yPosition, { align: "center" });
+    doc.text(data.company_name || "", pageWidth / 2, yPosition, { align: "center" });
     yPosition += 10;
     
     // Información de contacto (centrado)
@@ -68,8 +67,9 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     const contactInfo = [];
     if (data.company_phone) contactInfo.push(`P: ${data.company_phone}`);
     if (data.company_email) contactInfo.push(`E: ${data.company_email}`);
-    const contactText = contactInfo.length > 0 ? contactInfo.join(' • ') : "Contact Information";
-    doc.text(contactText, pageWidth / 2, yPosition, { align: "center" });
+    if (contactInfo.length > 0) {
+      doc.text(contactInfo.join(' • '), pageWidth / 2, yPosition, { align: "center" });
+    }
     yPosition += 20;
 
     // ============ ROUTE SECTION ============
