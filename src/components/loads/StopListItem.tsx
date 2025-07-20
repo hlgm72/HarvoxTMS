@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -109,6 +108,7 @@ export function StopListItem({
         </div>
         
         <Button
+          type="button"
           variant="ghost"
           size="sm"
           onClick={onEdit}
