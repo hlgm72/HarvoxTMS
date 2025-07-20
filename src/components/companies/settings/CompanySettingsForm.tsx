@@ -426,25 +426,6 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="payment_day">Día de Pago</Label>
-                  <Select 
-                    value={formData.payment_day || 'friday'} 
-                    onValueChange={(value) => handleInputChange('payment_day', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="monday">Lunes</SelectItem>
-                      <SelectItem value="tuesday">Martes</SelectItem>
-                      <SelectItem value="wednesday">Miércoles</SelectItem>
-                      <SelectItem value="thursday">Jueves</SelectItem>
-                      <SelectItem value="friday">Viernes</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
                   <Label htmlFor="default_payment_frequency">Frecuencia de Pago</Label>
                   <Select 
                     value={formData.default_payment_frequency || 'weekly'} 
@@ -478,6 +459,25 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                       <SelectItem value="5">Viernes</SelectItem>
                       <SelectItem value="6">Sábado</SelectItem>
                       <SelectItem value="7">Domingo</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="payment_day">Día de Pago</Label>
+                  <Select 
+                    value={formData.payment_day || 'friday'} 
+                    onValueChange={(value) => handleInputChange('payment_day', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="monday">Lunes</SelectItem>
+                      <SelectItem value="tuesday">Martes</SelectItem>
+                      <SelectItem value="wednesday">Miércoles</SelectItem>
+                      <SelectItem value="thursday">Jueves</SelectItem>
+                      <SelectItem value="friday">Viernes</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
