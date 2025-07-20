@@ -19,7 +19,7 @@ interface LoadOrderData {
 export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string> {
   console.log('📄 generateLoadOrderPDF - Starting with data:', data);
   
-  // Función para agregar imágenes de drop pins
+  // Función para agregar imágenes de drop pins con mejor calidad
   const addDropPinImage = async (doc: any, x: number, y: number, svgSrc: string) => {
     try {
       // Crear imagen desde SVG
@@ -28,18 +28,24 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       
       return new Promise<void>((resolve) => {
         img.onload = () => {
-          // Crear canvas para convertir SVG a imagen
+          // Crear canvas con mayor resolución para mejor calidad
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
-          canvas.width = 12;
-          canvas.height = 15;
+          const scale = 4; // Factor de escala para mejor calidad
+          canvas.width = 24 * scale;
+          canvas.height = 30 * scale;
           
           if (ctx) {
-            ctx.drawImage(img, 0, 0, 12, 15);
-            const imgData = canvas.toDataURL('image/png');
+            // Mejorar la calidad del renderizado
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
             
-            // Agregar imagen al PDF
-            doc.addImage(imgData, 'PNG', x - 3, y - 2, 6, 7.5);
+            // Dibujar con escala mejorada
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const imgData = canvas.toDataURL('image/png', 1.0); // Calidad máxima
+            
+            // Agregar imagen al PDF con mejor tamaño
+            doc.addImage(imgData, 'PNG', x - 6, y - 4, 12, 15);
           }
           resolve();
         };
