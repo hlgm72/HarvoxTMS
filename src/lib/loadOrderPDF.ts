@@ -80,7 +80,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     
     // Título central
     doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
+    doc.setFont("helvetica", "normal");
     doc.text("Load Order", pageWidth / 2, yPosition + 12, { align: "center" });
     
     // Load Number (derecha)
