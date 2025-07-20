@@ -393,22 +393,63 @@ export function LoadDocumentsSection({
     } else {
       // En modo creación, agregar como documento temporal
       console.log('📂 LoadDocumentsSection - Adding Load Order as temporary document');
-      const loadOrderDocument: LoadDocument = {
-        id: crypto.randomUUID(),
-        type: 'load_order',
-        name: 'Load Order',
-        fileName: `Load_Order_${loadData?.load_number || 'unknown'}.pdf`,
-        uploadedAt: new Date(),
-        url: loadOrderData.url // Keep blob URL for temporary documents
-      };
+      
+      // Convert blob URL to get file size for temporary document
+      try {
+        const response = await fetch(loadOrderData.url);
+        const blob = await response.blob();
+        const fileName = `Load_Order_${loadData?.load_number || 'unknown'}.pdf`;
+        
+        const loadOrderDocument: LoadDocument = {
+          id: crypto.randomUUID(),
+          type: 'load_order',
+          name: 'Load Order',
+          fileName: fileName,
+          fileSize: blob.size, // Include file size for temporary documents
+          uploadedAt: new Date(),
+          url: loadOrderData.url // Keep blob URL for temporary documents
+        };
 
-      const updatedTempDocs = [...temporaryDocuments, loadOrderDocument];
-      onTemporaryDocumentsChange?.(updatedTempDocs);
+        console.log('📂 LoadDocumentsSection - Temporary Load Order with size:', loadOrderDocument);
 
-      const updatedDocuments = [...documents, loadOrderDocument];
-      setDocuments(updatedDocuments);
-      setHasLoadOrder(true);
-      onDocumentsChange?.(updatedDocuments);
+        const updatedTempDocs = [...temporaryDocuments, loadOrderDocument];
+        onTemporaryDocumentsChange?.(updatedTempDocs);
+
+        const updatedDocuments = [...documents, loadOrderDocument];
+        setDocuments(updatedDocuments);
+        setHasLoadOrder(true);
+        onDocumentsChange?.(updatedDocuments);
+        
+        toast({
+          title: "Load Order generado",
+          description: `Load Order creado (${(blob.size / 1024 / 1024).toFixed(2)} MB). Se guardará al crear la carga.`,
+        });
+        
+      } catch (error) {
+        console.error('❌ Error processing temporary Load Order:', error);
+        // Fallback without file size
+        const loadOrderDocument: LoadDocument = {
+          id: crypto.randomUUID(),
+          type: 'load_order',
+          name: 'Load Order',
+          fileName: `Load_Order_${loadData?.load_number || 'unknown'}.pdf`,
+          uploadedAt: new Date(),
+          url: loadOrderData.url
+        };
+
+        const updatedTempDocs = [...temporaryDocuments, loadOrderDocument];
+        onTemporaryDocumentsChange?.(updatedTempDocs);
+
+        const updatedDocuments = [...documents, loadOrderDocument];
+        setDocuments(updatedDocuments);
+        setHasLoadOrder(true);
+        onDocumentsChange?.(updatedDocuments);
+        
+        toast({
+          title: "Load Order generado",
+          description: "Load Order creado. Se guardará al crear la carga.",
+        });
+      }
     }
     
     console.log('✅ LoadDocumentsSection - Load Order processing completed');
