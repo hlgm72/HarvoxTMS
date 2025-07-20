@@ -110,6 +110,9 @@ export const useCreateLoad = () => {
             };
           });
 
+          console.log('📍 useCreateLoad - Data stops received for edit:', data.stops);
+          console.log('📍 useCreateLoad - Stops to insert for edit:', stopsToInsert);
+
           console.log('📍 useCreateLoad - Inserting new stops:', stopsToInsert);
 
           const { error: stopsError } = await supabase
@@ -170,6 +173,9 @@ export const useCreateLoad = () => {
                   stop.actual_date) : null,
             };
           });
+
+          console.log('📍 useCreateLoad - Data stops received for creation:', data.stops);
+          console.log('📍 useCreateLoad - Stops to insert for creation:', stopsToInsert);
 
           const { error: stopsError } = await supabase
             .from('load_stops')
