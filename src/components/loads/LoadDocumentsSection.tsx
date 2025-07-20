@@ -59,6 +59,14 @@ const documentTypes = [
     description: 'Documento de embarque',
     required: false,
     color: 'secondary'
+  },
+  {
+    type: 'load_order' as const,
+    label: 'Load Order',
+    description: 'Documento personalizado para el conductor',
+    required: false,
+    color: 'default',
+    isGenerated: true // Flag to distinguish generated docs
   }
 ];
 
@@ -462,39 +470,61 @@ export function LoadDocumentsSection({
                             <Badge variant="secondary" className="text-xs">Pendiente</Badge>
                           )}
                         </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="file"
-                            id={`file-upload-${docType.type}`}
-                            className="hidden"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            onChange={(e) => {
-                              console.log('📎 File input onChange triggered', { 
-                                type: docType.type, 
-                                files: e.target.files?.length || 0 
-                              });
-                              handleFileUpload(docType.type, e.target.files);
-                            }}
-                            disabled={uploading === docType.type}
-                          />
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            disabled={uploading === docType.type}
-                            onClick={() => {
-                              console.log('🖱️ Upload button clicked for:', docType.type);
-                              const fileInput = document.getElementById(`file-upload-${docType.type}`) as HTMLInputElement;
-                              fileInput?.click();
-                            }}
-                          >
-                            <Upload className="h-4 w-4 mr-2" />
-                            {uploading === docType.type ? 'Subiendo...' : 'Subir archivo'}
-                          </Button>
-                          <span className="text-xs text-muted-foreground">
-                            {loadId ? 'PDF, JPG, PNG (máx. 10MB)' : 'Se subirá al guardar la carga'}
-                          </span>
-                        </div>
+                       ) : (
+                         <div className="flex items-center gap-2">
+                           {/* For generated documents like Load Order */}
+                           {docType.isGenerated ? (
+                             <Button 
+                               variant="outline" 
+                               size="sm"
+                               onClick={() => {
+                                 if (docType.type === 'load_order') {
+                                   setShowGenerateLoadOrder(true);
+                                 }
+                               }}
+                               disabled={uploading === docType.type}
+                             >
+                               <Plus className="h-4 w-4 mr-2" />
+                               Generar {docType.label}
+                             </Button>
+                           ) : (
+                             <>
+                               <input
+                                 type="file"
+                                 id={`file-upload-${docType.type}`}
+                                 className="hidden"
+                                 accept=".pdf,.jpg,.jpeg,.png"
+                                 onChange={(e) => {
+                                   console.log('📎 File input onChange triggered', { 
+                                     type: docType.type, 
+                                     files: e.target.files?.length || 0 
+                                   });
+                                   handleFileUpload(docType.type, e.target.files);
+                                 }}
+                                 disabled={uploading === docType.type}
+                               />
+                               <Button 
+                                 variant="outline" 
+                                 size="sm"
+                                 disabled={uploading === docType.type}
+                                 onClick={() => {
+                                   console.log('🖱️ Upload button clicked for:', docType.type);
+                                   const fileInput = document.getElementById(`file-upload-${docType.type}`) as HTMLInputElement;
+                                   fileInput?.click();
+                                 }}
+                               >
+                                 <Upload className="h-4 w-4 mr-2" />
+                                 {uploading === docType.type ? 'Subiendo...' : 'Subir archivo'}
+                               </Button>
+                             </>
+                           )}
+                           <span className="text-xs text-muted-foreground">
+                             {docType.isGenerated 
+                               ? 'Documento generado automáticamente'
+                               : loadId ? 'PDF, JPG, PNG (máx. 10MB)' : 'Se subirá al guardar la carga'
+                             }
+                           </span>
+                         </div>
                     )}
                   </div>
                   
@@ -549,55 +579,6 @@ export function LoadDocumentsSection({
           })}
         </div>
 
-        {/* Load Order Generation Section */}
-        <div className="border-t pt-6">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h4 className="font-medium mb-1 flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Load Order Personalizado
-              </h4>
-              <p className="text-sm text-muted-foreground mb-3">
-                Genera un Load Order con información personalizada para el conductor. 
-                Este documento puede tener un monto diferente al Rate Confirmation original.
-              </p>
-              
-              {hasLoadOrder ? (
-                <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
-                  <FileCheck className="h-4 w-4 text-green-600" />
-                  <div>
-                    <span className="text-sm font-medium text-green-800">Load Order generado</span>
-                    <p className="text-xs text-green-600 mt-1">
-                      Documento principal para el conductor
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 p-3 bg-amber-50 rounded-lg border border-amber-200">
-                  <FileText className="h-4 w-4 text-amber-600" />
-                  <div>
-                    <span className="text-sm text-amber-800">Sin Load Order generado</span>
-                    <p className="text-xs text-amber-600 mt-1">
-                      El conductor verá el Rate Confirmation original
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <Button 
-              onClick={() => {
-                console.log('🔍 LoadDocumentsSection - Button clicked, setting showGenerateLoadOrder to true');
-                setShowGenerateLoadOrder(true);
-              }}
-              variant={hasLoadOrder ? "secondary" : "default"}
-              disabled={hasLoadOrder}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              {hasLoadOrder ? 'Load Order ya generado' : 'Generar Load Order'}
-            </Button>
-          </div>
-        </div>
 
       </CardContent>
 
