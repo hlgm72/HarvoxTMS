@@ -694,7 +694,7 @@ export function LoadDocumentsSection({
                              <Button 
                                variant="ghost" 
                                size="sm"
-                               onClick={() => {
+                               onClick={async () => {
                                  console.log('⬇️ Descargar documento clicked:', { 
                                    url: uploadedDoc.url, 
                                    fileName: uploadedDoc.fileName,
@@ -713,45 +713,64 @@ export function LoadDocumentsSection({
                                  }
                                  
                                  try {
-                                   console.log('💾 Creating download link...');
+                                   console.log('🔄 Iniciando descarga forzada...');
+                                   
+                                   // Fetch the file as blob to force download
+                                   const response = await fetch(uploadedDoc.url);
+                                   if (!response.ok) {
+                                     throw new Error(`HTTP error! status: ${response.status}`);
+                                   }
+                                   
+                                   const blob = await response.blob();
+                                   console.log('📦 Blob obtenido:', { size: blob.size, type: blob.type });
+                                   
+                                   // Create download link with blob URL
+                                   const blobUrl = window.URL.createObjectURL(blob);
                                    const link = document.createElement('a');
-                                   link.href = uploadedDoc.url;
+                                   link.href = blobUrl;
                                    link.download = uploadedDoc.fileName;
-                                   link.target = '_blank';
-                                   link.rel = 'noopener noreferrer';
+                                   link.style.display = 'none';
                                    
-                                   console.log('📎 Link created:', {
-                                     href: link.href,
-                                     download: link.download,
-                                     target: link.target
-                                   });
-                                   
+                                   // Trigger download
                                    document.body.appendChild(link);
                                    link.click();
                                    document.body.removeChild(link);
                                    
-                                   console.log('✅ Download initiated successfully');
+                                   // Clean up blob URL
+                                   window.URL.revokeObjectURL(blobUrl);
+                                   
+                                   console.log('✅ Descarga iniciada exitosamente');
                                    
                                    toast({
                                      title: "Descarga iniciada",
-                                     description: "La descarga del documento ha comenzado",
+                                     description: `${uploadedDoc.fileName} se está descargando`,
                                    });
                                    
                                  } catch (error) {
                                    console.error('❌ Error downloading document:', error);
-                                   console.log('🔄 Trying fallback method - opening in new tab');
+                                   console.log('🔄 Trying fallback method - direct link download');
                                    
                                    try {
-                                     window.open(uploadedDoc.url, '_blank', 'noopener,noreferrer');
+                                     // Fallback: try direct download with different approach
+                                     const link = document.createElement('a');
+                                     link.href = uploadedDoc.url;
+                                     link.download = uploadedDoc.fileName;
+                                     link.target = '_blank';
+                                     link.rel = 'noopener noreferrer';
+                                     
+                                     document.body.appendChild(link);
+                                     link.click();
+                                     document.body.removeChild(link);
+                                     
                                      toast({
-                                       title: "Documento abierto",
-                                       description: "El documento se abrió en una nueva pestaña. Puedes descargarlo desde allí.",
+                                       title: "Descarga iniciada",
+                                       description: "Se ha intentado iniciar la descarga. Si se abre en el navegador, usa 'Guardar como' para descargar.",
                                      });
                                    } catch (fallbackError) {
                                      console.error('❌ Fallback method also failed:', fallbackError);
                                      toast({
                                        title: "Error",
-                                       description: "No se pudo descargar el documento. Intenta nuevamente.",
+                                       description: "No se pudo descargar el documento. Intenta hacer clic derecho en 'Ver' y seleccionar 'Guardar enlace como'.",
                                        variant: "destructive",
                                      });
                                    }
