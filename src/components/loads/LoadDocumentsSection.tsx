@@ -127,6 +127,13 @@ export function LoadDocumentsSection({
       setDocuments(loadDocuments);
       setHasLoadOrder(loadDocuments.some(doc => doc.type === 'load_order'));
       onDocumentsChange?.(loadDocuments);
+      
+      console.log('📋 LoadDocumentsSection - Documents loaded:', {
+        total: loadDocuments.length,
+        types: loadDocuments.map(d => d.type),
+        hasLoadOrder: loadDocuments.some(doc => doc.type === 'load_order'),
+        loadOrderDoc: loadDocuments.find(doc => doc.type === 'load_order')
+      });
     } catch (error) {
       console.error('Error loading documents:', error);
       toast({
