@@ -29,6 +29,9 @@ interface LoadDocumentsSectionProps {
     broker_name?: string;
     driver_name?: string;
     loadStops: any[];
+    company_name?: string;
+    company_phone?: string;
+    company_email?: string;
   };
   onDocumentsChange?: (documents: LoadDocument[]) => void;
   temporaryDocuments?: LoadDocument[];

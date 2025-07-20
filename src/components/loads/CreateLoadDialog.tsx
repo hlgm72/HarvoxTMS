@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useCompanyDrivers, CompanyDriver } from "@/hooks/useCompanyDrivers";
 import { useCompanyDispatchers } from "@/hooks/useCompanyDispatchers";
 import { useCompanyBrokers, CompanyBroker } from "@/hooks/useCompanyBrokers";
+import { useUserCompanies } from "@/hooks/useUserCompanies";
 import { useCreateLoad } from "@/hooks/useCreateLoad";
 import { useLoadNumberValidation } from "@/hooks/useLoadNumberValidation";
 import { useLoadData } from "@/hooks/useLoadData";
@@ -26,6 +27,7 @@ import { CreateDispatcherDialog } from "@/components/clients/CreateDispatcherDia
 import { LoadStopsManager } from "./LoadStopsManager";
 import { LoadDocumentsSection } from "./LoadDocumentsSection";
 import { LoadAssignmentSection } from "./LoadAssignmentSection";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CreateLoadDialogProps {
   isOpen: boolean;
@@ -51,7 +53,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const { drivers } = useCompanyDrivers();
   const { data: dispatchers = [] } = useCompanyDispatchers();
   const { brokers, loading: brokersLoading, refetch: refetchBrokers } = useCompanyBrokers();
+  const { selectedCompany } = useUserCompanies();
   const createLoadMutation = useCreateLoad();
+  const [companyData, setCompanyData] = useState<any>(null);
 
   // Load data hook for edit mode
   const { loadData: fetchedLoadData, isLoading: loadDataLoading, error: loadDataError } = useLoadData(
@@ -79,6 +83,28 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       form.setValue("total_amount", value, { shouldValidate: true });
     }
   });
+
+  // Fetch company data when selectedCompany changes
+  useEffect(() => {
+    if (selectedCompany?.id) {
+      const fetchCompanyData = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('companies')
+            .select('name, phone, email')
+            .eq('id', selectedCompany.id)
+            .single();
+          
+          if (error) throw error;
+          setCompanyData(data);
+        } catch (error) {
+          console.error('Error fetching company data:', error);
+        }
+      };
+      
+      fetchCompanyData();
+    }
+  }, [selectedCompany?.id]);
 
   // Initialize form and states when load data is available
   useEffect(() => {
@@ -641,7 +667,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                   weight_lbs: form.getValues("weight_lbs"),
                   broker_name: selectedBroker?.name,
                   driver_name: selectedDriver ? `${selectedDriver.first_name} ${selectedDriver.last_name}` : undefined,
-                  loadStops: loadStops
+                  loadStops: loadStops,
+                  company_name: companyData?.name,
+                  company_phone: companyData?.phone,
+                  company_email: companyData?.email
                 }}
                 onDocumentsChange={setLoadDocuments}
                 temporaryDocuments={loadDocuments}

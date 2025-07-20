@@ -27,6 +27,9 @@ interface GenerateLoadOrderDialogProps {
     broker_name?: string;
     driver_name?: string;
     loadStops: any[];
+    company_name?: string;
+    company_phone?: string;
+    company_email?: string;
   };
   onLoadOrderGenerated: (loadOrderData: { url: string; amount: number }) => void;
 }
