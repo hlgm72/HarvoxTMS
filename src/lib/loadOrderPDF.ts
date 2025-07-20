@@ -17,6 +17,48 @@ interface LoadOrderData {
 export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string> {
   console.log('📄 generateLoadOrderPDF - Starting with data:', data);
   
+  // Función para dibujar un drop pin
+  const drawDropPin = (doc: any, x: number, y: number, color: number[]) => {
+    // Configurar color
+    doc.setFillColor(color[0], color[1], color[2]);
+    doc.setDrawColor(color[0], color[1], color[2]);
+    
+    // Dibujar círculo superior del pin
+    doc.circle(x, y, 2.5, 'F');
+    
+    // Dibujar triángulo inferior del pin usando líneas
+    doc.setLineWidth(1);
+    const triangleHeight = 3;
+    const triangleBase = 2;
+    
+    // Coordenadas del triángulo
+    const x1 = x - triangleBase/2; // punto izquierdo
+    const y1 = y + 2.5;            // base del triángulo
+    const x2 = x + triangleBase/2; // punto derecho
+    const y2 = y + 2.5;            // base del triángulo
+    const x3 = x;                  // punta del triángulo
+    const y3 = y + 2.5 + triangleHeight; // punta del triángulo
+    
+    // Dibujar triángulo usando líneas
+    doc.setFillColor(color[0], color[1], color[2]);
+    doc.setDrawColor(color[0], color[1], color[2]);
+    doc.setLineWidth(0.5);
+    
+    // Base del triángulo
+    doc.line(x1, y1, x2, y2);
+    // Lado izquierdo
+    doc.line(x1, y1, x3, y3);
+    // Lado derecho
+    doc.line(x2, y2, x3, y3);
+    
+    // Rellenar el triángulo con pequeños rectángulos
+    for (let i = 0; i < triangleHeight; i++) {
+      const currentY = y1 + i;
+      const currentWidth = triangleBase * (1 - i / triangleHeight);
+      doc.rect(x - currentWidth/2, currentY, currentWidth, 0.5, 'F');
+    }
+  };
+  
   try {
     const doc = new jsPDF();
     
@@ -93,9 +135,8 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       doc.setFont("helvetica", "bold");
       doc.text("Pickup", margin + 60, yPosition);
       
-      // Círculo verde para pickup
-      doc.setFillColor(76, 175, 80); // Verde
-      doc.circle(margin + 50, yPosition - 2, 3, 'F');
+      // Drop pin verde para pickup
+      drawDropPin(doc, margin + 50, yPosition - 2, [76, 175, 80]);
       
       // Información de pickup en columna derecha
       doc.setFontSize(10);
@@ -149,9 +190,8 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       doc.setFont("helvetica", "bold");
       doc.text("Delivery", margin + 60, yPosition);
       
-      // Círculo rojo para delivery
-      doc.setFillColor(244, 67, 54); // Rojo
-      doc.circle(margin + 50, yPosition - 2, 3, 'F');
+      // Drop pin rojo para delivery
+      drawDropPin(doc, margin + 50, yPosition - 2, [244, 67, 54]);
       
       // Información de delivery en columna derecha
       doc.setFontSize(10);
