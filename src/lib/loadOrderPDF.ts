@@ -123,35 +123,40 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
 
     // ============ ROUTE SECTION ============
     
-    // Fondo y bordes para sección de ruta
-    const routeSectionStartY = yPosition;
-    doc.setFillColor(248, 250, 252); // Azul muy claro
-    doc.setLineWidth(0.2);
+    // Separar pickup y delivery
+    const pickupStops = data.loadStops?.filter(stop => stop.stop_type === 'pickup') || [];
+    const deliveryStops = data.loadStops?.filter(stop => stop.stop_type === 'delivery') || [];
     
-    // Route header con fondo
+    // Calcular altura total de la sección de ruta
+    const routeSectionStartY = yPosition;
+    let routeSectionHeight = 15; // Header
+    if (pickupStops.length > 0) routeSectionHeight += 45;
+    if (deliveryStops.length > 0) routeSectionHeight += 45;
+    
+    // Fondo y bordes para toda la sección de ruta
+    doc.setFillColor(248, 250, 252); // Azul muy claro
+    doc.rect(margin, yPosition, pageWidth - 2 * margin, routeSectionHeight, 'F');
+    doc.setLineWidth(0.2);
+    doc.rect(margin, yPosition, pageWidth - 2 * margin, routeSectionHeight);
+    
+    // Route header
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
     doc.text("Route", margin + 5, yPosition + 8);
     yPosition += 15;
 
-    // Separar pickup y delivery
-    const pickupStops = data.loadStops?.filter(stop => stop.stop_type === 'pickup') || [];
-    const deliveryStops = data.loadStops?.filter(stop => stop.stop_type === 'delivery') || [];
-
     // Variables para almacenar posiciones de drop pins para la línea conectora
     let pickupPinY = 0;
     let deliveryPinY = 0;
 
-    // ============ PICKUP SECTION ============
+    // ============ PICKUP STOP ============
     if (pickupStops.length > 0) {
       const pickup = pickupStops[0];
       
-      // Fondo y bordes para pickup
-      const pickupSectionHeight = 45;
-      doc.setFillColor(252, 255, 252); // Verde muy claro
-      doc.rect(margin, yPosition, pageWidth - 2 * margin, pickupSectionHeight, 'F');
-      doc.setLineWidth(0.2);
-      doc.rect(margin, yPosition, pageWidth - 2 * margin, pickupSectionHeight);
+      // Línea separadora interna
+      doc.setLineWidth(0.1);
+      doc.setDrawColor(200, 200, 200);
+      doc.line(margin + 5, yPosition, pageWidth - margin - 5, yPosition);
       
       // Pickup header con indicador visual
       doc.setFontSize(12);
@@ -202,19 +207,17 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
         doc.text(`*${pickup.special_instructions}*`, rightColumnX, yPosition + 40);
       }
       
-      yPosition += pickupSectionHeight + 3;
+      yPosition += 45;
     }
 
-    // ============ DELIVERY SECTION ============
+    // ============ DELIVERY STOP ============
     if (deliveryStops.length > 0) {
       const delivery = deliveryStops[0];
       
-      // Fondo y bordes para delivery
-      const deliverySectionHeight = 45;
-      doc.setFillColor(255, 252, 252); // Rojo muy claro
-      doc.rect(margin, yPosition, pageWidth - 2 * margin, deliverySectionHeight, 'F');
-      doc.setLineWidth(0.2);
-      doc.rect(margin, yPosition, pageWidth - 2 * margin, deliverySectionHeight);
+      // Línea separadora interna
+      doc.setLineWidth(0.1);
+      doc.setDrawColor(200, 200, 200);
+      doc.line(margin + 5, yPosition, pageWidth - margin - 5, yPosition);
       
       // Delivery header con indicador visual
       doc.setFontSize(12);
@@ -265,12 +268,8 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
         doc.text(`*${delivery.special_instructions}*`, rightColumnX, yPosition + 40);
       }
       
-      yPosition += deliverySectionHeight + 3;
+      yPosition += 45;
     }
-    
-    // Dibujar el borde completo para toda la sección de ruta
-    const routeSectionHeight = yPosition - routeSectionStartY;
-    doc.rect(margin, routeSectionStartY, pageWidth - 2 * margin, routeSectionHeight);
 
     // ============ LÍNEA CONECTORA ENTRE DROP PINS ============
     // Dibujar línea conectora entre pickup y delivery pins si ambos existen
@@ -280,6 +279,8 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       // Línea con separación de los pins
       doc.line(margin + 90, pickupPinY + 8, margin + 90, deliveryPinY - 5);
     }
+    
+    yPosition += 5;
 
     // ============ ACTION BUTTONS SECTION ============
     
