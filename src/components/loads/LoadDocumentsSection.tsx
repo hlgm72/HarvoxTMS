@@ -662,10 +662,10 @@ export function LoadDocumentsSection({
                                  }
                                  
                                    try {
-                                     console.log('🌐 Opening document in browser viewer...');
-                                     // Simple approach - let browser handle PDF directly
-                                     window.open(uploadedDoc.url, '_blank');
-                                     console.log('✅ Document opened successfully');
+                                     console.log('🌐 Opening document in browser PDF viewer...');
+                                     // Navigate directly to PDF using browser's native viewer
+                                     window.location.href = uploadedDoc.url;
+                                     console.log('✅ Navigated to document successfully');
                                   } catch (error) {
                                     console.error('❌ Error opening document:', error);
                                     toast({
