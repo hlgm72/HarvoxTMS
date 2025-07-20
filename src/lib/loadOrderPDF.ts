@@ -133,10 +133,12 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       // Pickup header con indicador visual
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
-      doc.text("Pickup", margin + 60, yPosition);
+      const pickupText = "Pickup";
+      doc.text(pickupText, margin + 60, yPosition);
       
-      // Drop pin verde para pickup
-      drawDropPin(doc, margin + 50, yPosition - 2, [76, 175, 80]);
+      // Calcular ancho del texto y posicionar drop pin después
+      const textWidth = doc.getTextWidth(pickupText);
+      drawDropPin(doc, margin + 60 + textWidth + 5, yPosition - 2, [76, 175, 80]);
       
       // Información de pickup en columna derecha
       doc.setFontSize(10);
@@ -188,10 +190,12 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       // Delivery header con indicador visual
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
-      doc.text("Delivery", margin + 60, yPosition);
+      const deliveryText = "Delivery";
+      doc.text(deliveryText, margin + 60, yPosition);
       
-      // Drop pin rojo para delivery
-      drawDropPin(doc, margin + 50, yPosition - 2, [244, 67, 54]);
+      // Calcular ancho del texto y posicionar drop pin después
+      const textWidth = doc.getTextWidth(deliveryText);
+      drawDropPin(doc, margin + 60 + textWidth + 5, yPosition - 2, [244, 67, 54]);
       
       // Información de delivery en columna derecha
       doc.setFontSize(10);
