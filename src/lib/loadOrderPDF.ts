@@ -117,7 +117,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     if (contactInfo.length > 0) {
       doc.text(contactInfo.join(' • '), pageWidth / 2, yPosition + 18, { align: "center" });
     }
-    yPosition += companySectionHeight;
+    yPosition += companySectionHeight + 5; // Reducir espacio debajo de compañía
 
     // ============ ROUTE SECTION ============
     
@@ -127,9 +127,9 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     
     // Calcular altura total de la sección de ruta - más compacta
     const routeSectionStartY = yPosition;
-    let routeSectionHeight = 12; // Header más pequeño
-    if (pickupStops.length > 0) routeSectionHeight += 35; // Reducido de 45 a 35
-    if (deliveryStops.length > 0) routeSectionHeight += 35; // Reducido de 45 a 35
+    let routeSectionHeight = 10; // Header más pequeño
+    if (pickupStops.length > 0) routeSectionHeight += 28; // Reducido de 35 a 28
+    if (deliveryStops.length > 0) routeSectionHeight += 28; // Reducido de 35 a 28
     
     // Bordes para toda la sección de ruta (sin fondo)
     doc.setLineWidth(0.2);
@@ -138,8 +138,8 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     // Route header más compacto
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
-    doc.text("Route", margin + 5, yPosition + 6); // Reducido de +8 a +6
-    yPosition += 12; // Reducido de 15 a 12
+    doc.text("Route", margin + 5, yPosition + 5); // Reducido de +6 a +5
+    yPosition += 10; // Reducido de 12 a 10
 
     // Variables para almacenar posiciones de drop pins para la línea conectora
     let pickupPinY = 0;
@@ -149,10 +149,20 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     if (pickupStops.length > 0) {
       const pickup = pickupStops[0];
       
-      // Pickup header con indicador visual
+      // Pickup header con fecha en la misma línea
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
-      doc.text("Pickup", margin + 60, yPosition + 8);
+      let pickupText = "Pickup";
+      if (pickup.scheduled_date) {
+        const date = new Date(pickup.scheduled_date);
+        const formattedDate = date.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+        pickupText += ` - ${formattedDate}`;
+      }
+      doc.text(pickupText, margin + 60, yPosition + 8);
       
       // Guardar posición Y del drop pin verde y agregarlo
       pickupPinY = yPosition + 6;
@@ -162,13 +172,9 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       
-      // Fecha y hora
-      if (pickup.scheduled_date) {
-        const date = new Date(pickup.scheduled_date);
-        doc.text(date.toLocaleDateString('es-ES'), margin + 60, yPosition + 18);
-        if (pickup.scheduled_time) {
-          doc.text(pickup.scheduled_time, margin + 60, yPosition + 26);
-        }
+      // Solo mostrar hora si existe
+      if (pickup.scheduled_time) {
+        doc.text(pickup.scheduled_time, margin + 60, yPosition + 16);
       }
       
       // Información de la empresa en la derecha
@@ -180,7 +186,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       
       doc.setFont("helvetica", "normal");
       // Dirección separada en líneas para diseño más compacto
-      let addressY = yPosition + 13; // Más cerca del nombre de la empresa
+      let addressY = yPosition + 12; // Más cerca del nombre de la empresa
       
       // Street address
       if (pickup.address) {
@@ -210,17 +216,27 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
         doc.text(`*${pickup.special_instructions}*`, rightColumnX, yPosition + 40);
       }
       
-      yPosition += 35;
+      yPosition += 28;
     }
 
     // ============ DELIVERY STOP ============
     if (deliveryStops.length > 0) {
       const delivery = deliveryStops[0];
       
-      // Delivery header con indicador visual
+      // Delivery header con fecha en la misma línea
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
-      doc.text("Delivery", margin + 60, yPosition + 8);
+      let deliveryText = "Delivery";
+      if (delivery.scheduled_date) {
+        const date = new Date(delivery.scheduled_date);
+        const formattedDate = date.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+        deliveryText += ` - ${formattedDate}`;
+      }
+      doc.text(deliveryText, margin + 60, yPosition + 8);
       
       // Guardar posición Y del drop pin rojo y agregarlo
       deliveryPinY = yPosition + 6;
@@ -230,13 +246,9 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       
-      // Fecha y hora
-      if (delivery.scheduled_date) {
-        const date = new Date(delivery.scheduled_date);
-        doc.text(date.toLocaleDateString('es-ES'), margin + 60, yPosition + 18);
-        if (delivery.scheduled_time) {
-          doc.text(delivery.scheduled_time, margin + 60, yPosition + 26);
-        }
+      // Solo mostrar hora si existe
+      if (delivery.scheduled_time) {
+        doc.text(delivery.scheduled_time, margin + 60, yPosition + 16);
       }
       
       // Información de la empresa en la derecha
@@ -248,7 +260,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       
       doc.setFont("helvetica", "normal");
       // Dirección separada en líneas para diseño más compacto
-      let addressY = yPosition + 13; // Más cerca del nombre de la empresa
+      let addressY = yPosition + 12; // Más cerca del nombre de la empresa
       
       // Street address
       if (delivery.address) {
@@ -278,7 +290,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
         doc.text(`*${delivery.special_instructions}*`, rightColumnX, yPosition + 40);
       }
       
-      yPosition += 35;
+      yPosition += 28;
     }
 
     // ============ LÍNEA CONECTORA ENTRE DROP PINS ============
