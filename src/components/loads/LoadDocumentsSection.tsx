@@ -554,82 +554,92 @@ export function LoadDocumentsSection({
           </div>
         </div>
 
-        {/* Document Summary */}
+        {/* Documents Status Section */}
         {(documents.length > 0 || temporaryDocuments.length > 0) && (
           <div className="border-t pt-6">
             <h4 className="text-sm font-medium text-muted-foreground mb-3">
-              Resumen de documentos ({documents.length + temporaryDocuments.length})
+              Estado de los documentos
             </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {[...documents, ...temporaryDocuments].map((doc) => (
-                <div key={doc.id} className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
-                  <FileCheck className={`h-4 w-4 ${loadId ? 'text-green-500' : 'text-amber-500'}`} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{doc.name}</p>
-                    <p className="text-xs text-muted-foreground">{doc.fileSize ? formatFileSize(doc.fileSize) : ''}</p>
-                  </div>
-                  {!loadId && (
-                    <Badge variant="secondary" className="text-xs">Pendiente</Badge>
-                  )}
+            
+            {/* Real documents (already uploaded) */}
+            {documents.length > 0 && (
+              <div className="space-y-2 mb-4">
+                <div className="text-xs text-green-600 dark:text-green-400 font-medium">
+                  Documentos subidos ({documents.length})
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Temporary Documents */}
-        {temporaryDocuments.length > 0 && (
-          <div className="border-t pt-4">
-            <h4 className="text-sm font-medium text-muted-foreground mb-2">
-              Documentos pendientes ({temporaryDocuments.length})
-            </h4>
-            <div className="text-xs text-muted-foreground mb-3">
-              Estos documentos se subirán cuando guardes la carga
-            </div>
-            <div className="grid grid-cols-1 gap-2">
-              {temporaryDocuments.map((tempDoc) => (
-                <div key={tempDoc.id} className="flex items-center justify-between gap-2 text-sm p-3 bg-muted/30 rounded-lg border-dashed border">
-                  <div className="flex items-center gap-2 flex-1">
-                    <FileText className="h-4 w-4 text-muted-foreground" />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{tempDoc.name}</span>
-                        <Badge variant="secondary" className="text-xs">
-                          Pendiente
-                        </Badge>
+                <div className="grid grid-cols-1 gap-2">
+                  {documents.map((doc) => (
+                    <div key={doc.id} className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+                      <FileCheck className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{doc.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {doc.fileName} • {formatFileSize(doc.fileSize)}
+                        </p>
                       </div>
-                      <span className="text-xs text-muted-foreground">{tempDoc.fileName}</span>
-                      {tempDoc.fileSize && (
-                        <span className="text-xs text-muted-foreground">
-                          {' • '}{formatFileSize(tempDoc.fileSize)}
-                        </span>
-                      )}
+                      <Badge variant="default" className="bg-green-600 text-white text-xs">
+                        Subido
+                      </Badge>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => tempDoc.url && window.open(tempDoc.url, '_blank')}
-                      title="Vista previa"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => handleRemoveTemporaryDocument(tempDoc.id)}
-                      title="Eliminar documento"
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
+            
+            {/* Temporary documents (pending upload) */}
+            {!loadId && temporaryDocuments.length > 0 && (
+              <div className="space-y-2">
+                <div className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+                  Documentos pendientes ({temporaryDocuments.length})
+                </div>
+                <div className="text-xs text-muted-foreground mb-3">
+                  Estos documentos se subirán cuando guardes la carga
+                </div>
+                <div className="grid grid-cols-1 gap-2">
+                  {temporaryDocuments.map((tempDoc) => (
+                    <div key={tempDoc.id} className="flex items-center justify-between gap-2 p-3 bg-amber-50 dark:bg-amber-950 rounded-lg border border-amber-200 dark:border-amber-800">
+                      <div className="flex items-center gap-2 flex-1">
+                        <FileText className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">{tempDoc.name}</span>
+                            <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
+                              Pendiente
+                            </Badge>
+                          </div>
+                          <span className="text-xs text-muted-foreground">{tempDoc.fileName}</span>
+                          {tempDoc.fileSize && (
+                            <span className="text-xs text-muted-foreground">
+                              {' • '}{formatFileSize(tempDoc.fileSize)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => tempDoc.url && window.open(tempDoc.url, '_blank')}
+                          title="Vista previa"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleRemoveTemporaryDocument(tempDoc.id)}
+                          title="Eliminar documento"
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
-
       </CardContent>
 
       {/* Generate Load Order Dialog */}
