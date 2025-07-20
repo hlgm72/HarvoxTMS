@@ -244,8 +244,8 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     if (pickupPinY > 0 && deliveryPinY > 0) {
       doc.setDrawColor(100, 100, 100); // Color gris
       doc.setLineWidth(0.3);
-      // Línea desde la parte inferior del pin verde hasta la parte superior del pin rojo
-      doc.line(margin + 90, pickupPinY + 5.5, margin + 90, deliveryPinY - 2.5);
+      // Línea con separación de los pins
+      doc.line(margin + 90, pickupPinY + 8, margin + 90, deliveryPinY - 5);
     }
 
     // ============ ACTION BUTTONS SECTION ============
