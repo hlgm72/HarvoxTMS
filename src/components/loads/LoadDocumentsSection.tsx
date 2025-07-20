@@ -639,51 +639,129 @@ export function LoadDocumentsSection({
                    {(uploadedDoc || temporaryDocuments.find(doc => doc.type === docType.type)) && (
                       <div className="flex items-center gap-1">
                         {uploadedDoc && (
-                          <>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => {
-                                console.log('👁️ Ver documento clicked:', { url: uploadedDoc.url, fileName: uploadedDoc.fileName });
-                                if (uploadedDoc.url) {
-                                  window.open(uploadedDoc.url, '_blank');
-                                } else {
-                                  console.error('❌ No URL found for document:', uploadedDoc);
-                                }
-                              }}
-                              title="Ver documento"
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => {
-                                console.log('⬇️ Descargar documento clicked:', { url: uploadedDoc.url, fileName: uploadedDoc.fileName });
-                                if (uploadedDoc.url) {
-                                  try {
-                                    const link = document.createElement('a');
-                                    link.href = uploadedDoc.url;
-                                    link.download = uploadedDoc.fileName;
-                                    link.target = '_blank'; // Add target for cross-origin downloads
-                                    document.body.appendChild(link);
-                                    link.click();
-                                    document.body.removeChild(link);
-                                    console.log('✅ Download link clicked successfully');
-                                  } catch (error) {
-                                    console.error('❌ Error creating download link:', error);
-                                    // Fallback: open in new tab
-                                    window.open(uploadedDoc.url, '_blank');
-                                  }
-                                } else {
-                                  console.error('❌ No URL found for download:', uploadedDoc);
-                                }
-                              }}
-                              title="Descargar documento"
-                            >
-                              <Download className="h-4 w-4" />
-                            </Button>
-                          </>
+                           <>
+                             <Button 
+                               variant="ghost" 
+                               size="sm"
+                               onClick={() => {
+                                 console.log('👁️ Ver documento clicked:', { 
+                                   url: uploadedDoc.url, 
+                                   fileName: uploadedDoc.fileName,
+                                   type: uploadedDoc.type,
+                                   id: uploadedDoc.id
+                                 });
+                                 
+                                 if (!uploadedDoc.url) {
+                                   console.error('❌ No URL found for document:', uploadedDoc);
+                                   toast({
+                                     title: "Error",
+                                     description: "No se pudo encontrar la URL del documento",
+                                     variant: "destructive",
+                                   });
+                                   return;
+                                 }
+                                 
+                                 try {
+                                   console.log('🌐 Opening document in new window...');
+                                   const newWindow = window.open(uploadedDoc.url, '_blank', 'noopener,noreferrer');
+                                   
+                                   if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+                                     console.warn('⚠️ Popup blocked, trying alternative method');
+                                     // Fallback: create a temporary link
+                                     const link = document.createElement('a');
+                                     link.href = uploadedDoc.url;
+                                     link.target = '_blank';
+                                     link.rel = 'noopener noreferrer';
+                                     document.body.appendChild(link);
+                                     link.click();
+                                     document.body.removeChild(link);
+                                   } else {
+                                     console.log('✅ Document opened successfully in new window');
+                                   }
+                                 } catch (error) {
+                                   console.error('❌ Error opening document:', error);
+                                   toast({
+                                     title: "Error",
+                                     description: "No se pudo abrir el documento. Intenta nuevamente.",
+                                     variant: "destructive",
+                                   });
+                                 }
+                               }}
+                               title="Ver documento"
+                             >
+                               <Eye className="h-4 w-4" />
+                             </Button>
+                             <Button 
+                               variant="ghost" 
+                               size="sm"
+                               onClick={() => {
+                                 console.log('⬇️ Descargar documento clicked:', { 
+                                   url: uploadedDoc.url, 
+                                   fileName: uploadedDoc.fileName,
+                                   type: uploadedDoc.type,
+                                   id: uploadedDoc.id
+                                 });
+                                 
+                                 if (!uploadedDoc.url) {
+                                   console.error('❌ No URL found for download:', uploadedDoc);
+                                   toast({
+                                     title: "Error",
+                                     description: "No se pudo encontrar la URL del documento para descargar",
+                                     variant: "destructive",
+                                   });
+                                   return;
+                                 }
+                                 
+                                 try {
+                                   console.log('💾 Creating download link...');
+                                   const link = document.createElement('a');
+                                   link.href = uploadedDoc.url;
+                                   link.download = uploadedDoc.fileName;
+                                   link.target = '_blank';
+                                   link.rel = 'noopener noreferrer';
+                                   
+                                   console.log('📎 Link created:', {
+                                     href: link.href,
+                                     download: link.download,
+                                     target: link.target
+                                   });
+                                   
+                                   document.body.appendChild(link);
+                                   link.click();
+                                   document.body.removeChild(link);
+                                   
+                                   console.log('✅ Download initiated successfully');
+                                   
+                                   toast({
+                                     title: "Descarga iniciada",
+                                     description: "La descarga del documento ha comenzado",
+                                   });
+                                   
+                                 } catch (error) {
+                                   console.error('❌ Error downloading document:', error);
+                                   console.log('🔄 Trying fallback method - opening in new tab');
+                                   
+                                   try {
+                                     window.open(uploadedDoc.url, '_blank', 'noopener,noreferrer');
+                                     toast({
+                                       title: "Documento abierto",
+                                       description: "El documento se abrió en una nueva pestaña. Puedes descargarlo desde allí.",
+                                     });
+                                   } catch (fallbackError) {
+                                     console.error('❌ Fallback method also failed:', fallbackError);
+                                     toast({
+                                       title: "Error",
+                                       description: "No se pudo descargar el documento. Intenta nuevamente.",
+                                       variant: "destructive",
+                                     });
+                                   }
+                                 }
+                               }}
+                               title="Descargar documento"
+                             >
+                               <Download className="h-4 w-4" />
+                             </Button>
+                           </>
                         )}
                         <Button 
                           variant="ghost" 
