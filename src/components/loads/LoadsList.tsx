@@ -223,13 +223,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     <DollarSign className="h-3 w-3" />
                     {formatCurrency(load.total_amount)}
                   </span>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    Período: {load.period_start_date && load.period_end_date 
-                      ? `${format(new Date(load.period_start_date), "dd/MM", { locale: es })} - ${format(new Date(load.period_end_date), "dd/MM/yy", { locale: es })}`
-                      : 'Sin asignar'
-                    }
-                  </span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
