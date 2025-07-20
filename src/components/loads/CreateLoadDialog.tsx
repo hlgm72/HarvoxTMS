@@ -9,6 +9,7 @@ import { useLoadNumberValidation } from "@/hooks/useLoadNumberValidation";
 import { useLoadData } from "@/hooks/useLoadData";
 import { useLoadForm } from "@/hooks/useLoadForm";
 import { useATMInput } from "@/hooks/useATMInput";
+import { LoadStop } from "@/hooks/useLoadStops";
 import { createTextHandlers } from "@/lib/textUtils";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -182,6 +183,61 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     onClose();
   };
 
+  // Función auxiliar para validar paradas
+  const validateStops = (stops: LoadStop[]) => {
+    const errors: string[] = [];
+
+    // Minimum 2 stops
+    if (stops.length < 2) {
+      errors.push('Debe haber al menos 2 paradas');
+      return { isValid: false, errors };
+    }
+
+    // First stop must be pickup
+    if (stops[0].stop_type !== 'pickup') {
+      errors.push('La primera parada debe ser una recogida (pickup)');
+    }
+
+    // Last stop must be delivery
+    if (stops[stops.length - 1].stop_type !== 'delivery') {
+      errors.push('La última parada debe ser una entrega (delivery)');
+    }
+
+    // Validate each stop has required fields
+    stops.forEach((stop, index) => {
+      const stopNumber = index + 1;
+      const fieldsErrors: string[] = [];
+      
+      if (!stop.company_name?.trim()) {
+        fieldsErrors.push('Empresa');
+      }
+      if (!stop.address?.trim()) {
+        fieldsErrors.push('Dirección');
+      }
+      if (!stop.city?.trim()) {
+        fieldsErrors.push('Ciudad');
+      }
+      if (!stop.state?.trim()) {
+        fieldsErrors.push('Estado');
+      }
+
+      // Validación obligatoria de fecha para paradas mínimas (primera y última)
+      if ((index === 0 || index === stops.length - 1) && !stop.scheduled_date) {
+        fieldsErrors.push('Fecha programada');
+      }
+
+      if (fieldsErrors.length > 0) {
+        const stopType = stop.stop_type === 'pickup' ? 'P' : 'D';
+        errors.push(`${stopType}${stopNumber}: Faltan ${fieldsErrors.join(', ')}`);
+      }
+    });
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  };
+
   const onSubmit = (values: any) => {
     console.log('🚨 onSubmit called with values:', values);
     
@@ -201,6 +257,22 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         variant: "destructive",
       });
       return;
+    }
+
+    // Validar paradas antes de guardar
+    if (loadStops && loadStops.length > 0) {
+      // Simular la validación usando la misma lógica que useLoadStops
+      const stopsValidation = validateStops(loadStops);
+      if (!stopsValidation.isValid) {
+        console.log('🚨 onSubmit blocked - invalid stops:', stopsValidation.errors);
+        toast({
+          title: "Error en las paradas",
+          description: `No se puede guardar la carga. ${stopsValidation.errors[0]}`,
+          variant: "destructive",
+        });
+        setCurrentPhase(2); // Redirigir al paso de paradas
+        return;
+      }
     }
 
     // Solo validar conductor en modo creación o si estamos en la fase de asignación
