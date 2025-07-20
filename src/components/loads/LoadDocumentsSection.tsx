@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Upload, Download, Trash2, FileCheck, Plus, Eye } from "lucide-react";
 import { GenerateLoadOrderDialog } from "./GenerateLoadOrderDialog";
-import { PDFViewer } from "./PDFViewer";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -82,8 +81,6 @@ export function LoadDocumentsSection({
   const [showGenerateLoadOrder, setShowGenerateLoadOrder] = useState(false);
   const [hasLoadOrder, setHasLoadOrder] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
-  const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
-  const [selectedPdf, setSelectedPdf] = useState<{ url: string; fileName: string } | null>(null);
   const { toast } = useToast();
 
   // Debug state changes - but don't close modal when loadData changes if it's open
@@ -663,12 +660,33 @@ export function LoadDocumentsSection({
                                    });
                                    return;
                                  }
-                                  
-                                  setSelectedPdf({
-                                    url: uploadedDoc.url,
-                                    fileName: uploadedDoc.fileName
-                                  });
-                                  setPdfViewerOpen(true);
+                                 
+                                   try {
+                                     console.log('🌐 Opening document in browser PDF viewer...');
+                                     // Force browser's native PDF viewer in new tab
+                                     const pdfUrl = uploadedDoc.url + '#toolbar=1&navpanes=1&scrollbar=1&view=FitH';
+                                     
+                                     // Create link element to force browser viewer
+                                     const link = document.createElement('a');
+                                     link.href = pdfUrl;
+                                     link.target = '_blank';
+                                     link.rel = 'noopener noreferrer';
+                                     link.type = 'application/pdf';
+                                     
+                                     // Add to DOM temporarily and click
+                                     document.body.appendChild(link);
+                                     link.click();
+                                     document.body.removeChild(link);
+                                     
+                                     console.log('✅ Document opened in browser PDF viewer');
+                                  } catch (error) {
+                                    console.error('❌ Error opening document:', error);
+                                    toast({
+                                      title: "Error",
+                                      description: "No se pudo abrir el documento. Intenta nuevamente.",
+                                      variant: "destructive",
+                                    });
+                                  }
                                }}
                                title="Ver documento"
                              >
@@ -819,19 +837,6 @@ export function LoadDocumentsSection({
         }}
         onLoadOrderGenerated={handleLoadOrderGenerated}
       />
-
-      {/* PDF Viewer */}
-      {selectedPdf && (
-        <PDFViewer
-          isOpen={pdfViewerOpen}
-          onClose={() => {
-            setPdfViewerOpen(false);
-            setSelectedPdf(null);
-          }}
-          pdfUrl={selectedPdf.url}
-          fileName={selectedPdf.fileName}
-        />
-      )}
     </Card>
   );
 }
