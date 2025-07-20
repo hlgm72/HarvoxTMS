@@ -69,58 +69,69 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     
     // Fondo gris claro para la cabecera
     doc.setFillColor(245, 245, 245); // Gris claro
-    doc.rect(margin, yPosition, pageWidth - 2 * margin, 20, 'F');
+    doc.rect(margin, yPosition, pageWidth - 2 * margin, 15, 'F');
     
-    // Top header con bordes
+    // Top header con bordes más finos
     doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(0.5);
-    doc.rect(margin, yPosition, pageWidth - 2 * margin, 20);
+    doc.setLineWidth(0.2);
+    doc.rect(margin, yPosition, pageWidth - 2 * margin, 15);
     
     // Page info (izquierda)
-    doc.setFontSize(9);
+    doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("Page 1", margin + 5, yPosition + 7);
-    doc.text(new Date().toLocaleDateString('es-ES'), margin + 5, yPosition + 14);
+    doc.text("Page 1", margin + 3, yPosition + 6);
+    doc.text(new Date().toLocaleDateString('es-ES'), margin + 3, yPosition + 11);
     
     // Título central
-    doc.setFontSize(14);
+    doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text("Load Order", pageWidth / 2, yPosition + 10, { align: "center" });
+    doc.text("Load Order", pageWidth / 2, yPosition + 9, { align: "center" });
     
     // Load Number (derecha)
-    doc.setFontSize(9);
+    doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("Load ID", pageWidth - margin - 35, yPosition + 7);
+    doc.text("Load ID", pageWidth - margin - 35, yPosition + 6);
     doc.setFont("helvetica", "bold");
-    doc.text(data.load_number, pageWidth - margin - 35, yPosition + 14);
+    doc.text(data.load_number, pageWidth - margin - 35, yPosition + 11);
     
-    yPosition += 30;
+    yPosition += 25;
 
     // ============ COMPANY SECTION ============
     
+    // Fondo y bordes para sección de empresa
+    const companySectionHeight = 25;
+    doc.setFillColor(250, 250, 250); // Gris muy claro
+    doc.rect(margin, yPosition, pageWidth - 2 * margin, companySectionHeight, 'F');
+    doc.setLineWidth(0.2);
+    doc.rect(margin, yPosition, pageWidth - 2 * margin, companySectionHeight);
+    
     // Nombre de la empresa (centrado y prominente)
-    doc.setFontSize(20);
+    doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
-    doc.text(data.company_name || "", pageWidth / 2, yPosition, { align: "center" });
-    yPosition += 10;
+    doc.text(data.company_name || "", pageWidth / 2, yPosition + 10, { align: "center" });
     
     // Información de contacto (centrado)
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
     const contactInfo = [];
     if (data.company_phone) contactInfo.push(`P: ${data.company_phone}`);
     if (data.company_email) contactInfo.push(`E: ${data.company_email}`);
     if (contactInfo.length > 0) {
-      doc.text(contactInfo.join(' • '), pageWidth / 2, yPosition, { align: "center" });
+      doc.text(contactInfo.join(' • '), pageWidth / 2, yPosition + 18, { align: "center" });
     }
-    yPosition += 20;
+    yPosition += companySectionHeight + 5;
 
     // ============ ROUTE SECTION ============
     
-    // Route header
-    doc.setFontSize(12);
+    // Fondo y bordes para sección de ruta
+    const routeSectionStartY = yPosition;
+    doc.setFillColor(248, 250, 252); // Azul muy claro
+    doc.setLineWidth(0.2);
+    
+    // Route header con fondo
+    doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
-    doc.text("Route", margin, yPosition);
+    doc.text("Route", margin + 5, yPosition + 8);
     yPosition += 15;
 
     // Separar pickup y delivery
@@ -135,13 +146,20 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     if (pickupStops.length > 0) {
       const pickup = pickupStops[0];
       
+      // Fondo y bordes para pickup
+      const pickupSectionHeight = 45;
+      doc.setFillColor(252, 255, 252); // Verde muy claro
+      doc.rect(margin, yPosition, pageWidth - 2 * margin, pickupSectionHeight, 'F');
+      doc.setLineWidth(0.2);
+      doc.rect(margin, yPosition, pageWidth - 2 * margin, pickupSectionHeight);
+      
       // Pickup header con indicador visual
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
-      doc.text("Pickup", margin + 60, yPosition);
+      doc.text("Pickup", margin + 60, yPosition + 8);
       
       // Guardar posición Y del drop pin verde y agregarlo
-      pickupPinY = yPosition - 2;
+      pickupPinY = yPosition + 6;
       await addDropPinImage(doc, margin + 90, pickupPinY, greenPinSvg);
       
       // Información de pickup en columna derecha
@@ -151,9 +169,9 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       // Fecha y hora
       if (pickup.scheduled_date) {
         const date = new Date(pickup.scheduled_date);
-        doc.text(date.toLocaleDateString('es-ES'), margin + 60, yPosition + 10);
+        doc.text(date.toLocaleDateString('es-ES'), margin + 60, yPosition + 18);
         if (pickup.scheduled_time) {
-          doc.text(pickup.scheduled_time, margin + 60, yPosition + 18);
+          doc.text(pickup.scheduled_time, margin + 60, yPosition + 26);
         }
       }
       
@@ -161,43 +179,50 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       const rightColumnX = margin + 105;
       doc.setFont("helvetica", "bold");
       if (pickup.company_name) {
-        doc.text(pickup.company_name, rightColumnX, yPosition);
+        doc.text(pickup.company_name, rightColumnX, yPosition + 8);
       }
       
       doc.setFont("helvetica", "normal");
       // Dirección completa
       const address = `${pickup.address}, ${pickup.city}, ${pickup.state} ${pickup.zip_code || ''}`;
       const addressLines = doc.splitTextToSize(address, pageWidth - rightColumnX - margin);
-      doc.text(addressLines, rightColumnX, yPosition + 8);
+      doc.text(addressLines, rightColumnX, yPosition + 16);
       
       // Información adicional
       if (pickup.contact_name || pickup.contact_phone) {
         const contact = [];
         if (pickup.contact_name) contact.push(pickup.contact_name);
         if (pickup.contact_phone) contact.push(pickup.contact_phone);
-        doc.text(contact.join(' - '), rightColumnX, yPosition + 24);
+        doc.text(contact.join(' - '), rightColumnX, yPosition + 32);
       }
       
       // Instrucciones especiales
       if (pickup.special_instructions) {
         doc.setFont("helvetica", "bold");
-        doc.text(`*${pickup.special_instructions}*`, rightColumnX, yPosition + 32);
+        doc.text(`*${pickup.special_instructions}*`, rightColumnX, yPosition + 40);
       }
       
-      yPosition += 50;
+      yPosition += pickupSectionHeight + 3;
     }
 
     // ============ DELIVERY SECTION ============
     if (deliveryStops.length > 0) {
       const delivery = deliveryStops[0];
       
+      // Fondo y bordes para delivery
+      const deliverySectionHeight = 45;
+      doc.setFillColor(255, 252, 252); // Rojo muy claro
+      doc.rect(margin, yPosition, pageWidth - 2 * margin, deliverySectionHeight, 'F');
+      doc.setLineWidth(0.2);
+      doc.rect(margin, yPosition, pageWidth - 2 * margin, deliverySectionHeight);
+      
       // Delivery header con indicador visual
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
-      doc.text("Delivery", margin + 60, yPosition);
+      doc.text("Delivery", margin + 60, yPosition + 8);
       
       // Guardar posición Y del drop pin rojo y agregarlo
-      deliveryPinY = yPosition - 2;
+      deliveryPinY = yPosition + 6;
       await addDropPinImage(doc, margin + 90, deliveryPinY, redPinSvg);
       
       // Información de delivery en columna derecha
@@ -207,9 +232,9 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       // Fecha y hora
       if (delivery.scheduled_date) {
         const date = new Date(delivery.scheduled_date);
-        doc.text(date.toLocaleDateString('es-ES'), margin + 60, yPosition + 10);
+        doc.text(date.toLocaleDateString('es-ES'), margin + 60, yPosition + 18);
         if (delivery.scheduled_time) {
-          doc.text(delivery.scheduled_time, margin + 60, yPosition + 18);
+          doc.text(delivery.scheduled_time, margin + 60, yPosition + 26);
         }
       }
       
@@ -217,31 +242,35 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       const rightColumnX = margin + 105;
       doc.setFont("helvetica", "bold");
       if (delivery.company_name) {
-        doc.text(delivery.company_name, rightColumnX, yPosition);
+        doc.text(delivery.company_name, rightColumnX, yPosition + 8);
       }
       
       doc.setFont("helvetica", "normal");
       // Dirección completa
       const address = `${delivery.address}, ${delivery.city}, ${delivery.state} ${delivery.zip_code || ''}`;
       const addressLines = doc.splitTextToSize(address, pageWidth - rightColumnX - margin);
-      doc.text(addressLines, rightColumnX, yPosition + 8);
+      doc.text(addressLines, rightColumnX, yPosition + 16);
       
       // Información adicional
       if (delivery.contact_name || delivery.contact_phone) {
         const contact = [];
         if (delivery.contact_name) contact.push(delivery.contact_name);
         if (delivery.contact_phone) contact.push(delivery.contact_phone);
-        doc.text(contact.join(' - '), rightColumnX, yPosition + 24);
+        doc.text(contact.join(' - '), rightColumnX, yPosition + 32);
       }
       
       // Instrucciones especiales
       if (delivery.special_instructions) {
         doc.setFont("helvetica", "bold");
-        doc.text(`*${delivery.special_instructions}*`, rightColumnX, yPosition + 32);
+        doc.text(`*${delivery.special_instructions}*`, rightColumnX, yPosition + 40);
       }
       
-      yPosition += 50;
+      yPosition += deliverySectionHeight + 3;
     }
+    
+    // Dibujar el borde completo para toda la sección de ruta
+    const routeSectionHeight = yPosition - routeSectionStartY;
+    doc.rect(margin, routeSectionStartY, pageWidth - 2 * margin, routeSectionHeight);
 
     // ============ LÍNEA CONECTORA ENTRE DROP PINS ============
     // Dibujar línea conectora entre pickup y delivery pins si ambos existen
