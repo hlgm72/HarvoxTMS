@@ -15,6 +15,7 @@ import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
 import { LoadDocumentsSection } from "./LoadDocumentsSection";
 import { EmptyLoadsState } from "./EmptyLoadsState";
 import { CreateLoadDialog } from "./CreateLoadDialog";
+import { LoadViewDialog } from "./LoadViewDialog";
 
 // Componente de skeleton para cargas
 const LoadSkeleton = () => (
@@ -174,6 +175,11 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
     isOpen: boolean;
     load?: any;
   }>({ isOpen: false });
+
+  const [viewDialog, setViewDialog] = useState<{
+    isOpen: boolean;
+    load?: any;
+  }>({ isOpen: false });
   
   // Aplicar filtros a los datos reales
   const filteredLoads = loads.filter(load => {
@@ -296,7 +302,11 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
               </div>
               
                <div className="flex gap-2">
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setViewDialog({ isOpen: true, load })}
+                >
                   <Eye className="h-3 w-3 mr-1" />
                   Ver
                 </Button>
@@ -375,6 +385,15 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
           onClose={() => setDocumentsDialog({ isOpen: false })}
           loadId={documentsDialog.load.id}
           loadNumber={documentsDialog.load.load_number}
+        />
+      )}
+
+      {/* Dialog de vista de detalles */}
+      {viewDialog.load && (
+        <LoadViewDialog
+          isOpen={viewDialog.isOpen}
+          onClose={() => setViewDialog({ isOpen: false })}
+          load={viewDialog.load}
         />
       )}
     </div>
