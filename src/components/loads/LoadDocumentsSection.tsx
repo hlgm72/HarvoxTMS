@@ -323,17 +323,6 @@ export function LoadDocumentsSection({
 
   const handleLoadOrderGenerated = async (loadOrderData: any) => {
     console.log('📋 LoadDocumentsSection - handleLoadOrderGenerated called with:', loadOrderData);
-    
-    const loadOrderDocument: LoadDocument = {
-      id: crypto.randomUUID(),
-      type: 'load_order',
-      name: 'Load Order',
-      fileName: `Load_Order_${loadData?.load_number || 'unknown'}.pdf`,
-      uploadedAt: new Date(),
-      url: loadOrderData.url
-    };
-
-    console.log('📄 LoadDocumentsSection - Created document:', loadOrderDocument);
 
     // Si tenemos loadId, guardar automáticamente en la BD y Storage
     if (loadId) {
@@ -343,11 +332,12 @@ export function LoadDocumentsSection({
         // Convert blob URL to actual file
         const response = await fetch(loadOrderData.url);
         const blob = await response.blob();
-        const file = new File([blob], loadOrderDocument.fileName, { type: 'application/pdf' });
+        const fileName = `Load_Order_${loadData?.load_number || 'unknown'}.pdf`;
+        const file = new File([blob], fileName, { type: 'application/pdf' });
         
         // Create file path: load_id/document_type_timestamp.ext
-        const fileName = `load_order_${Date.now()}.pdf`;
-        const filePath = `${loadId}/${fileName}`;
+        const storageFileName = `load_order_${Date.now()}.pdf`;
+        const filePath = `${loadId}/${storageFileName}`;
 
         // Upload file to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
@@ -368,8 +358,8 @@ export function LoadDocumentsSection({
           .insert({
             load_id: loadId,
             document_type: 'load_order',
-            file_name: loadOrderDocument.fileName,
-            file_url: urlData.publicUrl,
+            file_name: fileName,
+            file_url: urlData.publicUrl, // Use the permanent Storage URL
             file_size: file.size,
             content_type: 'application/pdf',
             uploaded_by: (await supabase.auth.getUser()).data.user?.id
@@ -379,37 +369,49 @@ export function LoadDocumentsSection({
 
         if (docError) throw docError;
 
-        // Update the document with the real ID and URL from database
-        loadOrderDocument.id = docData.id;
-        loadOrderDocument.url = urlData.publicUrl;
+        console.log('✅ LoadDocumentsSection - Load Order saved to database with permanent URL:', urlData.publicUrl);
         
-        console.log('✅ LoadDocumentsSection - Load Order saved to database with ID:', docData.id);
+        // Refresh documents from database to get the updated list
+        await loadDocuments();
         
         toast({
           title: "Load Order guardado",
           description: "El Load Order se ha guardado automáticamente en Storage y la base de datos",
         });
+
+        // Clean up the temporary blob URL
+        URL.revokeObjectURL(loadOrderData.url);
+        
       } catch (error) {
         console.error('❌ LoadDocumentsSection - Error saving Load Order:', error);
         toast({
-          title: "Advertencia",
-          description: "El Load Order se generó pero no se pudo guardar. Puedes subirlo manualmente.",
+          title: "Error",
+          description: "No se pudo guardar el Load Order. Intenta nuevamente.",
           variant: "destructive",
         });
       }
     } else {
       // En modo creación, agregar como documento temporal
       console.log('📂 LoadDocumentsSection - Adding Load Order as temporary document');
+      const loadOrderDocument: LoadDocument = {
+        id: crypto.randomUUID(),
+        type: 'load_order',
+        name: 'Load Order',
+        fileName: `Load_Order_${loadData?.load_number || 'unknown'}.pdf`,
+        uploadedAt: new Date(),
+        url: loadOrderData.url // Keep blob URL for temporary documents
+      };
+
       const updatedTempDocs = [...temporaryDocuments, loadOrderDocument];
       onTemporaryDocumentsChange?.(updatedTempDocs);
-    }
 
-    const updatedDocuments = [...documents, loadOrderDocument];
-    setDocuments(updatedDocuments);
-    setHasLoadOrder(true);
-    onDocumentsChange?.(updatedDocuments);
+      const updatedDocuments = [...documents, loadOrderDocument];
+      setDocuments(updatedDocuments);
+      setHasLoadOrder(true);
+      onDocumentsChange?.(updatedDocuments);
+    }
     
-    console.log('✅ LoadDocumentsSection - Documents updated, hasLoadOrder set to true');
+    console.log('✅ LoadDocumentsSection - Load Order processing completed');
   };
 
   const formatFileSize = (bytes?: number) => {
