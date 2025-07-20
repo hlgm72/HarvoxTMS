@@ -44,8 +44,8 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             const imgData = canvas.toDataURL('image/png', 1.0);
             
-            // Tamaño final más pequeño pero consistente
-            doc.addImage(imgData, 'PNG', x - 4, y - 3, 8, 10);
+            // Tamaño final más pequeño - reducido de 8x10 a 6x8
+            doc.addImage(imgData, 'PNG', x - 3, y - 2, 6, 8);
           }
           resolve();
         };
@@ -107,7 +107,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     
     // Nombre de la empresa (centrado y prominente)
     doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
+    doc.setFont("helvetica", "normal");
     doc.text(data.company_name || "", pageWidth / 2, yPosition + 10, { align: "center" });
     
     // Información de contacto (centrado)
@@ -127,11 +127,11 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     const pickupStops = data.loadStops?.filter(stop => stop.stop_type === 'pickup') || [];
     const deliveryStops = data.loadStops?.filter(stop => stop.stop_type === 'delivery') || [];
     
-    // Calcular altura total de la sección de ruta
+    // Calcular altura total de la sección de ruta - más compacta
     const routeSectionStartY = yPosition;
-    let routeSectionHeight = 15; // Header
-    if (pickupStops.length > 0) routeSectionHeight += 45;
-    if (deliveryStops.length > 0) routeSectionHeight += 45;
+    let routeSectionHeight = 12; // Header más pequeño
+    if (pickupStops.length > 0) routeSectionHeight += 35; // Reducido de 45 a 35
+    if (deliveryStops.length > 0) routeSectionHeight += 35; // Reducido de 45 a 35
     
     // Fondo y bordes para toda la sección de ruta
     doc.setFillColor(248, 250, 252); // Azul muy claro
@@ -139,11 +139,11 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     doc.setLineWidth(0.2);
     doc.rect(margin, yPosition, pageWidth - 2 * margin, routeSectionHeight);
     
-    // Route header
+    // Route header más compacto
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
-    doc.text("Route", margin + 5, yPosition + 8);
-    yPosition += 15;
+    doc.text("Route", margin + 5, yPosition + 6); // Reducido de +8 a +6
+    yPosition += 12; // Reducido de 15 a 12
 
     // Variables para almacenar posiciones de drop pins para la línea conectora
     let pickupPinY = 0;
@@ -202,7 +202,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
         doc.text(`*${pickup.special_instructions}*`, rightColumnX, yPosition + 40);
       }
       
-      yPosition += 45;
+      yPosition += 35;
     }
 
     // ============ DELIVERY STOP ============
@@ -258,7 +258,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
         doc.text(`*${delivery.special_instructions}*`, rightColumnX, yPosition + 40);
       }
       
-      yPosition += 45;
+      yPosition += 35;
     }
 
     // ============ LÍNEA CONECTORA ENTRE DROP PINS ============
@@ -266,8 +266,8 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     if (pickupPinY > 0 && deliveryPinY > 0) {
       doc.setDrawColor(100, 100, 100); // Color gris
       doc.setLineWidth(0.3);
-      // Línea con separación de los pins
-      doc.line(margin + 90, pickupPinY + 8, margin + 90, deliveryPinY - 5);
+      // Línea con separación ajustada para pins más pequeños
+      doc.line(margin + 90, pickupPinY + 6, margin + 90, deliveryPinY - 3);
     }
     
     yPosition += 5;
