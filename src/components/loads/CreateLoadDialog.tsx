@@ -238,6 +238,43 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     };
   };
 
+  // Validación del orden cronológico de las fechas
+  const validateChronologicalOrder = (stopsToValidate: LoadStop[]) => {
+    const errors: string[] = [];
+    
+    // Filtrar paradas que tienen fechas válidas
+    const stopsWithDates = stopsToValidate.filter(stop => 
+      stop.scheduled_date && 
+      (stop.scheduled_date instanceof Date ? true : !isNaN(Date.parse(stop.scheduled_date)))
+    );
+
+    if (stopsWithDates.length < 2) {
+      return { isValid: true, errors }; // No hay suficientes fechas para validar orden
+    }
+
+    // Verificar orden cronológico
+    for (let i = 1; i < stopsWithDates.length; i++) {
+      const prevStop = stopsWithDates[i - 1];
+      const currentStop = stopsWithDates[i];
+      
+      const prevDate = prevStop.scheduled_date instanceof Date ? 
+        prevStop.scheduled_date : new Date(prevStop.scheduled_date);
+      const currentDate = currentStop.scheduled_date instanceof Date ? 
+        currentStop.scheduled_date : new Date(currentStop.scheduled_date);
+      
+      if (currentDate < prevDate) {
+        const prevStopNumber = stopsToValidate.findIndex(s => s === prevStop) + 1;
+        const currentStopNumber = stopsToValidate.findIndex(s => s === currentStop) + 1;
+        errors.push(`Las fechas deben estar en orden cronológico. La parada ${currentStopNumber} tiene una fecha anterior a la parada ${prevStopNumber}`);
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  };
+
   const onSubmit = (values: any) => {
     console.log('🚨 onSubmit called with values:', values);
     
@@ -261,13 +298,26 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
     // Validar paradas antes de guardar
     if (loadStops && loadStops.length > 0) {
-      // Simular la validación usando la misma lógica que useLoadStops
+      // Validar campos requeridos
       const stopsValidation = validateStops(loadStops);
       if (!stopsValidation.isValid) {
         console.log('🚨 onSubmit blocked - invalid stops:', stopsValidation.errors);
         toast({
           title: "Error en las paradas",
           description: `No se puede guardar la carga. ${stopsValidation.errors[0]}`,
+          variant: "destructive",
+        });
+        setCurrentPhase(2); // Redirigir al paso de paradas
+        return;
+      }
+
+      // Validar orden cronológico de las fechas
+      const chronologicalValidation = validateChronologicalOrder(loadStops);
+      if (!chronologicalValidation.isValid) {
+        console.log('🚨 onSubmit blocked - chronological order error:', chronologicalValidation.errors);
+        toast({
+          title: "Error en el orden cronológico",
+          description: chronologicalValidation.errors[0],
           variant: "destructive",
         });
         setCurrentPhase(2); // Redirigir al paso de paradas
