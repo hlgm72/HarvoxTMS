@@ -83,31 +83,44 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   useEffect(() => {
     if (mode === 'edit' && activeLoadData && isFormReady) {
       console.log('🔄 CreateLoadDialog - Initializing edit mode with data:', activeLoadData);
+      console.log('🔄 CreateLoadDialog - Available brokers:', brokers.length);
+      console.log('🔄 CreateLoadDialog - Available drivers:', drivers.length);
 
       // Update ATM input
       atmInput.setValue(activeLoadData.total_amount || 0);
 
-      // Find and set broker
-      if (activeLoadData.broker_id && brokers.length > 0) {
-        const broker = brokers.find(b => b.id === activeLoadData.broker_id);
+      // Find and set broker/client
+      if (activeLoadData.client_id && brokers.length > 0) {
+        console.log('🔍 CreateLoadDialog - Looking for client:', activeLoadData.client_id);
+        const broker = brokers.find(b => b.id === activeLoadData.client_id);
         if (broker) {
+          console.log('✅ CreateLoadDialog - Client found:', broker.name);
           setSelectedBroker(broker);
+          form.setValue("broker_id", broker.id);
           
           // Find and set broker dispatcher if available
-          if (activeLoadData.broker_dispatcher_id && broker.dispatchers) {
-            const brokerDispatcher = broker.dispatchers.find(d => d.id === activeLoadData.broker_dispatcher_id);
+          if (activeLoadData.client_contact_id && broker.dispatchers) {
+            console.log('🔍 CreateLoadDialog - Looking for contact:', activeLoadData.client_contact_id);
+            const brokerDispatcher = broker.dispatchers.find(d => d.id === activeLoadData.client_contact_id);
             if (brokerDispatcher) {
+              console.log('✅ CreateLoadDialog - Contact found:', brokerDispatcher.name);
               form.setValue("dispatcher_id", brokerDispatcher.id);
             }
           }
+        } else {
+          console.warn('⚠️ CreateLoadDialog - Client not found in brokers list');
         }
       }
 
       // Find and set driver
       if (activeLoadData.driver_user_id && drivers.length > 0) {
+        console.log('🔍 CreateLoadDialog - Looking for driver:', activeLoadData.driver_user_id);
         const driver = drivers.find(d => d.user_id === activeLoadData.driver_user_id);
         if (driver) {
+          console.log('✅ CreateLoadDialog - Driver found:', driver.first_name, driver.last_name);
           setSelectedDriver(driver);
+        } else {
+          console.warn('⚠️ CreateLoadDialog - Driver not found in drivers list');
         }
       }
 

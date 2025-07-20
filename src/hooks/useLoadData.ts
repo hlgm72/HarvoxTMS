@@ -7,8 +7,8 @@ export interface LoadData {
   load_number: string;
   driver_user_id: string;
   internal_dispatcher_id?: string | null;
-  broker_id?: string;
-  broker_dispatcher_id?: string | null;
+  client_id?: string;
+  client_contact_id?: string | null;
   total_amount: number;
   commodity?: string;
   weight_lbs?: number;

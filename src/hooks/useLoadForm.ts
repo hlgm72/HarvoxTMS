@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { LoadData } from './useLoadData';
 
 const loadFormSchema = z.object({
-  broker_id: z.string().min(1, "Selecciona un broker"),
+  broker_id: z.string().min(1, "Selecciona un cliente"),
   dispatcher_id: z.string().optional(),
   load_number: z.string().min(1, "El número de carga es requerido"),
   total_amount: z.number().min(0.01, "El monto debe ser mayor a 0"),
@@ -51,8 +51,8 @@ export const useLoadForm = (initialData?: LoadData | null) => {
       console.log('🔄 useLoadForm - Populating form with data:', initialData);
       
       form.reset({
-        broker_id: initialData.broker_id || "",
-        dispatcher_id: initialData.internal_dispatcher_id || "",
+        broker_id: initialData.client_id || "",
+        dispatcher_id: initialData.client_contact_id || "",
         load_number: initialData.load_number || "",
         total_amount: initialData.total_amount || 0,
         commodity: initialData.commodity || "",
