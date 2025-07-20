@@ -232,6 +232,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       leasing_percentage: values.leasing_percentage,
     };
 
+    console.log('📍 CreateLoadDialog - Current loadStops state:', loadStops);
+
     console.log('📋 CreateLoadDialog - Submitting load data:', loadDataToSubmit);
     createLoadMutation.mutate(loadDataToSubmit, {
       onSuccess: () => {
@@ -479,7 +481,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
             {/* Phase 2: Route Details */}
             {currentPhase === 2 && (
               <LoadStopsManager 
-                onStopsChange={setLoadStops} 
+                onStopsChange={(newStops) => {
+                  console.log('📍 CreateLoadDialog - Stops changed:', newStops);
+                  setLoadStops(newStops);
+                }} 
                 showValidation={showStopsValidation}
                 initialStops={loadStops}
               />
