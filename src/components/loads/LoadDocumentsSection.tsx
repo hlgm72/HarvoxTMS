@@ -661,23 +661,25 @@ export function LoadDocumentsSection({
                                    return;
                                  }
                                  
-                                 try {
-                                   console.log('🌐 Opening document in new window...');
-                                   const newWindow = window.open(uploadedDoc.url, '_blank', 'noopener,noreferrer');
-                                   
-                                   if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-                                     console.warn('⚠️ Popup blocked, trying alternative method');
-                                     // Fallback: create a temporary link
-                                     const link = document.createElement('a');
-                                     link.href = uploadedDoc.url;
-                                     link.target = '_blank';
-                                     link.rel = 'noopener noreferrer';
-                                     document.body.appendChild(link);
-                                     link.click();
-                                     document.body.removeChild(link);
-                                   } else {
-                                     console.log('✅ Document opened successfully in new window');
-                                   }
+                                  try {
+                                    console.log('🌐 Opening document in browser viewer...');
+                                    // Force browser PDF viewer by adding #view=FitH parameter
+                                    const pdfUrl = `${uploadedDoc.url}#view=FitH`;
+                                    const newWindow = window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+                                    
+                                    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+                                      console.warn('⚠️ Popup blocked, trying alternative method');
+                                      // Fallback: create a temporary link with PDF viewer parameters
+                                      const link = document.createElement('a');
+                                      link.href = pdfUrl;
+                                      link.target = '_blank';
+                                      link.rel = 'noopener noreferrer';
+                                      document.body.appendChild(link);
+                                      link.click();
+                                      document.body.removeChild(link);
+                                    } else {
+                                      console.log('✅ Document opened successfully in browser viewer');
+                                    }
                                  } catch (error) {
                                    console.error('❌ Error opening document:', error);
                                    toast({
