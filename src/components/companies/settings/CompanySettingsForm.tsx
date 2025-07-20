@@ -95,6 +95,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           default_factoring_percentage: formData.default_factoring_percentage,
           default_dispatching_percentage: formData.default_dispatching_percentage,
           default_leasing_percentage: formData.default_leasing_percentage,
+          load_assignment_criteria: formData.load_assignment_criteria,
           updated_at: new Date().toISOString()
         })
         .eq('id', company.id)
@@ -546,6 +547,58 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                         placeholder="5.00"
                         className="pl-10"
                       />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Load Assignment Criteria */}
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <CreditCard className="h-5 w-5 text-green-600" />
+                  <div>
+                    <h4 className="font-semibold text-green-900">Criterio de Asignación de Cargas</h4>
+                    <p className="text-sm text-green-700">
+                      Selecciona qué fecha utilizar para asignar cargas a períodos de pago
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="radio"
+                        id="delivery_date"
+                        name="load_assignment_criteria"
+                        value="delivery_date"
+                        checked={(formData.load_assignment_criteria || 'delivery_date') === 'delivery_date'}
+                        onChange={(e) => handleInputChange('load_assignment_criteria', e.target.value)}
+                        className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
+                      />
+                      <Label htmlFor="delivery_date" className="flex-1 cursor-pointer">
+                        <div className="font-medium text-green-900">Fecha de Entrega (Recomendado)</div>
+                        <div className="text-sm text-green-700">
+                          Asignar cargas basándose en la fecha de entrega. Representa cuando se completa el servicio.
+                        </div>
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="radio"
+                        id="pickup_date"
+                        name="load_assignment_criteria"
+                        value="pickup_date"
+                        checked={formData.load_assignment_criteria === 'pickup_date'}
+                        onChange={(e) => handleInputChange('load_assignment_criteria', e.target.value)}
+                        className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
+                      />
+                      <Label htmlFor="pickup_date" className="flex-1 cursor-pointer">
+                        <div className="font-medium text-green-900">Fecha de Recogida</div>
+                        <div className="text-sm text-green-700">
+                          Asignar cargas basándose en la fecha de recogida. Representa cuando inicia el servicio.
+                        </div>
+                      </Label>
                     </div>
                   </div>
                 </div>

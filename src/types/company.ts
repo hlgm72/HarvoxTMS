@@ -28,4 +28,5 @@ export interface Company {
   default_factoring_percentage?: number;
   default_dispatching_percentage?: number;
   default_leasing_percentage?: number;
+  load_assignment_criteria?: string;
 }
