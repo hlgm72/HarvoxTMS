@@ -326,8 +326,8 @@ export const useLoads = (filters?: LoadsFilters) => {
             .sort((a, b) => b.stop_number - a.stop_number)[0];
 
           // Resolver nombres de ciudades
-          const pickupCity = pickupStop ? cities.find(c => c.id === pickupStop.city) : null;
-          const deliveryCity = deliveryStop ? cities.find(c => c.id === deliveryStop.city) : null;
+          const pickupCity = pickupStop ? cities.find(c => c.name === pickupStop.city) : null;
+          const deliveryCity = deliveryStop ? cities.find(c => c.name === deliveryStop.city) : null;
 
           // Priorizar alias sobre nombre para el broker
           const brokerDisplayName = broker ? (broker.alias && broker.alias.trim() ? broker.alias : broker.name) : 'Sin cliente';
