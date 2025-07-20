@@ -24,8 +24,8 @@ export interface LoadStopsValidation {
   errors: string[];
 }
 
-export function useLoadStops() {
-  const [stops, setStops] = useState<LoadStop[]>([
+export function useLoadStops(initialStops?: LoadStop[]) {
+  const getDefaultStops = (): LoadStop[] => [
     {
       id: 'stop-1',
       stop_number: 1,
@@ -46,7 +46,19 @@ export function useLoadStops() {
       state: '',
       zip_code: '',
     }
-  ]);
+  ];
+
+  const [stops, setStops] = useState<LoadStop[]>(() => {
+    if (initialStops && initialStops.length > 0) {
+      // Convert database stops to the format expected by the component
+      return initialStops.map((stop, index) => ({
+        ...stop,
+        scheduled_date: stop.scheduled_date ? new Date(stop.scheduled_date) : undefined,
+        stop_number: index + 1
+      }));
+    }
+    return getDefaultStops();
+  });
 
   const validateStops = useCallback((showFieldValidations: boolean = false): LoadStopsValidation => {
     const errors: string[] = [];

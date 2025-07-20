@@ -16,16 +16,17 @@ interface LoadStopsManagerProps {
   initialStops?: any[];
 }
 
-export function LoadStopsManager({ onStopsChange, showValidation = false }: LoadStopsManagerProps) {
+export function LoadStopsManager({ onStopsChange, showValidation = false, initialStops }: LoadStopsManagerProps) {
   const {
     stops,
+    setStops,
     addStop,
     removeStop,
     updateStop,
     reorderStops,
     validateStops,
     getCalculatedDates
-  } = useLoadStops();
+  } = useLoadStops(initialStops);
 
   const [editingStop, setEditingStop] = useState<LoadStop | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
