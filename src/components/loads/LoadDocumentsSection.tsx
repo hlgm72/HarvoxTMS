@@ -328,17 +328,40 @@ export function LoadDocumentsSection({
       id: crypto.randomUUID(),
       type: 'load_order',
       name: 'Load Order',
-      fileName: `Load_Order_${loadData.load_number}.pdf`,
+      fileName: `Load_Order_${loadData?.load_number || 'unknown'}.pdf`,
       uploadedAt: new Date(),
       url: loadOrderData.url
     };
 
     console.log('📄 LoadDocumentsSection - Created document:', loadOrderDocument);
 
-    // Si tenemos loadId, guardar automáticamente en la BD
+    // Si tenemos loadId, guardar automáticamente en la BD y Storage
     if (loadId) {
       try {
-        console.log('💾 LoadDocumentsSection - Saving Load Order to database...');
+        console.log('💾 LoadDocumentsSection - Uploading Load Order to storage...');
+        
+        // Convert blob URL to actual file
+        const response = await fetch(loadOrderData.url);
+        const blob = await response.blob();
+        const file = new File([blob], loadOrderDocument.fileName, { type: 'application/pdf' });
+        
+        // Create file path: load_id/document_type_timestamp.ext
+        const fileName = `load_order_${Date.now()}.pdf`;
+        const filePath = `${loadId}/${fileName}`;
+
+        // Upload file to Supabase Storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('load-documents')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from('load-documents')
+          .getPublicUrl(filePath);
+
+        console.log('🔗 LoadDocumentsSection - Storage URL:', urlData.publicUrl);
         
         const { data: docData, error: docError } = await supabase
           .from('load_documents')
@@ -346,8 +369,8 @@ export function LoadDocumentsSection({
             load_id: loadId,
             document_type: 'load_order',
             file_name: loadOrderDocument.fileName,
-            file_url: loadOrderData.url,
-            file_size: null, // PDF size not available from client generation
+            file_url: urlData.publicUrl,
+            file_size: file.size,
             content_type: 'application/pdf',
             uploaded_by: (await supabase.auth.getUser()).data.user?.id
           })
@@ -356,20 +379,21 @@ export function LoadDocumentsSection({
 
         if (docError) throw docError;
 
-        // Update the document with the real ID from database
+        // Update the document with the real ID and URL from database
         loadOrderDocument.id = docData.id;
+        loadOrderDocument.url = urlData.publicUrl;
         
         console.log('✅ LoadDocumentsSection - Load Order saved to database with ID:', docData.id);
         
         toast({
           title: "Load Order guardado",
-          description: "El Load Order se ha guardado automáticamente en la base de datos",
+          description: "El Load Order se ha guardado automáticamente en Storage y la base de datos",
         });
       } catch (error) {
-        console.error('❌ LoadDocumentsSection - Error saving Load Order to database:', error);
+        console.error('❌ LoadDocumentsSection - Error saving Load Order:', error);
         toast({
           title: "Advertencia",
-          description: "El Load Order se generó pero no se pudo guardar en la BD. Puedes subirlo manualmente.",
+          description: "El Load Order se generó pero no se pudo guardar. Puedes subirlo manualmente.",
           variant: "destructive",
         });
       }
