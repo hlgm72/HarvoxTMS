@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useToast } from '@/hooks/use-toast';
 import { ClientLogoUpload } from '@/components/clients/ClientLogoUpload';
-import { FMCSALookupModal } from '@/components/brokers/FMCSALookupModal';
+import { FMCSALookupModal } from '@/components/clients/FMCSALookupModal';
 import { createTextHandlers, createPhoneHandlers, createMCHandlers, createDOTHandlers } from '@/lib/textUtils';
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';

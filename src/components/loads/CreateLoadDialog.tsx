@@ -18,7 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Circle, ArrowRight, Loader2, AlertTriangle, Check } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { BrokerCombobox } from "@/components/brokers/BrokerCombobox";
+import { ClientCombobox } from "@/components/clients/ClientCombobox";
 import { ContactCombobox } from "@/components/clients/ContactCombobox";
 import { CreateClientDialog } from "@/components/clients/CreateClientDialog";
 import { CreateDispatcherDialog } from "@/components/clients/CreateDispatcherDialog";
@@ -287,9 +287,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                         <FormItem>
                           <FormLabel>Broker / Cliente *</FormLabel>
                           <FormControl>
-                             <BrokerCombobox
-                               brokers={brokers}
-                               loading={brokersLoading}
+                             <ClientCombobox
+                               clients={brokers}
                                value={field.value}
                                onValueChange={(value) => {
                                  field.onChange(value);
@@ -297,11 +296,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                  setSelectedBroker(broker || null);
                                  form.setValue("dispatcher_id", "");
                                }}
-                              onCreateNew={() => setShowCreateBroker(true)}
-                              onBrokerSelect={setSelectedBroker}
-                              placeholder="Buscar broker por nombre, DOT, MC..."
-                              className="w-full"
-                            />
+                               onClientSelect={setSelectedBroker}
+                               placeholder="Buscar cliente por nombre, DOT, MC..."
+                               className="w-full"
+                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
