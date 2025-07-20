@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2 } from "lucide-react";
+import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -12,6 +12,7 @@ import { useLoads } from "@/hooks/useLoads";
 import { PeriodFilterValue } from "./PeriodFilter";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
 import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
+import { LoadDocumentsManagementDialog } from "./LoadDocumentsManagementDialog";
 import { EmptyLoadsState } from "./EmptyLoadsState";
 import { CreateLoadDialog } from "./CreateLoadDialog";
 
@@ -168,6 +169,11 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
     isOpen: boolean;
     load?: any;
   }>({ isOpen: false });
+
+  const [documentsDialog, setDocumentsDialog] = useState<{
+    isOpen: boolean;
+    load?: any;
+  }>({ isOpen: false });
   
   // Aplicar filtros a los datos reales
   const filteredLoads = loads.filter(load => {
@@ -309,15 +315,24 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem 
-                      onClick={() => setReassignmentDialog({ 
-                        isOpen: true, 
-                        load 
-                      })}
-                    >
-                      <ArrowRightLeft className="h-3 w-3 mr-2" />
-                      Reasignar Período
-                    </DropdownMenuItem>
+                     <DropdownMenuItem 
+                       onClick={() => setReassignmentDialog({ 
+                         isOpen: true, 
+                         load 
+                       })}
+                     >
+                       <ArrowRightLeft className="h-3 w-3 mr-2" />
+                       Reasignar Período
+                     </DropdownMenuItem>
+                     <DropdownMenuItem 
+                       onClick={() => setDocumentsDialog({ 
+                         isOpen: true, 
+                         load 
+                       })}
+                     >
+                       <FileText className="h-3 w-3 mr-2" />
+                       Gestionar Documentos
+                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -349,6 +364,16 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
           onClose={() => setEditDialog({ isOpen: false })}
           mode="edit"
           loadData={editDialog.load}
+        />
+      )}
+
+      {/* Dialog de gestión de documentos */}
+      {documentsDialog.load && (
+        <LoadDocumentsManagementDialog
+          isOpen={documentsDialog.isOpen}
+          onClose={() => setDocumentsDialog({ isOpen: false })}
+          loadId={documentsDialog.load.id}
+          loadNumber={documentsDialog.load.load_number}
         />
       )}
     </div>

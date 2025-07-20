@@ -362,13 +362,28 @@ export function LoadDocumentsSection({
           Documentos de la Carga
         </CardTitle>
         <CardDescription>
-          Sube los documentos necesarios para la carga. El Load Order se puede generar automáticamente con información personalizada.
+          Gestiona los documentos necesarios para la carga. Puedes subir documentos ahora o generarlos automáticamente.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Document Upload Section */}
         <div className="space-y-4">
-          <h4 className="text-sm font-medium text-muted-foreground">Documentos a subir</h4>
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-medium text-muted-foreground">Documentos requeridos</h4>
+            {loadId && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  // This will be handled by the parent component
+                  console.log('Open document management');
+                }}
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Gestionar Documentos
+              </Button>
+            )}
+          </div>
           
           {documentTypes.map((docType) => {
             const status = getDocumentStatus(docType.type);
@@ -493,21 +508,34 @@ export function LoadDocumentsSection({
         <div className="border-t pt-6">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h4 className="font-medium mb-1">Load Order Personalizado</h4>
+              <h4 className="font-medium mb-1 flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                Load Order Personalizado
+              </h4>
               <p className="text-sm text-muted-foreground mb-3">
                 Genera un Load Order con información personalizada para el conductor. 
                 Este documento puede tener un monto diferente al Rate Confirmation original.
               </p>
               
               {hasLoadOrder ? (
-                <div className="flex items-center gap-2 text-sm">
-                  <FileCheck className="h-4 w-4 text-green-500" />
-                  <span>Load Order generado</span>
-                  <Badge variant="default">Documento principal para el conductor</Badge>
+                <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
+                  <FileCheck className="h-4 w-4 text-green-600" />
+                  <div>
+                    <span className="text-sm font-medium text-green-800">Load Order generado</span>
+                    <p className="text-xs text-green-600 mt-1">
+                      Documento principal para el conductor
+                    </p>
+                  </div>
                 </div>
               ) : (
-                <div className="text-sm text-muted-foreground">
-                  Sin Load Order generado - El conductor verá el Rate Confirmation original
+                <div className="flex items-center gap-2 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                  <FileText className="h-4 w-4 text-amber-600" />
+                  <div>
+                    <span className="text-sm text-amber-800">Sin Load Order generado</span>
+                    <p className="text-xs text-amber-600 mt-1">
+                      El conductor verá el Rate Confirmation original
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
@@ -525,6 +553,29 @@ export function LoadDocumentsSection({
             </Button>
           </div>
         </div>
+
+        {/* Document Summary */}
+        {(documents.length > 0 || temporaryDocuments.length > 0) && (
+          <div className="border-t pt-6">
+            <h4 className="text-sm font-medium text-muted-foreground mb-3">
+              Resumen de documentos ({documents.length + temporaryDocuments.length})
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {[...documents, ...temporaryDocuments].map((doc) => (
+                <div key={doc.id} className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+                  <FileCheck className={`h-4 w-4 ${loadId ? 'text-green-500' : 'text-amber-500'}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{doc.name}</p>
+                    <p className="text-xs text-muted-foreground">{doc.fileSize ? formatFileSize(doc.fileSize) : ''}</p>
+                  </div>
+                  {!loadId && (
+                    <Badge variant="secondary" className="text-xs">Pendiente</Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Temporary Documents */}
         {temporaryDocuments.length > 0 && (
