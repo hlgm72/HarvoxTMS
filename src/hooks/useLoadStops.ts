@@ -53,7 +53,10 @@ export function useLoadStops(initialStops?: LoadStop[]) {
       // Convert database stops to the format expected by the component
       return initialStops.map((stop, index) => ({
         ...stop,
-        scheduled_date: stop.scheduled_date ? new Date(stop.scheduled_date) : undefined,
+        scheduled_date: stop.scheduled_date ? 
+          (typeof stop.scheduled_date === 'string' ? 
+            new Date(stop.scheduled_date + 'T00:00:00') : 
+            stop.scheduled_date) : undefined, // Add time to avoid timezone issues
         stop_number: index + 1
       }));
     }
