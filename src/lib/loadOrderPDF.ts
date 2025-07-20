@@ -126,6 +126,10 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     const pickupStops = data.loadStops?.filter(stop => stop.stop_type === 'pickup') || [];
     const deliveryStops = data.loadStops?.filter(stop => stop.stop_type === 'delivery') || [];
 
+    // Variables para almacenar posiciones de drop pins para la línea conectora
+    let pickupPinY = 0;
+    let deliveryPinY = 0;
+
     // ============ PICKUP SECTION ============
     if (pickupStops.length > 0) {
       const pickup = pickupStops[0];
@@ -135,8 +139,9 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       doc.setFont("helvetica", "bold");
       doc.text("Pickup", margin + 60, yPosition);
       
-      // Drop pin verde centrado entre texto y direcciones
-      drawDropPin(doc, margin + 90, yPosition - 2, [76, 175, 80]);
+      // Guardar posición Y del drop pin verde y dibujarlo
+      pickupPinY = yPosition - 2;
+      drawDropPin(doc, margin + 90, pickupPinY, [76, 175, 80]);
       
       // Información de pickup en columna derecha
       doc.setFontSize(10);
@@ -152,7 +157,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       }
       
       // Información de la empresa en la derecha
-      const rightColumnX = margin + 120;
+      const rightColumnX = margin + 105;
       doc.setFont("helvetica", "bold");
       if (pickup.company_name) {
         doc.text(pickup.company_name, rightColumnX, yPosition);
@@ -190,8 +195,9 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       doc.setFont("helvetica", "bold");
       doc.text("Delivery", margin + 60, yPosition);
       
-      // Drop pin rojo centrado entre texto y direcciones
-      drawDropPin(doc, margin + 90, yPosition - 2, [244, 67, 54]);
+      // Guardar posición Y del drop pin rojo y dibujarlo
+      deliveryPinY = yPosition - 2;
+      drawDropPin(doc, margin + 90, deliveryPinY, [244, 67, 54]);
       
       // Información de delivery en columna derecha
       doc.setFontSize(10);
@@ -207,7 +213,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       }
       
       // Información de la empresa en la derecha
-      const rightColumnX = margin + 120;
+      const rightColumnX = margin + 105;
       doc.setFont("helvetica", "bold");
       if (delivery.company_name) {
         doc.text(delivery.company_name, rightColumnX, yPosition);
@@ -234,6 +240,15 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       }
       
       yPosition += 50;
+    }
+
+    // ============ LÍNEA CONECTORA ENTRE DROP PINS ============
+    // Dibujar línea conectora entre pickup y delivery pins si ambos existen
+    if (pickupPinY > 0 && deliveryPinY > 0) {
+      doc.setDrawColor(100, 100, 100); // Color gris
+      doc.setLineWidth(1);
+      // Línea desde la parte inferior del pin verde hasta la parte superior del pin rojo
+      doc.line(margin + 90, pickupPinY + 5.5, margin + 90, deliveryPinY - 2.5);
     }
 
     // ============ ACTION BUTTONS SECTION ============
