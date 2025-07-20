@@ -19,7 +19,7 @@ interface LoadOrderData {
 export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string> {
   console.log('📄 generateLoadOrderPDF - Starting with data:', data);
   
-  // Función para agregar imágenes de drop pins con mejor calidad
+  // Función para agregar imágenes de drop pins con calidad optimizada
   const addDropPinImage = async (doc: any, x: number, y: number, svgSrc: string) => {
     try {
       // Crear imagen desde SVG
@@ -28,28 +28,28 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       
       return new Promise<void>((resolve) => {
         img.onload = () => {
-          // Crear canvas con mayor resolución para mejor calidad
+          // Crear canvas con alta resolución para calidad
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
-          const scale = 4; // Factor de escala para mejor calidad
-          canvas.width = 24 * scale;
-          canvas.height = 30 * scale;
+          const scale = 4; // Factor de escala para calidad
+          canvas.width = 20 * scale; // Resolución consistente
+          canvas.height = 24 * scale; // Resolución consistente
           
           if (ctx) {
-            // Mejorar la calidad del renderizado
+            // Configurar calidad máxima
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
             
-            // Dibujar con escala mejorada
+            // Dibujar con escala alta
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const imgData = canvas.toDataURL('image/png', 1.0); // Calidad máxima
+            const imgData = canvas.toDataURL('image/png', 1.0);
             
-            // Agregar imagen al PDF con mejor tamaño
-            doc.addImage(imgData, 'PNG', x - 6, y - 4, 12, 15);
+            // Tamaño final más pequeño pero consistente
+            doc.addImage(imgData, 'PNG', x - 4, y - 3, 8, 10);
           }
           resolve();
         };
-        img.onerror = () => resolve(); // Continuar si hay error
+        img.onerror = () => resolve();
       });
     } catch (error) {
       console.warn('Error loading pin image:', error);
