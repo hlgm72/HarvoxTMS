@@ -661,33 +661,48 @@ export function LoadDocumentsSection({
                                    return;
                                  }
                                  
-                                  try {
-                                    console.log('🌐 Opening document in browser viewer...');
-                                    // Force browser PDF viewer by adding #view=FitH parameter
-                                    const pdfUrl = `${uploadedDoc.url}#view=FitH`;
-                                    const newWindow = window.open(pdfUrl, '_blank', 'noopener,noreferrer');
-                                    
-                                    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-                                      console.warn('⚠️ Popup blocked, trying alternative method');
-                                      // Fallback: create a temporary link with PDF viewer parameters
-                                      const link = document.createElement('a');
-                                      link.href = pdfUrl;
-                                      link.target = '_blank';
-                                      link.rel = 'noopener noreferrer';
-                                      document.body.appendChild(link);
-                                      link.click();
-                                      document.body.removeChild(link);
-                                    } else {
-                                      console.log('✅ Document opened successfully in browser viewer');
-                                    }
-                                 } catch (error) {
-                                   console.error('❌ Error opening document:', error);
-                                   toast({
-                                     title: "Error",
-                                     description: "No se pudo abrir el documento. Intenta nuevamente.",
-                                     variant: "destructive",
-                                   });
-                                 }
+                                   try {
+                                     console.log('🌐 Opening document in browser viewer...');
+                                     // Force browser PDF viewer with multiple strategies
+                                     let pdfUrl = uploadedDoc.url;
+                                     
+                                     // Add parameters to force browser viewer
+                                     const urlParams = new URLSearchParams();
+                                     urlParams.append('view', 'FitH');
+                                     urlParams.append('toolbar', '1');
+                                     urlParams.append('navpanes', '1');
+                                     
+                                     // Check if URL already has query params
+                                     const separator = pdfUrl.includes('?') ? '&' : '?';
+                                     pdfUrl = `${pdfUrl}${separator}${urlParams.toString()}#view=FitH`;
+                                     
+                                     // Method 1: Direct window.open with forced viewer
+                                     const newWindow = window.open('', '_blank', 'noopener,noreferrer');
+                                     
+                                     if (newWindow) {
+                                       // Navigate to the PDF with HTML wrapper to force browser viewer
+                                       newWindow.location.href = pdfUrl;
+                                       console.log('✅ Document opened successfully in browser viewer');
+                                     } else {
+                                       console.warn('⚠️ Popup blocked, trying alternative method');
+                                       // Fallback: Force browser viewer with iframe approach
+                                       const link = document.createElement('a');
+                                       link.href = pdfUrl;
+                                       link.target = '_blank';
+                                       link.rel = 'noopener noreferrer';
+                                       link.setAttribute('type', 'application/pdf');
+                                       document.body.appendChild(link);
+                                       link.click();
+                                       document.body.removeChild(link);
+                                     }
+                                  } catch (error) {
+                                    console.error('❌ Error opening document:', error);
+                                    toast({
+                                      title: "Error",
+                                      description: "No se pudo abrir el documento. Intenta nuevamente.",
+                                      variant: "destructive",
+                                    });
+                                  }
                                }}
                                title="Ver documento"
                              >
