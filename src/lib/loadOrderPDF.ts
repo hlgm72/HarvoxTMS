@@ -67,30 +67,34 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
 
     // ============ HEADER SECTION ============
     
+    // Fondo gris claro para la cabecera
+    doc.setFillColor(245, 245, 245); // Gris claro
+    doc.rect(margin, yPosition, pageWidth - 2 * margin, 20, 'F');
+    
     // Top header con bordes
     doc.setDrawColor(0, 0, 0);
     doc.setLineWidth(0.5);
-    doc.rect(margin, yPosition, pageWidth - 2 * margin, 25);
+    doc.rect(margin, yPosition, pageWidth - 2 * margin, 20);
     
     // Page info (izquierda)
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.text("Page 1", margin + 5, yPosition + 8);
-    doc.text(new Date().toLocaleDateString('es-ES'), margin + 5, yPosition + 16);
+    doc.text("Page 1", margin + 5, yPosition + 7);
+    doc.text(new Date().toLocaleDateString('es-ES'), margin + 5, yPosition + 14);
     
     // Título central
-    doc.setFontSize(16);
+    doc.setFontSize(14);
     doc.setFont("helvetica", "normal");
-    doc.text("Load Order", pageWidth / 2, yPosition + 12, { align: "center" });
+    doc.text("Load Order", pageWidth / 2, yPosition + 10, { align: "center" });
     
     // Load Number (derecha)
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.text("Load ID", pageWidth - margin - 35, yPosition + 8);
+    doc.text("Load ID", pageWidth - margin - 35, yPosition + 7);
     doc.setFont("helvetica", "bold");
-    doc.text(data.load_number, pageWidth - margin - 35, yPosition + 16);
+    doc.text(data.load_number, pageWidth - margin - 35, yPosition + 14);
     
-    yPosition += 35;
+    yPosition += 30;
 
     // ============ COMPANY SECTION ============
     
