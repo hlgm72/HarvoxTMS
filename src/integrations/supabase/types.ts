@@ -799,7 +799,7 @@ export type Database = {
             foreignKeyName: "expense_instances_payment_period_id_fkey"
             columns: ["payment_period_id"]
             isOneToOne: false
-            referencedRelation: "payment_periods"
+            referencedRelation: "company_payment_periods"
             referencedColumns: ["id"]
           },
           {
@@ -960,7 +960,7 @@ export type Database = {
             foreignKeyName: "fuel_expenses_payment_period_id_fkey"
             columns: ["payment_period_id"]
             isOneToOne: false
-            referencedRelation: "payment_periods"
+            referencedRelation: "company_payment_periods"
             referencedColumns: ["id"]
           },
           {
@@ -1472,6 +1472,13 @@ export type Database = {
             referencedRelation: "company_client_contacts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "loads_payment_period_id_fkey"
+            columns: ["payment_period_id"]
+            isOneToOne: false
+            referencedRelation: "company_payment_periods"
+            referencedColumns: ["id"]
+          },
         ]
       }
       maintenance_records: {
@@ -1696,7 +1703,7 @@ export type Database = {
             foreignKeyName: "other_income_payment_period_id_fkey"
             columns: ["payment_period_id"]
             isOneToOne: false
-            referencedRelation: "payment_periods"
+            referencedRelation: "company_payment_periods"
             referencedColumns: ["id"]
           },
         ]
@@ -2369,7 +2376,15 @@ export type Database = {
           updated_at: string | null
           weight_lbs: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "loads_payment_period_id_fkey"
+            columns: ["payment_period_id"]
+            isOneToOne: false
+            referencedRelation: "company_payment_periods"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
