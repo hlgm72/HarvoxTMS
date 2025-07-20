@@ -485,7 +485,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                   console.log('📍 CreateLoadDialog - Stops changed:', newStops);
                   setLoadStops(newStops);
                 }} 
-                showValidation={showStopsValidation}
+                showValidation={true}
                 initialStops={loadStops}
               />
             )}
