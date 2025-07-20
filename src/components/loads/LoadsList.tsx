@@ -250,8 +250,8 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   Broker / Cliente
                 </label>
                 <p className="text-sm font-medium">{load.broker_name}</p>
-                {(load as any).dispatcher_name && (
-                  <p className="text-xs text-muted-foreground">Contacto: {(load as any).dispatcher_name}</p>
+                {load.dispatcher_name && (
+                  <p className="text-xs text-muted-foreground">Contacto: {load.dispatcher_name}</p>
                 )}
               </div>
               
