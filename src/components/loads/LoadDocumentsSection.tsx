@@ -313,7 +313,7 @@ export function LoadDocumentsSection({
     }
   };
 
-  const handleLoadOrderGenerated = (loadOrderData: any) => {
+  const handleLoadOrderGenerated = async (loadOrderData: any) => {
     console.log('📋 LoadDocumentsSection - handleLoadOrderGenerated called with:', loadOrderData);
     
     const loadOrderDocument: LoadDocument = {
@@ -326,6 +326,51 @@ export function LoadDocumentsSection({
     };
 
     console.log('📄 LoadDocumentsSection - Created document:', loadOrderDocument);
+
+    // Si tenemos loadId, guardar automáticamente en la BD
+    if (loadId) {
+      try {
+        console.log('💾 LoadDocumentsSection - Saving Load Order to database...');
+        
+        const { data: docData, error: docError } = await supabase
+          .from('load_documents')
+          .insert({
+            load_id: loadId,
+            document_type: 'load_order',
+            file_name: loadOrderDocument.fileName,
+            file_url: loadOrderData.url,
+            file_size: null, // PDF size not available from client generation
+            content_type: 'application/pdf',
+            uploaded_by: (await supabase.auth.getUser()).data.user?.id
+          })
+          .select()
+          .single();
+
+        if (docError) throw docError;
+
+        // Update the document with the real ID from database
+        loadOrderDocument.id = docData.id;
+        
+        console.log('✅ LoadDocumentsSection - Load Order saved to database with ID:', docData.id);
+        
+        toast({
+          title: "Load Order guardado",
+          description: "El Load Order se ha guardado automáticamente en la base de datos",
+        });
+      } catch (error) {
+        console.error('❌ LoadDocumentsSection - Error saving Load Order to database:', error);
+        toast({
+          title: "Advertencia",
+          description: "El Load Order se generó pero no se pudo guardar en la BD. Puedes subirlo manualmente.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      // En modo creación, agregar como documento temporal
+      console.log('📂 LoadDocumentsSection - Adding Load Order as temporary document');
+      const updatedTempDocs = [...temporaryDocuments, loadOrderDocument];
+      onTemporaryDocumentsChange?.(updatedTempDocs);
+    }
 
     const updatedDocuments = [...documents, loadOrderDocument];
     setDocuments(updatedDocuments);
