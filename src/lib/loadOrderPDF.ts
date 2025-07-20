@@ -243,7 +243,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     // Dibujar línea conectora entre pickup y delivery pins si ambos existen
     if (pickupPinY > 0 && deliveryPinY > 0) {
       doc.setDrawColor(100, 100, 100); // Color gris
-      doc.setLineWidth(1);
+      doc.setLineWidth(0.3);
       // Línea desde la parte inferior del pin verde hasta la parte superior del pin rojo
       doc.line(margin + 90, pickupPinY + 5.5, margin + 90, deliveryPinY - 2.5);
     }
