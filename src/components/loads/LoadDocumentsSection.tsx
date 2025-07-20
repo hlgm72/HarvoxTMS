@@ -537,19 +537,6 @@ export function LoadDocumentsSection({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium text-muted-foreground">Documentos requeridos</h4>
-            {loadId && (
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => {
-                  // This will be handled by the parent component
-                  console.log('Open document management');
-                }}
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Gestionar Documentos
-              </Button>
-            )}
           </div>
           
           {documentTypes.map((docType) => {
