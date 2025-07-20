@@ -1839,84 +1839,6 @@ export type Database = {
           },
         ]
       }
-      payment_periods: {
-        Row: {
-          balance_alert_message: string | null
-          created_at: string
-          driver_user_id: string
-          gross_earnings: number
-          has_negative_balance: boolean
-          id: string
-          is_locked: boolean
-          locked_at: string | null
-          locked_by: string | null
-          net_payment: number
-          other_income: number
-          payment_method: string | null
-          payment_reference: string | null
-          period_end_date: string
-          period_frequency: string | null
-          period_start_date: string
-          period_type: string | null
-          processed_at: string | null
-          processed_by: string | null
-          status: string
-          total_deductions: number
-          total_income: number
-          updated_at: string
-        }
-        Insert: {
-          balance_alert_message?: string | null
-          created_at?: string
-          driver_user_id: string
-          gross_earnings?: number
-          has_negative_balance?: boolean
-          id?: string
-          is_locked?: boolean
-          locked_at?: string | null
-          locked_by?: string | null
-          net_payment?: number
-          other_income?: number
-          payment_method?: string | null
-          payment_reference?: string | null
-          period_end_date: string
-          period_frequency?: string | null
-          period_start_date: string
-          period_type?: string | null
-          processed_at?: string | null
-          processed_by?: string | null
-          status?: string
-          total_deductions?: number
-          total_income?: number
-          updated_at?: string
-        }
-        Update: {
-          balance_alert_message?: string | null
-          created_at?: string
-          driver_user_id?: string
-          gross_earnings?: number
-          has_negative_balance?: boolean
-          id?: string
-          is_locked?: boolean
-          locked_at?: string | null
-          locked_by?: string | null
-          net_payment?: number
-          other_income?: number
-          payment_method?: string | null
-          payment_reference?: string | null
-          period_end_date?: string
-          period_frequency?: string | null
-          period_start_date?: string
-          period_type?: string | null
-          processed_at?: string | null
-          processed_by?: string | null
-          status?: string
-          total_deductions?: number
-          total_income?: number
-          updated_at?: string
-        }
-        Relationships: []
-      }
       payment_reports: {
         Row: {
           amount: number
@@ -1977,13 +1899,6 @@ export type Database = {
             referencedRelation: "payment_methods"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "payment_reports_payment_period_id_fkey"
-            columns: ["payment_period_id"]
-            isOneToOne: false
-            referencedRelation: "payment_periods"
-            referencedColumns: ["id"]
-          },
         ]
       }
       pending_expenses: {
@@ -2028,24 +1943,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "pending_expenses_applied_to_period_id_fkey"
-            columns: ["applied_to_period_id"]
-            isOneToOne: false
-            referencedRelation: "payment_periods"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "pending_expenses_expense_instance_id_fkey"
             columns: ["expense_instance_id"]
             isOneToOne: false
             referencedRelation: "expense_instances"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "pending_expenses_original_period_id_fkey"
-            columns: ["original_period_id"]
-            isOneToOne: false
-            referencedRelation: "payment_periods"
             referencedColumns: ["id"]
           },
         ]
@@ -2396,6 +2297,20 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: Json
       }
+      calculate_driver_period_totals: {
+        Args: {
+          company_payment_period_id_param: string
+          driver_user_id_param: string
+        }
+        Returns: {
+          gross_earnings: number
+          total_deductions: number
+          other_income: number
+          total_income: number
+          net_payment: number
+          has_negative_balance: boolean
+        }[]
+      }
       calculate_fuel_summary_for_period: {
         Args: { period_id: string }
         Returns: {
@@ -2465,6 +2380,19 @@ export type Database = {
       get_payment_period_elements: {
         Args: { period_id_param: string }
         Returns: Json
+      }
+      get_period_drivers_summary: {
+        Args: { company_payment_period_id_param: string }
+        Returns: {
+          driver_user_id: string
+          driver_name: string
+          gross_earnings: number
+          total_deductions: number
+          other_income: number
+          total_income: number
+          net_payment: number
+          has_negative_balance: boolean
+        }[]
       }
       get_real_companies: {
         Args: Record<PropertyKey, never>
