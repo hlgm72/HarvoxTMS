@@ -663,9 +663,22 @@ export function LoadDocumentsSection({
                                  
                                    try {
                                      console.log('🌐 Opening document in browser PDF viewer...');
-                                     // Navigate directly to PDF using browser's native viewer
-                                     window.location.href = uploadedDoc.url;
-                                     console.log('✅ Navigated to document successfully');
+                                     // Force browser's native PDF viewer in new tab
+                                     const pdfUrl = uploadedDoc.url + '#toolbar=1&navpanes=1&scrollbar=1&view=FitH';
+                                     
+                                     // Create link element to force browser viewer
+                                     const link = document.createElement('a');
+                                     link.href = pdfUrl;
+                                     link.target = '_blank';
+                                     link.rel = 'noopener noreferrer';
+                                     link.type = 'application/pdf';
+                                     
+                                     // Add to DOM temporarily and click
+                                     document.body.appendChild(link);
+                                     link.click();
+                                     document.body.removeChild(link);
+                                     
+                                     console.log('✅ Document opened in browser PDF viewer');
                                   } catch (error) {
                                     console.error('❌ Error opening document:', error);
                                     toast({
