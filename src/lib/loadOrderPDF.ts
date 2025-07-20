@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
-import greenPinSvg from '../assets/green-pin.svg';
-import redPinSvg from '../assets/red-pin.svg';
+import greenPinSvg from '../assets/pin_green.svg';
+import redPinSvg from '../assets/pin_red.svg';
 
 interface LoadOrderData {
   load_number: string;
