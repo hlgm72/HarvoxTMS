@@ -8,7 +8,7 @@ import { Layout } from "@/components/layout/Layout";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { ClientsList } from "@/components/clients/ClientsList";
 import { ClientsGrid } from "@/components/clients/ClientsGrid";
-import { CreateBrokerDialog } from "@/components/brokers/CreateBrokerDialog";
+import { CreateClientDialog } from "@/components/clients/CreateClientDialog";
 import { ClientFilters } from "@/components/clients/ClientFilters";
 import { useClients } from "@/hooks/useClients";
 
@@ -252,7 +252,7 @@ export default function Clients() {
         </Card>
 
         {/* Create Client Dialog */}
-        <CreateBrokerDialog 
+        <CreateClientDialog 
           isOpen={showCreateDialog}
           onClose={() => setShowCreateDialog(false)}
         />

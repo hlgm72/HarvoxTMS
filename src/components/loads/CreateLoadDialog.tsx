@@ -19,9 +19,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CheckCircle, Circle, ArrowRight, Loader2, AlertTriangle, Check } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { BrokerCombobox } from "@/components/brokers/BrokerCombobox";
-import { DispatcherCombobox } from "@/components/brokers/DispatcherCombobox";
-import { CreateBrokerDialog } from "@/components/brokers/CreateBrokerDialog";
-import { CreateDispatcherDialog } from "@/components/brokers/CreateDispatcherDialog";
+import { ContactCombobox } from "@/components/clients/ContactCombobox";
+import { CreateClientDialog } from "@/components/clients/CreateClientDialog";
+import { CreateDispatcherDialog } from "@/components/clients/CreateDispatcherDialog";
 import { LoadStopsManager } from "./LoadStopsManager";
 import { LoadDocumentsSection } from "./LoadDocumentsSection";
 import { LoadAssignmentSection } from "./LoadAssignmentSection";
@@ -287,16 +287,16 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                         <FormItem>
                           <FormLabel>Broker / Cliente *</FormLabel>
                           <FormControl>
-                            <BrokerCombobox
-                              brokers={brokers}
-                              loading={brokersLoading}
-                              value={field.value}
-                              onValueChange={(value) => {
-                                field.onChange(value);
-                                const broker = brokers.find(b => b.id === value);
-                                setSelectedBroker(broker || null);
-                                form.setValue("dispatcher_id", "");
-                              }}
+                             <BrokerCombobox
+                               brokers={brokers}
+                               loading={brokersLoading}
+                               value={field.value}
+                               onValueChange={(value) => {
+                                 field.onChange(value);
+                                 const broker = brokers.find(b => b.id === value);
+                                 setSelectedBroker(broker || null);
+                                 form.setValue("dispatcher_id", "");
+                               }}
                               onCreateNew={() => setShowCreateBroker(true)}
                               onBrokerSelect={setSelectedBroker}
                               placeholder="Buscar broker por nombre, DOT, MC..."
@@ -314,17 +314,16 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                       name="dispatcher_id"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Dispatcher</FormLabel>
+                          <FormLabel>Contacto del Cliente</FormLabel>
                           <FormControl>
-                            <DispatcherCombobox
-                              dispatchers={selectedBroker?.dispatchers || []}
-                              value={field.value}
-                              onValueChange={field.onChange}
-                              onCreateNew={() => setShowCreateDispatcher(true)}
-                              placeholder="Buscar dispatcher..."
-                              disabled={!selectedBroker}
-                              className="w-full"
-                            />
+                             <ContactCombobox
+                               contacts={selectedBroker?.dispatchers || []}
+                               value={field.value}
+                               onValueChange={field.onChange}
+                               placeholder="Buscar contacto..."
+                               disabled={!selectedBroker}
+                               className="w-full"
+                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -550,7 +549,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         </Form>
 
         {/* Create Broker Dialog */}
-        <CreateBrokerDialog
+        <CreateClientDialog
           isOpen={showCreateBroker}
           onClose={() => setShowCreateBroker(false)}
           onSuccess={(brokerId) => {
@@ -560,30 +559,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
           }}
         />
 
-        {/* Create Dispatcher Dialog */}
+        {/* Create Contact Dialog */}
         <CreateDispatcherDialog
-          brokerId={selectedBroker?.id || ""}
-          isOpen={showCreateDispatcher}
-          onClose={() => setShowCreateDispatcher(false)}
-          onSuccess={async (dispatcherId) => {
-            try {
-              const result = await refetchBrokers();
-              if (result.data) {
-                const updatedBroker = result.data.find(b => b.id === selectedBroker?.id);
-                if (updatedBroker) {
-                  setSelectedBroker(updatedBroker);
-                }
-              }
-              form.setValue("dispatcher_id", dispatcherId);
-              toast({
-                title: "Dispatcher agregado al formulario",
-                description: `El dispatcher ha sido seleccionado automáticamente.`,
-              });
-            } catch (error) {
-              console.error('Error refrescando brokers:', error);
-              form.setValue("dispatcher_id", dispatcherId);
-            }
-          }}
+          clientId={selectedBroker?.id || ""}
+          open={showCreateDispatcher}
+          onOpenChange={setShowCreateDispatcher}
         />
       </DialogContent>
     </Dialog>

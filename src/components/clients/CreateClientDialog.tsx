@@ -30,8 +30,8 @@ const dispatcherSchema = z.object({
   notes: z.string().optional(),
 });
 
-const createBrokerSchema = z.object({
-  name: z.string().min(1, "Nombre del broker requerido"),
+const createClientSchema = z.object({
+  name: z.string().min(1, "Nombre del cliente requerido"),
   alias: z.string().optional(),
   phone: z.string().optional(),
   dot_number: z.string().optional(),
@@ -43,15 +43,15 @@ const createBrokerSchema = z.object({
   dispatchers: z.array(dispatcherSchema).optional(),
 });
 
-type CreateBrokerForm = z.infer<typeof createBrokerSchema>;
+type CreateClientForm = z.infer<typeof createClientSchema>;
 
-interface CreateBrokerDialogProps {
+interface CreateClientDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: (brokerId: string) => void;
 }
 
-export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerDialogProps) {
+export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientDialogProps) {
   const { user } = useAuth();
   const { userCompany } = useCompanyCache();
   const { toast } = useToast();
@@ -59,8 +59,8 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
   const [currentStep, setCurrentStep] = useState(1);
   const [showFMCSAModal, setShowFMCSAModal] = useState(false);
 
-  const form = useForm<CreateBrokerForm>({
-    resolver: zodResolver(createBrokerSchema),
+  const form = useForm<CreateClientForm>({
+    resolver: zodResolver(createClientSchema),
     defaultValues: {
       name: '',
       alias: '',
@@ -80,8 +80,8 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
     name: "dispatchers",
   });
 
-  const createBrokerMutation = useMutation({
-    mutationFn: async (data: CreateBrokerForm) => {
+  const createClientMutation = useMutation({
+    mutationFn: async (data: CreateClientForm) => {
       if (!user || !userCompany) {
         throw new Error('Usuario o compañía no encontrados');
       }
@@ -166,8 +166,8 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
     },
   });
 
-  const handleSubmitForm = (data: CreateBrokerForm) => {
-    createBrokerMutation.mutate(data);
+  const handleSubmitForm = (data: CreateClientForm) => {
+    createClientMutation.mutate(data);
   };
 
   const addDispatcher = () => {
@@ -234,7 +234,7 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">Información del Broker</CardTitle>
+                    <CardTitle className="text-lg">Información del Cliente</CardTitle>
                     <Button
                       type="button"
                       variant="outline"
@@ -254,14 +254,14 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                     name="logo_url"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Logo del Broker</FormLabel>
+                        <FormLabel>Logo del Cliente</FormLabel>
                         <FormControl>
                           <ClientLogoUpload
                             logoUrl={field.value || undefined}
                             clientName={form.watch("name") || form.watch("alias")}
                             emailDomain={form.watch("email_domain")}
                             onLogoChange={(url) => field.onChange(url || "")}
-                            disabled={createBrokerMutation.isPending}
+                            disabled={createClientMutation.isPending}
                           />
                         </FormControl>
                         <FormMessage />
@@ -277,7 +277,7 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                          const handlers = createTextHandlers(field.onChange, 'text');
                          return (
                            <FormItem>
-                             <FormLabel>Nombre del Broker *</FormLabel>
+                             <FormLabel>Nombre del Cliente *</FormLabel>
                              <FormControl>
                                <Input 
                                  placeholder="ABC Logistics Inc." 
@@ -433,7 +433,7 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                         <FormLabel>Notas</FormLabel>
                         <FormControl>
                           <Textarea 
-                            placeholder="Información adicional sobre el broker..."
+                            placeholder="Información adicional sobre el cliente..."
                             className="min-h-[80px]"
                             {...field} 
                           />
@@ -472,7 +472,7 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                   <CardTitle className="flex items-center justify-between">
                     <span className="flex items-center gap-2">
                       <User className="h-5 w-5" />
-                      Dispatchers
+                       Contactos de Cliente
                     </span>
                     <Button
                       type="button"
@@ -482,7 +482,7 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                       className="gap-2"
                     >
                       <Plus className="h-4 w-4" />
-                      Agregar Dispatcher
+                      Agregar Contacto
                     </Button>
                   </CardTitle>
                 </CardHeader>
@@ -490,14 +490,14 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                   {fields.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <User className="mx-auto h-8 w-8 mb-2" />
-                      <p>No hay dispatchers agregados</p>
-                      <p className="text-sm">Puedes agregar dispatchers o continuar sin ellos</p>
+                       <p>No hay contactos agregados</p>
+                       <p className="text-sm">Puedes agregar contactos o continuar sin ellos</p>
                     </div>
                   ) : (
                     fields.map((field, index) => (
                       <Card key={field.id} className="p-4">
                         <div className="flex items-center justify-between mb-4">
-                          <h4 className="font-medium">Dispatcher {index + 1}</h4>
+                          <h4 className="font-medium">Contacto {index + 1}</h4>
                           <Button
                             type="button"
                             variant="ghost"
@@ -666,9 +666,9 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
                   
                   <Button 
                     type="submit" 
-                    disabled={createBrokerMutation.isPending}
+                    disabled={createClientMutation.isPending}
                   >
-                    {createBrokerMutation.isPending ? 'Creando...' : 'Crear Broker'}
+                    {createClientMutation.isPending ? 'Creando...' : 'Crear Cliente'}
                   </Button>
                 </div>
               </div>
@@ -686,7 +686,7 @@ export function CreateBrokerDialog({ isOpen, onClose, onSuccess }: CreateBrokerD
             // Aplicar los datos al formulario
             Object.entries(data).forEach(([key, value]) => {
               if (value && typeof value === 'string') {
-                form.setValue(key as keyof CreateBrokerForm, value);
+                form.setValue(key as keyof CreateClientForm, value);
               }
             });
           }}
