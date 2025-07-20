@@ -211,7 +211,7 @@ export function LoadDocumentsSection({
         .insert({
           load_id: loadId,
           document_type: type,
-          file_name: file.name,
+          file_name: fileName, // Use custom file name instead of original
           file_url: urlData.publicUrl,
           file_size: file.size,
           content_type: file.type,
@@ -227,7 +227,7 @@ export function LoadDocumentsSection({
         id: docData.id,
         type,
         name: documentTypes.find(dt => dt.type === type)?.label || type,
-        fileName: file.name,
+        fileName: fileName, // Use custom file name instead of original
         fileSize: file.size,
         uploadedAt: new Date(),
         url: urlData.publicUrl,
@@ -378,12 +378,12 @@ export function LoadDocumentsSection({
         // Convert blob URL to actual file
         const response = await fetch(loadOrderData.url);
         const blob = await response.blob();
-        const fileName = `Load_Order_${loadData?.load_number || 'unknown'}.pdf`;
+        const loadNumber = loadData?.load_number || 'UNKNOWN';
+        const fileName = `${loadNumber}_Load_Order.pdf`;
         const file = new File([blob], fileName, { type: 'application/pdf' });
         
-        // Create file path: load_id/document_type_timestamp.ext
-        const storageFileName = `load_order_${Date.now()}.pdf`;
-        const filePath = `${loadId}/${storageFileName}`;
+        // Create file path using the custom name
+        const filePath = `${loadId}/${fileName}`;
 
         // Upload file to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
@@ -444,7 +444,8 @@ export function LoadDocumentsSection({
       try {
         const response = await fetch(loadOrderData.url);
         const blob = await response.blob();
-        const fileName = `Load_Order_${loadData?.load_number || 'unknown'}.pdf`;
+        const loadNumber = loadData?.load_number || 'UNKNOWN';
+        const fileName = `${loadNumber}_Load_Order.pdf`;
         
         const loadOrderDocument: LoadDocument = {
           id: crypto.randomUUID(),
