@@ -64,34 +64,46 @@ export function GenerateLoadOrderDialog({
     }
 
     setIsGenerating(true);
+    console.log('🔄 GenerateLoadOrderDialog - Starting PDF generation...');
     
     try {
       // Generar el PDF del Load Order
+      console.log('📄 GenerateLoadOrderDialog - Calling generateLoadOrderPDF with data:', {
+        ...loadData,
+        customAmount: values.customAmount
+      });
+      
       const pdfUrl = await generateLoadOrderPDF({
         ...loadData,
         customAmount: values.customAmount
       });
 
+      console.log('✅ GenerateLoadOrderDialog - PDF generated successfully, URL:', pdfUrl);
+
       // Notificar que se generó el Load Order
+      console.log('📢 GenerateLoadOrderDialog - Calling onLoadOrderGenerated...');
       onLoadOrderGenerated({
         url: pdfUrl,
         amount: values.customAmount
       });
 
+      console.log('🎉 GenerateLoadOrderDialog - Load Order generated successfully');
       toast({
         title: "Load Order generado",
         description: `Load Order creado exitosamente con monto $${values.customAmount.toFixed(2)}`,
       });
 
+      console.log('🚪 GenerateLoadOrderDialog - Closing modal...');
       onClose();
     } catch (error) {
-      console.error('Error generating Load Order:', error);
+      console.error('❌ GenerateLoadOrderDialog - Error generating Load Order:', error);
       toast({
         title: "Error",
         description: "No se pudo generar el Load Order. Intenta nuevamente.",
         variant: "destructive",
       });
     } finally {
+      console.log('🏁 GenerateLoadOrderDialog - Finishing, setting isGenerating to false');
       setIsGenerating(false);
     }
   };

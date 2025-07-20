@@ -12,12 +12,15 @@ interface LoadOrderData {
 }
 
 export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string> {
-  const doc = new jsPDF();
+  console.log('📄 generateLoadOrderPDF - Starting with data:', data);
   
-  // Configuración del documento
-  const pageWidth = doc.internal.pageSize.width;
-  const margin = 20;
-  let yPosition = 30;
+  try {
+    const doc = new jsPDF();
+    
+    // Configuración del documento
+    const pageWidth = doc.internal.pageSize.width;
+    const margin = 20;
+    let yPosition = 30;
 
   // Header - Company Logo y Título
   doc.setFontSize(24);
@@ -168,8 +171,14 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
   );
 
   // Convertir a blob y crear URL
+  console.log('🔗 generateLoadOrderPDF - Creating blob and URL...');
   const pdfBlob = doc.output('blob');
   const url = URL.createObjectURL(pdfBlob);
   
+  console.log('✅ generateLoadOrderPDF - PDF generated successfully, URL:', url);
   return url;
+  } catch (error) {
+    console.error('❌ generateLoadOrderPDF - Error generating PDF:', error);
+    throw error;
+  }
 }

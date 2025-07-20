@@ -305,6 +305,8 @@ export function LoadDocumentsSection({
   };
 
   const handleLoadOrderGenerated = (loadOrderData: any) => {
+    console.log('📋 LoadDocumentsSection - handleLoadOrderGenerated called with:', loadOrderData);
+    
     const loadOrderDocument: LoadDocument = {
       id: crypto.randomUUID(),
       type: 'load_order',
@@ -314,10 +316,14 @@ export function LoadDocumentsSection({
       url: loadOrderData.url
     };
 
+    console.log('📄 LoadDocumentsSection - Created document:', loadOrderDocument);
+
     const updatedDocuments = [...documents, loadOrderDocument];
     setDocuments(updatedDocuments);
     setHasLoadOrder(true);
     onDocumentsChange?.(updatedDocuments);
+    
+    console.log('✅ LoadDocumentsSection - Documents updated, hasLoadOrder set to true');
   };
 
   const formatFileSize = (bytes?: number) => {
