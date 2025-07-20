@@ -543,6 +543,13 @@ export function LoadDocumentsSection({
             const status = getDocumentStatus(docType.type);
             const uploadedDoc = documents.find(doc => doc.type === docType.type);
             
+            console.log('🔍 Document check for type:', docType.type, { 
+              uploadedDoc, 
+              hasUrl: !!uploadedDoc?.url,
+              url: uploadedDoc?.url,
+              fileName: uploadedDoc?.fileName 
+            });
+            
             return (
               <div key={docType.type} className="border rounded-lg p-4">
                 <div className="flex items-start justify-between">
