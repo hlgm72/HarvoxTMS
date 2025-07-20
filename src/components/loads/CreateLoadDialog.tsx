@@ -550,16 +550,29 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                   >
                     Siguiente
                   </Button>
-                ) : (
+                ) : mode === 'create' ? (
                   <Button 
-                    type="button"
-                    onClick={() => form.handleSubmit(onSubmit)()}
+                    type="submit"
                     disabled={createLoadMutation.isPending}
                   >
                     {createLoadMutation.isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     ) : null}
-                    {mode === 'create' ? 'Crear Carga' : 'Guardar Cambios'}
+                    Crear Carga
+                  </Button>
+                ) : (
+                  <Button 
+                    type="button"
+                    onClick={() => {
+                      const values = form.getValues();
+                      onSubmit(values);
+                    }}
+                    disabled={createLoadMutation.isPending}
+                  >
+                    {createLoadMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : null}
+                    Guardar Cambios
                   </Button>
                 )}
               </div>
