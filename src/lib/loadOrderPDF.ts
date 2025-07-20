@@ -183,17 +183,29 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       }
       
       doc.setFont("helvetica", "normal");
-      // Dirección completa
-      const address = `${pickup.address}, ${pickup.city}, ${pickup.state} ${pickup.zip_code || ''}`;
-      const addressLines = doc.splitTextToSize(address, pageWidth - rightColumnX - margin);
-      doc.text(addressLines, rightColumnX, yPosition + 16);
+      // Dirección separada en líneas para diseño más compacto
+      let addressY = yPosition + 13; // Más cerca del nombre de la empresa
       
-      // Información adicional
+      // Street address
+      if (pickup.address) {
+        const streetLines = doc.splitTextToSize(pickup.address, pageWidth - rightColumnX - margin);
+        doc.text(streetLines, rightColumnX, addressY);
+        addressY += streetLines.length * 4; // 4 puntos por línea
+      }
+      
+      // Ciudad, Estado y ZIP en la siguiente línea
+      const cityStateZip = `${pickup.city || ''}, ${pickup.state || ''} ${pickup.zip_code || ''}`.trim();
+      if (cityStateZip && cityStateZip !== ', ') {
+        doc.text(cityStateZip, rightColumnX, addressY);
+        addressY += 4;
+      }
+      
+      // Información adicional más compacta
       if (pickup.contact_name || pickup.contact_phone) {
         const contact = [];
         if (pickup.contact_name) contact.push(pickup.contact_name);
         if (pickup.contact_phone) contact.push(pickup.contact_phone);
-        doc.text(contact.join(' - '), rightColumnX, yPosition + 32);
+        doc.text(contact.join(' - '), rightColumnX, addressY + 4);
       }
       
       // Instrucciones especiales
@@ -239,17 +251,29 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       }
       
       doc.setFont("helvetica", "normal");
-      // Dirección completa
-      const address = `${delivery.address}, ${delivery.city}, ${delivery.state} ${delivery.zip_code || ''}`;
-      const addressLines = doc.splitTextToSize(address, pageWidth - rightColumnX - margin);
-      doc.text(addressLines, rightColumnX, yPosition + 16);
+      // Dirección separada en líneas para diseño más compacto
+      let addressY = yPosition + 13; // Más cerca del nombre de la empresa
       
-      // Información adicional
+      // Street address
+      if (delivery.address) {
+        const streetLines = doc.splitTextToSize(delivery.address, pageWidth - rightColumnX - margin);
+        doc.text(streetLines, rightColumnX, addressY);
+        addressY += streetLines.length * 4; // 4 puntos por línea
+      }
+      
+      // Ciudad, Estado y ZIP en la siguiente línea
+      const cityStateZip = `${delivery.city || ''}, ${delivery.state || ''} ${delivery.zip_code || ''}`.trim();
+      if (cityStateZip && cityStateZip !== ', ') {
+        doc.text(cityStateZip, rightColumnX, addressY);
+        addressY += 4;
+      }
+      
+      // Información adicional más compacta
       if (delivery.contact_name || delivery.contact_phone) {
         const contact = [];
         if (delivery.contact_name) contact.push(delivery.contact_name);
         if (delivery.contact_phone) contact.push(delivery.contact_phone);
-        doc.text(contact.join(' - '), rightColumnX, yPosition + 32);
+        doc.text(contact.join(' - '), rightColumnX, addressY + 4);
       }
       
       // Instrucciones especiales
