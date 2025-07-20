@@ -75,6 +75,54 @@ export const useCreateLoad = () => {
         console.log('✅ useCreateLoad - Load updated successfully:', updatedLoad);
         currentLoad = updatedLoad;
 
+        // Handle stops for edit mode
+        if (data.stops && data.stops.length > 0) {
+          console.log('📍 useCreateLoad - Processing stops for edit mode');
+          
+          // First, delete existing stops
+          console.log('🗑️ useCreateLoad - Deleting existing stops for load:', data.id);
+          const { error: deleteError } = await supabase
+            .from('load_stops')
+            .delete()
+            .eq('load_id', data.id);
+
+          if (deleteError) {
+            console.error('❌ useCreateLoad - Error deleting existing stops:', deleteError);
+            throw new Error(`Error eliminando paradas existentes: ${deleteError.message}`);
+          }
+
+          console.log('✅ useCreateLoad - Existing stops deleted successfully');
+
+          // Then, insert new stops
+          const stopsToInsert = data.stops.map(stop => ({
+            ...stop,
+            load_id: currentLoad.id,
+            scheduled_date: stop.scheduled_date ? 
+              (stop.scheduled_date instanceof Date ? 
+                stop.scheduled_date.toISOString().split('T')[0] : 
+                stop.scheduled_date) : null,
+            actual_date: stop.actual_date ? 
+              (stop.actual_date instanceof Date ? 
+                stop.actual_date.toISOString().split('T')[0] : 
+                stop.actual_date) : null,
+          }));
+
+          console.log('📍 useCreateLoad - Inserting new stops:', stopsToInsert);
+
+          const { error: stopsError } = await supabase
+            .from('load_stops')
+            .insert(stopsToInsert);
+
+          if (stopsError) {
+            console.error('❌ useCreateLoad - Error creating new stops:', stopsError);
+            throw new Error(`Error creando nuevas paradas: ${stopsError.message}`);
+          }
+
+          console.log('✅ useCreateLoad - New stops created successfully for edit mode');
+        } else {
+          console.log('📍 useCreateLoad - No stops to process for edit mode');
+        }
+
       } else {
         console.log('➕ useCreateLoad - Creating new load');
         
@@ -100,7 +148,7 @@ export const useCreateLoad = () => {
         console.log('✅ useCreateLoad - Load created successfully:', newLoad);
         currentLoad = newLoad;
 
-        // Handle stops only for new loads
+        // Handle stops for new loads
         if (data.stops && data.stops.length > 0) {
           console.log('📍 useCreateLoad - Creating stops for new load');
           
