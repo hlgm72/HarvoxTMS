@@ -120,10 +120,10 @@ const calculateDateRange = (filterType: LoadsFilters['periodFilter']['type']): D
 };
 
 /**
- * Obtiene los period_ids relevantes según el filtro de fechas
+ * Obtiene los period_ids relevantes según el filtro de fechas (ACTUALIZADO para company_payment_periods)
  */
 const getRelevantPeriodIds = async (
-  userIds: string[], 
+  companyId: string, 
   periodFilter: LoadsFilters['periodFilter']
 ): Promise<string[]> => {
   if (!periodFilter) {
@@ -152,11 +152,11 @@ const getRelevantPeriodIds = async (
     return [];
   }
 
-  // Buscar períodos que se solapen con el rango de fechas
+  // Buscar períodos que se solapen con el rango de fechas (NUEVA LÓGICA para períodos por empresa)
   const { data: periodsInRange, error } = await supabase
-    .from('payment_periods')
+    .from('company_payment_periods')
     .select('id')
-    .in('driver_user_id', userIds)
+    .eq('company_id', companyId)
     .lte('period_start_date', dateRange.endDate)
     .gte('period_end_date', dateRange.startDate);
 
@@ -211,7 +211,7 @@ export const useLoads = (filters?: LoadsFilters) => {
 
       try {
         // PASO 2: Obtener period_ids relevantes según el filtro (OPTIMIZACIÓN CLAVE)
-        const relevantPeriodIds = await getRelevantPeriodIds(companyUsers, filters?.periodFilter);
+        const relevantPeriodIds = await getRelevantPeriodIds(userCompany.company_id, filters?.periodFilter);
         
         // PASO 3: Construir query optimizada de cargas
         let loadsQuery = supabase
@@ -267,7 +267,7 @@ export const useLoads = (filters?: LoadsFilters) => {
             ? supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', dispatcherIds)
             : Promise.resolve({ data: [] }),
           periodIds.length > 0 
-            ? supabase.from('payment_periods').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds)
+            ? supabase.from('company_payment_periods').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds)
             : Promise.resolve({ data: [] }),
           loadIds.length > 0 
             ? supabase.from('load_stops').select('load_id, stop_type, city, stop_number').in('load_id', loadIds).in('stop_type', ['pickup', 'delivery'])

@@ -26,8 +26,8 @@ export const usePaymentPeriodProtection = () => {
       setIsLoading(true);
       
       const { data, error } = await supabase
-        .from('payment_periods')
-        .select('is_locked, locked_at, locked_by, payment_method, payment_reference')
+        .from('company_payment_periods')
+        .select('is_locked, locked_at, locked_by')
         .eq('id', periodId)
         .single();
 
@@ -44,9 +44,7 @@ export const usePaymentPeriodProtection = () => {
       return {
         isLocked: data.is_locked || false,
         lockedAt: data.locked_at,
-        lockedBy: data.locked_by,
-        paymentMethod: data.payment_method,
-        paymentReference: data.payment_reference
+        lockedBy: data.locked_by
       };
     } catch (error) {
       console.error('Unexpected error checking period status:', error);

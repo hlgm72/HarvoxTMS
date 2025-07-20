@@ -24,7 +24,7 @@ interface PeriodFilterProps {
 
 export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilterProps) {
   const [open, setOpen] = useState(false);
-  const { data: allPeriods = [] } = usePaymentPeriods({ includeDriverName: true });
+  const { data: allPeriods = [] } = usePaymentPeriods();
   const { data: currentPeriod } = useCurrentPaymentPeriod();
 
   const getDateRangeForType = (type: string) => {
@@ -313,9 +313,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                           {getStatusText(period.status)}
                         </Badge>
                       </div>
-                      {period.driver_name && (
-                        <span className="text-xs text-muted-foreground">{period.driver_name}</span>
-                      )}
+                      {/* Driver name not needed for company periods */}
                     </div>
                   </Button>
                 ))}
@@ -352,9 +350,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                           {getStatusText(period.status)}
                         </Badge>
                       </div>
-                      {period.driver_name && (
-                        <span className="text-xs text-muted-foreground">{period.driver_name}</span>
-                      )}
+                      {/* Driver name not needed for company periods */}
                     </div>
                   </Button>
                 ))}
@@ -386,9 +382,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                           {getStatusText(period.status)}
                         </Badge>
                       </div>
-                      {period.driver_name && (
-                        <span className="text-xs text-muted-foreground">{period.driver_name}</span>
-                      )}
+                      {/* Driver name not needed for company periods */}
                     </div>
                   </Button>
                 ))}

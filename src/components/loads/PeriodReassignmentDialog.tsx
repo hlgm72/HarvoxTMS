@@ -34,7 +34,7 @@ const PeriodReassignmentDialog = ({
     paymentPeriods, 
     reassignElement, 
     isReassigningElement 
-  } = usePaymentPeriods(element.driverUserId);
+  } = usePaymentPeriods();
 
   const handleReassign = () => {
     if (!selectedPeriodId) {
@@ -237,7 +237,7 @@ const PeriodReassignmentDialog = ({
                             </div>
                             <div className="flex justify-between items-center">
                               <span className="text-sm text-muted-foreground">Ingresos Actuales:</span>
-                              <span className="font-medium">{formatCurrency(selectedPeriod.total_income)}</span>
+                              <span className="font-medium">-</span>
                             </div>
                           </div>
                         );

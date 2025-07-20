@@ -5,21 +5,18 @@ import { toast } from './use-toast';
 
 export interface PaymentPeriod {
   id: string;
-  driver_user_id: string;
+  company_id: string;
   period_start_date: string;
   period_end_date: string;
   period_frequency: string;
   status: string;
   period_type: string;
   is_locked?: boolean;
-  total_income?: number;
-  driver_name?: string;
 }
 
 interface PaymentPeriodsFilters {
-  driverUserId?: string;
+  companyId?: string;
   status?: string;
-  includeDriverName?: boolean;
 }
 
 interface ReassignElementParams {
@@ -28,59 +25,48 @@ interface ReassignElementParams {
   newPeriodId: string;
 }
 
-// Hook principal que mantiene compatibilidad con la implementación anterior
-export const usePaymentPeriods = (driverUserIdOrFilters?: string | PaymentPeriodsFilters) => {
+// Hook principal actualizado para company_payment_periods
+export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFilters) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Determine if parameter is a string (driverUserId) or filters object
-  const filters: PaymentPeriodsFilters = typeof driverUserIdOrFilters === 'string' 
-    ? { driverUserId: driverUserIdOrFilters, includeDriverName: true }
-    : driverUserIdOrFilters || {};
+  // Determine if parameter is a string (companyId) or filters object
+  const filters: PaymentPeriodsFilters = typeof companyIdOrFilters === 'string' 
+    ? { companyId: companyIdOrFilters }
+    : companyIdOrFilters || {};
 
   const periodsQuery = useQuery({
-    queryKey: ['payment-periods', user?.id, filters],
+    queryKey: ['company-payment-periods', user?.id, filters],
     queryFn: async (): Promise<PaymentPeriod[]> => {
       if (!user) throw new Error('User not authenticated');
 
-      // Obtener la compañía del usuario
-      const { data: userCompanyRole, error: companyError } = await supabase
-        .from('user_company_roles')
-        .select('company_id')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .limit(1)
-        .single();
+      // Obtener la compañía del usuario si no se especifica
+      let companyId = filters.companyId;
+      
+      if (!companyId) {
+        const { data: userCompanyRole, error: companyError } = await supabase
+          .from('user_company_roles')
+          .select('company_id')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .limit(1)
+          .single();
 
-      if (companyError || !userCompanyRole) {
-        throw new Error('No se pudo obtener la compañía del usuario');
+        if (companyError || !userCompanyRole) {
+          throw new Error('No se pudo obtener la compañía del usuario');
+        }
+        
+        companyId = userCompanyRole.company_id;
       }
 
-      // Obtener todos los usuarios de la compañía
-      const { data: companyUsers, error: usersError } = await supabase
-        .from('user_company_roles')
-        .select('user_id')
-        .eq('company_id', userCompanyRole.company_id)
-        .eq('is_active', true);
-
-      if (usersError) {
-        throw new Error('Error obteniendo usuarios de la compañía');
-      }
-
-      const userIds = companyUsers.map(u => u.user_id);
-
-      // Construir query base
+      // Construir query base para períodos de empresa
       let query = supabase
-        .from('payment_periods')
-        .select('id, driver_user_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked, total_income')
-        .in('driver_user_id', userIds)
+        .from('company_payment_periods')
+        .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
+        .eq('company_id', companyId)
         .order('period_start_date', { ascending: false });
 
       // Aplicar filtros adicionales
-      if (filters?.driverUserId) {
-        query = query.eq('driver_user_id', filters.driverUserId);
-      }
-
       if (filters?.status) {
         query = query.eq('status', filters.status);
       }
@@ -91,25 +77,7 @@ export const usePaymentPeriods = (driverUserIdOrFilters?: string | PaymentPeriod
         throw periodsError;
       }
 
-      // Enriquecer con nombres de conductores si se solicita
-      if (filters?.includeDriverName) {
-        const driverIds = [...new Set(periods.map(p => p.driver_user_id))];
-        
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('user_id, first_name, last_name')
-          .in('user_id', driverIds);
-
-        return periods.map(period => {
-          const profile = profiles?.find(p => p.user_id === period.driver_user_id);
-          return {
-            ...period,
-            driver_name: profile ? `${profile.first_name} ${profile.last_name}` : 'Sin asignar'
-          };
-        });
-      }
-
-      return periods;
+      return periods || [];
     },
     enabled: !!user,
   });
@@ -132,7 +100,7 @@ export const usePaymentPeriods = (driverUserIdOrFilters?: string | PaymentPeriod
       });
       
       // Invalidar queries relacionadas
-      queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
+      queryClient.invalidateQueries({ queryKey: ['company-payment-periods'] });
       queryClient.invalidateQueries({ queryKey: ['loads'] });
     },
     onError: (error: any) => {
@@ -153,77 +121,52 @@ export const usePaymentPeriods = (driverUserIdOrFilters?: string | PaymentPeriod
   };
 };
 
-// Hook para obtener el período actual
-export const useCurrentPaymentPeriod = (driverUserId?: string) => {
+// Hook para obtener el período actual de empresa
+export const useCurrentPaymentPeriod = (companyId?: string) => {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ['current-payment-period', user?.id, driverUserId],
+    queryKey: ['current-company-payment-period', user?.id, companyId],
     queryFn: async (): Promise<PaymentPeriod | null> => {
       if (!user) throw new Error('User not authenticated');
 
       const currentDate = new Date().toISOString().split('T')[0];
       
-      // Si se especifica un conductor, buscar su período actual
-      if (driverUserId) {
-        const { data: period, error } = await supabase
-          .from('payment_periods')
-          .select('id, driver_user_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked, total_income')
-          .eq('driver_user_id', driverUserId)
-          .lte('period_start_date', currentDate)
-          .gte('period_end_date', currentDate)
-          .eq('status', 'open')
+      // Obtener la compañía del usuario si no se especifica
+      let targetCompanyId = companyId;
+      
+      if (!targetCompanyId) {
+        const { data: userCompanyRole, error: companyError } = await supabase
+          .from('user_company_roles')
+          .select('company_id')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
           .limit(1)
           .single();
 
-        if (error && error.code !== 'PGRST116') {
-          throw error;
+        if (companyError || !userCompanyRole) {
+          return null;
         }
-
-        return period || null;
+        
+        targetCompanyId = userCompanyRole.company_id;
       }
 
-      // Si no hay conductor específico, obtener el período más común de la compañía
-      const { data: userCompanyRole, error: companyError } = await supabase
-        .from('user_company_roles')
-        .select('company_id')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .limit(1)
-        .single();
-
-      if (companyError || !userCompanyRole) {
-        return null;
-      }
-
-      // Obtener todos los usuarios de la compañía
-      const { data: companyUsers, error: usersError } = await supabase
-        .from('user_company_roles')
-        .select('user_id')
-        .eq('company_id', userCompanyRole.company_id)
-        .eq('is_active', true);
-
-      if (usersError) {
-        return null;
-      }
-
-      const userIds = companyUsers.map(u => u.user_id);
-
-      // Buscar períodos actuales abiertos
-      const { data: periods, error: periodsError } = await supabase
-        .from('payment_periods')
-        .select('id, driver_user_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked, total_income')
-        .in('driver_user_id', userIds)
+      // Buscar período actual abierto de la empresa
+      const { data: period, error } = await supabase
+        .from('company_payment_periods')
+        .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
+        .eq('company_id', targetCompanyId)
         .lte('period_start_date', currentDate)
         .gte('period_end_date', currentDate)
         .eq('status', 'open')
-        .limit(1);
+        .limit(1)
+        .single();
 
-      if (periodsError) {
-        throw periodsError;
+      if (error && error.code !== 'PGRST116') {
+        throw error;
       }
 
-      return periods.length > 0 ? periods[0] : null;
+      return period || null;
     },
     enabled: !!user,
   });

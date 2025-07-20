@@ -154,12 +154,12 @@ export default function OwnerDashboard() {
         totalIncome = loadsData?.reduce((sum, load) => sum + (load.total_amount || 0), 0) || 0;
       }
 
-      // Get pending payments count
+      // Get pending payments count (ahora usando company_payment_periods)
       const { count: pendingPayments } = await supabase
-        .from('payment_periods')
+        .from('company_payment_periods')
         .select('*', { count: 'exact', head: true })
-        .in('driver_user_id', driverIds)
-        .eq('status', 'draft');
+        .eq('company_id', userRole.company_id)
+        .eq('status', 'open');
 
       setStats({
         total_drivers: driversCount || 0,
