@@ -1,4 +1,6 @@
 import jsPDF from 'jspdf';
+import greenPinSvg from '../assets/green-pin.svg';
+import redPinSvg from '../assets/red-pin.svg';
 
 interface LoadOrderData {
   load_number: string;
@@ -17,45 +19,34 @@ interface LoadOrderData {
 export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string> {
   console.log('📄 generateLoadOrderPDF - Starting with data:', data);
   
-  // Función para dibujar un drop pin
-  const drawDropPin = (doc: any, x: number, y: number, color: number[]) => {
-    // Configurar color
-    doc.setFillColor(color[0], color[1], color[2]);
-    doc.setDrawColor(color[0], color[1], color[2]);
-    
-    // Dibujar círculo superior del pin
-    doc.circle(x, y, 2.5, 'F');
-    
-    // Dibujar triángulo inferior del pin usando líneas
-    doc.setLineWidth(1);
-    const triangleHeight = 3;
-    const triangleBase = 2;
-    
-    // Coordenadas del triángulo
-    const x1 = x - triangleBase/2; // punto izquierdo
-    const y1 = y + 2.5;            // base del triángulo
-    const x2 = x + triangleBase/2; // punto derecho
-    const y2 = y + 2.5;            // base del triángulo
-    const x3 = x;                  // punta del triángulo
-    const y3 = y + 2.5 + triangleHeight; // punta del triángulo
-    
-    // Dibujar triángulo usando líneas
-    doc.setFillColor(color[0], color[1], color[2]);
-    doc.setDrawColor(color[0], color[1], color[2]);
-    doc.setLineWidth(0.5);
-    
-    // Base del triángulo
-    doc.line(x1, y1, x2, y2);
-    // Lado izquierdo
-    doc.line(x1, y1, x3, y3);
-    // Lado derecho
-    doc.line(x2, y2, x3, y3);
-    
-    // Rellenar el triángulo con pequeños rectángulos
-    for (let i = 0; i < triangleHeight; i++) {
-      const currentY = y1 + i;
-      const currentWidth = triangleBase * (1 - i / triangleHeight);
-      doc.rect(x - currentWidth/2, currentY, currentWidth, 0.5, 'F');
+  // Función para agregar imágenes de drop pins
+  const addDropPinImage = async (doc: any, x: number, y: number, svgSrc: string) => {
+    try {
+      // Crear imagen desde SVG
+      const img = new Image();
+      img.src = svgSrc;
+      
+      return new Promise<void>((resolve) => {
+        img.onload = () => {
+          // Crear canvas para convertir SVG a imagen
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = 12;
+          canvas.height = 15;
+          
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, 12, 15);
+            const imgData = canvas.toDataURL('image/png');
+            
+            // Agregar imagen al PDF
+            doc.addImage(imgData, 'PNG', x - 3, y - 2, 6, 7.5);
+          }
+          resolve();
+        };
+        img.onerror = () => resolve(); // Continuar si hay error
+      });
+    } catch (error) {
+      console.warn('Error loading pin image:', error);
     }
   };
   
@@ -139,9 +130,9 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       doc.setFont("helvetica", "bold");
       doc.text("Pickup", margin + 60, yPosition);
       
-      // Guardar posición Y del drop pin verde y dibujarlo
+      // Guardar posición Y del drop pin verde y agregarlo
       pickupPinY = yPosition - 2;
-      drawDropPin(doc, margin + 90, pickupPinY, [76, 175, 80]);
+      await addDropPinImage(doc, margin + 90, pickupPinY, greenPinSvg);
       
       // Información de pickup en columna derecha
       doc.setFontSize(10);
@@ -195,9 +186,9 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       doc.setFont("helvetica", "bold");
       doc.text("Delivery", margin + 60, yPosition);
       
-      // Guardar posición Y del drop pin rojo y dibujarlo
+      // Guardar posición Y del drop pin rojo y agregarlo
       deliveryPinY = yPosition - 2;
-      drawDropPin(doc, margin + 90, deliveryPinY, [244, 67, 54]);
+      await addDropPinImage(doc, margin + 90, deliveryPinY, redPinSvg);
       
       // Información de delivery en columna derecha
       doc.setFontSize(10);
