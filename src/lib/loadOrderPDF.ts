@@ -94,7 +94,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     doc.setFont("helvetica", "bold");
     doc.text(data.load_number, pageWidth - margin - 35, yPosition + 11);
     
-    yPosition += 25;
+    yPosition += 15;
 
     // ============ COMPANY SECTION ============
     
@@ -119,7 +119,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     if (contactInfo.length > 0) {
       doc.text(contactInfo.join(' • '), pageWidth / 2, yPosition + 18, { align: "center" });
     }
-    yPosition += companySectionHeight + 5;
+    yPosition += companySectionHeight;
 
     // ============ ROUTE SECTION ============
     
@@ -152,11 +152,6 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     // ============ PICKUP STOP ============
     if (pickupStops.length > 0) {
       const pickup = pickupStops[0];
-      
-      // Línea separadora interna
-      doc.setLineWidth(0.1);
-      doc.setDrawColor(200, 200, 200);
-      doc.line(margin + 5, yPosition, pageWidth - margin - 5, yPosition);
       
       // Pickup header con indicador visual
       doc.setFontSize(12);
@@ -213,11 +208,6 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     // ============ DELIVERY STOP ============
     if (deliveryStops.length > 0) {
       const delivery = deliveryStops[0];
-      
-      // Línea separadora interna
-      doc.setLineWidth(0.1);
-      doc.setDrawColor(200, 200, 200);
-      doc.line(margin + 5, yPosition, pageWidth - margin - 5, yPosition);
       
       // Delivery header con indicador visual
       doc.setFontSize(12);
