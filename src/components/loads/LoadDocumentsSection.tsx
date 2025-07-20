@@ -108,7 +108,7 @@ export function LoadDocumentsSection({
       const loadDocuments: LoadDocument[] = data.map(doc => ({
         id: doc.id,
         type: doc.document_type as LoadDocument['type'],
-        name: doc.file_name,
+        name: documentTypes.find(dt => dt.type === doc.document_type)?.label || doc.document_type,
         fileName: doc.file_name,
         fileSize: doc.file_size,
         uploadedAt: new Date(doc.created_at),
