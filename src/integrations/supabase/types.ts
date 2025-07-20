@@ -2421,6 +2421,10 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: Json
       }
+      generate_company_payment_periods: {
+        Args: { company_id_param: string; from_date: string; to_date: string }
+        Returns: Json
+      }
       generate_payment_periods: {
         Args:
           | { company_id_param: string; from_date: string; to_date: string }
