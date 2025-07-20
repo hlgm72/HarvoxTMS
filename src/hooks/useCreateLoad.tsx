@@ -93,19 +93,22 @@ export const useCreateLoad = () => {
 
           console.log('✅ useCreateLoad - Existing stops deleted successfully');
 
-          // Then, insert new stops
-          const stopsToInsert = data.stops.map(stop => ({
-            ...stop,
-            load_id: currentLoad.id,
-            scheduled_date: stop.scheduled_date ? 
-              (stop.scheduled_date instanceof Date ? 
-                stop.scheduled_date.toISOString().split('T')[0] : 
-                stop.scheduled_date) : null,
-            actual_date: stop.actual_date ? 
-              (stop.actual_date instanceof Date ? 
-                stop.actual_date.toISOString().split('T')[0] : 
-                stop.actual_date) : null,
-          }));
+          // Then, insert new stops (excluding temporary id)
+          const stopsToInsert = data.stops.map(stop => {
+            const { id, ...stopWithoutId } = stop;
+            return {
+              ...stopWithoutId,
+              load_id: currentLoad.id,
+              scheduled_date: stop.scheduled_date ? 
+                (stop.scheduled_date instanceof Date ? 
+                  stop.scheduled_date.toISOString().split('T')[0] : 
+                  stop.scheduled_date) : null,
+              actual_date: stop.actual_date ? 
+                (stop.actual_date instanceof Date ? 
+                  stop.actual_date.toISOString().split('T')[0] : 
+                  stop.actual_date) : null,
+            };
+          });
 
           console.log('📍 useCreateLoad - Inserting new stops:', stopsToInsert);
 
@@ -148,22 +151,25 @@ export const useCreateLoad = () => {
         console.log('✅ useCreateLoad - Load created successfully:', newLoad);
         currentLoad = newLoad;
 
-        // Handle stops for new loads
+        // Handle stops for new loads (excluding temporary id)
         if (data.stops && data.stops.length > 0) {
           console.log('📍 useCreateLoad - Creating stops for new load');
           
-          const stopsToInsert = data.stops.map(stop => ({
-            ...stop,
-            load_id: currentLoad.id,
-            scheduled_date: stop.scheduled_date ? 
-              (stop.scheduled_date instanceof Date ? 
-                stop.scheduled_date.toISOString().split('T')[0] : 
-                stop.scheduled_date) : null,
-            actual_date: stop.actual_date ? 
-              (stop.actual_date instanceof Date ? 
-                stop.actual_date.toISOString().split('T')[0] : 
-                stop.actual_date) : null,
-          }));
+          const stopsToInsert = data.stops.map(stop => {
+            const { id, ...stopWithoutId } = stop;
+            return {
+              ...stopWithoutId,
+              load_id: currentLoad.id,
+              scheduled_date: stop.scheduled_date ? 
+                (stop.scheduled_date instanceof Date ? 
+                  stop.scheduled_date.toISOString().split('T')[0] : 
+                  stop.scheduled_date) : null,
+              actual_date: stop.actual_date ? 
+                (stop.actual_date instanceof Date ? 
+                  stop.actual_date.toISOString().split('T')[0] : 
+                  stop.actual_date) : null,
+            };
+          });
 
           const { error: stopsError } = await supabase
             .from('load_stops')
