@@ -174,9 +174,23 @@ export function LoadDocumentsSection({
     setUploading(type);
 
     try {
-      // Create file path: load_id/document_type_timestamp.ext
+      // Generate custom file name based on load number and document type
       const fileExt = file.name.split('.').pop();
-      const fileName = `${type}_${Date.now()}.${fileExt}`;
+      const loadNumber = loadData?.load_number || 'UNKNOWN';
+      
+      // Map document types to custom names
+      const documentNameMap: Record<string, string> = {
+        'rate_confirmation': 'Rate_Confirmation',
+        'driver_instructions': 'Driver_Instructions', 
+        'bill_of_lading': 'Bill_of_Lading',
+        'load_order': 'Load_Order'
+      };
+      
+      const customName = documentNameMap[type];
+      const fileName = customName 
+        ? `${loadNumber}_${customName}.${fileExt}`
+        : `${type}_${Date.now()}.${fileExt}`;
+      
       const filePath = `${loadId}/${fileName}`;
 
       // Upload file to Supabase Storage
