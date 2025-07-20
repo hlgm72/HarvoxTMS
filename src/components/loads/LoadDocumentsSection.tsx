@@ -72,6 +72,12 @@ export function LoadDocumentsSection({
   const [uploading, setUploading] = useState<string | null>(null);
   const { toast } = useToast();
 
+  // Debug state changes
+  useEffect(() => {
+    console.log('🔍 LoadDocumentsSection - loadData changed:', loadData);
+    console.log('🔍 LoadDocumentsSection - showGenerateLoadOrder:', showGenerateLoadOrder);
+  }, [loadData, showGenerateLoadOrder]);
+
   // Debug temporaryDocuments changes
   useEffect(() => {
     console.log('📋 LoadDocumentsSection - temporaryDocuments changed:', temporaryDocuments);
