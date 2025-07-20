@@ -98,10 +98,8 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
 
     // ============ COMPANY SECTION ============
     
-    // Fondo y bordes para sección de empresa
+    // Bordes para sección de empresa (sin fondo)
     const companySectionHeight = 25;
-    doc.setFillColor(250, 250, 250); // Gris muy claro
-    doc.rect(margin, yPosition, pageWidth - 2 * margin, companySectionHeight, 'F');
     doc.setLineWidth(0.2);
     doc.rect(margin, yPosition, pageWidth - 2 * margin, companySectionHeight);
     
@@ -133,9 +131,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
     if (pickupStops.length > 0) routeSectionHeight += 35; // Reducido de 45 a 35
     if (deliveryStops.length > 0) routeSectionHeight += 35; // Reducido de 45 a 35
     
-    // Fondo y bordes para toda la sección de ruta
-    doc.setFillColor(248, 250, 252); // Azul muy claro
-    doc.rect(margin, yPosition, pageWidth - 2 * margin, routeSectionHeight, 'F');
+    // Bordes para toda la sección de ruta (sin fondo)
     doc.setLineWidth(0.2);
     doc.rect(margin, yPosition, pageWidth - 2 * margin, routeSectionHeight);
     
