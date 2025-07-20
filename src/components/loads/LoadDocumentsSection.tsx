@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Upload, Download, Trash2, FileCheck, Plus, Eye } from "lucide-react";
 import { GenerateLoadOrderDialog } from "./GenerateLoadOrderDialog";
+import { PDFViewerModal } from "./PDFViewerModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -81,6 +82,11 @@ export function LoadDocumentsSection({
   const [showGenerateLoadOrder, setShowGenerateLoadOrder] = useState(false);
   const [hasLoadOrder, setHasLoadOrder] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
+  const [pdfViewerModal, setPdfViewerModal] = useState<{
+    isOpen: boolean;
+    pdfUrl: string;
+    fileName: string;
+  }>({ isOpen: false, pdfUrl: '', fileName: '' });
   const { toast } = useToast();
 
   // Debug state changes - but don't close modal when loadData changes if it's open
@@ -662,32 +668,20 @@ export function LoadDocumentsSection({
                                  }
                                  
                                   try {
-                                    console.log('🌐 Opening document in browser viewer...');
-                                    // Force browser PDF viewer by adding #view=FitH parameter
-                                    const pdfUrl = `${uploadedDoc.url}#view=FitH`;
-                                    const newWindow = window.open(pdfUrl, '_blank', 'noopener,noreferrer');
-                                    
-                                    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-                                      console.warn('⚠️ Popup blocked, trying alternative method');
-                                      // Fallback: create a temporary link with PDF viewer parameters
-                                      const link = document.createElement('a');
-                                      link.href = pdfUrl;
-                                      link.target = '_blank';
-                                      link.rel = 'noopener noreferrer';
-                                      document.body.appendChild(link);
-                                      link.click();
-                                      document.body.removeChild(link);
-                                    } else {
-                                      console.log('✅ Document opened successfully in browser viewer');
-                                    }
-                                 } catch (error) {
-                                   console.error('❌ Error opening document:', error);
-                                   toast({
-                                     title: "Error",
-                                     description: "No se pudo abrir el documento. Intenta nuevamente.",
-                                     variant: "destructive",
-                                   });
-                                 }
+                                    console.log('🖼️ Opening document in modal viewer...');
+                                    setPdfViewerModal({
+                                      isOpen: true,
+                                      pdfUrl: uploadedDoc.url,
+                                      fileName: uploadedDoc.fileName
+                                    });
+                                  } catch (error) {
+                                    console.error('❌ Error opening document:', error);
+                                    toast({
+                                      title: "Error",
+                                      description: "No se pudo abrir el documento. Intenta nuevamente.",
+                                      variant: "destructive",
+                                    });
+                                  }
                                }}
                                title="Ver documento"
                              >
@@ -837,6 +831,14 @@ export function LoadDocumentsSection({
           loadStops: []
         }}
         onLoadOrderGenerated={handleLoadOrderGenerated}
+      />
+      
+      {/* PDF Viewer Modal */}
+      <PDFViewerModal
+        isOpen={pdfViewerModal.isOpen}
+        onClose={() => setPdfViewerModal({ isOpen: false, pdfUrl: '', fileName: '' })}
+        pdfUrl={pdfViewerModal.pdfUrl}
+        fileName={pdfViewerModal.fileName}
       />
     </Card>
   );
