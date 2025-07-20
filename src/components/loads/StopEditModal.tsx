@@ -119,6 +119,60 @@ export function StopEditModal({
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Programación - MOVIDO AL PRINCIPIO */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Programación
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Fecha Programada *</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !formData.scheduled_date && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.scheduled_date ? format(formData.scheduled_date, "PPP") : "Seleccionar fecha"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={formData.scheduled_date || undefined}
+                      onSelect={(date) => updateField('scheduled_date', date)}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Hora Programada</Label>
+                <Select 
+                  value={formData.scheduled_time || ''} 
+                  onValueChange={(value) => updateField('scheduled_time', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar hora" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TIME_OPTIONS.map(time => (
+                      <SelectItem key={time} value={time}>{time}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
           {/* Tipo de Parada */}
           {!isFirst && !isLast && (
             <div className="space-y-2">
@@ -227,58 +281,6 @@ export function StopEditModal({
                   />
                 </div>
                 <div></div>
-              </div>
-            </div>
-          </div>
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              Programación
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Fecha Programada</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !formData.scheduled_date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.scheduled_date ? format(formData.scheduled_date, "PPP") : "Seleccionar fecha"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={formData.scheduled_date || undefined}
-                      onSelect={(date) => updateField('scheduled_date', date)}
-                      initialFocus
-                      className="pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Hora Programada</Label>
-                <Select 
-                  value={formData.scheduled_time || ''} 
-                  onValueChange={(value) => updateField('scheduled_time', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar hora" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TIME_OPTIONS.map(time => (
-                      <SelectItem key={time} value={time}>{time}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
             </div>
           </div>

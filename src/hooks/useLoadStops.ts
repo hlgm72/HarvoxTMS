@@ -87,6 +87,11 @@ export function useLoadStops() {
           fieldsErrors.push('Estado');
         }
 
+        // Validación obligatoria de fecha para paradas mínimas (primera y última)
+        if ((index === 0 || index === stops.length - 1) && !stop.scheduled_date) {
+          fieldsErrors.push('Fecha programada');
+        }
+
         if (fieldsErrors.length > 0) {
           stopErrors[stopNumber] = fieldsErrors;
         }
