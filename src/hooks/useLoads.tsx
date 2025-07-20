@@ -257,7 +257,7 @@ export const useLoads = (filters?: LoadsFilters) => {
         const stopsResult = loadIds.length > 0 
           ? await supabase
               .from('load_stops')
-              .select('load_id, stop_type, stop_number, city')
+              .select('load_id, stop_type, stop_number, city, state')
               .in('load_id', loadIds)
               .in('stop_type', ['pickup', 'delivery'])
           : { data: [], error: null };
@@ -267,21 +267,36 @@ export const useLoads = (filters?: LoadsFilters) => {
         }
 
         const stopsData = stopsResult.data || [];
-        const cityNames = [...new Set(stopsData.map(s => s.city).filter(Boolean))];
+        
+        // Obtener combinaciones únicas de ciudad y estado desde load_stops
+        const cityStateMap = new Map();
+        stopsData.forEach(stop => {
+          if (stop.city && stop.state) {
+            cityStateMap.set(`${stop.city}|${stop.state}`, { city: stop.city, state: stop.state });
+          }
+        });
+        
+        const cityStatePairs = Array.from(cityStateMap.values());
 
-        // Obtener información de las ciudades (buscar por nombre, no por id)
-        const citiesResult = cityNames.length > 0 
-          ? await supabase
+        // Obtener información de las ciudades (buscar por nombre Y estado)
+        let cities: any[] = [];
+        
+        if (cityStatePairs.length > 0) {
+          // Hacer consultas individuales para cada combinación ciudad-estado
+          const cityPromises = cityStatePairs.map(async ({ city, state }) => {
+            const { data, error } = await supabase
               .from('state_cities')
               .select('id, name, state_id')
-              .in('name', cityNames)
-          : { data: [], error: null };
-
-        if (citiesResult.error) {
-          console.error('Error obteniendo ciudades:', citiesResult.error);
+              .eq('name', city)
+              .eq('state_id', state)
+              .limit(1);
+            
+            return data?.[0] || null;
+          });
+          
+          const cityResults = await Promise.all(cityPromises);
+          cities = cityResults.filter(Boolean);
         }
-
-        const cities = citiesResult.data || [];
         
         const [profilesResult, brokersResult, contactsResult, dispatchersResult, periodsResult] = await Promise.allSettled([
           driverIds.length > 0 
@@ -325,9 +340,9 @@ export const useLoads = (filters?: LoadsFilters) => {
             .filter(s => s.stop_type === 'delivery')
             .sort((a, b) => b.stop_number - a.stop_number)[0];
 
-          // Resolver nombres de ciudades
-          const pickupCity = pickupStop ? cities.find(c => c.name === pickupStop.city) : null;
-          const deliveryCity = deliveryStop ? cities.find(c => c.name === deliveryStop.city) : null;
+          // Resolver nombres de ciudades (usar ciudad Y estado para match exacto)
+          const pickupCity = pickupStop ? cities.find(c => c.name === pickupStop.city && c.state_id === pickupStop.state) : null;
+          const deliveryCity = deliveryStop ? cities.find(c => c.name === deliveryStop.city && c.state_id === deliveryStop.state) : null;
 
           // Priorizar alias sobre nombre para el broker
           const brokerDisplayName = broker ? (broker.alias && broker.alias.trim() ? broker.alias : broker.name) : 'Sin cliente';
