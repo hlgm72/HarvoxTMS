@@ -12,7 +12,7 @@ import { useLoads } from "@/hooks/useLoads";
 import { PeriodFilterValue } from "./PeriodFilter";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
 import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
-import { LoadDocumentsManagementDialog } from "./LoadDocumentsManagementDialog";
+import { LoadDocumentsSection } from "./LoadDocumentsSection";
 import { EmptyLoadsState } from "./EmptyLoadsState";
 import { CreateLoadDialog } from "./CreateLoadDialog";
 
@@ -369,7 +369,8 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
 
       {/* Dialog de gestión de documentos */}
       {documentsDialog.load && (
-        <LoadDocumentsManagementDialog
+        <LoadDocumentsSection
+          isDialogMode={true}
           isOpen={documentsDialog.isOpen}
           onClose={() => setDocumentsDialog({ isOpen: false })}
           loadId={documentsDialog.load.id}

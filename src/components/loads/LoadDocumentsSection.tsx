@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Upload, Download, Trash2, FileCheck, Plus, Eye } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { FileText, Upload, Download, Trash2, FileCheck, Plus, Eye, RotateCcw } from "lucide-react";
 import { GenerateLoadOrderDialog } from "./GenerateLoadOrderDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -36,6 +38,12 @@ interface LoadDocumentsSectionProps {
   onDocumentsChange?: (documents: LoadDocument[]) => void;
   temporaryDocuments?: LoadDocument[];
   onTemporaryDocumentsChange?: (documents: LoadDocument[]) => void;
+  
+  // Dialog mode props
+  isDialogMode?: boolean;
+  isOpen?: boolean;
+  onClose?: () => void;
+  loadNumber?: string;
 }
 
 const documentTypes = [
@@ -75,7 +83,12 @@ export function LoadDocumentsSection({
   loadData, 
   onDocumentsChange,
   temporaryDocuments = [],
-  onTemporaryDocumentsChange 
+  onTemporaryDocumentsChange,
+  // Dialog mode props
+  isDialogMode = false,
+  isOpen = false,
+  onClose,
+  loadNumber
 }: LoadDocumentsSectionProps) {
   const [documents, setDocuments] = useState<LoadDocument[]>([]);
   const [showGenerateLoadOrder, setShowGenerateLoadOrder] = useState(false);
@@ -94,12 +107,12 @@ export function LoadDocumentsSection({
     console.log('📋 LoadDocumentsSection - temporaryDocuments changed:', temporaryDocuments);
   }, [temporaryDocuments]);
 
-  // Load existing documents when loadId is available
+  // Load existing documents when loadId is available (both modes)
   useEffect(() => {
-    if (loadId) {
+    if (loadId && (isDialogMode || !isDialogMode)) {
       loadDocuments();
     }
-  }, [loadId]);
+  }, [loadId, isDialogMode, isOpen]);
 
   const loadDocuments = async () => {
     if (!loadId) return;
@@ -502,6 +515,119 @@ export function LoadDocumentsSection({
     console.log('✅ LoadDocumentsSection - Load Order processing completed');
   };
 
+  // Dialog mode specific functions
+  const handleFileUploadWithReplacement = async (type: LoadDocument['type'], files: FileList | null, isReplacement = false) => {
+    if (!files || files.length === 0 || !loadId) return;
+
+    const file = files[0];
+    
+    // Validate file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "Error",
+        description: "El archivo es muy grande. Máximo 10MB permitido.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploading(type);
+
+    try {
+      // If replacing, first remove the existing document
+      if (isReplacement) {
+        const existingDoc = documents.find(doc => doc.type === type);
+        if (existingDoc) {
+          await handleRemoveDocument(existingDoc.id);
+        }
+      }
+
+      // Create file path: load_id/document_type_timestamp.ext
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${type}_${Date.now()}.${fileExt}`;
+      const filePath = `${loadId}/${fileName}`;
+
+      // Upload file to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('load-documents')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('load-documents')
+        .getPublicUrl(filePath);
+
+      // Save document metadata to database
+      const { data: docData, error: docError } = await supabase
+        .from('load_documents')
+        .insert({
+          load_id: loadId,
+          document_type: type,
+          file_name: file.name,
+          file_url: urlData.publicUrl,
+          file_size: file.size,
+          content_type: file.type,
+          uploaded_by: (await supabase.auth.getUser()).data.user?.id
+        })
+        .select()
+        .single();
+
+      if (docError) throw docError;
+
+      // Reload documents to get updated list
+      await loadDocuments();
+
+      toast({
+        title: "Éxito",
+        description: `${file.name} ${isReplacement ? 'reemplazado' : 'subido'} correctamente`,
+      });
+
+    } catch (error) {
+      console.error('Error uploading document:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo subir el documento. Intenta nuevamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(null);
+    }
+  };
+
+  const handleRemoveDocumentForDialog = async (documentId: string) => {
+    try {
+      // Archive document in database (soft delete)
+      const { error } = await supabase
+        .from('load_documents')
+        .update({ 
+          archived_at: new Date().toISOString(),
+          archived_by: (await supabase.auth.getUser()).data.user?.id
+        })
+        .eq('id', documentId);
+
+      if (error) throw error;
+
+      // Reload documents to get updated list
+      await loadDocuments();
+
+      toast({
+        title: "Éxito",
+        description: "Documento eliminado correctamente",
+      });
+
+    } catch (error) {
+      console.error('Error removing document:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar el documento",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Helper functions
   const formatFileSize = (bytes?: number) => {
     if (!bytes) return '';
     const mb = bytes / 1024 / 1024;
@@ -509,7 +635,7 @@ export function LoadDocumentsSection({
   };
 
   const getDocumentStatus = (type: LoadDocument['type']) => {
-    const hasDoc = documents.some(doc => doc.type === type);
+    const hasDoc = documents.some(doc => doc.type === type) || temporaryDocuments.some(doc => doc.type === type);
     const docType = documentTypes.find(dt => dt.type === type);
     
     if (hasDoc) {
@@ -521,27 +647,21 @@ export function LoadDocumentsSection({
     }
   };
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5 text-primary" />
-          Documentos de la Carga
-        </CardTitle>
-        <CardDescription>
-          Gestiona los documentos necesarios para la carga. Puedes subir documentos ahora o generarlos automáticamente.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Document Upload Section */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h4 className="text-sm font-medium text-muted-foreground">Documentos requeridos</h4>
-          </div>
-          
+  const renderDocumentManagement = () => (
+    <div className="space-y-6">
+      {/* Document Upload Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h4 className="text-sm font-medium text-muted-foreground">
+            {isDialogMode ? 'Documentos de la carga' : 'Documentos requeridos'}
+          </h4>
+        </div>
+        
+        <div className={isDialogMode ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-4"}>
           {documentTypes.map((docType) => {
             const status = getDocumentStatus(docType.type);
             const uploadedDoc = documents.find(doc => doc.type === docType.type);
+            const tempDoc = temporaryDocuments.find(doc => doc.type === docType.type);
             
             console.log('🔍 Document check for type:', docType.type, { 
               uploadedDoc, 
@@ -550,28 +670,185 @@ export function LoadDocumentsSection({
               fileName: uploadedDoc?.fileName 
             });
             
-            return (
-              <div key={docType.type} className="border rounded-lg p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h5 className="font-medium">{docType.label}</h5>
+            if (isDialogMode) {
+              // Dialog mode rendering - similar to LoadDocumentsManagementDialog
+              return (
+                <Card key={docType.type} className="h-fit">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <FileText className="h-4 w-4" />
+                        {docType.label}
+                      </CardTitle>
                       <Badge variant={status.color as any}>
                         {status.status === 'uploaded' ? 'Subido' : 
                          status.status === 'required' ? 'Requerido' : 'Opcional'}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-3">
+                    <CardDescription>
                       {docType.description}
-                    </p>
-                    
-                      {uploadedDoc || temporaryDocuments.find(doc => doc.type === docType.type) ? (
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {uploadedDoc ? (
+                      <div className="space-y-3">
+                        {/* Document Info */}
+                        <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+                          <FileCheck className="h-5 w-5 text-green-500 mt-0.5" />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{uploadedDoc.fileName}</p>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <span>{formatFileSize(uploadedDoc.fileSize)}</span>
+                              <span>•</span>
+                              <span>
+                                {new Date(uploadedDoc.uploadedAt).toLocaleDateString('es-ES')}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => uploadedDoc.url && window.open(uploadedDoc.url, '_blank')}
+                          >
+                            <Eye className="h-4 w-4 mr-2" />
+                            Ver
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                              if (uploadedDoc.url) {
+                                const link = document.createElement('a');
+                                link.href = uploadedDoc.url;
+                                link.download = uploadedDoc.fileName;
+                                link.click();
+                              }
+                            }}
+                          >
+                            <Download className="h-4 w-4 mr-2" />
+                            Descargar
+                          </Button>
+                        </div>
+
+                        {/* Replace Document */}
+                        <div className="border-t pt-3">
+                          <h5 className="text-sm font-medium mb-2">Reemplazar documento</h5>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="file"
+                              id={`replace-${docType.type}`}
+                              className="hidden"
+                              accept=".pdf,.jpg,.jpeg,.png"
+                              onChange={(e) => handleFileUploadWithReplacement(docType.type, e.target.files, true)}
+                              disabled={uploading === docType.type}
+                            />
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              disabled={uploading === docType.type}
+                              onClick={() => {
+                                const fileInput = document.getElementById(`replace-${docType.type}`) as HTMLInputElement;
+                                fileInput?.click();
+                              }}
+                            >
+                              <RotateCcw className="h-4 w-4 mr-2" />
+                              {uploading === docType.type ? 'Reemplazando...' : 'Reemplazar'}
+                            </Button>
+                            
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="outline" size="sm">
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Eliminar
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>¿Eliminar documento?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Esta acción eliminará permanentemente el documento "{uploadedDoc.fileName}". 
+                                    No se puede deshacer.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleRemoveDocumentForDialog(uploadedDoc.id)}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  >
+                                    Eliminar
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      /* Upload New Document */
+                      <div className="space-y-3">
+                        <div className="text-center py-6 border-2 border-dashed border-muted rounded-lg">
+                          <FileText className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                          <p className="text-sm text-muted-foreground mb-3">
+                            Sin documento subido
+                          </p>
+                          <input
+                            type="file"
+                            id={`upload-${docType.type}`}
+                            className="hidden"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={(e) => handleFileUploadWithReplacement(docType.type, e.target.files)}
+                            disabled={uploading === docType.type}
+                          />
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            disabled={uploading === docType.type}
+                            onClick={() => {
+                              const fileInput = document.getElementById(`upload-${docType.type}`) as HTMLInputElement;
+                              fileInput?.click();
+                            }}
+                          >
+                            <Upload className="h-4 w-4 mr-2" />
+                            {uploading === docType.type ? 'Subiendo...' : 'Subir archivo'}
+                          </Button>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            PDF, JPG, PNG (máx. 10MB)
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            } else {
+              // Wizard mode rendering - existing layout
+              return (
+                <div key={docType.type} className="border rounded-lg p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h5 className="font-medium">{docType.label}</h5>
+                        <Badge variant={status.color as any}>
+                          {status.status === 'uploaded' ? 'Subido' : 
+                           status.status === 'required' ? 'Requerido' : 'Opcional'}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        {docType.description}
+                      </p>
+                      
+                      {uploadedDoc || tempDoc ? (
                         <div className="flex items-center gap-2 text-sm">
                           <FileCheck className="h-4 w-4 text-green-500" />
-                          <span>{uploadedDoc?.fileName || temporaryDocuments.find(doc => doc.type === docType.type)?.fileName}</span>
-                          {(uploadedDoc?.fileSize || temporaryDocuments.find(doc => doc.type === docType.type)?.fileSize) && (
+                          <span>{uploadedDoc?.fileName || tempDoc?.fileName}</span>
+                          {(uploadedDoc?.fileSize || tempDoc?.fileSize) && (
                             <span className="text-muted-foreground">
-                              ({formatFileSize(uploadedDoc?.fileSize || temporaryDocuments.find(doc => doc.type === docType.type)?.fileSize)})
+                              ({formatFileSize(uploadedDoc?.fileSize || tempDoc?.fileSize)})
                             </span>
                           )}
                           {!loadId && (
@@ -602,13 +879,7 @@ export function LoadDocumentsSection({
                                  id={`file-upload-${docType.type}`}
                                  className="hidden"
                                  accept=".pdf,.jpg,.jpeg,.png"
-                                 onChange={(e) => {
-                                   console.log('📎 File input onChange triggered', { 
-                                     type: docType.type, 
-                                     files: e.target.files?.length || 0 
-                                   });
-                                   handleFileUpload(docType.type, e.target.files);
-                                 }}
+                                 onChange={(e) => handleFileUpload(docType.type, e.target.files)}
                                  disabled={uploading === docType.type}
                                />
                                <Button 
@@ -616,7 +887,6 @@ export function LoadDocumentsSection({
                                  size="sm"
                                  disabled={uploading === docType.type}
                                  onClick={() => {
-                                   console.log('🖱️ Upload button clicked for:', docType.type);
                                    const fileInput = document.getElementById(`file-upload-${docType.type}`) as HTMLInputElement;
                                    fileInput?.click();
                                  }}
@@ -633,10 +903,10 @@ export function LoadDocumentsSection({
                              }
                            </span>
                          </div>
-                    )}
-                  </div>
-                  
-                   {(uploadedDoc || temporaryDocuments.find(doc => doc.type === docType.type)) && (
+                      )}
+                    </div>
+                    
+                    {(uploadedDoc || tempDoc) && !isDialogMode && (
                       <div className="flex items-center gap-1">
                         {uploadedDoc && (
                            <>
@@ -644,15 +914,7 @@ export function LoadDocumentsSection({
                                variant="ghost" 
                                size="sm"
                                onClick={() => {
-                                 console.log('👁️ Ver documento clicked:', { 
-                                   url: uploadedDoc.url, 
-                                   fileName: uploadedDoc.fileName,
-                                   type: uploadedDoc.type,
-                                   id: uploadedDoc.id
-                                 });
-                                 
                                  if (!uploadedDoc.url) {
-                                   console.error('❌ No URL found for document:', uploadedDoc);
                                    toast({
                                      title: "Error",
                                      description: "No se pudo encontrar la URL del documento",
@@ -660,9 +922,7 @@ export function LoadDocumentsSection({
                                    });
                                    return;
                                  }
-                                  
-                                  // Open PDF directly in new tab with browser's native viewer
-                                  window.open(uploadedDoc.url, '_blank');
+                                 window.open(uploadedDoc.url, '_blank');
                                }}
                                title="Ver documento"
                              >
@@ -672,15 +932,7 @@ export function LoadDocumentsSection({
                                variant="ghost" 
                                size="sm"
                                onClick={async () => {
-                                 console.log('⬇️ Descargar documento clicked:', { 
-                                   url: uploadedDoc.url, 
-                                   fileName: uploadedDoc.fileName,
-                                   type: uploadedDoc.type,
-                                   id: uploadedDoc.id
-                                 });
-                                 
                                  if (!uploadedDoc.url) {
-                                   console.error('❌ No URL found for download:', uploadedDoc);
                                    toast({
                                      title: "Error",
                                      description: "No se pudo encontrar la URL del documento para descargar",
@@ -690,67 +942,38 @@ export function LoadDocumentsSection({
                                  }
                                  
                                  try {
-                                   console.log('🔄 Iniciando descarga forzada...');
-                                   
-                                   // Fetch the file as blob to force download
                                    const response = await fetch(uploadedDoc.url);
                                    if (!response.ok) {
                                      throw new Error(`HTTP error! status: ${response.status}`);
                                    }
                                    
                                    const blob = await response.blob();
-                                   console.log('📦 Blob obtenido:', { size: blob.size, type: blob.type });
-                                   
-                                   // Create download link with blob URL
                                    const blobUrl = window.URL.createObjectURL(blob);
                                    const link = document.createElement('a');
                                    link.href = blobUrl;
                                    link.download = uploadedDoc.fileName;
                                    link.style.display = 'none';
                                    
-                                   // Trigger download
                                    document.body.appendChild(link);
                                    link.click();
                                    document.body.removeChild(link);
                                    
-                                   // Clean up blob URL
                                    window.URL.revokeObjectURL(blobUrl);
-                                   
-                                   console.log('✅ Descarga iniciada exitosamente');
                                    
                                    toast({
                                      title: "Descarga iniciada",
                                      description: `${uploadedDoc.fileName} se está descargando`,
                                    });
-                                   
                                  } catch (error) {
-                                   console.error('❌ Error downloading document:', error);
-                                   console.log('🔄 Trying fallback method - direct link download');
+                                   const link = document.createElement('a');
+                                   link.href = uploadedDoc.url;
+                                   link.download = uploadedDoc.fileName;
+                                   link.target = '_blank';
+                                   link.rel = 'noopener noreferrer';
                                    
-                                   try {
-                                     // Fallback: try direct download with different approach
-                                     const link = document.createElement('a');
-                                     link.href = uploadedDoc.url;
-                                     link.download = uploadedDoc.fileName;
-                                     link.target = '_blank';
-                                     link.rel = 'noopener noreferrer';
-                                     
-                                     document.body.appendChild(link);
-                                     link.click();
-                                     document.body.removeChild(link);
-                                     
-                                     toast({
-                                       title: "Descarga iniciada",
-                                       description: "Se ha intentado iniciar la descarga. Si se abre en el navegador, usa 'Guardar como' para descargar.",
-                                     });
-                                   } catch (fallbackError) {
-                                     console.error('❌ Fallback method also failed:', fallbackError);
-                                     toast({
-                                       title: "Error",
-                                       description: "No se pudo descargar el documento. Intenta hacer clic derecho en 'Ver' y seleccionar 'Guardar enlace como'.",
-                                       variant: "destructive",
-                                     });
-                                   }
+                                   document.body.appendChild(link);
+                                   link.click();
+                                   document.body.removeChild(link);
                                  }
                                }}
                                title="Descargar documento"
@@ -763,19 +986,12 @@ export function LoadDocumentsSection({
                           variant="ghost" 
                           size="sm"
                           onClick={async () => {
-                            const tempDoc = temporaryDocuments.find(doc => doc.type === docType.type);
-                            
-                            // If there's an uploaded document (in BD), remove it from BD/Storage
                             if (uploadedDoc) {
                               await handleRemoveDocument(uploadedDoc.id);
                             }
-                            
-                            // If there's a temporary document, remove it from local state
                             if (tempDoc) {
                               handleRemoveTemporaryDocument(tempDoc.id);
                             }
-                            
-                            // Update hasLoadOrder state if removing load_order
                             if (docType.type === 'load_order') {
                               setHasLoadOrder(false);
                             }
@@ -786,13 +1002,54 @@ export function LoadDocumentsSection({
                         </Button>
                       </div>
                     )}
+                  </div>
                 </div>
-              </div>
-            );
+              );
+            }
           })}
         </div>
+      </div>
+    </div>
+  );
 
+  // Conditional rendering based on dialog mode
+  if (isDialogMode) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              Gestión de Documentos - Carga {loadNumber}
+            </DialogTitle>
+          </DialogHeader>
 
+          {uploading ? (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            renderDocumentManagement()
+          )}
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Wizard mode rendering
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <FileText className="h-5 w-5 text-primary" />
+          Documentos de la Carga
+        </CardTitle>
+        <CardDescription>
+          Gestiona los documentos necesarios para la carga. Puedes subir documentos ahora o generarlos automáticamente.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {renderDocumentManagement()}
       </CardContent>
 
       {/* Generate Load Order Dialog */}
