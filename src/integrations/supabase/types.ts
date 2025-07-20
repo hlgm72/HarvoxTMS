@@ -38,7 +38,7 @@ export type Database = {
           owner_phone: string | null
           owner_title: string | null
           payment_cycle_start_day: number | null
-          payment_day: number
+          payment_day: string
           phone: string | null
           plan_type: string | null
           state_id: string
@@ -70,7 +70,7 @@ export type Database = {
           owner_phone?: string | null
           owner_title?: string | null
           payment_cycle_start_day?: number | null
-          payment_day?: number
+          payment_day?: string
           phone?: string | null
           plan_type?: string | null
           state_id: string
@@ -102,7 +102,7 @@ export type Database = {
           owner_phone?: string | null
           owner_title?: string | null
           payment_cycle_start_day?: number | null
-          payment_day?: number
+          payment_day?: string
           phone?: string | null
           plan_type?: string | null
           state_id?: string

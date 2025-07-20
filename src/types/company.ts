@@ -10,7 +10,7 @@ export interface Company {
   zip_code: string;
   phone?: string;
   email?: string;
-  payment_day: number;
+  payment_day: string;
   created_at: string;
   updated_at: string;
   owner_name?: string;

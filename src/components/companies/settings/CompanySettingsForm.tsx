@@ -426,20 +426,20 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="payment_day">Día de Pago del Mes</Label>
+                  <Label htmlFor="payment_day">Día de Pago</Label>
                   <Select 
-                    value={formData.payment_day.toString()} 
-                    onValueChange={(value) => handleInputChange('payment_day', parseInt(value))}
+                    value={formData.payment_day || 'friday'} 
+                    onValueChange={(value) => handleInputChange('payment_day', value)}
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
-                        <SelectItem key={day} value={day.toString()}>
-                          Día {day}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="monday">Lunes</SelectItem>
+                      <SelectItem value="tuesday">Martes</SelectItem>
+                      <SelectItem value="wednesday">Miércoles</SelectItem>
+                      <SelectItem value="thursday">Jueves</SelectItem>
+                      <SelectItem value="friday">Viernes</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
