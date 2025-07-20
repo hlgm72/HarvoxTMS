@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -46,6 +45,12 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Add defensive checks for React hooks
+  if (typeof useState !== 'function') {
+    console.error('useState is not available. React hooks may not be imported correctly.');
+    return <div>Loading...</div>;
+  }
+
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userRoles, setUserRoles] = useState<UserRole[] | null>(null);
