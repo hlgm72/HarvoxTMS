@@ -93,7 +93,10 @@ export function LoadViewDialog({ isOpen, onClose, load }: LoadViewDialogProps) {
                         <p className="text-foreground font-medium">{load.pickup_city}</p>
                         {load.pickup_date && (
                           <p className="text-sm text-muted-foreground mt-1">
-                            📅 {format(new Date(load.pickup_date), "dd/MM/yyyy", { locale: es })}
+                            📅 {typeof load.pickup_date === 'string' 
+                              ? format(new Date(load.pickup_date + 'T00:00:00'), "dd/MM/yyyy", { locale: es })
+                              : format(new Date(load.pickup_date), "dd/MM/yyyy", { locale: es })
+                            }
                           </p>
                         )}
                       </div>
@@ -118,7 +121,10 @@ export function LoadViewDialog({ isOpen, onClose, load }: LoadViewDialogProps) {
                         <p className="text-foreground font-medium">{load.delivery_city}</p>
                         {load.delivery_date && (
                           <p className="text-sm text-muted-foreground mt-1">
-                            📅 {format(new Date(load.delivery_date), "dd/MM/yyyy", { locale: es })}
+                            📅 {typeof load.delivery_date === 'string' 
+                              ? format(new Date(load.delivery_date + 'T00:00:00'), "dd/MM/yyyy", { locale: es })
+                              : format(new Date(load.delivery_date), "dd/MM/yyyy", { locale: es })
+                            }
                           </p>
                         )}
                       </div>
