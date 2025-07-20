@@ -518,9 +518,10 @@ export function LoadDocumentsSection({
                 setShowGenerateLoadOrder(true);
               }}
               variant={hasLoadOrder ? "secondary" : "default"}
+              disabled={hasLoadOrder}
             >
               <Plus className="h-4 w-4 mr-2" />
-              {hasLoadOrder ? 'Regenerar Load Order' : 'Generar Load Order'}
+              {hasLoadOrder ? 'Load Order ya generado' : 'Generar Load Order'}
             </Button>
           </div>
         </div>
