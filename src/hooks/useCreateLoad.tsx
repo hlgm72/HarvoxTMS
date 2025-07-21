@@ -541,31 +541,12 @@ export const useCreateLoad = () => {
       queryClient.invalidateQueries({ queryKey: ['loads'] });
       queryClient.refetchQueries({ queryKey: ['loads'] });
       
-      const isEdit = variables.mode === 'edit';
-      const isDuplicate = variables.mode === 'duplicate';
-      
-      console.log('📧 useCreateLoad - Showing success toast:', {
-        isEdit,
-        isDuplicate,
-        mode: variables.mode
-      });
-      
-      toast({
-        title: "Éxito",
-        description: isEdit 
-          ? "Carga actualizada exitosamente" 
-          : isDuplicate 
-          ? "Carga duplicada exitosamente"
-          : "Carga creada exitosamente",
-      });
+      // No mostramos toast aquí - se maneja en el componente
+      console.log('✅ useCreateLoad - Load operation completed successfully');
     },
     onError: (error: Error) => {
       console.error('❌ useCreateLoad - Mutation error:', error);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      // No mostramos toast aquí - se maneja en el componente
     },
   });
 };

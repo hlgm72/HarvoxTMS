@@ -530,12 +530,32 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         console.log('✅ CreateLoadDialog - Load mutation successful');
         console.log(`✅ CreateLoadDialog - Mode: ${mode}, currentPhase: ${currentPhase}`);
         
-        // Always close dialog on successful mutation
+        // Show success toast based on mode
+        const isEdit = mode === 'edit';
+        const isDuplicate = mode === 'duplicate';
+        
+        toast.success(
+          isEdit 
+            ? "Carga actualizada exitosamente" 
+            : isDuplicate 
+            ? "Carga duplicada exitosamente"
+            : "Carga creada exitosamente",
+          {
+            duration: 3000,
+            position: "top-center"
+          }
+        );
+        
+        // Close dialog after showing toast
         console.log('✅ CreateLoadDialog - Closing dialog after successful creation/edit');
         onClose();
       },
       onError: (error) => {
         console.error('❌ CreateLoadDialog - Load mutation failed:', error);
+        toast.error(error.message || "Error al procesar la carga", {
+          duration: 4000,
+          position: "top-center"
+        });
       }
     });
   };
