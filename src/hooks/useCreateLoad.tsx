@@ -301,10 +301,11 @@ export const useCreateLoad = () => {
         // Handle stops for new loads (excluding temporary id)
         if (data.stops && data.stops.length > 0) {
           console.log('📍 useCreateLoad - Creating stops for new load');
+          console.log('📍 useCreateLoad - Raw data.stops:', JSON.stringify(data.stops, null, 2));
           
           const stopsToInsert = data.stops.map(stop => {
             const { id, ...stopWithoutId } = stop;
-            return {
+            const processedStop = {
               ...stopWithoutId,
               load_id: currentLoad.id,
               scheduled_date: stop.scheduled_date ? 
@@ -316,10 +317,13 @@ export const useCreateLoad = () => {
                   stop.actual_date.toISOString().split('T')[0] : 
                   stop.actual_date) : null,
             };
+            console.log('📍 useCreateLoad - Processing stop:', JSON.stringify(stop, null, 2));
+            console.log('📍 useCreateLoad - Processed to:', JSON.stringify(processedStop, null, 2));
+            return processedStop;
           });
 
           console.log('📍 useCreateLoad - Data stops received for creation:', data.stops);
-          console.log('📍 useCreateLoad - Stops to insert for creation:', stopsToInsert);
+          console.log('📍 useCreateLoad - Stops to insert for creation:', JSON.stringify(stopsToInsert, null, 2));
 
           const { error: stopsError } = await supabase
             .from('load_stops')
@@ -331,6 +335,12 @@ export const useCreateLoad = () => {
           }
 
           console.log('✅ useCreateLoad - Stops created successfully');
+        } else {
+          console.warn('⚠️ useCreateLoad - No stops data provided:', {
+            hasStops: !!data.stops,
+            stopsLength: data.stops?.length,
+            stopsData: data.stops
+          });
         }
 
         // Handle temporary documents for new loads (create and duplicate)
