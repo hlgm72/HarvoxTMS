@@ -39,16 +39,17 @@ export const useDeleteLoad = () => {
       }
 
       // Verificar permisos: solo el creador o company owners pueden eliminar
-      const { data: userRole } = await supabase
+      const { data: userRoles } = await supabase
         .from('user_company_roles')
         .select('role, company_id')
         .eq('user_id', user.id)
-        .eq('is_active', true)
-        .single();
+        .eq('is_active', true);
 
       const canDelete = loadData.created_by === user.id || 
-                       userRole?.role === 'company_owner' || 
-                       userRole?.role === 'operations_manager';
+                       userRoles?.some(role => 
+                         role.role === 'company_owner' || 
+                         role.role === 'operations_manager'
+                       );
 
       if (!canDelete) {
         throw new Error('No tienes permisos para eliminar esta carga');
