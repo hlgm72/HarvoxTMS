@@ -144,21 +144,15 @@ export function useLoadStops(initialStops?: LoadStop[]) {
         errors.push('Las fechas no deben estar separadas por más de 30 días');
       }
 
-      // Check dates are not too far in the past or future
+      // Check dates are not too far in the future (allow any past date for historical loads)
       const today = new Date();
       const maxFutureDate = new Date();
       maxFutureDate.setMonth(today.getMonth() + 6); // 6 months in future
-      
-      const minPastDate = new Date();
-      minPastDate.setDate(today.getDate() - 7); // 7 days in past
       
       stopsWithDates.forEach((stop, index) => {
         if (stop.scheduled_date) {
           if (isAfter(stop.scheduled_date, maxFutureDate)) {
             errors.push(`Parada ${stop.stop_number}: Fecha no puede ser más de 6 meses en el futuro`);
-          }
-          if (isBefore(stop.scheduled_date, minPastDate)) {
-            errors.push(`Parada ${stop.stop_number}: Fecha no puede ser más de 7 días en el pasado`);
           }
         }
       });

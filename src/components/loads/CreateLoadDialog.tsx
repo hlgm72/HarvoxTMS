@@ -42,7 +42,34 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showCreateClient, setShowCreateClient] = useState(false);
   const [showCreateDispatcher, setShowCreateDispatcher] = useState(false);
-  const [loadStops, setLoadStops] = useState<any[]>([]);
+  const [loadStops, setLoadStops] = useState<any[]>(() => {
+    // Initialize with default stops for create mode
+    if (mode === 'create') {
+      return [
+        {
+          id: 'stop-1',
+          stop_number: 1,
+          stop_type: 'pickup',
+          company_name: '',
+          address: '',
+          city: '',
+          state: '',
+          zip_code: '',
+        },
+        {
+          id: 'stop-2', 
+          stop_number: 2,
+          stop_type: 'delivery',
+          company_name: '',
+          address: '',
+          city: '',
+          state: '',
+          zip_code: '',
+        }
+      ];
+    }
+    return [];
+  });
   const [showStopsValidation, setShowStopsValidation] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState<CompanyDriver | null>(null);
   const [loadDocuments, setLoadDocuments] = useState<any[]>([]);
