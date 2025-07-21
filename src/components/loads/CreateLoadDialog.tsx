@@ -546,107 +546,107 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                        }}
                      />
 
-                     {/* Total Amount */}
-                    <FormField
-                      control={form.control}
-                      name="total_amount"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Monto Total ($) *</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="text"
-                              value={atmInput.displayValue}
-                              onKeyDown={atmInput.handleKeyDown}
-                              onPaste={atmInput.handlePaste}
-                              placeholder="$0.00"
-                              className="text-right font-mono"
-                              autoComplete="off"
-                              readOnly
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                     {/* Broker Selection */}
+                     <FormField
+                       control={form.control}
+                       name="broker_id"
+                       render={({ field }) => (
+                         <FormItem>
+                           <FormLabel>Cliente / Broker *</FormLabel>
+                           <FormControl>
+                               <ClientCombobox
+                                 clients={brokers}
+                                 value={field.value}
+                                 onValueChange={(value) => {
+                                   field.onChange(value);
+                                   const broker = brokers.find(b => b.id === value);
+                                   setSelectedBroker(broker || null);
+                                   form.setValue("dispatcher_id", "");
+                                 }}
+                                 onClientSelect={setSelectedBroker}
+                                 placeholder="Buscar cliente por nombre, DOT, MC..."
+                                 className="w-full"
+                                 onCreateNew={() => setShowCreateBroker(true)}
+                               />
+                           </FormControl>
+                           <FormMessage />
+                         </FormItem>
+                       )}
+                     />
 
-                    {/* Broker Selection */}
-                    <FormField
-                      control={form.control}
-                      name="broker_id"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Cliente / Broker *</FormLabel>
-                          <FormControl>
-                              <ClientCombobox
-                                clients={brokers}
-                                value={field.value}
-                                onValueChange={(value) => {
-                                  field.onChange(value);
-                                  const broker = brokers.find(b => b.id === value);
-                                  setSelectedBroker(broker || null);
-                                  form.setValue("dispatcher_id", "");
-                                }}
-                                onClientSelect={setSelectedBroker}
-                                placeholder="Buscar cliente por nombre, DOT, MC..."
-                                className="w-full"
-                                onCreateNew={() => setShowCreateBroker(true)}
-                              />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                     {/* Dispatcher Selection */}
+                     <FormField
+                       control={form.control}
+                       name="dispatcher_id"
+                       render={({ field }) => (
+                         <FormItem>
+                           <FormLabel>Contacto del Cliente</FormLabel>
+                           <FormControl>
+                               <ContactCombobox
+                                 contacts={selectedBroker?.dispatchers || []}
+                                 value={field.value}
+                                 onValueChange={field.onChange}
+                                 placeholder="Buscar contacto..."
+                                 disabled={!selectedBroker}
+                                 className="w-full"
+                                 onCreateNew={selectedBroker ? () => setShowCreateDispatcher(true) : undefined}
+                               />
+                           </FormControl>
+                           <FormMessage />
+                         </FormItem>
+                       )}
+                     />
 
-                    {/* Dispatcher Selection */}
-                    <FormField
-                      control={form.control}
-                      name="dispatcher_id"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Contacto del Cliente</FormLabel>
-                          <FormControl>
-                              <ContactCombobox
-                                contacts={selectedBroker?.dispatchers || []}
-                                value={field.value}
-                                onValueChange={field.onChange}
-                                placeholder="Buscar contacto..."
-                                disabled={!selectedBroker}
-                                className="w-full"
-                                onCreateNew={selectedBroker ? () => setShowCreateDispatcher(true) : undefined}
-                              />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                     {/* Commodity */}
+                     <FormField
+                       control={form.control}
+                       name="commodity"
+                       render={({ field }) => {
+                         const textHandlers = createTextHandlers(
+                           (value) => field.onChange(value),
+                           'text'
+                         );
+                         
+                         return (
+                           <FormItem>
+                             <FormLabel>Commodity *</FormLabel>
+                             <FormControl>
+                               <Input 
+                                 placeholder="Electronics, Food Products, etc." 
+                                 value={field.value || ''}
+                                 onChange={textHandlers.onChange}
+                                 onBlur={textHandlers.onBlur}
+                               />
+                             </FormControl>
+                             <FormMessage />
+                           </FormItem>
+                         );
+                       }}
+                     />
 
-                    {/* Commodity */}
-                    <FormField
-                      control={form.control}
-                      name="commodity"
-                      render={({ field }) => {
-                        const textHandlers = createTextHandlers(
-                          (value) => field.onChange(value),
-                          'text'
-                        );
-                        
-                        return (
-                          <FormItem>
-                            <FormLabel>Commodity *</FormLabel>
-                            <FormControl>
-                              <Input 
-                                placeholder="Electronics, Food Products, etc." 
-                                value={field.value || ''}
-                                onChange={textHandlers.onChange}
-                                onBlur={textHandlers.onBlur}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
+                     {/* Total Amount - moved to end */}
+                     <FormField
+                       control={form.control}
+                       name="total_amount"
+                       render={({ field }) => (
+                         <FormItem>
+                           <FormLabel>Monto Total ($) *</FormLabel>
+                           <FormControl>
+                             <Input 
+                               type="text"
+                               value={atmInput.displayValue}
+                               onKeyDown={atmInput.handleKeyDown}
+                               onPaste={atmInput.handlePaste}
+                               placeholder="$0.00"
+                               className="text-right font-mono"
+                               autoComplete="off"
+                               readOnly
+                             />
+                           </FormControl>
+                           <FormMessage />
+                         </FormItem>
+                       )}
+                     />
 
                     {/* Weight */}
                     <FormField
