@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Check, ChevronsUpDown, Building } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -39,6 +40,10 @@ export function CityCombobox({
       loadCities(stateId);
     } else {
       setCities([]);
+      // Clear selection if state changes
+      if (value) {
+        onValueChange(undefined);
+      }
     }
   }, [stateId]);
 
@@ -99,16 +104,17 @@ export function CityCombobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" style={{ zIndex: 9999 }}>
+      <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command>
-          <CommandInput placeholder="Buscar ciudad..." className="border-0" />
-          <CommandList className="max-h-[280px] overflow-y-auto">
+          <CommandInput placeholder="Buscar ciudad..." className="h-9" />
+          <CommandList className="max-h-60 overflow-y-auto">
             <CommandEmpty>
               {loading ? "Cargando ciudades..." : "No se encontró la ciudad."}
             </CommandEmpty>
             <CommandGroup>
               <CommandItem
-                value="unspecified"
+                key="unspecified"
+                value="sin especificar"
                 onSelect={() => {
                   onValueChange(undefined);
                   setOpen(false);
@@ -125,7 +131,7 @@ export function CityCombobox({
               {cities.map((city) => (
                 <CommandItem
                   key={city.id}
-                  value={`${city.name}${city.county ? ` ${city.county}` : ''}`}
+                  value={`${city.name.toLowerCase()}${city.county ? ` ${city.county.toLowerCase()}` : ''}`}
                   onSelect={() => {
                     onValueChange(city.id === value ? undefined : city.id);
                     setOpen(false);

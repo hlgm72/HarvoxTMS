@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Check, ChevronsUpDown, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -75,16 +76,17 @@ export function StateCombobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" style={{ zIndex: 9999 }}>
+      <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command>
-          <CommandInput placeholder="Buscar estado..." className="border-0" />
-          <CommandList className="max-h-[280px] overflow-y-auto">
+          <CommandInput placeholder="Buscar estado..." className="h-9" />
+          <CommandList className="max-h-60 overflow-y-auto">
             <CommandEmpty>
               {loading ? "Cargando estados..." : "No se encontró el estado."}
             </CommandEmpty>
             <CommandGroup>
               <CommandItem
-                value="unspecified"
+                key="unspecified"
+                value="sin especificar"
                 onSelect={() => {
                   onValueChange(undefined);
                   setOpen(false);
@@ -101,7 +103,7 @@ export function StateCombobox({
               {states.map((state) => (
                 <CommandItem
                   key={state.id}
-                  value={state.name}
+                  value={state.name.toLowerCase()}
                   onSelect={() => {
                     onValueChange(state.id === value ? undefined : state.id);
                     setOpen(false);
