@@ -110,7 +110,7 @@ export function StopEditModal({
       <div className="fixed inset-0 bg-black/50" />
       
       {/* Modal Content */}
-      <div className="relative z-[101] bg-background rounded-lg border shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative z-[101] bg-white rounded-lg border shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex flex-col space-y-1.5 text-center sm:text-left p-6 pb-0">
           <div className="flex items-center gap-3">
             <MapPin className="h-5 w-5 text-primary" />
