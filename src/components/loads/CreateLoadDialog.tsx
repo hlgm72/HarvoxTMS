@@ -489,6 +489,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     console.log('📍 CreateLoadDialog - Current loadStops state:', loadStops);
 
     console.log('📋 CreateLoadDialog - Submitting load data:', loadDataToSubmit);
+    console.log('📋 CreateLoadDialog - Current mutation state:', {
+      isIdle: createLoadMutation.isIdle,
+      isPending: createLoadMutation.isPending,
+      isError: createLoadMutation.isError,
+      isSuccess: createLoadMutation.isSuccess,
+      error: createLoadMutation.error
+    });
+    
     createLoadMutation.mutate(loadDataToSubmit, {
       onSuccess: () => {
         console.log('✅ CreateLoadDialog - Load mutation successful');
@@ -503,6 +511,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         } else {
           console.log('✅ CreateLoadDialog - Staying open, not final phase');
         }
+      },
+      onError: (error) => {
+        console.error('❌ CreateLoadDialog - Load mutation failed:', error);
       }
     });
   };
