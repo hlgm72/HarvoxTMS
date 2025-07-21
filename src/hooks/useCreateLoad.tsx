@@ -129,6 +129,141 @@ const getFileExtension = (fileName: string): string => {
   return parts.length > 1 ? parts[parts.length - 1] : 'pdf';
 };
 
+// Function to assign payment period to a load based on its dates and driver
+const assignPaymentPeriodToLoad = async (loadId: string): Promise<void> => {
+  console.log('📅 assignPaymentPeriodToLoad - Starting for load:', loadId);
+  
+  try {
+    // Get the load details including driver info
+    const { data: loadData, error: loadError } = await supabase
+      .from('loads')
+      .select(`
+        id,
+        driver_user_id,
+        pickup_date,
+        delivery_date,
+        created_by
+      `)
+      .eq('id', loadId)
+      .single();
+
+    if (loadError || !loadData) {
+      console.error('❌ assignPaymentPeriodToLoad - Error getting load:', loadError);
+      return;
+    }
+
+    console.log('📋 assignPaymentPeriodToLoad - Load data:', loadData);
+
+    // Use the assigned driver or the user who created the load
+    const userId = loadData.driver_user_id || loadData.created_by;
+    
+    if (!userId) {
+      console.log('⚠️ assignPaymentPeriodToLoad - No user to assign period to');
+      return;
+    }
+
+    // Get company ID from user roles
+    const { data: userRole, error: roleError } = await supabase
+      .from('user_company_roles')
+      .select('company_id')
+      .eq('user_id', userId)
+      .eq('is_active', true)
+      .limit(1)
+      .single();
+
+    if (roleError || !userRole) {
+      console.error('❌ assignPaymentPeriodToLoad - Error getting user company:', roleError);
+      return;
+    }
+
+    console.log('🏢 assignPaymentPeriodToLoad - Company ID:', userRole.company_id);
+
+    // Determine target date (prefer pickup_date, fallback to delivery_date, then current date)
+    const targetDate = loadData.pickup_date || loadData.delivery_date || new Date().toISOString().split('T')[0];
+    
+    console.log('📅 assignPaymentPeriodToLoad - Target date:', targetDate);
+
+    // Find the appropriate company payment period
+    const { data: period, error: periodError } = await supabase
+      .from('company_payment_periods')
+      .select('id')
+      .eq('company_id', userRole.company_id)
+      .lte('period_start_date', targetDate)
+      .gte('period_end_date', targetDate)
+      .in('status', ['open', 'processing'])
+      .limit(1)
+      .single();
+
+    if (periodError && periodError.code !== 'PGRST116') {
+      console.error('❌ assignPaymentPeriodToLoad - Error finding period:', periodError);
+      return;
+    }
+
+    let periodId = period?.id;
+
+    // If no period found, try to generate one
+    if (!periodId) {
+      console.log('📅 assignPaymentPeriodToLoad - No period found, generating...');
+      
+      const { data: generateResult, error: generateError } = await supabase.rpc(
+        'generate_payment_periods',
+        {
+          company_id_param: userRole.company_id,
+          from_date: new Date(Date.parse(targetDate) - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          to_date: new Date(Date.parse(targetDate) + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        }
+      );
+
+      if (generateError) {
+        console.error('❌ assignPaymentPeriodToLoad - Error generating periods:', generateError);
+        return;
+      }
+
+      console.log('✅ assignPaymentPeriodToLoad - Generated periods result:', generateResult);
+
+      // Try to find the period again
+      const { data: newPeriod, error: newPeriodError } = await supabase
+        .from('company_payment_periods')
+        .select('id')
+        .eq('company_id', userRole.company_id)
+        .lte('period_start_date', targetDate)
+        .gte('period_end_date', targetDate)
+        .in('status', ['open', 'processing'])
+        .limit(1)
+        .single();
+
+      if (newPeriodError) {
+        console.error('❌ assignPaymentPeriodToLoad - Still no period found after generation:', newPeriodError);
+        return;
+      }
+
+      periodId = newPeriod.id;
+    }
+
+    if (periodId) {
+      console.log('📅 assignPaymentPeriodToLoad - Assigning period:', periodId);
+      
+      // Update the load with the payment period
+      const { error: updateError } = await supabase
+        .from('loads')
+        .update({ payment_period_id: periodId })
+        .eq('id', loadId);
+
+      if (updateError) {
+        console.error('❌ assignPaymentPeriodToLoad - Error updating load:', updateError);
+        return;
+      }
+
+      console.log('✅ assignPaymentPeriodToLoad - Successfully assigned period:', periodId);
+    } else {
+      console.log('⚠️ assignPaymentPeriodToLoad - No period could be found or generated');
+    }
+
+  } catch (error) {
+    console.error('❌ assignPaymentPeriodToLoad - Unexpected error:', error);
+  }
+};
+
 export const useCreateLoad = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -262,6 +397,9 @@ export const useCreateLoad = () => {
           }
 
           console.log('✅ useCreateLoad - New stops created successfully for edit mode');
+          
+          // Assign payment period after updating stops
+          await assignPaymentPeriodToLoad(currentLoad.id);
         } else {
           console.log('📍 useCreateLoad - No stops to process for edit mode');
         }
@@ -376,6 +514,9 @@ export const useCreateLoad = () => {
           }
 
           console.log('✅ useCreateLoad - Stops created successfully');
+          
+          // Now assign the payment period based on the stops
+          await assignPaymentPeriodToLoad(currentLoad.id);
         } else {
           console.warn('⚠️ useCreateLoad - No stops data provided:', {
             hasStops: !!data.stops,
