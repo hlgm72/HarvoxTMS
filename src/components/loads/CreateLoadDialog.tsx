@@ -624,7 +624,27 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                        }}
                      />
 
-                     {/* Total Amount - moved to end */}
+                     {/* Weight */}
+                     <FormField
+                       control={form.control}
+                       name="weight_lbs"
+                       render={({ field }) => (
+                         <FormItem>
+                           <FormLabel>Peso (lbs)</FormLabel>
+                           <FormControl>
+                             <Input 
+                               type="number"
+                               placeholder="25000"
+                               {...field}
+                               onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
+                             />
+                           </FormControl>
+                           <FormMessage />
+                         </FormItem>
+                       )}
+                     />
+
+                     {/* Total Amount - moved after weight */}
                      <FormField
                        control={form.control}
                        name="total_amount"
@@ -647,26 +667,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                          </FormItem>
                        )}
                      />
-
-                    {/* Weight */}
-                    <FormField
-                      control={form.control}
-                      name="weight_lbs"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Peso (lbs)</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number"
-                              placeholder="25000"
-                              {...field}
-                              onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </div>
                 </CardContent>
               </Card>
