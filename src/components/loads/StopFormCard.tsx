@@ -211,30 +211,16 @@ export function StopFormCard({
         {/* Date and Time */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Fecha Programada</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !stop.scheduled_date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {stop.scheduled_date ? format(stop.scheduled_date, "PPP") : "Seleccionar fecha"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={stop.scheduled_date}
-                  onSelect={(date) => onUpdate({ scheduled_date: date })}
-                  initialFocus
-                  className="pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
+            <Label htmlFor={`scheduled-date-${stop.id}`}>Fecha Programada</Label>
+            <Input
+              id={`scheduled-date-${stop.id}`}
+              type="date"
+              value={stop.scheduled_date ? format(stop.scheduled_date, "yyyy-MM-dd") : ''}
+              onChange={(e) => {
+                const dateValue = e.target.value ? new Date(e.target.value) : null;
+                onUpdate({ scheduled_date: dateValue });
+              }}
+            />
           </div>
 
           <div className="space-y-2">
