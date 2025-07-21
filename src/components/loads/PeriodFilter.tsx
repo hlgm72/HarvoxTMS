@@ -192,7 +192,18 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                <Button
                 variant={value.type === 'current' ? 'default' : 'ghost'}
                 className="w-full justify-start"
-                onClick={() => handleOptionSelect({ type: 'current' })}
+                onClick={() => {
+                  if (currentPeriod) {
+                    handleOptionSelect({ 
+                      type: 'current',
+                      periodId: currentPeriod.id,
+                      startDate: currentPeriod.period_start_date,
+                      endDate: currentPeriod.period_end_date
+                    });
+                  } else {
+                    handleOptionSelect({ type: 'current' });
+                  }
+                }}
               >
                 <Clock className="h-4 w-4 mr-2" />
                 Período Actual
@@ -206,7 +217,16 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
               <Button
                 variant={value.type === 'previous' ? 'default' : 'ghost'}
                 className="w-full justify-start"
-                onClick={() => handleOptionSelect({ type: 'previous' })}
+                onClick={() => {
+                  if (previousPeriod) {
+                    handleOptionSelect({ 
+                      type: 'previous',
+                      periodId: previousPeriod.id,
+                      startDate: previousPeriod.period_start_date,
+                      endDate: previousPeriod.period_end_date
+                    });
+                  }
+                }}
                 disabled={!previousPeriod}
               >
                 <Clock className="h-4 w-4 mr-2" />
