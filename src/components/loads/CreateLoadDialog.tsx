@@ -473,7 +473,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       po_number: values.po_number || null,
       client_id: values.client_id,
       client_contact_id: values.contact_id || null,
-      driver_user_id: selectedDriver?.user_id || activeLoadData?.driver_user_id,
+      driver_user_id: selectedDriver?.user_id || (mode === 'edit' ? activeLoadData?.driver_user_id : null),
       internal_dispatcher_id: selectedDispatcher?.user_id || null,
       total_amount: parseFloat(values.total_amount) || 0,
       commodity: values.commodity || null,
