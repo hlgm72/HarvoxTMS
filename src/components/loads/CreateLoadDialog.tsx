@@ -366,6 +366,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       mode,
       id: activeLoadData?.id,
       load_number: values.load_number,
+      po_number: values.po_number || null,
       client_id: values.broker_id,
       client_contact_id: values.dispatcher_id || null,
       driver_user_id: selectedDriver?.user_id || activeLoadData?.driver_user_id,
@@ -516,9 +517,36 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                           </FormItem>
                         );
                       }}
-                    />
+                     />
 
-                    {/* Total Amount */}
+                     {/* PO Number */}
+                     <FormField
+                       control={form.control}
+                       name="po_number"
+                       render={({ field }) => {
+                         const textHandlers = createTextHandlers(
+                           (value) => field.onChange(value),
+                           'text'
+                         );
+                         
+                         return (
+                           <FormItem>
+                             <FormLabel>PO# (Purchase Order)</FormLabel>
+                             <FormControl>
+                               <Input 
+                                 placeholder="Ej: PO-12345, PO-2024-001" 
+                                 value={field.value || ''}
+                                 onChange={textHandlers.onChange}
+                                 onBlur={textHandlers.onBlur}
+                               />
+                             </FormControl>
+                             <FormMessage />
+                           </FormItem>
+                         );
+                       }}
+                     />
+
+                     {/* Total Amount */}
                     <FormField
                       control={form.control}
                       name="total_amount"

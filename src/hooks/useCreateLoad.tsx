@@ -8,6 +8,7 @@ export interface CreateLoadData {
   id?: string;
   mode?: 'create' | 'edit';
   load_number: string;
+  po_number?: string;
   driver_user_id: string;
   internal_dispatcher_id?: string | null;
   client_id?: string;
@@ -146,6 +147,7 @@ export const useCreateLoad = () => {
       // Prepare load data
       const loadData = {
         load_number: data.load_number,
+        po_number: data.po_number || null,
         driver_user_id: data.driver_user_id,
         internal_dispatcher_id: data.internal_dispatcher_id,
         client_id: data.client_id || null,

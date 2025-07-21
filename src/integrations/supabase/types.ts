@@ -1411,6 +1411,7 @@ export type Database = {
           notes: string | null
           payment_period_id: string | null
           pickup_date: string | null
+          po_number: string | null
           status: string
           total_amount: number
           updated_at: string
@@ -1435,6 +1436,7 @@ export type Database = {
           notes?: string | null
           payment_period_id?: string | null
           pickup_date?: string | null
+          po_number?: string | null
           status?: string
           total_amount: number
           updated_at?: string
@@ -1459,6 +1461,7 @@ export type Database = {
           notes?: string | null
           payment_period_id?: string | null
           pickup_date?: string | null
+          po_number?: string | null
           status?: string
           total_amount?: number
           updated_at?: string
