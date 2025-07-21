@@ -64,14 +64,11 @@ const calculateDateRange = (filterType: LoadsFilters['periodFilter']['type']): D
 
   switch (filterType) {
     case 'current':
-      // Para período actual, usar un rango amplio que capture cualquier período activo
-      const thirtyDaysAgo = new Date(now);
-      thirtyDaysAgo.setDate(now.getDate() - 30);
-      const thirtyDaysFromNow = new Date(now);
-      thirtyDaysFromNow.setDate(now.getDate() + 30);
+      // Para período actual, usar solo la fecha de hoy para encontrar el período que la contiene
+      const today = now.toISOString().split('T')[0];
       return {
-        startDate: thirtyDaysAgo.toISOString().split('T')[0],
-        endDate: thirtyDaysFromNow.toISOString().split('T')[0]
+        startDate: today,
+        endDate: today
       };
 
     case 'this_month':
