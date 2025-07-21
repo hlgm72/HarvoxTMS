@@ -38,6 +38,8 @@ export default function Loads() {
     switch (periodFilter.type) {
       case 'current':
         return 'Período Actual';
+      case 'previous':
+        return 'Período Anterior';
       case 'all':
         return 'Histórico Completo';
       case 'this_month':

@@ -172,3 +172,53 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
     enabled: !!user,
   });
 };
+
+// Hook para obtener el período anterior de empresa
+export const usePreviousPaymentPeriod = (companyId?: string) => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ['previous-company-payment-period', user?.id, companyId],
+    queryFn: async (): Promise<PaymentPeriod | null> => {
+      if (!user) throw new Error('User not authenticated');
+
+      const currentDate = getTodayInUserTimeZone();
+      
+      // Obtener la compañía del usuario si no se especifica
+      let targetCompanyId = companyId;
+      
+      if (!targetCompanyId) {
+        const { data: userCompanyRole, error: companyError } = await supabase
+          .from('user_company_roles')
+          .select('company_id')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .limit(1)
+          .single();
+
+        if (companyError || !userCompanyRole) {
+          return null;
+        }
+        
+        targetCompanyId = userCompanyRole.company_id;
+      }
+
+      // Buscar el período anterior (el período que terminó justo antes de la fecha actual)
+      const { data: period, error } = await supabase
+        .from('company_payment_periods')
+        .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
+        .eq('company_id', targetCompanyId)
+        .lt('period_end_date', currentDate)
+        .order('period_end_date', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      return period || null;
+    },
+    enabled: !!user,
+  });
+};

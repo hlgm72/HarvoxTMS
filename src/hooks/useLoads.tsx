@@ -42,7 +42,7 @@ export interface Load {
 
 interface LoadsFilters {
   periodFilter?: {
-    type: 'current' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
+    type: 'current' | 'previous' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
     periodId?: string;
     startDate?: string;
     endDate?: string;
@@ -65,7 +65,9 @@ const calculateDateRange = (filterType: LoadsFilters['periodFilter']['type']): D
 
   switch (filterType) {
     case 'current':
-      // Para período actual, usar la fecha de hoy en la zona horaria del usuario
+    case 'previous':
+      // Para períodos actual y anterior, usar la fecha de hoy en la zona horaria del usuario
+      // El filtrado específico se hace por period_id, no por rango de fechas
       const today = getTodayInUserTimeZone();
       return {
         startDate: today,
