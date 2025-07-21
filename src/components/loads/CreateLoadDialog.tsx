@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Circle, ArrowRight, Loader2, AlertTriangle, Check } from "lucide-react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 import { ClientCombobox } from "@/components/clients/ClientCombobox";
 import { ContactCombobox } from "@/components/clients/ContactCombobox";
 import { CreateClientDialog } from "@/components/clients/CreateClientDialog";
@@ -83,6 +83,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const { data: clients = [], isLoading: clientsLoading, refetch: refetchClients } = useClients();
   const { selectedCompany } = useUserCompanies();
   const createLoadMutation = useCreateLoad();
+  const { toast } = useToast();
   const [companyData, setCompanyData] = useState<any>(null);
 
   // For edit mode, fetch full load data. For duplicate mode, also fetch stops separately
@@ -383,7 +384,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         type: "manual",
         message: "El número de carga es requerido."
       });
-      toast.error("El número de carga es requerido.");
+      toast({
+        title: "Error de validación",
+        description: "El número de carga es requerido.",
+        variant: "destructive",
+      });
       setCurrentPhase(1);
       return;
     }
@@ -395,7 +400,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         type: "manual",
         message: "Este número de carga ya existe. Por favor use un número diferente."
       });
-      toast.error("Este número de carga ya existe. Por favor use un número diferente.");
+      toast({
+        title: "Error de validación",
+        description: "Este número de carga ya existe. Por favor use un número diferente.",
+        variant: "destructive",
+      });
       setCurrentPhase(1);
       return;
     }
@@ -407,7 +416,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         type: "manual",
         message: poNumberValidation.error || "El número PO no es válido."
       });
-      toast.error(poNumberValidation.error || "El número PO no es válido.");
+      toast({
+        title: "Error de validación",
+        description: poNumberValidation.error || "El número PO no es válido.",
+        variant: "destructive",
+      });
       setCurrentPhase(1);
       return;
     }
@@ -419,7 +432,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         type: "manual",
         message: "Debes seleccionar un cliente."
       });
-      toast.error("Debes seleccionar un cliente.");
+      toast({
+        title: "Error de validación",
+        description: "Debes seleccionar un cliente.",
+        variant: "destructive",
+      });
       setCurrentPhase(1);
       return;
     }
@@ -431,7 +448,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         type: "manual",
         message: "El commodity es requerido."
       });
-      toast.error("El commodity es requerido.");
+      toast({
+        title: "Error de validación",
+        description: "El commodity es requerido.",
+        variant: "destructive",
+      });
       setCurrentPhase(1);
       return;
     }
@@ -443,7 +464,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         type: "manual",
         message: "El monto total debe ser mayor a 0."
       });
-      toast.error("El monto total debe ser mayor a 0.");
+      toast({
+        title: "Error de validación",
+        description: "El monto total debe ser mayor a 0.",
+        variant: "destructive",
+      });
       setCurrentPhase(1);
       return;
     }
@@ -451,7 +476,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // Solo validar número duplicado en modo creación y duplicación (duplicate se comporta como create)
     if ((mode === 'create' || mode === 'duplicate') && loadNumberValidation.isDuplicate) {
       console.log('🚨 onSubmit blocked - duplicate load number');
-      toast.error("No se puede crear la carga con un número duplicado.");
+      toast({
+        title: "Error de validación",
+        description: "No se puede crear la carga con un número duplicado.",
+        variant: "destructive",
+      });
       setCurrentPhase(1); // Ir al paso 1 donde está el campo load_number
       return;
     }
@@ -459,7 +488,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // Validar paradas (Paso 2)
     if (!loadStops || loadStops.length < 2) {
       console.log('🚨 onSubmit blocked - insufficient stops');
-      toast.error("Debe haber al menos 2 paradas (pickup y delivery).");
+      toast({
+        title: "Error de validación",
+        description: "Debe haber al menos 2 paradas (pickup y delivery).",
+        variant: "destructive",
+      });
       setCurrentPhase(2);
       return;
     }
@@ -468,7 +501,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     const stopsValidation = validateStops(loadStops);
     if (!stopsValidation.isValid) {
       console.log('🚨 onSubmit blocked - invalid stops:', stopsValidation.errors);
-      toast.error(`Error en las paradas: ${stopsValidation.errors[0]}`);
+      toast({
+        title: "Error en las paradas",
+        description: stopsValidation.errors[0],
+        variant: "destructive",
+      });
       setCurrentPhase(2);
       return;
     }
@@ -477,7 +514,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     const chronologicalValidation = validateChronologicalOrder(loadStops);
     if (!chronologicalValidation.isValid) {
       console.log('🚨 onSubmit blocked - chronological order error:', chronologicalValidation.errors);
-      toast.error(chronologicalValidation.errors[0]);
+      toast({
+        title: "Error de fechas",
+        description: chronologicalValidation.errors[0],
+        variant: "destructive",
+      });
       setCurrentPhase(2);
       return;
     }
@@ -534,17 +575,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         const isEdit = mode === 'edit';
         const isDuplicate = mode === 'duplicate';
         
-        toast.success(
-          isEdit 
+        toast({
+          title: "¡Éxito!",
+          description: isEdit 
             ? "Carga actualizada exitosamente" 
             : isDuplicate 
             ? "Carga duplicada exitosamente"
             : "Carga creada exitosamente",
-          {
-            duration: 3000,
-            position: "top-center"
-          }
-        );
+        });
         
         // Close dialog after showing toast
         console.log('✅ CreateLoadDialog - Closing dialog after successful creation/edit');
@@ -552,9 +590,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       },
       onError: (error) => {
         console.error('❌ CreateLoadDialog - Load mutation failed:', error);
-        toast.error(error.message || "Error al procesar la carga", {
-          duration: 4000,
-          position: "top-center"
+        toast({
+          title: "Error",
+          description: error.message || "Error al procesar la carga",
+          variant: "destructive",
         });
       }
     });
