@@ -243,6 +243,11 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
               <div className="space-y-1">
                 <CardTitle className="text-lg font-semibold">
                   {load.load_number}
+                  {load.po_number && (
+                    <span className="text-sm font-normal text-muted-foreground ml-2">
+                      ({load.po_number})
+                    </span>
+                  )}
                 </CardTitle>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">

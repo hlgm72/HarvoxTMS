@@ -7,6 +7,7 @@ import { useCompanyCache } from './useCompanyCache';
 export interface Load {
   id: string;
   load_number: string;
+  po_number?: string | null;
   driver_user_id: string;
   total_amount: number;
   commodity: string | null;
