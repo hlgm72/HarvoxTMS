@@ -7,6 +7,7 @@ import { useClients, Client } from "@/hooks/useClients";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
 import { useCreateLoad } from "@/hooks/useCreateLoad";
 import { useLoadNumberValidation } from "@/hooks/useLoadNumberValidation";
+import { usePONumberValidation } from "@/hooks/usePONumberValidation";
 import { useLoadData } from "@/hooks/useLoadData";
 import { useLoadForm } from "@/hooks/useLoadForm";
 import { useATMInput } from "@/hooks/useATMInput";
@@ -119,6 +120,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const loadNumberValidation = useLoadNumberValidation(
     currentLoadNumber,
     mode === 'edit' && !form.formState.dirtyFields.load_number, // Skip validation if in edit mode and field not dirty
+    mode === 'edit' ? activeLoadData?.id : undefined
+  );
+
+  // PO number validation
+  const currentPONumber = form.watch("po_number");
+  const poNumberValidation = usePONumberValidation(
+    currentPONumber,
+    !currentPONumber || currentPONumber.trim() === '', // Skip validation if PO is empty (it's optional)
     mode === 'edit' ? activeLoadData?.id : undefined
   );
 
@@ -391,6 +400,18 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       return;
     }
 
+    // Validar PO number si no está vacío (es opcional)
+    if (currentPONumber && currentPONumber.trim() !== '' && !poNumberValidation.isValid) {
+      console.log('🚨 onSubmit blocked - invalid PO number');
+      form.setError("po_number", {
+        type: "manual",
+        message: poNumberValidation.error || "El número PO no es válido."
+      });
+      toast.error(poNumberValidation.error || "El número PO no es válido.");
+      setCurrentPhase(1);
+      return;
+    }
+
     // Validar cliente requerido (Paso 1)
     if (!values.client_id || values.client_id === '') {
       console.log('🚨 onSubmit blocked - missing client');
@@ -659,14 +680,39 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                            <FormItem>
                              <FormLabel>PO# (Purchase Order)</FormLabel>
                              <FormControl>
-                               <Input 
-                                 placeholder="Ej: PO-12345, PO-2024-001" 
-                                 value={field.value || ''}
-                                 onChange={textHandlers.onChange}
-                                 onBlur={textHandlers.onBlur}
-                               />
+                               <div className="relative">
+                                 <Input 
+                                   placeholder="Ej: PO-12345, PO-2024-001" 
+                                   value={field.value || ''}
+                                   onChange={textHandlers.onChange}
+                                   onBlur={textHandlers.onBlur}
+                                   className={
+                                     !poNumberValidation.isValid 
+                                       ? "border-destructive focus:border-destructive" 
+                                       : poNumberValidation.isValid && currentPONumber && currentPONumber.trim() !== ''
+                                       ? "border-green-500 focus:border-green-500" 
+                                       : ""
+                                   }
+                                 />
+                                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                   {poNumberValidation.isLoading && (
+                                     <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                   )}
+                                   {!poNumberValidation.isLoading && !poNumberValidation.isValid && poNumberValidation.error && (
+                                     <AlertTriangle className="h-4 w-4 text-destructive" />
+                                   )}
+                                   {!poNumberValidation.isLoading && poNumberValidation.isValid && currentPONumber && currentPONumber.trim() !== '' && (
+                                     <Check className="h-4 w-4 text-green-500" />
+                                   )}
+                                 </div>
+                               </div>
                              </FormControl>
                              <FormMessage />
+                             {!poNumberValidation.isValid && poNumberValidation.error && (
+                               <p className="text-sm text-destructive mt-1">
+                                 {poNumberValidation.error}
+                               </p>
+                             )}
                            </FormItem>
                          );
                        }}
