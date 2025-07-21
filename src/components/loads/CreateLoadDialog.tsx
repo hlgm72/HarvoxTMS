@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Circle, ArrowRight, Loader2, AlertTriangle, Check } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { ClientCombobox } from "@/components/clients/ClientCombobox";
 import { ContactCombobox } from "@/components/clients/ContactCombobox";
 import { CreateClientDialog } from "@/components/clients/CreateClientDialog";
@@ -347,11 +347,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         type: "manual",
         message: "El número de carga es requerido."
       });
-      toast({
-        title: "Error",
-        description: "El número de carga es requerido.",
-        variant: "destructive",
-      });
+      toast.error("El número de carga es requerido.");
       setCurrentPhase(1);
       return;
     }
@@ -363,11 +359,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         type: "manual",
         message: "Este número de carga ya existe. Por favor use un número diferente."
       });
-      toast({
-        title: "Error",
-        description: "Este número de carga ya existe. Por favor use un número diferente.",
-        variant: "destructive",
-      });
+      toast.error("Este número de carga ya existe. Por favor use un número diferente.");
       setCurrentPhase(1);
       return;
     }
@@ -379,11 +371,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         type: "manual",
         message: "Debes seleccionar un cliente."
       });
-      toast({
-        title: "Error", 
-        description: "Debes seleccionar un cliente.",
-        variant: "destructive",
-      });
+      toast.error("Debes seleccionar un cliente.");
       setCurrentPhase(1);
       return;
     }
@@ -395,11 +383,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         type: "manual",
         message: "El commodity es requerido."
       });
-      toast({
-        title: "Error",
-        description: "El commodity es requerido.",
-        variant: "destructive", 
-      });
+      toast.error("El commodity es requerido.");
       setCurrentPhase(1);
       return;
     }
@@ -411,11 +395,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         type: "manual",
         message: "El monto total debe ser mayor a 0."
       });
-      toast({
-        title: "Error",
-        description: "El monto total debe ser mayor a 0.",
-        variant: "destructive",
-      });
+      toast.error("El monto total debe ser mayor a 0.");
       setCurrentPhase(1);
       return;
     }
@@ -423,11 +403,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // Solo validar número duplicado en modo creación y duplicación (duplicate se comporta como create)
     if ((mode === 'create' || mode === 'duplicate') && loadNumberValidation.isDuplicate) {
       console.log('🚨 onSubmit blocked - duplicate load number');
-      toast({
-        title: "Error",
-        description: "No se puede crear la carga con un número duplicado.",
-        variant: "destructive",
-      });
+      toast.error("No se puede crear la carga con un número duplicado.");
       setCurrentPhase(1); // Ir al paso 1 donde está el campo load_number
       return;
     }
@@ -435,11 +411,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // Validar paradas (Paso 2)
     if (!loadStops || loadStops.length < 2) {
       console.log('🚨 onSubmit blocked - insufficient stops');
-      toast({
-        title: "Error",
-        description: "Debe haber al menos 2 paradas (pickup y delivery).",
-        variant: "destructive",
-      });
+      toast.error("Debe haber al menos 2 paradas (pickup y delivery).");
       setCurrentPhase(2);
       return;
     }
@@ -448,11 +420,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     const stopsValidation = validateStops(loadStops);
     if (!stopsValidation.isValid) {
       console.log('🚨 onSubmit blocked - invalid stops:', stopsValidation.errors);
-      toast({
-        title: "Error en las paradas",
-        description: `${stopsValidation.errors[0]}`,
-        variant: "destructive",
-      });
+      toast.error(`Error en las paradas: ${stopsValidation.errors[0]}`);
       setCurrentPhase(2);
       return;
     }
@@ -461,11 +429,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     const chronologicalValidation = validateChronologicalOrder(loadStops);
     if (!chronologicalValidation.isValid) {
       console.log('🚨 onSubmit blocked - chronological order error:', chronologicalValidation.errors);
-      toast({
-        title: "Error en el orden cronológico",
-        description: chronologicalValidation.errors[0],
-        variant: "destructive",
-      });
+      toast.error(chronologicalValidation.errors[0]);
       setCurrentPhase(2);
       return;
     }
