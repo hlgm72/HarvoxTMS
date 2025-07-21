@@ -40,6 +40,8 @@ export default function Loads() {
         return 'Período Actual';
       case 'previous':
         return 'Período Anterior';
+      case 'next':
+        return 'Período Siguiente';
       case 'all':
         return 'Histórico Completo';
       case 'this_month':

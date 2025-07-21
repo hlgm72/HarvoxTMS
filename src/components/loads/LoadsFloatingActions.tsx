@@ -63,7 +63,7 @@ interface LoadsFloatingActionsProps {
     dateRange: { from: Date | undefined; to: Date | undefined };
   };
   periodFilter?: { 
-    type: 'current' | 'previous' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
+    type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
     periodId?: string; 
     startDate?: string;
     endDate?: string;
@@ -163,6 +163,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
     switch (type) {
       case 'current': return 'Período Actual';
       case 'previous': return 'Período Anterior';
+      case 'next': return 'Período Siguiente';
       case 'all': return 'Todos los Períodos';
       case 'this_month': return 'Este Mes';
       case 'last_month': return 'Mes Pasado';
@@ -320,6 +321,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                        <SelectContent>
                         <SelectItem value="current">Período Actual</SelectItem>
                         <SelectItem value="previous">Período Anterior</SelectItem>
+                        <SelectItem value="next">Período Siguiente</SelectItem>
                         <SelectItem value="all">Todos los Períodos</SelectItem>
                         <SelectItem value="this_month">Este Mes</SelectItem>
                         <SelectItem value="last_month">Mes Pasado</SelectItem>

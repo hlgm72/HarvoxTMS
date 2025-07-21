@@ -42,7 +42,7 @@ export interface Load {
 
 interface LoadsFilters {
   periodFilter?: {
-    type: 'current' | 'previous' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
+    type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
     periodId?: string;
     startDate?: string;
     endDate?: string;
@@ -66,7 +66,8 @@ const calculateDateRange = (filterType: LoadsFilters['periodFilter']['type']): D
   switch (filterType) {
     case 'current':
     case 'previous':
-      // Para períodos actual y anterior, usar la fecha de hoy en la zona horaria del usuario
+    case 'next':
+      // Para períodos actual, anterior y siguiente, usar la fecha de hoy en la zona horaria del usuario
       // El filtrado específico se hace por period_id, no por rango de fechas
       const today = getTodayInUserTimeZone();
       return {
@@ -131,8 +132,8 @@ const getRelevantPeriodIds = async (
     return [];
   }
 
-  // Caso específico: período único (incluyendo current, previous y specific)
-  if ((periodFilter.type === 'specific' || periodFilter.type === 'current' || periodFilter.type === 'previous') && periodFilter.periodId) {
+  // Caso específico: período único (incluyendo current, previous, next y specific)
+  if ((periodFilter.type === 'specific' || periodFilter.type === 'current' || periodFilter.type === 'previous' || periodFilter.type === 'next') && periodFilter.periodId) {
     return [periodFilter.periodId];
   }
 

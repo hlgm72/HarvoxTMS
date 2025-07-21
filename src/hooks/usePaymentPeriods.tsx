@@ -222,3 +222,87 @@ export const usePreviousPaymentPeriod = (companyId?: string) => {
     enabled: !!user,
   });
 };
+
+// Hook para obtener el siguiente período de pago
+export const useNextPaymentPeriod = (companyId?: string) => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ['next-company-payment-period', user?.id, companyId],
+    queryFn: async (): Promise<PaymentPeriod | null> => {
+      if (!user) throw new Error('User not authenticated');
+
+      const currentDate = getTodayInUserTimeZone();
+      
+      // Obtener la compañía del usuario si no se especifica
+      let targetCompanyId = companyId;
+      
+      if (!targetCompanyId) {
+        const { data: userCompanyRole, error: companyError } = await supabase
+          .from('user_company_roles')
+          .select('company_id')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .limit(1)
+          .single();
+
+        if (companyError || !userCompanyRole) {
+          return null;
+        }
+        
+        targetCompanyId = userCompanyRole.company_id;
+      }
+
+      // Buscar el siguiente período (el período que comienza después de la fecha actual)
+      const { data: period, error } = await supabase
+        .from('company_payment_periods')
+        .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
+        .eq('company_id', targetCompanyId)
+        .gt('period_start_date', currentDate)
+        .order('period_start_date', { ascending: true })
+        .limit(1)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      return period || null;
+    },
+    enabled: !!user,
+  });
+};
+
+export const useReassignElement = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: ReassignElementParams) => {
+      const { data, error } = await supabase.rpc('reassign_to_payment_period', {
+        element_type: params.elementType,
+        element_id: params.elementId,
+        new_period_id: params.newPeriodId
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data: any) => {
+      toast({
+        title: "Reasignación exitosa",
+        description: (data && typeof data === 'object' && data.message) || "El elemento ha sido reasignado correctamente",
+      });
+      
+      // Invalidar queries relacionadas
+      queryClient.invalidateQueries({ queryKey: ['company-payment-periods'] });
+      queryClient.invalidateQueries({ queryKey: ['loads'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error en la reasignación",
+        description: error.message || "No se pudo reasignar el elemento",
+        variant: "destructive",
+      });
+    },
+  });
+};

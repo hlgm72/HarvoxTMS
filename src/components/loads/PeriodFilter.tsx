@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar, CalendarDays, ChevronDown, Clock, X, TrendingUp, FileText, Loader2 } from 'lucide-react';
-import { usePaymentPeriods, useCurrentPaymentPeriod, usePreviousPaymentPeriod } from '@/hooks/usePaymentPeriods';
+import { usePaymentPeriods, useCurrentPaymentPeriod, usePreviousPaymentPeriod, useNextPaymentPeriod } from '@/hooks/usePaymentPeriods';
 import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 export interface PeriodFilterValue {
-  type: 'current' | 'previous' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
+  type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
   periodId?: string;
   startDate?: string;
   endDate?: string;
@@ -27,6 +27,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   const { data: allPeriods = [] } = usePaymentPeriods();
   const { data: currentPeriod } = useCurrentPaymentPeriod();
   const { data: previousPeriod } = usePreviousPaymentPeriod();
+  const { data: nextPeriod } = useNextPaymentPeriod();
 
   const getDateRangeForType = (type: string) => {
     const now = new Date();
@@ -86,6 +87,10 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         return previousPeriod 
           ? `Período Anterior (${format(parseISO(previousPeriod.period_start_date), 'dd/MM', { locale: es })} - ${format(parseISO(previousPeriod.period_end_date), 'dd/MM/yy', { locale: es })})`
           : 'Período Anterior';
+      case 'next':
+        return nextPeriod 
+          ? `Período Siguiente (${format(parseISO(nextPeriod.period_start_date), 'dd/MM', { locale: es })} - ${format(parseISO(nextPeriod.period_end_date), 'dd/MM/yy', { locale: es })})`
+          : 'Período Siguiente';
       case 'all':
         return 'Todos los períodos';
       case 'specific':
@@ -234,6 +239,30 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 {previousPeriod && (
                   <Badge variant="secondary" className="ml-auto text-xs">
                     {format(parseISO(previousPeriod.period_start_date), 'dd/MM', { locale: es })} - {format(parseISO(previousPeriod.period_end_date), 'dd/MM', { locale: es })}
+                  </Badge>
+                )}
+              </Button>
+
+              <Button
+                variant={value.type === 'next' ? 'default' : 'ghost'}
+                className="w-full justify-start"
+                onClick={() => {
+                  if (nextPeriod) {
+                    handleOptionSelect({ 
+                      type: 'next',
+                      periodId: nextPeriod.id,
+                      startDate: nextPeriod.period_start_date,
+                      endDate: nextPeriod.period_end_date
+                    });
+                  }
+                }}
+                disabled={!nextPeriod}
+              >
+                <Clock className="h-4 w-4 mr-2" />
+                Período Siguiente
+                {nextPeriod && (
+                  <Badge variant="secondary" className="ml-auto text-xs">
+                    {format(parseISO(nextPeriod.period_start_date), 'dd/MM', { locale: es })} - {format(parseISO(nextPeriod.period_end_date), 'dd/MM', { locale: es })}
                   </Badge>
                 )}
               </Button>
