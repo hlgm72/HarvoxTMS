@@ -270,7 +270,8 @@ export function LoadDocumentsSection({
 
   const handleTemporaryFileUpload = (type: LoadDocument['type'], files: FileList) => {
     console.log('📂 handleTemporaryFileUpload called', { type, file: files[0]?.name });
-    console.log('📂 Current temporaryDocuments:', temporaryDocuments);
+    console.log('📂 Current temporaryDocuments BEFORE:', temporaryDocuments);
+    console.log('📂 onTemporaryDocumentsChange callback exists:', !!onTemporaryDocumentsChange);
     
     const file = files[0];
     
@@ -301,9 +302,17 @@ export function LoadDocumentsSection({
     console.log('📂 Creating tempDocument:', tempDocument);
 
     const updatedTempDocs = [...temporaryDocuments, tempDocument];
-    console.log('📂 Updated temporaryDocuments:', updatedTempDocs);
+    console.log('📂 Updated temporaryDocuments AFTER:', updatedTempDocs);
     
+    // Call the callback to update parent state
+    console.log('📂 Calling onTemporaryDocumentsChange with:', updatedTempDocs);
     onTemporaryDocumentsChange?.(updatedTempDocs);
+
+    // Also update local documents state for immediate UI feedback
+    const updatedDocuments = [...documents, tempDocument];
+    console.log('📂 Updating local documents state:', updatedDocuments);
+    setDocuments(updatedDocuments);
+    onDocumentsChange?.(updatedDocuments);
 
     toast({
       title: "Documento agregado",
