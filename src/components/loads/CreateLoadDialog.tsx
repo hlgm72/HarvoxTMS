@@ -391,36 +391,45 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       return;
     }
 
-    // Validar paradas antes de guardar
-    if (loadStops && loadStops.length > 0) {
-      // Validar campos requeridos
-      const stopsValidation = validateStops(loadStops);
-      if (!stopsValidation.isValid) {
-        console.log('🚨 onSubmit blocked - invalid stops:', stopsValidation.errors);
-        toast({
-          title: "Error en las paradas",
-          description: `No se puede guardar la carga. ${stopsValidation.errors[0]}`,
-          variant: "destructive",
-        });
-        setCurrentPhase(2); // Ir al paso 2 donde están las paradas
-        return;
-      }
-
-      // Validar orden cronológico de las fechas
-      const chronologicalValidation = validateChronologicalOrder(loadStops);
-      if (!chronologicalValidation.isValid) {
-        console.log('🚨 onSubmit blocked - chronological order error:', chronologicalValidation.errors);
-        toast({
-          title: "Error en el orden cronológico",
-          description: chronologicalValidation.errors[0],
-          variant: "destructive",
-        });
-        setCurrentPhase(2); // Ir al paso 2 donde están las paradas
-        return;
-      }
+    // Validar paradas (Paso 2)
+    if (!loadStops || loadStops.length < 2) {
+      console.log('🚨 onSubmit blocked - insufficient stops');
+      toast({
+        title: "Error",
+        description: "Debe haber al menos 2 paradas (pickup y delivery).",
+        variant: "destructive",
+      });
+      setCurrentPhase(2);
+      return;
     }
 
-    // Solo validar conductor en modo creación o si estamos en la fase de asignación
+    // Validar campos requeridos de paradas (Paso 2)
+    const stopsValidation = validateStops(loadStops);
+    if (!stopsValidation.isValid) {
+      console.log('🚨 onSubmit blocked - invalid stops:', stopsValidation.errors);
+      toast({
+        title: "Error en las paradas",
+        description: `${stopsValidation.errors[0]}`,
+        variant: "destructive",
+      });
+      setCurrentPhase(2);
+      return;
+    }
+
+    // Validar orden cronológico de las fechas (Paso 2)
+    const chronologicalValidation = validateChronologicalOrder(loadStops);
+    if (!chronologicalValidation.isValid) {
+      console.log('🚨 onSubmit blocked - chronological order error:', chronologicalValidation.errors);
+      toast({
+        title: "Error en el orden cronológico",
+        description: chronologicalValidation.errors[0],
+        variant: "destructive",
+      });
+      setCurrentPhase(2);
+      return;
+    }
+
+    // Validar conductor (Paso 3)
     if ((mode === 'create' || mode === 'duplicate') && !selectedDriver) {
       console.log('🚨 onSubmit blocked - no driver selected');
       toast({
@@ -428,7 +437,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         description: "Debes seleccionar un conductor antes de crear la carga.",
         variant: "destructive",
       });
-      setCurrentPhase(3); // Ir al paso 3 donde está la asignación de conductor
+      setCurrentPhase(3);
       return;
     }
 
