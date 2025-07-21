@@ -333,6 +333,8 @@ export const useLoads = (filters?: LoadsFilters) => {
           const period = periods.find(p => p.id === load.payment_period_id);
           
           const loadStops = stopsData.filter(s => s.load_id === load.id);
+          console.log(`🚛 Load ${load.load_number} - Found ${loadStops.length} stops:`, loadStops);
+          
           const pickupStop = loadStops
             .filter(s => s.stop_type === 'pickup')
             .sort((a, b) => a.stop_number - b.stop_number)[0];
@@ -340,12 +342,25 @@ export const useLoads = (filters?: LoadsFilters) => {
             .filter(s => s.stop_type === 'delivery')
             .sort((a, b) => b.stop_number - a.stop_number)[0];
 
+          console.log(`🚛 Load ${load.load_number} - Pickup stop:`, pickupStop);
+          console.log(`🚛 Load ${load.load_number} - Delivery stop:`, deliveryStop);
+
           // Resolver nombres de ciudades (usar ciudad Y estado para match exacto)
           const pickupCity = pickupStop ? cities.find(c => c.name === pickupStop.city && c.state_id === pickupStop.state) : null;
           const deliveryCity = deliveryStop ? cities.find(c => c.name === deliveryStop.city && c.state_id === deliveryStop.state) : null;
 
+          console.log(`🚛 Load ${load.load_number} - Pickup city found:`, pickupCity);
+          console.log(`🚛 Load ${load.load_number} - Delivery city found:`, deliveryCity);
+
           // Priorizar alias sobre nombre para el broker
           const brokerDisplayName = broker ? (broker.alias && broker.alias.trim() ? broker.alias : broker.name) : 'Sin cliente';
+
+          const pickupCityDisplay = pickupStop && pickupStop.city && pickupStop.state ? 
+            `${pickupStop.city}, ${pickupStop.state}` : 'Sin definir';
+          const deliveryCityDisplay = deliveryStop && deliveryStop.city && deliveryStop.state ? 
+            `${deliveryStop.city}, ${deliveryStop.state}` : 'Sin definir';
+
+          console.log(`🚛 Load ${load.load_number} - Final display: ${pickupCityDisplay} → ${deliveryCityDisplay}`);
 
           return {
             ...load,
@@ -355,8 +370,8 @@ export const useLoads = (filters?: LoadsFilters) => {
             broker_alias: broker?.alias,
             dispatcher_name: contact?.name || null,
             internal_dispatcher_name: dispatcher ? `${dispatcher.first_name} ${dispatcher.last_name}` : null,
-            pickup_city: pickupCity ? `${pickupCity.name}, ${pickupCity.state_id}` : 'Sin definir',
-            delivery_city: deliveryCity ? `${deliveryCity.name}, ${deliveryCity.state_id}` : 'Sin definir',
+            pickup_city: pickupCityDisplay,
+            delivery_city: deliveryCityDisplay,
             period_start_date: period?.period_start_date,
             period_end_date: period?.period_end_date,
             period_frequency: period?.period_frequency,
