@@ -336,6 +336,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // Validar número de carga requerido (Paso 1)
     if (!values.load_number || values.load_number.trim() === '') {
       console.log('🚨 onSubmit blocked - missing load number');
+      form.setError("load_number", {
+        type: "manual",
+        message: "El número de carga es requerido."
+      });
       toast({
         title: "Error",
         description: "El número de carga es requerido.",
@@ -348,6 +352,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // Validar cliente requerido (Paso 1)
     if (!values.client_id || values.client_id === '') {
       console.log('🚨 onSubmit blocked - missing client');
+      form.setError("client_id", {
+        type: "manual",
+        message: "Debes seleccionar un cliente."
+      });
       toast({
         title: "Error", 
         description: "Debes seleccionar un cliente.",
@@ -360,6 +368,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // Validar commodity requerido (Paso 1)
     if (!values.commodity || values.commodity.trim() === '') {
       console.log('🚨 onSubmit blocked - missing commodity');
+      form.setError("commodity", {
+        type: "manual",
+        message: "El commodity es requerido."
+      });
       toast({
         title: "Error",
         description: "El commodity es requerido.",
@@ -372,6 +384,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // Validar monto mayor a 0 (Paso 1)
     if (!values.total_amount || values.total_amount <= 0) {
       console.log('🚨 onSubmit blocked - invalid amount');
+      form.setError("total_amount", {
+        type: "manual",
+        message: "El monto total debe ser mayor a 0."
+      });
       toast({
         title: "Error",
         description: "El monto total debe ser mayor a 0.",
