@@ -345,7 +345,9 @@ export const useCreateLoad = () => {
     onSuccess: (loadId, variables) => {
       console.log('✅ useCreateLoad - Mutation successful, load ID:', loadId);
       
+      // Invalidar todas las queries relacionadas con loads
       queryClient.invalidateQueries({ queryKey: ['loads'] });
+      queryClient.refetchQueries({ queryKey: ['loads'] });
       
       const isEdit = variables.mode === 'edit';
       const isDuplicate = variables.mode === 'duplicate';

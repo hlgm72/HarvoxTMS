@@ -500,17 +500,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     createLoadMutation.mutate(loadDataToSubmit, {
       onSuccess: () => {
         console.log('✅ CreateLoadDialog - Load mutation successful');
-        // Solo cerrar el diálogo cuando se hace submit final en modo creación o duplicación
-        // En modo edición, también cerrar
-        if ((mode === 'create' || mode === 'duplicate') && currentPhase === 4) {
-          console.log(`✅ CreateLoadDialog - Closing dialog after final ${mode}`);
-          onClose();
-        } else if (mode === 'edit') {
-          console.log('✅ CreateLoadDialog - Closing dialog after edit');
-          onClose();
-        } else {
-          console.log('✅ CreateLoadDialog - Staying open, not final phase');
-        }
+        console.log(`✅ CreateLoadDialog - Mode: ${mode}, currentPhase: ${currentPhase}`);
+        
+        // Always close dialog on successful mutation
+        console.log('✅ CreateLoadDialog - Closing dialog after successful creation/edit');
+        onClose();
       },
       onError: (error) => {
         console.error('❌ CreateLoadDialog - Load mutation failed:', error);
