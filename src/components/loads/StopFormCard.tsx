@@ -151,7 +151,7 @@ export function StopFormCard({
             <Label htmlFor={`reference-${stop.id}`}>Número de Referencia</Label>
             <Input
               id={`reference-${stop.id}`}
-              placeholder="BOL, PO, etc."
+              placeholder="Número de Pickup/Delivery"
               value={stop.reference_number || ''}
               onChange={referenceHandlers.onChange}
               onBlur={referenceHandlers.onBlur}

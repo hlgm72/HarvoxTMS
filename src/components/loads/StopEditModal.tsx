@@ -217,7 +217,7 @@ export function StopEditModal({
                 <Label htmlFor="reference">Número de Referencia</Label>
                 <Input
                   id="reference"
-                  placeholder="BOL, PO, etc."
+                  placeholder="Número de Pickup/Delivery"
                   value={formData.reference_number || ''}
                   onChange={referenceHandlers.onChange}
                   onBlur={referenceHandlers.onBlur}
