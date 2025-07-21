@@ -320,6 +320,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
   const onSubmit = (values: any) => {
     console.log('🚨 onSubmit called with values:', values);
+    console.log('🚨 Current mode:', mode);
+    console.log('🚨 Current phase:', currentPhase);
     
     // En modo edición, permitir guardar en cualquier fase
     // En modo creación y duplicación, solo permitir en la fase final (duplicate se comporta como create)
