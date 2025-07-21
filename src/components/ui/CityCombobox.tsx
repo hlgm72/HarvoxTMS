@@ -34,6 +34,7 @@ export function CityCombobox({
   const [open, setOpen] = useState(false);
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -72,6 +73,11 @@ export function CityCombobox({
   };
 
   const selectedCity = cities.find((city) => city.id === value);
+  
+  const filteredCities = cities.filter((city) =>
+    city.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (city.county && city.county.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   const getPlaceholderText = () => {
     if (loading) return "Cargando ciudades...";
@@ -107,10 +113,15 @@ export function CityCombobox({
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command shouldFilter={false}>
-          <CommandInput placeholder="Buscar ciudad..." className="h-9" />
+          <CommandInput 
+            placeholder="Buscar ciudad..." 
+            className="h-9"
+            value={searchTerm}
+            onValueChange={setSearchTerm}
+          />
           <CommandList>
             <CommandEmpty>
-              {loading ? "Cargando ciudades..." : "No se encontró la ciudad."}
+              {loading ? "Cargando ciudades..." : searchTerm ? "No se encontró la ciudad." : "Escribe para buscar..."}
             </CommandEmpty>
             <ScrollArea className="h-60">
               <CommandGroup>
@@ -130,7 +141,7 @@ export function CityCombobox({
                   />
                   Sin especificar
                 </CommandItem>
-                {cities.map((city) => (
+                {filteredCities.map((city) => (
                   <CommandItem
                     key={city.id}
                     value={`${city.name.toLowerCase()}${city.county ? ` ${city.county.toLowerCase()}` : ''}`}

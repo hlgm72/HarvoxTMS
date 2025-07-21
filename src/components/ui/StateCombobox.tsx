@@ -30,6 +30,7 @@ export function StateCombobox({
   const [open, setOpen] = useState(false);
   const [states, setStates] = useState<State[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -59,6 +60,10 @@ export function StateCombobox({
   };
 
   const selectedState = states.find((state) => state.id === value);
+  
+  const filteredStates = states.filter((state) =>
+    state.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -79,10 +84,15 @@ export function StateCombobox({
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command shouldFilter={false}>
-          <CommandInput placeholder="Buscar estado..." className="h-9" />
+          <CommandInput 
+            placeholder="Buscar estado..." 
+            className="h-9"
+            value={searchTerm}
+            onValueChange={setSearchTerm}
+          />
           <CommandList>
             <CommandEmpty>
-              {loading ? "Cargando estados..." : "No se encontró el estado."}
+              {loading ? "Cargando estados..." : searchTerm ? "No se encontró el estado." : "Escribe para buscar..."}
             </CommandEmpty>
             <ScrollArea className="h-60">
               <CommandGroup>
@@ -102,7 +112,7 @@ export function StateCombobox({
                   />
                   Sin especificar
                 </CommandItem>
-                {states.map((state) => (
+                {filteredStates.map((state) => (
                   <CommandItem
                     key={state.id}
                     value={state.name.toLowerCase()}
