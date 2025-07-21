@@ -350,6 +350,12 @@ export const useCreateLoad = () => {
       const isEdit = variables.mode === 'edit';
       const isDuplicate = variables.mode === 'duplicate';
       
+      console.log('📧 useCreateLoad - Showing success toast:', {
+        isEdit,
+        isDuplicate,
+        mode: variables.mode
+      });
+      
       toast({
         title: "Éxito",
         description: isEdit 
