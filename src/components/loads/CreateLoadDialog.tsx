@@ -574,7 +574,17 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {mode === 'create' ? 'Nueva Carga' : mode === 'edit' ? 'Editar Carga' : 'Duplicar Carga'}
+            {(() => {
+              const loadNumber = currentLoadNumber?.trim();
+              
+              if (mode === 'edit') {
+                return loadNumber ? `Editar Carga ${loadNumber}` : 'Editar Carga';
+              } else if (mode === 'duplicate') {
+                return loadNumber ? `Duplicar Carga ${loadNumber}` : 'Duplicar Carga';
+              } else {
+                return loadNumber ? `Crear Carga ${loadNumber}` : 'Nueva Carga';
+              }
+            })()}
           </DialogTitle>
           <DialogDescription>
             {mode === 'create' 
