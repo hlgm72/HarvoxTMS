@@ -95,6 +95,32 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     mode === 'edit' ? activeLoadData?.id : undefined
   );
 
+  // Function to generate unique load number
+  const generateUniqueLoadNumber = async () => {
+    const { data: companies } = await supabase
+      .from('user_company_roles')
+      .select('company_id, companies!inner(name)')
+      .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+      .eq('is_active', true)
+      .limit(1)
+      .maybeSingle();
+
+    const prefix = companies?.companies?.name?.substring(0, 3).toUpperCase() || 'LD';
+    const timestamp = Date.now().toString().slice(-6);
+    const randomNum = Math.floor(Math.random() * 999).toString().padStart(3, '0');
+    
+    return `${prefix}-${timestamp}-${randomNum}`;
+  };
+
+  const handleGenerateLoadNumber = async () => {
+    const uniqueNumber = await generateUniqueLoadNumber();
+    form.setValue("load_number", uniqueNumber);
+    toast({
+      title: "Número generado",
+      description: `Se generó el número de carga: ${uniqueNumber}`,
+    });
+  };
+
   // ATM Input
   const atmInput = useATMInput({
     initialValue: 0,
@@ -356,6 +382,22 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       return;
     }
 
+    // Validar que el número no sea duplicado
+    if (loadNumberValidation.isDuplicate) {
+      console.log('🚨 onSubmit blocked - duplicate load number');
+      form.setError("load_number", {
+        type: "manual",
+        message: "Este número de carga ya existe. Use el botón 'Generar' para crear uno único."
+      });
+      toast({
+        title: "Error",
+        description: "Este número de carga ya existe. Use el botón 'Generar' para crear uno único.",
+        variant: "destructive",
+      });
+      setCurrentPhase(1);
+      return;
+    }
+
     // Validar cliente requerido (Paso 1)
     if (!values.client_id || values.client_id === '') {
       console.log('🚨 onSubmit blocked - missing client');
@@ -598,35 +640,46 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                         
                         return (
                           <FormItem>
-                            <FormLabel>Número de Carga *</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <Input 
-                                  placeholder="Ej: LD-001, 2024-001, etc." 
-                                  value={field.value || ''}
-                                  onChange={textHandlers.onChange}
-                                  onBlur={textHandlers.onBlur}
-                                  className={
-                                    loadNumberValidation.isDuplicate 
-                                      ? "border-destructive focus:border-destructive" 
-                                      : loadNumberValidation.isValid 
-                                      ? "border-green-500 focus:border-green-500" 
-                                      : ""
-                                  }
-                                />
-                                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                                  {loadNumberValidation.isValidating && (
-                                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                                  )}
-                                  {!loadNumberValidation.isValidating && loadNumberValidation.isDuplicate && (
-                                    <AlertTriangle className="h-4 w-4 text-destructive" />
-                                  )}
-                                  {!loadNumberValidation.isValidating && loadNumberValidation.isValid && currentLoadNumber && (
-                                    <Check className="h-4 w-4 text-green-500" />
-                                  )}
-                                </div>
-                              </div>
-                            </FormControl>
+                             <FormLabel>Número de Carga *</FormLabel>
+                             <FormControl>
+                               <div className="flex gap-2">
+                                 <div className="relative flex-1">
+                                   <Input 
+                                     placeholder="Ej: LD-001, 2024-001, etc." 
+                                     value={field.value || ''}
+                                     onChange={textHandlers.onChange}
+                                     onBlur={textHandlers.onBlur}
+                                     className={
+                                       loadNumberValidation.isDuplicate 
+                                         ? "border-destructive focus:border-destructive" 
+                                         : loadNumberValidation.isValid 
+                                         ? "border-green-500 focus:border-green-500" 
+                                         : ""
+                                     }
+                                   />
+                                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                     {loadNumberValidation.isValidating && (
+                                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                     )}
+                                     {!loadNumberValidation.isValidating && loadNumberValidation.isDuplicate && (
+                                       <AlertTriangle className="h-4 w-4 text-destructive" />
+                                     )}
+                                     {!loadNumberValidation.isValidating && loadNumberValidation.isValid && currentLoadNumber && (
+                                       <Check className="h-4 w-4 text-green-500" />
+                                     )}
+                                   </div>
+                                 </div>
+                                 <Button 
+                                   type="button" 
+                                   variant="outline" 
+                                   size="sm"
+                                   onClick={handleGenerateLoadNumber}
+                                   className="whitespace-nowrap"
+                                 >
+                                   Generar
+                                 </Button>
+                               </div>
+                             </FormControl>
                             <FormMessage />
                             {loadNumberValidation.isDuplicate && (
                               <p className="text-sm text-destructive mt-1">
