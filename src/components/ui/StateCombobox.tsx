@@ -4,6 +4,7 @@ import { Check, ChevronsUpDown, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -79,46 +80,48 @@ export function StateCombobox({
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command>
           <CommandInput placeholder="Buscar estado..." className="h-9" />
-          <CommandList className="max-h-60 overflow-y-auto">
+          <CommandList>
             <CommandEmpty>
               {loading ? "Cargando estados..." : "No se encontró el estado."}
             </CommandEmpty>
-            <CommandGroup>
-              <CommandItem
-                key="unspecified"
-                value="sin especificar"
-                onSelect={() => {
-                  onValueChange(undefined);
-                  setOpen(false);
-                }}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    !value ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                Sin especificar
-              </CommandItem>
-              {states.map((state) => (
+            <ScrollArea className="h-60">
+              <CommandGroup>
                 <CommandItem
-                  key={state.id}
-                  value={state.name.toLowerCase()}
+                  key="unspecified"
+                  value="sin especificar"
                   onSelect={() => {
-                    onValueChange(state.id === value ? undefined : state.id);
+                    onValueChange(undefined);
                     setOpen(false);
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === state.id ? "opacity-100" : "opacity-0"
+                      !value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {state.name}
+                  Sin especificar
                 </CommandItem>
-              ))}
-            </CommandGroup>
+                {states.map((state) => (
+                  <CommandItem
+                    key={state.id}
+                    value={state.name.toLowerCase()}
+                    onSelect={() => {
+                      onValueChange(state.id === value ? undefined : state.id);
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === state.id ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {state.name}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </ScrollArea>
           </CommandList>
         </Command>
       </PopoverContent>

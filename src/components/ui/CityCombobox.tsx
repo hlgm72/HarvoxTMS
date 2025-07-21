@@ -4,6 +4,7 @@ import { Check, ChevronsUpDown, Building } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -107,51 +108,53 @@ export function CityCombobox({
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command>
           <CommandInput placeholder="Buscar ciudad..." className="h-9" />
-          <CommandList className="max-h-60 overflow-y-auto">
+          <CommandList>
             <CommandEmpty>
               {loading ? "Cargando ciudades..." : "No se encontró la ciudad."}
             </CommandEmpty>
-            <CommandGroup>
-              <CommandItem
-                key="unspecified"
-                value="sin especificar"
-                onSelect={() => {
-                  onValueChange(undefined);
-                  setOpen(false);
-                }}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    !value ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                Sin especificar
-              </CommandItem>
-              {cities.map((city) => (
+            <ScrollArea className="h-60">
+              <CommandGroup>
                 <CommandItem
-                  key={city.id}
-                  value={`${city.name.toLowerCase()}${city.county ? ` ${city.county.toLowerCase()}` : ''}`}
+                  key="unspecified"
+                  value="sin especificar"
                   onSelect={() => {
-                    onValueChange(city.id === value ? undefined : city.id);
+                    onValueChange(undefined);
                     setOpen(false);
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === city.id ? "opacity-100" : "opacity-0"
+                      !value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  <div>
-                    <div>{city.name}</div>
-                    {city.county && (
-                      <div className="text-sm text-muted-foreground">{city.county}</div>
-                    )}
-                  </div>
+                  Sin especificar
                 </CommandItem>
-              ))}
-            </CommandGroup>
+                {cities.map((city) => (
+                  <CommandItem
+                    key={city.id}
+                    value={`${city.name.toLowerCase()}${city.county ? ` ${city.county.toLowerCase()}` : ''}`}
+                    onSelect={() => {
+                      onValueChange(city.id === value ? undefined : city.id);
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === city.id ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    <div>
+                      <div>{city.name}</div>
+                      {city.county && (
+                        <div className="text-sm text-muted-foreground">{city.county}</div>
+                      )}
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </ScrollArea>
           </CommandList>
         </Command>
       </PopoverContent>
