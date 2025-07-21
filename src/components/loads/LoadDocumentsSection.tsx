@@ -698,19 +698,22 @@ export function LoadDocumentsSection({
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {uploadedDoc ? (
+                    {(uploadedDoc || tempDoc) ? (
                       <div className="space-y-3">
                         {/* Document Info */}
                         <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
                           <FileCheck className="h-5 w-5 text-green-500 mt-0.5" />
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">{uploadedDoc.fileName}</p>
+                            <p className="font-medium truncate">{(uploadedDoc || tempDoc)?.fileName}</p>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <span>{formatFileSize(uploadedDoc.fileSize)}</span>
+                              <span>{formatFileSize((uploadedDoc || tempDoc)?.fileSize)}</span>
                               <span>•</span>
                               <span>
-                                {new Date(uploadedDoc.uploadedAt).toLocaleDateString('es-ES')}
+                                {new Date((uploadedDoc || tempDoc)?.uploadedAt || new Date()).toLocaleDateString('es-ES')}
                               </span>
+                              {tempDoc && !uploadedDoc && (
+                                <Badge variant="secondary" className="text-xs">Temporal</Badge>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -720,7 +723,12 @@ export function LoadDocumentsSection({
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => uploadedDoc.url && window.open(uploadedDoc.url, '_blank')}
+                            onClick={() => {
+                              const docToView = uploadedDoc || tempDoc;
+                              if (docToView?.url) {
+                                window.open(docToView.url, '_blank');
+                              }
+                            }}
                           >
                             <Eye className="h-4 w-4 mr-2" />
                             Ver
@@ -729,10 +737,11 @@ export function LoadDocumentsSection({
                             variant="outline" 
                             size="sm"
                             onClick={() => {
-                              if (uploadedDoc.url) {
+                              const docToDownload = uploadedDoc || tempDoc;
+                              if (docToDownload?.url) {
                                 const link = document.createElement('a');
-                                link.href = uploadedDoc.url;
-                                link.download = uploadedDoc.fileName;
+                                link.href = docToDownload.url;
+                                link.download = docToDownload.fileName;
                                 link.click();
                               }
                             }}
