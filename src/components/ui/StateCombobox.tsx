@@ -62,7 +62,8 @@ export function StateCombobox({
   const selectedState = states.find((state) => state.id === value);
   
   const filteredStates = states.filter((state) =>
-    state.name.toLowerCase().includes(searchTerm.toLowerCase())
+    state.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    state.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
