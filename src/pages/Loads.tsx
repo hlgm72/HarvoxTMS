@@ -7,7 +7,6 @@ import { LoadsList } from "@/components/loads/LoadsList";
 import { LoadsFloatingActions } from "@/components/loads/LoadsFloatingActions";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
-import { DateDebugger } from "@/components/debug/DateDebugger";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -98,10 +97,7 @@ export default function Loads() {
         }
       />
 
-      <div className="p-2 md:p-4 space-y-6">
-        {/* Debug temporal */}
-        <DateDebugger />
-        
+      <div className="p-2 md:p-4 space-y-6">        
         {/* Filtro de Períodos */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <PeriodFilter 

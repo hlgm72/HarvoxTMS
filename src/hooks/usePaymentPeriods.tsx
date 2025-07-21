@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from './use-toast';
+import { getTodayInUserTimeZone } from '@/utils/dateUtils';
 
 export interface PaymentPeriod {
   id: string;
@@ -130,7 +131,7 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
     queryFn: async (): Promise<PaymentPeriod | null> => {
       if (!user) throw new Error('User not authenticated');
 
-      const currentDate = new Date().toISOString().split('T')[0];
+      const currentDate = getTodayInUserTimeZone();
       
       // Obtener la compañía del usuario si no se especifica
       let targetCompanyId = companyId;
