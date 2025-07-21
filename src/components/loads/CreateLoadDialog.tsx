@@ -336,6 +336,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         description: "No se puede crear la carga con un número duplicado.",
         variant: "destructive",
       });
+      setCurrentPhase(1); // Ir al paso 1 donde está el campo load_number
       return;
     }
 
@@ -350,7 +351,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
           description: `No se puede guardar la carga. ${stopsValidation.errors[0]}`,
           variant: "destructive",
         });
-        setCurrentPhase(2); // Redirigir al paso de paradas
+        setCurrentPhase(2); // Ir al paso 2 donde están las paradas
         return;
       }
 
@@ -363,7 +364,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
           description: chronologicalValidation.errors[0],
           variant: "destructive",
         });
-        setCurrentPhase(2); // Redirigir al paso de paradas
+        setCurrentPhase(2); // Ir al paso 2 donde están las paradas
         return;
       }
     }
@@ -376,6 +377,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         description: "Debes seleccionar un conductor antes de crear la carga.",
         variant: "destructive",
       });
+      setCurrentPhase(3); // Ir al paso 3 donde está la asignación de conductor
       return;
     }
 
