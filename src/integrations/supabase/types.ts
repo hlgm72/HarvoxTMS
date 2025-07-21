@@ -2358,6 +2358,10 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: Json
       }
+      force_assign_payment_period: {
+        Args: { load_id_param: string; period_id_param: string }
+        Returns: boolean
+      }
       generate_company_payment_periods: {
         Args: { company_id_param: string; from_date: string; to_date: string }
         Returns: Json
