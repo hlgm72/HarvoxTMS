@@ -78,7 +78,7 @@ export function StateCombobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
-        <Command>
+        <Command shouldFilter={false}>
           <CommandInput placeholder="Buscar estado..." className="h-9" />
           <CommandList>
             <CommandEmpty>
