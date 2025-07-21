@@ -267,35 +267,38 @@ export const useLoads = (filters?: LoadsFilters) => {
         }
 
         const stopsData = stopsResult.data || [];
+        console.log('🚛 All stops data:', stopsData);
         
-        // Obtener combinaciones únicas de ciudad y estado desde load_stops
-        const cityStateMap = new Map();
-        stopsData.forEach(stop => {
-          if (stop.city && stop.state) {
-            cityStateMap.set(`${stop.city}|${stop.state}`, { city: stop.city, state: stop.state });
-          }
+        // Separar paradas con UUIDs vs nombres de texto
+        const stopsWithUUIDs = stopsData.filter(stop => {
+          // Un UUID tiene 36 caracteres con guiones
+          return stop.city && stop.city.length === 36 && stop.city.includes('-');
         });
-        
-        const cityStatePairs = Array.from(cityStateMap.values());
 
-        // Obtener información de las ciudades (buscar por nombre Y estado)
+        const stopsWithTextNames = stopsData.filter(stop => {
+          // No es un UUID, es texto directo
+          return stop.city && (stop.city.length !== 36 || !stop.city.includes('-'));
+        });
+
+        console.log('🚛 Stops with UUIDs:', stopsWithUUIDs.length);
+        console.log('🚛 Stops with text names:', stopsWithTextNames.length);
+
+        // Obtener nombres de ciudades solo para los UUIDs
         let cities: any[] = [];
         
-        if (cityStatePairs.length > 0) {
-          // Hacer consultas individuales para cada combinación ciudad-estado
-          const cityPromises = cityStatePairs.map(async ({ city, state }) => {
-            const { data, error } = await supabase
-              .from('state_cities')
-              .select('id, name, state_id')
-              .eq('name', city)
-              .eq('state_id', state)
-              .limit(1);
-            
-            return data?.[0] || null;
-          });
+        if (stopsWithUUIDs.length > 0) {
+          const cityUUIDs = [...new Set(stopsWithUUIDs.map(s => s.city))];
           
-          const cityResults = await Promise.all(cityPromises);
-          cities = cityResults.filter(Boolean);
+          const { data: citiesFromDB, error: citiesError } = await supabase
+            .from('state_cities')
+            .select('id, name, state_id')
+            .in('id', cityUUIDs);
+          
+          if (citiesError) {
+            console.error('Error obteniendo ciudades:', citiesError);
+          } else {
+            cities = citiesFromDB || [];
+          }
         }
         
         const [profilesResult, brokersResult, contactsResult, dispatchersResult, periodsResult] = await Promise.allSettled([
@@ -345,22 +348,34 @@ export const useLoads = (filters?: LoadsFilters) => {
           console.log(`🚛 Load ${load.load_number} - Pickup stop:`, pickupStop);
           console.log(`🚛 Load ${load.load_number} - Delivery stop:`, deliveryStop);
 
-          // Resolver nombres de ciudades (usar ciudad Y estado para match exacto)
-          const pickupCity = pickupStop ? cities.find(c => c.name === pickupStop.city && c.state_id === pickupStop.state) : null;
-          const deliveryCity = deliveryStop ? cities.find(c => c.name === deliveryStop.city && c.state_id === deliveryStop.state) : null;
+          // Función auxiliar para obtener el display de la ciudad
+          const getCityDisplay = (stop: any) => {
+            if (!stop || !stop.city || !stop.state) {
+              return 'Sin definir';
+            }
 
-          console.log(`🚛 Load ${load.load_number} - Pickup city found:`, pickupCity);
-          console.log(`🚛 Load ${load.load_number} - Delivery city found:`, deliveryCity);
+            // Si es un UUID, buscar en la tabla de ciudades
+            if (stop.city.length === 36 && stop.city.includes('-')) {
+              const cityFromDB = cities.find(c => c.id === stop.city);
+              if (cityFromDB) {
+                return `${cityFromDB.name}, ${cityFromDB.state_id}`;
+              } else {
+                console.warn(`🚛 Load ${load.load_number} - City UUID not found:`, stop.city);
+                return 'Ciudad no encontrada';
+              }
+            } else {
+              // Es texto directo
+              return `${stop.city}, ${stop.state}`;
+            }
+          };
+
+          const pickupCityDisplay = getCityDisplay(pickupStop);
+          const deliveryCityDisplay = getCityDisplay(deliveryStop);
+
+          console.log(`🚛 Load ${load.load_number} - Final display: ${pickupCityDisplay} → ${deliveryCityDisplay}`);
 
           // Priorizar alias sobre nombre para el broker
           const brokerDisplayName = broker ? (broker.alias && broker.alias.trim() ? broker.alias : broker.name) : 'Sin cliente';
-
-          const pickupCityDisplay = pickupStop && pickupStop.city && pickupStop.state ? 
-            `${pickupStop.city}, ${pickupStop.state}` : 'Sin definir';
-          const deliveryCityDisplay = deliveryStop && deliveryStop.city && deliveryStop.state ? 
-            `${deliveryStop.city}, ${deliveryStop.state}` : 'Sin definir';
-
-          console.log(`🚛 Load ${load.load_number} - Final display: ${pickupCityDisplay} → ${deliveryCityDisplay}`);
 
           return {
             ...load,
