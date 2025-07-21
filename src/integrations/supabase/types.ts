@@ -2325,6 +2325,10 @@ export type Database = {
           approved_amount: number
         }[]
       }
+      can_access_load: {
+        Args: { load_id_param: string }
+        Returns: boolean
+      }
       can_delete_test_company: {
         Args: { company_id_param: string }
         Returns: Json
