@@ -480,7 +480,9 @@ export function LoadDocumentsSection({
         onTemporaryDocumentsChange?.(updatedTempDocs);
 
         console.log('📂 Before updating documents state:', documents);
-        const updatedDocuments = [...documents, loadOrderDocument];
+        // Include both existing documents AND temporary documents
+        const allCurrentDocuments = [...documents, ...temporaryDocuments.filter(td => td.type !== 'load_order')];
+        const updatedDocuments = [...allCurrentDocuments, loadOrderDocument];
         console.log('📂 After creating updatedDocuments:', updatedDocuments);
         setDocuments(updatedDocuments);
         setHasLoadOrder(true);
