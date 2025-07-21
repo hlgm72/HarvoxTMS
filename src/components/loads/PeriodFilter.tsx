@@ -194,6 +194,30 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             <div className="space-y-2">
               <h4 className="font-medium text-sm text-muted-foreground">Filtros rápidos</h4>
               
+              <Button
+                variant={value.type === 'previous' ? 'default' : 'ghost'}
+                className="w-full justify-start"
+                onClick={() => {
+                  if (previousPeriod) {
+                    handleOptionSelect({ 
+                      type: 'previous',
+                      periodId: previousPeriod.id,
+                      startDate: previousPeriod.period_start_date,
+                      endDate: previousPeriod.period_end_date
+                    });
+                  }
+                }}
+                disabled={!previousPeriod}
+              >
+                <Clock className="h-4 w-4 mr-2" />
+                Período Anterior
+                {previousPeriod && (
+                  <Badge variant="secondary" className="ml-auto text-xs">
+                    {format(parseISO(previousPeriod.period_start_date), 'dd/MM', { locale: es })} - {format(parseISO(previousPeriod.period_end_date), 'dd/MM', { locale: es })}
+                  </Badge>
+                )}
+              </Button>
+
                <Button
                 variant={value.type === 'current' ? 'default' : 'ghost'}
                 className="w-full justify-start"
@@ -215,30 +239,6 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 {currentPeriod && (
                   <Badge variant="secondary" className="ml-auto text-xs">
                     {format(parseISO(currentPeriod.period_start_date), 'dd/MM', { locale: es })} - {format(parseISO(currentPeriod.period_end_date), 'dd/MM', { locale: es })}
-                  </Badge>
-                )}
-              </Button>
-
-              <Button
-                variant={value.type === 'previous' ? 'default' : 'ghost'}
-                className="w-full justify-start"
-                onClick={() => {
-                  if (previousPeriod) {
-                    handleOptionSelect({ 
-                      type: 'previous',
-                      periodId: previousPeriod.id,
-                      startDate: previousPeriod.period_start_date,
-                      endDate: previousPeriod.period_end_date
-                    });
-                  }
-                }}
-                disabled={!previousPeriod}
-              >
-                <Clock className="h-4 w-4 mr-2" />
-                Período Anterior
-                {previousPeriod && (
-                  <Badge variant="secondary" className="ml-auto text-xs">
-                    {format(parseISO(previousPeriod.period_start_date), 'dd/MM', { locale: es })} - {format(parseISO(previousPeriod.period_end_date), 'dd/MM', { locale: es })}
                   </Badge>
                 )}
               </Button>
