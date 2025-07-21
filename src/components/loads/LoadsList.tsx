@@ -4,11 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useLoads } from "@/hooks/useLoads";
+import { useDeleteLoad } from "@/hooks/useDeleteLoad";
 import { PeriodFilterValue } from "./PeriodFilter";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
 import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
@@ -161,6 +163,8 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
   } : undefined;
   
   const { data: loads = [], isLoading, error } = useLoads(loadsFilters);
+  const deleteLoadMutation = useDeleteLoad();
+  
   const [reassignmentDialog, setReassignmentDialog] = useState<{
     isOpen: boolean;
     load?: any;
@@ -180,6 +184,20 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
     isOpen: boolean;
     load?: any;
   }>({ isOpen: false });
+
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    load?: any;
+  }>({ isOpen: false });
+
+  const handleDeleteLoad = async (loadId: string) => {
+    try {
+      await deleteLoadMutation.mutateAsync(loadId);
+      setDeleteDialog({ isOpen: false });
+    } catch (error) {
+      // El error ya se maneja en el hook
+    }
+  };
   
   // Aplicar filtros a los datos reales
   const filteredLoads = loads.filter(load => {
@@ -334,15 +352,25 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                        <ArrowRightLeft className="h-3 w-3 mr-2" />
                        Reasignar Período
                      </DropdownMenuItem>
-                     <DropdownMenuItem 
-                       onClick={() => setDocumentsDialog({ 
-                         isOpen: true, 
-                         load 
-                       })}
-                     >
-                       <FileText className="h-3 w-3 mr-2" />
-                       Gestionar Documentos
-                     </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => setDocumentsDialog({ 
+                          isOpen: true, 
+                          load 
+                        })}
+                      >
+                        <FileText className="h-3 w-3 mr-2" />
+                        Gestionar Documentos
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => setDeleteDialog({ 
+                          isOpen: true, 
+                          load 
+                        })}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Trash2 className="h-3 w-3 mr-2" />
+                        Eliminar Carga
+                      </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -396,6 +424,42 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
           load={viewDialog.load}
         />
       )}
+
+      {/* Dialog de confirmación de eliminación */}
+      <AlertDialog open={deleteDialog.isOpen} onOpenChange={(open) => !open && setDeleteDialog({ isOpen: false })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Confirmar eliminación?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción eliminará permanentemente la carga <strong>{deleteDialog.load?.load_number}</strong> y todos sus datos asociados (paradas y documentos). 
+              <br /><br />
+              <span className="text-destructive font-medium">Esta acción no se puede deshacer.</span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteLoadMutation.isPending}>
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteDialog.load && handleDeleteLoad(deleteDialog.load.id)}
+              disabled={deleteLoadMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteLoadMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Eliminando...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Eliminar Carga
+                </>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
