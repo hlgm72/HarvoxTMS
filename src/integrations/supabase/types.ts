@@ -1402,7 +1402,7 @@ export type Database = {
           customer_name: string | null
           delivery_date: string | null
           dispatching_percentage: number | null
-          driver_user_id: string
+          driver_user_id: string | null
           factoring_percentage: number | null
           id: string
           internal_dispatcher_id: string | null
@@ -1427,7 +1427,7 @@ export type Database = {
           customer_name?: string | null
           delivery_date?: string | null
           dispatching_percentage?: number | null
-          driver_user_id: string
+          driver_user_id?: string | null
           factoring_percentage?: number | null
           id?: string
           internal_dispatcher_id?: string | null
@@ -1452,7 +1452,7 @@ export type Database = {
           customer_name?: string | null
           delivery_date?: string | null
           dispatching_percentage?: number | null
-          driver_user_id?: string
+          driver_user_id?: string | null
           factoring_percentage?: number | null
           id?: string
           internal_dispatcher_id?: string | null
