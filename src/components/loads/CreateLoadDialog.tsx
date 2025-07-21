@@ -535,13 +535,20 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         const isEdit = mode === 'edit';
         const isDuplicate = mode === 'duplicate';
         
+        const loadNumber = form.getValues("load_number");
+        const clientName = selectedClient?.name || "Cliente";
+        
         showSuccess(
-          "¡Éxito!",
           isEdit 
-            ? "Carga actualizada exitosamente" 
+            ? `Carga ${loadNumber} actualizada` 
             : isDuplicate 
-            ? "Carga duplicada exitosamente"
-            : "Carga creada exitosamente"
+            ? `Carga ${loadNumber} duplicada exitosamente`
+            : `🚛 Carga ${loadNumber} creada`,
+          isEdit 
+            ? `Los cambios en la carga ${loadNumber} han sido guardados correctamente.` 
+            : isDuplicate 
+            ? `Se ha creado una nueva carga ${loadNumber} basada en la carga original.`
+            : `La carga ${loadNumber} para ${clientName} ha sido creada exitosamente y está lista para ser procesada.`
         );
         
         // Close dialog after showing toast
@@ -550,7 +557,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       },
       onError: (error) => {
         console.error('❌ CreateLoadDialog - Load mutation failed:', error);
-        showError("Error", error.message || "Error al procesar la carga");
+        const loadNumber = form.getValues("load_number");
+        const errorTitle = mode === 'edit' 
+          ? `Error al actualizar carga ${loadNumber}` 
+          : mode === 'duplicate'
+          ? `Error al duplicar carga ${loadNumber}`
+          : `Error al crear carga ${loadNumber}`;
+        
+        showError(errorTitle, error.message || "Ha ocurrido un error inesperado. Por favor intenta nuevamente.");
       }
     });
   };
