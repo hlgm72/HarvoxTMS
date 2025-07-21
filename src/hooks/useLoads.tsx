@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useMemo } from 'react';
 import { useCompanyCache } from './useCompanyCache';
+import { getTodayInUserTimeZone, createDateInUserTimeZone } from '@/utils/dateUtils';
 
 export interface Load {
   id: string;
@@ -64,8 +65,8 @@ const calculateDateRange = (filterType: LoadsFilters['periodFilter']['type']): D
 
   switch (filterType) {
     case 'current':
-      // Para período actual, usar solo la fecha de hoy para encontrar el período que la contiene
-      const today = now.toISOString().split('T')[0];
+      // Para período actual, usar la fecha de hoy en la zona horaria del usuario
+      const today = getTodayInUserTimeZone();
       return {
         startDate: today,
         endDate: today
@@ -73,21 +74,21 @@ const calculateDateRange = (filterType: LoadsFilters['periodFilter']['type']): D
 
     case 'this_month':
       return {
-        startDate: new Date(currentYear, currentMonth, 1).toISOString().split('T')[0],
-        endDate: new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0]
+        startDate: createDateInUserTimeZone(currentYear, currentMonth, 1),
+        endDate: createDateInUserTimeZone(currentYear, currentMonth + 1, 0)
       };
 
     case 'last_month':
       return {
-        startDate: new Date(currentYear, currentMonth - 1, 1).toISOString().split('T')[0],
-        endDate: new Date(currentYear, currentMonth, 0).toISOString().split('T')[0]
+        startDate: createDateInUserTimeZone(currentYear, currentMonth - 1, 1),
+        endDate: createDateInUserTimeZone(currentYear, currentMonth, 0)
       };
 
     case 'this_quarter':
       const quarterStart = currentQuarter * 3;
       return {
-        startDate: new Date(currentYear, quarterStart, 1).toISOString().split('T')[0],
-        endDate: new Date(currentYear, quarterStart + 3, 0).toISOString().split('T')[0]
+        startDate: createDateInUserTimeZone(currentYear, quarterStart, 1),
+        endDate: createDateInUserTimeZone(currentYear, quarterStart + 3, 0)
       };
 
     case 'last_quarter':
@@ -95,20 +96,20 @@ const calculateDateRange = (filterType: LoadsFilters['periodFilter']['type']): D
       const lastQuarterYear = currentQuarter === 0 ? currentYear - 1 : currentYear;
       const adjustedQuarterStart = currentQuarter === 0 ? 9 : lastQuarterStart;
       return {
-        startDate: new Date(lastQuarterYear, adjustedQuarterStart, 1).toISOString().split('T')[0],
-        endDate: new Date(lastQuarterYear, adjustedQuarterStart + 3, 0).toISOString().split('T')[0]
+        startDate: createDateInUserTimeZone(lastQuarterYear, adjustedQuarterStart, 1),
+        endDate: createDateInUserTimeZone(lastQuarterYear, adjustedQuarterStart + 3, 0)
       };
 
     case 'this_year':
       return {
-        startDate: new Date(currentYear, 0, 1).toISOString().split('T')[0],
-        endDate: new Date(currentYear, 11, 31).toISOString().split('T')[0]
+        startDate: createDateInUserTimeZone(currentYear, 0, 1),
+        endDate: createDateInUserTimeZone(currentYear, 11, 31)
       };
 
     case 'last_year':
       return {
-        startDate: new Date(currentYear - 1, 0, 1).toISOString().split('T')[0],
-        endDate: new Date(currentYear - 1, 11, 31).toISOString().split('T')[0]
+        startDate: createDateInUserTimeZone(currentYear - 1, 0, 1),
+        endDate: createDateInUserTimeZone(currentYear - 1, 11, 31)
       };
 
     case 'all':
