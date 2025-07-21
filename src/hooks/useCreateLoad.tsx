@@ -165,9 +165,29 @@ export const useCreateLoad = () => {
       if (isEdit) {
         console.log('🔄 useCreateLoad - Updating existing load:', data.id);
         
+        // Para modo edición, también determinar el estado automáticamente
+        let updatedStatus: string | undefined;
+        
+        if (loadData.driver_user_id && loadData.driver_user_id.trim() !== '') {
+          // Si se asigna un conductor, cambiar a 'assigned'
+          updatedStatus = 'assigned';
+          console.log('🚛 useCreateLoad - Driver assigned in edit, updating status to "assigned"');
+        } else if (data.stops && data.stops.length >= 2) {
+          // Si tiene paradas pero no conductor, es 'route_planned'
+          updatedStatus = 'route_planned';
+          console.log('📍 useCreateLoad - Route planned in edit but no driver, updating status to "route_planned"');
+        } else {
+          // Si no tiene conductor ni paradas completas, volver a 'created'
+          updatedStatus = 'created';
+          console.log('📝 useCreateLoad - No driver or incomplete route in edit, updating status to "created"');
+        }
+
+        const dataToUpdate = updatedStatus ? { ...loadData, status: updatedStatus } : loadData;
+        console.log('📊 useCreateLoad - Updating with status:', updatedStatus);
+        
         const { data: updatedLoad, error: loadError } = await supabase
           .from('loads')
-          .update(loadData)
+          .update(dataToUpdate)
           .eq('id', data.id)
           .select()
           .single();
@@ -237,11 +257,26 @@ export const useCreateLoad = () => {
       } else {
         console.log('➕ useCreateLoad - Creating new load');
         
+        // Determinar el estado inicial basado en los datos disponibles
+        let initialStatus = 'created';
+        
+        if (loadData.driver_user_id) {
+          // Si tiene conductor asignado, cambiar a 'assigned'
+          initialStatus = 'assigned';
+          console.log('🚛 useCreateLoad - Driver assigned, setting status to "assigned"');
+        } else if (data.stops && data.stops.length >= 2) {
+          // Si tiene paradas definidas pero no conductor, es 'route_planned'
+          initialStatus = 'route_planned';
+          console.log('📍 useCreateLoad - Route planned but no driver, setting status to "route_planned"');
+        }
+        
+        console.log('📊 useCreateLoad - Initial status determined:', initialStatus);
+        
         const { data: newLoad, error: loadError } = await supabase
           .from('loads')
           .insert({
             ...loadData,
-            status: 'created',
+            status: initialStatus,
             created_by: user.id
           })
           .select()
