@@ -77,7 +77,7 @@ export function StateCombobox({
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" style={{ zIndex: 9999 }}>
         <Command>
-          <CommandInput placeholder="Buscar estado..." />
+          <CommandInput placeholder="Buscar estado..." className="border-0" />
           <CommandList className="max-h-[280px] overflow-y-auto">
             <CommandEmpty>
               {loading ? "Cargando estados..." : "No se encontró el estado."}

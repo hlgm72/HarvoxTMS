@@ -101,7 +101,7 @@ export function CityCombobox({
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" style={{ zIndex: 9999 }}>
         <Command>
-          <CommandInput placeholder="Buscar ciudad..." />
+          <CommandInput placeholder="Buscar ciudad..." className="border-0" />
           <CommandList className="max-h-[280px] overflow-y-auto">
             <CommandEmpty>
               {loading ? "Cargando ciudades..." : "No se encontró la ciudad."}
