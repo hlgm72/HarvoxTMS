@@ -41,7 +41,7 @@ export const useDeleteLoad = () => {
       // Verificar permisos: solo el creador o company owners pueden eliminar
       const { data: userRole } = await supabase
         .from('user_company_roles')
-        .select('role, company_id')
+        .select('role::text, company_id')
         .eq('user_id', user.id)
         .eq('is_active', true)
         .single();
