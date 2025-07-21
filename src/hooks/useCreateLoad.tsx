@@ -343,12 +343,35 @@ export const useCreateLoad = () => {
           console.log('📍 useCreateLoad - Data stops received for creation:', data.stops);
           console.log('📍 useCreateLoad - Stops to insert for creation:', JSON.stringify(stopsToInsert, null, 2));
 
+          // 🔍 DEBUG: Let's test what happens when we try to insert directly
+          console.log('🔍 DEBUG: About to attempt INSERT into load_stops...');
+          console.log('🔍 DEBUG: Current load ID:', currentLoad.id);
+          console.log('🔍 DEBUG: User ID:', user.id);
+          
+          // Try a simple test first
+          console.log('🔍 DEBUG: Testing simple load_stops query first...');
+          const { data: testData, error: testError } = await supabase
+            .from('load_stops')
+            .select('id')
+            .limit(1);
+          
+          if (testError) {
+            console.error('🔍 DEBUG: Simple SELECT failed:', testError);
+          } else {
+            console.log('🔍 DEBUG: Simple SELECT worked:', testData);
+          }
+
+          console.log('🔍 DEBUG: Now attempting INSERT...');
           const { error: stopsError } = await supabase
             .from('load_stops')
             .insert(stopsToInsert);
 
           if (stopsError) {
             console.error('❌ useCreateLoad - Error creating stops:', stopsError);
+            console.error('🔍 DEBUG: Full error object:', JSON.stringify(stopsError, null, 2));
+            console.error('🔍 DEBUG: Error code:', stopsError.code);
+            console.error('🔍 DEBUG: Error details:', stopsError.details);
+            console.error('🔍 DEBUG: Error hint:', stopsError.hint);
             throw new Error(`Error creando paradas: ${stopsError.message}`);
           }
 
