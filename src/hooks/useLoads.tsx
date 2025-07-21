@@ -244,7 +244,7 @@ export const useLoads = (filters?: LoadsFilters) => {
 
         // PASO 4: Enriquecer datos relacionados en paralelo
         const [driverIds, brokerIds, contactIds, dispatcherIds, periodIds, loadIds] = [
-          [...new Set(loads.map(l => l.driver_user_id))],
+          [...new Set(loads.map(l => l.driver_user_id).filter(Boolean))],
           [...new Set(loads.map(l => l.client_id).filter(Boolean))],
           [...new Set(loads.map(l => l.client_contact_id).filter(Boolean))],
           [...new Set(loads.map(l => l.internal_dispatcher_id).filter(Boolean))],
