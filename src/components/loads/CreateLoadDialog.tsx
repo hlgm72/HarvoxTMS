@@ -57,27 +57,32 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const createLoadMutation = useCreateLoad();
   const [companyData, setCompanyData] = useState<any>(null);
 
-  // For edit mode, get the actual load data. For duplicate mode, also get full data including stops
+  // For edit mode, fetch full load data. For duplicate mode, also fetch stops separately
   const { loadData: fetchedLoadData, isLoading: loadDataLoading, error: loadDataError } = useLoadData(
-    (mode === 'edit' || mode === 'duplicate') ? externalLoadData?.id : undefined
+    mode === 'edit' ? externalLoadData?.id : undefined
+  );
+  
+  // For duplicate mode, fetch stops separately since they're not included in useLoads
+  const { loadData: duplicateLoadData, isLoading: duplicateLoading } = useLoadData(
+    mode === 'duplicate' ? externalLoadData?.id : undefined
   );
   
   // Determine the active load data based on mode
   const activeLoadData = useMemo(() => {
     if (mode === 'edit') {
       return fetchedLoadData;
-    } else if (mode === 'duplicate' && fetchedLoadData) {
-      // For duplicate mode, use the fetched data (which includes stops) but clear load_number and po_number
-      console.log('🔄 CreateLoadDialog - Duplicate mode, fetched data with stops:', fetchedLoadData);
+    } else if (mode === 'duplicate' && duplicateLoadData) {
+      // For duplicate mode, use fetched data but clear sensitive fields
+      console.log('🔄 CreateLoadDialog - Duplicate mode, fetched data with stops:', duplicateLoadData);
       return {
-        ...fetchedLoadData,
+        ...duplicateLoadData,
         load_number: '', // Clear load number
         po_number: '',   // Clear PO number
         id: undefined,   // Clear ID to create new load
       };
     }
     return null;
-  }, [mode, fetchedLoadData]);
+  }, [mode, fetchedLoadData, duplicateLoadData]);
 
   // Form hook
   const { form, isFormReady } = useLoadForm(activeLoadData, mode);
@@ -149,7 +154,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         }
       }
 
-      // Find and set driver (only in edit mode, not in duplicate mode)
+      // Find and set driver (only in edit mode, duplicate should start fresh)
       if (mode === 'edit' && activeLoadData.driver_user_id && drivers.length > 0) {
         console.log('🔍 CreateLoadDialog - Looking for driver:', activeLoadData.driver_user_id);
         const driver = drivers.find(d => d.user_id === activeLoadData.driver_user_id);
@@ -161,7 +166,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         }
       }
 
-      // Find and set dispatcher (only in edit mode, not in duplicate mode)
+      // Find and set dispatcher (only in edit mode, duplicate should start fresh)
       if (mode === 'edit' && activeLoadData.internal_dispatcher_id && dispatchers.length > 0) {
         const dispatcher = dispatchers.find(d => d.user_id === activeLoadData.internal_dispatcher_id);
         if (dispatcher) {
@@ -179,8 +184,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   }, [mode, activeLoadData, isFormReady, clients, drivers, dispatchers]);
 
-  // Show loading state
-  if ((mode === 'edit' || mode === 'duplicate') && loadDataLoading) {
+  // Show loading state for edit or duplicate modes
+  if ((mode === 'edit' && loadDataLoading) || (mode === 'duplicate' && duplicateLoading)) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-md">
@@ -193,8 +198,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     );
   }
 
-  // Show error state
-  if ((mode === 'edit' || mode === 'duplicate') && loadDataError) {
+  // Show error state (only for edit mode)
+  if (mode === 'edit' && loadDataError) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-md">
@@ -317,13 +322,13 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     console.log('🚨 onSubmit called with values:', values);
     
     // En modo edición, permitir guardar en cualquier fase
-    // En modo creación y duplicación, solo permitir en la fase final
+    // En modo creación y duplicación, solo permitir en la fase final (duplicate se comporta como create)
     if ((mode === 'create' || mode === 'duplicate') && currentPhase !== 4) {
-      console.log('🚨 onSubmit blocked - not in final phase for create/duplicate mode');
+      console.log('🚨 onSubmit blocked - not in final phase for create mode');
       return;
     }
 
-    // Solo validar número duplicado en modo creación y duplicación
+    // Solo validar número duplicado en modo creación y duplicación (duplicate se comporta como create)
     if ((mode === 'create' || mode === 'duplicate') && loadNumberValidation.isDuplicate) {
       console.log('🚨 onSubmit blocked - duplicate load number');
       toast({
