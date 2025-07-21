@@ -144,8 +144,14 @@ export function StopEditModal({
                   type="date"
                   value={formData.scheduled_date ? format(formData.scheduled_date, "yyyy-MM-dd") : ''}
                   onChange={(e) => {
-                    const dateValue = e.target.value ? new Date(e.target.value) : null;
-                    updateField('scheduled_date', dateValue);
+                    if (e.target.value) {
+                      // Crear fecha en zona horaria local para evitar problemas de offset
+                      const [year, month, day] = e.target.value.split('-').map(Number);
+                      const dateValue = new Date(year, month - 1, day);
+                      updateField('scheduled_date', dateValue);
+                    } else {
+                      updateField('scheduled_date', null);
+                    }
                   }}
                 />
               </div>

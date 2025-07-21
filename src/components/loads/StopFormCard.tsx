@@ -217,8 +217,14 @@ export function StopFormCard({
               type="date"
               value={stop.scheduled_date ? format(stop.scheduled_date, "yyyy-MM-dd") : ''}
               onChange={(e) => {
-                const dateValue = e.target.value ? new Date(e.target.value) : null;
-                onUpdate({ scheduled_date: dateValue });
+                if (e.target.value) {
+                  // Crear fecha en zona horaria local para evitar problemas de offset
+                  const [year, month, day] = e.target.value.split('-').map(Number);
+                  const dateValue = new Date(year, month - 1, day);
+                  onUpdate({ scheduled_date: dateValue });
+                } else {
+                  onUpdate({ scheduled_date: null });
+                }
               }}
             />
           </div>
