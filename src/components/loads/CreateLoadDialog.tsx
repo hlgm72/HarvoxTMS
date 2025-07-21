@@ -68,6 +68,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       return fetchedLoadData;
     } else if (mode === 'duplicate' && externalLoadData) {
       // For duplicate mode, use the external data but clear load_number and po_number
+      console.log('🔄 CreateLoadDialog - Duplicate mode, external data:', externalLoadData);
       return {
         ...externalLoadData,
         load_number: '', // Clear load number
@@ -148,8 +149,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         }
       }
 
-      // Find and set driver
-      if (activeLoadData.driver_user_id && drivers.length > 0) {
+      // Find and set driver (only in edit mode, not in duplicate mode)
+      if (mode === 'edit' && activeLoadData.driver_user_id && drivers.length > 0) {
         console.log('🔍 CreateLoadDialog - Looking for driver:', activeLoadData.driver_user_id);
         const driver = drivers.find(d => d.user_id === activeLoadData.driver_user_id);
         if (driver) {
@@ -160,18 +161,20 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         }
       }
 
-      // Find and set dispatcher
-      if (activeLoadData.internal_dispatcher_id && dispatchers.length > 0) {
+      // Find and set dispatcher (only in edit mode, not in duplicate mode)
+      if (mode === 'edit' && activeLoadData.internal_dispatcher_id && dispatchers.length > 0) {
         const dispatcher = dispatchers.find(d => d.user_id === activeLoadData.internal_dispatcher_id);
         if (dispatcher) {
           setSelectedDispatcher(dispatcher);
         }
       }
 
-      // Set stops
+      // Set stops (for both edit and duplicate modes)
       if (activeLoadData.stops && activeLoadData.stops.length > 0) {
         console.log('📍 CreateLoadDialog - Setting stops from load data:', activeLoadData.stops);
         setLoadStops(activeLoadData.stops);
+      } else {
+        console.warn('⚠️ CreateLoadDialog - No stops found in load data:', activeLoadData);
       }
     }
   }, [mode, activeLoadData, isFormReady, clients, drivers, dispatchers]);
