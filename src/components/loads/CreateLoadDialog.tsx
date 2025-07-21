@@ -328,6 +328,57 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       return;
     }
 
+    // Validar campos requeridos del formulario primero
+    console.log('🔍 onSubmit - Validating form values:', values);
+    
+    // Validar número de carga requerido (Paso 1)
+    if (!values.load_number || values.load_number.trim() === '') {
+      console.log('🚨 onSubmit blocked - missing load number');
+      toast({
+        title: "Error",
+        description: "El número de carga es requerido.",
+        variant: "destructive",
+      });
+      setCurrentPhase(1);
+      return;
+    }
+
+    // Validar cliente requerido (Paso 1)
+    if (!values.client_id || values.client_id === '') {
+      console.log('🚨 onSubmit blocked - missing client');
+      toast({
+        title: "Error", 
+        description: "Debes seleccionar un cliente.",
+        variant: "destructive",
+      });
+      setCurrentPhase(1);
+      return;
+    }
+
+    // Validar commodity requerido (Paso 1)
+    if (!values.commodity || values.commodity.trim() === '') {
+      console.log('🚨 onSubmit blocked - missing commodity');
+      toast({
+        title: "Error",
+        description: "El commodity es requerido.",
+        variant: "destructive", 
+      });
+      setCurrentPhase(1);
+      return;
+    }
+
+    // Validar monto mayor a 0 (Paso 1)
+    if (!values.total_amount || values.total_amount <= 0) {
+      console.log('🚨 onSubmit blocked - invalid amount');
+      toast({
+        title: "Error",
+        description: "El monto total debe ser mayor a 0.",
+        variant: "destructive",
+      });
+      setCurrentPhase(1);
+      return;
+    }
+
     // Solo validar número duplicado en modo creación y duplicación (duplicate se comporta como create)
     if ((mode === 'create' || mode === 'duplicate') && loadNumberValidation.isDuplicate) {
       console.log('🚨 onSubmit blocked - duplicate load number');
