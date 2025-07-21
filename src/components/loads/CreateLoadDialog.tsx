@@ -100,6 +100,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     initialValue: 0,
     onValueChange: (value) => {
       form.setValue("total_amount", value, { shouldValidate: true });
+      // Limpiar error cuando el usuario cambie el monto
+      if (form.formState.errors.total_amount) {
+        form.clearErrors("total_amount");
+      }
     }
   });
 
@@ -322,6 +326,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     console.log('🚨 onSubmit called with values:', values);
     console.log('🚨 Current mode:', mode);
     console.log('🚨 Current phase:', currentPhase);
+    
+    // Limpiar errores previos antes de validar
+    form.clearErrors();
     
     // En modo edición, permitir guardar en cualquier fase
     // En modo creación y duplicación, solo permitir en la fase final (duplicate se comporta como create)
@@ -574,7 +581,13 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                       name="load_number"
                       render={({ field }) => {
                         const textHandlers = createTextHandlers(
-                          (value) => field.onChange(value),
+                          (value) => {
+                            field.onChange(value);
+                            // Limpiar error cuando el usuario comience a escribir
+                            if (form.formState.errors.load_number) {
+                              form.clearErrors("load_number");
+                            }
+                          },
                           'text'
                         );
                         
@@ -658,12 +671,16 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                 <ClientCombobox
                                   clients={clients}
                                   value={field.value}
-                                  onValueChange={(value) => {
-                                    field.onChange(value);
-                                    const client = clients.find(c => c.id === value);
-                                    setSelectedClient(client || null);
-                                    form.setValue("contact_id", "");
-                                  }}
+                                   onValueChange={(value) => {
+                                     field.onChange(value);
+                                     const client = clients.find(c => c.id === value);
+                                     setSelectedClient(client || null);
+                                     form.setValue("contact_id", "");
+                                     // Limpiar error cuando el usuario seleccione un cliente
+                                     if (form.formState.errors.client_id) {
+                                       form.clearErrors("client_id");
+                                     }
+                                   }}
                                   onClientSelect={(client) => setSelectedClient(client as Client)}
                                   placeholder="Buscar cliente por nombre, DOT, MC..."
                                   className="w-full"
@@ -703,10 +720,16 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                        control={form.control}
                        name="commodity"
                        render={({ field }) => {
-                         const textHandlers = createTextHandlers(
-                           (value) => field.onChange(value),
-                           'text'
-                         );
+                          const textHandlers = createTextHandlers(
+                            (value) => {
+                              field.onChange(value);
+                              // Limpiar error cuando el usuario comience a escribir
+                              if (form.formState.errors.commodity) {
+                                form.clearErrors("commodity");
+                              }
+                            },
+                            'text'
+                          );
                          
                          return (
                            <FormItem>
