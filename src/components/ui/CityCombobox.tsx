@@ -125,7 +125,8 @@ export function CityCombobox({
               {cities.map((city) => (
                 <CommandItem
                   key={city.id}
-                  value={`${city.name} ${city.county || ''}`}
+                  value={city.name}
+                  keywords={[city.name, city.county || '']}
                   onSelect={() => {
                     onValueChange(city.id === value ? undefined : city.id);
                     setOpen(false);
