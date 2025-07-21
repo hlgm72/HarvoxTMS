@@ -382,6 +382,8 @@ export function LoadDocumentsSection({
 
   const handleLoadOrderGenerated = async (loadOrderData: any) => {
     console.log('📋 LoadDocumentsSection - handleLoadOrderGenerated called with:', loadOrderData);
+    console.log('📋 Current documents before Load Order:', documents);
+    console.log('📋 Current temporaryDocuments before Load Order:', temporaryDocuments);
 
     // Si tenemos loadId, guardar automáticamente en la BD y Storage
     if (loadId) {
@@ -472,10 +474,14 @@ export function LoadDocumentsSection({
 
         console.log('📂 LoadDocumentsSection - Temporary Load Order with size:', loadOrderDocument);
 
+        console.log('📂 Before updating temporaryDocuments:', temporaryDocuments);
         const updatedTempDocs = [...temporaryDocuments, loadOrderDocument];
+        console.log('📂 After creating updatedTempDocs:', updatedTempDocs);
         onTemporaryDocumentsChange?.(updatedTempDocs);
 
+        console.log('📂 Before updating documents state:', documents);
         const updatedDocuments = [...documents, loadOrderDocument];
+        console.log('📂 After creating updatedDocuments:', updatedDocuments);
         setDocuments(updatedDocuments);
         setHasLoadOrder(true);
         onDocumentsChange?.(updatedDocuments);
