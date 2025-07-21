@@ -32,7 +32,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface CreateLoadDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  mode?: 'create' | 'edit';
+  mode?: 'create' | 'edit' | 'duplicate';
   loadData?: any;
 }
 
@@ -57,16 +57,29 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const createLoadMutation = useCreateLoad();
   const [companyData, setCompanyData] = useState<any>(null);
 
-  // Load data hook for edit mode
+  // For edit mode, get the actual load data. For duplicate mode, use external data but clear certain fields
   const { loadData: fetchedLoadData, isLoading: loadDataLoading, error: loadDataError } = useLoadData(
     mode === 'edit' ? externalLoadData?.id : undefined
   );
-
-  // Use fetched data if available, otherwise use external data
-  const activeLoadData = fetchedLoadData || externalLoadData;
+  
+  // Determine the active load data based on mode
+  const activeLoadData = useMemo(() => {
+    if (mode === 'edit') {
+      return fetchedLoadData;
+    } else if (mode === 'duplicate' && externalLoadData) {
+      // For duplicate mode, use the external data but clear load_number and po_number
+      return {
+        ...externalLoadData,
+        load_number: '', // Clear load number
+        po_number: '',   // Clear PO number
+        id: undefined,   // Clear ID to create new load
+      };
+    }
+    return null;
+  }, [mode, fetchedLoadData, externalLoadData]);
 
   // Form hook
-  const { form, isFormReady } = useLoadForm(mode === 'edit' ? activeLoadData : null);
+  const { form, isFormReady } = useLoadForm(activeLoadData, mode);
 
   // Load number validation (skip in edit mode initially)
   const currentLoadNumber = form.watch("load_number");
@@ -108,8 +121,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
   // Initialize form and states when load data is available
   useEffect(() => {
-    if (mode === 'edit' && activeLoadData && isFormReady) {
-      console.log('🔄 CreateLoadDialog - Initializing edit mode with data:', activeLoadData);
+    if ((mode === 'edit' || mode === 'duplicate') && activeLoadData && isFormReady) {
+      console.log(`🔄 CreateLoadDialog - Initializing ${mode} mode with data:`, activeLoadData);
       console.log('🔄 CreateLoadDialog - Available brokers:', brokers.length);
       console.log('🔄 CreateLoadDialog - Available drivers:', drivers.length);
 
@@ -352,7 +365,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
 
     // Solo validar conductor en modo creación o si estamos en la fase de asignación
-    if (mode === 'create' && !selectedDriver) {
+    if ((mode === 'create' || mode === 'duplicate') && !selectedDriver) {
       console.log('🚨 onSubmit blocked - no driver selected');
       toast({
         title: "Error",
@@ -379,7 +392,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       factoring_percentage: values.factoring_percentage,
       dispatching_percentage: values.dispatching_percentage,
       leasing_percentage: values.leasing_percentage,
-      temporaryDocuments: mode === 'create' ? loadDocuments : undefined, // Pass temporary documents only for new loads
+      temporaryDocuments: (mode === 'create' || mode === 'duplicate') ? loadDocuments : undefined, // Pass temporary documents only for new loads
     };
 
     console.log('📍 CreateLoadDialog - Current loadStops state:', loadStops);
@@ -388,10 +401,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     createLoadMutation.mutate(loadDataToSubmit, {
       onSuccess: () => {
         console.log('✅ CreateLoadDialog - Load mutation successful');
-        // Solo cerrar el diálogo cuando se hace submit final en modo creación
+        // Solo cerrar el diálogo cuando se hace submit final en modo creación o duplicación
         // En modo edición, también cerrar
-        if (mode === 'create' && currentPhase === 4) {
-          console.log('✅ CreateLoadDialog - Closing dialog after final create');
+        if ((mode === 'create' || mode === 'duplicate') && currentPhase === 4) {
+          console.log(`✅ CreateLoadDialog - Closing dialog after final ${mode}`);
           onClose();
         } else if (mode === 'edit') {
           console.log('✅ CreateLoadDialog - Closing dialog after edit');
@@ -407,11 +420,15 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{mode === 'create' ? 'Nueva Carga' : 'Editar Carga'}</DialogTitle>
+          <DialogTitle>
+            {mode === 'create' ? 'Nueva Carga' : mode === 'edit' ? 'Editar Carga' : 'Duplicar Carga'}
+          </DialogTitle>
           <DialogDescription>
             {mode === 'create' 
               ? 'Crea una nueva carga siguiendo el proceso paso a paso'
-              : 'Modifica los datos de la carga existente'
+              : mode === 'edit'
+              ? 'Modifica los datos de la carga existente'
+              : 'Crea una nueva carga basada en una carga existente'
             }
           </DialogDescription>
         </DialogHeader>
@@ -752,16 +769,16 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                   >
                     Siguiente
                   </Button>
-                ) : mode === 'create' ? (
-                  <Button 
-                    type="submit"
-                    disabled={createLoadMutation.isPending}
-                  >
-                    {createLoadMutation.isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    ) : null}
-                    Crear Carga
-                  </Button>
+                 ) : (mode === 'create' || mode === 'duplicate') ? (
+                   <Button 
+                     type="submit"
+                     disabled={createLoadMutation.isPending}
+                   >
+                     {createLoadMutation.isPending ? (
+                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                     ) : null}
+                     {mode === 'duplicate' ? 'Duplicar Carga' : 'Crear Carga'}
+                   </Button>
                 ) : (
                   <Button 
                     type="button"

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2 } from "lucide-react";
+import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2, Copy } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -171,6 +171,11 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
   }>({ isOpen: false });
   
   const [editDialog, setEditDialog] = useState<{
+    isOpen: boolean;
+    load?: any;
+  }>({ isOpen: false });
+
+  const [duplicateDialog, setDuplicateDialog] = useState<{
     isOpen: boolean;
     load?: any;
   }>({ isOpen: false });
@@ -345,25 +350,34 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                       <MoreHorizontal className="h-3 w-3" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                     <DropdownMenuItem 
-                       onClick={() => setReassignmentDialog({ 
-                         isOpen: true, 
-                         load 
-                       })}
-                     >
-                       <ArrowRightLeft className="h-3 w-3 mr-2" />
-                       Reasignar Período
-                     </DropdownMenuItem>
+                   <DropdownMenuContent align="end">
                       <DropdownMenuItem 
-                        onClick={() => setDocumentsDialog({ 
+                        onClick={() => setDuplicateDialog({ 
                           isOpen: true, 
                           load 
                         })}
                       >
-                        <FileText className="h-3 w-3 mr-2" />
-                        Gestionar Documentos
+                        <Copy className="h-3 w-3 mr-2" />
+                        Duplicar Carga
                       </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => setReassignmentDialog({ 
+                          isOpen: true, 
+                          load 
+                        })}
+                      >
+                        <ArrowRightLeft className="h-3 w-3 mr-2" />
+                        Reasignar Período
+                      </DropdownMenuItem>
+                       <DropdownMenuItem 
+                         onClick={() => setDocumentsDialog({ 
+                           isOpen: true, 
+                           load 
+                         })}
+                       >
+                         <FileText className="h-3 w-3 mr-2" />
+                         Gestionar Documentos
+                       </DropdownMenuItem>
                        <DropdownMenuItem 
                          onClick={() => setDeleteDialog({ 
                            isOpen: true, 
@@ -406,6 +420,16 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
           onClose={() => setEditDialog({ isOpen: false })}
           mode="edit"
           loadData={editDialog.load}
+        />
+      )}
+
+      {/* Dialog de duplicación */}
+      {duplicateDialog.load && (
+        <CreateLoadDialog
+          isOpen={duplicateDialog.isOpen}
+          onClose={() => setDuplicateDialog({ isOpen: false })}
+          mode="duplicate"
+          loadData={duplicateDialog.load}
         />
       )}
 

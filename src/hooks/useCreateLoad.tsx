@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 
 export interface CreateLoadData {
   id?: string;
-  mode?: 'create' | 'edit';
+  mode?: 'create' | 'edit' | 'duplicate';
   load_number: string;
   po_number?: string;
   driver_user_id: string;
@@ -143,6 +143,7 @@ export const useCreateLoad = () => {
       }
 
       const isEdit = data.mode === 'edit' && data.id;
+      const isCreate = data.mode === 'create' || data.mode === 'duplicate';
 
       // Prepare load data
       const loadData = {
@@ -257,6 +258,7 @@ export const useCreateLoad = () => {
         }
 
       } else {
+        // For create and duplicate modes
         console.log('➕ useCreateLoad - Creating new load');
         
         // Determinar el estado inicial basado en los datos disponibles
@@ -331,8 +333,8 @@ export const useCreateLoad = () => {
           console.log('✅ useCreateLoad - Stops created successfully');
         }
 
-        // Handle temporary documents for new loads
-        if (data.temporaryDocuments && data.temporaryDocuments.length > 0) {
+        // Handle temporary documents for new loads (create and duplicate)
+        if (isCreate && data.temporaryDocuments && data.temporaryDocuments.length > 0) {
           console.log('📄 useCreateLoad - Processing temporary documents:', data.temporaryDocuments);
           await uploadTemporaryDocuments(data.temporaryDocuments, currentLoad.id, data.load_number);
         }
@@ -346,9 +348,15 @@ export const useCreateLoad = () => {
       queryClient.invalidateQueries({ queryKey: ['loads'] });
       
       const isEdit = variables.mode === 'edit';
+      const isDuplicate = variables.mode === 'duplicate';
+      
       toast({
         title: "Éxito",
-        description: isEdit ? "Carga actualizada exitosamente" : "Carga creada exitosamente",
+        description: isEdit 
+          ? "Carga actualizada exitosamente" 
+          : isDuplicate 
+          ? "Carga duplicada exitosamente"
+          : "Carga creada exitosamente",
       });
     },
     onError: (error: Error) => {

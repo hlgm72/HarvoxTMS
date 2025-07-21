@@ -23,7 +23,7 @@ const loadFormSchema = z.object({
 
 export type LoadFormData = z.infer<typeof loadFormSchema>;
 
-export const useLoadForm = (initialData?: LoadData | null) => {
+export const useLoadForm = (initialData?: LoadData | null, mode?: 'create' | 'edit' | 'duplicate') => {
   const [isFormReady, setIsFormReady] = useState(false);
 
   const form = useForm<LoadFormData>({
@@ -47,14 +47,14 @@ export const useLoadForm = (initialData?: LoadData | null) => {
 
   // Populate form when initial data is available
   useEffect(() => {
-    if (initialData) {
-      console.log('🔄 useLoadForm - Populating form with data:', initialData);
+    if ((mode === 'edit' || mode === 'duplicate') && initialData) {
+      console.log(`🔄 useLoadForm - Populating form with data for ${mode} mode:`, initialData);
       
       form.reset({
         broker_id: initialData.client_id || "",
         dispatcher_id: initialData.client_contact_id || "",
-        load_number: initialData.load_number || "",
-        po_number: initialData.po_number || "",
+        load_number: mode === 'duplicate' ? "" : (initialData.load_number || ""), // Clear for duplicate
+        po_number: mode === 'duplicate' ? "" : (initialData.po_number || ""),     // Clear for duplicate
         total_amount: initialData.total_amount || 0,
         commodity: initialData.commodity || "",
         weight_lbs: initialData.weight_lbs || 0,
@@ -69,7 +69,7 @@ export const useLoadForm = (initialData?: LoadData | null) => {
     } else {
       setIsFormReady(true);
     }
-  }, [initialData, form]);
+  }, [initialData, form, mode]);
 
   return {
     form,
