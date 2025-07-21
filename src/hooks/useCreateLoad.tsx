@@ -223,10 +223,19 @@ export const useCreateLoad = () => {
 
           // Then, insert new stops (excluding temporary id)
           const stopsToInsert = data.stops.map(stop => {
-            const { id, ...stopWithoutId } = stop;
             return {
-              ...stopWithoutId,
               load_id: currentLoad.id,
+              stop_number: stop.stop_number,
+              stop_type: stop.stop_type,
+              company_name: stop.company_name,
+              address: stop.address,
+              city: stop.city,
+              state: stop.state,
+              zip_code: stop.zip_code,
+              reference_number: stop.reference_number,
+              contact_name: stop.contact_name,
+              contact_phone: stop.contact_phone,
+              special_instructions: stop.special_instructions,
               scheduled_date: stop.scheduled_date ? 
                 (stop.scheduled_date instanceof Date ? 
                   stop.scheduled_date.toISOString().split('T')[0] : 
@@ -304,10 +313,19 @@ export const useCreateLoad = () => {
           console.log('📍 useCreateLoad - Raw data.stops:', JSON.stringify(data.stops, null, 2));
           
           const stopsToInsert = data.stops.map(stop => {
-            const { id, ...stopWithoutId } = stop;
             const processedStop = {
-              ...stopWithoutId,
               load_id: currentLoad.id,
+              stop_number: stop.stop_number,
+              stop_type: stop.stop_type,
+              company_name: stop.company_name,
+              address: stop.address,
+              city: stop.city,
+              state: stop.state,
+              zip_code: stop.zip_code,
+              reference_number: stop.reference_number,
+              contact_name: stop.contact_name,
+              contact_phone: stop.contact_phone,
+              special_instructions: stop.special_instructions,
               scheduled_date: stop.scheduled_date ? 
                 (stop.scheduled_date instanceof Date ? 
                   stop.scheduled_date.toISOString().split('T')[0] : 
