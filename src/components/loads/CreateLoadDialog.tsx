@@ -842,20 +842,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                      type="button"
                      onClick={() => {
                        console.log('🚨 Crear Carga button clicked');
-                       console.log('🚨 Form errors:', form.formState.errors);
-                       console.log('🚨 Form values:', form.getValues());
-                       console.log('🚨 Form is valid:', form.formState.isValid);
+                       const values = form.getValues();
+                       console.log('🚨 Form values:', values);
                        
-                       // Trigger form validation
-                       form.trigger().then((isValid) => {
-                         console.log('🚨 Form validation result:', isValid);
-                         if (isValid) {
-                           const values = form.getValues();
-                           onSubmit(values);
-                         } else {
-                           console.log('🚨 Form validation failed, errors:', form.formState.errors);
-                         }
-                       });
+                       // Ejecutar nuestras validaciones personalizadas directamente
+                       onSubmit(values);
                      }}
                      disabled={createLoadMutation.isPending}
                    >
