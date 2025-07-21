@@ -454,17 +454,17 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       return;
     }
 
-    // Validar conductor (Paso 3)
-    if ((mode === 'create' || mode === 'duplicate') && !selectedDriver) {
-      console.log('🚨 onSubmit blocked - no driver selected');
-      toast({
-        title: "Error",
-        description: "Debes seleccionar un conductor antes de crear la carga.",
-        variant: "destructive",
-      });
-      setCurrentPhase(3);
-      return;
-    }
+    // Validar conductor (Paso 3) - Ahora es opcional
+    // if ((mode === 'create' || mode === 'duplicate') && !selectedDriver) {
+    //   console.log('🚨 onSubmit blocked - no driver selected');
+    //   toast({
+    //     title: "Error",
+    //     description: "Debes seleccionar un conductor antes de crear la carga.",
+    //     variant: "destructive",
+    //   });
+    //   setCurrentPhase(3);
+    //   return;
+    // }
 
     const loadDataToSubmit = {
       mode,
