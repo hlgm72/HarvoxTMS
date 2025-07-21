@@ -4,10 +4,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Check, ChevronsUpDown, Users, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ClientContact } from "@/hooks/useCompanyClients";
+import { ClientContact, useClientContacts } from "@/hooks/useClients";
 
 interface ContactComboboxProps {
-  contacts: ClientContact[];
+  contacts?: ClientContact[];
+  clientId?: string;
   value?: string;
   onValueChange: (value: string) => void;
   placeholder?: string;
@@ -17,7 +18,8 @@ interface ContactComboboxProps {
 }
 
 export const ContactCombobox: React.FC<ContactComboboxProps> = ({
-  contacts,
+  contacts: propContacts,
+  clientId,
   value,
   onValueChange,
   placeholder = "Seleccionar contacto...",
@@ -26,7 +28,13 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
   onCreateNew
 }) => {
   const [open, setOpen] = React.useState(false);
-
+  
+  // Use the hook to fetch contacts if clientId is provided
+  const { data: fetchedContacts = [] } = useClientContacts(clientId || "");
+  
+  // Use either prop contacts or fetched contacts
+  const contacts = propContacts || (clientId ? fetchedContacts : []);
+  
   const selectedContact = contacts.find(contact => contact.id === value);
 
   const handleSelect = (contactId: string) => {

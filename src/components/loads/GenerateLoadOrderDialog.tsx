@@ -24,7 +24,7 @@ interface GenerateLoadOrderDialogProps {
     total_amount: number;
     commodity: string;
     weight_lbs?: number;
-    broker_name?: string;
+    client_name?: string;
     driver_name?: string;
     loadStops: any[];
     company_name?: string;

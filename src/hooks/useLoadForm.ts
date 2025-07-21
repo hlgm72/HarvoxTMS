@@ -6,8 +6,8 @@ import { z } from 'zod';
 import { LoadData } from './useLoadData';
 
 const loadFormSchema = z.object({
-  broker_id: z.string().min(1, "Selecciona un cliente"),
-  dispatcher_id: z.string().optional(),
+  client_id: z.string().min(1, "Selecciona un cliente"),
+  contact_id: z.string().optional(),
   load_number: z.string().min(1, "El número de carga es requerido"),
   po_number: z.string().optional(),
   total_amount: z.number().min(0.01, "El monto debe ser mayor a 0"),
@@ -29,8 +29,8 @@ export const useLoadForm = (initialData?: LoadData | null, mode?: 'create' | 'ed
   const form = useForm<LoadFormData>({
     resolver: zodResolver(loadFormSchema),
     defaultValues: {
-      broker_id: "",
-      dispatcher_id: "",
+      client_id: "",
+      contact_id: "",
       load_number: "",
       po_number: "",
       total_amount: 0,
@@ -51,8 +51,8 @@ export const useLoadForm = (initialData?: LoadData | null, mode?: 'create' | 'ed
       console.log(`🔄 useLoadForm - Populating form with data for ${mode} mode:`, initialData);
       
       form.reset({
-        broker_id: initialData.client_id || "",
-        dispatcher_id: initialData.client_contact_id || "",
+        client_id: initialData.client_id || "",
+        contact_id: initialData.client_contact_id || "",
         load_number: mode === 'duplicate' ? "" : (initialData.load_number || ""), // Clear for duplicate
         po_number: mode === 'duplicate' ? "" : (initialData.po_number || ""),     // Clear for duplicate
         total_amount: initialData.total_amount || 0,

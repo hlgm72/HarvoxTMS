@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useCompanyDrivers, CompanyDriver } from "@/hooks/useCompanyDrivers";
 import { useCompanyDispatchers } from "@/hooks/useCompanyDispatchers";
-import { useCompanyBrokers, CompanyBroker } from "@/hooks/useCompanyBrokers";
+import { useClients, Client } from "@/hooks/useClients";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
 import { useCreateLoad } from "@/hooks/useCreateLoad";
 import { useLoadNumberValidation } from "@/hooks/useLoadNumberValidation";
@@ -39,8 +39,8 @@ interface CreateLoadDialogProps {
 export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: externalLoadData }: CreateLoadDialogProps) {
   const { t } = useTranslation();
   const [currentPhase, setCurrentPhase] = useState(1);
-  const [selectedBroker, setSelectedBroker] = useState<CompanyBroker | null>(null);
-  const [showCreateBroker, setShowCreateBroker] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [showCreateClient, setShowCreateClient] = useState(false);
   const [showCreateDispatcher, setShowCreateDispatcher] = useState(false);
   const [loadStops, setLoadStops] = useState<any[]>([]);
   const [showStopsValidation, setShowStopsValidation] = useState(false);
@@ -52,7 +52,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   // Hooks
   const { drivers } = useCompanyDrivers();
   const { data: dispatchers = [] } = useCompanyDispatchers();
-  const { brokers, loading: brokersLoading, refetch: refetchBrokers } = useCompanyBrokers();
+  const { data: clients = [], isLoading: clientsLoading, refetch: refetchClients } = useClients();
   const { selectedCompany } = useUserCompanies();
   const createLoadMutation = useCreateLoad();
   const [companyData, setCompanyData] = useState<any>(null);
@@ -123,32 +123,28 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   useEffect(() => {
     if ((mode === 'edit' || mode === 'duplicate') && activeLoadData && isFormReady) {
       console.log(`🔄 CreateLoadDialog - Initializing ${mode} mode with data:`, activeLoadData);
-      console.log('🔄 CreateLoadDialog - Available brokers:', brokers.length);
+      console.log('🔄 CreateLoadDialog - Available clients:', clients.length);
       console.log('🔄 CreateLoadDialog - Available drivers:', drivers.length);
 
       // Update ATM input
       atmInput.setValue(activeLoadData.total_amount || 0);
 
-      // Find and set broker/client
-      if (activeLoadData.client_id && brokers.length > 0) {
+      // Find and set client
+      if (activeLoadData.client_id && clients.length > 0) {
         console.log('🔍 CreateLoadDialog - Looking for client:', activeLoadData.client_id);
-        const broker = brokers.find(b => b.id === activeLoadData.client_id);
-        if (broker) {
-          console.log('✅ CreateLoadDialog - Client found:', broker.name);
-          setSelectedBroker(broker);
-          form.setValue("broker_id", broker.id);
+        const client = clients.find(c => c.id === activeLoadData.client_id);
+        if (client) {
+          console.log('✅ CreateLoadDialog - Client found:', client.name);
+          setSelectedClient(client);
+          form.setValue("client_id", client.id);
           
-          // Find and set broker dispatcher if available
-          if (activeLoadData.client_contact_id && broker.dispatchers) {
+          // Find and set client contact if available
+          if (activeLoadData.client_contact_id) {
             console.log('🔍 CreateLoadDialog - Looking for contact:', activeLoadData.client_contact_id);
-            const brokerDispatcher = broker.dispatchers.find(d => d.id === activeLoadData.client_contact_id);
-            if (brokerDispatcher) {
-              console.log('✅ CreateLoadDialog - Contact found:', brokerDispatcher.name);
-              form.setValue("dispatcher_id", brokerDispatcher.id);
-            }
+            form.setValue("contact_id", activeLoadData.client_contact_id);
           }
         } else {
-          console.warn('⚠️ CreateLoadDialog - Client not found in brokers list');
+          console.warn('⚠️ CreateLoadDialog - Client not found in clients list');
         }
       }
 
@@ -178,7 +174,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         setLoadStops(activeLoadData.stops);
       }
     }
-  }, [mode, activeLoadData, isFormReady, brokers, drivers, dispatchers]);
+  }, [mode, activeLoadData, isFormReady, clients, drivers, dispatchers]);
 
   // Show loading state
   if (mode === 'edit' && loadDataLoading) {
@@ -380,8 +376,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       id: activeLoadData?.id,
       load_number: values.load_number,
       po_number: values.po_number || null,
-      client_id: values.broker_id,
-      client_contact_id: values.dispatcher_id || null,
+      client_id: values.client_id,
+      client_contact_id: values.contact_id || null,
       driver_user_id: selectedDriver?.user_id || activeLoadData?.driver_user_id,
       internal_dispatcher_id: selectedDispatcher?.user_id || null,
       total_amount: parseFloat(values.total_amount) || 0,
@@ -563,56 +559,56 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                        }}
                      />
 
-                     {/* Broker Selection */}
-                     <FormField
-                       control={form.control}
-                       name="broker_id"
-                       render={({ field }) => (
-                         <FormItem>
-                           <FormLabel>Cliente / Broker *</FormLabel>
-                           <FormControl>
-                               <ClientCombobox
-                                 clients={brokers}
-                                 value={field.value}
-                                 onValueChange={(value) => {
-                                   field.onChange(value);
-                                   const broker = brokers.find(b => b.id === value);
-                                   setSelectedBroker(broker || null);
-                                   form.setValue("dispatcher_id", "");
-                                 }}
-                                 onClientSelect={setSelectedBroker}
-                                 placeholder="Buscar cliente por nombre, DOT, MC..."
-                                 className="w-full"
-                                 onCreateNew={() => setShowCreateBroker(true)}
-                               />
-                           </FormControl>
-                           <FormMessage />
-                         </FormItem>
-                       )}
-                     />
+                      {/* Client Selection */}
+                      <FormField
+                        control={form.control}
+                        name="client_id"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Cliente *</FormLabel>
+                            <FormControl>
+                                <ClientCombobox
+                                  clients={clients}
+                                  value={field.value}
+                                  onValueChange={(value) => {
+                                    field.onChange(value);
+                                    const client = clients.find(c => c.id === value);
+                                    setSelectedClient(client || null);
+                                    form.setValue("contact_id", "");
+                                  }}
+                                  onClientSelect={(client) => setSelectedClient(client as Client)}
+                                  placeholder="Buscar cliente por nombre, DOT, MC..."
+                                  className="w-full"
+                                  onCreateNew={() => setShowCreateClient(true)}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                     {/* Dispatcher Selection */}
-                     <FormField
-                       control={form.control}
-                       name="dispatcher_id"
-                       render={({ field }) => (
-                         <FormItem>
-                           <FormLabel>Contacto del Cliente</FormLabel>
-                           <FormControl>
-                               <ContactCombobox
-                                 contacts={selectedBroker?.dispatchers || []}
-                                 value={field.value}
-                                 onValueChange={field.onChange}
-                                 placeholder="Buscar contacto..."
-                                 disabled={!selectedBroker}
-                                 className="w-full"
-                                 onCreateNew={selectedBroker ? () => setShowCreateDispatcher(true) : undefined}
-                               />
-                           </FormControl>
-                           <FormMessage />
-                         </FormItem>
-                       )}
-                     />
+                      {/* Contact Selection */}
+                      <FormField
+                        control={form.control}
+                        name="contact_id"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Contacto del Cliente</FormLabel>
+                            <FormControl>
+                                <ContactCombobox
+                                  clientId={selectedClient?.id}
+                                  value={field.value}
+                                  onValueChange={field.onChange}
+                                  placeholder="Buscar contacto..."
+                                  disabled={!selectedClient}
+                                  className="w-full"
+                                  onCreateNew={selectedClient ? () => setShowCreateDispatcher(true) : undefined}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
                      {/* Commodity */}
                      <FormField
@@ -722,7 +718,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                   total_amount: form.getValues("total_amount") || 0,
                   commodity: form.getValues("commodity") || '',
                   weight_lbs: form.getValues("weight_lbs"),
-                  broker_name: selectedBroker?.name,
+                  client_name: selectedClient?.name,
                   driver_name: selectedDriver ? `${selectedDriver.first_name} ${selectedDriver.last_name}` : undefined,
                   loadStops: loadStops,
                   company_name: companyData?.name,
@@ -799,26 +795,26 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
           </form>
         </Form>
 
-        {/* Create Broker Dialog */}
-        <CreateClientDialog
-          isOpen={showCreateBroker}
-          onClose={() => setShowCreateBroker(false)}
-          onSuccess={(brokerId) => {
-            // Refresh brokers list and select the new broker
-            refetchBrokers().then(() => {
-              form.setValue("broker_id", brokerId);
-              const newBroker = brokers.find(b => b.id === brokerId);
-              setSelectedBroker(newBroker || null);
-            });
-          }}
-        />
+         {/* Create Client Dialog */}
+         <CreateClientDialog
+           isOpen={showCreateClient}
+           onClose={() => setShowCreateClient(false)}
+           onSuccess={(clientId) => {
+             // Refresh clients list and select the new client
+             refetchClients().then(() => {
+               form.setValue("client_id", clientId);
+               const newClient = clients.find(c => c.id === clientId);
+               setSelectedClient(newClient || null);
+             });
+           }}
+         />
 
-        {/* Create Contact Dialog */}
-        <CreateDispatcherDialog
-          clientId={selectedBroker?.id || ""}
-          open={showCreateDispatcher}
-          onOpenChange={setShowCreateDispatcher}
-        />
+         {/* Create Contact Dialog */}
+         <CreateDispatcherDialog
+           clientId={selectedClient?.id || ""}
+           open={showCreateDispatcher}
+           onOpenChange={setShowCreateDispatcher}
+         />
       </DialogContent>
     </Dialog>
   );

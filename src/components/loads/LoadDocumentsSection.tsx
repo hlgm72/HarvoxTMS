@@ -28,7 +28,7 @@ interface LoadDocumentsSectionProps {
     total_amount: number;
     commodity: string;
     weight_lbs?: number;
-    broker_name?: string;
+    client_name?: string;
     driver_name?: string;
     loadStops: any[];
     company_name?: string;
@@ -1064,7 +1064,7 @@ export function LoadDocumentsSection({
           total_amount: 0,
           commodity: '',
           weight_lbs: 0,
-          broker_name: '',
+          client_name: '',
           driver_name: '',
           loadStops: []
         }}
