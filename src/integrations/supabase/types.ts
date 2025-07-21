@@ -2300,10 +2300,6 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: Json
       }
-      assign_payment_period_to_load_by_id: {
-        Args: { load_id_param: string }
-        Returns: undefined
-      }
       calculate_driver_period_totals: {
         Args: {
           company_payment_period_id_param: string
