@@ -75,14 +75,29 @@ export function StateCombobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className="w-full p-0" style={{ zIndex: 9999 }}>
         <Command>
           <CommandInput placeholder="Buscar estado..." />
-          <CommandList>
+          <CommandList className="max-h-[280px] overflow-y-auto">
             <CommandEmpty>
               {loading ? "Cargando estados..." : "No se encontró el estado."}
             </CommandEmpty>
             <CommandGroup>
+              <CommandItem
+                value="unspecified"
+                onSelect={() => {
+                  onValueChange(undefined);
+                  setOpen(false);
+                }}
+              >
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4",
+                    !value ? "opacity-100" : "opacity-0"
+                  )}
+                />
+                Sin especificar
+              </CommandItem>
               {states.map((state) => (
                 <CommandItem
                   key={state.id}
