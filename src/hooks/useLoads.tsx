@@ -218,7 +218,7 @@ export const useLoads = (filters?: LoadsFilters) => {
         let loadsQuery = supabase
           .from('loads')
           .select('*')
-          .in('driver_user_id', companyUsers)
+          .or(`driver_user_id.in.(${companyUsers.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUsers.join(',')}))`)
           .order('created_at', { ascending: false });
 
         // Aplicar filtro de períodos si hay alguno
