@@ -317,14 +317,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     console.log('🚨 onSubmit called with values:', values);
     
     // En modo edición, permitir guardar en cualquier fase
-    // En modo creación, solo permitir en la fase final
-    if (mode === 'create' && currentPhase !== 4) {
-      console.log('🚨 onSubmit blocked - not in final phase for create mode');
+    // En modo creación y duplicación, solo permitir en la fase final
+    if ((mode === 'create' || mode === 'duplicate') && currentPhase !== 4) {
+      console.log('🚨 onSubmit blocked - not in final phase for create/duplicate mode');
       return;
     }
 
-    // Solo validar número duplicado en modo creación
-    if (mode === 'create' && loadNumberValidation.isDuplicate) {
+    // Solo validar número duplicado en modo creación y duplicación
+    if ((mode === 'create' || mode === 'duplicate') && loadNumberValidation.isDuplicate) {
       console.log('🚨 onSubmit blocked - duplicate load number');
       toast({
         title: "Error",
@@ -776,7 +776,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                      {createLoadMutation.isPending ? (
                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
                      ) : null}
-                     {mode === 'duplicate' ? 'Duplicar Carga' : 'Crear Carga'}
+                     Crear Carga
                    </Button>
                 ) : (
                   <Button 
