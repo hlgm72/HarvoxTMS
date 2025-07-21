@@ -57,27 +57,27 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const createLoadMutation = useCreateLoad();
   const [companyData, setCompanyData] = useState<any>(null);
 
-  // For edit mode, get the actual load data. For duplicate mode, use external data but clear certain fields
+  // For edit mode, get the actual load data. For duplicate mode, also get full data including stops
   const { loadData: fetchedLoadData, isLoading: loadDataLoading, error: loadDataError } = useLoadData(
-    mode === 'edit' ? externalLoadData?.id : undefined
+    (mode === 'edit' || mode === 'duplicate') ? externalLoadData?.id : undefined
   );
   
   // Determine the active load data based on mode
   const activeLoadData = useMemo(() => {
     if (mode === 'edit') {
       return fetchedLoadData;
-    } else if (mode === 'duplicate' && externalLoadData) {
-      // For duplicate mode, use the external data but clear load_number and po_number
-      console.log('🔄 CreateLoadDialog - Duplicate mode, external data:', externalLoadData);
+    } else if (mode === 'duplicate' && fetchedLoadData) {
+      // For duplicate mode, use the fetched data (which includes stops) but clear load_number and po_number
+      console.log('🔄 CreateLoadDialog - Duplicate mode, fetched data with stops:', fetchedLoadData);
       return {
-        ...externalLoadData,
+        ...fetchedLoadData,
         load_number: '', // Clear load number
         po_number: '',   // Clear PO number
         id: undefined,   // Clear ID to create new load
       };
     }
     return null;
-  }, [mode, fetchedLoadData, externalLoadData]);
+  }, [mode, fetchedLoadData]);
 
   // Form hook
   const { form, isFormReady } = useLoadForm(activeLoadData, mode);
@@ -180,13 +180,13 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   }, [mode, activeLoadData, isFormReady, clients, drivers, dispatchers]);
 
   // Show loading state
-  if (mode === 'edit' && loadDataLoading) {
+  if ((mode === 'edit' || mode === 'duplicate') && loadDataLoading) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-md">
           <div className="flex items-center justify-center p-8">
             <Loader2 className="h-8 w-8 animate-spin" />
-            <span className="ml-2">Cargando datos de la carga...</span>
+            <span className="ml-2">{mode === 'edit' ? 'Cargando datos de la carga...' : 'Cargando datos para duplicar...'}</span>
           </div>
         </DialogContent>
       </Dialog>
@@ -194,7 +194,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   }
 
   // Show error state
-  if (mode === 'edit' && loadDataError) {
+  if ((mode === 'edit' || mode === 'duplicate') && loadDataError) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-md">
