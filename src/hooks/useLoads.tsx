@@ -131,8 +131,8 @@ const getRelevantPeriodIds = async (
     return [];
   }
 
-  // Caso específico: período único
-  if (periodFilter.type === 'specific' && periodFilter.periodId) {
+  // Caso específico: período único (incluyendo current, previous y specific)
+  if ((periodFilter.type === 'specific' || periodFilter.type === 'current' || periodFilter.type === 'previous') && periodFilter.periodId) {
     return [periodFilter.periodId];
   }
 
