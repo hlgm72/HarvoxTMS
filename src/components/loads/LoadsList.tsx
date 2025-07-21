@@ -361,16 +361,17 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                         <FileText className="h-3 w-3 mr-2" />
                         Gestionar Documentos
                       </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => setDeleteDialog({ 
-                          isOpen: true, 
-                          load 
-                        })}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <Trash2 className="h-3 w-3 mr-2" />
-                        Eliminar Carga
-                      </DropdownMenuItem>
+                       <DropdownMenuItem 
+                         onClick={() => setDeleteDialog({ 
+                           isOpen: true, 
+                           load 
+                         })}
+                         disabled={['in_transit', 'delivered', 'completed'].includes(load.status)}
+                         className="text-destructive focus:text-destructive disabled:text-muted-foreground disabled:cursor-not-allowed"
+                       >
+                         <Trash2 className="h-3 w-3 mr-2" />
+                         Eliminar Carga
+                       </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
