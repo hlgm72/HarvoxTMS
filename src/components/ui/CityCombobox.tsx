@@ -102,7 +102,7 @@ export function CityCombobox({
       <PopoverContent className="w-full p-0">
         <Command>
           <CommandInput placeholder="Buscar ciudad..." />
-          <CommandList>
+          <CommandList className="max-h-[200px] overflow-y-auto">
             <CommandEmpty>
               {loading ? "Cargando ciudades..." : "No se encontró la ciudad."}
             </CommandEmpty>
@@ -125,8 +125,7 @@ export function CityCombobox({
               {cities.map((city) => (
                 <CommandItem
                   key={city.id}
-                  value={city.name}
-                  keywords={[city.name, city.county || '']}
+                  value={`${city.name}${city.county ? ` ${city.county}` : ''}`}
                   onSelect={() => {
                     onValueChange(city.id === value ? undefined : city.id);
                     setOpen(false);
