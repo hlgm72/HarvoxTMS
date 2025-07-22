@@ -901,30 +901,55 @@ export function LoadDocumentsSection({
                         <div className="text-center py-6 border-2 border-dashed border-muted rounded-lg">
                           <FileText className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
                           <p className="text-sm text-muted-foreground mb-3">
-                            Sin documento subido
+                            Sin documento {docType.isGenerated ? 'generado' : 'subido'}
                           </p>
-                          <input
-                            type="file"
-                            id={`upload-${docType.type}`}
-                            className="hidden"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            onChange={(e) => handleFileUploadWithReplacement(docType.type, e.target.files)}
-                            disabled={uploading === docType.type}
-                          />
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            disabled={uploading === docType.type}
-                            onClick={() => {
-                              const fileInput = document.getElementById(`upload-${docType.type}`) as HTMLInputElement;
-                              fileInput?.click();
-                            }}
-                          >
-                            <Upload className="h-4 w-4 mr-2" />
-                            {uploading === docType.type ? 'Subiendo...' : 'Subir archivo'}
-                          </Button>
+                          
+                          {docType.isGenerated ? (
+                            /* Generated Document Button */
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => {
+                                if (docType.type === 'load_order') {
+                                  setShowGenerateLoadOrder(true);
+                                }
+                              }}
+                              disabled={uploading === docType.type}
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Generar {docType.label}
+                            </Button>
+                          ) : (
+                            /* Regular Upload */
+                            <>
+                              <input
+                                type="file"
+                                id={`upload-${docType.type}`}
+                                className="hidden"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                onChange={(e) => handleFileUploadWithReplacement(docType.type, e.target.files)}
+                                disabled={uploading === docType.type}
+                              />
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                disabled={uploading === docType.type}
+                                onClick={() => {
+                                  const fileInput = document.getElementById(`upload-${docType.type}`) as HTMLInputElement;
+                                  fileInput?.click();
+                                }}
+                              >
+                                <Upload className="h-4 w-4 mr-2" />
+                                {uploading === docType.type ? 'Subiendo...' : 'Subir archivo'}
+                              </Button>
+                            </>
+                          )}
+                          
                           <p className="text-xs text-muted-foreground mt-2">
-                            PDF, JPG, PNG (máx. 10MB)
+                            {docType.isGenerated 
+                              ? 'Documento generado automáticamente'
+                              : 'PDF, JPG, PNG (máx. 10MB)'
+                            }
                           </p>
                         </div>
                       </div>
