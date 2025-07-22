@@ -789,13 +789,51 @@ export function LoadDocumentsSection({
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => {
+                            onClick={async () => {
                               const docToDownload = uploadedDoc || tempDoc;
-                              if (docToDownload?.url) {
+                              if (!docToDownload?.url) {
+                                toast({
+                                  title: "Error",
+                                  description: "No se pudo encontrar la URL del documento para descargar",
+                                  variant: "destructive",
+                                });
+                                return;
+                              }
+                              
+                              try {
+                                const response = await fetch(docToDownload.url);
+                                if (!response.ok) {
+                                  throw new Error(`HTTP error! status: ${response.status}`);
+                                }
+                                
+                                const blob = await response.blob();
+                                const blobUrl = window.URL.createObjectURL(blob);
+                                const link = document.createElement('a');
+                                link.href = blobUrl;
+                                link.download = docToDownload.fileName;
+                                link.style.display = 'none';
+                                
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                
+                                window.URL.revokeObjectURL(blobUrl);
+                                
+                                toast({
+                                  title: "Descarga iniciada",
+                                  description: `${docToDownload.fileName} se está descargando`,
+                                });
+                              } catch (error) {
+                                // Fallback to direct download
                                 const link = document.createElement('a');
                                 link.href = docToDownload.url;
                                 link.download = docToDownload.fileName;
+                                link.target = '_blank';
+                                link.rel = 'noopener noreferrer';
+                                
+                                document.body.appendChild(link);
                                 link.click();
+                                document.body.removeChild(link);
                               }
                             }}
                           >
