@@ -209,7 +209,9 @@ export function LoadDocumentsSection({
       // Upload file to Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('load-documents')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          upsert: true // This will replace if file already exists
+        });
 
       if (uploadError) throw uploadError;
 
