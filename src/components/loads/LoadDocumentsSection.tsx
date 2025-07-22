@@ -910,6 +910,7 @@ export function LoadDocumentsSection({
                             <Button 
                               variant="outline" 
                               size="sm"
+                              type="button"
                               onClick={() => {
                                 console.log('🔍 Generate Load Order button clicked - Modal');
                                 console.log('🔍 docType:', docType);
@@ -997,10 +998,11 @@ export function LoadDocumentsSection({
                          <div className="flex items-center gap-2">
                            {/* For generated documents like Load Order */}
                            {docType.isGenerated ? (
-                             <Button 
-                               variant="outline" 
-                               size="sm"
-                                onClick={() => {
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                type="button"
+                                 onClick={() => {
                                   console.log('🔍 Generate Load Order button clicked - Wizard');
                                   console.log('🔍 docType:', docType);
                                   console.log('🔍 loadData:', loadData);
