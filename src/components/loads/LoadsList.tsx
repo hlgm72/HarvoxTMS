@@ -253,6 +253,19 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     (PO#: {load.po_number || ''})
                   </span>
                 </CardTitle>
+                
+                {/* Documentos Subidos después del PO# */}
+                <div className="mt-2">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1 block">
+                    Documentos Subidos
+                  </label>
+                  <LoadDocumentsList 
+                    loadId={load.id} 
+                    maxItems={3}
+                    showActions={false}
+                  />
+                </div>
+                
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <MapPin className="h-3 w-3" />
@@ -307,18 +320,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                 </label>
                 <p className="text-sm font-medium">{load.commodity}</p>
                 <p className="text-xs text-muted-foreground">{load.weight_lbs?.toLocaleString()} lbs</p>
-                
-                {/* Documentos Subidos en la misma columna */}
-                <div className="mt-3">
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
-                    Documentos Subidos
-                  </label>
-                  <LoadDocumentsList 
-                    loadId={load.id} 
-                    maxItems={3}
-                    showActions={false}
-                  />
-                </div>
               </div>
             </div>
             
