@@ -310,29 +310,30 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
               </div>
             </div>
             
-            {/* Información del período de pago */}
-            <div className="mb-3 pb-3 border-b border-border">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
-                Período de Pago
-              </label>
-              <PaymentPeriodInfo
-                periodStartDate={load.period_start_date}
-                periodEndDate={load.period_end_date}
-                periodFrequency={load.period_frequency}
-                periodStatus={load.period_status}
-              />
-            </div>
-            
-            {/* Sección de documentos */}
-            <div className="mb-3 pb-3 border-b border-border">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
-                Documentos Subidos
-              </label>
-              <LoadDocumentsList 
-                loadId={load.id} 
-                maxItems={3}
-                showActions={false}
-              />
+            {/* Información del período de pago y documentos en dos columnas */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 pb-3 border-b border-border">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
+                  Período de Pago
+                </label>
+                <PaymentPeriodInfo
+                  periodStartDate={load.period_start_date}
+                  periodEndDate={load.period_end_date}
+                  periodFrequency={load.period_frequency}
+                  periodStatus={load.period_status}
+                />
+              </div>
+              
+              <div>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
+                  Documentos Subidos
+                </label>
+                <LoadDocumentsList 
+                  loadId={load.id} 
+                  maxItems={3}
+                  showActions={false}
+                />
+              </div>
             </div>
             
             <div className="flex items-center justify-between">
