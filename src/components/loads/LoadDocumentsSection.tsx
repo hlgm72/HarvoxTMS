@@ -1199,7 +1199,7 @@ export function LoadDocumentsSection({
 
       {/* Generate Load Order Dialog */}
       <GenerateLoadOrderDialog
-        isOpen={showGenerateLoadOrder && !!loadData}
+        isOpen={showGenerateLoadOrder}
         onClose={() => {
           console.log('🔍 LoadDocumentsSection - onClose called, setting showGenerateLoadOrder to false');
           setShowGenerateLoadOrder(false);
