@@ -663,10 +663,26 @@ export function LoadDocumentsSection({
         }
       }
 
-      // Create file path: load_id/document_type.ext
+      // Generate custom file name based on load number and document type
       const fileExt = file.name.split('.').pop();
-      const fileName = `${type}.${fileExt}`;
+      const currentLoadNumber = loadNumber || loadData?.load_number || 'UNKNOWN';
+      
+      // Map document types to custom names
+      const documentNameMap: Record<string, string> = {
+        'rate_confirmation': 'Rate_Confirmation',
+        'driver_instructions': 'Driver_Instructions', 
+        'bol': 'Bill_of_Lading',
+        'load_order': 'Load_Order'
+      };
+      
+      const customName = documentNameMap[type];
+      const timestamp = Date.now();
+      const fileName = customName 
+        ? `${currentLoadNumber}_${customName}_${timestamp}.${fileExt}`
+        : `${type}_${timestamp}.${fileExt}`;
       const filePath = `${loadId}/${fileName}`;
+      
+      console.log('🔄 handleFileUploadWithReplacement - Generated fileName:', fileName);
 
       // Upload file to Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
@@ -686,7 +702,7 @@ export function LoadDocumentsSection({
         .insert({
           load_id: loadId,
           document_type: type,
-          file_name: file.name,
+          file_name: fileName,
           file_url: urlData.publicUrl,
           file_size: file.size,
           content_type: file.type,
