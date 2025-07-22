@@ -8,6 +8,7 @@ import { FileText, Upload, Download, Trash2, FileCheck, Plus, Eye, RotateCcw } f
 import { GenerateLoadOrderDialog } from "./GenerateLoadOrderDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface LoadDocument {
   id: string;
@@ -95,6 +96,7 @@ export function LoadDocumentsSection({
   const [hasLoadOrder, setHasLoadOrder] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Debug state changes - but don't close modal when loadData changes if it's open
   useEffect(() => {
@@ -286,6 +288,9 @@ export function LoadDocumentsSection({
       setDocuments(updatedDocuments);
       onDocumentsChange?.(updatedDocuments);
 
+      // Invalidate loads query to refresh the loads list
+      queryClient.invalidateQueries({ queryKey: ['loads'] });
+
       toast({
         title: "Éxito",
         description: `${newDocument.name} subido correctamente`,
@@ -409,6 +414,9 @@ export function LoadDocumentsSection({
       setDocuments(updatedDocuments);
       onDocumentsChange?.(updatedDocuments);
 
+      // Invalidate loads query to refresh the loads list
+      queryClient.invalidateQueries({ queryKey: ['loads'] });
+
       toast({
         title: "Éxito",
         description: "Documento eliminado correctamente",
@@ -488,6 +496,9 @@ export function LoadDocumentsSection({
         
         // Refresh documents from database to get the updated list
         await loadDocuments();
+        
+        // Invalidate loads query to refresh the loads list
+        queryClient.invalidateQueries({ queryKey: ['loads'] });
         
         toast({
           title: "Load Order guardado",
