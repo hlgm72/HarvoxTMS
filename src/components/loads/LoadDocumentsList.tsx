@@ -102,10 +102,30 @@ export function LoadDocumentsList({
 
     fetchDocuments();
 
+    // Configurar listener de tiempo real para actualizaciones de documentos
+    const channel = supabase
+      .channel('load_documents_updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'load_documents',
+          filter: `load_id=eq.${loadId}`
+        },
+        (payload) => {
+          console.log('Document change detected:', payload);
+          // Refrescar documentos cuando haya cambios
+          fetchDocuments();
+        }
+      )
+      .subscribe();
+
     return () => {
       mounted = false;
+      supabase.removeChannel(channel);
     };
-  }, [loadId]);
+  }, [loadId, toast]);
 
   const handleDownload = async (doc: LoadDocument) => {
     try {
