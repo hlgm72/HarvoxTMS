@@ -1234,6 +1234,25 @@ export function LoadDocumentsSection({
           ) : (
             renderDocumentManagement()
           )}
+
+          {/* Generate Load Order Dialog - Available in Dialog Mode */}
+          <GenerateLoadOrderDialog
+            isOpen={showGenerateLoadOrder}
+            onClose={() => {
+              console.log('🔍 LoadDocumentsSection - onClose called in dialog mode, setting showGenerateLoadOrder to false');
+              setShowGenerateLoadOrder(false);
+            }}
+            loadData={loadData || {
+              load_number: '',
+              total_amount: 0,
+              commodity: '',
+              weight_lbs: 0,
+              client_name: '',
+              driver_name: '',
+              loadStops: []
+            }}
+            onLoadOrderGenerated={handleLoadOrderGenerated}
+          />
         </DialogContent>
       </Dialog>
     );

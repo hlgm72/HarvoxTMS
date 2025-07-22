@@ -462,6 +462,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
           onClose={() => setDocumentsDialog({ isOpen: false })}
           loadId={documentsDialog.load.id}
           loadNumber={documentsDialog.load.load_number}
+          loadData={documentsDialog.load}
         />
       )}
 
