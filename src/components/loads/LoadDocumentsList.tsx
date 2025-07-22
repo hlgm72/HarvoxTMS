@@ -67,12 +67,16 @@ export function LoadDocumentsList({
     
     const fetchDocuments = async () => {
       if (!loadId) {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
         return;
       }
       
       try {
-        setIsLoading(true);
+        if (mounted) {
+          setIsLoading(true);
+        }
         const { data, error } = await supabase
           .from('load_documents')
           .select('*')
@@ -83,19 +87,17 @@ export function LoadDocumentsList({
         
         if (mounted) {
           setDocuments(data || []);
+          setIsLoading(false);
         }
       } catch (error) {
         if (mounted) {
           console.error('Error fetching load documents:', error);
+          setIsLoading(false);
           toast({
             title: "Error",
             description: "No se pudieron cargar los documentos",
             variant: "destructive",
           });
-        }
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
         }
       }
     };
@@ -104,7 +106,7 @@ export function LoadDocumentsList({
 
     // Configurar listener de tiempo real para actualizaciones de documentos
     const channel = supabase
-      .channel('load_documents_updates')
+      .channel(`load_documents_${loadId}`)
       .on(
         'postgres_changes',
         {
@@ -115,8 +117,10 @@ export function LoadDocumentsList({
         },
         (payload) => {
           console.log('Document change detected:', payload);
-          // Refrescar documentos cuando haya cambios
-          fetchDocuments();
+          // Refrescar documentos cuando haya cambios, pero solo si no estamos cargando
+          if (mounted) {
+            fetchDocuments();
+          }
         }
       )
       .subscribe();
@@ -125,7 +129,7 @@ export function LoadDocumentsList({
       mounted = false;
       supabase.removeChannel(channel);
     };
-  }, [loadId, toast]);
+  }, [loadId]); // Removí toast de las dependencias
 
   const handleDownload = async (doc: LoadDocument) => {
     try {
