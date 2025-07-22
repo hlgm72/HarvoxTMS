@@ -51,8 +51,13 @@ export function LoadDocumentsList({
   const { toast } = useToast();
 
   useEffect(() => {
+    let mounted = true;
+    
     const fetchDocuments = async () => {
-      if (!loadId) return;
+      if (!loadId) {
+        setIsLoading(false);
+        return;
+      }
       
       try {
         setIsLoading(true);
@@ -64,21 +69,31 @@ export function LoadDocumentsList({
 
         if (error) throw error;
         
-        setDocuments(data || []);
+        if (mounted) {
+          setDocuments(data || []);
+        }
       } catch (error) {
-        console.error('Error fetching load documents:', error);
-        toast({
-          title: "Error",
-          description: "No se pudieron cargar los documentos",
-          variant: "destructive",
-        });
+        if (mounted) {
+          console.error('Error fetching load documents:', error);
+          toast({
+            title: "Error",
+            description: "No se pudieron cargar los documentos",
+            variant: "destructive",
+          });
+        }
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchDocuments();
-  }, [loadId, toast]);
+
+    return () => {
+      mounted = false;
+    };
+  }, [loadId]);
 
   const handleDownload = async (doc: LoadDocument) => {
     try {
