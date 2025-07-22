@@ -92,6 +92,13 @@ export function LoadDocumentsSection({
   onClose,
   loadNumber
 }: LoadDocumentsSectionProps) {
+  console.log('🔍 LoadDocumentsSection props:', { 
+    loadId, 
+    loadNumber, 
+    loadDataNumber: loadData?.load_number,
+    isDialogMode,
+    hasLoadData: !!loadData
+  });
   const [documents, setDocuments] = useState<LoadDocument[]>([]);
   const [showGenerateLoadOrder, setShowGenerateLoadOrder] = useState(false);
   const [hasLoadOrder, setHasLoadOrder] = useState(false);
@@ -201,6 +208,7 @@ export function LoadDocumentsSection({
       // Generate custom file name based on load number and document type
       const fileExt = file.name.split('.').pop();
       const currentLoadNumber = loadNumber || loadData?.load_number || 'UNKNOWN';
+      console.log('🏷️ File naming - loadNumber:', loadNumber, 'loadData?.load_number:', loadData?.load_number, 'currentLoadNumber:', currentLoadNumber);
       console.log('🏷️ Using load number for file naming:', currentLoadNumber);
       
       // Map document types to custom names
@@ -216,6 +224,8 @@ export function LoadDocumentsSection({
       let fileName = customName 
         ? `${currentLoadNumber}_${customName}_${timestamp}.${fileExt}`
         : `${type}_${timestamp}.${fileExt}`;
+      
+      console.log('🏷️ Generated fileName:', fileName);
       
       let filePath = `${loadId}/${fileName}`;
 
@@ -340,6 +350,7 @@ export function LoadDocumentsSection({
     // Generate custom file name based on load number and document type
     const fileExt = file.name.split('.').pop();
     const currentLoadNumber = loadNumber || loadData?.load_number || 'TEMP';
+    console.log('📂 Temporary file naming - loadNumber:', loadNumber, 'loadData?.load_number:', loadData?.load_number, 'currentLoadNumber:', currentLoadNumber);
     
     // Map document types to custom names
     const documentNameMap: Record<string, string> = {
