@@ -420,6 +420,10 @@ export function LoadDocumentsSection({
       // Invalidate loads query to refresh the loads list
       queryClient.invalidateQueries({ queryKey: ['loads'] });
       notifyDocumentChange();
+      
+      // Refrescar los documentos locales también
+      console.log('🔄 LoadDocumentsSection - Reloading documents after deletion');
+      setTimeout(() => loadDocuments(), 100);
 
       toast({
         title: "Éxito",
@@ -676,19 +680,52 @@ export function LoadDocumentsSection({
 
   const handleRemoveDocumentForDialog = async (documentId: string) => {
     try {
-      // Archive document in database (soft delete)
+      // Get document info before deleting
+      const { data: documentData, error: fetchError } = await supabase
+        .from('load_documents')
+        .select('file_url')
+        .eq('id', documentId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Extract file path from URL to delete from Storage
+      if (documentData?.file_url) {
+        const url = new URL(documentData.file_url);
+        const pathParts = url.pathname.split('/');
+        const bucketIndex = pathParts.findIndex(part => part === 'load-documents');
+        if (bucketIndex !== -1 && bucketIndex < pathParts.length - 1) {
+          const filePath = pathParts.slice(bucketIndex + 1).join('/');
+          
+          // Delete file from Storage
+          const { error: storageError } = await supabase.storage
+            .from('load-documents')
+            .remove([filePath]);
+
+          if (storageError) {
+            console.error('Error deleting file from storage:', storageError);
+          }
+        }
+      }
+
+      // Delete document record from database (hard delete - same as wizard)
       const { error } = await supabase
         .from('load_documents')
-        .update({ 
-          archived_at: new Date().toISOString(),
-          archived_by: (await supabase.auth.getUser()).data.user?.id
-        })
+        .delete()
         .eq('id', documentId);
 
       if (error) throw error;
 
       // Reload documents to get updated list
       await loadDocuments();
+      
+      // Invalidate loads query to refresh the loads list
+      queryClient.invalidateQueries({ queryKey: ['loads'] });
+      notifyDocumentChange();
+      
+      // Refrescar los documentos locales también
+      console.log('🔄 LoadDocumentsSection - Reloading documents after deletion in dialog');
+      setTimeout(() => loadDocuments(), 100);
 
       toast({
         title: "Éxito",

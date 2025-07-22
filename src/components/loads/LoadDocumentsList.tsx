@@ -109,7 +109,7 @@ export function LoadDocumentsList({
 
     // Configurar listener de tiempo real para actualizaciones de documentos
     const channel = supabase
-      .channel(`load_documents_${loadId}`)
+      .channel(`load_documents_${loadId}_${refreshTrigger}`)
       .on(
         'postgres_changes',
         {
