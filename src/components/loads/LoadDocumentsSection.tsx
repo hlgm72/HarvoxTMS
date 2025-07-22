@@ -244,22 +244,31 @@ export function LoadDocumentsSection({
         .from('load-documents')
         .getPublicUrl(filePath);
 
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        throw new Error('Usuario no autenticado');
+      }
+
       // Save document metadata to database
       const { data: docData, error: docError } = await supabase
         .from('load_documents')
         .insert({
           load_id: loadId,
           document_type: type,
-          file_name: fileName, // Use custom file name instead of original
+          file_name: fileName,
           file_url: urlData.publicUrl,
           file_size: file.size,
           content_type: file.type,
-          uploaded_by: (await supabase.auth.getUser()).data.user?.id
+          uploaded_by: user.id
         })
         .select()
         .single();
 
-      if (docError) throw docError;
+      if (docError) {
+        console.error('Database insert error:', docError);
+        throw docError;
+      }
 
       // Add to local state
       const newDocument: LoadDocument = {
@@ -449,6 +458,12 @@ export function LoadDocumentsSection({
 
         console.log('🔗 LoadDocumentsSection - Storage URL:', urlData.publicUrl);
         
+        // Get current user
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          throw new Error('Usuario no autenticado');
+        }
+        
         const { data: docData, error: docError } = await supabase
           .from('load_documents')
           .insert({
@@ -458,12 +473,15 @@ export function LoadDocumentsSection({
             file_url: urlData.publicUrl, // Use the permanent Storage URL
             file_size: file.size,
             content_type: 'application/pdf',
-            uploaded_by: (await supabase.auth.getUser()).data.user?.id
+            uploaded_by: user.id
           })
           .select()
           .single();
 
-        if (docError) throw docError;
+        if (docError) {
+          console.error('Database insert error for Load Order:', docError);
+          throw docError;
+        }
 
         console.log('✅ LoadDocumentsSection - Load Order saved to database with permanent URL:', urlData.publicUrl);
         
