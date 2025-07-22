@@ -200,9 +200,10 @@ export function LoadDocumentsSection({
       };
       
       const customName = documentNameMap[type];
+      const timestamp = Date.now();
       const fileName = customName 
-        ? `${loadNumber}_${customName}.${fileExt}`
-        : `${type}_${Date.now()}.${fileExt}`;
+        ? `${loadNumber}_${customName}_${timestamp}.${fileExt}`
+        : `${type}_${timestamp}.${fileExt}`;
       
       const filePath = `${loadId}/${fileName}`;
 
