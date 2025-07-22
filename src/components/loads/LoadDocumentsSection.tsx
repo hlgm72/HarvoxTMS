@@ -162,7 +162,14 @@ export function LoadDocumentsSection({
   };
 
   const handleFileUpload = async (type: LoadDocument['type'], files: FileList | null) => {
-    console.log('🔄 handleFileUpload called', { type, filesCount: files?.length || 0, loadId });
+    console.log('🔄 handleFileUpload called', { 
+      type, 
+      filesCount: files?.length || 0, 
+      loadId,
+      loadNumber,
+      isDialogMode,
+      hasLoadData: !!loadData
+    });
     
     if (!files || files.length === 0) {
       console.log('❌ No files selected');
@@ -171,7 +178,7 @@ export function LoadDocumentsSection({
     
     // If no loadId, handle as temporary document
     if (!loadId) {
-      console.log('📁 Handling as temporary document');
+      console.log('📁 Handling as temporary document (no loadId)');
       handleTemporaryFileUpload(type, files);
       return;
     }
@@ -330,12 +337,32 @@ export function LoadDocumentsSection({
       return;
     }
 
-    // Create temporary document with file data
+    // Generate custom file name based on load number and document type
+    const fileExt = file.name.split('.').pop();
+    const currentLoadNumber = loadNumber || loadData?.load_number || 'TEMP';
+    
+    // Map document types to custom names
+    const documentNameMap: Record<string, string> = {
+      'rate_confirmation': 'Rate_Confirmation',
+      'driver_instructions': 'Driver_Instructions', 
+      'bol': 'Bill_of_Lading',
+      'load_order': 'Load_Order'
+    };
+    
+    const customName = documentNameMap[type];
+    const timestamp = Date.now();
+    const customFileName = customName 
+      ? `${currentLoadNumber}_${customName}_${timestamp}.${fileExt}`
+      : `${type}_${timestamp}.${fileExt}`;
+    
+    console.log('📂 Generated custom fileName for temp document:', customFileName);
+
+    // Create temporary document with file data and custom name
     const tempDocument: LoadDocument = {
       id: `temp-${Date.now()}`,
       type,
-      name: file.name,
-      fileName: file.name,
+      name: customFileName,
+      fileName: customFileName,
       fileSize: file.size,
       uploadedAt: new Date().toISOString(),
       url: URL.createObjectURL(file), // Create blob URL for preview
