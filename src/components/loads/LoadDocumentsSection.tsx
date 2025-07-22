@@ -977,12 +977,13 @@ export function LoadDocumentsSection({
                     </div>
                     
                     {(uploadedDoc || tempDoc) && !isDialogMode && (
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-0.5">
                         {uploadedDoc && (
                            <>
                              <Button 
                                variant="ghost" 
-                               size="sm"
+                               size="icon"
+                               className="h-8 w-8"
                                onClick={() => {
                                  if (!uploadedDoc.url) {
                                    toast({
@@ -1000,7 +1001,8 @@ export function LoadDocumentsSection({
                              </Button>
                              <Button 
                                variant="ghost" 
-                               size="sm"
+                               size="icon"
+                               className="h-8 w-8"
                                onClick={async () => {
                                  if (!uploadedDoc.url) {
                                    toast({
@@ -1054,7 +1056,8 @@ export function LoadDocumentsSection({
                         )}
                         <Button 
                           variant="ghost" 
-                          size="sm"
+                          size="icon"
+                          className="h-8 w-8"
                           onClick={async () => {
                             if (uploadedDoc) {
                               await handleRemoveDocument(uploadedDoc.id);
