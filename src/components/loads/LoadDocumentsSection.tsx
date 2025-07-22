@@ -676,10 +676,9 @@ export function LoadDocumentsSection({
       };
       
       const customName = documentNameMap[type];
-      const timestamp = Date.now();
       const fileName = customName 
-        ? `${currentLoadNumber}_${customName}_${timestamp}.${fileExt}`
-        : `${type}_${timestamp}.${fileExt}`;
+        ? `${currentLoadNumber}_${customName}.${fileExt}`
+        : `${type}.${fileExt}`;
       const filePath = `${loadId}/${fileName}`;
       
       console.log('🔄 handleFileUploadWithReplacement - Generated fileName:', fileName);
