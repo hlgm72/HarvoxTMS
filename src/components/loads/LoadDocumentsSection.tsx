@@ -426,6 +426,7 @@ export function LoadDocumentsSection({
 
   const handleLoadOrderGenerated = async (loadOrderData: any) => {
     console.log('📋 LoadDocumentsSection - handleLoadOrderGenerated called with:', loadOrderData);
+    console.log('📋 Current loadId:', loadId);
     console.log('📋 Current documents before Load Order:', documents);
     console.log('📋 Current temporaryDocuments before Load Order:', temporaryDocuments);
 
