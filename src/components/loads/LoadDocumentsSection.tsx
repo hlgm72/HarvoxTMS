@@ -201,18 +201,41 @@ export function LoadDocumentsSection({
       
       const customName = documentNameMap[type];
       const timestamp = Date.now();
-      const fileName = customName 
+      let fileName = customName 
         ? `${loadNumber}_${customName}_${timestamp}.${fileExt}`
         : `${type}_${timestamp}.${fileExt}`;
       
-      const filePath = `${loadId}/${fileName}`;
+      let filePath = `${loadId}/${fileName}`;
 
       // Upload file to Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      let uploadData, uploadError;
+      
+      // First try with upsert to replace existing files
+      ({ data: uploadData, error: uploadError } = await supabase.storage
         .from('load-documents')
         .upload(filePath, file, {
-          upsert: true // This will replace if file already exists
-        });
+          upsert: true
+        }));
+
+      // If still getting duplicate error, try with a new unique name
+      if (uploadError?.message?.includes('already exists') || uploadError?.message?.includes('Duplicate')) {
+        console.log('🔄 File exists, trying with unique name...');
+        const uniqueTimestamp = Date.now() + Math.random().toString(36).substr(2, 9);
+        const uniqueFileName = customName 
+          ? `${loadNumber}_${customName}_${uniqueTimestamp}.${fileExt}`
+          : `${type}_${uniqueTimestamp}.${fileExt}`;
+        const uniqueFilePath = `${loadId}/${uniqueFileName}`;
+        
+        ({ data: uploadData, error: uploadError } = await supabase.storage
+          .from('load-documents')
+          .upload(uniqueFilePath, file));
+          
+        // Update the file path and name for the rest of the process
+        if (!uploadError) {
+          filePath = uniqueFilePath;
+          fileName = uniqueFileName;
+        }
+      }
 
       if (uploadError) throw uploadError;
 
