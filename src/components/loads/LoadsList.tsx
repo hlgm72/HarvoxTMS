@@ -247,23 +247,25 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
-                <CardTitle className="text-lg font-semibold">
-                  {load.load_number}
-                  <span className="text-sm font-normal text-muted-foreground ml-2">
-                    (PO#: {load.po_number || ''})
-                  </span>
-                </CardTitle>
-                
-                {/* Documentos Subidos después del PO# */}
-                <div className="mt-2">
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1 block">
-                    Documentos Subidos
-                  </label>
-                  <LoadDocumentsList 
-                    loadId={load.id} 
-                    maxItems={3}
-                    showActions={false}
-                  />
+                <div className="flex items-center gap-4 flex-wrap">
+                  <CardTitle className="text-lg font-semibold">
+                    {load.load_number}
+                    <span className="text-sm font-normal text-muted-foreground ml-2">
+                      (PO#: {load.po_number || ''})
+                    </span>
+                  </CardTitle>
+                  
+                  {/* Documentos Subidos al lado del PO# */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Documentos:
+                    </span>
+                    <LoadDocumentsList 
+                      loadId={load.id} 
+                      maxItems={3}
+                      showActions={false}
+                    />
+                  </div>
                 </div>
                 
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
