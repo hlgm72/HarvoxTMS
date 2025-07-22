@@ -714,6 +714,10 @@ export function LoadDocumentsSection({
 
       // Reload documents to get updated list
       await loadDocuments();
+      
+      // Invalidate loads query to refresh the loads list
+      queryClient.invalidateQueries({ queryKey: ['loads'] });
+      notifyDocumentChange();
 
       toast({
         title: "Éxito",
