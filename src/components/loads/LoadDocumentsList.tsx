@@ -22,13 +22,13 @@ interface LoadDocumentsListProps {
 }
 
 const documentTypeLabels: Record<string, string> = {
-  'rate_confirmation': 'Rate Confirmation',
-  'driver_instructions': 'Instrucciones del Conductor', 
-  'bol': 'Bill of Lading',
-  'load_order': 'Orden de Carga',
-  'pod': 'Proof of Delivery',
-  'receipt': 'Recibo',
-  'other': 'Otro'
+  'rate_confirmation': 'RC',
+  'driver_instructions': 'DI', 
+  'bol': 'BOL',
+  'load_order': 'LO',
+  'pod': 'POD',
+  'receipt': 'RCPT',
+  'other': 'OD'
 };
 
 const documentTypeColors: Record<string, string> = {
