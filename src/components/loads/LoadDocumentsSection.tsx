@@ -193,7 +193,8 @@ export function LoadDocumentsSection({
     try {
       // Generate custom file name based on load number and document type
       const fileExt = file.name.split('.').pop();
-      const loadNumber = loadData?.load_number || 'UNKNOWN';
+      const currentLoadNumber = loadNumber || loadData?.load_number || 'UNKNOWN';
+      console.log('🏷️ Using load number for file naming:', currentLoadNumber);
       
       // Map document types to custom names
       const documentNameMap: Record<string, string> = {
@@ -206,7 +207,7 @@ export function LoadDocumentsSection({
       const customName = documentNameMap[type];
       const timestamp = Date.now();
       let fileName = customName 
-        ? `${loadNumber}_${customName}_${timestamp}.${fileExt}`
+        ? `${currentLoadNumber}_${customName}_${timestamp}.${fileExt}`
         : `${type}_${timestamp}.${fileExt}`;
       
       let filePath = `${loadId}/${fileName}`;
@@ -226,7 +227,7 @@ export function LoadDocumentsSection({
         console.log('🔄 File exists, trying with unique name...');
         const uniqueTimestamp = Date.now() + Math.random().toString(36).substr(2, 9);
         const uniqueFileName = customName 
-          ? `${loadNumber}_${customName}_${uniqueTimestamp}.${fileExt}`
+          ? `${currentLoadNumber}_${customName}_${uniqueTimestamp}.${fileExt}`
           : `${type}_${uniqueTimestamp}.${fileExt}`;
         const uniqueFilePath = `${loadId}/${uniqueFileName}`;
         
