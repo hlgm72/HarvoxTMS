@@ -307,11 +307,23 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                 </label>
                 <p className="text-sm font-medium">{load.commodity}</p>
                 <p className="text-xs text-muted-foreground">{load.weight_lbs?.toLocaleString()} lbs</p>
+                
+                {/* Documentos Subidos en la misma columna */}
+                <div className="mt-3">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
+                    Documentos Subidos
+                  </label>
+                  <LoadDocumentsList 
+                    loadId={load.id} 
+                    maxItems={3}
+                    showActions={false}
+                  />
+                </div>
               </div>
             </div>
             
-            {/* Información del período de pago y documentos en dos columnas */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 pb-3 border-b border-border">
+            {/* Información del período de pago */}
+            <div className="mb-3 pb-3 border-b border-border">
               <div>
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
                   Período de Pago
@@ -321,17 +333,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   periodEndDate={load.period_end_date}
                   periodFrequency={load.period_frequency}
                   periodStatus={load.period_status}
-                />
-              </div>
-              
-              <div>
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
-                  Documentos Subidos
-                </label>
-                <LoadDocumentsList 
-                  loadId={load.id} 
-                  maxItems={3}
-                  showActions={false}
                 />
               </div>
             </div>
