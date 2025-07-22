@@ -9,6 +9,7 @@ import { GenerateLoadOrderDialog } from "./GenerateLoadOrderDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
 
 interface LoadDocument {
   id: string;
@@ -97,6 +98,7 @@ export function LoadDocumentsSection({
   const [uploading, setUploading] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { notifyDocumentChange } = useLoadDocuments();
 
   // Debug state changes - but don't close modal when loadData changes if it's open
   useEffect(() => {
@@ -290,6 +292,7 @@ export function LoadDocumentsSection({
 
       // Invalidate loads query to refresh the loads list
       queryClient.invalidateQueries({ queryKey: ['loads'] });
+      notifyDocumentChange();
 
       toast({
         title: "Éxito",
@@ -416,6 +419,7 @@ export function LoadDocumentsSection({
 
       // Invalidate loads query to refresh the loads list
       queryClient.invalidateQueries({ queryKey: ['loads'] });
+      notifyDocumentChange();
 
       toast({
         title: "Éxito",
@@ -499,6 +503,7 @@ export function LoadDocumentsSection({
         
         // Invalidate loads query to refresh the loads list
         queryClient.invalidateQueries({ queryKey: ['loads'] });
+        notifyDocumentChange();
         
         toast({
           title: "Load Order guardado",

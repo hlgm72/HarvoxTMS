@@ -20,6 +20,7 @@ interface LoadDocumentsListProps {
   loadId: string;
   maxItems?: number;
   showActions?: boolean;
+  refreshTrigger?: number;
 }
 
 const documentTypeLabels: Record<string, string> = {
@@ -56,10 +57,12 @@ const documentTypeOrder = [
 export function LoadDocumentsList({ 
   loadId, 
   maxItems = 3, 
-  showActions = false 
+  showActions = false,
+  refreshTrigger = 0
 }: LoadDocumentsListProps) {
   const [documents, setDocuments] = useState<LoadDocument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [forceRefresh, setForceRefresh] = useState(0);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -129,7 +132,7 @@ export function LoadDocumentsList({
       mounted = false;
       supabase.removeChannel(channel);
     };
-  }, [loadId]); // Removí toast de las dependencias
+  }, [loadId, refreshTrigger]); // Agregué refreshTrigger como dependencia
 
   const handleDownload = async (doc: LoadDocument) => {
     try {

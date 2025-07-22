@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Package, Clock } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { LoadsList } from "@/components/loads/LoadsList";
+import { LoadDocumentsProvider } from "@/contexts/LoadDocumentsContext";
 import { LoadsFloatingActions } from "@/components/loads/LoadsFloatingActions";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
@@ -125,11 +126,13 @@ export default function Loads() {
           </div>
         </div>
 
-        <LoadsList 
-          filters={filters}
-          periodFilter={periodFilter}
-          onCreateLoad={() => setIsCreateDialogOpen(true)}
-        />
+        <LoadDocumentsProvider>
+          <LoadsList 
+            filters={filters}
+            periodFilter={periodFilter}
+            onCreateLoad={() => setIsCreateDialogOpen(true)}
+          />
+        </LoadDocumentsProvider>
 
         <CreateLoadDialog
           isOpen={isCreateDialogOpen}

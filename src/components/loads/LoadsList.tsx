@@ -19,6 +19,7 @@ import { EmptyLoadsState } from "./EmptyLoadsState";
 import { CreateLoadDialog } from "./CreateLoadDialog";
 import { LoadViewDialog } from "./LoadViewDialog";
 import { LoadDocumentsList } from "./LoadDocumentsList";
+import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
 
 // Componente de skeleton para cargas
 const LoadSkeleton = () => (
@@ -152,6 +153,7 @@ interface LoadsListProps {
 
 export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProps) {
   const { t } = useTranslation();
+  const { refreshTrigger } = useLoadDocuments();
   
   // Convertir el filtro de períodos al formato que espera el hook useLoads
   const loadsFilters = periodFilter ? {
@@ -264,6 +266,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                       loadId={load.id} 
                       maxItems={3}
                       showActions={false}
+                      refreshTrigger={refreshTrigger}
                     />
                   </div>
                 </div>
