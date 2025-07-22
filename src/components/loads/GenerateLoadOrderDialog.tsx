@@ -56,6 +56,13 @@ export function GenerateLoadOrderDialog({
     },
   });
 
+  // Update form when loadData changes
+  useEffect(() => {
+    if (loadData.total_amount) {
+      form.setValue("customAmount", loadData.total_amount);
+    }
+  }, [loadData.total_amount, form]);
+
   const atmInput = useATMInput({
     initialValue: loadData.total_amount,
     onValueChange: (value) => {
