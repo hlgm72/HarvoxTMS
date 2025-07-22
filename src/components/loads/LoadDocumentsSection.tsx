@@ -1013,16 +1013,18 @@ export function LoadDocumentsSection({
                                 variant="outline" 
                                 size="sm"
                                 type="button"
-                                 onClick={() => {
-                                  console.log('🔍 Generate Load Order button clicked - Wizard');
-                                  console.log('🔍 docType:', docType);
-                                  console.log('🔍 loadData:', loadData);
-                                  console.log('🔍 Current showGenerateLoadOrder:', showGenerateLoadOrder);
-                                  if (docType.type === 'load_order') {
-                                    setShowGenerateLoadOrder(true);
-                                    console.log('🔍 setShowGenerateLoadOrder(true) called');
-                                  }
-                                }}
+                                 onClick={(e) => {
+                                   e.preventDefault();
+                                   e.stopPropagation();
+                                   console.log('🔍 Generate Load Order button clicked - Wizard');
+                                   console.log('🔍 docType:', docType);
+                                   console.log('🔍 loadData:', loadData);
+                                   console.log('🔍 Current showGenerateLoadOrder:', showGenerateLoadOrder);
+                                   if (docType.type === 'load_order') {
+                                     setShowGenerateLoadOrder(true);
+                                     console.log('🔍 setShowGenerateLoadOrder(true) called');
+                                   }
+                                 }}
                                disabled={uploading === docType.type}
                              >
                                <Plus className="h-4 w-4 mr-2" />
