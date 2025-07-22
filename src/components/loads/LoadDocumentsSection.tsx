@@ -603,9 +603,9 @@ export function LoadDocumentsSection({
         }
       }
 
-      // Create file path: load_id/document_type_timestamp.ext
+      // Create file path: load_id/document_type.ext
       const fileExt = file.name.split('.').pop();
-      const fileName = `${type}_${Date.now()}.${fileExt}`;
+      const fileName = `${type}.${fileExt}`;
       const filePath = `${loadId}/${fileName}`;
 
       // Upload file to Supabase Storage
