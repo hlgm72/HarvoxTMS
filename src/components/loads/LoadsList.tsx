@@ -18,6 +18,7 @@ import { LoadDocumentsSection } from "./LoadDocumentsSection";
 import { EmptyLoadsState } from "./EmptyLoadsState";
 import { CreateLoadDialog } from "./CreateLoadDialog";
 import { LoadViewDialog } from "./LoadViewDialog";
+import { LoadDocumentsList } from "./LoadDocumentsList";
 
 // Componente de skeleton para cargas
 const LoadSkeleton = () => (
@@ -319,6 +320,18 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                 periodEndDate={load.period_end_date}
                 periodFrequency={load.period_frequency}
                 periodStatus={load.period_status}
+              />
+            </div>
+            
+            {/* Sección de documentos */}
+            <div className="mb-3 pb-3 border-b border-border">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
+                Documentos Subidos
+              </label>
+              <LoadDocumentsList 
+                loadId={load.id} 
+                maxItems={3}
+                showActions={false}
               />
             </div>
             
