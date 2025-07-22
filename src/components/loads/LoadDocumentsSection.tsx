@@ -910,8 +910,13 @@ export function LoadDocumentsSection({
                               variant="outline" 
                               size="sm"
                               onClick={() => {
+                                console.log('🔍 Generate Load Order button clicked - Modal');
+                                console.log('🔍 docType:', docType);
+                                console.log('🔍 loadData:', loadData);
+                                console.log('🔍 Current showGenerateLoadOrder:', showGenerateLoadOrder);
                                 if (docType.type === 'load_order') {
                                   setShowGenerateLoadOrder(true);
+                                  console.log('🔍 setShowGenerateLoadOrder(true) called');
                                 }
                               }}
                               disabled={uploading === docType.type}
@@ -994,11 +999,16 @@ export function LoadDocumentsSection({
                              <Button 
                                variant="outline" 
                                size="sm"
-                               onClick={() => {
-                                 if (docType.type === 'load_order') {
-                                   setShowGenerateLoadOrder(true);
-                                 }
-                               }}
+                                onClick={() => {
+                                  console.log('🔍 Generate Load Order button clicked - Wizard');
+                                  console.log('🔍 docType:', docType);
+                                  console.log('🔍 loadData:', loadData);
+                                  console.log('🔍 Current showGenerateLoadOrder:', showGenerateLoadOrder);
+                                  if (docType.type === 'load_order') {
+                                    setShowGenerateLoadOrder(true);
+                                    console.log('🔍 setShowGenerateLoadOrder(true) called');
+                                  }
+                                }}
                                disabled={uploading === docType.type}
                              >
                                <Plus className="h-4 w-4 mr-2" />
