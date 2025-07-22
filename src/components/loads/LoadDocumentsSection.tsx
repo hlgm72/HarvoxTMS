@@ -220,10 +220,9 @@ export function LoadDocumentsSection({
       };
       
       const customName = documentNameMap[type];
-      const timestamp = Date.now();
       let fileName = customName 
-        ? `${currentLoadNumber}_${customName}_${timestamp}.${fileExt}`
-        : `${type}_${timestamp}.${fileExt}`;
+        ? `${currentLoadNumber}_${customName}.${fileExt}`
+        : `${type}.${fileExt}`;
       
       console.log('🏷️ Generated fileName:', fileName);
       
@@ -361,10 +360,9 @@ export function LoadDocumentsSection({
     };
     
     const customName = documentNameMap[type];
-    const timestamp = Date.now();
     const customFileName = customName 
-      ? `${currentLoadNumber}_${customName}_${timestamp}.${fileExt}`
-      : `${type}_${timestamp}.${fileExt}`;
+      ? `${currentLoadNumber}_${customName}.${fileExt}`
+      : `${type}.${fileExt}`;
     
     console.log('📂 Generated custom fileName for temp document:', customFileName);
 
