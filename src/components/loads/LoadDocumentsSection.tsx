@@ -806,7 +806,6 @@ export function LoadDocumentsSection({
 
                         {/* Replace Document */}
                         <div className="border-t pt-3">
-                          <h5 className="text-sm font-medium mb-2">Reemplazar documento</h5>
                           <div className="flex items-center gap-2">
                             <input
                               type="file"
