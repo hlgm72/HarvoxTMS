@@ -771,43 +771,41 @@ export function LoadDocumentsSection({
                           </div>
                         </div>
 
-                        {/* Actions */}
-                        <div className="flex items-center gap-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => {
-                              const docToView = uploadedDoc || tempDoc;
-                              if (docToView?.url) {
-                                window.open(docToView.url, '_blank');
-                              }
-                            }}
-                          >
-                            <Eye className="h-4 w-4 mr-2" />
-                            Ver
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => {
-                              const docToDownload = uploadedDoc || tempDoc;
-                              if (docToDownload?.url) {
-                                const link = document.createElement('a');
-                                link.href = docToDownload.url;
-                                link.download = docToDownload.fileName;
-                                link.click();
-                              }
-                            }}
-                          >
-                            <Download className="h-4 w-4 mr-2" />
-                            Descargar
-                          </Button>
-                        </div>
-
-                        {/* Replace Document */}
-                        <div className="border-t pt-3">
-                          <h5 className="text-sm font-medium mb-2">Reemplazar documento</h5>
-                          <div className="flex items-center gap-2">
+                        {/* Actions - Compact buttons in single line */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => {
+                                const docToView = uploadedDoc || tempDoc;
+                                if (docToView?.url) {
+                                  window.open(docToView.url, '_blank');
+                                }
+                              }}
+                              title="Ver documento"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => {
+                                const docToDownload = uploadedDoc || tempDoc;
+                                if (docToDownload?.url) {
+                                  const link = document.createElement('a');
+                                  link.href = docToDownload.url;
+                                  link.download = docToDownload.fileName;
+                                  link.click();
+                                }
+                              }}
+                              title="Descargar documento"
+                            >
+                              <Download className="h-4 w-4" />
+                            </Button>
+                            
                             <input
                               type="file"
                               id={`replace-${docType.type}`}
@@ -817,23 +815,28 @@ export function LoadDocumentsSection({
                               disabled={uploading === docType.type}
                             />
                             <Button 
-                              variant="outline" 
-                              size="sm"
+                              variant="ghost" 
+                              size="icon"
+                              className="h-8 w-8"
                               disabled={uploading === docType.type}
                               onClick={() => {
                                 const fileInput = document.getElementById(`replace-${docType.type}`) as HTMLInputElement;
                                 fileInput?.click();
                               }}
+                              title={uploading === docType.type ? 'Reemplazando...' : 'Reemplazar documento'}
                             >
-                              <RotateCcw className="h-4 w-4 mr-2" />
-                              {uploading === docType.type ? 'Reemplazando...' : 'Reemplazar'}
+                              <RotateCcw className="h-4 w-4" />
                             </Button>
                             
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
-                                <Button variant="outline" size="sm">
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Eliminar
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  title="Eliminar documento"
+                                >
+                                  <Trash2 className="h-4 w-4" />
                                 </Button>
                               </AlertDialogTrigger>
                               <AlertDialogContent>
