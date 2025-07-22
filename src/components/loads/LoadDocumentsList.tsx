@@ -148,51 +148,41 @@ export function LoadDocumentsList({
   const remainingCount = documents.length - maxItems;
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       {displayDocuments.map((document) => (
         <div
           key={document.id}
-          className="flex items-center justify-between gap-2 p-2 rounded-md border bg-muted/30"
+          className="flex items-center gap-1.5 p-1.5 text-xs"
         >
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <FileText className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <Badge 
-                  variant="outline" 
-                  className={`text-xs px-1 py-0 ${documentTypeColors[document.document_type] || documentTypeColors.other}`}
-                >
-                  {documentTypeLabels[document.document_type] || document.document_type}
-                </Badge>
-              </div>
-              <p className="text-xs font-medium truncate" title={document.file_name}>
-                {document.file_name}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {formatFileSize(document.file_size)}
-              </p>
-            </div>
-          </div>
-          
+          <FileText className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+          <Badge 
+            variant="outline" 
+            className={`text-xs px-1 py-0 h-4 ${documentTypeColors[document.document_type] || documentTypeColors.other}`}
+          >
+            {documentTypeLabels[document.document_type] || document.document_type}
+          </Badge>
+          <span className="truncate flex-1 text-muted-foreground" title={document.file_name}>
+            {document.file_name}
+          </span>
           {showActions && (
-            <div className="flex gap-1 flex-shrink-0">
+            <div className="flex gap-0.5 flex-shrink-0">
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0"
+                className="h-5 w-5 p-0"
                 onClick={() => handleView(document)}
                 title="Ver documento"
               >
-                <Eye className="h-3 w-3" />
+                <Eye className="h-2.5 w-2.5" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0"
+                className="h-5 w-5 p-0"
                 onClick={() => handleDownload(document)}
                 title="Descargar documento"
               >
-                <Download className="h-3 w-3" />
+                <Download className="h-2.5 w-2.5" />
               </Button>
             </div>
           )}
@@ -200,8 +190,8 @@ export function LoadDocumentsList({
       ))}
       
       {remainingCount > 0 && (
-        <div className="text-xs text-muted-foreground text-center">
-          +{remainingCount} documento{remainingCount !== 1 ? 's' : ''} más
+        <div className="text-xs text-muted-foreground text-center pt-1">
+          +{remainingCount} más
         </div>
       )}
     </div>
