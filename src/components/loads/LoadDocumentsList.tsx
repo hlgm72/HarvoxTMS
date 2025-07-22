@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { FileText, Download, Eye, Loader2 } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -171,19 +172,26 @@ export function LoadDocumentsList({
   const remainingCount = sortedDocuments.length - maxItems;
 
   return (
-    <div className="flex flex-wrap gap-1">
-      {displayDocuments.map((document) => (
-        <div
-          key={document.id}
-          className="flex items-center gap-1"
-        >
-          <Badge 
-            variant="outline" 
-            className={`text-xs px-2 py-1 h-5 ${documentTypeColors[document.document_type] || documentTypeColors.other}`}
-            title={document.file_name}
+    <TooltipProvider>
+      <div className="flex flex-wrap gap-1">
+        {displayDocuments.map((document) => (
+          <div
+            key={document.id}
+            className="flex items-center gap-1"
           >
-            {documentTypeLabels[document.document_type] || document.document_type}
-          </Badge>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge 
+                  variant="outline" 
+                  className={`text-xs px-2 py-1 h-5 cursor-help ${documentTypeColors[document.document_type] || documentTypeColors.other}`}
+                >
+                  {documentTypeLabels[document.document_type] || document.document_type}
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{document.file_name}</p>
+              </TooltipContent>
+            </Tooltip>
           {showActions && (
             <div className="flex gap-0.5">
               <Button
@@ -206,14 +214,15 @@ export function LoadDocumentsList({
               </Button>
             </div>
           )}
-        </div>
-      ))}
-      
-      {remainingCount > 0 && (
-        <Badge variant="secondary" className="text-xs h-5">
-          +{remainingCount}
-        </Badge>
-      )}
-    </div>
+          </div>
+        ))}
+        
+        {remainingCount > 0 && (
+          <Badge variant="secondary" className="text-xs h-5">
+            +{remainingCount}
+          </Badge>
+        )}
+      </div>
+    </TooltipProvider>
   );
 }
