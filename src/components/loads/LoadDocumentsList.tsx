@@ -41,6 +41,17 @@ const documentTypeColors: Record<string, string> = {
   'other': 'bg-gray-100 text-gray-800 border-gray-200'
 };
 
+// Orden de prioridad para mostrar documentos
+const documentTypeOrder = [
+  'rate_confirmation',
+  'driver_instructions', 
+  'bol',
+  'load_order',
+  'pod',
+  'receipt',
+  'other'
+];
+
 export function LoadDocumentsList({ 
   loadId, 
   maxItems = 3, 
@@ -144,8 +155,20 @@ export function LoadDocumentsList({
     );
   }
 
-  const displayDocuments = documents.slice(0, maxItems);
-  const remainingCount = documents.length - maxItems;
+  // Ordenar documentos según el tipo especificado
+  const sortedDocuments = documents.sort((a, b) => {
+    const indexA = documentTypeOrder.indexOf(a.document_type);
+    const indexB = documentTypeOrder.indexOf(b.document_type);
+    
+    // Si no se encuentra el tipo, ponerlo al final
+    const priorityA = indexA === -1 ? documentTypeOrder.length : indexA;
+    const priorityB = indexB === -1 ? documentTypeOrder.length : indexB;
+    
+    return priorityA - priorityB;
+  });
+
+  const displayDocuments = sortedDocuments.slice(0, maxItems);
+  const remainingCount = sortedDocuments.length - maxItems;
 
   return (
     <div className="space-y-1">
