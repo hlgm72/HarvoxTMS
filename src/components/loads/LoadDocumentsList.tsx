@@ -171,24 +171,21 @@ export function LoadDocumentsList({
   const remainingCount = sortedDocuments.length - maxItems;
 
   return (
-    <div className="space-y-1">
+    <div className="flex flex-wrap gap-1">
       {displayDocuments.map((document) => (
         <div
           key={document.id}
-          className="flex items-center gap-1.5 p-1.5 text-xs"
+          className="flex items-center gap-1"
         >
-          <FileText className="h-3 w-3 text-muted-foreground flex-shrink-0" />
           <Badge 
             variant="outline" 
-            className={`text-xs px-1 py-0 h-4 ${documentTypeColors[document.document_type] || documentTypeColors.other}`}
+            className={`text-xs px-2 py-1 h-5 ${documentTypeColors[document.document_type] || documentTypeColors.other}`}
+            title={document.file_name}
           >
             {documentTypeLabels[document.document_type] || document.document_type}
           </Badge>
-          <span className="truncate flex-1 text-muted-foreground" title={document.file_name}>
-            {document.file_name}
-          </span>
           {showActions && (
-            <div className="flex gap-0.5 flex-shrink-0">
+            <div className="flex gap-0.5">
               <Button
                 variant="ghost"
                 size="sm"
@@ -213,9 +210,9 @@ export function LoadDocumentsList({
       ))}
       
       {remainingCount > 0 && (
-        <div className="text-xs text-muted-foreground text-center pt-1">
-          +{remainingCount} más
-        </div>
+        <Badge variant="secondary" className="text-xs h-5">
+          +{remainingCount}
+        </Badge>
       )}
     </div>
   );
