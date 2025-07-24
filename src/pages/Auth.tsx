@@ -1107,9 +1107,9 @@ export default function Auth() {
         <div className="mt-6 text-center text-xs text-white/60 animate-fade-in">
           <p className="font-body">
             {t('common:legal.legal_acceptance')}{' '}
-            <a href="#" className="text-white/80 hover:text-white underline transition-colors">
+            <Link to="/terms-of-service" className="text-white/80 hover:text-white underline transition-colors">
               {t('common:legal.terms_of_service')}
-            </a>{' '}
+            </Link>{' '}
             y{' '}
             <Link to="/privacy-policy" className="text-white/80 hover:text-white underline transition-colors">
               {t('common:legal.privacy_policy')}

@@ -302,9 +302,9 @@ export default function Landing() {
                 Política de Privacidad
               </Link>
               <span>•</span>
-              <a href="#" className="text-sm hover:text-primary transition-colors">
+              <Link to="/terms-of-service" className="text-sm hover:text-primary transition-colors">
                 Términos de Servicio
-              </a>
+              </Link>
             </div>
             <p>&copy; 2024 {t('common:app.name')}. {t('common:legal.rights_reserved')}</p>
           </div>

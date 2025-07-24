@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import Users from "./pages/Users";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import OwnerDashboard from "./pages/dashboard/OwnerDashboard";
 import OperationsManagerDashboard from "./pages/dashboard/OperationsManagerDashboard";
 import DispatcherDashboard from "./pages/dashboard/DispatcherDashboard";
@@ -59,6 +60,7 @@ function AppContent() {
         <Route path="/invitation/callback" element={<InvitationCallback />} />
         <Route path="/demo" element={<EagleDemo />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
         
         {/* Public home route */}
         <Route path="/" element={<Landing />} />
