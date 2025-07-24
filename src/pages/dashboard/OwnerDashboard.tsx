@@ -20,6 +20,7 @@ import { ActiveLoadsCard } from '@/components/dashboard/ActiveLoadsCard';
 import { DriverMobileCard } from '@/components/dashboard/DriverMobileCard';
 import { ReversMobileCard } from '@/components/dashboard/ReversMobileCard';
 import { Company } from '@/types/company';
+import { PaymentPeriodsManager } from "@/components/payments/PaymentPeriodsManager";
 
 // Types
 interface CompanyStats {
@@ -288,6 +289,10 @@ export default function OwnerDashboard() {
                 <FileText className="h-4 w-4" />
                 <span className="hidden xs:inline">Reportes</span>
               </TabsTrigger>
+              <TabsTrigger value="payments" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
+                <DollarSign className="h-4 w-4" />
+                <span className="hidden xs:inline">Pagos</span>
+              </TabsTrigger>
               <TabsTrigger value="settings" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
                 <Settings className="h-4 w-4" />
                 <span className="hidden xs:inline">Config</span>
@@ -297,7 +302,7 @@ export default function OwnerDashboard() {
 
           {/* Desktop Layout - Grid */}
           <div className="hidden sm:block">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5 bg-white shadow-sm border">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-6 bg-white shadow-sm border">
               <TabsTrigger value="overview" className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" />
                 <span className="hidden md:inline">Dashboard</span>
@@ -309,6 +314,10 @@ export default function OwnerDashboard() {
               <TabsTrigger value="fleet" className="flex items-center gap-2">
                 <Truck className="h-4 w-4" />
                 <span className="hidden md:inline">Fleet Tracking</span>
+              </TabsTrigger>
+              <TabsTrigger value="payments" className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4" />
+                <span className="hidden md:inline">Pagos</span>
               </TabsTrigger>
               <TabsTrigger value="reports" className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
@@ -520,6 +529,11 @@ export default function OwnerDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Payment Periods Management */}
+          <TabsContent value="payments" className="space-y-6">
+            <PaymentPeriodsManager />
           </TabsContent>
 
           {/* Settings */}
