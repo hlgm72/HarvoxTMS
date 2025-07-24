@@ -13,9 +13,21 @@ import { EmptyDeductionsState } from "./EmptyDeductionsState";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
-export function DeductionsManager() {
+interface DeductionsManagerProps {
+  isCreateDialogOpen?: boolean;
+  onCreateDialogChange?: (open: boolean) => void;
+}
+
+export function DeductionsManager({ 
+  isCreateDialogOpen: externalIsOpen, 
+  onCreateDialogChange: externalOnChange 
+}: DeductionsManagerProps = {}) {
   const { user } = useAuth();
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  
+  // Use external state if provided, otherwise use internal state
+  const isCreateDialogOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+  const setIsCreateDialogOpen = externalOnChange || setInternalIsOpen;
 
   // Obtener plantillas de deducciones reales
   const { data: templates = [], refetch: refetchTemplates } = useQuery({
@@ -89,33 +101,6 @@ export function DeductionsManager() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Gestión de Deducciones</h2>
-          <p className="text-muted-foreground">Administra gastos recurrentes y deducciones de conductores</p>
-        </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Nueva Deducción
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Crear Plantilla de Deducción</DialogTitle>
-              <DialogDescription>
-                Crea una nueva plantilla de gasto recurrente para un conductor
-              </DialogDescription>
-            </DialogHeader>
-            <CreateExpenseTemplateDialog 
-              onClose={() => setIsCreateDialogOpen(false)}
-              onSuccess={handleCreateSuccess}
-            />
-          </DialogContent>
-        </Dialog>
-      </div>
-
       <Tabs defaultValue="templates" className="space-y-6">
         <TabsList>
           <TabsTrigger value="templates">Plantillas Activas</TabsTrigger>
