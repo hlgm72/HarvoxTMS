@@ -261,21 +261,9 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-background border-border">
                 <div className="p-3 space-y-3">
-                  {/* Control personalizado para año */}
-                  <div className="flex items-center justify-center gap-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const currentDate = effectiveFrom || new Date();
-                        const newDate = new Date(currentDate);
-                        newDate.setFullYear(currentDate.getFullYear() - 1);
-                        setEffectiveFrom(newDate);
-                      }}
-                      className="h-8 w-8 p-0"
-                    >
-                      -
-                    </Button>
+                  {/* Control para año */}
+                  <div className="flex items-center justify-center gap-2">
+                    <Label className="text-sm">Año:</Label>
                     <Input
                       type="number"
                       min="2020"
@@ -291,19 +279,6 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
                       }}
                       className="w-20 text-center"
                     />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const currentDate = effectiveFrom || new Date();
-                        const newDate = new Date(currentDate);
-                        newDate.setFullYear(currentDate.getFullYear() + 1);
-                        setEffectiveFrom(newDate);
-                      }}
-                      className="h-8 w-8 p-0"
-                    >
-                      +
-                    </Button>
                   </div>
                 </div>
                 <Calendar
@@ -335,21 +310,9 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-background border-border">
                 <div className="p-3 space-y-3">
-                  {/* Control personalizado para año */}
-                  <div className="flex items-center justify-center gap-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const currentDate = effectiveUntil || new Date();
-                        const newDate = new Date(currentDate);
-                        newDate.setFullYear(currentDate.getFullYear() - 1);
-                        setEffectiveUntil(newDate);
-                      }}
-                      className="h-8 w-8 p-0"
-                    >
-                      -
-                    </Button>
+                  {/* Control para año */}
+                  <div className="flex items-center justify-center gap-2">
+                    <Label className="text-sm">Año:</Label>
                     <Input
                       type="number"
                       min="2020"
@@ -365,19 +328,6 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
                       }}
                       className="w-20 text-center"
                     />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const currentDate = effectiveUntil || new Date();
-                        const newDate = new Date(currentDate);
-                        newDate.setFullYear(currentDate.getFullYear() + 1);
-                        setEffectiveUntil(newDate);
-                      }}
-                      className="h-8 w-8 p-0"
-                    >
-                      +
-                    </Button>
                   </div>
                 </div>
                 <Calendar
