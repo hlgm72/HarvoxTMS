@@ -62,8 +62,8 @@ function AppContent() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
         
-        {/* Public home route */}
-        <Route path="/" element={<Landing />} />
+        {/* Home route - handles role-based redirects */}
+        <Route path="/" element={<Index />} />
         
         {/* Protected dashboard route */}
         <Route 
