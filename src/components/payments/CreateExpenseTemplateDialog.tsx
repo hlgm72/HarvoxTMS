@@ -260,11 +260,67 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-background border-border">
+                <div className="space-y-3 p-3">
+                  {/* Shortcuts de fechas comunes */}
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setEffectiveFrom(new Date())}
+                      className="text-xs"
+                    >
+                      Hoy
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const date = new Date();
+                        date.setDate(1);
+                        setEffectiveFrom(date);
+                      }}
+                      className="text-xs"
+                    >
+                      Inicio del mes
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const date = new Date();
+                        date.setMonth(date.getMonth() + 1);
+                        date.setDate(1);
+                        setEffectiveFrom(date);
+                      }}
+                      className="text-xs"
+                    >
+                      Próximo mes
+                    </Button>
+                  </div>
+                  
+                  {/* Input directo de año */}
+                  <div className="flex items-center gap-2">
+                    <Label className="text-sm">Año:</Label>
+                    <Input
+                      type="number"
+                      min="2020"
+                      max="2030"
+                      className="w-20 text-sm"
+                      placeholder="2024"
+                      onChange={(e) => {
+                        const year = parseInt(e.target.value);
+                        if (year >= 2020 && year <= 2030) {
+                          const newDate = effectiveFrom ? new Date(effectiveFrom) : new Date();
+                          newDate.setFullYear(year);
+                          setEffectiveFrom(newDate);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+                
                 <Calendar
                   mode="single"
-                  captionLayout="dropdown"
-                  fromYear={2020}
-                  toYear={2030}
                   selected={effectiveFrom}
                   onSelect={setEffectiveFrom}
                   initialFocus
