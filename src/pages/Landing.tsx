@@ -291,7 +291,7 @@ export default function Landing() {
                 <li><a href="#" className="hover:text-primary transition-colors">{t('landing:footer.sections.support.links.help_center')}</a></li>
                 <li><a href="#" className="hover:text-primary transition-colors">{t('landing:footer.sections.support.links.contact')}</a></li>
                 <li><a href="#" className="hover:text-primary transition-colors">{t('landing:footer.sections.support.links.system_status')}</a></li>
-                <li><Link to="/privacy-policy" className="hover:text-primary transition-colors">Política de Privacidad</Link></li>
+                <li><Link to="/privacy-policy" className="hover:text-primary transition-colors">{t('common:legal.privacy_policy')}</Link></li>
               </ul>
             </div>
           </div>
@@ -299,11 +299,11 @@ export default function Landing() {
           <div className="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
             <div className="flex justify-center items-center space-x-4 mb-2">
               <Link to="/privacy-policy" className="text-sm hover:text-primary transition-colors">
-                Política de Privacidad
+                {t('common:legal.privacy_policy')}
               </Link>
               <span>•</span>
               <Link to="/terms-of-service" className="text-sm hover:text-primary transition-colors">
-                Términos de Servicio
+                {t('common:legal.terms_of_service')}
               </Link>
             </div>
             <p>&copy; 2024 {t('common:app.name')}. {t('common:legal.rights_reserved')}</p>
