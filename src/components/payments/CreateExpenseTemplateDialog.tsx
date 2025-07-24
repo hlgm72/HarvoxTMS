@@ -138,173 +138,177 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="driver">Conductor</Label>
-          <Select
-            value={formData.driver_user_id}
-            onValueChange={(value) => setFormData(prev => ({ ...prev, driver_user_id: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Seleccionar conductor" />
-            </SelectTrigger>
-            <SelectContent>
-              {drivers.map((driver) => (
-                <SelectItem key={driver.user_id} value={driver.user_id}>
-                  {driver.first_name} {driver.last_name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    <div className="bg-card rounded-lg p-6 border">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="driver" className="text-foreground font-medium">Conductor</Label>
+            <Select
+              value={formData.driver_user_id}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, driver_user_id: value }))}
+            >
+              <SelectTrigger className="bg-background border-input">
+                <SelectValue placeholder="Seleccionar conductor" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border-border">
+                {drivers.map((driver) => (
+                  <SelectItem key={driver.user_id} value={driver.user_id}>
+                    {driver.first_name} {driver.last_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="expense-type" className="text-foreground font-medium">Tipo de Gasto</Label>
+            <Select
+              value={formData.expense_type_id}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, expense_type_id: value }))}
+            >
+              <SelectTrigger className="bg-background border-input">
+                <SelectValue placeholder="Seleccionar tipo" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border-border">
+                {expenseTypes.map((type) => (
+                  <SelectItem key={type.id} value={type.id}>
+                    {type.name} {type.category && `(${type.category})`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="amount" className="text-foreground font-medium">Monto ($)</Label>
+            <Input
+              id="amount"
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.amount}
+              onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
+              placeholder="0.00"
+              className="bg-background border-input"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="frequency" className="text-foreground font-medium">Frecuencia</Label>
+            <Select
+              value={formData.frequency}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, frequency: value }))}
+            >
+              <SelectTrigger className="bg-background border-input">
+                <SelectValue placeholder="Seleccionar frecuencia" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border-border">
+                <SelectItem value="weekly">Semanal</SelectItem>
+                <SelectItem value="biweekly">Quincenal</SelectItem>
+                <SelectItem value="monthly">Mensual</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {formData.frequency === 'monthly' && (
+          <div className="space-y-2">
+            <Label htmlFor="month-week" className="text-foreground font-medium">Semana del Mes</Label>
+            <Select
+              value={formData.month_week.toString()}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, month_week: parseInt(value) }))}
+            >
+              <SelectTrigger className="bg-background border-input">
+                <SelectValue placeholder="Seleccionar semana" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border-border">
+                <SelectItem value="1">Primera semana</SelectItem>
+                <SelectItem value="2">Segunda semana</SelectItem>
+                <SelectItem value="3">Tercera semana</SelectItem>
+                <SelectItem value="4">Cuarta semana</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-foreground font-medium">Vigente Desde</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal bg-background border-input",
+                    !effectiveFrom && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {effectiveFrom ? format(effectiveFrom, "PPP", { locale: es }) : "Seleccionar fecha"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-background border-border">
+                <Calendar
+                  mode="single"
+                  selected={effectiveFrom}
+                  onSelect={setEffectiveFrom}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-foreground font-medium">Vigente Hasta (Opcional)</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal bg-background border-input",
+                    !effectiveUntil && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {effectiveUntil ? format(effectiveUntil, "PPP", { locale: es }) : "Indefinido"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-background border-border">
+                <Calendar
+                  mode="single"
+                  selected={effectiveUntil}
+                  onSelect={setEffectiveUntil}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="expense-type">Tipo de Gasto</Label>
-          <Select
-            value={formData.expense_type_id}
-            onValueChange={(value) => setFormData(prev => ({ ...prev, expense_type_id: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Seleccionar tipo" />
-            </SelectTrigger>
-            <SelectContent>
-              {expenseTypes.map((type) => (
-                <SelectItem key={type.id} value={type.id}>
-                  {type.name} {type.category && `(${type.category})`}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="amount">Monto ($)</Label>
-          <Input
-            id="amount"
-            type="number"
-            step="0.01"
-            min="0"
-            value={formData.amount}
-            onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-            placeholder="0.00"
-            required
+          <Label htmlFor="notes" className="text-foreground font-medium">Notas (Opcional)</Label>
+          <Textarea
+            id="notes"
+            value={formData.notes}
+            onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+            placeholder="Información adicional sobre esta deducción..."
+            className="bg-background border-input"
+            rows={3}
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="frequency">Frecuencia</Label>
-          <Select
-            value={formData.frequency}
-            onValueChange={(value) => setFormData(prev => ({ ...prev, frequency: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Seleccionar frecuencia" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="weekly">Semanal</SelectItem>
-              <SelectItem value="biweekly">Quincenal</SelectItem>
-              <SelectItem value="monthly">Mensual</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex gap-3 pt-4 border-t">
+          <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+            Cancelar
+          </Button>
+          <Button type="submit" disabled={isLoading} className="flex-1">
+            {isLoading ? "Creando..." : "Crear Deducción"}
+          </Button>
         </div>
-      </div>
-
-      {formData.frequency === 'monthly' && (
-        <div className="space-y-2">
-          <Label htmlFor="month-week">Semana del Mes</Label>
-          <Select
-            value={formData.month_week.toString()}
-            onValueChange={(value) => setFormData(prev => ({ ...prev, month_week: parseInt(value) }))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Seleccionar semana" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">Primera semana</SelectItem>
-              <SelectItem value="2">Segunda semana</SelectItem>
-              <SelectItem value="3">Tercera semana</SelectItem>
-              <SelectItem value="4">Cuarta semana</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      )}
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Vigente Desde</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !effectiveFrom && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {effectiveFrom ? format(effectiveFrom, "PPP", { locale: es }) : "Seleccionar fecha"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={effectiveFrom}
-                onSelect={setEffectiveFrom}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Vigente Hasta (Opcional)</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !effectiveUntil && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {effectiveUntil ? format(effectiveUntil, "PPP", { locale: es }) : "Indefinido"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={effectiveUntil}
-                onSelect={setEffectiveUntil}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="notes">Notas (Opcional)</Label>
-        <Textarea
-          id="notes"
-          value={formData.notes}
-          onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-          placeholder="Información adicional sobre esta deducción..."
-          rows={3}
-        />
-      </div>
-
-      <div className="flex gap-2 pt-4">
-        <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-          Cancelar
-        </Button>
-        <Button type="submit" disabled={isLoading} className="flex-1">
-          {isLoading ? "Creando..." : "Crear Deducción"}
-        </Button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }
