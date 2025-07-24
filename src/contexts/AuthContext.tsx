@@ -357,15 +357,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Attempt to sign out from Supabase
       await supabase.auth.signOut();
       
-      // Redirect to home page after logout
-      window.location.href = '/';
+      // No need for window.location.href - let React Router handle it
+      // The ProtectedRoute will detect no auth and redirect appropriately
     } catch (error) {
       console.error('Error signing out:', error);
-      // Clean up state anyway and redirect
+      // Clean up state anyway
       cleanupAuthState();
       setUserRoles(null);
       setCurrentRole(null);
-      window.location.href = '/';
     }
   };
 

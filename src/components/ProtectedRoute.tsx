@@ -38,7 +38,8 @@ export const ProtectedRoute = ({
 
   // Check authentication requirement
   if (requireAuth && !isAuthenticated) {
-    return <Navigate to="/auth" replace />;
+    // If user is not authenticated, redirect to home (which shows landing)
+    return <Navigate to="/" replace />;
   }
 
   // Check role requirement
