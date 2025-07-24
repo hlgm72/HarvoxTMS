@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { cleanupAuthState } from '@/lib/authUtils';
 
 interface UserRole {
   role: string;
@@ -343,13 +344,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      localStorage.removeItem('currentRole');
+      // Clean up all auth state using utility
+      cleanupAuthState();
+      setUserRoles(null);
+      setCurrentRole(null);
+      
+      // Attempt to sign out from Supabase
       await supabase.auth.signOut();
-      // Redirect to home page after logout (like Lovable.dev)
+      
+      // Redirect to home page after logout
       window.location.href = '/';
     } catch (error) {
       console.error('Error signing out:', error);
-      // Still redirect even if logout fails
+      // Clean up state anyway and redirect
+      cleanupAuthState();
+      setUserRoles(null);
+      setCurrentRole(null);
       window.location.href = '/';
     }
   };

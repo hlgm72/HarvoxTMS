@@ -65,9 +65,9 @@ export default function Index() {
         navigate('/dashboard/driver');
       }
     } else if (!loading && !user) {
-      // Si no hay usuario autenticado, mostrar landing page
-      console.log('🏠 No authenticated user, showing landing');
-      return;
+      // Si no hay usuario autenticado, mostrar landing
+      console.log('🏠 No authenticated user, showing landing page');
+      // No hacemos return aquí, dejamos que se renderice la Landing abajo
     } else {
       console.log('🏠 Still loading or no user:', { loading, hasUser: !!user });
     }
