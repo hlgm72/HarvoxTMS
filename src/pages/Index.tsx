@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
@@ -19,14 +19,19 @@ export default function Index() {
     isDriver,
     _forceUpdate
   } = useAuth();
+  
+  const hasProcessedRedirect = useRef(false);
 
   useEffect(() => {
+    // Prevent multiple redirects during auth state changes
+    if (hasProcessedRedirect.current) return;
+    
     console.log('🏠 Index.tsx useEffect triggered:', {
       loading,
       user: user?.id,
       userRole: userRole?.role,
       userRoles: userRoles?.length,
-      _forceUpdate
+      hasProcessed: hasProcessedRedirect.current
     });
 
     // Check for login success message
@@ -50,6 +55,7 @@ export default function Index() {
       // Si el usuario está autenticado pero no tiene rol asignado
       if (userRoles.length === 0 || !userRole) {
         console.log('🏠 No role assigned, redirecting to profile');
+        hasProcessedRedirect.current = true;
         navigate('/profile');
         return;
       }
@@ -57,6 +63,7 @@ export default function Index() {
       console.log('🏠 User has role:', userRole.role, 'redirecting...');
       
       // Redirigir según el rol activo del usuario (no por jerarquía)
+      hasProcessedRedirect.current = true;
       if (isSuperAdmin) {
         console.log('🏠 Redirecting to superadmin dashboard');
         navigate('/superadmin');
@@ -76,11 +83,12 @@ export default function Index() {
     } else if (!loading && !user) {
       // Si no hay usuario autenticado, mostrar landing
       console.log('🏠 No authenticated user, showing landing page');
-      // No hacemos return aquí, dejamos que se renderice la Landing abajo
+      // Reset the redirect flag when showing landing
+      hasProcessedRedirect.current = false;
     } else {
       console.log('🏠 Still loading or no user:', { loading, hasUser: !!user });
     }
-  }, [loading, user, userRole, userRoles, navigate, isSuperAdmin, isCompanyOwner, isOperationsManager, isDispatcher, isDriver, _forceUpdate]);
+  }, [loading, user, userRole, userRoles, navigate, isSuperAdmin, isCompanyOwner, isOperationsManager, isDispatcher, isDriver]);
 
 
   // Show loading while determining user role or while auth context initializes
