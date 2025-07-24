@@ -1111,9 +1111,9 @@ export default function Auth() {
               {t('common:legal.terms_of_service')}
             </a>{' '}
             y{' '}
-            <a href="#" className="text-white/80 hover:text-white underline transition-colors">
+            <Link to="/privacy-policy" className="text-white/80 hover:text-white underline transition-colors">
               {t('common:legal.privacy_policy')}
-            </a>
+            </Link>
           </p>
         </div>
         
