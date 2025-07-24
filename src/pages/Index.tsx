@@ -10,6 +10,7 @@ export default function Index() {
   const { 
     user, 
     userRole, 
+    userRoles,
     loading, 
     isSuperAdmin, 
     isCompanyOwner, 
@@ -24,6 +25,7 @@ export default function Index() {
       loading,
       user: user?.id,
       userRole: userRole?.role,
+      userRoles: userRoles?.length,
       _forceUpdate
     });
 
@@ -38,8 +40,15 @@ export default function Index() {
     if (!loading && user) {
       console.log('🏠 User is authenticated, checking roles...');
       
+      // Esperar a que los roles se carguen completamente
+      // Si userRoles es null, aún se están cargando
+      if (userRoles === null) {
+        console.log('🏠 Roles still loading, waiting...');
+        return;
+      }
+      
       // Si el usuario está autenticado pero no tiene rol asignado
-      if (!userRole) {
+      if (userRoles.length === 0 || !userRole) {
         console.log('🏠 No role assigned, redirecting to profile');
         navigate('/profile');
         return;
@@ -71,7 +80,7 @@ export default function Index() {
     } else {
       console.log('🏠 Still loading or no user:', { loading, hasUser: !!user });
     }
-  }, [loading, user, userRole, navigate, isSuperAdmin, isCompanyOwner, isOperationsManager, isDispatcher, isDriver, _forceUpdate]);
+  }, [loading, user, userRole, userRoles, navigate, isSuperAdmin, isCompanyOwner, isOperationsManager, isDispatcher, isDriver, _forceUpdate]);
 
 
   // Show loading while determining user role or while auth context initializes

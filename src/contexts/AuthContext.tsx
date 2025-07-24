@@ -57,12 +57,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userRoles, setUserRoles] = useState<UserRole[] | null>(null);
   const [currentRole, setCurrentRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [rolesLoaded, setRolesLoaded] = useState(false);
   const [forceUpdateCounter, setForceUpdateCounter] = useState(0);
 
   // Get current active role from roles array
   const userRole = userRoles?.find(role => role.role === currentRole) || null;
-  const isAuthenticated = !!user && !!session && rolesLoaded;
+  const isAuthenticated = !!user && !!session;
   const availableRoles = userRoles || [];
   const hasMultipleRoles = availableRoles.length > 1;
 
@@ -230,20 +229,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             console.log('🎯 Final selected role:', selectedRole);
             setCurrentRole(selectedRole);
-            setRolesLoaded(true);
             setLoading(false);
           } catch (error) {
             console.error('Error in role fetching:', error);
             setUserRoles([]);
             setCurrentRole(null);
-            setRolesLoaded(true);
             setLoading(false);
           }
         }, 100);
       } else {
         setUserRoles(null);
         setCurrentRole(null);
-        setRolesLoaded(false);
         localStorage.removeItem('currentRole');
         setLoading(false);
       }
@@ -310,11 +306,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
             
             setCurrentRole(selectedRole);
-            setRolesLoaded(true);
             setLoading(false);
           });
       } else {
-        setRolesLoaded(true);
         setLoading(false);
       }
     });
