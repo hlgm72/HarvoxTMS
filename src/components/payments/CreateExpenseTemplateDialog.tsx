@@ -262,8 +262,7 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
               <PopoverContent className="w-auto p-0 bg-background border-border">
                 <Calendar
                   mode="single"
-                  numberOfMonths={2}
-                  captionLayout="dropdown-buttons"
+                  captionLayout="dropdown"
                   fromYear={2020}
                   toYear={2030}
                   selected={effectiveFrom}
@@ -293,8 +292,7 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
               <PopoverContent className="w-auto p-0 bg-background border-border">
                 <Calendar
                   mode="single"
-                  numberOfMonths={2}
-                  captionLayout="dropdown-buttons"
+                  captionLayout="dropdown"
                   fromYear={2020}
                   toYear={2030}
                   selected={effectiveUntil}
