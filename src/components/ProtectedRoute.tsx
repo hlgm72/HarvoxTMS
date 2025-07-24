@@ -16,12 +16,14 @@ export const ProtectedRoute = ({
   requiredRole, 
   requireAuth = true 
 }: ProtectedRouteProps) => {
-  const { user, userRole, loading, isAuthenticated, currentRole, _forceUpdate } = useAuth();
+  const { user, userRole, userRoles, loading, isAuthenticated, currentRole } = useAuth();
   const { t } = useTranslation('common');
 
-  // Show loading spinner while checking authentication OR while role is being determined
-  // Also wait for the AuthContext to complete its initialization cycle
-  if (loading || (isAuthenticated && !currentRole)) {
+  // Show loading spinner only during initial auth loading
+  // Don't show spinner if user is authenticated and roles are already loaded (even if currentRole is null)
+  const shouldShowLoading = loading || (user && userRoles === null);
+  
+  if (shouldShowLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
