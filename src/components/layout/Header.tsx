@@ -28,7 +28,7 @@ export function Header() {
   const handleLogout = async () => {
     try {
       await signOut();
-      navigate('/auth');
+      // Don't navigate - let the auth context and ProtectedRoute handle it
     } catch (error) {
       showError(
         "Error",
