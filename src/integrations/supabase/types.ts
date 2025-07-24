@@ -2461,6 +2461,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      process_company_payment_period: {
+        Args: { company_payment_period_id: string }
+        Returns: Json
+      }
       reassign_to_payment_period: {
         Args: {
           element_type: string
