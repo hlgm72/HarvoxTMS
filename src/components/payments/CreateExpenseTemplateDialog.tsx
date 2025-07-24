@@ -263,6 +263,9 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
                 <Calendar
                   mode="single"
                   numberOfMonths={2}
+                  captionLayout="dropdown-buttons"
+                  fromYear={2020}
+                  toYear={2030}
                   selected={effectiveFrom}
                   onSelect={setEffectiveFrom}
                   initialFocus
@@ -291,6 +294,9 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
                 <Calendar
                   mode="single"
                   numberOfMonths={2}
+                  captionLayout="dropdown-buttons"
+                  fromYear={2020}
+                  toYear={2030}
                   selected={effectiveUntil}
                   onSelect={setEffectiveUntil}
                   initialFocus
