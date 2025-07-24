@@ -262,9 +262,9 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
               <PopoverContent className="w-auto p-0 bg-background border-border">
                 <Calendar
                   mode="single"
-                  captionLayout="dropdown-buttons"
-                  fromYear={1950}
-                  toYear={2050}
+                  captionLayout="dropdown"
+                  fromYear={2020}
+                  toYear={2030}
                   selected={effectiveFrom}
                   onSelect={setEffectiveFrom}
                   initialFocus
@@ -292,9 +292,9 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
               <PopoverContent className="w-auto p-0 bg-background border-border">
                 <Calendar
                   mode="single"
-                  captionLayout="dropdown-buttons"
-                  fromYear={1950}
-                  toYear={2050}
+                  captionLayout="dropdown"
+                  fromYear={2020}
+                  toYear={2030}
                   selected={effectiveUntil}
                   onSelect={setEffectiveUntil}
                   initialFocus
