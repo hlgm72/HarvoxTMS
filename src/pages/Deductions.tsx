@@ -6,14 +6,27 @@ import { Plus, DollarSign, Calendar } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { DeductionsManager } from "@/components/payments/DeductionsManager";
 import { CreateExpenseTemplateDialog } from "@/components/payments/CreateExpenseTemplateDialog";
+import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 
 export default function Deductions() {
   const { t } = useTranslation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const { data: stats, isLoading: statsLoading } = useDeductionsStats();
 
   const handleCreateSuccess = () => {
     setIsCreateDialogOpen(false);
     // The DeductionsManager will handle the refetch automatically
+  };
+
+  // Generar subtitle con datos reales
+  const getSubtitle = () => {
+    if (statsLoading || !stats) {
+      return "Cargando estadísticas...";
+    }
+
+    const { activeTemplates, totalMonthlyAmount, affectedDrivers } = stats;
+    
+    return `${activeTemplates} plantillas activas • $${totalMonthlyAmount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} total mensual • ${affectedDrivers} conductores afectados`;
   };
 
   return (
@@ -21,7 +34,7 @@ export default function Deductions() {
       <PageToolbar 
         icon={DollarSign}
         title={t("deductions.title", "Gestión de Deducciones")}
-        subtitle="15 plantillas activas • $2,450 total mensual • 8 conductores afectados"
+        subtitle={getSubtitle()}
         actions={
           <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
             <Plus className="h-4 w-4" />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +23,7 @@ export function DeductionsManager({
   onCreateDialogChange: externalOnChange 
 }: DeductionsManagerProps = {}) {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   
   // Use external state if provided, otherwise use internal state
@@ -36,20 +37,22 @@ export function DeductionsManager({
       if (!user?.id) return [];
       
       // Obtener la empresa del usuario actual
-      const { data: userRole } = await supabase
+      const { data: userRoles } = await supabase
         .from('user_company_roles')
         .select('company_id')
         .eq('user_id', user.id)
-        .eq('is_active', true)
-        .single();
+        .eq('is_active', true);
 
-      if (!userRole) return [];
+      if (!userRoles || userRoles.length === 0) return [];
+      
+      // Tomar la primera empresa (en caso de múltiples roles)
+      const companyId = userRoles[0].company_id;
       
       // Obtener conductores de la empresa
       const { data: driverRoles } = await supabase
         .from('user_company_roles')
         .select('user_id')
-        .eq('company_id', userRole.company_id)
+        .eq('company_id', companyId)
         .eq('role', 'driver')
         .eq('is_active', true);
 
@@ -97,6 +100,8 @@ export function DeductionsManager({
   const handleCreateSuccess = () => {
     setIsCreateDialogOpen(false);
     refetchTemplates();
+    // Invalidar también las estadísticas para que se actualicen
+    queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
   };
 
   return (
