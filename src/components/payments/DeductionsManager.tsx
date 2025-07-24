@@ -1,11 +1,91 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, AlertTriangle, DollarSign, Clock, User, Settings } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Plus, AlertTriangle, DollarSign, Clock, User, Settings, Edit, Trash2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { CreateExpenseTemplateDialog } from "./CreateExpenseTemplateDialog";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 export function DeductionsManager() {
+  const { user } = useAuth();
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+
+  // Obtener plantillas de deducciones reales
+  const { data: templates = [], refetch: refetchTemplates } = useQuery({
+    queryKey: ['recurring-expense-templates', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      // Obtener la empresa del usuario actual
+      const { data: userRole } = await supabase
+        .from('user_company_roles')
+        .select('company_id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .single();
+
+      if (!userRole) return [];
+      
+      // Obtener conductores de la empresa
+      const { data: driverRoles } = await supabase
+        .from('user_company_roles')
+        .select('user_id')
+        .eq('company_id', userRole.company_id)
+        .eq('role', 'driver')
+        .eq('is_active', true);
+
+      if (!driverRoles || driverRoles.length === 0) return [];
+
+      const driverIds = driverRoles.map(role => role.user_id);
+
+      // Obtener plantillas para estos conductores
+      const { data: templatesData, error } = await supabase
+        .from('recurring_expense_templates')
+        .select(`
+          *,
+          expense_types (name, category)
+        `)
+        .in('driver_user_id', driverIds)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      if (!templatesData || templatesData.length === 0) return [];
+
+      // Obtener perfiles de conductores por separado
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, first_name, last_name')
+        .in('user_id', templatesData.map(t => t.driver_user_id));
+
+      if (profilesError) throw profilesError;
+
+      // Combinar datos
+      const templatesWithProfiles = templatesData.map(template => {
+        const profile = profilesData?.find(p => p.user_id === template.driver_user_id);
+        return {
+          ...template,
+          driver_profile: profile
+        };
+      });
+
+      return templatesWithProfiles;
+    },
+    enabled: !!user?.id,
+  });
+
+  const handleCreateSuccess = () => {
+    setIsCreateDialogOpen(false);
+    refetchTemplates();
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -13,64 +93,143 @@ export function DeductionsManager() {
           <h2 className="text-2xl font-bold tracking-tight">Gestión de Deducciones</h2>
           <p className="text-muted-foreground">Administra gastos recurrentes y deducciones de conductores</p>
         </div>
-        <Button disabled>
-          <Plus className="h-4 w-4 mr-2" />
-          Nueva Deducción
-          <Badge variant="secondary" className="ml-2">Próximamente</Badge>
-        </Button>
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Nueva Deducción
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Crear Plantilla de Deducción</DialogTitle>
+              <DialogDescription>
+                Crea una nueva plantilla de gasto recurrente para un conductor
+              </DialogDescription>
+            </DialogHeader>
+            <CreateExpenseTemplateDialog 
+              onClose={() => setIsCreateDialogOpen(false)}
+              onSuccess={handleCreateSuccess}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Sistema de Deducciones</CardTitle>
-          <CardDescription>
-            El sistema de gestión de deducciones permite automatizar gastos recurrentes para conductores
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4">
-            <div className="flex items-start gap-3">
-              <Settings className="h-5 w-5 text-primary mt-0.5" />
-              <div>
-                <h4 className="font-semibold">Plantillas Recurrentes</h4>
-                <p className="text-sm text-muted-foreground">
-                  Configura gastos que se aplican automáticamente según frecuencia (semanal, quincenal, mensual)
+      <Tabs defaultValue="templates" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="templates">Plantillas Activas</TabsTrigger>
+          <TabsTrigger value="instances">Instancias Generadas</TabsTrigger>
+          <TabsTrigger value="history">Historial</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="templates" className="space-y-4">
+          {templates.length === 0 ? (
+            <Card>
+              <CardContent className="p-6 text-center">
+                <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No hay plantillas de deducciones</h3>
+                <p className="text-muted-foreground mb-4">
+                  Comienza creando tu primera plantilla de gasto recurrente
                 </p>
-              </div>
+                <Button onClick={() => setIsCreateDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Crear Primera Plantilla
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {templates.map((template) => (
+                <Card key={template.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                          <DollarSign className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">
+                            {template.driver_profile?.first_name} {template.driver_profile?.last_name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {template.expense_types?.name} - {template.expense_types?.category}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="font-semibold text-lg">${template.amount}</p>
+                          <Badge variant="outline">
+                            {template.frequency === 'weekly' ? 'Semanal' : 
+                             template.frequency === 'biweekly' ? 'Quincenal' : 'Mensual'}
+                          </Badge>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-muted-foreground">Vigente desde:</span>
+                        <p>{format(new Date(template.start_date), "PPP", { locale: es })}</p>
+                      </div>
+                      {template.end_date && (
+                        <div>
+                          <span className="text-muted-foreground">Vigente hasta:</span>
+                          <p>{format(new Date(template.end_date), "PPP", { locale: es })}</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {template.notes && (
+                      <div className="mt-2 text-sm text-muted-foreground">
+                        <strong>Notas:</strong> {template.notes}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-            
-            <div className="flex items-start gap-3">
-              <Clock className="h-5 w-5 text-primary mt-0.5" />
-              <div>
-                <h4 className="font-semibold">Procesamiento Automático</h4>
-                <p className="text-sm text-muted-foreground">
-                  Los gastos se generan automáticamente cuando se procesan los períodos de pago
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-primary mt-0.5" />
-              <div>
-                <h4 className="font-semibold">Gestión de Prioridades</h4>
-                <p className="text-sm text-muted-foreground">
-                  Gastos críticos siempre se aplican, mientras que los normales se diferieren si no hay balance suficiente
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h4 className="font-semibold text-blue-900 mb-2">¿Cómo funciona?</h4>
-            <ol className="text-sm text-blue-800 space-y-1">
-              <li>1. Crea plantillas de deducciones para cada conductor</li>
-              <li>2. Define la frecuencia y monto de cada deducción</li>
-              <li>3. El sistema genera automáticamente las instancias al procesar períodos</li>
-              <li>4. Las deducciones se aplican según prioridad y balance disponible</li>
-            </ol>
-          </div>
-        </CardContent>
-      </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="instances">
+          <Card>
+            <CardHeader>
+              <CardTitle>Instancias Generadas</CardTitle>
+              <CardDescription>
+                Gastos generados automáticamente a partir de las plantillas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Próximamente - Instancias de gastos procesados</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="history">
+          <Card>
+            <CardHeader>
+              <CardTitle>Historial de Cambios</CardTitle>
+              <CardDescription>
+                Registro de modificaciones en las plantillas de deducciones
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Próximamente - Historial de cambios</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
