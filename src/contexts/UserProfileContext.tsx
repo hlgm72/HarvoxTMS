@@ -1,5 +1,5 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
-import { useAuth } from './AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
 interface UserProfile {
@@ -37,7 +37,9 @@ interface UserProfileProviderProps {
 }
 
 export const UserProfileProvider: React.FC<UserProfileProviderProps> = ({ children }) => {
-  const { user } = useAuth();
+  // Add defensive check for AuthContext availability
+  const authContext = useAuth();
+  const { user } = authContext || { user: null };
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(false);
 
