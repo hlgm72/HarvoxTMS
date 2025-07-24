@@ -39,8 +39,8 @@ export default function Dashboard() {
         subtitle="Operaciones en tiempo real • Monitoreo de flota activo"
       />
       <div className="p-3 md:p-6 space-y-4 md:space-y-6">
-        {/* PWA Install Banner */}
-        <PWAInstallBanner />
+        {/* PWA Install Banner - Temporarily disabled for debugging */}
+        {/* <PWAInstallBanner /> */}
 
         {/* Stats Grid - Mejorado para móviles */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
