@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.fmcsa-lookup]
 verify_jwt = false
+
+[functions.accept-google-invitation]
+verify_jwt = false
