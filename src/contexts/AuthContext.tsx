@@ -345,8 +345,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       localStorage.removeItem('currentRole');
       await supabase.auth.signOut();
+      // Redirect to landing page after logout
+      window.location.href = '/landing';
     } catch (error) {
       console.error('Error signing out:', error);
+      // Still redirect even if logout fails
+      window.location.href = '/landing';
     }
   };
 

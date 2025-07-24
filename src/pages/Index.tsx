@@ -63,6 +63,10 @@ export default function Index() {
         console.log('🏠 Redirecting to driver dashboard');
         navigate('/dashboard/driver');
       }
+    } else if (!loading && !user) {
+      // Si no hay usuario autenticado, redirigir a landing
+      console.log('🏠 No authenticated user, redirecting to landing');
+      navigate('/landing');
     } else {
       console.log('🏠 Still loading or no user:', { loading, hasUser: !!user });
     }
