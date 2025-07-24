@@ -308,7 +308,7 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
                 </div>
                 <Calendar
                   mode="single"
-                  captionLayout="buttons"
+                  captionLayout="dropdown"
                   selected={effectiveFrom}
                   onSelect={setEffectiveFrom}
                   initialFocus
@@ -382,7 +382,7 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
                 </div>
                 <Calendar
                   mode="single"
-                  captionLayout="buttons"
+                  captionLayout="dropdown"
                   selected={effectiveUntil}
                   onSelect={setEffectiveUntil}
                   initialFocus
