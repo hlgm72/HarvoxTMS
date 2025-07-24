@@ -44,19 +44,21 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
       if (!user?.id) return [];
       
       // Obtener la empresa del usuario actual
-      const { data: userRole } = await supabase
+      const { data: userRoles } = await supabase
         .from('user_company_roles')
         .select('company_id')
         .eq('user_id', user.id)
-        .eq('is_active', true)
-        .single();
+        .eq('is_active', true);
 
-      if (!userRole) return [];
+      if (!userRoles || userRoles.length === 0) return [];
       
+      // Tomar la primera empresa (en caso de múltiples roles)
+      const companyId = userRoles[0].company_id;
+
       const { data: driverRoles } = await supabase
         .from('user_company_roles')
         .select('user_id')
-        .eq('company_id', userRole.company_id)
+        .eq('company_id', companyId)
         .eq('role', 'driver')
         .eq('is_active', true);
 
