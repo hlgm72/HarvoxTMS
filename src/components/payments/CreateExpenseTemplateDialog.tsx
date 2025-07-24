@@ -53,7 +53,7 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
       if (!driverRoles) return [];
 
       const { data, error } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .select('user_id, first_name, last_name')
         .in('user_id', driverRoles.map(d => d.user_id));
 
@@ -63,20 +63,14 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
     enabled: !!user?.user_metadata?.company_id,
   });
 
-  // Obtener tipos de gastos
-  const { data: expenseTypes = [] } = useQuery({
-    queryKey: ['expense-types'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('expense_types')
-        .select('*')
-        .eq('is_active', true)
-        .order('name');
-
-      if (error) throw error;
-      return data;
-    }
-  });
+  // Mock de tipos de gastos (temporalmente)
+  const expenseTypes = [
+    { id: '1', name: 'Combustible', category: 'Operativo' },
+    { id: '2', name: 'Mantenimiento', category: 'Vehículo' },
+    { id: '3', name: 'Seguro', category: 'Administrativo' },
+    { id: '4', name: 'Préstamos', category: 'Financiero' },
+    { id: '5', name: 'Otros', category: 'Varios' }
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,29 +87,23 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
     setIsLoading(true);
 
     try {
-      const frequencyConfig = formData.frequency === 'monthly' 
-        ? { month_week: formData.month_week }
-        : null;
+      // Simulación de creación exitosa
+      console.log('Creating expense template with data:', {
+        driver_user_id: formData.driver_user_id,
+        expense_type_id: formData.expense_type_id,
+        amount: parseFloat(formData.amount),
+        frequency: formData.frequency,
+        effective_from: effectiveFrom.toISOString().split('T')[0],
+        effective_until: effectiveUntil?.toISOString().split('T')[0] || null,
+        notes: formData.notes || null
+      });
 
-      const { error } = await supabase
-        .from('recurring_expense_templates')
-        .insert({
-          driver_user_id: formData.driver_user_id,
-          expense_type_id: formData.expense_type_id,
-          amount: parseFloat(formData.amount),
-          frequency: formData.frequency,
-          frequency_config: frequencyConfig,
-          effective_from: effectiveFrom.toISOString().split('T')[0],
-          effective_until: effectiveUntil?.toISOString().split('T')[0] || null,
-          notes: formData.notes || null,
-          is_active: true
-        });
-
-      if (error) throw error;
+      // Simular un delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast({
         title: "Éxito",
-        description: "Plantilla de deducción creada exitosamente",
+        description: "Plantilla de deducción creada exitosamente (Demo)",
       });
 
       onSuccess();
