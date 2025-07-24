@@ -98,8 +98,14 @@ export default function AuthCallback() {
             console.log('OAuth: Redirecting to driver dashboard');
             navigate('/dashboard/driver');
           } else {
-            console.log('OAuth: No specific role found, redirecting to main page');
-            navigate('/');
+            // Usuario sin roles asignados - redirigir a página de acceso restringido
+            console.log('OAuth: No roles found for user, redirecting to no-access page');
+            toast({
+              title: "Acceso Restringido",
+              description: "Tu cuenta no tiene permisos para acceder a esta aplicación.",
+              variant: "destructive"
+            });
+            navigate('/no-access');
           }
         } else {
           // No session found, redirect to auth

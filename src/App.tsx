@@ -5,6 +5,7 @@ import Index from "./pages/Index";
 import Setup from "./pages/Setup";
 import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
+import NoAccess from "./pages/NoAccess";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import Companies from "./pages/Companies";
 import PaymentSystem from "./pages/PaymentSystem";
@@ -51,6 +52,7 @@ function AppContent() {
         <Route path="/preview" element={<Preview />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/no-access" element={<NoAccess />} />
         <Route path="/invitation/:token" element={<Invitation />} />
         <Route path="/demo" element={<EagleDemo />} />
         
