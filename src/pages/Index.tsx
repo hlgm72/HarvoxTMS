@@ -108,6 +108,13 @@ export default function Index() {
     return <Landing />;
   }
 
-  // Fallback: show generic dashboard if no specific role redirect
-  return <Dashboard />;
+  // Show loading while processing role redirection
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="flex flex-col items-center space-y-4">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-muted-foreground">Configurando dashboard...</p>
+      </div>
+    </div>
+  );
 }
