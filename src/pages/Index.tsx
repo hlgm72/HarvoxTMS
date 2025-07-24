@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 import Dashboard from './Dashboard';
+import Landing from './Landing';
 
 export default function Index() {
   const navigate = useNavigate();
@@ -64,9 +65,9 @@ export default function Index() {
         navigate('/dashboard/driver');
       }
     } else if (!loading && !user) {
-      // Si no hay usuario autenticado, redirigir a landing
-      console.log('🏠 No authenticated user, redirecting to landing');
-      navigate('/landing');
+      // Si no hay usuario autenticado, mostrar landing page
+      console.log('🏠 No authenticated user, showing landing');
+      return;
     } else {
       console.log('🏠 Still loading or no user:', { loading, hasUser: !!user });
     }
@@ -83,6 +84,11 @@ export default function Index() {
         </div>
       </div>
     );
+  }
+
+  // Si no hay usuario autenticado, mostrar landing page
+  if (!user) {
+    return <Landing />;
   }
 
   // Fallback: show generic dashboard if no specific role redirect
