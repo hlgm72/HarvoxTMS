@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useATMInput } from "@/hooks/useATMInput";
 
 interface CreateExpenseTemplateDialogProps {
   onClose: () => void;
@@ -28,10 +29,17 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
   const [formData, setFormData] = useState({
     driver_user_id: '',
     expense_type_id: '',
-    amount: '',
     frequency: '',
     notes: '',
     month_week: 1
+  });
+
+  // ATM Input para el monto
+  const atmInput = useATMInput({
+    initialValue: 0,
+    onValueChange: (value) => {
+      // El valor ya está actualizado en el hook
+    }
   });
   
   const [effectiveFrom, setEffectiveFrom] = useState<Date>();
@@ -110,7 +118,7 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
         .insert({
           driver_user_id: formData.driver_user_id,
           expense_type_id: formData.expense_type_id,
-          amount: parseFloat(formData.amount),
+          amount: atmInput.numericValue,
           frequency: formData.frequency,
           start_date: effectiveFrom.toISOString().split('T')[0],
           end_date: effectiveUntil?.toISOString().split('T')[0] || null,
@@ -184,17 +192,16 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="amount" className="text-foreground font-medium">Monto ($)</Label>
-            <Input
-              id="amount"
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.amount}
-              onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-              placeholder="0.00"
-              className="bg-background border-input"
-              required
+            <Label htmlFor="amount" className="text-foreground font-medium">Monto ($) *</Label>
+            <Input 
+              type="text"
+              value={atmInput.displayValue}
+              onKeyDown={atmInput.handleKeyDown}
+              onPaste={atmInput.handlePaste}
+              placeholder="$0.00"
+              className="text-right font-mono bg-background border-input"
+              autoComplete="off"
+              readOnly
             />
           </div>
 
