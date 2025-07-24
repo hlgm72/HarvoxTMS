@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { 
   Settings as SettingsIcon, Building, User, Moon, Sun, Bell, Shield, 
-  Globe, Palette, Monitor, Database, Save, RotateCcw, KeyRound
+  Globe, Palette, Monitor, Database, Save, RotateCcw, KeyRound, CreditCard
 } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -12,6 +12,7 @@ import { useFleetNotifications } from '@/components/notifications';
 import { CompanySettingsForm } from '@/components/companies/settings/CompanySettingsForm';
 import { SelfRoleManager } from '@/components/owner/SelfRoleManager';
 import { PageToolbar } from '@/components/layout/PageToolbar';
+import { PaymentConfigurationForm } from '@/components/payments/PaymentConfigurationForm';
 import { Company } from '@/types/company';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
@@ -233,7 +234,7 @@ export default function Settings() {
         {/* Content */}
         <div className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm border">
+          <TabsList className="grid w-full grid-cols-6 bg-white shadow-sm border">
             <TabsTrigger 
               value="profile" 
               className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -247,6 +248,13 @@ export default function Settings() {
             >
               <Building className="h-4 w-4" />
               Empresa
+            </TabsTrigger>
+            <TabsTrigger 
+              value="payments" 
+              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <CreditCard className="h-4 w-4" />
+              Pagos
             </TabsTrigger>
             <TabsTrigger 
               value="system" 
@@ -581,6 +589,13 @@ export default function Settings() {
                 company={companyInfo} 
                 onUpdate={setCompanyInfo}
               />
+            )}
+          </TabsContent>
+
+          {/* Configuración de Pagos */}
+          <TabsContent value="payments">
+            {userRole?.company_id && (
+              <PaymentConfigurationForm companyId={userRole.company_id} />
             )}
           </TabsContent>
 
