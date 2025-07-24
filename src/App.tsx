@@ -60,9 +60,12 @@ function AppContent() {
         <Route path="/demo" element={<EagleDemo />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         
-        {/* Protected routes with Layout */}
+        {/* Public home route */}
+        <Route path="/" element={<Landing />} />
+        
+        {/* Protected dashboard route */}
         <Route 
-          path="/" 
+          path="/dashboard" 
           element={
             <ProtectedRoute>
               <Layout>
