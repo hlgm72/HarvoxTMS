@@ -1,0 +1,285 @@
+{
+  "privacy_policy": {
+    "title": "Política de Privacidad",
+    "subtitle": "Esta política de privacidad describe cómo FleetNest recopila, utiliza y protege su información personal.",
+    "last_updated": "Última actualización: 24 de julio de 2024",
+    "back_to_login": "Volver al Login",
+    "back_to_home": "Volver al Inicio",
+    "sections": {
+      "introduction": {
+        "title": "1. Introducción",
+        "content": [
+          "FleetNest (\"nosotros,\" \"nuestro\" o \"nos\") está comprometido con la protección de su privacidad. Esta Política de Privacidad explica cómo recopilamos, utilizamos, divulgamos y protegemos su información cuando utiliza nuestros servicios de gestión de flotas.",
+          "Al utilizar nuestros servicios, usted consiente la recopilación y uso de información de acuerdo con esta política."
+        ]
+      },
+      "information_collection": {
+        "title": "2. Información que Recopilamos",
+        "personal_info": {
+          "title": "Información Personal:",
+          "items": [
+            "Información de contacto (nombre, email, teléfono, dirección)",
+            "Credenciales de cuenta y datos de autenticación",
+            "Información de la empresa y detalles comerciales",
+            "Información de pago y facturación",
+            "Información de perfil profesional"
+          ]
+        },
+        "operational_data": {
+          "title": "Datos Operacionales:",
+          "items": [
+            "Ubicación del vehículo y datos de seguimiento",
+            "Información de rutas e historial de viajes",
+            "Métricas de comportamiento y rendimiento del conductor",
+            "Registros de consumo de combustible y mantenimiento",
+            "Información de entregas y logística"
+          ]
+        },
+        "technical_data": {
+          "title": "Datos Técnicos:",
+          "items": [
+            "Direcciones IP e información del dispositivo",
+            "Tipo de navegador y sistema operativo",
+            "Patrones de uso e interacciones con funciones",
+            "Archivos de registro e informes de errores",
+            "Cookies y tecnologías de seguimiento"
+          ]
+        }
+      },
+      "usage": {
+        "title": "3. Cómo Utilizamos su Información",
+        "content": [
+          "Utilizamos la información recopilada para:",
+          "• Proporcionar y mantener nuestros servicios de gestión de flotas",
+          "• Procesar transacciones y gestionar facturación",
+          "• Mejorar nuestros servicios y experiencia del usuario",
+          "• Proporcionar soporte al cliente y asistencia técnica",
+          "• Enviar notificaciones importantes y actualizaciones",
+          "• Garantizar la seguridad y prevenir el fraude",
+          "• Cumplir con obligaciones legales y regulaciones"
+        ]
+      },
+      "sharing": {
+        "title": "4. Compartir Información",
+        "content": [
+          "No vendemos, intercambiamos o alquilamos su información personal a terceros. Podemos compartir su información solo en las siguientes circunstancias:",
+          "• Con su consentimiento explícito",
+          "• Con proveedores de servicios de confianza que asisten en nuestras operaciones",
+          "• Cuando sea requerido por ley o proceso legal",
+          "• Para proteger nuestros derechos, propiedad o seguridad",
+          "• En conexión con transferencias comerciales o fusiones"
+        ]
+      },
+      "security": {
+        "title": "5. Seguridad de Datos",
+        "content": [
+          "Implementamos medidas técnicas y organizacionales apropiadas para proteger su información contra acceso no autorizado, alteración, divulgación o destrucción.",
+          "Nuestras medidas de seguridad incluyen:",
+          "• Cifrado de datos en tránsito y en reposo",
+          "• Sistemas de autenticación seguros",
+          "• Auditorías de seguridad y monitoreo regulares",
+          "• Controles de acceso y capacitación de empleados",
+          "• Cumplimiento con estándares de seguridad de la industria"
+        ]
+      },
+      "rights": {
+        "title": "6. Sus Derechos",
+        "content": [
+          "Usted tiene derecho a:",
+          "• Acceder a su información personal",
+          "• Corregir datos inexactos o incompletos",
+          "• Solicitar la eliminación de su información",
+          "• Oponerse a ciertas actividades de procesamiento",
+          "• Portabilidad de datos cuando sea aplicable",
+          "• Retirar el consentimiento en cualquier momento"
+        ]
+      },
+      "retention": {
+        "title": "7. Retención de Datos",
+        "content": [
+          "Retenemos su información durante el tiempo necesario para:",
+          "• Proporcionarle nuestros servicios",
+          "• Cumplir con obligaciones legales",
+          "• Resolver disputas y hacer cumplir acuerdos",
+          "• Apoyar operaciones comerciales y análisis",
+          "Cuando los datos ya no sean necesarios, los eliminamos de forma segura o los anonimizamos."
+        ]
+      },
+      "cookies": {
+        "title": "8. Cookies y Seguimiento",
+        "content": [
+          "Utilizamos cookies y tecnologías similares para:",
+          "• Recordar sus preferencias y configuraciones",
+          "• Analizar patrones de uso y mejorar servicios",
+          "• Proporcionar experiencias personalizadas",
+          "• Garantizar la seguridad y prevenir el fraude",
+          "Puede controlar la configuración de cookies a través de las preferencias de su navegador."
+        ]
+      },
+      "international": {
+        "title": "9. Transferencias Internacionales",
+        "content": [
+          "Su información puede ser transferida y procesada en países distintos al de su residencia. Nos aseguramos de que se implementen las salvaguardas apropiadas para proteger sus datos durante las transferencias internacionales.",
+          "Cumplimos con las regulaciones de protección de datos aplicables, incluyendo GDPR, CCPA y leyes locales de privacidad."
+        ]
+      },
+      "changes": {
+        "title": "10. Cambios en la Política",
+        "content": [
+          "Podemos actualizar esta Política de Privacidad de vez en cuando. Le notificaremos cualquier cambio significativo mediante:",
+          "• Publicar la política actualizada en nuestro sitio web",
+          "• Enviar notificaciones por email a usuarios registrados",
+          "• Mostrar avisos prominentes en nuestra aplicación",
+          "Su uso continuado de nuestros servicios constituye la aceptación de la política actualizada."
+        ]
+      },
+      "contact": {
+        "title": "11. Información de Contacto",
+        "content": [
+          "Si tiene preguntas sobre esta Política de Privacidad o nuestras prácticas de datos, contáctenos en:",
+          "Email: privacy@fleetnest.app",
+          "Dirección: Departamento de Privacidad de FleetNest",
+          "Teléfono: +1 (555) 123-4567"
+        ]
+      }
+    }
+  },
+  "terms_of_service": {
+    "title": "Términos de Servicio",
+    "subtitle": "Estos términos y condiciones rigen el uso de FleetNest y sus servicios.",
+    "last_updated": "Última actualización: 24 de julio de 2024",
+    "back_to_login": "Volver al Login",
+    "back_to_home": "Volver al Inicio",
+    "sections": {
+      "acceptance": {
+        "title": "1. Aceptación de los Términos",
+        "content": [
+          "Al acceder y utilizar FleetNest (\"el Servicio\"), usted acepta estar sujeto a estos Términos de Servicio (\"Términos\"). Si no está de acuerdo con alguna parte de estos términos, no debe utilizar nuestro servicio.",
+          "Estos Términos constituyen un acuerdo legal vinculante entre usted y FleetNest. El uso continuado del Servicio constituye su aceptación de cualquier modificación a estos Términos."
+        ]
+      },
+      "service_description": {
+        "title": "2. Descripción del Servicio",
+        "content": [
+          "FleetNest es una plataforma de gestión de flotas que proporciona:",
+          "• Seguimiento en tiempo real de vehículos",
+          "• Gestión de conductores y empleados",
+          "• Reportes y análisis de operaciones",
+          "• Gestión de documentos y cumplimiento",
+          "• Optimización de rutas y combustible",
+          "• Herramientas de facturación y pagos",
+          "Nos reservamos el derecho de modificar, suspender o discontinuar cualquier aspecto del Servicio en cualquier momento."
+        ]
+      },
+      "user_responsibilities": {
+        "title": "3. Responsabilidades del Usuario",
+        "account_security": {
+          "title": "Cuenta y Seguridad:",
+          "items": [
+            "Mantener la confidencialidad de sus credenciales de acceso",
+            "Proporcionar información precisa y actualizada",
+            "Notificar inmediatamente cualquier uso no autorizado de su cuenta",
+            "Ser responsable de todas las actividades bajo su cuenta"
+          ]
+        },
+        "appropriate_use": {
+          "title": "Uso Apropiado:",
+          "items": [
+            "Utilizar el Servicio solo para fines legales y comerciales legítimos",
+            "No interferir con el funcionamiento del Servicio",
+            "No intentar acceder a sistemas o datos sin autorización",
+            "Cumplir con todas las leyes y regulaciones aplicables"
+          ]
+        }
+      },
+      "prohibited_uses": {
+        "title": "4. Usos Prohibidos",
+        "content": [
+          "Está prohibido utilizar el Servicio para:",
+          "• Actividades ilegales o fraudulentas",
+          "• Violar derechos de propiedad intelectual",
+          "• Transmitir virus, malware o código malicioso",
+          "• Realizar ingeniería inversa del software",
+          "• Revender o redistribuir el Servicio sin autorización",
+          "• Interferir con la seguridad del Servicio",
+          "• Crear cuentas mediante medios automatizados"
+        ]
+      },
+      "data_privacy": {
+        "title": "5. Datos y Privacidad",
+        "content": [
+          "Su privacidad es importante para nosotros. El manejo de sus datos personales se rige por nuestra Política de Privacidad, que forma parte integral de estos Términos.",
+          "Usted retiene la propiedad de sus datos comerciales, pero nos otorga una licencia para procesarlos conforme sea necesario para proporcionar el Servicio."
+        ]
+      },
+      "payment_terms": {
+        "title": "6. Términos de Pago",
+        "subscriptions": {
+          "title": "Suscripciones:",
+          "items": [
+            "Los pagos se procesan automáticamente según el plan seleccionado",
+            "Los precios pueden cambiar con notificación previa de 30 días",
+            "No se otorgan reembolsos por períodos parciales",
+            "La suspensión del servicio ocurre por falta de pago"
+          ]
+        },
+        "cancellations": {
+          "title": "Cancelaciones:",
+          "content": "Puede cancelar su suscripción en cualquier momento. El servicio continuará hasta el final del período facturado actual."
+        }
+      },
+      "intellectual_property": {
+        "title": "7. Propiedad Intelectual",
+        "content": [
+          "FleetNest y todo su contenido, características y funcionalidad son propiedad de FleetNest y están protegidos por derechos de autor, marcas comerciales y otras leyes de propiedad intelectual.",
+          "Se le otorga una licencia limitada, no exclusiva y revocable para utilizar el Servicio de acuerdo con estos Términos."
+        ]
+      },
+      "limitation_liability": {
+        "title": "8. Limitación de Responsabilidad",
+        "content": [
+          "EN LA MÁXIMA MEDIDA PERMITIDA POR LA LEY, FLEETNEST NO SERÁ RESPONSABLE POR DAÑOS INDIRECTOS, INCIDENTALES, ESPECIALES, CONSECUENCIALES O PUNITIVOS.",
+          "Nuestra responsabilidad total no excederá el monto pagado por usted en los 12 meses anteriores al evento que dio origen a la reclamación."
+        ]
+      },
+      "service_availability": {
+        "title": "9. Disponibilidad del Servicio",
+        "content": [
+          "Nos esforzamos por mantener el Servicio disponible 24/7, pero no garantizamos un tiempo de actividad del 100%. El mantenimiento programado puede requerir interrupciones temporales.",
+          "No somos responsables por interrupciones causadas por factores fuera de nuestro control, incluyendo fallas de internet, desastres naturales o problemas de terceros."
+        ]
+      },
+      "termination": {
+        "title": "10. Terminación",
+        "content": [
+          "Podemos suspender o terminar su acceso al Servicio inmediatamente, sin aviso previo, por cualquier violación de estos Términos.",
+          "Usted puede terminar su cuenta en cualquier momento contactándonos o utilizando las opciones disponibles en su panel de control.",
+          "Al terminar, cesará su derecho a utilizar el Servicio, pero las disposiciones que por su naturaleza deban sobrevivir continuarán en vigor."
+        ]
+      },
+      "changes_terms": {
+        "title": "11. Modificaciones a los Términos",
+        "content": [
+          "Nos reservamos el derecho de modificar estos Términos en cualquier momento. Los cambios significativos serán notificados con al menos 30 días de anticipación.",
+          "Su uso continuado del Servicio después de la notificación constituye su aceptación de los nuevos Términos."
+        ]
+      },
+      "governing_law": {
+        "title": "12. Ley Aplicable",
+        "content": [
+          "Estos Términos se rigen por las leyes del país donde FleetNest tiene su sede principal, sin consideración a conflictos de principios legales.",
+          "Cualquier disputa será resuelta mediante arbitraje vinculante de acuerdo con las reglas de arbitraje comercial aplicables."
+        ]
+      },
+      "contact": {
+        "title": "13. Información de Contacto",
+        "content": [
+          "Si tiene preguntas sobre estos Términos de Servicio, puede contactarnos en:",
+          "Email: legal@fleetnest.app",
+          "Dirección: FleetNest Legal Department",
+          "Teléfono: +1 (555) 123-4567"
+        ]
+      }
+    }
+  }
+}
