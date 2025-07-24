@@ -174,11 +174,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (!mounted) return;
           
           try {
+            console.log('🔍 Fetching roles for user:', session.user.id);
             const { data: roles, error } = await supabase
               .from('user_company_roles')
               .select('*')
               .eq('user_id', session.user.id)
               .eq('is_active', true);
+
+            console.log('📋 Raw roles data:', { roles, error });
 
             if (error) {
               console.error('Error fetching user roles:', error);
@@ -189,6 +192,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
 
             const userRoles = roles || [];
+            console.log('📋 Setting user roles:', userRoles);
             setUserRoles(userRoles);
             
             // Determine current role
@@ -223,6 +227,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               }
             }
             
+            console.log('🎯 Final selected role:', selectedRole);
             setCurrentRole(selectedRole);
             setLoading(false);
           } catch (error) {
