@@ -15,6 +15,7 @@ import Invitation from "./pages/Invitation";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import Users from "./pages/Users";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import OwnerDashboard from "./pages/dashboard/OwnerDashboard";
 import OperationsManagerDashboard from "./pages/dashboard/OperationsManagerDashboard";
 import DispatcherDashboard from "./pages/dashboard/DispatcherDashboard";
@@ -57,6 +58,7 @@ function AppContent() {
         <Route path="/invitation/:token" element={<Invitation />} />
         <Route path="/invitation/callback" element={<InvitationCallback />} />
         <Route path="/demo" element={<EagleDemo />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         
         {/* Protected routes with Layout */}
         <Route 
