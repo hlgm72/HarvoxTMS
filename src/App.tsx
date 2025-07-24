@@ -27,6 +27,7 @@ import Settings from "./pages/Settings";
 import Clients from "./pages/Clients";
 import Documents from "./pages/Documents";
 import Payments from "./pages/Payments";
+import Deductions from "./pages/Deductions";
 import Loads from "./pages/Loads";
 import EagleDemo from "./pages/EagleDemo";
 import DriverMobile from "./pages/DriverMobile";
@@ -224,6 +225,18 @@ function AppContent() {
             <ProtectedRoute>
               <Layout>
                 <Payments />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Deductions Management */}
+        <Route 
+          path="/deductions" 
+          element={
+            <ProtectedRoute requiredRole="company_owner">
+              <Layout>
+                <Deductions />
               </Layout>
             </ProtectedRoute>
           } 

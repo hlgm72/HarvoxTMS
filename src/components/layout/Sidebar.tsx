@@ -21,7 +21,7 @@ import {
   ChevronDown, Command, Users, Truck, Package, MapPin, Building2, 
   CreditCard, BarChart3, FileText, Target, Activity, Shield, 
   Heart, TrendingUp, Headphones, Settings, FileBarChart, 
-  Lock, Home, Navigation, Zap, Dot, DollarSign
+  Lock, Home, Navigation, Zap, Dot, DollarSign, Minus, Calculator, Fuel
 } from "lucide-react";
 import eagleLogo from "@/assets/high_res_eagle.svg";
 import {
@@ -99,12 +99,28 @@ const getCompanyOwnerNavigationItems = (driversCount: number, equipmentCount: nu
     description: "Facturación y pagos",
     section: "commercial"
   },
+  
+  // Gestión Financiera
+  { 
+    title: "Deducciones", 
+    url: "/deductions", 
+    icon: Minus,
+    description: "Gastos recurrentes",
+    section: "financial"
+  },
+  { 
+    title: "Gestión de Combustible", 
+    url: "/fuel-management", 
+    icon: Fuel,
+    description: "Control de combustible",
+    section: "financial"
+  },
   { 
     title: "Pagos de Conductores", 
     url: "/payments", 
     icon: DollarSign,
     description: "Gestión de pagos",
-    section: "commercial"
+    section: "financial"
   },
   
   // Reportes y Análisis
@@ -468,6 +484,7 @@ export function AppSidebar() {
         dashboard: "Dashboard",
         operations: "Gestión Operacional", 
         commercial: "Gestión Comercial",
+        financial: "Gestión Financiera",
         reports: "Reportes y Análisis",
         admin: "Administración"
       };

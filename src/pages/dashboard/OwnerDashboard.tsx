@@ -21,7 +21,6 @@ import { DriverMobileCard } from '@/components/dashboard/DriverMobileCard';
 import { ReversMobileCard } from '@/components/dashboard/ReversMobileCard';
 import { Company } from '@/types/company';
 import { PaymentPeriodsManager } from "@/components/payments/PaymentPeriodsManager";
-import { DeductionsManager } from "@/components/payments/DeductionsManager";
 
 // Types
 interface CompanyStats {
@@ -294,10 +293,6 @@ export default function OwnerDashboard() {
                 <DollarSign className="h-4 w-4" />
                 <span className="hidden xs:inline">Pagos</span>
               </TabsTrigger>
-              <TabsTrigger value="deductions" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
-                <AlertTriangle className="h-4 w-4" />
-                <span className="hidden xs:inline">Deducciones</span>
-              </TabsTrigger>
               <TabsTrigger value="settings" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
                 <Settings className="h-4 w-4" />
                 <span className="hidden xs:inline">Config</span>
@@ -323,10 +318,6 @@ export default function OwnerDashboard() {
               <TabsTrigger value="payments" className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4" />
                 <span className="hidden md:inline">Pagos</span>
-              </TabsTrigger>
-              <TabsTrigger value="deductions" className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4" />
-                <span className="hidden md:inline">Deducciones</span>
               </TabsTrigger>
               <TabsTrigger value="reports" className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
@@ -543,11 +534,6 @@ export default function OwnerDashboard() {
           {/* Payment Periods Management */}
           <TabsContent value="payments" className="space-y-6">
             <PaymentPeriodsManager />
-          </TabsContent>
-
-          {/* Deductions Management */}
-          <TabsContent value="deductions" className="space-y-6">
-            <DeductionsManager />
           </TabsContent>
 
           {/* Settings */}
