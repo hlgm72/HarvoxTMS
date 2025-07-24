@@ -2376,6 +2376,10 @@ export type Database = {
             }
         Returns: Json
       }
+      generate_recurring_expenses_for_period: {
+        Args: { company_payment_period_id: string }
+        Returns: Json
+      }
       get_company_current_payment_period: {
         Args: { company_id_param: string; target_date?: string }
         Returns: string
