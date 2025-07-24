@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { 
   Building, User, CreditCard, Settings, 
   Save, RotateCcw, AlertCircle, FileText, 
-  MapPin, Phone, Truck, Percent
+  MapPin, Phone, Truck, Percent, CalendarDays, Eye
 } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from '@/integrations/supabase/client';
@@ -17,6 +17,9 @@ import { Company } from '@/types/company';
 import { CompanyLogoUpload } from '../CompanyLogoUpload';
 import { AddressForm } from '@/components/ui/AddressForm';
 import { createTextHandlers, createPhoneHandlers, createEINHandlers, createMCHandlers, createDOTHandlers } from '@/lib/textUtils';
+import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface CompanySettingsFormProps {
   company: Company;
@@ -27,6 +30,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
   const [formData, setFormData] = useState<Company>(company);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('company');
+  const [showPaymentPreview, setShowPaymentPreview] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
 
   // Sync formData with company prop changes (e.g., logo updates)
@@ -49,6 +53,57 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
   const ownerTitleHandlers = createTextHandlers((value: string) => handleInputChange('owner_title', value));
   const ownerEmailHandlers = createTextHandlers((value: string) => handleInputChange('owner_email', value), 'email');
   const ownerPhoneHandlers = createPhoneHandlers((value: string) => handleInputChange('owner_phone', value));
+
+  // Generate preview periods function
+  const generatePreviewPeriods = (count: number = 4) => {
+    const periods = [];
+    let currentDate = new Date();
+    
+    // Adjust to the correct start day of week
+    const dayOfWeek = currentDate.getDay();
+    const targetDay = (formData.payment_cycle_start_day || 1) === 7 ? 0 : (formData.payment_cycle_start_day || 1);
+    const daysToAdjust = (targetDay - dayOfWeek + 7) % 7;
+    currentDate.setDate(currentDate.getDate() + daysToAdjust);
+
+    for (let i = 0; i < count; i++) {
+      const periodStart = new Date(currentDate);
+      let periodEnd = new Date(currentDate);
+      
+      switch (formData.default_payment_frequency || 'weekly') {
+        case 'weekly':
+          periodEnd.setDate(periodEnd.getDate() + 6);
+          break;
+        case 'biweekly':
+          periodEnd.setDate(periodEnd.getDate() + 13);
+          break;
+        case 'monthly':
+          periodEnd.setMonth(periodEnd.getMonth() + 1);
+          periodEnd.setDate(periodEnd.getDate() - 1);
+          break;
+      }
+
+      periods.push({
+        start: periodStart,
+        end: periodEnd,
+        type: 'regular' as const,
+      });
+
+      // Move to next period
+      switch (formData.default_payment_frequency || 'weekly') {
+        case 'weekly':
+          currentDate.setDate(currentDate.getDate() + 7);
+          break;
+        case 'biweekly':
+          currentDate.setDate(currentDate.getDate() + 14);
+          break;
+        case 'monthly':
+          currentDate.setMonth(currentDate.getMonth() + 1);
+          break;
+      }
+    }
+
+    return periods;
+  };
 
   const handleInputChange = (field: keyof Company, value: string | number) => {
     setFormData(prev => {
@@ -482,6 +537,58 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   </Select>
                 </div>
               </div>
+
+              {/* Preview Toggle */}
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Vista Previa de Períodos</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Ve cómo se verán los próximos períodos con esta configuración
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowPaymentPreview(!showPaymentPreview)}
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  {showPaymentPreview ? 'Ocultar' : 'Mostrar'} Vista Previa
+                </Button>
+              </div>
+
+              {/* Preview Periods */}
+              {showPaymentPreview && (
+                <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+                  <h5 className="font-medium flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4" />
+                    Próximos Períodos de Pago
+                  </h5>
+                  <div className="grid gap-2">
+                    {generatePreviewPeriods().map((period, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-background rounded border">
+                        <div className="flex items-center gap-3">
+                          <Badge variant="outline">
+                            Período {index + 1}
+                          </Badge>
+                          <span className="text-sm">
+                            {format(period.start, 'dd/MM/yyyy', { locale: es })} - {format(period.end, 'dd/MM/yyyy', { locale: es })}
+                          </span>
+                        </div>
+                        <Badge variant="secondary">
+                          {(formData.default_payment_frequency || 'weekly') === 'weekly' && '7 días'}
+                          {(formData.default_payment_frequency || 'weekly') === 'biweekly' && '14 días'}
+                          {(formData.default_payment_frequency || 'weekly') === 'monthly' && 'Mensual'}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    * Esta vista previa muestra cómo se generarían los períodos con la configuración actual
+                  </p>
+                </div>
+              )}
 
               {/* Load Assignment Criteria */}
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-6">
