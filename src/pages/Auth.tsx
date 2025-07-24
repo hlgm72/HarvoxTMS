@@ -515,12 +515,9 @@ export default function Auth() {
           // Store success message for the dashboard to show
           localStorage.setItem('loginSuccess', 'true');
           
-          // Wait a bit for the AuthContext to process the session
-          // then force a redirect with a full page reload to ensure clean state
-          setTimeout(() => {
-            console.log('Redirecting after successful login...');
-            window.location.href = '/';
-          }, 500);
+          // Navigate to index which will handle role-based redirects
+          console.log('Login successful, navigating to home...');
+          navigate('/');
         }
       } else {
         // Sign up new user
