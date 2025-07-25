@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, AlertTriangle, DollarSign, Clock, User, Settings, Edit, Trash2 } from "lucide-react";
+import { Plus, AlertTriangle, DollarSign, Clock, User, Settings, Edit, Trash2, RotateCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { CreateExpenseTemplateDialog } from "./CreateExpenseTemplateDialog";
@@ -36,7 +36,7 @@ export function DeductionsManager({
   const isCreateDialogOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
   const setIsCreateDialogOpen = externalOnChange || setInternalIsOpen;
 
-  // Obtener plantillas de deducciones reales
+  // Obtener plantillas de deducciones activas
   const { data: templates = [], refetch: refetchTemplates } = useQuery({
     queryKey: ['recurring-expense-templates', user?.id],
     queryFn: async () => {
@@ -83,7 +83,7 @@ export function DeductionsManager({
 
       if (driverIds.length === 0) return [];
 
-      // Obtener plantillas para estos conductores
+      // Obtener plantillas ACTIVAS para estos conductores
       const { data: templatesData, error } = await supabase
         .from('recurring_expense_templates')
         .select(`
@@ -120,9 +120,86 @@ export function DeductionsManager({
     enabled: !!user?.id,
   });
 
+  // Obtener plantillas INACTIVAS para reactivación
+  const { data: inactiveTemplates = [], refetch: refetchInactiveTemplates } = useQuery({
+    queryKey: ['inactive-expense-templates', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      // Obtener la empresa del usuario actual
+      const { data: userRoles } = await supabase
+        .from('user_company_roles')
+        .select('company_id, role')
+        .eq('user_id', user.id)
+        .eq('is_active', true);
+
+      if (!userRoles || userRoles.length === 0) return [];
+      
+      // Solo permitir a company_owner y operations_manager ver plantillas inactivas
+      const hasAdminRole = userRoles.some(role => 
+        ['company_owner', 'operations_manager'].includes(role.role)
+      );
+      
+      if (!hasAdminRole) return [];
+      
+      const companyId = userRoles[0].company_id;
+      
+      // Obtener conductores de la empresa
+      const { data: driverRoles } = await supabase
+        .from('user_company_roles')
+        .select('user_id')
+        .eq('company_id', companyId)
+        .eq('role', 'driver')
+        .eq('is_active', true);
+
+      const driverIds = driverRoles?.map(role => role.user_id) || [];
+      if (!driverIds.includes(user.id)) {
+        driverIds.push(user.id);
+      }
+
+      if (driverIds.length === 0) return [];
+
+      // Obtener plantillas INACTIVAS
+      const { data: templatesData, error } = await supabase
+        .from('recurring_expense_templates')
+        .select(`
+          *,
+          expense_types (name, category)
+        `)
+        .in('driver_user_id', driverIds)
+        .eq('is_active', false)
+        .order('updated_at', { ascending: false });
+
+      if (error) throw error;
+      
+      if (!templatesData || templatesData.length === 0) return [];
+
+      // Obtener perfiles de conductores
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, first_name, last_name')
+        .in('user_id', templatesData.map(t => t.driver_user_id));
+
+      if (profilesError) throw profilesError;
+
+      // Combinar datos
+      const templatesWithProfiles = templatesData.map(template => {
+        const profile = profilesData?.find(p => p.user_id === template.driver_user_id);
+        return {
+          ...template,
+          driver_profile: profile
+        };
+      });
+
+      return templatesWithProfiles;
+    },
+    enabled: !!user?.id,
+  });
+
   const handleCreateSuccess = () => {
     setIsCreateDialogOpen(false);
     refetchTemplates();
+    refetchInactiveTemplates();
     // Invalidar también las estadísticas para que se actualicen
     queryClient.invalidateQueries({ queryKey: ['deductions-stats', user?.id] });
   };
@@ -130,10 +207,11 @@ export function DeductionsManager({
   const handleEditSuccess = () => {
     setEditingTemplate(null);
     refetchTemplates();
+    refetchInactiveTemplates();
     queryClient.invalidateQueries({ queryKey: ['deductions-stats', user?.id] });
   };
 
-  // Mutation para eliminar plantilla
+  // Mutation para eliminar plantilla (marcar como inactiva)
   const deleteTemplateMutation = useMutation({
     mutationFn: async (templateId: string) => {
       const { error } = await supabase
@@ -146,15 +224,47 @@ export function DeductionsManager({
     onSuccess: () => {
       toast({
         title: "Éxito",
-        description: "Plantilla eliminada exitosamente",
+        description: "Plantilla desactivada exitosamente",
       });
       refetchTemplates();
+      refetchInactiveTemplates();
       queryClient.invalidateQueries({ queryKey: ['deductions-stats', user?.id] });
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "No se pudo eliminar la plantilla",
+        description: error.message || "No se pudo desactivar la plantilla",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Mutation para reactivar plantilla
+  const reactivateTemplateMutation = useMutation({
+    mutationFn: async (templateId: string) => {
+      const { error } = await supabase
+        .from('recurring_expense_templates')
+        .update({ 
+          is_active: true,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', templateId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Éxito",
+        description: "Plantilla reactivada exitosamente",
+      });
+      refetchTemplates();
+      refetchInactiveTemplates();
+      queryClient.invalidateQueries({ queryKey: ['deductions-stats', user?.id] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo reactivar la plantilla",
         variant: "destructive",
       });
     }
@@ -162,6 +272,12 @@ export function DeductionsManager({
 
   const handleDeleteTemplate = (templateId: string) => {
     setDeletingTemplate(templateId);
+  };
+
+  const handleReactivateTemplate = (templateId: string) => {
+    if (window.confirm('¿Estás seguro de que quieres reactivar esta plantilla? Se volverán a generar deducciones automáticas.')) {
+      reactivateTemplateMutation.mutate(templateId);
+    }
   };
 
   const confirmDeleteTemplate = () => {
@@ -176,6 +292,7 @@ export function DeductionsManager({
       <Tabs defaultValue="templates" className="space-y-6">
         <TabsList>
           <TabsTrigger value="templates">Plantillas Activas</TabsTrigger>
+          <TabsTrigger value="inactive">Plantillas Inactivas</TabsTrigger>
           <TabsTrigger value="instances">Instancias Generadas</TabsTrigger>
           <TabsTrigger value="history">Historial</TabsTrigger>
         </TabsList>
@@ -243,6 +360,81 @@ export function DeductionsManager({
                           <p>{format(new Date(template.end_date + 'T00:00:00'), "PPP", { locale: es })}</p>
                         </div>
                       )}
+                    </div>
+                    
+                    {template.notes && (
+                      <div className="mt-2 text-sm text-muted-foreground">
+                        <strong>Notas:</strong> {template.notes}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="inactive" className="space-y-4">
+          {inactiveTemplates.length === 0 ? (
+            <Card>
+              <CardContent className="p-6 text-center">
+                <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">No hay plantillas inactivas</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {inactiveTemplates.map((template) => (
+                <Card key={template.id} className="hover:shadow-md transition-shadow border-muted">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="p-2 bg-muted rounded-lg">
+                          <DollarSign className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-muted-foreground">
+                            {template.driver_profile?.first_name} {template.driver_profile?.last_name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {template.expense_types?.name} - {template.expense_types?.category}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="font-semibold text-lg text-muted-foreground">${template.amount}</p>
+                          <Badge variant="secondary">
+                            Inactiva • {template.frequency === 'weekly' ? 'Semanal' : 
+                             template.frequency === 'biweekly' ? 'Quincenal' : 'Mensual'}
+                          </Badge>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleReactivateTemplate(template.id)}
+                            disabled={reactivateTemplateMutation.isPending}
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                          >
+                            <RotateCcw className="h-4 w-4 mr-1" />
+                            Reactivar
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+                      <div>
+                        <span>Desactivada:</span>
+                        <p>{format(new Date(template.updated_at), "PPP", { locale: es })}</p>
+                      </div>
+                      <div>
+                        <span>Vigente desde:</span>
+                        <p>{format(new Date(template.start_date + 'T00:00:00'), "PPP", { locale: es })}</p>
+                      </div>
                     </div>
                     
                     {template.notes && (
