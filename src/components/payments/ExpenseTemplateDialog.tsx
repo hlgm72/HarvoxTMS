@@ -494,13 +494,71 @@ export function ExpenseTemplateDialog({
                     {effectiveFrom ? format(effectiveFrom, "PPP", { locale: es }) : "Seleccionar fecha"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={effectiveFrom}
-                    onSelect={setEffectiveFrom}
-                    initialFocus
-                  />
+                <PopoverContent className="w-auto p-0" align="start">
+                  <div className="p-4 space-y-4">
+                    {/* Selectores de mes y año */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <Select
+                        value={effectiveFrom ? format(effectiveFrom, 'MMMM', { locale: es }) : ""}
+                        onValueChange={(monthName) => {
+                          const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                                            'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+                                            .indexOf(monthName.toLowerCase());
+                          if (monthIndex !== -1) {
+                            const currentYear = effectiveFrom?.getFullYear() || new Date().getFullYear();
+                            const currentDay = effectiveFrom?.getDate() || 1;
+                            setEffectiveFrom(new Date(currentYear, monthIndex, currentDay));
+                          }
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Mes" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="enero">Enero</SelectItem>
+                          <SelectItem value="febrero">Febrero</SelectItem>
+                          <SelectItem value="marzo">Marzo</SelectItem>
+                          <SelectItem value="abril">Abril</SelectItem>
+                          <SelectItem value="mayo">Mayo</SelectItem>
+                          <SelectItem value="junio">Junio</SelectItem>
+                          <SelectItem value="julio">Julio</SelectItem>
+                          <SelectItem value="agosto">Agosto</SelectItem>
+                          <SelectItem value="septiembre">Septiembre</SelectItem>
+                          <SelectItem value="octubre">Octubre</SelectItem>
+                          <SelectItem value="noviembre">Noviembre</SelectItem>
+                          <SelectItem value="diciembre">Diciembre</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      <Select
+                        value={effectiveFrom?.getFullYear()?.toString() || ""}
+                        onValueChange={(year) => {
+                          const currentMonth = effectiveFrom?.getMonth() || 0;
+                          const currentDay = effectiveFrom?.getDate() || 1;
+                          setEffectiveFrom(new Date(parseInt(year), currentMonth, currentDay));
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Año" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="2024">2024</SelectItem>
+                          <SelectItem value="2025">2025</SelectItem>
+                          <SelectItem value="2026">2026</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Calendar */}
+                    <Calendar
+                      mode="single"
+                      selected={effectiveFrom}
+                      onSelect={setEffectiveFrom}
+                      month={effectiveFrom}
+                      onMonthChange={setEffectiveFrom}
+                      className="p-0 pointer-events-auto"
+                    />
+                  </div>
                 </PopoverContent>
               </Popover>
             </div>
@@ -520,13 +578,71 @@ export function ExpenseTemplateDialog({
                     {effectiveUntil ? format(effectiveUntil, "PPP", { locale: es }) : "Indefinido"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={effectiveUntil}
-                    onSelect={setEffectiveUntil}
-                    initialFocus
-                  />
+                <PopoverContent className="w-auto p-0" align="start">
+                  <div className="p-4 space-y-4">
+                    {/* Selectores de mes y año */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <Select
+                        value={effectiveUntil ? format(effectiveUntil, 'MMMM', { locale: es }) : ""}
+                        onValueChange={(monthName) => {
+                          const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                                            'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+                                            .indexOf(monthName.toLowerCase());
+                          if (monthIndex !== -1) {
+                            const currentYear = effectiveUntil?.getFullYear() || new Date().getFullYear();
+                            const currentDay = effectiveUntil?.getDate() || 1;
+                            setEffectiveUntil(new Date(currentYear, monthIndex, currentDay));
+                          }
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Mes" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="enero">Enero</SelectItem>
+                          <SelectItem value="febrero">Febrero</SelectItem>
+                          <SelectItem value="marzo">Marzo</SelectItem>
+                          <SelectItem value="abril">Abril</SelectItem>
+                          <SelectItem value="mayo">Mayo</SelectItem>
+                          <SelectItem value="junio">Junio</SelectItem>
+                          <SelectItem value="julio">Julio</SelectItem>
+                          <SelectItem value="agosto">Agosto</SelectItem>
+                          <SelectItem value="septiembre">Septiembre</SelectItem>
+                          <SelectItem value="octubre">Octubre</SelectItem>
+                          <SelectItem value="noviembre">Noviembre</SelectItem>
+                          <SelectItem value="diciembre">Diciembre</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      <Select
+                        value={effectiveUntil?.getFullYear()?.toString() || ""}
+                        onValueChange={(year) => {
+                          const currentMonth = effectiveUntil?.getMonth() || 0;
+                          const currentDay = effectiveUntil?.getDate() || 1;
+                          setEffectiveUntil(new Date(parseInt(year), currentMonth, currentDay));
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Año" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="2024">2024</SelectItem>
+                          <SelectItem value="2025">2025</SelectItem>
+                          <SelectItem value="2026">2026</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Calendar */}
+                    <Calendar
+                      mode="single"
+                      selected={effectiveUntil}
+                      onSelect={setEffectiveUntil}
+                      month={effectiveUntil}
+                      onMonthChange={setEffectiveUntil}
+                      className="p-0 pointer-events-auto"
+                    />
+                  </div>
                 </PopoverContent>
               </Popover>
             </div>
