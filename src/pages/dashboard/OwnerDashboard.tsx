@@ -262,7 +262,7 @@ export default function OwnerDashboard() {
   }
 
   return (
-    <div className="!bg-lime-500">
+    <>
       <PageToolbar 
         title="Dashboard Ejecutivo"
       />
@@ -546,6 +546,6 @@ export default function OwnerDashboard() {
         </Tabs>
         </div>
       </div>
-    </div>
+    </>
   );
 }
