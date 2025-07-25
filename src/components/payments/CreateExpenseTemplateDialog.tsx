@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CalendarIcon, AlertTriangle, RotateCcw } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
   const { user } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [inactiveTemplate, setInactiveTemplate] = useState<any>(null);
   
   const [formData, setFormData] = useState({
     driver_user_id: '',
@@ -46,6 +48,75 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
   const [effectiveUntil, setEffectiveUntil] = useState<Date>();
   const [isFromDateOpen, setIsFromDateOpen] = useState(false);
   const [isUntilDateOpen, setIsUntilDateOpen] = useState(false);
+
+  // Verificar plantillas inactivas cuando cambian conductor y tipo de gasto
+  useEffect(() => {
+    const checkInactiveTemplate = async () => {
+      if (!formData.driver_user_id || !formData.expense_type_id) {
+        setInactiveTemplate(null);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('recurring_expense_templates')
+          .select(`
+            *,
+            expense_types (name, category)
+          `)
+          .eq('driver_user_id', formData.driver_user_id)
+          .eq('expense_type_id', formData.expense_type_id)
+          .eq('is_active', false)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error checking inactive template:', error);
+          return;
+        }
+
+        setInactiveTemplate(data || null);
+      } catch (error) {
+        console.error('Error in checkInactiveTemplate:', error);
+      }
+    };
+
+    checkInactiveTemplate();
+  }, [formData.driver_user_id, formData.expense_type_id]);
+
+  // Mutation para reactivar plantilla
+  const reactivateTemplateMutation = useMutation({
+    mutationFn: async (templateId: string) => {
+      const { error } = await supabase
+        .from('recurring_expense_templates')
+        .update({ 
+          is_active: true,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', templateId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Éxito",
+        description: "Plantilla reactivada exitosamente",
+      });
+      onSuccess();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo reactivar la plantilla",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleReactivateExisting = () => {
+    if (inactiveTemplate) {
+      reactivateTemplateMutation.mutate(inactiveTemplate.id);
+    }
+  };
 
   // Obtener conductores de la empresa
   const { data: drivers = [] } = useQuery({
@@ -191,6 +262,33 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
             </Select>
           </div>
         </div>
+
+        {/* Alerta para plantilla inactiva encontrada */}
+        {inactiveTemplate && (
+          <Alert className="border-orange-200 bg-orange-50">
+            <AlertTriangle className="h-4 w-4 text-orange-600" />
+            <AlertDescription className="flex items-center justify-between">
+              <div>
+                <span className="font-medium text-orange-800">Plantilla inactiva encontrada</span>
+                <p className="text-sm text-orange-700 mt-1">
+                  Ya existe una plantilla de "{inactiveTemplate.expense_types?.name}" para este conductor que fue desactivada el {format(new Date(inactiveTemplate.updated_at), "PPP", { locale: es })}. 
+                  Puedes reactivarla en lugar de crear una nueva.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleReactivateExisting}
+                disabled={reactivateTemplateMutation.isPending}
+                className="ml-4 text-green-600 border-green-300 hover:bg-green-50"
+              >
+                <RotateCcw className="h-4 w-4 mr-1" />
+                {reactivateTemplateMutation.isPending ? "Reactivando..." : "Reactivar"}
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
