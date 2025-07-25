@@ -29,8 +29,32 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
     hireDate: new Date()
   });
 
+  // Validación de email
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Verificar si todos los campos están válidos
+  const isFormValid = formData.firstName.trim() !== '' && 
+                      formData.lastName.trim() !== '' && 
+                      formData.email.trim() !== '' && 
+                      isValidEmail(formData.email) && 
+                      formData.hireDate;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validación adicional antes de enviar
+    if (!isFormValid) {
+      toast({
+        title: "Error de validación",
+        description: "Por favor complete todos los campos correctamente",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -156,7 +180,7 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
             <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading || !isFormValid}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Enviar Invitación
             </Button>
