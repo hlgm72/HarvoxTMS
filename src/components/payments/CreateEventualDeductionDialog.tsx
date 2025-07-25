@@ -13,7 +13,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Check, ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { CalendarIcon } from "lucide-react";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, isWithinInterval, isBefore, isAfter } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -266,6 +266,30 @@ export function CreateEventualDeductionDialog({
     }
   };
 
+  // Función helper para determinar el tipo de período
+  const getPeriodLabel = (period: any) => {
+    const today = new Date();
+    const startDate = parseISO(period.company_payment_periods.period_start_date);
+    const endDate = parseISO(period.company_payment_periods.period_end_date);
+    
+    // Verificar si es el período actual
+    if (isWithinInterval(today, { start: startDate, end: endDate })) {
+      return 'actual';
+    }
+    
+    // Verificar si es un período anterior
+    if (isBefore(endDate, today)) {
+      return 'anterior';
+    }
+    
+    // Verificar si es un período siguiente
+    if (isAfter(startDate, today)) {
+      return 'siguiente';
+    }
+    
+    return '';
+  };
+
   const isFormValid = 
     formData.driver_user_id && 
     formData.payment_period_id &&
@@ -373,8 +397,12 @@ export function CreateEventualDeductionDialog({
                     {paymentPeriods.map((period) => (
                       <SelectItem key={period.id} value={period.id}>
                         {format(parseISO(period.company_payment_periods.period_start_date), 'dd/MM/yyyy', { locale: es })} - {' '}
-                        {format(parseISO(period.company_payment_periods.period_end_date), 'dd/MM/yyyy', { locale: es })} {' '}
-                        ({period.company_payment_periods.period_frequency})
+                        {format(parseISO(period.company_payment_periods.period_end_date), 'dd/MM/yyyy', { locale: es })}
+                        {getPeriodLabel(period) && (
+                          <span className="ml-2 text-xs text-muted-foreground">
+                            ({getPeriodLabel(period)})
+                          </span>
+                        )}
                       </SelectItem>
                     ))}
                   </SelectContent>
