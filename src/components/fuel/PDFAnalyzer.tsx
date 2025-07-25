@@ -168,14 +168,37 @@ export function PDFAnalyzer() {
               </div>
             </div>
 
-            {/* Sample Data */}
+            {/* Transactions Table */}
             {analysisResult.sampleData.length > 0 && (
               <div>
-                <h4 className="font-medium mb-2">Datos de muestra:</h4>
-                <div className="bg-muted p-3 rounded-md text-sm">
-                  <pre className="whitespace-pre-wrap">
-                    {JSON.stringify(analysisResult.sampleData[0], null, 2)}
-                  </pre>
+                <h4 className="font-medium mb-2">Transacciones encontradas ({analysisResult.sampleData.length}):</h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse border border-border rounded-md">
+                    <thead>
+                      <tr className="bg-muted">
+                        <th className="border border-border p-2 text-left text-sm font-medium">Fecha</th>
+                        <th className="border border-border p-2 text-left text-sm font-medium">Ubicación</th>
+                        <th className="border border-border p-2 text-left text-sm font-medium">Combustible</th>
+                        <th className="border border-border p-2 text-right text-sm font-medium">Galones</th>
+                        <th className="border border-border p-2 text-right text-sm font-medium">Precio/Gal</th>
+                        <th className="border border-border p-2 text-right text-sm font-medium">Descuento</th>
+                        <th className="border border-border p-2 text-right text-sm font-medium">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {analysisResult.sampleData.map((transaction, index) => (
+                        <tr key={index} className="hover:bg-muted/50">
+                          <td className="border border-border p-2 text-sm">{transaction.date || '-'}</td>
+                          <td className="border border-border p-2 text-sm">{transaction.location || '-'}</td>
+                          <td className="border border-border p-2 text-sm">{transaction.fuel_type || '-'}</td>
+                          <td className="border border-border p-2 text-sm text-right">{transaction.gallons || '-'}</td>
+                          <td className="border border-border p-2 text-sm text-right">${transaction.gross_ppg || '-'}</td>
+                          <td className="border border-border p-2 text-sm text-right">${transaction.discount || '-'}</td>
+                          <td className="border border-border p-2 text-sm text-right font-medium">${transaction.total_amount || '-'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )}
