@@ -67,8 +67,15 @@ export function CreateEventualDeductionDialog({
   const atmInput = useATMInput({
     initialValue: 0,
     onValueChange: (value) => {
+      console.log('🏧 ATM Input value changed:', value);
       setFormData(prev => ({ ...prev, amount: value.toString() }));
     }
+  });
+
+  console.log('🔍 ATM Input current state:', {
+    displayValue: atmInput.displayValue,
+    numericValue: atmInput.numericValue,
+    formDataAmount: formData.amount
   });
 
   // Reset ATM input when dialog opens
@@ -478,11 +485,20 @@ export function CreateEventualDeductionDialog({
                 type="text"
                 value={atmInput.displayValue}
                 onChange={() => {}} // Dummy onChange to satisfy React warning
-                onKeyDown={atmInput.handleKeyDown}
-                onPaste={atmInput.handlePaste}
+                onKeyDown={(e) => {
+                  console.log('⌨️ Key pressed:', e.key, 'Input focused:', document.activeElement === e.target);
+                  atmInput.handleKeyDown(e);
+                }}
+                onPaste={(e) => {
+                  console.log('📋 Paste event triggered');
+                  atmInput.handlePaste(e);
+                }}
+                onFocus={() => console.log('🔍 Input focused')}
+                onBlur={() => console.log('😴 Input blurred')}
                 placeholder="$0.00"
                 className="text-right"
                 autoComplete="off"
+                readOnly
                 required
               />
             </div>
