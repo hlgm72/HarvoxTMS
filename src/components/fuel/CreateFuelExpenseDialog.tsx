@@ -17,6 +17,7 @@ import { useCreateFuelExpense } from '@/hooks/useFuelExpenses';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { useCompanyPaymentPeriods } from '@/hooks/useCompanyPaymentPeriods';
 import { useEquipment } from '@/hooks/useEquipment';
+import { useCompanyCache } from '@/hooks/useCompanyCache';
 
 const formSchema = z.object({
   driver_user_id: z.string().min(1, 'Selecciona un conductor'),
@@ -45,8 +46,9 @@ interface CreateFuelExpenseDialogProps {
 }
 
 export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpenseDialogProps) {
+  const { userCompany } = useCompanyCache();
   const { drivers } = useCompanyDrivers();
-  const { data: paymentPeriods = [] } = useCompanyPaymentPeriods();
+  const { data: paymentPeriods = [] } = useCompanyPaymentPeriods(userCompany?.company_id);
   const { equipment } = useEquipment();
   const createMutation = useCreateFuelExpense();
 
@@ -84,13 +86,32 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
 
   const gallons = form.watch('gallons_purchased');
   const pricePerGallon = form.watch('price_per_gallon');
+  const transactionDate = form.watch('transaction_date');
 
+  // Auto-calculate total amount
   React.useEffect(() => {
     if (gallons && pricePerGallon) {
       const total = gallons * pricePerGallon;
       form.setValue('total_amount', Number(total.toFixed(2)));
     }
   }, [gallons, pricePerGallon, form]);
+
+  // Auto-select payment period based on transaction date
+  React.useEffect(() => {
+    if (transactionDate && paymentPeriods.length > 0) {
+      const transactionDateStr = transactionDate.toISOString().split('T')[0];
+      
+      const matchingPeriod = paymentPeriods.find(period => {
+        const startDate = new Date(period.period_start_date).toISOString().split('T')[0];
+        const endDate = new Date(period.period_end_date).toISOString().split('T')[0];
+        return transactionDateStr >= startDate && transactionDateStr <= endDate;
+      });
+
+      if (matchingPeriod && !form.getValues('payment_period_id')) {
+        form.setValue('payment_period_id', matchingPeriod.id);
+      }
+    }
+  }, [transactionDate, paymentPeriods, form]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -104,6 +125,47 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Fecha de transacción primero - es el campo más importante */}
+            <FormField
+              control={form.control}
+              name="transaction_date"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Fecha de Transacción *</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Seleccionar fecha</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -139,7 +201,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar período" />
+                          <SelectValue placeholder="Se seleccionará automáticamente" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -156,70 +218,28 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="transaction_date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Fecha de Transacción</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Seleccionar fecha</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
-                          className="p-3 pointer-events-auto"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="fuel_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo de Combustible</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar tipo" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="diesel">Diesel</SelectItem>
-                        <SelectItem value="gasoline">Gasolina</SelectItem>
-                        <SelectItem value="def">DEF</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="fuel_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tipo de Combustible</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar tipo" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="diesel">Diesel</SelectItem>
+                      <SelectItem value="gasoline">Gasolina</SelectItem>
+                      <SelectItem value="def">DEF</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="grid grid-cols-3 gap-4">
               <FormField
