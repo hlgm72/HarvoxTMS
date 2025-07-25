@@ -1,5 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// @deno-types="npm:@types/pdf-parse"
+import pdfParse from "npm:pdf-parse";
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 
@@ -34,41 +36,30 @@ serve(async (req) => {
 
     console.log('PDF received, length:', pdfBase64.length);
 
-    // Decodificar el PDF para extraer texto
-    let pdfText = '';
+    // Convertir base64 a buffer para pdf-parse
+    const pdfBuffer = Uint8Array.from(atob(pdfBase64), c => c.charCodeAt(0));
+    
+    let extractedText = '';
+    
     try {
-      // Convertir base64 a texto para buscar patrones
-      const binaryString = atob(pdfBase64);
-      
-      // Buscar patrones comunes en PDFs de combustible
-      const patterns = [
-        /authorization.{0,10}code/gi,
-        /auth.{0,5}code/gi,
-        /reference.{0,10}number/gi,
-        /transaction.{0,10}id/gi,
-        /card.{0,10}number/gi,
-        /driver/gi,
-        /vehicle/gi,
-        /gallons/gi,
-        /amount/gi,
-        /date/gi,
-        /station/gi,
-        /pump/gi
-      ];
+      console.log('Extracting text from PDF...');
+      const pdfData = await pdfParse(pdfBuffer);
+      extractedText = pdfData.text;
+      console.log('PDF text extracted, length:', extractedText.length);
+      console.log('First 500 chars:', extractedText.substring(0, 500));
+    } catch (pdfError) {
+      console.error('PDF parsing error:', pdfError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to extract text from PDF', details: pdfError.message }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-      let foundFields = [];
-      patterns.forEach((pattern, index) => {
-        const matches = binaryString.match(pattern);
-        if (matches) {
-          foundFields.push(matches[0]);
-        }
-      });
-
-      pdfText = `PDF content analysis - Found potential fields: ${foundFields.join(', ')}`;
-      
-    } catch (error) {
-      console.log('PDF decoding failed:', error);
-      pdfText = 'PDF content could not be decoded for pattern analysis';
+    if (!extractedText.trim()) {
+      return new Response(
+        JSON.stringify({ error: 'No text could be extracted from the PDF' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     console.log('Analyzing with OpenAI...');
@@ -84,41 +75,38 @@ serve(async (req) => {
         messages: [
           {
             role: 'user',
-            content: `Eres un experto en análisis de documentos de combustible y transporte. 
+            content: `Eres un asistente experto en contabilidad de transporte. Analiza este texto extraído de un PDF de combustible y extrae información estructurada.
 
-            Información del documento: "${pdfText}"
+Texto del PDF:
+${extractedText}
 
-            Basándote en esta información y tu conocimiento de documentos de combustible típicos, analiza qué campos podrían estar presentes.
+Responde SOLO con JSON válido en este formato exacto:
+{
+  "columnsFound": ["lista de campos que encuentres en el documento"],
+  "hasAuthorizationCode": true/false,
+  "authorizationCodeField": "nombre del campo si existe o null",
+  "sampleData": [
+    {
+      "date": "YYYY-MM-DD",
+      "fuel_type": "Diesel",
+      "location": "Nombre del lugar",
+      "gallons": número,
+      "gross_ppg": precio_por_galón,
+      "gross_amount": total_bruto,
+      "discount": descuento,
+      "fees": comisiones,
+      "total_amount": monto_final,
+      "authorization_code": "código si existe"
+    }
+  ],
+  "analysis": "Análisis detallado de qué encontraste en el documento"
+}
 
-            Busca especialmente:
-            - authorization_code o authorization code
-            - códigos de autorización
-            - números de referencia
-            - códigos de transacción
-
-            También incluye campos típicos de reportes de combustible como:
-            - date, transaction_date
-            - amount, total_amount
-            - gallons, gallons_purchased
-            - price_per_gallon
-            - station_name, station
-            - driver_name, driver_id
-            - vehicle_number, truck_number
-            - card_number
-            - reference_number
-
-            Responde SOLO con JSON válido:
-            {
-              "columnsFound": ["lista_de_campos_encontrados_y_típicos"],
-              "hasAuthorizationCode": true/false,
-              "authorizationCodeField": "authorization_code si existe o null",
-              "sampleData": [{"campo": "valor_ejemplo"}],
-              "analysis": "Análisis del documento de combustible basado en patrones encontrados y campos típicos"
-            }`
+Extrae TODOS los datos de transacciones que encuentres en el PDF.`
           }
         ],
-        max_tokens: 1500,
-        temperature: 0.1
+        max_tokens: 2000,
+        temperature: 0
       }),
     });
 
@@ -156,24 +144,17 @@ serve(async (req) => {
 
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
+      console.error('Raw response was:', responseText);
       
-      // Fallback con análisis básico
-      const hasAuth = /authorization|auth.?code/i.test(pdfText);
-      
-      analysisResult = {
-        columnsFound: [
-          "date", "transaction_date", "amount", "total_amount", 
-          "gallons", "gallons_purchased", "price_per_gallon",
-          "station_name", "driver_name", "vehicle_number", "card_number"
-        ],
-        hasAuthorizationCode: hasAuth,
-        authorizationCodeField: hasAuth ? "authorization_code" : null,
-        sampleData: [
-          {"date": "2025-07-14", "amount": "150.25", "gallons": "45.5"},
-          {"station": "Shell", "driver": "John Doe", "vehicle": "T001"}
-        ],
-        analysis: `Análisis de PDF de combustible. Patrones encontrados: ${pdfText}. Estructura típica incluye campos de fecha, cantidad, galones, estación y conductor.`
-      };
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Failed to parse OpenAI response',
+          details: parseError.message,
+          rawResponse: responseText
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     return new Response(
