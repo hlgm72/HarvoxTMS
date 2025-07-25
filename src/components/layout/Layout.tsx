@@ -19,12 +19,12 @@ export function Layout({ children }: LayoutProps) {
         } as React.CSSProperties
       }
     >
-      <div className="min-h-screen flex w-full bg-background prevent-horizontal-scroll">
+      <div className="min-h-screen flex w-full bg-background prevent-horizontal-scroll !bg-red-500">
         <AppSidebar />
         <SidebarInset className="flex flex-col flex-1 min-w-0">
           <Header />
           <main className="flex-1 bg-gradient-subtle overflow-x-hidden">
-            <div className="animate-fade-in !bg-red-500">
+            <div className="animate-fade-in">
               {children}
             </div>
           </main>
