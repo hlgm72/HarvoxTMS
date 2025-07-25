@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useFuelCardProviders } from '@/hooks/useFuelCardProviders';
 
 interface DriverCard {
   id: string;
@@ -49,9 +50,13 @@ interface Driver {
 export function DriverCardsManager() {
   const [isAddCardOpen, setIsAddCardOpen] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState<string>('');
+  const [selectedProvider, setSelectedProvider] = useState<string>('');
   const [cardLastFour, setCardLastFour] = useState('');
   const [cardIdentifier, setCardIdentifier] = useState('');
   const queryClient = useQueryClient();
+
+  // Fetch fuel card providers
+  const { data: providers } = useFuelCardProviders();
 
   // Fetch driver cards with driver names
   const { data: driverCards, isLoading } = useQuery({
@@ -120,8 +125,8 @@ export function DriverCardsManager() {
   // Add new card mutation
   const addCardMutation = useMutation({
     mutationFn: async () => {
-      if (!selectedDriver || !cardLastFour) {
-        throw new Error('Driver y últimos 4 dígitos son requeridos');
+      if (!selectedDriver || !selectedProvider || !cardLastFour) {
+        throw new Error('Conductor, proveedor y últimos 4 dígitos son requeridos');
       }
 
       // Get company ID from current user - solo necesitamos el company_id
@@ -146,7 +151,7 @@ export function DriverCardsManager() {
         driver_user_id: selectedDriver,
         company_id: userRoles.company_id,
         card_number_last_four: cardLastFour,
-        card_provider: 'fleetone',
+        card_provider: selectedProvider,
         ...(cardIdentifier && { card_identifier: cardIdentifier })
       };
 
@@ -168,6 +173,7 @@ export function DriverCardsManager() {
       queryClient.invalidateQueries({ queryKey: ['driver-cards'] });
       setIsAddCardOpen(false);
       setSelectedDriver('');
+      setSelectedProvider('');
       setCardLastFour('');
       setCardIdentifier('');
       toast.success('Tarjeta asignada exitosamente');
@@ -219,7 +225,7 @@ export function DriverCardsManager() {
         <div>
           <h2 className="text-2xl font-bold">Tarjetas de Combustible</h2>
           <p className="text-muted-foreground">
-            Gestiona las tarjetas FleetOne asignadas a los conductores
+            Gestiona las tarjetas de combustible asignadas a los conductores
           </p>
         </div>
         
@@ -232,9 +238,9 @@ export function DriverCardsManager() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Asignar Nueva Tarjeta FleetOne</DialogTitle>
+              <DialogTitle>Asignar Nueva Tarjeta de Combustible</DialogTitle>
               <DialogDescription>
-                Asigna una tarjeta de combustible FleetOne a un conductor
+                Asigna una tarjeta de combustible a un conductor
               </DialogDescription>
             </DialogHeader>
             
@@ -249,6 +255,22 @@ export function DriverCardsManager() {
                     {drivers?.map((driver) => (
                       <SelectItem key={driver.user_id} value={driver.user_id}>
                         {driver.profiles.first_name} {driver.profiles.last_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="provider">Proveedor de Tarjeta</Label>
+                <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar proveedor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {providers?.map((provider) => (
+                      <SelectItem key={provider.id} value={provider.name}>
+                        {provider.display_name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -298,9 +320,9 @@ export function DriverCardsManager() {
           <div className="flex items-start space-x-3">
             <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
             <div>
-              <h3 className="font-medium text-blue-900">Configuración FleetOne</h3>
+              <h3 className="font-medium text-blue-900">Configuración de Webhooks</h3>
               <p className="text-sm text-blue-700 mt-1">
-                Webhook URL para configurar en FleetOne Portal:<br />
+                FleetOne Webhook URL:<br />
                 <code className="bg-blue-100 px-2 py-1 rounded text-xs">
                   https://htaotttcnjxqzpsrqwll.supabase.co/functions/v1/fleetone-webhook
                 </code>
@@ -361,7 +383,7 @@ export function DriverCardsManager() {
             <CreditCard className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <h3 className="font-medium mb-2">No hay tarjetas asignadas</h3>
             <p className="text-muted-foreground mb-4">
-              Comienza asignando tarjetas FleetOne a tus conductores
+              Comienza asignando tarjetas de combustible a tus conductores
             </p>
             <Button onClick={() => setIsAddCardOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
