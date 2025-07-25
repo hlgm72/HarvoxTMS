@@ -40,6 +40,8 @@ export function ExpenseTemplateDialog({
   const [inactiveTemplate, setInactiveTemplate] = useState<any>(null);
   const [driverSearchOpen, setDriverSearchOpen] = useState(false);
   const [driverSearchValue, setDriverSearchValue] = useState("");
+  const [isFromDatePickerOpen, setIsFromDatePickerOpen] = useState(false);
+  const [isUntilDatePickerOpen, setIsUntilDatePickerOpen] = useState(false);
   
   const [formData, setFormData] = useState({
     driver_user_id: mode === 'edit' ? template?.driver_user_id : '',
@@ -481,7 +483,7 @@ export function ExpenseTemplateDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Vigente Desde</Label>
-              <Popover>
+              <Popover open={isFromDatePickerOpen} onOpenChange={setIsFromDatePickerOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -553,7 +555,12 @@ export function ExpenseTemplateDialog({
                     <Calendar
                       mode="single"
                       selected={effectiveFrom}
-                      onSelect={setEffectiveFrom}
+                      onSelect={(date) => {
+                        if (date) {
+                          setEffectiveFrom(date);
+                          setIsFromDatePickerOpen(false);
+                        }
+                      }}
                       month={effectiveFrom}
                       onMonthChange={setEffectiveFrom}
                       className="p-0 pointer-events-auto"
@@ -565,7 +572,7 @@ export function ExpenseTemplateDialog({
 
             <div className="space-y-2">
               <Label>Vigente Hasta (Opcional)</Label>
-              <Popover>
+              <Popover open={isUntilDatePickerOpen} onOpenChange={setIsUntilDatePickerOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -637,7 +644,12 @@ export function ExpenseTemplateDialog({
                     <Calendar
                       mode="single"
                       selected={effectiveUntil}
-                      onSelect={setEffectiveUntil}
+                      onSelect={(date) => {
+                        if (date) {
+                          setEffectiveUntil(date);
+                          setIsUntilDatePickerOpen(false);
+                        }
+                      }}
                       month={effectiveUntil}
                       onMonthChange={setEffectiveUntil}
                       className="p-0 pointer-events-auto"

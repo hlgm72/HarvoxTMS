@@ -45,6 +45,7 @@ export function CreateEventualDeductionDialog({
   
   const [expenseDate, setExpenseDate] = useState<Date>(new Date());
   const [driverComboboxOpen, setDriverComboboxOpen] = useState(false);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   // Reset form when dialog opens
   useEffect(() => {
@@ -496,7 +497,7 @@ export function CreateEventualDeductionDialog({
 
             <div className="space-y-2">
               <Label>Fecha del Gasto</Label>
-              <Popover>
+              <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -568,7 +569,12 @@ export function CreateEventualDeductionDialog({
                     <Calendar
                       mode="single"
                       selected={expenseDate}
-                      onSelect={(date) => date && setExpenseDate(date)}
+                      onSelect={(date) => {
+                        if (date) {
+                          setExpenseDate(date);
+                          setIsDatePickerOpen(false);
+                        }
+                      }}
                       month={expenseDate}
                       onMonthChange={setExpenseDate}
                       className="p-0 pointer-events-auto"
