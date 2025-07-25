@@ -15,6 +15,7 @@ All colors MUST be HSL.
   html {
     font-size: 16px;
     overflow-x: hidden;
+    background: red !important;
   }
   
   body {
