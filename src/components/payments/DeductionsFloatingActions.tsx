@@ -306,14 +306,73 @@ export function DeductionsFloatingActions({
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          initialFocus
-                          mode="range"
-                          defaultMonth={filters.dateRange.from}
-                          selected={filters.dateRange}
-                          onSelect={(range) => handleFilterChange("dateRange", range || { from: undefined, to: undefined })}
-                          className="p-0 pointer-events-auto"
-                        />
+                        <div className="p-3">
+                          {/* Month and Year selectors */}
+                          <div className="grid grid-cols-2 gap-2 mb-3">
+                            <Select
+                              value={filters.dateRange.from ? 
+                                ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                                 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+                                [filters.dateRange.from.getMonth()] : ""}
+                              onValueChange={(monthName) => {
+                                const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                                                  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+                                                  .indexOf(monthName.toLowerCase());
+                                if (monthIndex !== -1) {
+                                  const currentYear = filters.dateRange.from?.getFullYear() || new Date().getFullYear();
+                                  const newDate = new Date(currentYear, monthIndex, 1);
+                                  handleFilterChange("dateRange", { from: newDate, to: filters.dateRange.to });
+                                }
+                              }}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Mes" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="enero">Enero</SelectItem>
+                                <SelectItem value="febrero">Febrero</SelectItem>
+                                <SelectItem value="marzo">Marzo</SelectItem>
+                                <SelectItem value="abril">Abril</SelectItem>
+                                <SelectItem value="mayo">Mayo</SelectItem>
+                                <SelectItem value="junio">Junio</SelectItem>
+                                <SelectItem value="julio">Julio</SelectItem>
+                                <SelectItem value="agosto">Agosto</SelectItem>
+                                <SelectItem value="septiembre">Septiembre</SelectItem>
+                                <SelectItem value="octubre">Octubre</SelectItem>
+                                <SelectItem value="noviembre">Noviembre</SelectItem>
+                                <SelectItem value="diciembre">Diciembre</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            
+                            <Select
+                              value={filters.dateRange.from?.getFullYear()?.toString() || ""}
+                              onValueChange={(year) => {
+                                const currentMonth = filters.dateRange.from?.getMonth() || 0;
+                                const newDate = new Date(parseInt(year), currentMonth, 1);
+                                handleFilterChange("dateRange", { from: newDate, to: filters.dateRange.to });
+                              }}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Año" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="2024">2024</SelectItem>
+                                <SelectItem value="2025">2025</SelectItem>
+                                <SelectItem value="2026">2026</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          {/* Calendar */}
+                          <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={filters.dateRange.from}
+                            selected={filters.dateRange}
+                            onSelect={(range) => handleFilterChange("dateRange", range || { from: undefined, to: undefined })}
+                            className="p-0 pointer-events-auto"
+                          />
+                        </div>
                       </PopoverContent>
                     </Popover>
                   </div>
