@@ -17,8 +17,7 @@ import { AlertCircle, Calendar, Download, FileText, MoreVertical, Archive, Archi
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatExpiryDate, formatDateOnly } from '@/lib/dateFormatting';
 
 interface PredefinedDocumentType {
   value: string;
@@ -260,7 +259,7 @@ export function DocumentCard({
           <div className="flex items-center space-x-2 text-xs text-muted-foreground">
             <Calendar className="h-3 w-3" />
             <span>
-              Vence: {format(new Date(document.expires_at), "d 'de' MMMM, yyyy", { locale: es })}
+              Vence: {formatExpiryDate(document.expires_at)}
             </span>
           </div>
         )}
@@ -269,7 +268,7 @@ export function DocumentCard({
         <div className="space-y-1 text-xs text-muted-foreground">
           <div>Tamaño: {formatFileSize(document.file_size)}</div>
           <div>
-            Subido: {format(new Date(document.created_at), "d MMM yyyy", { locale: es })}
+            Subido: {formatDateOnly(document.created_at)}
           </div>
         </div>
 

@@ -21,8 +21,7 @@ import {
   Trash2,
   FileText
 } from "lucide-react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatDateOnly } from '@/lib/dateFormatting';
 
 interface OtherIncomeItem {
   id: string;
@@ -217,7 +216,7 @@ export function OtherIncomeSection() {
                     <TableCell className="font-medium">{item.description}</TableCell>
                     <TableCell>{getIncomeTypeLabel(item.incomeType)}</TableCell>
                     <TableCell className="font-semibold">${item.amount.toLocaleString()}</TableCell>
-                    <TableCell>{format(new Date(item.incomeDate), "dd MMM yyyy", { locale: es })}</TableCell>
+                    <TableCell>{formatDateOnly(item.incomeDate)}</TableCell>
                     {!isDriver && <TableCell>{item.driverName}</TableCell>}
                     <TableCell>{getStatusBadge(item.status)}</TableCell>
                     <TableCell>
@@ -274,7 +273,7 @@ export function OtherIncomeSection() {
                 <div>
                   <Label className="text-sm font-medium">Fecha</Label>
                   <p className="text-sm text-muted-foreground">
-                    {format(new Date(selectedItem.incomeDate), "dd MMM yyyy", { locale: es })}
+                    {formatDateOnly(selectedItem.incomeDate)}
                   </p>
                 </div>
                 <div>

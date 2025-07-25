@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertTriangle, Calculator, DollarSign, Lock, Play, Users } from "lucide-react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatPaymentPeriod } from '@/lib/dateFormatting';
 import { useToast } from "@/hooks/use-toast";
 import { PaymentPeriodAlerts } from "./PaymentPeriodAlerts";
 
@@ -126,8 +125,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold">
-            {format(new Date(period.period_start_date), 'dd MMM', { locale: es })} - {' '}
-            {format(new Date(period.period_end_date), 'dd MMM yyyy', { locale: es })}
+            {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
           </h3>
           <div className="flex items-center gap-2 mt-1">
             <Badge variant={getStatusBadgeVariant(period.status)}>
@@ -291,8 +289,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                 <div>
                   <p className="text-sm text-muted-foreground">Período</p>
                   <p className="font-semibold">
-                    {format(new Date(period.period_start_date), 'dd MMM', { locale: es })} - {' '}
-                    {format(new Date(period.period_end_date), 'dd MMM yyyy', { locale: es })}
+                    {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
                   </p>
                 </div>
                 <div>

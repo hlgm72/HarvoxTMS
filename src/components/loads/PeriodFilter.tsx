@@ -7,6 +7,7 @@ import { Calendar, CalendarDays, ChevronDown, Clock, X, TrendingUp, FileText, Lo
 import { usePaymentPeriods, useCurrentPaymentPeriod, usePreviousPaymentPeriod, useNextPaymentPeriod } from '@/hooks/usePaymentPeriods';
 import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { formatPaymentPeriod, formatDateOnly } from '@/lib/dateFormatting';
 
 export interface PeriodFilterValue {
   type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
@@ -81,22 +82,22 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
     switch (value.type) {
       case 'current':
         return currentPeriod 
-          ? `Período Actual (${format(parseISO(currentPeriod.period_start_date), 'dd/MM', { locale: es })} - ${format(parseISO(currentPeriod.period_end_date), 'dd/MM/yy', { locale: es })})`
+          ? `Período Actual (${formatPaymentPeriod(currentPeriod.period_start_date, currentPeriod.period_end_date)})`
           : 'Período Actual';
       case 'previous':
         return previousPeriod 
-          ? `Período Anterior (${format(parseISO(previousPeriod.period_start_date), 'dd/MM', { locale: es })} - ${format(parseISO(previousPeriod.period_end_date), 'dd/MM/yy', { locale: es })})`
+          ? `Período Anterior (${formatPaymentPeriod(previousPeriod.period_start_date, previousPeriod.period_end_date)})`
           : 'Período Anterior';
       case 'next':
         return nextPeriod 
-          ? `Período Siguiente (${format(parseISO(nextPeriod.period_start_date), 'dd/MM', { locale: es })} - ${format(parseISO(nextPeriod.period_end_date), 'dd/MM/yy', { locale: es })})`
+          ? `Período Siguiente (${formatPaymentPeriod(nextPeriod.period_start_date, nextPeriod.period_end_date)})`
           : 'Período Siguiente';
       case 'all':
         return 'Todos los períodos';
       case 'specific':
         const selectedPeriod = allPeriods.find(p => p.id === value.periodId);
         return selectedPeriod 
-          ? `${format(parseISO(selectedPeriod.period_start_date), 'dd/MM', { locale: es })} - ${format(parseISO(selectedPeriod.period_end_date), 'dd/MM/yy', { locale: es })}`
+          ? formatPaymentPeriod(selectedPeriod.period_start_date, selectedPeriod.period_end_date)
           : 'Período específico';
       case 'this_month':
       case 'last_month':
@@ -213,7 +214,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 Período Anterior
                 {previousPeriod && (
                   <Badge variant="secondary" className="ml-auto text-xs">
-                    {format(parseISO(previousPeriod.period_start_date), 'dd/MM', { locale: es })} - {format(parseISO(previousPeriod.period_end_date), 'dd/MM', { locale: es })}
+                    {formatPaymentPeriod(previousPeriod.period_start_date, previousPeriod.period_end_date)}
                   </Badge>
                 )}
               </Button>
@@ -238,7 +239,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 Período Actual
                 {currentPeriod && (
                   <Badge variant="secondary" className="ml-auto text-xs">
-                    {format(parseISO(currentPeriod.period_start_date), 'dd/MM', { locale: es })} - {format(parseISO(currentPeriod.period_end_date), 'dd/MM', { locale: es })}
+                    {formatPaymentPeriod(currentPeriod.period_start_date, currentPeriod.period_end_date)}
                   </Badge>
                 )}
               </Button>
@@ -262,7 +263,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 Período Siguiente
                 {nextPeriod && (
                   <Badge variant="secondary" className="ml-auto text-xs">
-                    {format(parseISO(nextPeriod.period_start_date), 'dd/MM', { locale: es })} - {format(parseISO(nextPeriod.period_end_date), 'dd/MM', { locale: es })}
+                    {formatPaymentPeriod(nextPeriod.period_start_date, nextPeriod.period_end_date)}
                   </Badge>
                 )}
               </Button>
@@ -376,7 +377,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     <div className="flex flex-col items-start w-full">
                       <div className="flex items-center justify-between w-full">
                         <span className="text-sm">
-                          {format(parseISO(period.period_start_date), 'dd/MM', { locale: es })} - {format(parseISO(period.period_end_date), 'dd/MM/yy', { locale: es })}
+                          {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
                         </span>
                         <Badge className={`text-xs ${getStatusColor(period.status)}`}>
                           {getStatusText(period.status)}
@@ -413,7 +414,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     <div className="flex flex-col items-start w-full">
                       <div className="flex items-center justify-between w-full">
                         <span className="text-sm">
-                          {format(parseISO(period.period_start_date), 'dd/MM', { locale: es })} - {format(parseISO(period.period_end_date), 'dd/MM/yy', { locale: es })}
+                          {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
                         </span>
                         <Badge className={`text-xs ${getStatusColor(period.status)}`}>
                           {getStatusText(period.status)}
@@ -445,7 +446,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     <div className="flex flex-col items-start w-full">
                       <div className="flex items-center justify-between w-full">
                         <span className="text-sm">
-                          {format(parseISO(period.period_start_date), 'dd/MM', { locale: es })} - {format(parseISO(period.period_end_date), 'dd/MM/yy', { locale: es })}
+                          {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
                         </span>
                         <Badge className={`text-xs ${getStatusColor(period.status)}`}>
                           {getStatusText(period.status)}

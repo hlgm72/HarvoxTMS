@@ -50,8 +50,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatExpiryDate, formatDateOnly } from '@/lib/dateFormatting';
 
 interface PredefinedDocumentType {
   value: string;
@@ -415,7 +414,7 @@ export function DocumentTable({
                           <div className="flex items-center gap-2">
                             <Calendar className="w-4 h-4 text-muted-foreground" />
                             <span className="text-sm">
-                              {format(new Date(document.expires_at), "d MMM yyyy", { locale: es })}
+                              {formatExpiryDate(document.expires_at)}
                             </span>
                           </div>
                         ) : (
@@ -427,7 +426,7 @@ export function DocumentTable({
                       </TableCell>
                       <TableCell>
                         <span className="text-sm">
-                          {format(new Date(document.created_at), "d MMM yyyy", { locale: es })}
+                          {formatDateOnly(document.created_at)}
                         </span>
                       </TableCell>
                       <TableCell>

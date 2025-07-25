@@ -5,8 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Calendar, DollarSign, Users, Plus } from "lucide-react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatPaymentPeriod } from '@/lib/dateFormatting';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CreateSpecialPeriodDialog } from "./CreateSpecialPeriodDialog";
 import { PaymentPeriodDetails } from "./PaymentPeriodDetails";
@@ -160,8 +159,7 @@ export function PaymentPeriodsManager() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <CardTitle className="text-lg">
-                    {format(new Date(period.period_start_date), 'dd MMM', { locale: es })} - {' '}
-                    {format(new Date(period.period_end_date), 'dd MMM yyyy', { locale: es })}
+                    {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
                   </CardTitle>
                   <CardDescription>
                     {getPeriodTypeLabel(period.period_type)} • {period.period_frequency}

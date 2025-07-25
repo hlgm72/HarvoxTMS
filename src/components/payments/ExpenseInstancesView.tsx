@@ -5,8 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, CheckCircle2, Clock, DollarSign } from "lucide-react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatDateOnly, formatDateTime } from '@/lib/dateFormatting';
 
 export function ExpenseInstancesView() {
   const { user } = useAuth();
@@ -185,7 +184,7 @@ export function ExpenseInstancesView() {
                   <p className="text-muted-foreground">Fecha del Gasto</p>
                   <p className="font-medium">
                     {instance.expense_date 
-                      ? format(new Date(instance.expense_date), 'dd MMM yyyy', { locale: es })
+                      ? formatDateOnly(instance.expense_date)
                       : 'No definida'
                     }
                   </p>
@@ -202,7 +201,7 @@ export function ExpenseInstancesView() {
                   <p className="text-muted-foreground">Fecha de Aplicación</p>
                   <p className="font-medium">
                     {instance.applied_at 
-                      ? format(new Date(instance.applied_at), 'dd MMM yyyy HH:mm', { locale: es })
+                      ? formatDateTime(instance.applied_at)
                       : 'No aplicado'
                     }
                   </p>

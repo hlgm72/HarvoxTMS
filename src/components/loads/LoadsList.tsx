@@ -7,8 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2, Copy } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatDateTime } from '@/lib/dateFormatting';
 import { useLoads } from "@/hooks/useLoads";
 import { useDeleteLoad } from "@/hooks/useDeleteLoad";
 import { PeriodFilterValue } from "./PeriodFilter";
@@ -345,7 +344,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
             
             <div className="flex items-center justify-between">
               <div className="text-xs text-muted-foreground">
-                Creada: {format(new Date(load.created_at), "dd/MM/yyyy HH:mm", { locale: es })}
+                Creada: {formatDateTime(load.created_at)}
               </div>
               
                <div className="flex gap-2">

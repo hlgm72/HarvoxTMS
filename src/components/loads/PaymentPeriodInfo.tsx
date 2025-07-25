@@ -1,8 +1,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { formatPaymentPeriod } from '@/lib/dateFormatting';
 
 interface PaymentPeriodInfoProps {
   periodStartDate?: string;
@@ -75,15 +74,14 @@ const PaymentPeriodInfo = ({
     }
   };
 
-  const startDate = parseISO(periodStartDate);
-  const endDate = parseISO(periodEndDate);
+  const formattedPeriod = formatPaymentPeriod(periodStartDate, periodEndDate);
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       <div className="flex items-center gap-1 text-sm text-muted-foreground">
         <Calendar className="h-4 w-4" />
         <span>
-          {format(startDate, 'dd/MM', { locale: es })} - {format(endDate, 'dd/MM/yy', { locale: es })}
+          {formattedPeriod}
         </span>
       </div>
       

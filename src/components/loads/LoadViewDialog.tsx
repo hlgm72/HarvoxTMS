@@ -4,8 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, DollarSign, Calendar, Package, User, Building, Clock, FileText, Truck, ArrowRight, CheckCircle } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatDateOnly, formatDateTime, formatPaymentPeriod } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 
 const statusColors = {
@@ -93,10 +92,7 @@ export function LoadViewDialog({ isOpen, onClose, load }: LoadViewDialogProps) {
                         <p className="text-foreground font-medium">{load.pickup_city}</p>
                         {load.pickup_date && (
                           <p className="text-sm text-muted-foreground mt-1">
-                            📅 {typeof load.pickup_date === 'string' 
-                              ? format(new Date(load.pickup_date + 'T00:00:00'), "dd/MM/yyyy", { locale: es })
-                              : format(new Date(load.pickup_date), "dd/MM/yyyy", { locale: es })
-                            }
+                            📅 {formatDateOnly(load.pickup_date)}
                           </p>
                         )}
                       </div>
@@ -121,10 +117,7 @@ export function LoadViewDialog({ isOpen, onClose, load }: LoadViewDialogProps) {
                         <p className="text-foreground font-medium">{load.delivery_city}</p>
                         {load.delivery_date && (
                           <p className="text-sm text-muted-foreground mt-1">
-                            📅 {typeof load.delivery_date === 'string' 
-                              ? format(new Date(load.delivery_date + 'T00:00:00'), "dd/MM/yyyy", { locale: es })
-                              : format(new Date(load.delivery_date), "dd/MM/yyyy", { locale: es })
-                            }
+                            📅 {formatDateOnly(load.delivery_date)}
                           </p>
                         )}
                       </div>
@@ -268,8 +261,7 @@ export function LoadViewDialog({ isOpen, onClose, load }: LoadViewDialogProps) {
                             Período
                           </label>
                           <p className="text-lg font-bold text-purple-900">
-                            {format(new Date(load.period_start_date), "dd/MM/yyyy", { locale: es })} - {" "}
-                            {format(new Date(load.period_end_date), "dd/MM/yyyy", { locale: es })}
+                            {formatPaymentPeriod(load.period_start_date, load.period_end_date)}
                           </p>
                         </div>
 
@@ -331,7 +323,7 @@ export function LoadViewDialog({ isOpen, onClose, load }: LoadViewDialogProps) {
                       Fecha de Creación
                     </label>
                     <p className="text-sm font-medium text-orange-900">
-                      🗓️ {format(new Date(load.created_at), "dd/MM/yyyy HH:mm", { locale: es })}
+                      🗓️ {formatDateTime(load.created_at)}
                     </p>
                   </div>
 
@@ -341,7 +333,7 @@ export function LoadViewDialog({ isOpen, onClose, load }: LoadViewDialogProps) {
                         Última Actualización
                       </label>
                       <p className="text-sm font-medium text-yellow-900">
-                        ⏰ {format(new Date(load.updated_at), "dd/MM/yyyy HH:mm", { locale: es })}
+                        ⏰ {formatDateTime(load.updated_at)}
                       </p>
                     </div>
                   )}

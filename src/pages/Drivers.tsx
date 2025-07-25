@@ -6,8 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatExpiryDate } from '@/lib/dateFormatting';
 import { useState } from "react";
 import { InviteDriverDialog } from "@/components/drivers/InviteDriverDialog";
 
@@ -238,7 +237,7 @@ export default function Drivers() {
                       <span>📋</span>
                       <span className="text-sm">
                         {driver.license_expiry_date 
-                          ? `Vence: ${format(new Date(driver.license_expiry_date), 'dd/MM/yyyy', { locale: es })}`
+                          ? `Vence: ${formatExpiryDate(driver.license_expiry_date)}`
                           : 'Fecha de vencimiento no especificada'
                         }
                       </span>
