@@ -435,7 +435,6 @@ export function ExpenseTemplateDialog({
                 placeholder="$0.00"
                 className="text-right"
                 autoComplete="off"
-                readOnly
                 required
               />
             </div>

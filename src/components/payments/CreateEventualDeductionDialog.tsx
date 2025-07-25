@@ -482,7 +482,6 @@ export function CreateEventualDeductionDialog({
                 placeholder="$0.00"
                 className="text-right"
                 autoComplete="off"
-                readOnly
                 required
               />
             </div>
