@@ -21,9 +21,9 @@ export function Layout({ children }: LayoutProps) {
     >
       <div className="min-h-screen flex w-full bg-background prevent-horizontal-scroll">
         <AppSidebar />
-        <SidebarInset className="flex flex-col flex-1 min-w-0 !bg-red-500">
+        <SidebarInset className="flex flex-col flex-1 min-w-0">
           <Header />
-          <main className="flex-1 bg-gradient-subtle overflow-x-hidden">
+          <main className="flex-1 bg-gradient-subtle overflow-x-hidden !bg-red-500">
             <div className="animate-fade-in">
               {children}
             </div>
