@@ -35,7 +35,7 @@ export function MenuToggle({ onToggle }: MenuToggleProps) {
   }, [toggleSidebar, onToggle, isMobile, openMobile, open]);
   
   return (
-    <div className="flex-shrink-0 pl-3 md:pl-6">
+    <div className="flex-shrink-0 pl-3 md:pl-6 !bg-red-500">
       <Button
         variant="ghost" 
         size="sm"
