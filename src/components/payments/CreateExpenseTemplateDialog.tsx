@@ -122,8 +122,8 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
           expense_type_id: formData.expense_type_id,
           amount: atmInput.numericValue,
           frequency: formData.frequency,
-          start_date: effectiveFrom.toISOString().split('T')[0],
-          end_date: effectiveUntil?.toISOString().split('T')[0] || null,
+          start_date: `${effectiveFrom.getFullYear()}-${String(effectiveFrom.getMonth() + 1).padStart(2, '0')}-${String(effectiveFrom.getDate()).padStart(2, '0')}`,
+          end_date: effectiveUntil ? `${effectiveUntil.getFullYear()}-${String(effectiveUntil.getMonth() + 1).padStart(2, '0')}-${String(effectiveUntil.getDate()).padStart(2, '0')}` : null,
           notes: formData.notes || null,
           month_week: formData.frequency === 'monthly' ? formData.month_week : null,
           created_by: user?.id

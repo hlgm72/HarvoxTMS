@@ -34,10 +34,10 @@ export function EditExpenseTemplateDialog({ template, onClose, onSuccess }: Edit
   });
   
   const [effectiveFrom, setEffectiveFrom] = useState<Date>(
-    template.start_date ? new Date(template.start_date) : new Date()
+    template.start_date ? new Date(template.start_date + 'T00:00:00') : new Date()
   );
   const [effectiveUntil, setEffectiveUntil] = useState<Date | undefined>(
-    template.end_date ? new Date(template.end_date) : undefined
+    template.end_date ? new Date(template.end_date + 'T00:00:00') : undefined
   );
 
   // Obtener tipos de gastos
@@ -66,8 +66,8 @@ export function EditExpenseTemplateDialog({ template, onClose, onSuccess }: Edit
           amount: parseFloat(formData.amount),
           frequency: formData.frequency,
           month_week: formData.frequency === 'monthly' ? formData.month_week : null,
-          start_date: effectiveFrom.toISOString().split('T')[0],
-          end_date: effectiveUntil?.toISOString().split('T')[0] || null,
+          start_date: effectiveFrom ? `${effectiveFrom.getFullYear()}-${String(effectiveFrom.getMonth() + 1).padStart(2, '0')}-${String(effectiveFrom.getDate()).padStart(2, '0')}` : template.start_date,
+          end_date: effectiveUntil ? `${effectiveUntil.getFullYear()}-${String(effectiveUntil.getMonth() + 1).padStart(2, '0')}-${String(effectiveUntil.getDate()).padStart(2, '0')}` : null,
           notes: formData.notes || null,
           updated_at: new Date().toISOString()
         })

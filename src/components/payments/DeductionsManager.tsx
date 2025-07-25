@@ -228,12 +228,12 @@ export function DeductionsManager({
                     <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Vigente desde:</span>
-                        <p>{format(new Date(template.start_date), "PPP", { locale: es })}</p>
+                        <p>{format(new Date(template.start_date + 'T00:00:00'), "PPP", { locale: es })}</p>
                       </div>
                       {template.end_date && (
                         <div>
                           <span className="text-muted-foreground">Vigente hasta:</span>
-                          <p>{format(new Date(template.end_date), "PPP", { locale: es })}</p>
+                          <p>{format(new Date(template.end_date + 'T00:00:00'), "PPP", { locale: es })}</p>
                         </div>
                       )}
                     </div>
