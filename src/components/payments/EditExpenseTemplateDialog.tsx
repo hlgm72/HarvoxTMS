@@ -98,7 +98,7 @@ export function EditExpenseTemplateDialog({ template, onClose, onSuccess }: Edit
       <div className="space-y-2">
         <Label>Conductor</Label>
         <Input
-          value={`${template.profiles?.first_name || ''} ${template.profiles?.last_name || ''}`}
+          value={`${template.driver_profile?.first_name || ''} ${template.driver_profile?.last_name || ''}`}
           disabled
           className="bg-muted"
         />
