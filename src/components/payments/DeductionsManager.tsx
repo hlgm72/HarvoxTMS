@@ -9,8 +9,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Plus, AlertTriangle, DollarSign, Clock, User, Settings, Edit, Trash2, RotateCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { CreateExpenseTemplateDialog } from "./CreateExpenseTemplateDialog";
-import { EditExpenseTemplateDialog } from "./EditExpenseTemplateDialog";
+import { ExpenseTemplateDialog } from "./ExpenseTemplateDialog";
 import { EmptyDeductionsState } from "./EmptyDeductionsState";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -478,23 +477,18 @@ export function DeductionsManager({
         </TabsContent>
       </Tabs>
 
-      {/* Dialog para editar plantilla */}
-      {editingTemplate && (
-        <Dialog open={!!editingTemplate} onOpenChange={() => setEditingTemplate(null)}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Editar Plantilla de Deducción</DialogTitle>
-              <DialogDescription>
-                Modifica los datos de la plantilla de deducción
-              </DialogDescription>
-            </DialogHeader>
-            <EditExpenseTemplateDialog 
-              template={editingTemplate}
-              onClose={() => setEditingTemplate(null)}
-              onSuccess={handleEditSuccess}
-            />
-          </DialogContent>
-        </Dialog>
+      {/* Dialog unificado para crear/editar plantilla */}
+      {(isCreateDialogOpen || editingTemplate) && (
+        <ExpenseTemplateDialog
+          isOpen={isCreateDialogOpen || !!editingTemplate}
+          onClose={() => {
+            setIsCreateDialogOpen(false);
+            setEditingTemplate(null);
+          }}
+          onSuccess={editingTemplate ? handleEditSuccess : handleCreateSuccess}
+          mode={editingTemplate ? 'edit' : 'create'}
+          template={editingTemplate}
+        />
       )}
 
       {/* Dialog de confirmación para eliminar plantilla */}

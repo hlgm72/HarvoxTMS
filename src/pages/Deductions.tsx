@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Plus, DollarSign, Calendar } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { DeductionsManager } from "@/components/payments/DeductionsManager";
-import { CreateExpenseTemplateDialog } from "@/components/payments/CreateExpenseTemplateDialog";
+import { ExpenseTemplateDialog } from "@/components/payments/ExpenseTemplateDialog";
 import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -58,20 +58,12 @@ export default function Deductions() {
         />
       </div>
 
-      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Crear Plantilla de Deducción</DialogTitle>
-            <DialogDescription>
-              Crea una nueva plantilla de gasto recurrente para un conductor
-            </DialogDescription>
-          </DialogHeader>
-          <CreateExpenseTemplateDialog 
-            onClose={() => setIsCreateDialogOpen(false)}
-            onSuccess={handleCreateSuccess}
-          />
-        </DialogContent>
-      </Dialog>
+      <ExpenseTemplateDialog 
+        isOpen={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+        onSuccess={handleCreateSuccess}
+        mode="create"
+      />
     </>
   );
 }
