@@ -841,13 +841,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "expense_instances_payment_period_id_fkey"
-            columns: ["payment_period_id"]
-            isOneToOne: false
-            referencedRelation: "driver_period_calculations"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "expense_instances_recurring_template_id_fkey"
             columns: ["recurring_template_id"]
             isOneToOne: false

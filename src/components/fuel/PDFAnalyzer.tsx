@@ -158,22 +158,12 @@ export function PDFAnalyzer() {
         .eq('is_active', true)
         .in('user_id', driverIds);
 
-      // Obtener períodos de pago de los conductores para encontrar el período apropiado
-      const { data: driverPeriodCalculations } = await supabase
-        .from('driver_period_calculations')
-        .select(`
-          id,
-          driver_user_id,
-          company_payment_periods!inner(
-            id,
-            period_start_date,
-            period_end_date,
-            period_frequency,
-            status
-          )
-        `)
-        .eq('company_payment_periods.company_id', companyId)
-        .eq('company_payment_periods.status', 'open');
+      // Obtener períodos de pago de la empresa (simplificado)
+      const { data: companyPeriods } = await supabase
+        .from('company_payment_periods')
+        .select('*')
+        .eq('company_id', companyId)
+        .eq('status', 'open');
 
       const enriched: EnrichedTransaction[] = transactions.map(transaction => {
         const enrichedTransaction: EnrichedTransaction = {
@@ -227,21 +217,18 @@ export function PDFAnalyzer() {
           enrichedTransaction.card_mapping_status = 'multiple';
         }
 
-        // Mapear período de pago por fecha y conductor
-        if (enrichedTransaction.driver_user_id) {
-          const transactionDate = new Date(transaction.date);
-          const matchingDriverPeriod = driverPeriodCalculations?.find(dpc => {
-            if (dpc.driver_user_id !== enrichedTransaction.driver_user_id) return false;
-            const startDate = new Date(dpc.company_payment_periods.period_start_date);
-            const endDate = new Date(dpc.company_payment_periods.period_end_date);
-            return transactionDate >= startDate && transactionDate <= endDate;
-          });
+        // Mapear período de pago por fecha (simplificado - directo a company_payment_periods)
+        const transactionDate = new Date(transaction.date);
+        const matchingPeriod = companyPeriods?.find(period => {
+          const startDate = new Date(period.period_start_date);
+          const endDate = new Date(period.period_end_date);
+          return transactionDate >= startDate && transactionDate <= endDate;
+        });
 
-          if (matchingDriverPeriod) {
-            enrichedTransaction.payment_period_id = matchingDriverPeriod.id;
-            enrichedTransaction.payment_period_dates = `${matchingDriverPeriod.company_payment_periods.period_start_date} - ${matchingDriverPeriod.company_payment_periods.period_end_date}`;
-            enrichedTransaction.period_mapping_status = 'found';
-          }
+        if (matchingPeriod) {
+          enrichedTransaction.payment_period_id = matchingPeriod.id;
+          enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date}`;
+          enrichedTransaction.period_mapping_status = 'found';
         }
 
         // Mapear vehículo (si existe en el campo unit)
