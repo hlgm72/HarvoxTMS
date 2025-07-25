@@ -18,7 +18,7 @@ export function PageToolbar({
 }: PageToolbarProps) {
   return (
     <div className="w-full border-b border-border bg-card backdrop-blur supports-[backdrop-filter]:bg-card/92">
-      <div className="px-2 md:px-4 py-4 md:py-6 !bg-red-500">
+      <div className="px-2 md:px-4 py-4 md:py-6">
         {/* Title and Actions Row */}
         <div className="flex items-start justify-between gap-2 md:gap-4">
           <div className="min-w-0 flex-1">
