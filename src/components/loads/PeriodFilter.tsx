@@ -7,7 +7,7 @@ import { Calendar, CalendarDays, ChevronDown, Clock, X, TrendingUp, FileText, Lo
 import { usePaymentPeriods, useCurrentPaymentPeriod, usePreviousPaymentPeriod, useNextPaymentPeriod } from '@/hooks/usePaymentPeriods';
 import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { formatPaymentPeriod, formatPaymentPeriodCompact, formatDateOnly } from '@/lib/dateFormatting';
+import { formatPaymentPeriod, formatPaymentPeriodCompact, formatPaymentPeriodBadge, formatDateOnly } from '@/lib/dateFormatting';
 
 export interface PeriodFilterValue {
   type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
@@ -214,7 +214,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 Período Anterior
                 {previousPeriod && (
                   <Badge variant="secondary" className="ml-auto text-xs">
-                    {formatPaymentPeriodCompact(previousPeriod.period_start_date, previousPeriod.period_end_date)}
+                    {formatPaymentPeriodBadge(previousPeriod.period_start_date, previousPeriod.period_end_date)}
                   </Badge>
                 )}
               </Button>
@@ -239,7 +239,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 Período Actual
                 {currentPeriod && (
                   <Badge variant="secondary" className="ml-auto text-xs">
-                    {formatPaymentPeriodCompact(currentPeriod.period_start_date, currentPeriod.period_end_date)}
+                    {formatPaymentPeriodBadge(currentPeriod.period_start_date, currentPeriod.period_end_date)}
                   </Badge>
                 )}
               </Button>
@@ -263,7 +263,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 Período Siguiente
                 {nextPeriod && (
                   <Badge variant="secondary" className="ml-auto text-xs">
-                    {formatPaymentPeriodCompact(nextPeriod.period_start_date, nextPeriod.period_end_date)}
+                    {formatPaymentPeriodBadge(nextPeriod.period_start_date, nextPeriod.period_end_date)}
                   </Badge>
                 )}
               </Button>

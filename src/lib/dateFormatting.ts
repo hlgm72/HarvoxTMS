@@ -79,6 +79,28 @@ export const formatPaymentPeriodCompact = (startDate: string | null, endDate: st
 };
 
 /**
+ * Formateo ultra compacto para badges (omite año si es el mismo)
+ */
+export const formatPaymentPeriodBadge = (startDate: string | null, endDate: string | null): string => {
+  if (!startDate || !endDate) return 'No definido';
+  
+  const startYear = getYearSafe(startDate);
+  const endYear = getYearSafe(endDate);
+  
+  // Si es el mismo año, omitir el año en ambas fechas
+  if (startYear === endYear) {
+    const start = formatDateSafe(startDate, 'dd/MM');
+    const end = formatDateSafe(endDate, 'dd/MM');
+    return `${start} - ${end}`;
+  }
+  
+  // Si son años diferentes, mostrar año solo en la fecha final
+  const start = formatDateSafe(startDate, 'dd/MM');
+  const end = formatDateSafe(endDate, 'dd/MM/yy');
+  return `${start} - ${end}`;
+};
+
+/**
  * Formateo específico para deducciones
  */
 export const formatDeductionDate = (date: string | Date | null | undefined): string => {
