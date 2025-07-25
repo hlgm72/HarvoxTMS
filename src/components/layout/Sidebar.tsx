@@ -623,7 +623,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="border-r border-[hsl(var(--sidebar-border))] overflow-x-hidden"
+      className="overflow-x-hidden"
       collapsible="icon"
       variant="sidebar"
       side="left"
