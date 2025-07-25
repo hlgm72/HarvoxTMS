@@ -396,13 +396,25 @@ export function CreateEventualDeductionDialog({
                   <SelectContent>
                     {paymentPeriods.map((period) => (
                       <SelectItem key={period.id} value={period.id}>
-                        {format(parseISO(period.company_payment_periods.period_start_date), 'dd/MM/yyyy', { locale: es })} - {' '}
-                        {format(parseISO(period.company_payment_periods.period_end_date), 'dd/MM/yyyy', { locale: es })}
-                        {getPeriodLabel(period) && (
-                          <span className="ml-2 text-xs text-muted-foreground">
-                            ({getPeriodLabel(period)})
+                        <div className={`flex items-center justify-between w-full ${
+                          getPeriodLabel(period) === 'actual' 
+                            ? 'font-semibold text-primary' 
+                            : ''
+                        }`}>
+                          <span>
+                            {format(parseISO(period.company_payment_periods.period_start_date), 'dd/MM/yyyy', { locale: es })} - {' '}
+                            {format(parseISO(period.company_payment_periods.period_end_date), 'dd/MM/yyyy', { locale: es })}
                           </span>
-                        )}
+                          {getPeriodLabel(period) && (
+                            <span className={`ml-2 text-xs ${
+                              getPeriodLabel(period) === 'actual' 
+                                ? 'text-primary font-medium' 
+                                : 'text-muted-foreground'
+                            }`}>
+                              ({getPeriodLabel(period)})
+                            </span>
+                          )}
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
