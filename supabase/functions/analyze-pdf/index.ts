@@ -23,8 +23,9 @@ serve(async (req) => {
       );
     }
 
-    console.log('Analyzing PDF with OpenAI Vision API...');
+    console.log('Analyzing PDF content with OpenAI...');
 
+    // Usar Vision API con el PDF como imagen
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -36,25 +37,36 @@ serve(async (req) => {
         messages: [
           {
             role: 'user',
-            content: `Eres un experto en análisis de documentos de combustible y transporte. 
-            Analiza este documento y extrae TODAS las columnas y campos de datos que veas.
-            
-            Presta especial atención a encontrar:
-            - authorization_code o authorization code
-            - cualquier código de autorización
-            - números de referencia
-            - códigos de transacción
-            
-            Devuelve la respuesta en formato JSON con esta estructura:
-            {
-              "columnsFound": ["lista", "de", "columnas", "encontradas"],
-              "hasAuthorizationCode": boolean,
-              "authorizationCodeField": "nombre del campo si existe",
-              "sampleData": [{"campo1": "valor1", "campo2": "valor2"}],
-              "analysis": "descripción detallada de lo que encontraste"
-            }
-            
-            Documento en base64: ${pdfBase64}`
+            content: [
+              {
+                type: 'text',
+                text: `Eres un experto en análisis de documentos de combustible y transporte. 
+                Analiza esta imagen/documento y extrae TODAS las columnas y campos de datos que veas.
+                
+                Presta especial atención a encontrar:
+                - authorization_code o authorization code
+                - cualquier código de autorización
+                - números de referencia
+                - códigos de transacción
+                
+                Devuelve la respuesta SOLO en formato JSON válido con esta estructura exacta:
+                {
+                  "columnsFound": ["lista", "de", "columnas", "encontradas"],
+                  "hasAuthorizationCode": true/false,
+                  "authorizationCodeField": "nombre del campo si existe o null",
+                  "sampleData": [{"campo1": "valor1", "campo2": "valor2"}],
+                  "analysis": "descripción detallada de lo que encontraste"
+                }
+                
+                IMPORTANTE: Responde SOLAMENTE con el JSON, sin texto adicional.`
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: `data:image/jpeg;base64,${pdfBase64}`
+                }
+              }
+            ]
           }
         ],
         max_tokens: 2000,
@@ -66,7 +78,7 @@ serve(async (req) => {
       const errorData = await response.text();
       console.error('OpenAI API error:', errorData);
       return new Response(
-        JSON.stringify({ error: 'Error analyzing PDF', details: errorData }),
+        JSON.stringify({ error: 'Error analyzing document', details: errorData }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -75,32 +87,58 @@ serve(async (req) => {
     console.log('OpenAI response received');
 
     const analysisText = data.choices[0].message.content;
+    console.log('Raw analysis text:', analysisText);
     
     let analysisResult;
     try {
-      // Try to extract JSON from the response
-      const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
+      // Limpiar el texto para extraer solo el JSON
+      const cleanedText = analysisText.replace(/```json\n?|\n?```/g, '').trim();
+      
+      // Intentar encontrar el JSON en el texto
+      let jsonToparse = cleanedText;
+      const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        analysisResult = JSON.parse(jsonMatch[0]);
-      } else {
-        // Fallback if no JSON found
-        analysisResult = {
-          columnsFound: [],
-          hasAuthorizationCode: false,
-          authorizationCodeField: null,
-          sampleData: [],
-          analysis: analysisText
-        };
+        jsonToParse = jsonMatch[0];
       }
+      
+      analysisResult = JSON.parse(jsonToparse);
+      
+      // Validar y corregir la estructura
+      analysisResult = {
+        columnsFound: Array.isArray(analysisResult.columnsFound) ? analysisResult.columnsFound : [],
+        hasAuthorizationCode: Boolean(analysisResult.hasAuthorizationCode),
+        authorizationCodeField: analysisResult.authorizationCodeField || null,
+        sampleData: Array.isArray(analysisResult.sampleData) ? analysisResult.sampleData : [],
+        analysis: analysisResult.analysis || 'Análisis completado'
+      };
+      
     } catch (parseError) {
       console.error('Error parsing JSON response:', parseError);
+      console.error('Raw response text:', analysisText);
+      
+      // Fallback: intentar extraer información manualmente del texto
+      const hasAuthCode = /authorization.{0,20}code/i.test(analysisText);
+      const columns = [];
+      
+      // Buscar posibles columnas mencionadas
+      const columnMatches = analysisText.match(/columna[s]?[:\s]*([^.]+)/gi);
+      if (columnMatches) {
+        columnMatches.forEach(match => {
+          const cleanMatch = match.replace(/columna[s]?[:\s]*/gi, '').trim();
+          if (cleanMatch && cleanMatch.length < 100) {
+            columns.push(cleanMatch);
+          }
+        });
+      }
+      
       analysisResult = {
-        columnsFound: [],
-        hasAuthorizationCode: false,
-        authorizationCodeField: null,
+        columnsFound: columns,
+        hasAuthorizationCode: hasAuthCode,
+        authorizationCodeField: hasAuthCode ? "authorization_code" : null,
         sampleData: [],
-        analysis: analysisText,
-        parseError: parseError.message
+        analysis: `Análisis de respuesta de texto: ${analysisText}`,
+        parseError: parseError.message,
+        rawResponse: analysisText
       };
     }
 
