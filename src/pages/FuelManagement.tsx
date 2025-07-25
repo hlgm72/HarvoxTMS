@@ -6,6 +6,9 @@ import { PageToolbar } from '@/components/layout/PageToolbar';
 import { FuelStatsCards } from '@/components/fuel/FuelStatsCards';
 import { FuelFilters, FuelFiltersType } from '@/components/fuel/FuelFilters';
 import { FuelExpensesList } from '@/components/fuel/FuelExpensesList';
+import { CreateFuelExpenseDialog } from '@/components/fuel/CreateFuelExpenseDialog';
+import { EditFuelExpenseDialog } from '@/components/fuel/EditFuelExpenseDialog';
+import { ViewFuelExpenseDialog } from '@/components/fuel/ViewFuelExpenseDialog';
 
 export default function FuelManagement() {
   const { t } = useTranslation();
@@ -81,18 +84,23 @@ export default function FuelManagement() {
         onView={handleView}
       />
 
-      {/* TODO: Añadir modales para crear, editar y ver detalles */}
-      {createDialogOpen && (
-        <div>TODO: Modal para crear gasto de combustible</div>
-      )}
+      {/* Modales */}
+      <CreateFuelExpenseDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+      />
       
-      {editExpenseId && (
-        <div>TODO: Modal para editar gasto de combustible</div>
-      )}
+      <EditFuelExpenseDialog
+        expenseId={editExpenseId}
+        open={!!editExpenseId}
+        onOpenChange={(open) => !open && setEditExpenseId(null)}
+      />
       
-      {viewExpenseId && (
-        <div>TODO: Modal para ver detalles del gasto</div>
-      )}
+      <ViewFuelExpenseDialog
+        expenseId={viewExpenseId}
+        open={!!viewExpenseId}
+        onOpenChange={(open) => !open && setViewExpenseId(null)}
+      />
     </div>
   );
 }
