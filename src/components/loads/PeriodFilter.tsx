@@ -214,7 +214,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 Período Anterior
                 {previousPeriod && (
                   <Badge variant="secondary" className="ml-auto text-xs">
-                    {formatPaymentPeriod(previousPeriod.period_start_date, previousPeriod.period_end_date)}
+                    {formatPaymentPeriodCompact(previousPeriod.period_start_date, previousPeriod.period_end_date)}
                   </Badge>
                 )}
               </Button>
@@ -239,7 +239,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 Período Actual
                 {currentPeriod && (
                   <Badge variant="secondary" className="ml-auto text-xs">
-                    {formatPaymentPeriod(currentPeriod.period_start_date, currentPeriod.period_end_date)}
+                    {formatPaymentPeriodCompact(currentPeriod.period_start_date, currentPeriod.period_end_date)}
                   </Badge>
                 )}
               </Button>
@@ -263,7 +263,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 Período Siguiente
                 {nextPeriod && (
                   <Badge variant="secondary" className="ml-auto text-xs">
-                    {formatPaymentPeriod(nextPeriod.period_start_date, nextPeriod.period_end_date)}
+                    {formatPaymentPeriodCompact(nextPeriod.period_start_date, nextPeriod.period_end_date)}
                   </Badge>
                 )}
               </Button>
