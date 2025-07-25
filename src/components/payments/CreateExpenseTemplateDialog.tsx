@@ -272,6 +272,7 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
                     setEffectiveFrom(date);
                     setIsFromDateOpen(false);
                   }}
+                  disabled={(date) => effectiveUntil ? date > effectiveUntil : false}
                   initialFocus
                   className="pointer-events-auto"
                 />
@@ -305,6 +306,7 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
                     setEffectiveUntil(date);
                     setIsUntilDateOpen(false);
                   }}
+                  disabled={(date) => effectiveFrom ? date < effectiveFrom : false}
                   initialFocus
                   className="pointer-events-auto"
                 />
