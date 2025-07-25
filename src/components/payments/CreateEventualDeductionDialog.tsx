@@ -39,9 +39,7 @@ export function CreateEventualDeductionDialog({
     payment_period_id: '',
     expense_type_id: '',
     amount: '',
-    description: '',
-    is_critical: false,
-    priority: 5
+    description: ''
   });
   
   const [expenseDate, setExpenseDate] = useState<Date>(new Date());
@@ -55,9 +53,7 @@ export function CreateEventualDeductionDialog({
         payment_period_id: '',
         expense_type_id: '',
         amount: '',
-        description: '',
-        is_critical: false,
-        priority: 5
+        description: ''
       });
       setExpenseDate(new Date());
     }
@@ -257,8 +253,8 @@ export function CreateEventualDeductionDialog({
           description: formData.description,
           expense_date: format(expenseDate, 'yyyy-MM-dd'),
           status: 'planned',
-          is_critical: formData.is_critical,
-          priority: formData.priority,
+          is_critical: false,
+          priority: 5,
           created_by: user?.id
         });
 
@@ -535,42 +531,6 @@ export function CreateEventualDeductionDialog({
               rows={3}
               required
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="is-critical">¿Es un gasto crítico?</Label>
-              <Select 
-                value={formData.is_critical.toString()} 
-                onValueChange={(value) => setFormData(prev => ({ 
-                  ...prev, 
-                  is_critical: value === 'true',
-                  priority: value === 'true' ? 1 : 5 // Critical expenses get priority 1
-                }))}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="false">No - Aplicar si hay balance</SelectItem>
-                  <SelectItem value="true">Sí - Aplicar siempre</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {!formData.is_critical && (
-              <div className="space-y-2">
-                <Label htmlFor="priority">Prioridad (1-10)</Label>
-                <Input
-                  id="priority"
-                  type="number"
-                  min="1"
-                  max="10"
-                  value={formData.priority}
-                  onChange={(e) => setFormData(prev => ({ ...prev, priority: parseInt(e.target.value) || 5 }))}
-                />
-              </div>
-            )}
           </div>
 
           <div className="flex gap-2 pt-4">
