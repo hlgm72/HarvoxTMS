@@ -253,48 +253,38 @@ export function EventualDeductionsList({ onRefresh }: EventualDeductionsListProp
               </div>
             </CardHeader>
             
-            <CardContent className="space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+            <CardContent className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium">${deduction.amount}</span>
+                    <span className="font-semibold text-lg">${deduction.amount}</span>
                   </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">Tipo: </span>
-                    <span className="text-sm font-medium">{deduction.expense_types?.name}</span>
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">Tipo:</span> <span className="font-medium">{deduction.expense_types?.name}</span>
                   </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">Fecha: </span>
-                    <span className="text-sm">
-                      {formatDeductionDate(deduction.expense_date)}
-                    </span>
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">Fecha:</span> <span>{formatDeductionDate(deduction.expense_date)}</span>
                   </div>
                 </div>
                 
-                 <div className="space-y-2">
-                   {deduction.description && (
-                    <div>
-                      <span className="text-sm text-muted-foreground">Descripción: </span>
-                      <p className="text-sm">{deduction.description}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Acciones */}
-              <div className="flex justify-end pt-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setDeletingExpense(deduction)}
-                  className="text-destructive hover:text-destructive"
+                  className="text-destructive hover:text-destructive h-8"
                   disabled={deduction.status === 'applied'}
                 >
-                  <Trash2 className="h-4 w-4 mr-1" />
-                  Eliminar
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
+
+              {deduction.description && (
+                <div className="pt-1">
+                  <span className="text-sm text-muted-foreground">Descripción:</span>
+                  <p className="text-sm mt-1">{deduction.description}</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
