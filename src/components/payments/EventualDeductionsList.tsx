@@ -282,7 +282,7 @@ export function EventualDeductionsList({ onRefresh }: EventualDeductionsListProp
               {deduction.description && (
                 <div className="pt-1">
                   <span className="text-sm text-muted-foreground">Descripción:</span>
-                  <p className="text-sm mt-1">{deduction.description}</p>
+                  <span className="text-sm ml-1">{deduction.description}</span>
                 </div>
               )}
             </CardContent>
