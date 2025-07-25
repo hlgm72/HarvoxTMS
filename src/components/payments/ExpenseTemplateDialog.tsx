@@ -289,26 +289,11 @@ export function ExpenseTemplateDialog({
     }
   };
 
-  // Validación cronológica de fechas
-  const dateValidation = useMemo(() => {
-    if (!effectiveUntil) return { isValid: true, message: null };
-    
-    if (effectiveUntil < effectiveFrom) {
-      return { 
-        isValid: false, 
-        message: "La fecha 'Vigente Hasta' no puede ser anterior a 'Vigente Desde'" 
-      };
-    }
-    
-    return { isValid: true, message: null };
-  }, [effectiveFrom, effectiveUntil]);
-
   const isFormValid = mode === 'edit' || (
     formData.driver_user_id && 
     formData.expenseTypeId && 
     formData.amount && 
-    parseFloat(formData.amount) > 0 &&
-    dateValidation.isValid
+    parseFloat(formData.amount) > 0
   );
 
   return (
@@ -495,15 +480,6 @@ export function ExpenseTemplateDialog({
             </div>
           )}
 
-          {!dateValidation.isValid && (
-            <Alert className="mb-4">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                {dateValidation.message}
-              </AlertDescription>
-            </Alert>
-          )}
-
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Vigente Desde</Label>
@@ -584,6 +560,13 @@ export function ExpenseTemplateDialog({
                           setEffectiveFrom(date);
                           setIsFromDatePickerOpen(false);
                         }
+                      }}
+                      disabled={(date) => {
+                        // Deshabilitar fechas posteriores a "Vigente Hasta" si está seleccionada
+                        if (effectiveUntil) {
+                          return date > effectiveUntil;
+                        }
+                        return false;
                       }}
                       month={effectiveFrom}
                       onMonthChange={setEffectiveFrom}
@@ -673,6 +656,10 @@ export function ExpenseTemplateDialog({
                           setEffectiveUntil(date);
                           setIsUntilDatePickerOpen(false);
                         }
+                      }}
+                      disabled={(date) => {
+                        // Deshabilitar fechas anteriores a "Vigente Desde"
+                        return date < effectiveFrom;
                       }}
                       month={effectiveUntil}
                       onMonthChange={setEffectiveUntil}
