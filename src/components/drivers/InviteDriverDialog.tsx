@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { es } from 'date-fns/locale';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -28,6 +29,7 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
     email: "",
     hireDate: new Date()
   });
+  const [isDateOpen, setIsDateOpen] = useState(false);
 
   // Validación de email
   const isValidEmail = (email: string) => {
@@ -148,7 +150,7 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
 
           <div className="space-y-2">
             <Label>Fecha de Contratación *</Label>
-            <Popover>
+            <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -158,14 +160,19 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {formData.hireDate ? format(formData.hireDate, "PPP") : <span>Seleccionar fecha</span>}
+                  {formData.hireDate ? format(formData.hireDate, "PPP", { locale: es }) : <span>Seleccionar fecha</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 bg-background border-border">
                 <Calendar
                   mode="single"
                   selected={formData.hireDate}
-                  onSelect={(date) => date && setFormData(prev => ({ ...prev, hireDate: date }))}
+                  onSelect={(date) => {
+                    if (date) {
+                      setFormData(prev => ({ ...prev, hireDate: date }));
+                      setIsDateOpen(false);
+                    }
+                  }}
                   initialFocus
                   className="pointer-events-auto"
                   captionLayout="dropdown"
