@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Plus, AlertTriangle, DollarSign, Clock, User, Settings, Edit, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -29,6 +30,7 @@ export function DeductionsManager({
   const { toast } = useToast();
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState(null);
+  const [deletingTemplate, setDeletingTemplate] = useState<string | null>(null);
   
   // Use external state if provided, otherwise use internal state
   const isCreateDialogOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
@@ -159,8 +161,13 @@ export function DeductionsManager({
   });
 
   const handleDeleteTemplate = (templateId: string) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta plantilla?')) {
-      deleteTemplateMutation.mutate(templateId);
+    setDeletingTemplate(templateId);
+  };
+
+  const confirmDeleteTemplate = () => {
+    if (deletingTemplate) {
+      deleteTemplateMutation.mutate(deletingTemplate);
+      setDeletingTemplate(null);
     }
   };
 
@@ -297,6 +304,29 @@ export function DeductionsManager({
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Dialog de confirmación para eliminar plantilla */}
+      <AlertDialog open={!!deletingTemplate} onOpenChange={() => setDeletingTemplate(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar plantilla de deducción?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción marcará la plantilla como inactiva y ya no se generarán nuevas deducciones automáticas. 
+              Esta acción no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDeleteTemplate}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteTemplateMutation.isPending}
+            >
+              {deleteTemplateMutation.isPending ? "Eliminando..." : "Eliminar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
