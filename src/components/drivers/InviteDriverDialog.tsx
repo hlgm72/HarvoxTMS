@@ -97,7 +97,6 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
                 value={formData.firstName}
                 onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
                 placeholder="Nombre del conductor"
-                required
               />
             </div>
             
@@ -108,7 +107,6 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
                 value={formData.lastName}
                 onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
                 placeholder="Apellido del conductor"
-                required
               />
             </div>
           </div>
@@ -121,7 +119,6 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
               value={formData.email}
               onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
               placeholder="conductor@email.com"
-              required
             />
           </div>
 
