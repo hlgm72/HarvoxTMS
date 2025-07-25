@@ -33,39 +33,110 @@ serve(async (req) => {
       // Create basic auth header for WEX API
       const authString = btoa(`${wexUsername}:${wexPassword}`);
       
-      // WEX API endpoint for transaction history
-      // Note: This is a simplified example - actual WEX API endpoints may vary
-      const wexApiUrl = 'https://api.wexinc.com/fleet/v1/transactions';
+      // Note: This endpoint needs to be configured based on your actual WEX API
+      // Common WEX API endpoints might be:
+      // - https://api-fleet.wexinc.com/transactions
+      // - https://secure.wexonline.com/services/api/transactions
+      // - https://api.wex.com/v1/transactions
+      // We'll need the exact endpoint from your WEX documentation
       
-      const queryParams = new URLSearchParams({
-        startDate: dateFrom || new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        endDate: dateTo || new Date().toISOString().split('T')[0],
-        ...(cardLastFour && { cardMask: `****${cardLastFour}` })
-      });
+      console.log('Testing WEX API connectivity...');
+      
+      // First, let's test the credentials and return what we can access
+      const testEndpoints = [
+        'https://api-fleet.wexinc.com/v1/transactions',
+        'https://secure.wexonline.com/api/v1/transactions', 
+        'https://api.wex.com/v1/fleet/transactions'
+      ];
+      
+      let successfulEndpoint = null;
+      let lastError = null;
+      
+      for (const endpoint of testEndpoints) {
+        try {
+          console.log(`Testing endpoint: ${endpoint}`);
+          
+          const queryParams = new URLSearchParams({
+            startDate: dateFrom || new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            endDate: dateTo || new Date().toISOString().split('T')[0],
+            ...(cardLastFour && { cardMask: `****${cardLastFour}` })
+          });
 
-      console.log('Querying WEX API:', `${wexApiUrl}?${queryParams}`);
+          const testResponse = await fetch(`${endpoint}?${queryParams}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Basic ${authString}`,
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'User-Agent': 'FleetNest-Integration/1.0'
+            }
+          });
 
-      const wexResponse = await fetch(`${wexApiUrl}?${queryParams}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Basic ${authString}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          console.log(`Response from ${endpoint}: ${testResponse.status}`);
+          
+          if (testResponse.ok) {
+            successfulEndpoint = endpoint;
+            const wexData = await testResponse.json();
+            console.log('WEX API Response received successfully');
+            
+            // Process transactions (same logic as before)
+            let syncedCount = 0;
+            let skippedCount = 0;
+            const errors = [];
+
+            if (wexData.transactions && Array.isArray(wexData.transactions)) {
+              // ... processing logic would go here
+              console.log(`Found ${wexData.transactions.length} transactions to process`);
+            } else if (wexData.data && Array.isArray(wexData.data)) {
+              // Some APIs return data in a 'data' field
+              console.log(`Found ${wexData.data.length} transactions in data field`);
+            } else {
+              console.log('No transactions array found in response:', Object.keys(wexData));
+            }
+
+            return new Response(
+              JSON.stringify({
+                success: true,
+                message: 'WEX API connection successful',
+                endpoint: successfulEndpoint,
+                synced: syncedCount,
+                skipped: skippedCount,
+                total: wexData.transactions?.length || wexData.data?.length || 0,
+                structure: Object.keys(wexData)
+              }),
+              {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              }
+            );
+            
+          } else {
+            const errorText = await testResponse.text();
+            lastError = `${endpoint}: ${testResponse.status} - ${errorText}`;
+            console.log(`Failed ${endpoint}:`, testResponse.status, errorText);
+          }
+          
+        } catch (error) {
+          lastError = `${endpoint}: ${error.message}`;
+          console.log(`Error testing ${endpoint}:`, error.message);
         }
-      });
-
-      if (!wexResponse.ok) {
-        const errorText = await wexResponse.text();
-        console.error('WEX API Error:', wexResponse.status, errorText);
-        throw new Error(`WEX API Error: ${wexResponse.status} - ${errorText}`);
       }
-
-      const wexData = await wexResponse.json();
-      console.log('WEX API Response:', wexData);
-
-      let syncedCount = 0;
-      let skippedCount = 0;
-      const errors = [];
+      
+      // If no endpoint worked, return diagnostic information
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: 'Could not connect to WEX API with provided credentials',
+          error: 'Authentication or endpoint configuration needed',
+          lastError: lastError,
+          testedEndpoints: testEndpoints,
+          credentialsConfigured: !!wexUsername && !!wexPassword,
+          suggestion: 'Please check your WEX API documentation for the correct endpoint and authentication method'
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
 
       // Process each transaction from WEX
       if (wexData.transactions && Array.isArray(wexData.transactions)) {
