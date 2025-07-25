@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Fuel, BarChart3, Settings, Filter, CreditCard } from 'lucide-react';
+import { Plus, Fuel, BarChart3, Settings, Filter, CreditCard, FileText } from 'lucide-react';
 import { PageToolbar } from '@/components/layout/PageToolbar';
 import { FuelStatsCards } from '@/components/fuel/FuelStatsCards';
 import { FuelFloatingActions } from '@/components/fuel/FuelFloatingActions';
@@ -12,6 +12,7 @@ import { CreateFuelExpenseDialog } from '@/components/fuel/CreateFuelExpenseDial
 import { EditFuelExpenseDialog } from '@/components/fuel/EditFuelExpenseDialog';
 import { ViewFuelExpenseDialog } from '@/components/fuel/ViewFuelExpenseDialog';
 import { DriverCardsManager } from '@/components/fuel/DriverCardsManager';
+import { PDFAnalyzer } from '@/components/fuel/PDFAnalyzer';
 
 export default function FuelManagement() {
   const { t } = useTranslation();
@@ -77,7 +78,7 @@ export default function FuelManagement() {
       <div className="p-2 md:p-4 pr-16 md:pr-20 space-y-6">
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="expenses" className="flex items-center gap-2">
               <Fuel className="h-4 w-4" />
               Gastos de Combustible
@@ -85,6 +86,10 @@ export default function FuelManagement() {
             <TabsTrigger value="cards" className="flex items-center gap-2">
               <CreditCard className="h-4 w-4" />
               Tarjetas de Combustible
+            </TabsTrigger>
+            <TabsTrigger value="analyzer" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Analizador PDF
             </TabsTrigger>
           </TabsList>
 
@@ -103,6 +108,11 @@ export default function FuelManagement() {
           <TabsContent value="cards" className="mt-6">
             {/* Gestión de Tarjetas de Combustible */}
             <DriverCardsManager />
+          </TabsContent>
+
+          <TabsContent value="analyzer" className="mt-6">
+            {/* Analizador de PDF */}
+            <PDFAnalyzer />
           </TabsContent>
         </Tabs>
       </div>
