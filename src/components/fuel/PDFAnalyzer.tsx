@@ -177,6 +177,7 @@ export function PDFAnalyzer() {
                     <thead>
                       <tr className="bg-muted">
                         <th className="border border-border p-2 text-left text-sm font-medium">Fecha</th>
+                        <th className="border border-border p-2 text-left text-sm font-medium">Tarjeta</th>
                         <th className="border border-border p-2 text-left text-sm font-medium">Ubicación</th>
                         <th className="border border-border p-2 text-left text-sm font-medium">Combustible</th>
                         <th className="border border-border p-2 text-right text-sm font-medium">Galones</th>
@@ -189,7 +190,7 @@ export function PDFAnalyzer() {
                       {analysisResult.sampleData.map((transaction, index) => (
                         <tr key={index} className="hover:bg-muted/50">
                           <td className="border border-border p-2 text-sm">{transaction.date || '-'}</td>
-                          <td className="border border-border p-2 text-sm">{transaction.location || '-'}</td>
+                          <td className="border border-border p-2 text-sm">{transaction.card || '-'}</td>
                           <td className="border border-border p-2 text-sm">{transaction.fuel_type || '-'}</td>
                           <td className="border border-border p-2 text-sm text-right">{transaction.gallons || '-'}</td>
                           <td className="border border-border p-2 text-sm text-right">${transaction.gross_ppg || '-'}</td>
