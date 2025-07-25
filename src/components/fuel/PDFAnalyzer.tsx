@@ -146,8 +146,8 @@ export function PDFAnalyzer() {
       
       const { data: driverProfiles } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name')
-        .in('id', driverIds);
+        .select('user_id, first_name, last_name')
+        .in('user_id', driverIds);
 
       // Obtener emails de los conductores de la tabla user_company_roles
       const { data: driverRoles } = await supabase
@@ -210,7 +210,7 @@ export function PDFAnalyzer() {
 
         if (matchingCards.length === 1) {
           const card = matchingCards[0];
-          const driverProfile = driverProfiles?.find(profile => profile.id === card.driver_user_id);
+          const driverProfile = driverProfiles?.find(profile => profile.user_id === card.driver_user_id);
           enrichedTransaction.driver_user_id = card.driver_user_id;
           
           if (driverProfile && driverProfile.first_name) {
