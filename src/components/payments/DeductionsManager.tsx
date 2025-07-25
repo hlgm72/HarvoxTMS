@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,9 +9,11 @@ import { Plus, AlertTriangle, DollarSign, Clock, User, Settings, Edit, Trash2 } 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { CreateExpenseTemplateDialog } from "./CreateExpenseTemplateDialog";
+import { EditExpenseTemplateDialog } from "./EditExpenseTemplateDialog";
 import { EmptyDeductionsState } from "./EmptyDeductionsState";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { useToast } from "@/hooks/use-toast";
 
 interface DeductionsManagerProps {
   isCreateDialogOpen?: boolean;
@@ -24,7 +26,9 @@ export function DeductionsManager({
 }: DeductionsManagerProps = {}) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState(null);
   
   // Use external state if provided, otherwise use internal state
   const isCreateDialogOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
@@ -56,9 +60,26 @@ export function DeductionsManager({
         .eq('role', 'driver')
         .eq('is_active', true);
 
-      if (!driverRoles || driverRoles.length === 0) return [];
+      // Incluir también al usuario actual si es owner/manager
+      const currentUserRoles = userRoles.map(role => role.company_id);
+      const { data: currentUserRole } = await supabase
+        .from('user_company_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('company_id', companyId)
+        .eq('is_active', true)
+        .single();
 
-      const driverIds = driverRoles.map(role => role.user_id);
+      const driverIds = driverRoles?.map(role => role.user_id) || [];
+      
+      // Si el usuario actual es owner o manager, incluirlo en la lista
+      if (currentUserRole && ['company_owner', 'operations_manager'].includes(currentUserRole.role)) {
+        if (!driverIds.includes(user.id)) {
+          driverIds.push(user.id);
+        }
+      }
+
+      if (driverIds.length === 0) return [];
 
       // Obtener plantillas para estos conductores
       const { data: templatesData, error } = await supabase
@@ -104,6 +125,45 @@ export function DeductionsManager({
     queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
   };
 
+  const handleEditSuccess = () => {
+    setEditingTemplate(null);
+    refetchTemplates();
+    queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
+  };
+
+  // Mutation para eliminar plantilla
+  const deleteTemplateMutation = useMutation({
+    mutationFn: async (templateId: string) => {
+      const { error } = await supabase
+        .from('recurring_expense_templates')
+        .update({ is_active: false })
+        .eq('id', templateId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Éxito",
+        description: "Plantilla eliminada exitosamente",
+      });
+      refetchTemplates();
+      queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo eliminar la plantilla",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleDeleteTemplate = (templateId: string) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta plantilla?')) {
+      deleteTemplateMutation.mutate(templateId);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Tabs defaultValue="templates" className="space-y-6">
@@ -146,10 +206,19 @@ export function DeductionsManager({
                         </div>
                         
                         <div className="flex gap-2">
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => setEditingTemplate(template)}
+                          >
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleDeleteTemplate(template.id)}
+                            disabled={deleteTemplateMutation.isPending}
+                          >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -209,6 +278,25 @@ export function DeductionsManager({
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Dialog para editar plantilla */}
+      {editingTemplate && (
+        <Dialog open={!!editingTemplate} onOpenChange={() => setEditingTemplate(null)}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Editar Plantilla de Deducción</DialogTitle>
+              <DialogDescription>
+                Modifica los datos de la plantilla de deducción
+              </DialogDescription>
+            </DialogHeader>
+            <EditExpenseTemplateDialog 
+              template={editingTemplate}
+              onClose={() => setEditingTemplate(null)}
+              onSuccess={handleEditSuccess}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
