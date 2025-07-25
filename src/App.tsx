@@ -28,6 +28,7 @@ import Clients from "./pages/Clients";
 import Documents from "./pages/Documents";
 import Payments from "./pages/Payments";
 import Deductions from "./pages/Deductions";
+import FuelManagement from "./pages/FuelManagement";
 import Loads from "./pages/Loads";
 import EagleDemo from "./pages/EagleDemo";
 import DriverMobile from "./pages/DriverMobile";
@@ -237,6 +238,18 @@ function AppContent() {
             <ProtectedRoute requiredRole="company_owner">
               <Layout>
                 <Deductions />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Fuel Management */}
+        <Route 
+          path="/fuel-management" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <FuelManagement />
               </Layout>
             </ProtectedRoute>
           } 
