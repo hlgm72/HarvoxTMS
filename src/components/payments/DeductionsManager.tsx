@@ -122,13 +122,13 @@ export function DeductionsManager({
     setIsCreateDialogOpen(false);
     refetchTemplates();
     // Invalidar también las estadísticas para que se actualicen
-    queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
+    queryClient.invalidateQueries({ queryKey: ['deductions-stats', user?.id] });
   };
 
   const handleEditSuccess = () => {
     setEditingTemplate(null);
     refetchTemplates();
-    queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
+    queryClient.invalidateQueries({ queryKey: ['deductions-stats', user?.id] });
   };
 
   // Mutation para eliminar plantilla
@@ -147,7 +147,7 @@ export function DeductionsManager({
         description: "Plantilla eliminada exitosamente",
       });
       refetchTemplates();
-      queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['deductions-stats', user?.id] });
     },
     onError: (error: any) => {
       toast({
