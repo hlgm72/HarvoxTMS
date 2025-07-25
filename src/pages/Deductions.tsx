@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, DollarSign, Calendar } from "lucide-react";
@@ -7,15 +8,22 @@ import { PageToolbar } from "@/components/layout/PageToolbar";
 import { DeductionsManager } from "@/components/payments/DeductionsManager";
 import { CreateExpenseTemplateDialog } from "@/components/payments/CreateExpenseTemplateDialog";
 import { useDeductionsStats } from "@/hooks/useDeductionsStats";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Deductions() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const { data: stats, isLoading: statsLoading } = useDeductionsStats();
 
   const handleCreateSuccess = () => {
     setIsCreateDialogOpen(false);
-    // The DeductionsManager will handle the refetch automatically
+    // Invalidar las estadísticas para que se actualicen en la cabecera
+    queryClient.invalidateQueries({ queryKey: ['deductions-stats', user?.id] });
+    // También invalidar las plantillas por si acaso
+    queryClient.invalidateQueries({ queryKey: ['recurring-expense-templates', user?.id] });
+    queryClient.invalidateQueries({ queryKey: ['inactive-expense-templates', user?.id] });
   };
 
   // Generar subtitle con datos reales
