@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Plus, CreditCard, Trash2, AlertCircle } from 'lucide-react';
+import { Plus, CreditCard, Trash2, AlertCircle, Edit } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -30,6 +30,7 @@ interface DriverCard {
   driver_user_id: string;
   card_number_last_four: string;
   card_provider: string;
+  card_identifier?: string;
   is_active: boolean;
   assigned_date: string;
   // Join data
@@ -48,7 +49,8 @@ interface Driver {
 }
 
 export function DriverCardsManager() {
-  const [isAddCardOpen, setIsAddCardOpen] = useState(false);
+  const [isCardDialogOpen, setIsCardDialogOpen] = useState(false);
+  const [editingCard, setEditingCard] = useState<DriverCard | null>(null);
   const [selectedDriver, setSelectedDriver] = useState<string>('');
   const [selectedProvider, setSelectedProvider] = useState<string>('');
   const [cardLastFour, setCardLastFour] = useState('');
@@ -122,64 +124,74 @@ export function DriverCardsManager() {
     }
   });
 
-  // Add new card mutation
-  const addCardMutation = useMutation({
+  // Save card mutation (handles both create and update)
+  const saveCardMutation = useMutation({
     mutationFn: async () => {
       if (!selectedDriver || !selectedProvider || !cardLastFour) {
         throw new Error('Conductor, proveedor y últimos 4 dígitos son requeridos');
       }
 
-      // Get company ID from current user - solo necesitamos el company_id
-      const { data: userRoles, error: rolesError } = await supabase
-        .from('user_company_roles')
-        .select('company_id')
-        .eq('user_id', selectedDriver)
-        .eq('is_active', true)
-        .limit(1)
-        .single();
+      if (editingCard) {
+        // Update existing card
+        const { data, error } = await supabase
+          .from('driver_cards')
+          .update({
+            driver_user_id: selectedDriver,
+            card_number_last_four: cardLastFour,
+            card_provider: selectedProvider,
+            card_identifier: cardIdentifier || null
+          })
+          .eq('id', editingCard.id)
+          .select()
+          .maybeSingle();
 
-      if (rolesError) {
-        console.error('Error fetching user roles:', rolesError);
-        throw new Error('Error al obtener la empresa del conductor');
+        if (error) throw error;
+        return data;
+      } else {
+        // Create new card
+        // Get company ID from current user
+        const { data: userRoles, error: rolesError } = await supabase
+          .from('user_company_roles')
+          .select('company_id')
+          .eq('user_id', selectedDriver)
+          .eq('is_active', true)
+          .limit(1)
+          .single();
+
+        if (rolesError) {
+          console.error('Error fetching user roles:', rolesError);
+          throw new Error('Error al obtener la empresa del conductor');
+        }
+
+        if (!userRoles) {
+          throw new Error('No se encontró la empresa del conductor');
+        }
+
+        const cardData = {
+          driver_user_id: selectedDriver,
+          company_id: userRoles.company_id,
+          card_number_last_four: cardLastFour,
+          card_provider: selectedProvider,
+          ...(cardIdentifier && { card_identifier: cardIdentifier })
+        };
+
+        const { data, error } = await supabase
+          .from('driver_cards')
+          .insert(cardData)
+          .select()
+          .maybeSingle();
+
+        if (error) throw error;
+        return data;
       }
-
-      if (!userRoles) {
-        throw new Error('No se encontró la empresa del conductor');
-      }
-
-      const cardData = {
-        driver_user_id: selectedDriver,
-        company_id: userRoles.company_id,
-        card_number_last_four: cardLastFour,
-        card_provider: selectedProvider,
-        ...(cardIdentifier && { card_identifier: cardIdentifier })
-      };
-
-      console.log('Inserting card data:', cardData);
-
-      const { data, error } = await supabase
-        .from('driver_cards')
-        .insert(cardData)
-        .select()
-        .maybeSingle();
-
-      if (error) {
-        console.error('Insert error:', error);
-        throw error;
-      }
-      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['driver-cards'] });
-      setIsAddCardOpen(false);
-      setSelectedDriver('');
-      setSelectedProvider('');
-      setCardLastFour('');
-      setCardIdentifier('');
-      toast.success('Tarjeta asignada exitosamente');
+      resetForm();
+      toast.success(editingCard ? 'Tarjeta actualizada exitosamente' : 'Tarjeta asignada exitosamente');
     },
     onError: (error) => {
-      toast.error('Error al asignar tarjeta: ' + error.message);
+      toast.error('Error al guardar tarjeta: ' + error.message);
     }
   });
 
@@ -205,8 +217,31 @@ export function DriverCardsManager() {
     }
   });
 
+  const resetForm = () => {
+    setIsCardDialogOpen(false);
+    setEditingCard(null);
+    setSelectedDriver('');
+    setSelectedProvider('');
+    setCardLastFour('');
+    setCardIdentifier('');
+  };
+
+  const handleSaveCard = () => {
+    saveCardMutation.mutate();
+  };
+
+  const handleEditCard = (card: DriverCard) => {
+    setEditingCard(card);
+    setSelectedDriver(card.driver_user_id);
+    setSelectedProvider(card.card_provider);
+    setCardLastFour(card.card_number_last_four);
+    setCardIdentifier(card.card_identifier || '');
+    setIsCardDialogOpen(true);
+  };
+
   const handleAddCard = () => {
-    addCardMutation.mutate();
+    resetForm();
+    setIsCardDialogOpen(true);
   };
 
   const handleRemoveCard = (cardId: string) => {
@@ -229,18 +264,20 @@ export function DriverCardsManager() {
           </p>
         </div>
         
-        <Dialog open={isAddCardOpen} onOpenChange={setIsAddCardOpen}>
+        <Dialog open={isCardDialogOpen} onOpenChange={setIsCardDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={handleAddCard}>
               <Plus className="h-4 w-4 mr-2" />
               Asignar Tarjeta
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Asignar Nueva Tarjeta de Combustible</DialogTitle>
+              <DialogTitle>
+                {editingCard ? 'Editar Tarjeta de Combustible' : 'Asignar Nueva Tarjeta de Combustible'}
+              </DialogTitle>
               <DialogDescription>
-                Asigna una tarjeta de combustible a un conductor
+                {editingCard ? 'Modifica los datos de la tarjeta de combustible' : 'Asigna una tarjeta de combustible a un conductor'}
               </DialogDescription>
             </DialogHeader>
             
@@ -300,14 +337,17 @@ export function DriverCardsManager() {
             </div>
             
             <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setIsAddCardOpen(false)}>
+              <Button variant="outline" onClick={resetForm}>
                 Cancelar
               </Button>
               <Button 
-                onClick={handleAddCard}
-                disabled={addCardMutation.isPending}
+                onClick={handleSaveCard}
+                disabled={saveCardMutation.isPending}
               >
-                {addCardMutation.isPending ? 'Asignando...' : 'Asignar Tarjeta'}
+                {saveCardMutation.isPending 
+                  ? (editingCard ? 'Actualizando...' : 'Asignando...') 
+                  : (editingCard ? 'Actualizar Tarjeta' : 'Asignar Tarjeta')
+                }
               </Button>
             </div>
           </DialogContent>
@@ -361,7 +401,15 @@ export function DriverCardsManager() {
                 </div>
               </div>
               
-              <div className="mt-4 flex justify-end">
+              <div className="mt-4 flex justify-end space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleEditCard(card)}
+                >
+                  <Edit className="h-4 w-4 mr-1" />
+                  Editar
+                </Button>
                 <Button 
                   variant="destructive" 
                   size="sm"
@@ -385,7 +433,7 @@ export function DriverCardsManager() {
             <p className="text-muted-foreground mb-4">
               Comienza asignando tarjetas de combustible a tus conductores
             </p>
-            <Button onClick={() => setIsAddCardOpen(true)}>
+            <Button onClick={handleAddCard}>
               <Plus className="h-4 w-4 mr-2" />
               Asignar Primera Tarjeta
             </Button>
