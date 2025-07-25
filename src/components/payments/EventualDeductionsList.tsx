@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatPaymentPeriod, formatDeductionDate } from "@/lib/dateFormatting";
 import { Trash2, AlertTriangle, Calendar, DollarSign, User, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -234,12 +233,12 @@ export function EventualDeductionsList({ onRefresh }: EventualDeductionsListProp
                   <CardDescription className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
                     Período: {' '}
-                    {deduction.driver_period_calculations?.company_payment_periods && (
-                      <>
-                        {format(new Date(deduction.driver_period_calculations.company_payment_periods.period_start_date), 'dd/MM/yyyy', { locale: es })} - {' '}
-                        {format(new Date(deduction.driver_period_calculations.company_payment_periods.period_end_date), 'dd/MM/yyyy', { locale: es })}
-                      </>
-                    )}
+                    {deduction.driver_period_calculations?.company_payment_periods && 
+                      formatPaymentPeriod(
+                        deduction.driver_period_calculations.company_payment_periods.period_start_date,
+                        deduction.driver_period_calculations.company_payment_periods.period_end_date
+                      )
+                    }
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
@@ -268,7 +267,7 @@ export function EventualDeductionsList({ onRefresh }: EventualDeductionsListProp
                   <div>
                     <span className="text-sm text-muted-foreground">Fecha: </span>
                     <span className="text-sm">
-                      {deduction.expense_date && format(new Date(deduction.expense_date), 'dd/MM/yyyy', { locale: es })}
+                      {formatDeductionDate(deduction.expense_date)}
                     </span>
                   </div>
                 </div>

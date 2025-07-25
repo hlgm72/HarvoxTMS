@@ -13,8 +13,9 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Check, ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { CalendarIcon } from "lucide-react";
-import { format, parseISO, isWithinInterval, isBefore, isAfter } from "date-fns";
+import { parseISO, isWithinInterval, isBefore, isAfter, format } from "date-fns";
 import { es } from "date-fns/locale";
+import { formatDateOnly, formatDateInUserTimeZone } from "@/utils/dateUtils";
 import { useATMInput } from "@/hooks/useATMInput";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -251,7 +252,7 @@ export function CreateEventualDeductionDialog({
           expense_type_id: formData.expense_type_id,
           amount: parseFloat(formData.amount),
           description: formData.description,
-          expense_date: format(expenseDate, 'yyyy-MM-dd'),
+          expense_date: formatDateInUserTimeZone(expenseDate),
           status: 'planned',
           is_critical: false,
           priority: 5,
@@ -427,8 +428,8 @@ export function CreateEventualDeductionDialog({
                             : ''
                         }`}>
                           <span>
-                            {format(parseISO(period.company_payment_periods.period_start_date), 'dd/MM/yyyy', { locale: es })} - {' '}
-                            {format(parseISO(period.company_payment_periods.period_end_date), 'dd/MM/yyyy', { locale: es })}
+                            {formatDateOnly(period.company_payment_periods.period_start_date)} - {' '}
+                            {formatDateOnly(period.company_payment_periods.period_end_date)}
                           </span>
                           {getPeriodLabel(period) && (
                             <span className={`ml-2 text-xs ${
