@@ -157,6 +157,7 @@ export function PDFAnalyzer() {
                         <th className="border border-border p-2 text-left text-sm font-medium">INVOICE #</th>
                         <th className="border border-border p-2 text-left text-sm font-medium">LOCATION NAME</th>
                         <th className="border border-border p-2 text-left text-sm font-medium">ST</th>
+                        <th className="border border-border p-2 text-left text-sm font-medium">CATEGORY</th>
                         <th className="border border-border p-2 text-right text-sm font-medium">QTY</th>
                         <th className="border border-border p-2 text-right text-sm font-medium">GROSS PPG</th>
                         <th className="border border-border p-2 text-right text-sm font-medium">GROSS AMT</th>
@@ -174,6 +175,7 @@ export function PDFAnalyzer() {
                           <td className="border border-border p-2 text-sm">{transaction.invoice || '-'}</td>
                           <td className="border border-border p-2 text-sm">{transaction.location_name || '-'}</td>
                           <td className="border border-border p-2 text-sm">{transaction.state || '-'}</td>
+                          <td className="border border-border p-2 text-sm font-medium">{transaction.category || 'Diesel'}</td>
                           <td className="border border-border p-2 text-sm text-right">{transaction.qty || '-'}</td>
                           <td className="border border-border p-2 text-sm text-right">${transaction.gross_ppg || '-'}</td>
                           <td className="border border-border p-2 text-sm text-right">${transaction.gross_amt || '-'}</td>
