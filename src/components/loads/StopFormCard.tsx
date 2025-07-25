@@ -227,20 +227,63 @@ export function StopFormCard({
                   {stop.scheduled_date ? format(stop.scheduled_date, "PPP", { locale: es }) : "Seleccionar fecha"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-background border-border">
-                <Calendar
-                  mode="single"
-                  captionLayout="dropdown"
-                  fromYear={2020}
-                  toYear={2030}
-                  selected={stop.scheduled_date}
-                  onSelect={(date) => {
-                    onUpdate({ scheduled_date: date });
-                    setIsDateOpen(false);
-                  }}
-                  initialFocus
-                  className="pointer-events-auto"
-                />
+               <PopoverContent className="w-auto p-0 bg-background border-border">
+                <div className="space-y-3 p-4">
+                  {/* Month/Year Selectors */}
+                  <div className="flex gap-2">
+                    <Select
+                      value={(stop.scheduled_date?.getMonth() ?? new Date().getMonth()).toString()}
+                      onValueChange={(value) => {
+                        const currentDate = stop.scheduled_date || new Date();
+                        const newDate = new Date(currentDate.getFullYear(), parseInt(value), currentDate.getDate());
+                        onUpdate({ scheduled_date: newDate });
+                      }}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 12 }, (_, i) => (
+                          <SelectItem key={i} value={i.toString()}>
+                            {format(new Date(2024, i, 1), 'MMMM', { locale: es })}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        min={2020}
+                        max={2030}
+                        value={stop.scheduled_date?.getFullYear() ?? new Date().getFullYear()}
+                        onChange={(e) => {
+                          const year = parseInt(e.target.value);
+                          if (year >= 2020 && year <= 2030) {
+                            const currentDate = stop.scheduled_date || new Date();
+                            const newDate = new Date(year, currentDate.getMonth(), currentDate.getDate());
+                            onUpdate({ scheduled_date: newDate });
+                          }
+                        }}
+                        className="w-20 text-center"
+                        placeholder="Año"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Calendar */}
+                  <Calendar
+                    mode="single"
+                    selected={stop.scheduled_date}
+                    onSelect={(date) => {
+                      onUpdate({ scheduled_date: date });
+                      setIsDateOpen(false);
+                    }}
+                    month={stop.scheduled_date || new Date()}
+                    onMonthChange={(date) => onUpdate({ scheduled_date: date })}
+                    className="p-0 pointer-events-auto"
+                  />
+                </div>
               </PopoverContent>
             </Popover>
           </div>
