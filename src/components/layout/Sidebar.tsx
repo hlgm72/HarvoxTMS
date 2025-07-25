@@ -116,6 +116,13 @@ const getCompanyOwnerNavigationItems = (driversCount: number, equipmentCount: nu
     section: "financial"
   },
   { 
+    title: "Tarjetas de Combustible WEX", 
+    url: "/fuel-cards", 
+    icon: CreditCard,
+    description: "Gestión de tarjetas WEX",
+    section: "financial"
+  },
+  { 
     title: "Pagos de Conductores", 
     url: "/payments", 
     icon: DollarSign,

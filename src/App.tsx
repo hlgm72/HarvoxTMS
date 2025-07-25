@@ -29,6 +29,7 @@ import Documents from "./pages/Documents";
 import Payments from "./pages/Payments";
 import Deductions from "./pages/Deductions";
 import FuelManagement from "./pages/FuelManagement";
+import FuelCards from "./pages/FuelCards";
 import Loads from "./pages/Loads";
 import EagleDemo from "./pages/EagleDemo";
 import DriverMobile from "./pages/DriverMobile";
@@ -250,6 +251,18 @@ function AppContent() {
             <ProtectedRoute>
               <Layout>
                 <FuelManagement />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Fuel Cards */}
+        <Route 
+          path="/fuel-cards" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <FuelCards />
               </Layout>
             </ProtectedRoute>
           } 
