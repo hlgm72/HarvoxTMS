@@ -184,11 +184,19 @@ export function PDFAnalyzer() {
           period_mapping_status: 'not_found'
         };
 
-        // Mapear conductor por tarjeta
-        const matchingCards = driverCards?.filter(card => 
-          card.card_number_last_four === transaction.card ||
-          card.card_identifier === transaction.card
-        ) || [];
+        // Mapear conductor por tarjeta (flexible con 4 o 5 dígitos)
+        const cardNumber = transaction.card;
+        const matchingCards = driverCards?.filter(card => {
+          // Comparar los últimos 4 dígitos de ambos números
+          const cardLast4 = card.card_number_last_four;
+          const transactionLast4 = cardNumber.slice(-4);
+          const transactionLast5 = cardNumber.slice(-5);
+          
+          return cardLast4 === transactionLast4 || 
+                 card.card_identifier === cardNumber ||
+                 card.card_identifier === transactionLast4 ||
+                 card.card_identifier === transactionLast5;
+        }) || [];
 
         if (matchingCards.length === 1) {
           const card = matchingCards[0];
