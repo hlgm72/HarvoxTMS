@@ -45,7 +45,7 @@ export default function FuelManagement() {
   };
 
   return (
-    <div className="space-y-6">
+    <>
       {/* Header */}
       <PageToolbar
         title="Gestión de Combustible"
@@ -69,13 +69,11 @@ export default function FuelManagement() {
         }
       />
 
-      {/* Estadísticas */}
-      <div className="pr-16 md:pr-20">
+      <div className="p-2 md:p-4 pr-16 md:pr-20 space-y-6">
+        {/* Estadísticas */}
         <FuelStatsCards filters={queryFilters} />
-      </div>
 
-      {/* Lista de Gastos */}
-      <div className="pr-16 md:pr-20">
+        {/* Lista de Gastos */}
         <FuelExpensesList 
           filters={queryFilters}
           onEdit={handleEdit}
@@ -106,6 +104,6 @@ export default function FuelManagement() {
         filters={filters}
         onFiltersChange={setFilters}
       />
-    </div>
+    </>
   );
 }
