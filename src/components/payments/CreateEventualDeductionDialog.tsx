@@ -104,31 +104,32 @@ export function CreateEventualDeductionDialog({
       try {
         // Primero obtenemos la empresa del conductor
         console.log('Step 1: Getting user company...');
-        const { data: userCompany, error: companyError } = await supabase
+        const { data: userCompanyRoles, error: companyError } = await supabase
           .from('user_company_roles')
           .select('company_id')
           .eq('user_id', formData.driver_user_id)
           .eq('is_active', true)
-          .single();
+          .limit(1);
 
         if (companyError) {
           console.error('Error getting user company:', companyError);
           return [];
         }
 
-        if (!userCompany) {
+        if (!userCompanyRoles || userCompanyRoles.length === 0) {
           console.log('No company found for user');
           return [];
         }
 
-        console.log('User company found:', userCompany.company_id);
+        const companyId = userCompanyRoles[0].company_id;
+        console.log('User company found:', companyId);
 
         // Obtenemos los períodos abiertos de la empresa
         console.log('Step 2: Getting company periods...');
         const { data: companyPeriods, error: periodsError } = await supabase
           .from('company_payment_periods')
           .select('*')
-          .eq('company_id', userCompany.company_id)
+          .eq('company_id', companyId)
           .in('status', ['open', 'processing'])
           .order('period_start_date', { ascending: false });
 
