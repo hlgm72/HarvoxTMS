@@ -205,12 +205,42 @@ const assignPaymentPeriodToLoad = async (loadId: string): Promise<void> => {
     if (!periodId) {
       console.log('📅 assignPaymentPeriodToLoad - No period found, generating...');
       
+      // Get company payment frequency to determine appropriate range
+      const { data: companyData, error: companyError } = await supabase
+        .from('companies')
+        .select('default_payment_frequency')
+        .eq('id', userRole.company_id)
+        .single();
+      
+      if (companyError) {
+        console.error('❌ assignPaymentPeriodToLoad - Error getting company data:', companyError);
+        return;
+      }
+      
+      // Determine range based on payment frequency
+      let rangeDays = 7; // default for weekly
+      switch (companyData.default_payment_frequency) {
+        case 'weekly':
+          rangeDays = 7;
+          break;
+        case 'biweekly':
+          rangeDays = 14;
+          break;
+        case 'monthly':
+          rangeDays = 30;
+          break;
+        default:
+          rangeDays = 7;
+      }
+      
+      console.log(`📅 Using range of ±${rangeDays} days for ${companyData.default_payment_frequency} frequency`);
+      
       const { data: generateResult, error: generateError } = await supabase.rpc(
         'generate_payment_periods',
         {
           company_id_param: userRole.company_id,
-          from_date: new Date(Date.parse(targetDate) - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          to_date: new Date(Date.parse(targetDate) + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+          from_date: new Date(Date.parse(targetDate) - rangeDays * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          to_date: new Date(Date.parse(targetDate) + rangeDays * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
         }
       );
 
