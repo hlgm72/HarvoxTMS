@@ -3,9 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Filter, X, Download, Settings, BarChart3 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Filter, X, Download, Settings, BarChart3, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FuelFilters, FuelFiltersType } from './FuelFilters';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface FuelFloatingActionsProps {
   filters: FuelFiltersType;
@@ -14,7 +18,11 @@ interface FuelFloatingActionsProps {
 
 export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingActionsProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'view' | 'stats'>('filters');
+  const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'view' | 'stats' | 'sync'>('filters');
+  const [syncLoading, setSyncLoading] = useState(false);
+  const [syncDateFrom, setSyncDateFrom] = useState('');
+  const [syncDateTo, setSyncDateTo] = useState('');
+  const { toast } = useToast();
 
   const getActiveFiltersCount = () => {
     let count = 0;
@@ -36,9 +44,45 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
 
   const hasActiveFilters = getActiveFiltersCount() > 0;
 
-  const openSheet = (tab: 'filters' | 'export' | 'view' | 'stats') => {
+  const openSheet = (tab: 'filters' | 'export' | 'view' | 'stats' | 'sync') => {
     setActiveTab(tab);
     setIsOpen(true);
+  };
+
+  const handleWexSync = async () => {
+    setSyncLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('wex-sync', {
+        body: {
+          action: 'sync_transactions',
+          dateFrom: syncDateFrom || undefined,
+          dateTo: syncDateTo || undefined
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        toast({
+          title: "Sincronización Exitosa",
+          description: `Se sincronizaron ${data.synced} transacciones. ${data.skipped} ya existían.`,
+        });
+        
+        // Refrescar la página para mostrar las nuevas transacciones
+        window.location.reload();
+      } else {
+        throw new Error(data?.error || 'Error en la sincronización');
+      }
+    } catch (error: any) {
+      console.error('Error syncing WEX transactions:', error);
+      toast({
+        title: "Error de Sincronización",
+        description: error.message || 'No se pudieron sincronizar las transacciones de WEX',
+        variant: "destructive"
+      });
+    } finally {
+      setSyncLoading(false);
+    }
   };
 
   const actionButtons = [
@@ -49,6 +93,14 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
       color: 'text-blue-600 hover:text-blue-700',
       bgColor: 'hover:bg-blue-50',
       hasIndicator: hasActiveFilters
+    },
+    {
+      id: 'sync',
+      icon: RefreshCw,
+      label: 'Sync WEX',
+      color: 'text-cyan-600 hover:text-cyan-700',
+      bgColor: 'hover:bg-cyan-50',
+      hasIndicator: false
     },
     {
       id: 'export',
@@ -120,12 +172,14 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
           <SheetHeader>
             <SheetTitle>
               {activeTab === 'filters' && 'Filtros de Combustible'}
+              {activeTab === 'sync' && 'Sincronización WEX'}
               {activeTab === 'export' && 'Exportar Datos'}
               {activeTab === 'view' && 'Configuración de Vista'}
               {activeTab === 'stats' && 'Estadísticas'}
             </SheetTitle>
             <SheetDescription>
               {activeTab === 'filters' && 'Filtra los gastos de combustible por diferentes criterios'}
+              {activeTab === 'sync' && 'Sincroniza transacciones directamente desde la API de WEX'}
               {activeTab === 'export' && 'Exporta los datos de combustible en diferentes formatos'}
               {activeTab === 'view' && 'Personaliza cómo se muestran los gastos'}
               {activeTab === 'stats' && 'Ve estadísticas rápidas de combustible'}
@@ -151,6 +205,59 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
                   onFiltersChange={onFiltersChange}
                   compact
                 />
+              </div>
+            )}
+
+            {/* WEX Sync Content */}
+            {activeTab === 'sync' && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-sm font-medium mb-3">Sincronización con WEX</h3>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Sincroniza transacciones directamente desde la API de WEX para obtener datos históricos o verificar transacciones.
+                  </p>
+                  
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="dateFrom" className="text-xs">Fecha desde (opcional)</Label>
+                      <Input
+                        id="dateFrom"
+                        type="date"
+                        value={syncDateFrom}
+                        onChange={(e) => setSyncDateFrom(e.target.value)}
+                        className="text-xs"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="dateTo" className="text-xs">Fecha hasta (opcional)</Label>
+                      <Input
+                        id="dateTo"
+                        type="date"
+                        value={syncDateTo}
+                        onChange={(e) => setSyncDateTo(e.target.value)}
+                        className="text-xs"
+                      />
+                    </div>
+                    
+                    <div className="space-y-3 pt-2">
+                      <Button 
+                        onClick={handleWexSync}
+                        disabled={syncLoading}
+                        className="w-full"
+                      >
+                        <RefreshCw className={cn("h-4 w-4 mr-2", syncLoading && "animate-spin")} />
+                        {syncLoading ? 'Sincronizando...' : 'Sincronizar Transacciones'}
+                      </Button>
+                      
+                      <div className="text-xs text-muted-foreground space-y-1">
+                        <p>• Si no especificas fechas, se sincronizarán los últimos 7 días</p>
+                        <p>• Las transacciones duplicadas serán omitidas automáticamente</p>
+                        <p>• Solo se sincronizarán las tarjetas WEX asignadas en el sistema</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
