@@ -24,8 +24,6 @@ export default function Deductions() {
     status: "planned",
     driver: "all",
     expenseType: "all",
-    deductionType: "all",
-    critical: "all",
     dateRange: { from: undefined as Date | undefined, to: undefined as Date | undefined }
   });
 

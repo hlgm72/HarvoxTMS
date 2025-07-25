@@ -31,25 +31,12 @@ const statusOptions = [
   { value: "deferred", label: "Diferido" }
 ];
 
-const typeOptions = [
-  { value: "all", label: "Todos los tipos" },
-  { value: "recurring", label: "Recurrentes" },
-  { value: "eventual", label: "Eventuales" }
-];
-
-const criticalOptions = [
-  { value: "all", label: "Todas las prioridades" },
-  { value: "critical", label: "Solo críticas" },
-  { value: "normal", label: "Solo normales" }
-];
 
 interface DeductionsFloatingActionsProps {
   filters: {
     status: string;
     driver: string;
     expenseType: string;
-    deductionType: string;
-    critical: string;
     dateRange: { from: Date | undefined; to: Date | undefined };
   };
   onFiltersChange: (filters: any) => void;
@@ -89,8 +76,6 @@ export function DeductionsFloatingActions({
       status: "planned",
       driver: "all",
       expenseType: "all",
-      deductionType: "all",
-      critical: "all",
       dateRange: { from: undefined, to: undefined }
     });
   };
@@ -98,8 +83,6 @@ export function DeductionsFloatingActions({
   const hasActiveFilters = filters.status !== "planned" || 
                           filters.driver !== "all" || 
                           filters.expenseType !== "all" || 
-                          filters.deductionType !== "all" ||
-                          filters.critical !== "all" ||
                           filters.dateRange.from || 
                           filters.dateRange.to;
 
@@ -285,45 +268,6 @@ export function DeductionsFloatingActions({
                     </Select>
                   </div>
 
-                  {/* Deduction Type Filter */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Tipo de Deducción</label>
-                    <Select 
-                      value={filters.deductionType} 
-                      onValueChange={(value) => handleFilterChange("deductionType", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar tipo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {typeOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Critical Filter */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Prioridad</label>
-                    <Select 
-                      value={filters.critical} 
-                      onValueChange={(value) => handleFilterChange("critical", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar prioridad" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {criticalOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
 
                   {/* Date Range Filter */}
                   <div className="space-y-2">
