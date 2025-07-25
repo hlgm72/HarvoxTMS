@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Plus, Fuel, BarChart3, Settings } from 'lucide-react';
+import { Plus, Fuel, BarChart3, Settings, Filter } from 'lucide-react';
 import { PageToolbar } from '@/components/layout/PageToolbar';
 import { FuelStatsCards } from '@/components/fuel/FuelStatsCards';
+import { FuelFiltersSheet } from '@/components/fuel/FuelFiltersSheet';
 import { FuelFilters, FuelFiltersType } from '@/components/fuel/FuelFilters';
 import { FuelExpensesList } from '@/components/fuel/FuelExpensesList';
 import { CreateFuelExpenseDialog } from '@/components/fuel/CreateFuelExpenseDialog';
@@ -52,6 +53,10 @@ export default function FuelManagement() {
         icon={Fuel}
         actions={
           <div className="flex items-center gap-2">
+            <FuelFiltersSheet 
+              filters={filters} 
+              onFiltersChange={setFilters}
+            />
             <Button variant="outline" size="sm">
               <BarChart3 className="h-4 w-4 mr-2" />
               Reportes
@@ -71,14 +76,6 @@ export default function FuelManagement() {
       {/* Estadísticas */}
       <div className="pr-16 md:pr-20">
         <FuelStatsCards filters={queryFilters} />
-      </div>
-
-      {/* Filtros */}
-      <div className="pr-16 md:pr-20">
-        <FuelFilters 
-          filters={filters} 
-          onFiltersChange={setFilters} 
-        />
       </div>
 
       {/* Lista de Gastos */}

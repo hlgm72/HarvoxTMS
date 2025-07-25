@@ -25,9 +25,10 @@ export interface FuelFiltersType {
 interface FuelFiltersProps {
   filters: FuelFiltersType;
   onFiltersChange: (filters: FuelFiltersType) => void;
+  compact?: boolean;
 }
 
-export function FuelFilters({ filters, onFiltersChange }: FuelFiltersProps) {
+export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelFiltersProps) {
   const { drivers = [] } = useCompanyDrivers();
   const { geotabVehicles: vehicles = [] } = useGeotabVehicles();
 
@@ -58,7 +59,124 @@ export function FuelFilters({ filters, onFiltersChange }: FuelFiltersProps) {
 
   const activeFiltersCount = getActiveFiltersCount();
 
-  return (
+  return compact ? (
+    <div className="space-y-4">
+      {/* Conductor */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">Conductor</label>
+        <Select
+          value={filters.driverId}
+          onValueChange={(value) => handleFilterChange('driverId', value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Seleccionar conductor" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos los conductores</SelectItem>
+            {drivers.map((driver) => (
+              <SelectItem key={driver.user_id} value={driver.user_id}>
+                {driver.first_name} {driver.last_name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Estado */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">Estado</label>
+        <Select
+          value={filters.status}
+          onValueChange={(value) => handleFilterChange('status', value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Seleccionar estado" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos los estados</SelectItem>
+            <SelectItem value="pending">Pendiente</SelectItem>
+            <SelectItem value="approved">Aprobado</SelectItem>
+            <SelectItem value="verified">Verificado</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Vehículo */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">Vehículo</label>
+        <Select
+          value={filters.vehicleId}
+          onValueChange={(value) => handleFilterChange('vehicleId', value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Seleccionar vehículo" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos los vehículos</SelectItem>
+            {vehicles.map((vehicle) => (
+              <SelectItem key={vehicle.id} value={vehicle.id}>
+                {vehicle.name}
+                {vehicle.license_plate && (
+                  <span className="text-muted-foreground ml-1">
+                    ({vehicle.license_plate})
+                  </span>
+                )}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Rango de Fechas */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">Rango de Fechas</label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                !filters.dateRange.from && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {filters.dateRange.from ? (
+                filters.dateRange.to ? (
+                  <>
+                    {format(filters.dateRange.from, "LLL dd, y")} -{" "}
+                    {format(filters.dateRange.to, "LLL dd, y")}
+                  </>
+                ) : (
+                  format(filters.dateRange.from, "LLL dd, y")
+                )
+              ) : (
+                <span>Seleccionar rango</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={filters.dateRange.from}
+              selected={{
+                from: filters.dateRange.from,
+                to: filters.dateRange.to,
+              }}
+              onSelect={(range) => {
+                handleFilterChange('dateRange', {
+                  from: range?.from,
+                  to: range?.to,
+                });
+              }}
+              numberOfMonths={1}
+              className="p-3 pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+    </div>
+  ) : (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
