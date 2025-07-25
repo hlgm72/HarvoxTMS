@@ -125,30 +125,42 @@ export function DriverCardsManager() {
       }
 
       // Get company ID from current user
-      const { data: userRoles } = await supabase
+      const { data: userRoles, error: rolesError } = await supabase
         .from('user_company_roles')
         .select('company_id')
         .eq('user_id', selectedDriver)
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
+
+      if (rolesError) {
+        console.error('Error fetching user roles:', rolesError);
+        throw new Error('Error al obtener la empresa del conductor');
+      }
 
       if (!userRoles) {
         throw new Error('No se encontró la empresa del conductor');
       }
 
+      const cardData = {
+        driver_user_id: selectedDriver,
+        company_id: userRoles.company_id,
+        card_number_last_four: cardLastFour,
+        card_provider: 'wex',
+        ...(cardIdentifier && { card_identifier: cardIdentifier })
+      };
+
+      console.log('Inserting card data:', cardData);
+
       const { data, error } = await supabase
         .from('driver_cards')
-        .insert({
-          driver_user_id: selectedDriver,
-          company_id: userRoles.company_id,
-          card_number_last_four: cardLastFour,
-          card_identifier: cardIdentifier || null,
-          card_provider: 'wex'
-        })
+        .insert(cardData)
         .select()
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Insert error:', error);
+        throw error;
+      }
       return data;
     },
     onSuccess: () => {
