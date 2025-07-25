@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Fuel, BarChart3, Settings, Filter } from 'lucide-react';
 import { PageToolbar } from '@/components/layout/PageToolbar';
 import { FuelStatsCards } from '@/components/fuel/FuelStatsCards';
-import { FuelFiltersSheet } from '@/components/fuel/FuelFiltersSheet';
+import { FuelFloatingActions } from '@/components/fuel/FuelFloatingActions';
 import { FuelFilters, FuelFiltersType } from '@/components/fuel/FuelFilters';
 import { FuelExpensesList } from '@/components/fuel/FuelExpensesList';
 import { CreateFuelExpenseDialog } from '@/components/fuel/CreateFuelExpenseDialog';
@@ -53,10 +53,6 @@ export default function FuelManagement() {
         icon={Fuel}
         actions={
           <div className="flex items-center gap-2">
-            <FuelFiltersSheet 
-              filters={filters} 
-              onFiltersChange={setFilters}
-            />
             <Button variant="outline" size="sm">
               <BarChart3 className="h-4 w-4 mr-2" />
               Reportes
@@ -103,6 +99,12 @@ export default function FuelManagement() {
         expenseId={viewExpenseId}
         open={!!viewExpenseId}
         onOpenChange={(open) => !open && setViewExpenseId(null)}
+      />
+
+      {/* Floating Actions */}
+      <FuelFloatingActions 
+        filters={filters}
+        onFiltersChange={setFilters}
       />
     </div>
   );
