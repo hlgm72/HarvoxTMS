@@ -416,13 +416,6 @@ export function PDFAnalyzer() {
                   </Button>
                 </div>
               )}
-
-              <div className="mt-4">
-                <h4 className="font-medium mb-2">Análisis detallado:</h4>
-                <p className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
-                  {analysisResult.analysis}
-                </p>
-              </div>
             </CardContent>
           </Card>
 
