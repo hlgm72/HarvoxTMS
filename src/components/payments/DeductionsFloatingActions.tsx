@@ -147,7 +147,7 @@ export function DeductionsFloatingActions({
   return (
     <>
       {/* Floating Action Buttons */}
-      <div className="fixed right-0 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2">
+      <div className="fixed right-2 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2">
         <TooltipProvider>
           {actionButtons.map((action) => {
             const IconComponent = action.icon;
@@ -157,17 +157,17 @@ export function DeductionsFloatingActions({
                   <Button
                     variant="outline"
                     className={cn(
-                      "h-14 w-12 rounded-l-xl rounded-r-none border-r-0 shadow-lg transition-all duration-300",
+                      "h-12 w-10 rounded-l-xl rounded-r-none border-r-0 shadow-lg transition-all duration-300",
                       "bg-background/95 backdrop-blur-sm",
-                      "hover:w-16 hover:shadow-xl hover:-translate-x-1",
+                      "hover:w-14 hover:shadow-xl hover:-translate-x-1",
                       action.color,
                       action.bgColor,
-                      "relative flex flex-col items-center justify-center gap-1 px-2"
+                      "relative flex flex-col items-center justify-center gap-0.5 px-1"
                     )}
                     onClick={() => openSheet(action.id as any)}
                   >
-                    <IconComponent className="h-4 w-4" />
-                    <span className="text-[8px] font-medium leading-none">{action.label}</span>
+                    <IconComponent className="h-3.5 w-3.5" />
+                    <span className="text-[7px] font-medium leading-none">{action.label}</span>
                     {action.hasIndicator && (
                       <div className="absolute -top-1 left-1 h-2 w-2 bg-red-500 rounded-full animate-pulse" />
                     )}
