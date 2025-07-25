@@ -88,21 +88,23 @@ Responde SOLO con JSON válido en este formato exacto:
   "sampleData": [
     {
       "date": "YYYY-MM-DD",
-      "fuel_type": "Diesel",
-      "location": "Nombre del lugar",
-      "gallons": número,
+      "card": "últimos 4 dígitos de la tarjeta",
+      "unit": "número de unidad o vehículo",
+      "invoice": "número de factura",
+      "location": "nombre completo de la ubicación",
+      "state": "estado (ST)",
+      "qty": cantidad_de_galones,
       "gross_ppg": precio_por_galón,
-      "gross_amount": total_bruto,
-      "discount": descuento,
+      "gross_amt": monto_bruto,
+      "disc_amt": descuento,
       "fees": comisiones,
-      "total_amount": monto_final,
-      "authorization_code": "código si existe"
+      "total_amt": monto_total
     }
   ],
   "analysis": "Análisis detallado de qué encontraste en el documento"
 }
 
-Extrae TODOS los datos de transacciones que encuentres en el PDF.`
+IMPORTANTE: Extrae TODAS las transacciones que encuentres en el PDF, no solo una muestra. Usa los nombres de campo exactos que especifiqué arriba.`
           }
         ],
         max_tokens: 2000,
