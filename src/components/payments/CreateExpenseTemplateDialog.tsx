@@ -260,27 +260,6 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-background border-border">
-                <div className="p-3 space-y-3">
-                  {/* Control para año */}
-                  <div className="flex items-center justify-center gap-2">
-                    <Label className="text-sm">Año:</Label>
-                    <Input
-                      type="number"
-                      min="2020"
-                      max="2030"
-                      value={effectiveFrom?.getFullYear() || new Date().getFullYear()}
-                      onChange={(e) => {
-                        const year = parseInt(e.target.value);
-                        if (year >= 2020 && year <= 2030) {
-                          const newDate = effectiveFrom ? new Date(effectiveFrom) : new Date();
-                          newDate.setFullYear(year);
-                          setEffectiveFrom(newDate);
-                        }
-                      }}
-                      className="w-20 text-center"
-                    />
-                  </div>
-                </div>
                 <Calendar
                   mode="single"
                   captionLayout="dropdown"
@@ -311,27 +290,6 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-background border-border">
-                <div className="p-3 space-y-3">
-                  {/* Control para año */}
-                  <div className="flex items-center justify-center gap-2">
-                    <Label className="text-sm">Año:</Label>
-                    <Input
-                      type="number"
-                      min="2020"
-                      max="2030"
-                      value={effectiveUntil?.getFullYear() || new Date().getFullYear()}
-                      onChange={(e) => {
-                        const year = parseInt(e.target.value);
-                        if (year >= 2020 && year <= 2030) {
-                          const newDate = effectiveUntil ? new Date(effectiveUntil) : new Date();
-                          newDate.setFullYear(year);
-                          setEffectiveUntil(newDate);
-                        }
-                      }}
-                      className="w-20 text-center"
-                    />
-                  </div>
-                </div>
                 <Calendar
                   mode="single"
                   captionLayout="dropdown"
