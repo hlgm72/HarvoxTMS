@@ -178,11 +178,15 @@ export function PDFAnalyzer() {
                       <tr className="bg-muted">
                         <th className="border border-border p-2 text-left text-sm font-medium">Fecha</th>
                         <th className="border border-border p-2 text-left text-sm font-medium">Tarjeta</th>
+                        <th className="border border-border p-2 text-left text-sm font-medium">Unidad</th>
+                        <th className="border border-border p-2 text-left text-sm font-medium">Factura #</th>
                         <th className="border border-border p-2 text-left text-sm font-medium">Ubicación</th>
-                        <th className="border border-border p-2 text-left text-sm font-medium">Combustible</th>
-                        <th className="border border-border p-2 text-right text-sm font-medium">Galones</th>
+                        <th className="border border-border p-2 text-left text-sm font-medium">Estado</th>
+                        <th className="border border-border p-2 text-right text-sm font-medium">Cantidad</th>
                         <th className="border border-border p-2 text-right text-sm font-medium">Precio/Gal</th>
+                        <th className="border border-border p-2 text-right text-sm font-medium">Total Bruto</th>
                         <th className="border border-border p-2 text-right text-sm font-medium">Descuento</th>
+                        <th className="border border-border p-2 text-right text-sm font-medium">Comisiones</th>
                         <th className="border border-border p-2 text-right text-sm font-medium">Total</th>
                       </tr>
                     </thead>
@@ -191,11 +195,16 @@ export function PDFAnalyzer() {
                         <tr key={index} className="hover:bg-muted/50">
                           <td className="border border-border p-2 text-sm">{transaction.date || '-'}</td>
                           <td className="border border-border p-2 text-sm">{transaction.card || '-'}</td>
-                          <td className="border border-border p-2 text-sm">{transaction.fuel_type || '-'}</td>
-                          <td className="border border-border p-2 text-sm text-right">{transaction.gallons || '-'}</td>
+                          <td className="border border-border p-2 text-sm">{transaction.unit || '-'}</td>
+                          <td className="border border-border p-2 text-sm">{transaction.invoice || '-'}</td>
+                          <td className="border border-border p-2 text-sm">{transaction.location || '-'}</td>
+                          <td className="border border-border p-2 text-sm">{transaction.state || '-'}</td>
+                          <td className="border border-border p-2 text-sm text-right">{transaction.qty || '-'}</td>
                           <td className="border border-border p-2 text-sm text-right">${transaction.gross_ppg || '-'}</td>
-                          <td className="border border-border p-2 text-sm text-right">${transaction.discount || '-'}</td>
-                          <td className="border border-border p-2 text-sm text-right font-medium">${transaction.total_amount || '-'}</td>
+                          <td className="border border-border p-2 text-sm text-right">${transaction.gross_amt || '-'}</td>
+                          <td className="border border-border p-2 text-sm text-right">${transaction.disc_amt || '-'}</td>
+                          <td className="border border-border p-2 text-sm text-right">${transaction.fees || '-'}</td>
+                          <td className="border border-border p-2 text-sm text-right font-medium">${transaction.total_amt || '-'}</td>
                         </tr>
                       ))}
                     </tbody>
