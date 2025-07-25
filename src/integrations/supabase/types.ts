@@ -959,15 +959,14 @@ export type Database = {
       }
       fuel_expenses: {
         Row: {
-          authorization_code: string | null
           card_last_four: string | null
           created_at: string
           created_by: string | null
           driver_user_id: string
-          fuel_card_number: string | null
           fuel_type: string
           gallons_purchased: number
           id: string
+          invoice_number: string | null
           is_verified: boolean
           notes: string | null
           odometer_reading: number | null
@@ -975,8 +974,8 @@ export type Database = {
           price_per_gallon: number
           raw_webhook_data: Json | null
           receipt_url: string | null
-          station_address: string | null
           station_name: string | null
+          station_state: string | null
           status: string
           total_amount: number
           transaction_date: string
@@ -984,18 +983,16 @@ export type Database = {
           vehicle_id: string | null
           verified_at: string | null
           verified_by: string | null
-          wex_reference_id: string | null
         }
         Insert: {
-          authorization_code?: string | null
           card_last_four?: string | null
           created_at?: string
           created_by?: string | null
           driver_user_id: string
-          fuel_card_number?: string | null
           fuel_type?: string
           gallons_purchased: number
           id?: string
+          invoice_number?: string | null
           is_verified?: boolean
           notes?: string | null
           odometer_reading?: number | null
@@ -1003,8 +1000,8 @@ export type Database = {
           price_per_gallon: number
           raw_webhook_data?: Json | null
           receipt_url?: string | null
-          station_address?: string | null
           station_name?: string | null
+          station_state?: string | null
           status?: string
           total_amount: number
           transaction_date: string
@@ -1012,18 +1009,16 @@ export type Database = {
           vehicle_id?: string | null
           verified_at?: string | null
           verified_by?: string | null
-          wex_reference_id?: string | null
         }
         Update: {
-          authorization_code?: string | null
           card_last_four?: string | null
           created_at?: string
           created_by?: string | null
           driver_user_id?: string
-          fuel_card_number?: string | null
           fuel_type?: string
           gallons_purchased?: number
           id?: string
+          invoice_number?: string | null
           is_verified?: boolean
           notes?: string | null
           odometer_reading?: number | null
@@ -1031,8 +1026,8 @@ export type Database = {
           price_per_gallon?: number
           raw_webhook_data?: Json | null
           receipt_url?: string | null
-          station_address?: string | null
           station_name?: string | null
+          station_state?: string | null
           status?: string
           total_amount?: number
           transaction_date?: string
@@ -1040,7 +1035,6 @@ export type Database = {
           vehicle_id?: string | null
           verified_at?: string | null
           verified_by?: string | null
-          wex_reference_id?: string | null
         }
         Relationships: [
           {
