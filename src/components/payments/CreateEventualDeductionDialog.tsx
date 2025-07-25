@@ -11,7 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Check, ChevronDown } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -279,6 +279,9 @@ export function CreateEventualDeductionDialog({
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle>Crear Deducción Eventual</DialogTitle>
+          <DialogDescription>
+            Crea una deducción única para un conductor específico en un período de pago determinado.
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
