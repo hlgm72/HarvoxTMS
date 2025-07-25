@@ -455,6 +455,51 @@ export type Database = {
         }
         Relationships: []
       }
+      driver_cards: {
+        Row: {
+          assigned_date: string
+          card_identifier: string | null
+          card_number_last_four: string
+          card_provider: string
+          company_id: string
+          created_at: string
+          created_by: string | null
+          deactivated_date: string | null
+          driver_user_id: string
+          id: string
+          is_active: boolean
+          updated_at: string
+        }
+        Insert: {
+          assigned_date?: string
+          card_identifier?: string | null
+          card_number_last_four: string
+          card_provider?: string
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          deactivated_date?: string | null
+          driver_user_id: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+        }
+        Update: {
+          assigned_date?: string
+          card_identifier?: string | null
+          card_number_last_four?: string
+          card_provider?: string
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          deactivated_date?: string | null
+          driver_user_id?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       driver_period_calculations: {
         Row: {
           balance_alert_message: string | null
@@ -884,6 +929,8 @@ export type Database = {
       }
       fuel_expenses: {
         Row: {
+          authorization_code: string | null
+          card_last_four: string | null
           created_at: string
           created_by: string | null
           driver_user_id: string
@@ -896,6 +943,7 @@ export type Database = {
           odometer_reading: number | null
           payment_period_id: string
           price_per_gallon: number
+          raw_webhook_data: Json | null
           receipt_url: string | null
           station_address: string | null
           station_name: string | null
@@ -906,8 +954,11 @@ export type Database = {
           vehicle_id: string | null
           verified_at: string | null
           verified_by: string | null
+          wex_reference_id: string | null
         }
         Insert: {
+          authorization_code?: string | null
+          card_last_four?: string | null
           created_at?: string
           created_by?: string | null
           driver_user_id: string
@@ -920,6 +971,7 @@ export type Database = {
           odometer_reading?: number | null
           payment_period_id: string
           price_per_gallon: number
+          raw_webhook_data?: Json | null
           receipt_url?: string | null
           station_address?: string | null
           station_name?: string | null
@@ -930,8 +982,11 @@ export type Database = {
           vehicle_id?: string | null
           verified_at?: string | null
           verified_by?: string | null
+          wex_reference_id?: string | null
         }
         Update: {
+          authorization_code?: string | null
+          card_last_four?: string | null
           created_at?: string
           created_by?: string | null
           driver_user_id?: string
@@ -944,6 +999,7 @@ export type Database = {
           odometer_reading?: number | null
           payment_period_id?: string
           price_per_gallon?: number
+          raw_webhook_data?: Json | null
           receipt_url?: string | null
           station_address?: string | null
           station_name?: string | null
@@ -954,6 +1010,7 @@ export type Database = {
           vehicle_id?: string | null
           verified_at?: string | null
           verified_by?: string | null
+          wex_reference_id?: string | null
         }
         Relationships: [
           {
