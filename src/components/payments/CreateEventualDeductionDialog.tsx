@@ -189,7 +189,7 @@ export function CreateEventualDeductionDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle>Crear Deducción Eventual</DialogTitle>
         </DialogHeader>
