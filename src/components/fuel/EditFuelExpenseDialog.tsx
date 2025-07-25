@@ -29,8 +29,7 @@ const formSchema = z.object({
   price_per_gallon: z.coerce.number().positive('El precio por galón debe ser positivo'),
   total_amount: z.coerce.number().positive('El monto total debe ser positivo'),
   station_name: z.string().optional(),
-  station_address: z.string().optional(),
-  fuel_card_number: z.string().optional(),
+  station_state: z.string().optional(),
   vehicle_id: z.string().optional(),
   odometer_reading: z.coerce.number().optional(),
   receipt_url: z.string().optional(),
@@ -67,8 +66,7 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
         price_per_gallon: expense.price_per_gallon,
         total_amount: expense.total_amount,
         station_name: expense.station_name || '',
-        station_address: expense.station_address || '',
-        fuel_card_number: expense.fuel_card_number || '',
+        station_state: expense.station_state || '',
         vehicle_id: expense.vehicle_id || '',
         odometer_reading: expense.odometer_reading || undefined,
         receipt_url: expense.receipt_url || '',
@@ -333,29 +331,15 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="station_address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Dirección de la Estación</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Dirección completa" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="fuel_card_number"
+                name="station_state"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Número de Tarjeta</FormLabel>
+                    <FormLabel>Estado</FormLabel>
                     <FormControl>
-                      <Input placeholder="****1234" {...field} />
+                      <Input placeholder="TX, CA, NY..." maxLength={2} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

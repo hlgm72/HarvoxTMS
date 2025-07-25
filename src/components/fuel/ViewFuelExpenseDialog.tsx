@@ -141,7 +141,7 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
             </Card>
 
             {/* Información de la Estación */}
-            {(expense.station_name || expense.station_address) && (
+            {(expense.station_name || expense.station_state) && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
@@ -157,10 +157,10 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
                     </div>
                   )}
                   
-                  {expense.station_address && (
+                  {expense.station_state && (
                     <div>
-                      <div className="text-sm text-muted-foreground">Dirección</div>
-                      <div className="font-medium">{expense.station_address}</div>
+                      <div className="text-sm text-muted-foreground">Estado</div>
+                      <div className="font-medium">{expense.station_state}</div>
                     </div>
                   )}
                 </CardContent>
@@ -173,15 +173,6 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
                 <CardTitle className="text-lg">Información Adicional</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {expense.fuel_card_number && (
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <div className="text-sm text-muted-foreground">Tarjeta de Combustible</div>
-                      <div className="font-medium">{expense.fuel_card_number}</div>
-                    </div>
-                  </div>
-                )}
 
                 {expense.odometer_reading && (
                   <div className="flex items-center gap-2">

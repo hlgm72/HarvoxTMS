@@ -146,9 +146,9 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                         <MapPin className="h-4 w-4 text-muted-foreground" />
                         <div>
                           <div className="font-medium">{expense.station_name || 'N/A'}</div>
-                          {expense.station_address && (
+                          {expense.station_state && (
                             <div className="text-xs text-muted-foreground truncate max-w-[150px]">
-                              {expense.station_address}
+                              Estado: {expense.station_state}
                             </div>
                           )}
                         </div>

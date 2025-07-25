@@ -142,31 +142,6 @@ export function PDFAnalyzer() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Authorization Code Status */}
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Authorization Code:</span>
-              {analysisResult.hasAuthorizationCode ? (
-                <Badge variant="default" className="bg-green-100 text-green-800">
-                  ✓ Encontrado: {analysisResult.authorizationCodeField}
-                </Badge>
-              ) : (
-                <Badge variant="secondary" className="bg-red-100 text-red-800">
-                  ✗ No encontrado
-                </Badge>
-              )}
-            </div>
-
-            {/* Columns Found */}
-            <div>
-              <h4 className="font-medium mb-2">Columnas encontradas ({analysisResult.columnsFound.length}):</h4>
-              <div className="flex flex-wrap gap-1">
-                {analysisResult.columnsFound.map((column, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
-                    {column}
-                  </Badge>
-                ))}
-              </div>
-            </div>
 
             {/* Transactions Table */}
             {analysisResult.sampleData.length > 0 && (
