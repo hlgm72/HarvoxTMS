@@ -189,7 +189,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             <ChevronDown className="h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-80 p-0" align="start">
+        <PopoverContent className="w-72 sm:w-80 p-0 max-w-[calc(100vw-2rem)]" align="start">
           <div className="p-4 space-y-4">
             {/* Opciones rápidas */}
             <div className="space-y-2">
@@ -374,12 +374,12 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                       endDate: period.period_end_date
                     })}
                   >
-                    <div className="flex flex-col items-start w-full">
-                      <div className="flex items-center justify-between w-full">
-                        <span className="text-sm">
+                    <div className="flex flex-col items-start w-full min-w-0">
+                      <div className="flex items-center justify-between w-full gap-2">
+                        <span className="text-sm truncate flex-1 min-w-0">
                           {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
                         </span>
-                        <Badge className={`text-xs ${getStatusColor(period.status)}`}>
+                        <Badge className={`text-xs flex-shrink-0 ${getStatusColor(period.status)}`}>
                           {getStatusText(period.status)}
                         </Badge>
                       </div>
