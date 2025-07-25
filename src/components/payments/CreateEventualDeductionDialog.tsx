@@ -252,23 +252,47 @@ export function CreateEventualDeductionDialog({
           {formData.driver_user_id && (
             <div className="space-y-2">
               <Label htmlFor="payment-period">Período de Pago</Label>
-              <Select 
-                value={formData.payment_period_id} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, payment_period_id: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar período" />
-                </SelectTrigger>
-                <SelectContent>
-                  {paymentPeriods.map((period) => (
-                    <SelectItem key={period.id} value={period.id}>
-                      {format(new Date(period.company_payment_periods.period_start_date), 'dd/MM/yyyy', { locale: es })} - {' '}
-                      {format(new Date(period.company_payment_periods.period_end_date), 'dd/MM/yyyy', { locale: es })} {' '}
-                      ({period.company_payment_periods.period_frequency})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {paymentPeriods.length === 0 ? (
+                <div className="space-y-2">
+                  <div className="p-3 border border-orange-200 bg-orange-50 rounded-md">
+                    <p className="text-sm text-orange-800">
+                      No hay períodos de pago disponibles para este conductor.
+                    </p>
+                    <p className="text-xs text-orange-600 mt-1">
+                      Los períodos de pago deben estar en estado "abierto" o "procesando" para crear deducciones eventuales.
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      window.open('/payments', '_blank');
+                    }}
+                    className="w-full"
+                  >
+                    Ir a Períodos de Pago
+                  </Button>
+                </div>
+              ) : (
+                <Select 
+                  value={formData.payment_period_id} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, payment_period_id: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar período" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {paymentPeriods.map((period) => (
+                      <SelectItem key={period.id} value={period.id}>
+                        {format(new Date(period.company_payment_periods.period_start_date), 'dd/MM/yyyy', { locale: es })} - {' '}
+                        {format(new Date(period.company_payment_periods.period_end_date), 'dd/MM/yyyy', { locale: es })} {' '}
+                        ({period.company_payment_periods.period_frequency})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
           )}
 
