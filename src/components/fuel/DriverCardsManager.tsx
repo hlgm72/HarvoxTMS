@@ -124,13 +124,14 @@ export function DriverCardsManager() {
         throw new Error('Driver y últimos 4 dígitos son requeridos');
       }
 
-      // Get company ID from current user
+      // Get company ID from current user - solo necesitamos el company_id
       const { data: userRoles, error: rolesError } = await supabase
         .from('user_company_roles')
         .select('company_id')
         .eq('user_id', selectedDriver)
         .eq('is_active', true)
-        .maybeSingle();
+        .limit(1)
+        .single();
 
       if (rolesError) {
         console.error('Error fetching user roles:', rolesError);
