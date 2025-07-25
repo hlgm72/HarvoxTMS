@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -59,6 +59,9 @@ export function LoadViewDialog({ isOpen, onClose, load }: LoadViewDialogProps) {
                   </div>
                   {load.load_number}
                 </DialogTitle>
+                <DialogDescription className="text-muted-foreground">
+                  Detalles completos de la carga incluyendo paradas, conductor asignado y documentos.
+                </DialogDescription>
                 <div className="flex items-center gap-3">
                   <Badge 
                     variant="outline" 

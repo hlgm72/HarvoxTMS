@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -55,6 +55,9 @@ export function GeotabLinkDialog({ open, onOpenChange, equipment }: GeotabLinkDi
             <Link className="h-5 w-5" />
             {t("equipment.geotab.link.title", "Vincular con Geotab")}
           </DialogTitle>
+          <DialogDescription>
+            Conecta este equipo con un vehículo de Geotab para obtener datos de GPS y telemetría en tiempo real.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
