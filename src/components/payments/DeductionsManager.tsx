@@ -271,14 +271,14 @@ export function DeductionsManager({ isCreateDialogOpen: externalIsCreateDialogOp
           onClick={() => setIsCreateDialogOpen(true)}
           className="flex-1 sm:flex-none"
         >
-          Crear Plantilla Recurrente
+          Deducción Recurrente
         </Button>
         <Button 
           variant="outline"
           onClick={() => setIsEventualDialogOpen(true)}
           className="flex-1 sm:flex-none"
         >
-          Crear Deducción Eventual
+          Deducción Eventual
         </Button>
       </div>
 
