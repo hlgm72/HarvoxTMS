@@ -54,7 +54,7 @@ export default function Deductions() {
       <div className="p-2 md:p-4 space-y-6">
         <DeductionsManager 
           isCreateDialogOpen={isCreateDialogOpen}
-          onCreateDialogChange={setIsCreateDialogOpen}
+          onCreateDialogOpenChange={setIsCreateDialogOpen}
         />
       </div>
 

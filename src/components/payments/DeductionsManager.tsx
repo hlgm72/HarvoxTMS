@@ -1,39 +1,34 @@
 import { useState } from "react";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, AlertTriangle, DollarSign, Clock, User, Settings, Edit, Trash2, RotateCcw } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { ExpenseTemplateDialog } from "./ExpenseTemplateDialog";
-import { EmptyDeductionsState } from "./EmptyDeductionsState";
+import { CreateEventualDeductionDialog } from "./CreateEventualDeductionDialog";
+import { EventualDeductionsList } from "./EventualDeductionsList";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface DeductionsManagerProps {
   isCreateDialogOpen?: boolean;
-  onCreateDialogChange?: (open: boolean) => void;
+  onCreateDialogOpenChange?: (open: boolean) => void;
 }
 
-export function DeductionsManager({ 
-  isCreateDialogOpen: externalIsOpen, 
-  onCreateDialogChange: externalOnChange 
-}: DeductionsManagerProps = {}) {
+export function DeductionsManager({ isCreateDialogOpen: externalIsCreateDialogOpen, onCreateDialogOpenChange }: DeductionsManagerProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const [internalIsOpen, setInternalIsOpen] = useState(false);
-  const [editingTemplate, setEditingTemplate] = useState(null);
-  const [deletingTemplate, setDeletingTemplate] = useState<string | null>(null);
-  
-  // Use external state if provided, otherwise use internal state
-  const isCreateDialogOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
-  const setIsCreateDialogOpen = externalOnChange || setInternalIsOpen;
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEventualDialogOpen, setIsEventualDialogOpen] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<any>(null);
+  const [deletingTemplate, setDeletingTemplate] = useState<any>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Obtener plantillas de deducciones activas
   const { data: templates = [], refetch: refetchTemplates } = useQuery({
@@ -50,7 +45,6 @@ export function DeductionsManager({
 
       if (!userRoles || userRoles.length === 0) return [];
       
-      // Tomar la primera empresa (en caso de múltiples roles)
       const companyId = userRoles[0].company_id;
       
       // Obtener conductores de la empresa
@@ -61,28 +55,11 @@ export function DeductionsManager({
         .eq('role', 'driver')
         .eq('is_active', true);
 
-      // Incluir también al usuario actual si es owner/manager
-      const currentUserRoles = userRoles.map(role => role.company_id);
-      const { data: currentUserRole } = await supabase
-        .from('user_company_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .eq('company_id', companyId)
-        .eq('is_active', true)
-        .single();
-
       const driverIds = driverRoles?.map(role => role.user_id) || [];
       
-      // Si el usuario actual es owner o manager, incluirlo en la lista
-      if (currentUserRole && ['company_owner', 'operations_manager'].includes(currentUserRole.role)) {
-        if (!driverIds.includes(user.id)) {
-          driverIds.push(user.id);
-        }
-      }
-
       if (driverIds.length === 0) return [];
 
-      // Obtener plantillas ACTIVAS para estos conductores
+      // Obtener plantillas ACTIVAS
       const { data: templatesData, error } = await supabase
         .from('recurring_expense_templates')
         .select(`
@@ -97,7 +74,7 @@ export function DeductionsManager({
       
       if (!templatesData || templatesData.length === 0) return [];
 
-      // Obtener perfiles de conductores por separado
+      // Obtener perfiles de conductores
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('user_id, first_name, last_name')
@@ -119,7 +96,7 @@ export function DeductionsManager({
     enabled: !!user?.id,
   });
 
-  // Obtener plantillas INACTIVAS para reactivación
+  // Obtener plantillas INACTIVAS
   const { data: inactiveTemplates = [], refetch: refetchInactiveTemplates } = useQuery({
     queryKey: ['inactive-expense-templates', user?.id],
     queryFn: async () => {
@@ -152,9 +129,6 @@ export function DeductionsManager({
         .eq('is_active', true);
 
       const driverIds = driverRoles?.map(role => role.user_id) || [];
-      if (!driverIds.includes(user.id)) {
-        driverIds.push(user.id);
-      }
 
       if (driverIds.length === 0) return [];
 
@@ -195,12 +169,18 @@ export function DeductionsManager({
     enabled: !!user?.id,
   });
 
+  const handleEventualSuccess = () => {
+    setRefreshTrigger(prev => prev + 1);
+    setIsEventualDialogOpen(false);
+  };
+
   const handleCreateSuccess = () => {
     setIsCreateDialogOpen(false);
     refetchTemplates();
     refetchInactiveTemplates();
-    // Invalidar también las estadísticas para que se actualicen
     queryClient.invalidateQueries({ queryKey: ['deductions-stats', user?.id] });
+    queryClient.invalidateQueries({ queryKey: ['recurring-expense-templates'] });
+    queryClient.invalidateQueries({ queryKey: ['inactive-expense-templates'] });
   };
 
   const handleEditSuccess = () => {
@@ -208,6 +188,8 @@ export function DeductionsManager({
     refetchTemplates();
     refetchInactiveTemplates();
     queryClient.invalidateQueries({ queryKey: ['deductions-stats', user?.id] });
+    queryClient.invalidateQueries({ queryKey: ['recurring-expense-templates'] });
+    queryClient.invalidateQueries({ queryKey: ['inactive-expense-templates'] });
   };
 
   // Mutation para eliminar plantilla (marcar como inactiva)
@@ -225,9 +207,7 @@ export function DeductionsManager({
         title: "Éxito",
         description: "Plantilla desactivada exitosamente",
       });
-      refetchTemplates();
-      refetchInactiveTemplates();
-      queryClient.invalidateQueries({ queryKey: ['deductions-stats', user?.id] });
+      handleCreateSuccess();
     },
     onError: (error: any) => {
       toast({
@@ -256,9 +236,7 @@ export function DeductionsManager({
         title: "Éxito",
         description: "Plantilla reactivada exitosamente",
       });
-      refetchTemplates();
-      refetchInactiveTemplates();
-      queryClient.invalidateQueries({ queryKey: ['deductions-stats', user?.id] });
+      handleCreateSuccess();
     },
     onError: (error: any) => {
       toast({
@@ -269,8 +247,8 @@ export function DeductionsManager({
     }
   });
 
-  const handleDeleteTemplate = (templateId: string) => {
-    setDeletingTemplate(templateId);
+  const handleDeleteTemplate = (template: any) => {
+    setDeletingTemplate(template);
   };
 
   const handleReactivateTemplate = (templateId: string) => {
@@ -281,24 +259,51 @@ export function DeductionsManager({
 
   const confirmDeleteTemplate = () => {
     if (deletingTemplate) {
-      deleteTemplateMutation.mutate(deletingTemplate);
+      deleteTemplateMutation.mutate(deletingTemplate.id);
       setDeletingTemplate(null);
     }
   };
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="templates" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="templates">Plantillas Activas</TabsTrigger>
+      <div className="flex flex-col sm:flex-row gap-2">
+        <Button 
+          onClick={() => setIsCreateDialogOpen(true)}
+          className="flex-1 sm:flex-none"
+        >
+          Crear Plantilla Recurrente
+        </Button>
+        <Button 
+          variant="outline"
+          onClick={() => setIsEventualDialogOpen(true)}
+          className="flex-1 sm:flex-none"
+        >
+          Crear Deducción Eventual
+        </Button>
+      </div>
+
+      <Tabs defaultValue="active" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="active">Plantillas Activas</TabsTrigger>
           <TabsTrigger value="inactive">Plantillas Inactivas</TabsTrigger>
-          <TabsTrigger value="instances">Instancias Generadas</TabsTrigger>
+          <TabsTrigger value="eventual">Deducciones Eventuales</TabsTrigger>
           <TabsTrigger value="history">Historial</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="templates" className="space-y-4">
+        <TabsContent value="active" className="space-y-4">
           {templates.length === 0 ? (
-            <EmptyDeductionsState onCreateTemplate={() => setIsCreateDialogOpen(true)} />
+            <Card>
+              <CardContent className="p-6 text-center">
+                <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">No hay plantillas activas</p>
+                <Button 
+                  onClick={() => setIsCreateDialogOpen(true)}
+                  className="mt-4"
+                >
+                  Crear Primera Plantilla
+                </Button>
+              </CardContent>
+            </Card>
           ) : (
             <div className="grid gap-4">
               {templates.map((template) => (
@@ -314,7 +319,7 @@ export function DeductionsManager({
                             {template.driver_profile?.first_name} {template.driver_profile?.last_name}
                           </h3>
                           <p className="text-sm text-muted-foreground">
-                            {template.expense_types?.name} - {template.expense_types?.category}
+                            {template.expense_types?.name}
                           </p>
                         </div>
                       </div>
@@ -339,7 +344,7 @@ export function DeductionsManager({
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => handleDeleteTemplate(template.id)}
+                            onClick={() => handleDeleteTemplate(template)}
                             disabled={deleteTemplateMutation.isPending}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -396,7 +401,7 @@ export function DeductionsManager({
                             {template.driver_profile?.first_name} {template.driver_profile?.last_name}
                           </h3>
                           <p className="text-sm text-muted-foreground">
-                            {template.expense_types?.name} - {template.expense_types?.category}
+                            {template.expense_types?.name}
                           </p>
                         </div>
                       </div>
@@ -424,23 +429,6 @@ export function DeductionsManager({
                         </div>
                       </div>
                     </div>
-                    
-                    <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-4 text-sm text-muted-foreground">
-                      <div>
-                        <span>Desactivada:</span>
-                        <p>{format(new Date(template.updated_at), "PPP", { locale: es })}</p>
-                      </div>
-                      <div>
-                        <span>Vigente desde:</span>
-                        <p>{format(new Date(template.start_date + 'T00:00:00'), "PPP", { locale: es })}</p>
-                      </div>
-                    </div>
-                    
-                    {template.notes && (
-                      <div className="mt-2 text-sm text-muted-foreground">
-                        <strong>Notas:</strong> {template.notes}
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -448,32 +436,19 @@ export function DeductionsManager({
           )}
         </TabsContent>
 
-        <TabsContent value="instances">
-          <Card>
-            <CardHeader>
-              <CardTitle>Instancias Generadas</CardTitle>
-              <CardDescription>
-                Gastos generados automáticamente a partir de las plantillas
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Próximamente - Instancias de gastos procesados</p>
-            </CardContent>
-          </Card>
+        <TabsContent value="eventual" className="space-y-4">
+          <EventualDeductionsList 
+            onRefresh={() => setRefreshTrigger(prev => prev + 1)}
+          />
         </TabsContent>
 
-        <TabsContent value="history">
-          <Card>
-            <CardHeader>
-              <CardTitle>Historial de Cambios</CardTitle>
-              <CardDescription>
-                Registro de modificaciones en las plantillas de deducciones
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Próximamente - Historial de cambios</p>
-            </CardContent>
-          </Card>
+        <TabsContent value="history" className="space-y-4">
+          <div className="text-center py-8 text-muted-foreground">
+            <h3 className="text-lg font-medium mb-2">Historial de Cambios</h3>
+            <p className="text-sm">
+              Próximamente: Historial de modificaciones en plantillas de deducción
+            </p>
+          </div>
         </TabsContent>
       </Tabs>
 
@@ -490,6 +465,13 @@ export function DeductionsManager({
           template={editingTemplate}
         />
       )}
+
+      {/* Dialog para crear deducción eventual */}
+      <CreateEventualDeductionDialog
+        isOpen={isEventualDialogOpen}
+        onClose={() => setIsEventualDialogOpen(false)}
+        onSuccess={handleEventualSuccess}
+      />
 
       {/* Dialog de confirmación para eliminar plantilla */}
       <AlertDialog open={!!deletingTemplate} onOpenChange={() => setDeletingTemplate(null)}>
