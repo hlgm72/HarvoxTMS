@@ -19,7 +19,7 @@ export function Layout({ children }: LayoutProps) {
         } as React.CSSProperties
       }
     >
-      <div className="min-h-screen flex w-full bg-background prevent-horizontal-scroll gap-0">
+      <div className="min-h-screen flex w-full bg-background prevent-horizontal-scroll gap-0 !bg-red-500">
         <AppSidebar />
         <SidebarInset className="flex flex-col flex-1 min-w-0 ml-0">
           <Header />
