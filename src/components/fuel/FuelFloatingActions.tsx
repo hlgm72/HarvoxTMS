@@ -49,10 +49,10 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
     setIsOpen(true);
   };
 
-  const handleWexSync = async () => {
+  const handleFleetOneSync = async () => {
     setSyncLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('wex-sync', {
+      const { data, error } = await supabase.functions.invoke('fleetone-sync', {
         body: {
           action: 'sync_transactions',
           dateFrom: syncDateFrom || undefined,
@@ -74,10 +74,10 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
         throw new Error(data?.error || 'Error en la sincronización');
       }
     } catch (error: any) {
-      console.error('Error syncing WEX transactions:', error);
+      console.error('Error syncing FleetOne transactions:', error);
       toast({
         title: "Error de Sincronización",
-        description: error.message || 'No se pudieron sincronizar las transacciones de WEX',
+        description: error.message || 'No se pudieron sincronizar las transacciones de FleetOne',
         variant: "destructive"
       });
     } finally {
@@ -97,7 +97,7 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
     {
       id: 'sync',
       icon: RefreshCw,
-      label: 'Sync WEX',
+      label: 'FleetOne',
       color: 'text-cyan-600 hover:text-cyan-700',
       bgColor: 'hover:bg-cyan-50',
       hasIndicator: false
@@ -172,14 +172,14 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
           <SheetHeader>
             <SheetTitle>
               {activeTab === 'filters' && 'Filtros de Combustible'}
-              {activeTab === 'sync' && 'Sincronización WEX'}
+              {activeTab === 'sync' && 'Sincronización FleetOne'}
               {activeTab === 'export' && 'Exportar Datos'}
               {activeTab === 'view' && 'Configuración de Vista'}
               {activeTab === 'stats' && 'Estadísticas'}
             </SheetTitle>
             <SheetDescription>
               {activeTab === 'filters' && 'Filtra los gastos de combustible por diferentes criterios'}
-              {activeTab === 'sync' && 'Sincroniza transacciones directamente desde la API de WEX'}
+              {activeTab === 'sync' && 'Sincroniza transacciones directamente desde la API de FleetOne'}
               {activeTab === 'export' && 'Exporta los datos de combustible en diferentes formatos'}
               {activeTab === 'view' && 'Personaliza cómo se muestran los gastos'}
               {activeTab === 'stats' && 'Ve estadísticas rápidas de combustible'}
@@ -208,13 +208,13 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
               </div>
             )}
 
-            {/* WEX Sync Content */}
+            {/* FleetOne Sync Content */}
             {activeTab === 'sync' && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Sincronización con WEX</h3>
+                  <h3 className="text-sm font-medium mb-3">Sincronización con FleetOne</h3>
                   <p className="text-xs text-muted-foreground mb-4">
-                    Sincroniza transacciones directamente desde la API de WEX para obtener datos históricos o verificar transacciones.
+                    Sincroniza transacciones directamente desde la API de FleetOne para obtener datos históricos o verificar transacciones.
                   </p>
                   
                   <div className="space-y-4">
@@ -242,7 +242,7 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
                     
                     <div className="space-y-3 pt-2">
                       <Button 
-                        onClick={handleWexSync}
+                        onClick={handleFleetOneSync}
                         disabled={syncLoading}
                         className="w-full"
                       >
@@ -253,7 +253,7 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
                       <div className="text-xs text-muted-foreground space-y-1">
                         <p>• Si no especificas fechas, se sincronizarán los últimos 7 días</p>
                         <p>• Las transacciones duplicadas serán omitidas automáticamente</p>
-                        <p>• Solo se sincronizarán las tarjetas WEX asignadas en el sistema</p>
+                        <p>• Solo se sincronizarán las tarjetas FleetOne asignadas en el sistema</p>
                       </div>
                     </div>
                   </div>

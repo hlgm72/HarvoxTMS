@@ -146,7 +146,7 @@ export function DriverCardsManager() {
         driver_user_id: selectedDriver,
         company_id: userRoles.company_id,
         card_number_last_four: cardLastFour,
-        card_provider: 'wex',
+        card_provider: 'fleetone',
         ...(cardIdentifier && { card_identifier: cardIdentifier })
       };
 
@@ -219,7 +219,7 @@ export function DriverCardsManager() {
         <div>
           <h2 className="text-2xl font-bold">Tarjetas de Combustible</h2>
           <p className="text-muted-foreground">
-            Gestiona las tarjetas WEX asignadas a los conductores
+            Gestiona las tarjetas FleetOne asignadas a los conductores
           </p>
         </div>
         
@@ -232,9 +232,9 @@ export function DriverCardsManager() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Asignar Nueva Tarjeta WEX</DialogTitle>
+              <DialogTitle>Asignar Nueva Tarjeta FleetOne</DialogTitle>
               <DialogDescription>
-                Asigna una tarjeta de combustible WEX a un conductor
+                Asigna una tarjeta de combustible FleetOne a un conductor
               </DialogDescription>
             </DialogHeader>
             
@@ -298,11 +298,11 @@ export function DriverCardsManager() {
           <div className="flex items-start space-x-3">
             <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
             <div>
-              <h3 className="font-medium text-blue-900">Configuración WEX</h3>
+              <h3 className="font-medium text-blue-900">Configuración FleetOne</h3>
               <p className="text-sm text-blue-700 mt-1">
-                Webhook URL para configurar en WEX Portal:<br />
+                Webhook URL para configurar en FleetOne Portal:<br />
                 <code className="bg-blue-100 px-2 py-1 rounded text-xs">
-                  https://htaotttcnjxqzpsrqwll.supabase.co/functions/v1/wex-webhook
+                  https://htaotttcnjxqzpsrqwll.supabase.co/functions/v1/fleetone-webhook
                 </code>
               </p>
             </div>
@@ -361,7 +361,7 @@ export function DriverCardsManager() {
             <CreditCard className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <h3 className="font-medium mb-2">No hay tarjetas asignadas</h3>
             <p className="text-muted-foreground mb-4">
-              Comienza asignando tarjetas WEX a tus conductores
+              Comienza asignando tarjetas FleetOne a tus conductores
             </p>
             <Button onClick={() => setIsAddCardOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />

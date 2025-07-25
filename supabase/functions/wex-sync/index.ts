@@ -18,11 +18,11 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const wexUsername = Deno.env.get('WEX_API_USERNAME');
-    const wexPassword = Deno.env.get('WEX_API_PASSWORD');
+    const fleetOneClientId = Deno.env.get('FLEETONE_API_CLIENT_ID');
+    const fleetOneClientSecret = Deno.env.get('FLEETONE_API_CLIENT_SECRET');
 
-    if (!wexUsername || !wexPassword) {
-      throw new Error('WEX API credentials not configured');
+    if (!fleetOneClientId || !fleetOneClientSecret) {
+      throw new Error('FleetOne API credentials not configured');
     }
 
     const { action, dateFrom, dateTo, cardLastFour } = await req.json();
