@@ -313,7 +313,7 @@ export function DeductionsFloatingActions({
                           selected={filters.dateRange}
                           onSelect={(range) => handleFilterChange("dateRange", range || { from: undefined, to: undefined })}
                           numberOfMonths={2}
-                          className="pointer-events-auto"
+                          className="p-3 pointer-events-auto"
                         />
                       </PopoverContent>
                     </Popover>
