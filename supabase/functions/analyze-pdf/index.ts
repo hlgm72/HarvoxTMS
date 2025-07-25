@@ -80,8 +80,10 @@ serve(async (req) => {
 INSTRUCCIONES ESPECÍFICAS:
 1. Busca tablas de transacciones de combustible (ignora balances y pagos)
 2. Identifica las columnas: DATE, CARD, UNIT, INVOICE #, LOCATION NAME, ST, QTY, GROSS PPG, GROSS AMT, DISC AMT, FEES, TOTAL AMT
-3. Para LOCATION NAME: busca nombres de estaciones como "P W I # 111 MAIN ST MKT" o "PWI #400"
-4. Extrae TODAS las filas de transacciones de combustible, no omitas ninguna
+3. Para CARD: busca códigos como "PMT", "0002", últimos 4 dígitos de tarjeta
+4. Para UNIT: busca números de unidad/vehículo como "4812"
+5. Para LOCATION NAME: busca nombres de estaciones como "P W I # 111 MAIN ST MKT" o "PWI #400"
+6. Extrae TODAS las filas de transacciones de combustible, no omitas ninguna
 
 Texto del PDF:
 ${extractedText}
@@ -94,8 +96,8 @@ Responde SOLO con JSON válido en este formato exacto:
   "sampleData": [
     {
       "date": "YYYY-MM-DD",
-      "card": "últimos 4 dígitos de la tarjeta",
-      "unit": "número de unidad/vehículo",
+      "card": "código de tarjeta (ej: PMT, 0002, últimos 4 dígitos)",
+      "unit": "número de unidad (ej: 4812)",
       "invoice": "número de factura completo",
       "location_name": "nombre completo de la estación (ej: P W I # 111 MAIN ST MKT)",
       "state": "código de estado (ej: TX)",
@@ -112,8 +114,10 @@ Responde SOLO con JSON válido en este formato exacto:
 
 CRÍTICO: 
 - Extrae TODAS las transacciones de combustible (tipo Diesel, Gas, etc.)
+- Para CARD y UNIT, busca los valores exactos en las columnas correspondientes
 - Para LOCATION NAME, captura el texto completo que identifica la estación
-- Asegúrate de que los valores numéricos sean números, no texto`
+- Asegúrate de que los valores numéricos sean números, no texto
+- Presta especial atención a extraer correctamente CARD y UNIT de cada fila`
           }
         ],
         max_tokens: 2000,
