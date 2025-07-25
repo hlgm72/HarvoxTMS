@@ -102,7 +102,7 @@ export default function Loads() {
         }
       />
 
-      <div className="p-2 md:p-4 space-y-6">        
+      <div className="p-2 md:p-4 pr-16 md:pr-20 space-y-6">        
         {/* Filtro de Períodos */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <PeriodFilter 
