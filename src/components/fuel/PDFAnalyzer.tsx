@@ -141,12 +141,22 @@ export function PDFAnalyzer() {
         .eq('company_id', companyId)
         .eq('is_active', true);
 
-      // Obtener nombres de conductores
+      // Intentar obtener nombres de perfiles, si no, usar emails como fallback
       const driverIds = driverCards?.map(card => card.driver_user_id) || [];
+      
       const { data: driverProfiles } = await supabase
         .from('profiles')
         .select('id, first_name, last_name')
         .in('id', driverIds);
+
+      // Obtener emails de los conductores de la tabla user_company_roles
+      const { data: driverRoles } = await supabase
+        .from('user_company_roles')
+        .select('user_id')
+        .eq('company_id', companyId)
+        .eq('role', 'driver')
+        .eq('is_active', true)
+        .in('user_id', driverIds);
 
       // Obtener períodos de pago de los conductores para encontrar el período apropiado
       const { data: driverPeriodCalculations } = await supabase
@@ -202,9 +212,16 @@ export function PDFAnalyzer() {
           const card = matchingCards[0];
           const driverProfile = driverProfiles?.find(profile => profile.id === card.driver_user_id);
           enrichedTransaction.driver_user_id = card.driver_user_id;
-          enrichedTransaction.driver_name = driverProfile 
-            ? `${driverProfile.first_name} ${driverProfile.last_name}`
-            : 'Conductor sin nombre';
+          
+          if (driverProfile && driverProfile.first_name) {
+            const firstName = driverProfile.first_name || '';
+            const lastName = driverProfile.last_name || '';
+            enrichedTransaction.driver_name = `${firstName} ${lastName}`.trim();
+          } else {
+            // Si no hay perfil, usar un nombre basado en tarjeta o ID genérico
+            enrichedTransaction.driver_name = `Conductor Tarjeta ${card.card_number_last_four}`;
+          }
+          
           enrichedTransaction.card_mapping_status = 'found';
         } else if (matchingCards.length > 1) {
           enrichedTransaction.card_mapping_status = 'multiple';
