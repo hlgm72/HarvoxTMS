@@ -93,23 +93,17 @@ Responde SOLO con JSON válido en este formato exacto:
   "sampleData": [
     {
       "date": "YYYY-MM-DD",
-      "category": "tipo de categoría",
-      "description": "descripción completa",
       "card": "últimos 4 dígitos",
       "unit": "número de unidad",
-      "prompt_data": "datos de prompt",
-      "invoice_check": "número de factura/cheque",
-      "loc": "número de ubicación",
+      "invoice": "número de factura",
       "location_name": "nombre completo de ubicación",
       "state": "código de estado",
       "qty": cantidad_galones,
       "gross_ppg": precio_por_galón,
-      "sales_tax": impuesto_ventas,
-      "fed_tax": impuesto_federal,
       "gross_amt": monto_bruto,
       "disc_amt": descuento,
       "fees": comisiones,
-      "total": total_final
+      "total_amt": total_final
     }
   ],
   "analysis": "Análisis detallado"
