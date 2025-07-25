@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -36,6 +37,8 @@ export function ExpenseTemplateDialog({
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [inactiveTemplate, setInactiveTemplate] = useState<any>(null);
+  const [driverSearchOpen, setDriverSearchOpen] = useState(false);
+  const [driverSearchValue, setDriverSearchValue] = useState("");
   
   const [formData, setFormData] = useState({
     driver_user_id: mode === 'edit' ? template?.driver_user_id : '',
@@ -90,37 +93,49 @@ export function ExpenseTemplateDialog({
   const { data: drivers = [] } = useQuery({
     queryKey: ['company-drivers'],
     queryFn: async () => {
-      // Primero obtenemos la compañía del usuario actual
-      const { data: userRole } = await supabase
-        .from('user_company_roles')
-        .select('company_id')
-        .eq('user_id', user?.id)
-        .eq('is_active', true)
-        .single();
+      try {
+        // Obtenemos directamente de company_drivers
+        const { data: companyDrivers, error: driversError } = await supabase
+          .from('company_drivers')
+          .select('user_id')
+          .eq('is_active', true);
 
-      if (!userRole?.company_id) return [];
+        if (driversError) {
+          console.error('Error fetching company drivers:', driversError);
+          return [];
+        }
 
-      // Obtenemos los roles de conductor de la compañía
-      const { data: driverRoles, error: rolesError } = await supabase
-        .from('user_company_roles')
-        .select('user_id')
-        .eq('company_id', userRole.company_id)
-        .eq('role', 'driver')
-        .eq('is_active', true);
+        if (!companyDrivers || companyDrivers.length === 0) return [];
 
-      if (rolesError || !driverRoles) return [];
+        // Luego obtenemos los perfiles
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('user_id, first_name, last_name')
+          .in('user_id', companyDrivers.map(d => d.user_id));
 
-      // Luego obtenemos la información de los perfiles
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('user_id, first_name, last_name')
-        .in('user_id', driverRoles.map(d => d.user_id));
+        if (profilesError) {
+          console.error('Error fetching profiles:', profilesError);
+          return [];
+        }
 
-      if (error) throw error;
-      return data;
+        return profiles || [];
+      } catch (error) {
+        console.error('Error in drivers query:', error);
+        return [];
+      }
     },
     enabled: !!user?.id
   });
+
+  // Filtrar conductores para búsqueda
+  const filteredDrivers = useMemo(() => {
+    if (!driverSearchValue) return drivers;
+    
+    return drivers.filter(driver => {
+      const fullName = `${driver.first_name} ${driver.last_name}`.toLowerCase();
+      return fullName.includes(driverSearchValue.toLowerCase());
+    });
+  }, [drivers, driverSearchValue]);
 
   // Obtener tipos de gastos
   const { data: expenseTypes = [] } = useQuery({
@@ -310,21 +325,48 @@ export function ExpenseTemplateDialog({
           {mode === 'create' && (
             <div className="space-y-2">
               <Label htmlFor="driver">Conductor</Label>
-              <Select 
-                value={formData.driver_user_id} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, driver_user_id: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar conductor" />
-                </SelectTrigger>
-                <SelectContent>
-                  {drivers.map((driver) => (
-                    <SelectItem key={driver.user_id} value={driver.user_id}>
-                      {driver.first_name} {driver.last_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={driverSearchOpen} onOpenChange={setDriverSearchOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={driverSearchOpen}
+                    className="w-full justify-between"
+                  >
+                    {formData.driver_user_id 
+                      ? drivers.find(driver => driver.user_id === formData.driver_user_id)?.first_name + ' ' + 
+                        drivers.find(driver => driver.user_id === formData.driver_user_id)?.last_name
+                      : "Seleccionar conductor..."}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput 
+                      placeholder="Buscar conductor..." 
+                      value={driverSearchValue}
+                      onValueChange={setDriverSearchValue}
+                    />
+                    <CommandList>
+                      <CommandEmpty>No se encontraron conductores.</CommandEmpty>
+                      <CommandGroup>
+                        {filteredDrivers.map((driver) => (
+                          <CommandItem
+                            key={driver.user_id}
+                            value={`${driver.first_name} ${driver.last_name}`}
+                            onSelect={() => {
+                              setFormData(prev => ({ ...prev, driver_user_id: driver.user_id }));
+                              setDriverSearchOpen(false);
+                              setDriverSearchValue("");
+                            }}
+                          >
+                            {driver.first_name} {driver.last_name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
           )}
 
