@@ -266,9 +266,9 @@ export default function OwnerDashboard() {
       <PageToolbar 
         title="Dashboard Ejecutivo"
       />
-      <div className="p-6 pt-2 min-h-screen bg-gradient-subtle !bg-purple-500">
+      <div className="p-6 pt-2 min-h-screen bg-gradient-subtle !bg-pink-500">
         {/* Content */}
-        <div className="space-y-4 !bg-cyan-500">
+        <div className="space-y-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           {/* Mobile Layout - Horizontal Scroll */}
           <div className="sm:hidden">
