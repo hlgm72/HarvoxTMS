@@ -7,8 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Calendar, Truck, DollarSign, Fuel, Receipt, Plus } from 'lucide-react';
 import { usePaymentPeriods } from '@/hooks/usePaymentPeriods';
 import { formatCurrency } from '@/lib/utils';
-import { format, parseISO } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { formatPaymentPeriod, formatDateOnly } from '@/lib/dateFormatting';
 import { toast } from '@/hooks/use-toast';
 
 interface PeriodReassignmentDialogProps {
@@ -159,8 +158,7 @@ const PeriodReassignmentDialog = ({
                     <span className="text-sm text-muted-foreground">Período Actual:</span>
                     <div className="flex items-center gap-2">
                       <span className="text-sm">
-                        {format(parseISO(currentPeriod.period_start_date), 'dd/MM', { locale: es })} - {' '}
-                        {format(parseISO(currentPeriod.period_end_date), 'dd/MM/yy', { locale: es })}
+                        {formatPaymentPeriod(currentPeriod.period_start_date, currentPeriod.period_end_date)}
                       </span>
                       <Badge className={`text-xs ${getStatusColor(currentPeriod.status)}`}>
                         {getStatusText(currentPeriod.status)}
@@ -202,8 +200,7 @@ const PeriodReassignmentDialog = ({
                       <SelectItem key={period.id} value={period.id}>
                         <div className="flex items-center justify-between w-full">
                           <span>
-                            {format(parseISO(period.period_start_date), 'dd/MM', { locale: es })} - {' '}
-                            {format(parseISO(period.period_end_date), 'dd/MM/yy', { locale: es })}
+                            {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
                           </span>
                           <Badge className={`ml-2 text-xs ${getStatusColor(period.status)}`}>
                             {getStatusText(period.status)}
@@ -227,8 +224,7 @@ const PeriodReassignmentDialog = ({
                             <div className="flex justify-between items-center">
                               <span className="text-sm text-muted-foreground">Período:</span>
                               <span className="font-medium">
-                                {format(parseISO(selectedPeriod.period_start_date), 'dd/MM/yyyy', { locale: es })} - {' '}
-                                {format(parseISO(selectedPeriod.period_end_date), 'dd/MM/yyyy', { locale: es })}
+                                {formatPaymentPeriod(selectedPeriod.period_start_date, selectedPeriod.period_end_date)}
                               </span>
                             </div>
                             <div className="flex justify-between items-center">

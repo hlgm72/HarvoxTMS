@@ -10,8 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ExpenseTemplateDialog } from "./ExpenseTemplateDialog";
 import { CreateEventualDeductionDialog } from "./CreateEventualDeductionDialog";
 import { EventualDeductionsList } from "./EventualDeductionsList";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatDateOnly } from '@/lib/dateFormatting';
 import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -340,12 +339,12 @@ export function DeductionsManager({ isCreateDialogOpen: externalIsCreateDialogOp
                     <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Vigente desde:</span>
-                        <p>{format(new Date(template.start_date + 'T00:00:00'), "PPP", { locale: es })}</p>
+                        <p>{formatDateOnly(template.start_date)}</p>
                       </div>
                       {template.end_date && (
                         <div>
                           <span className="text-muted-foreground">Vigente hasta:</span>
-                          <p>{format(new Date(template.end_date + 'T00:00:00'), "PPP", { locale: es })}</p>
+                          <p>{formatDateOnly(template.end_date)}</p>
                         </div>
                       )}
                     </div>

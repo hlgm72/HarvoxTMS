@@ -13,8 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CalendarIcon, AlertTriangle, Check, ChevronDown } from "lucide-react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatDateOnly, formatDatabaseDate } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useATMInput } from "@/hooks/useATMInput";
@@ -491,7 +490,7 @@ export function ExpenseTemplateDialog({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {effectiveFrom ? format(effectiveFrom, "PPP", { locale: es }) : "Seleccionar fecha"}
+                    {effectiveFrom ? formatDateOnly(effectiveFrom) : "Seleccionar fecha"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -517,7 +516,7 @@ export function ExpenseTemplateDialog({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {effectiveUntil ? format(effectiveUntil, "PPP", { locale: es }) : "Indefinido"}
+                    {effectiveUntil ? formatDateOnly(effectiveUntil) : "Indefinido"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
