@@ -66,7 +66,7 @@ function Calendar({
                 max="2030"
                 value={props.value}
                 onChange={(e) => props.onChange?.(e as any)}
-                className="text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 w-[70px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium text-center"
+                className="text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 w-[85px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium text-center"
               />
             );
           }
