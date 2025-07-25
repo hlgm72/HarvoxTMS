@@ -433,7 +433,7 @@ export function ExpenseTemplateDialog({
                 onKeyDown={atmInput.handleKeyDown}
                 onPaste={atmInput.handlePaste}
                 placeholder="$0.00"
-                className="text-right font-mono"
+                className="text-right"
                 autoComplete="off"
                 readOnly
                 required
