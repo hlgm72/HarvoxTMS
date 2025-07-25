@@ -44,6 +44,8 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
   
   const [effectiveFrom, setEffectiveFrom] = useState<Date>();
   const [effectiveUntil, setEffectiveUntil] = useState<Date>();
+  const [isFromDateOpen, setIsFromDateOpen] = useState(false);
+  const [isUntilDateOpen, setIsUntilDateOpen] = useState(false);
 
   // Obtener conductores de la empresa
   const { data: drivers = [] } = useQuery({
@@ -246,7 +248,7 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="text-foreground font-medium">Vigente Desde</Label>
-            <Popover>
+            <Popover open={isFromDateOpen} onOpenChange={setIsFromDateOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -266,7 +268,10 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
                   fromYear={2020}
                   toYear={2030}
                   selected={effectiveFrom}
-                  onSelect={setEffectiveFrom}
+                  onSelect={(date) => {
+                    setEffectiveFrom(date);
+                    setIsFromDateOpen(false);
+                  }}
                   initialFocus
                   className="pointer-events-auto"
                 />
@@ -276,7 +281,7 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
 
           <div className="space-y-2">
             <Label className="text-foreground font-medium">Vigente Hasta (Opcional)</Label>
-            <Popover>
+            <Popover open={isUntilDateOpen} onOpenChange={setIsUntilDateOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -296,7 +301,10 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
                   fromYear={2020}
                   toYear={2030}
                   selected={effectiveUntil}
-                  onSelect={setEffectiveUntil}
+                  onSelect={(date) => {
+                    setEffectiveUntil(date);
+                    setIsUntilDateOpen(false);
+                  }}
                   initialFocus
                   className="pointer-events-auto"
                 />
