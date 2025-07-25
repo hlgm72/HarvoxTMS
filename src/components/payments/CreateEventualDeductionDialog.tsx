@@ -9,6 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Check, ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
@@ -42,6 +44,7 @@ export function CreateEventualDeductionDialog({
   });
   
   const [expenseDate, setExpenseDate] = useState<Date>(new Date());
+  const [driverComboboxOpen, setDriverComboboxOpen] = useState(false);
 
   // Reset form when dialog opens
   useEffect(() => {
@@ -197,25 +200,53 @@ export function CreateEventualDeductionDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="driver">Conductor</Label>
-            <Select 
-              value={formData.driver_user_id} 
-              onValueChange={(value) => setFormData(prev => ({ 
-                ...prev, 
-                driver_user_id: value,
-                payment_period_id: '' // Reset period when driver changes
-              }))}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar conductor" />
-              </SelectTrigger>
-              <SelectContent>
-                {drivers.map((driver) => (
-                  <SelectItem key={driver.user_id} value={driver.user_id}>
-                    {driver.first_name} {driver.last_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Popover open={driverComboboxOpen} onOpenChange={setDriverComboboxOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={driverComboboxOpen}
+                  className="w-full justify-between"
+                >
+                  {formData.driver_user_id
+                    ? drivers.find((driver) => driver.user_id === formData.driver_user_id)?.first_name + " " + drivers.find((driver) => driver.user_id === formData.driver_user_id)?.last_name
+                    : "Seleccionar conductor..."}
+                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" align="start">
+                <Command>
+                  <CommandInput placeholder="Buscar conductor..." />
+                  <CommandEmpty>No se encontró conductor.</CommandEmpty>
+                  <CommandList>
+                    <CommandGroup>
+                      {drivers.map((driver) => (
+                        <CommandItem
+                          key={driver.user_id}
+                          value={`${driver.first_name} ${driver.last_name}`}
+                          onSelect={() => {
+                            setFormData(prev => ({
+                              ...prev,
+                              driver_user_id: driver.user_id,
+                              payment_period_id: '' // Reset period when driver changes
+                            }));
+                            setDriverComboboxOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              formData.driver_user_id === driver.user_id ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {driver.first_name} {driver.last_name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
 
           {formData.driver_user_id && (
