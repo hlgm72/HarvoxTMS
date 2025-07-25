@@ -379,7 +379,19 @@ export function CreateEventualDeductionDialog({
           {formData.driver_user_id && (
             <div className="space-y-2">
               <Label htmlFor="payment-period">Período de Pago</Label>
-              {paymentPeriods.length === 0 ? (
+              {formData.driver_user_id && isLoadingPeriods ? (
+                <div className="p-3 border border-blue-200 bg-blue-50 rounded-md">
+                  <p className="text-sm text-blue-800">
+                    Cargando períodos de pago...
+                  </p>
+                </div>
+              ) : !formData.driver_user_id ? (
+                <div className="p-3 border border-gray-200 bg-gray-50 rounded-md">
+                  <p className="text-sm text-gray-600">
+                    Selecciona un conductor para ver los períodos de pago disponibles.
+                  </p>
+                </div>
+              ) : paymentPeriods.length === 0 ? (
                 <div className="space-y-2">
                   <div className="p-3 border border-orange-200 bg-orange-50 rounded-md">
                     <p className="text-sm text-orange-800">
