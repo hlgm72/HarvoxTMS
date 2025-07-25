@@ -7,6 +7,7 @@ import { PageToolbar } from "@/components/layout/PageToolbar";
 import { DeductionsManager } from "@/components/payments/DeductionsManager";
 import { ExpenseTemplateDialog } from "@/components/payments/ExpenseTemplateDialog";
 import { CreateEventualDeductionDialog } from "@/components/payments/CreateEventualDeductionDialog";
+import { DeductionsFloatingActions } from "@/components/payments/DeductionsFloatingActions";
 import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -17,6 +18,16 @@ export default function Deductions() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEventualDialogOpen, setIsEventualDialogOpen] = useState(false);
   const { data: stats, isLoading: statsLoading } = useDeductionsStats();
+
+  // Estado de filtros
+  const [filters, setFilters] = useState({
+    status: "planned",
+    driver: "all",
+    expenseType: "all",
+    deductionType: "all",
+    critical: "all",
+    dateRange: { from: undefined as Date | undefined, to: undefined as Date | undefined }
+  });
 
   const handleCreateSuccess = () => {
     setIsCreateDialogOpen(false);
@@ -80,6 +91,11 @@ export default function Deductions() {
         isOpen={isEventualDialogOpen}
         onClose={() => setIsEventualDialogOpen(false)}
         onSuccess={handleEventualSuccess}
+      />
+
+      <DeductionsFloatingActions
+        filters={filters}
+        onFiltersChange={setFilters}
       />
     </>
   );
