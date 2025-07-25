@@ -13,7 +13,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Check, ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -372,8 +372,8 @@ export function CreateEventualDeductionDialog({
                   <SelectContent>
                     {paymentPeriods.map((period) => (
                       <SelectItem key={period.id} value={period.id}>
-                        {format(new Date(period.company_payment_periods.period_start_date), 'dd/MM/yyyy', { locale: es })} - {' '}
-                        {format(new Date(period.company_payment_periods.period_end_date), 'dd/MM/yyyy', { locale: es })} {' '}
+                        {format(parseISO(period.company_payment_periods.period_start_date), 'dd/MM/yyyy', { locale: es })} - {' '}
+                        {format(parseISO(period.company_payment_periods.period_end_date), 'dd/MM/yyyy', { locale: es })} {' '}
                         ({period.company_payment_periods.period_frequency})
                       </SelectItem>
                     ))}
