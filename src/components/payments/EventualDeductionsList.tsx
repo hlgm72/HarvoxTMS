@@ -14,28 +14,84 @@ import { useToast } from "@/hooks/use-toast";
 
 interface EventualDeductionsListProps {
   onRefresh: () => void;
+  filters?: {
+    status: string;
+    driver: string;
+    expenseType: string;
+    dateRange: { from: Date | undefined; to: Date | undefined };
+  };
+  viewConfig?: {
+    density: string;
+    sortBy: string;
+    groupBy: string;
+    showDriverInfo: boolean;
+    showAmounts: boolean;
+    showDates: boolean;
+    showExpenseType: boolean;
+  };
 }
 
-export function EventualDeductionsList({ onRefresh }: EventualDeductionsListProps) {
+export function EventualDeductionsList({ onRefresh, filters, viewConfig }: EventualDeductionsListProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [deletingExpense, setDeletingExpense] = useState<any>(null);
-  const [filterDriver, setFilterDriver] = useState<string>('all');
-  const [filterStatus, setFilterStatus] = useState<string>('planned');
 
   // Obtener deducciones eventuales
   const { data: eventualDeductions = [], refetch } = useQuery({
-    queryKey: ['eventual-deductions'],
+    queryKey: ['eventual-deductions', filters],
     queryFn: async () => {
       try {
-        const { data, error } = await supabase
+        // Construir la consulta base
+        let query = supabase
           .from('expense_instances')
           .select(`
             *,
             expense_types(name)
           `)
-          .is('recurring_template_id', null) // Solo gastos eventuales (sin plantilla)
-          .order('expense_date', { ascending: false });
+          .is('recurring_template_id', null); // Solo gastos eventuales (sin plantilla)
+
+        // Aplicar filtros de estado
+        if (filters?.status && filters.status !== 'all') {
+          if (filters.status === 'planned') {
+            query = query.eq('status', 'planned');
+          } else {
+            query = query.eq('status', filters.status);
+          }
+        }
+
+        // Aplicar filtros de tipo de gasto
+        if (filters?.expenseType && filters.expenseType !== 'all') {
+          query = query.eq('expense_type_id', filters.expenseType);
+        }
+
+        // Aplicar filtros de fecha si existen
+        if (filters?.dateRange?.from) {
+          query = query.gte('expense_date', filters.dateRange.from.toISOString().split('T')[0]);
+        }
+        if (filters?.dateRange?.to) {
+          query = query.lte('expense_date', filters.dateRange.to.toISOString().split('T')[0]);
+        }
+
+        // Aplicar ordenación según viewConfig
+        const sortBy = viewConfig?.sortBy || 'date_desc';
+        switch (sortBy) {
+          case 'amount_desc':
+            query = query.order('amount', { ascending: false });
+            break;
+          case 'amount_asc':
+            query = query.order('amount', { ascending: true });
+            break;
+          case 'date_asc':
+            query = query.order('expense_date', { ascending: true });
+            break;
+          case 'status':
+            query = query.order('status');
+            break;
+          default:
+            query = query.order('expense_date', { ascending: false });
+        }
+
+        const { data, error } = await query;
 
         if (error) throw error;
         
@@ -76,37 +132,17 @@ export function EventualDeductionsList({ onRefresh }: EventualDeductionsListProp
           })
         );
 
-        return expensesWithDriverInfo;
+        // Aplicar filtro de conductor después de obtener la información
+        let filteredExpenses = expensesWithDriverInfo;
+        if (filters?.driver && filters.driver !== 'all') {
+          filteredExpenses = expensesWithDriverInfo.filter(expense => 
+            expense.driver_period_calculations?.driver_user_id === filters.driver
+          );
+        }
+
+        return filteredExpenses;
       } catch (error) {
         console.error('Error fetching eventual deductions:', error);
-        return [];
-      }
-    },
-    enabled: !!user?.id
-  });
-
-  // Obtener lista de conductores para filtro
-  const { data: drivers = [] } = useQuery({
-    queryKey: ['drivers-for-filter'],
-    queryFn: async () => {
-      try {
-        const { data: companyDrivers, error: driversError } = await supabase
-          .from('company_drivers')
-          .select('user_id')
-          .eq('is_active', true);
-
-        if (driversError) throw driversError;
-        if (!companyDrivers || companyDrivers.length === 0) return [];
-
-        const { data: profiles, error: profilesError } = await supabase
-          .from('profiles')
-          .select('user_id, first_name, last_name')
-          .in('user_id', companyDrivers.map(d => d.user_id));
-
-        if (profilesError) throw profilesError;
-        return profiles || [];
-      } catch (error) {
-        console.error('Error fetching drivers:', error);
         return [];
       }
     },
@@ -116,15 +152,6 @@ export function EventualDeductionsList({ onRefresh }: EventualDeductionsListProp
   useEffect(() => {
     refetch();
   }, [onRefresh, refetch]);
-
-  // Filtrar deducciones
-  const filteredDeductions = eventualDeductions.filter(deduction => {
-    const driverMatch = filterDriver === 'all' || 
-      deduction.driver_period_calculations?.driver_user_id === filterDriver;
-    const statusMatch = filterStatus === 'all' || deduction.status === filterStatus;
-    
-    return driverMatch && statusMatch;
-  });
 
   const handleDeleteExpense = async () => {
     if (!deletingExpense) return;
@@ -183,44 +210,9 @@ export function EventualDeductionsList({ onRefresh }: EventualDeductionsListProp
 
   return (
     <div className="space-y-4">
-      {/* Filtros */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Filtrar por Conductor</Label>
-          <Select value={filterDriver} onValueChange={setFilterDriver}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos los conductores</SelectItem>
-              {drivers.map((driver) => (
-                <SelectItem key={driver.user_id} value={driver.user_id}>
-                  {driver.first_name} {driver.last_name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Filtrar por Estado</Label>
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos los estados</SelectItem>
-              <SelectItem value="planned">Planificado</SelectItem>
-              <SelectItem value="applied">Aplicado</SelectItem>
-              <SelectItem value="deferred">Diferido</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
       {/* Lista de deducciones */}
       <div className="grid gap-4">
-        {filteredDeductions.map((deduction) => (
+        {eventualDeductions.map((deduction) => (
           <Card key={deduction.id}>
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">

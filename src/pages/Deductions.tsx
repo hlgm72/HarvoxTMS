@@ -90,7 +90,10 @@ export default function Deductions() {
       />
 
       <div className="p-2 md:p-4 space-y-6">
-        <DeductionsManager />
+        <DeductionsManager 
+          filters={filters}
+          viewConfig={viewConfig}
+        />
       </div>
 
       <ExpenseTemplateDialog 

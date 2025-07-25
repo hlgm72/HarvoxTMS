@@ -17,9 +17,29 @@ import { useToast } from "@/hooks/use-toast";
 interface DeductionsManagerProps {
   isCreateDialogOpen?: boolean;
   onCreateDialogOpenChange?: (open: boolean) => void;
+  filters?: {
+    status: string;
+    driver: string;
+    expenseType: string;
+    dateRange: { from: Date | undefined; to: Date | undefined };
+  };
+  viewConfig?: {
+    density: string;
+    sortBy: string;
+    groupBy: string;
+    showDriverInfo: boolean;
+    showAmounts: boolean;
+    showDates: boolean;
+    showExpenseType: boolean;
+  };
 }
 
-export function DeductionsManager({ isCreateDialogOpen: externalIsCreateDialogOpen, onCreateDialogOpenChange }: DeductionsManagerProps) {
+export function DeductionsManager({ 
+  isCreateDialogOpen: externalIsCreateDialogOpen, 
+  onCreateDialogOpenChange,
+  filters,
+  viewConfig 
+}: DeductionsManagerProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -31,7 +51,7 @@ export function DeductionsManager({ isCreateDialogOpen: externalIsCreateDialogOp
 
   // Obtener plantillas de deducciones activas
   const { data: templates = [], refetch: refetchTemplates } = useQuery({
-    queryKey: ['recurring-expense-templates', user?.id],
+    queryKey: ['recurring-expense-templates', user?.id, filters],
     queryFn: async () => {
       if (!user?.id) return [];
       
@@ -58,16 +78,42 @@ export function DeductionsManager({ isCreateDialogOpen: externalIsCreateDialogOp
       
       if (driverIds.length === 0) return [];
 
-      // Obtener plantillas ACTIVAS
-      const { data: templatesData, error } = await supabase
+      // Construir la consulta base
+      let query = supabase
         .from('recurring_expense_templates')
         .select(`
           *,
           expense_types (name, category)
         `)
         .in('driver_user_id', driverIds)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+        .eq('is_active', true);
+
+      // Aplicar filtros
+      if (filters?.driver && filters.driver !== 'all') {
+        query = query.eq('driver_user_id', filters.driver);
+      }
+
+      if (filters?.expenseType && filters.expenseType !== 'all') {
+        query = query.eq('expense_type_id', filters.expenseType);
+      }
+
+      // Aplicar ordenación según viewConfig
+      const sortBy = viewConfig?.sortBy || 'date_desc';
+      switch (sortBy) {
+        case 'amount_desc':
+          query = query.order('amount', { ascending: false });
+          break;
+        case 'amount_asc':
+          query = query.order('amount', { ascending: true });
+          break;
+        case 'date_asc':
+          query = query.order('created_at', { ascending: true });
+          break;
+        default:
+          query = query.order('created_at', { ascending: false });
+      }
+
+      const { data: templatesData, error } = await query;
 
       if (error) throw error;
       
@@ -97,7 +143,7 @@ export function DeductionsManager({ isCreateDialogOpen: externalIsCreateDialogOp
 
   // Obtener plantillas INACTIVAS
   const { data: inactiveTemplates = [], refetch: refetchInactiveTemplates } = useQuery({
-    queryKey: ['inactive-expense-templates', user?.id],
+    queryKey: ['inactive-expense-templates', user?.id, filters],
     queryFn: async () => {
       if (!user?.id) return [];
       
@@ -131,16 +177,42 @@ export function DeductionsManager({ isCreateDialogOpen: externalIsCreateDialogOp
 
       if (driverIds.length === 0) return [];
 
-      // Obtener plantillas INACTIVAS
-      const { data: templatesData, error } = await supabase
+      // Construir la consulta base para plantillas inactivas
+      let query = supabase
         .from('recurring_expense_templates')
         .select(`
           *,
           expense_types (name, category)
         `)
         .in('driver_user_id', driverIds)
-        .eq('is_active', false)
-        .order('updated_at', { ascending: false });
+        .eq('is_active', false);
+
+      // Aplicar filtros
+      if (filters?.driver && filters.driver !== 'all') {
+        query = query.eq('driver_user_id', filters.driver);
+      }
+
+      if (filters?.expenseType && filters.expenseType !== 'all') {
+        query = query.eq('expense_type_id', filters.expenseType);
+      }
+
+      // Aplicar ordenación según viewConfig
+      const sortBy = viewConfig?.sortBy || 'date_desc';
+      switch (sortBy) {
+        case 'amount_desc':
+          query = query.order('amount', { ascending: false });
+          break;
+        case 'amount_asc':
+          query = query.order('amount', { ascending: true });
+          break;
+        case 'date_asc':
+          query = query.order('updated_at', { ascending: true });
+          break;
+        default:
+          query = query.order('updated_at', { ascending: false });
+      }
+
+      const { data: templatesData, error } = await query;
 
       if (error) throw error;
       
@@ -422,6 +494,8 @@ export function DeductionsManager({ isCreateDialogOpen: externalIsCreateDialogOp
         <TabsContent value="eventual" className="space-y-4">
           <EventualDeductionsList 
             onRefresh={() => setRefreshTrigger(prev => prev + 1)}
+            filters={filters}
+            viewConfig={viewConfig}
           />
         </TabsContent>
 
