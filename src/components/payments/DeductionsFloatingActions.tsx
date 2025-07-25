@@ -313,7 +313,10 @@ export function DeductionsFloatingActions({
                               value={filters.dateRange.from ? 
                                 ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
                                  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
-                                [filters.dateRange.from.getMonth()] : ""}
+                                [filters.dateRange.from.getMonth()] : 
+                                ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                                 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+                                [new Date().getMonth()]}
                               onValueChange={(monthName) => {
                                 const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
                                                   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
@@ -326,7 +329,7 @@ export function DeductionsFloatingActions({
                               }}
                             >
                               <SelectTrigger>
-                                <SelectValue placeholder="Mes" />
+                                <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="enero">Enero</SelectItem>
@@ -345,15 +348,15 @@ export function DeductionsFloatingActions({
                             </Select>
                             
                             <Select
-                              value={filters.dateRange.from?.getFullYear()?.toString() || ""}
+                              value={filters.dateRange.from?.getFullYear()?.toString() || new Date().getFullYear().toString()}
                               onValueChange={(year) => {
-                                const currentMonth = filters.dateRange.from?.getMonth() || 0;
+                                const currentMonth = filters.dateRange.from?.getMonth() || new Date().getMonth();
                                 const newDate = new Date(parseInt(year), currentMonth, 1);
                                 handleFilterChange("dateRange", { from: newDate, to: filters.dateRange.to });
                               }}
                             >
                               <SelectTrigger>
-                                <SelectValue placeholder="Año" />
+                                <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="2024">2024</SelectItem>
