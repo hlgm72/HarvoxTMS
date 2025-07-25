@@ -272,12 +272,8 @@ export function EventualDeductionsList({ onRefresh }: EventualDeductionsListProp
                   </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <div>
-                    <span className="text-sm text-muted-foreground">Prioridad: </span>
-                    <span className="text-sm font-medium">{deduction.priority}/10</span>
-                  </div>
-                  {deduction.description && (
+                 <div className="space-y-2">
+                   {deduction.description && (
                     <div>
                       <span className="text-sm text-muted-foreground">Descripción: </span>
                       <p className="text-sm">{deduction.description}</p>
