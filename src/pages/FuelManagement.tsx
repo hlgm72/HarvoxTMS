@@ -84,7 +84,7 @@ export default function FuelManagement() {
             </TabsTrigger>
             <TabsTrigger value="cards" className="flex items-center gap-2">
               <CreditCard className="h-4 w-4" />
-              Tarjetas WEX
+              Tarjetas de Combustible
             </TabsTrigger>
           </TabsList>
 
@@ -101,7 +101,7 @@ export default function FuelManagement() {
           </TabsContent>
 
           <TabsContent value="cards" className="mt-6">
-            {/* Gestión de Tarjetas WEX */}
+            {/* Gestión de Tarjetas de Combustible */}
             <DriverCardsManager />
           </TabsContent>
         </Tabs>
