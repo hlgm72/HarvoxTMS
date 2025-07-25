@@ -209,8 +209,8 @@ const assignPaymentPeriodToLoad = async (loadId: string): Promise<void> => {
         'generate_payment_periods',
         {
           company_id_param: userRole.company_id,
-          from_date: new Date(Date.parse(targetDate) - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          to_date: new Date(Date.parse(targetDate) + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+          from_date: new Date(Date.parse(targetDate) - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          to_date: new Date(Date.parse(targetDate) + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
         }
       );
 
