@@ -799,7 +799,7 @@ export type Database = {
             foreignKeyName: "expense_instances_payment_period_id_fkey"
             columns: ["payment_period_id"]
             isOneToOne: false
-            referencedRelation: "company_payment_periods"
+            referencedRelation: "driver_period_calculations"
             referencedColumns: ["id"]
           },
           {
