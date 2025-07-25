@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
@@ -163,22 +164,65 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
                   {formData.hireDate ? format(formData.hireDate, "PPP", { locale: es }) : <span>Seleccionar fecha</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-background border-border">
-                <Calendar
-                  mode="single"
-                  selected={formData.hireDate}
-                  onSelect={(date) => {
-                    if (date) {
-                      setFormData(prev => ({ ...prev, hireDate: date }));
-                      setIsDateOpen(false);
-                    }
-                  }}
-                  initialFocus
-                  className="pointer-events-auto"
-                  captionLayout="dropdown"
-                  fromYear={1980}
-                  toYear={2030}
-                />
+               <PopoverContent className="w-auto p-0 bg-background border-border">
+                <div className="space-y-3 p-4">
+                  {/* Month/Year Selectors */}
+                  <div className="flex gap-2">
+                    <Select
+                      value={(formData.hireDate?.getMonth() ?? new Date().getMonth()).toString()}
+                      onValueChange={(value) => {
+                        const currentDate = formData.hireDate || new Date();
+                        const newDate = new Date(currentDate.getFullYear(), parseInt(value), currentDate.getDate());
+                        setFormData(prev => ({ ...prev, hireDate: newDate }));
+                      }}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 12 }, (_, i) => (
+                          <SelectItem key={i} value={i.toString()}>
+                            {format(new Date(2024, i, 1), 'MMMM', { locale: es })}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        min={1980}
+                        max={2030}
+                        value={formData.hireDate?.getFullYear() ?? new Date().getFullYear()}
+                        onChange={(e) => {
+                          const year = parseInt(e.target.value);
+                          if (year >= 1980 && year <= 2030) {
+                            const currentDate = formData.hireDate || new Date();
+                            const newDate = new Date(year, currentDate.getMonth(), currentDate.getDate());
+                            setFormData(prev => ({ ...prev, hireDate: newDate }));
+                          }
+                        }}
+                        className="w-20 text-center"
+                        placeholder="Año"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Calendar */}
+                  <Calendar
+                    mode="single"
+                    selected={formData.hireDate}
+                    onSelect={(date) => {
+                      if (date) {
+                        setFormData(prev => ({ ...prev, hireDate: date }));
+                        setIsDateOpen(false);
+                      }
+                    }}
+                    month={formData.hireDate || new Date()}
+                    onMonthChange={(date) => setFormData(prev => ({ ...prev, hireDate: date }))}
+                    className="p-0 pointer-events-auto"
+                  />
+                </div>
               </PopoverContent>
             </Popover>
           </div>
