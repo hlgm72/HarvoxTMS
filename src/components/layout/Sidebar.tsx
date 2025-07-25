@@ -112,14 +112,7 @@ const getCompanyOwnerNavigationItems = (driversCount: number, equipmentCount: nu
     title: "Gestión de Combustible", 
     url: "/fuel-management", 
     icon: Fuel,
-    description: "Control de combustible",
-    section: "financial"
-  },
-  { 
-    title: "Tarjetas de Combustible WEX", 
-    url: "/fuel-cards", 
-    icon: CreditCard,
-    description: "Gestión de tarjetas WEX",
+    description: "Control de combustible y tarjetas WEX",
     section: "financial"
   },
   { 

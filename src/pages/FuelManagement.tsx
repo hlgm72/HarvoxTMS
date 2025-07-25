@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Plus, Fuel, BarChart3, Settings, Filter } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Plus, Fuel, BarChart3, Settings, Filter, CreditCard } from 'lucide-react';
 import { PageToolbar } from '@/components/layout/PageToolbar';
 import { FuelStatsCards } from '@/components/fuel/FuelStatsCards';
 import { FuelFloatingActions } from '@/components/fuel/FuelFloatingActions';
@@ -10,6 +11,7 @@ import { FuelExpensesList } from '@/components/fuel/FuelExpensesList';
 import { CreateFuelExpenseDialog } from '@/components/fuel/CreateFuelExpenseDialog';
 import { EditFuelExpenseDialog } from '@/components/fuel/EditFuelExpenseDialog';
 import { ViewFuelExpenseDialog } from '@/components/fuel/ViewFuelExpenseDialog';
+import { DriverCardsManager } from '@/components/fuel/DriverCardsManager';
 
 export default function FuelManagement() {
   const { t } = useTranslation();
@@ -21,6 +23,9 @@ export default function FuelManagement() {
     vehicleId: 'all',
     dateRange: { from: undefined, to: undefined }
   });
+
+  // Estado de tabs
+  const [activeTab, setActiveTab] = useState('expenses');
 
   // Estado de modales
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -70,15 +75,36 @@ export default function FuelManagement() {
       />
 
       <div className="p-2 md:p-4 pr-16 md:pr-20 space-y-6">
-        {/* Estadísticas */}
-        <FuelStatsCards filters={queryFilters} />
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="expenses" className="flex items-center gap-2">
+              <Fuel className="h-4 w-4" />
+              Gastos de Combustible
+            </TabsTrigger>
+            <TabsTrigger value="cards" className="flex items-center gap-2">
+              <CreditCard className="h-4 w-4" />
+              Tarjetas WEX
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Lista de Gastos */}
-        <FuelExpensesList 
-          filters={queryFilters}
-          onEdit={handleEdit}
-          onView={handleView}
-        />
+          <TabsContent value="expenses" className="space-y-6 mt-6">
+            {/* Estadísticas */}
+            <FuelStatsCards filters={queryFilters} />
+
+            {/* Lista de Gastos */}
+            <FuelExpensesList 
+              filters={queryFilters}
+              onEdit={handleEdit}
+              onView={handleView}
+            />
+          </TabsContent>
+
+          <TabsContent value="cards" className="mt-6">
+            {/* Gestión de Tarjetas WEX */}
+            <DriverCardsManager />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Modales */}
@@ -99,11 +125,13 @@ export default function FuelManagement() {
         onOpenChange={(open) => !open && setViewExpenseId(null)}
       />
 
-      {/* Floating Actions */}
-      <FuelFloatingActions 
-        filters={filters}
-        onFiltersChange={setFilters}
-      />
+      {/* Floating Actions - Solo para tab de gastos */}
+      {activeTab === 'expenses' && (
+        <FuelFloatingActions 
+          filters={filters}
+          onFiltersChange={setFilters}
+        />
+      )}
     </>
   );
 }
