@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { CalendarIcon, MapPin, Clock, User, Phone, Building, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -42,6 +43,7 @@ export function StopEditModal({
   isLast = false 
 }: StopEditModalProps) {
   const [formData, setFormData] = useState<Partial<LoadStop>>({});
+  const [isDateOpen, setIsDateOpen] = useState(false);
 
   // Initialize form data when stop changes
   React.useEffect(() => {
@@ -139,21 +141,35 @@ export function StopEditModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="scheduled-date">Fecha Programada *</Label>
-                <Input
-                  id="scheduled-date"
-                  type="date"
-                  value={formData.scheduled_date ? format(formData.scheduled_date, "yyyy-MM-dd") : ''}
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      // Crear fecha en zona horaria local para evitar problemas de offset
-                      const [year, month, day] = e.target.value.split('-').map(Number);
-                      const dateValue = new Date(year, month - 1, day);
-                      updateField('scheduled_date', dateValue);
-                    } else {
-                      updateField('scheduled_date', null);
-                    }
-                  }}
-                />
+                <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal bg-background border-input",
+                        !formData.scheduled_date && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.scheduled_date ? format(formData.scheduled_date, "PPP", { locale: es }) : "Seleccionar fecha"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background border-border">
+                    <Calendar
+                      mode="single"
+                      captionLayout="dropdown"
+                      fromYear={2020}
+                      toYear={2030}
+                      selected={formData.scheduled_date}
+                      onSelect={(date) => {
+                        updateField('scheduled_date', date);
+                        setIsDateOpen(false);
+                      }}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div className="space-y-2">
