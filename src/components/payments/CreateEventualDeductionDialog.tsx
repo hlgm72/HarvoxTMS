@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { CalendarIcon } from "lucide-react";
 import { format, parseISO, isWithinInterval, isBefore, isAfter } from "date-fns";
 import { es } from "date-fns/locale";
+import { useATMInput } from "@/hooks/useATMInput";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
@@ -61,6 +62,21 @@ export function CreateEventualDeductionDialog({
       setExpenseDate(new Date());
     }
   }, [isOpen]);
+
+  // ATM Input para el monto
+  const atmInput = useATMInput({
+    initialValue: 0,
+    onValueChange: (value) => {
+      setFormData(prev => ({ ...prev, amount: value.toString() }));
+    }
+  });
+
+  // Reset ATM input when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      atmInput.reset();
+    }
+  }, [isOpen, atmInput.reset]);
 
   // Obtener conductores de la compañía
   const { data: drivers = [] } = useQuery({
@@ -447,12 +463,14 @@ export function CreateEventualDeductionDialog({
               <Label htmlFor="amount">Monto ($)</Label>
               <Input
                 id="amount"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.amount}
-                onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-                placeholder="0.00"
+                type="text"
+                value={atmInput.displayValue}
+                onKeyDown={atmInput.handleKeyDown}
+                onPaste={atmInput.handlePaste}
+                placeholder="$0.00"
+                className="text-right font-mono"
+                autoComplete="off"
+                readOnly
                 required
               />
             </div>

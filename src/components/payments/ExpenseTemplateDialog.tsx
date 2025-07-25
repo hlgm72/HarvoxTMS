@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useATMInput } from "@/hooks/useATMInput";
 
 interface ExpenseTemplateDialogProps {
   isOpen: boolean;
@@ -88,6 +89,21 @@ export function ExpenseTemplateDialog({
       setInactiveTemplate(null);
     }
   }, [mode, template]);
+
+  // ATM Input para el monto
+  const atmInput = useATMInput({
+    initialValue: mode === 'edit' ? template?.amount || 0 : 0,
+    onValueChange: (value) => {
+      setFormData(prev => ({ ...prev, amount: value.toString() }));
+    }
+  });
+
+  // Actualizar ATM input cuando cambie el template en modo edición
+  useEffect(() => {
+    if (mode === 'edit' && template?.amount) {
+      atmInput.setValue(template.amount * 100); // Convert to cents
+    }
+  }, [template?.amount, mode]);
 
   // Obtener conductores de la compañía
   const { data: drivers = [] } = useQuery({
@@ -412,12 +428,14 @@ export function ExpenseTemplateDialog({
               <Label htmlFor="amount">Monto ($)</Label>
               <Input
                 id="amount"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.amount}
-                onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-                placeholder="0.00"
+                type="text"
+                value={atmInput.displayValue}
+                onKeyDown={atmInput.handleKeyDown}
+                onPaste={atmInput.handlePaste}
+                placeholder="$0.00"
+                className="text-right font-mono"
+                autoComplete="off"
+                readOnly
                 required
               />
             </div>
