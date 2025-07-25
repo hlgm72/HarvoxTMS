@@ -71,40 +71,51 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1-2025-04-14',
         messages: [
           {
             role: 'user',
-            content: `Eres un asistente experto en contabilidad de transporte. Analiza este texto extraído de un PDF de combustible y extrae información estructurada.
+            content: `Eres un asistente experto en contabilidad de transporte. Analiza este texto extraído de un PDF de estado de cuenta de combustible.
+
+INSTRUCCIONES ESPECÍFICAS:
+1. Busca tablas de transacciones de combustible
+2. Identifica TODAS las columnas disponibles en las tablas
+3. Extrae TODAS las filas de transacciones, no solo muestras
 
 Texto del PDF:
 ${extractedText}
 
 Responde SOLO con JSON válido en este formato exacto:
 {
-  "columnsFound": ["lista de campos que encuentres en el documento"],
+  "columnsFound": ["DATE", "CATEGORY", "DESCRIPTION", "CARD", "UNIT", "PROMPT_DATA", "INVOICE_CHECK", "LOC", "LOCATION_NAME", "ST", "QTY", "GROSS_PPG", "SALES_TAX", "FED_TAX", "GROSS_AMT", "DISC_AMT", "FEES", "TOTAL"],
   "hasAuthorizationCode": true/false,
   "authorizationCodeField": "nombre del campo si existe o null",
   "sampleData": [
     {
       "date": "YYYY-MM-DD",
-      "card": "últimos 4 dígitos de la tarjeta",
-      "unit": "número de unidad o vehículo",
-      "invoice": "número de factura",
-      "location": "nombre completo de la ubicación",
-      "state": "estado (ST)",
-      "qty": cantidad_de_galones,
+      "category": "tipo de categoría",
+      "description": "descripción completa",
+      "card": "últimos 4 dígitos",
+      "unit": "número de unidad",
+      "prompt_data": "datos de prompt",
+      "invoice_check": "número de factura/cheque",
+      "loc": "número de ubicación",
+      "location_name": "nombre completo de ubicación",
+      "state": "código de estado",
+      "qty": cantidad_galones,
       "gross_ppg": precio_por_galón,
+      "sales_tax": impuesto_ventas,
+      "fed_tax": impuesto_federal,
       "gross_amt": monto_bruto,
       "disc_amt": descuento,
       "fees": comisiones,
-      "total_amt": monto_total
+      "total": total_final
     }
   ],
-  "analysis": "Análisis detallado de qué encontraste en el documento"
+  "analysis": "Análisis detallado"
 }
 
-IMPORTANTE: Extrae TODAS las transacciones que encuentres en el PDF, no solo una muestra. Usa los nombres de campo exactos que especifiqué arriba.`
+CRÍTICO: Extrae TODAS las transacciones de combustible que veas en las tablas, no omitas ninguna.`
           }
         ],
         max_tokens: 2000,

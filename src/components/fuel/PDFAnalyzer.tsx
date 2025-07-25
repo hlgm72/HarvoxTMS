@@ -177,14 +177,20 @@ export function PDFAnalyzer() {
                     <thead>
                       <tr className="bg-muted">
                         <th className="border border-border p-2 text-left text-sm font-medium">Fecha</th>
+                        <th className="border border-border p-2 text-left text-sm font-medium">Categoría</th>
+                        <th className="border border-border p-2 text-left text-sm font-medium">Descripción</th>
                         <th className="border border-border p-2 text-left text-sm font-medium">Tarjeta</th>
                         <th className="border border-border p-2 text-left text-sm font-medium">Unidad</th>
-                        <th className="border border-border p-2 text-left text-sm font-medium">Factura #</th>
+                        <th className="border border-border p-2 text-left text-sm font-medium">Prompt Data</th>
+                        <th className="border border-border p-2 text-left text-sm font-medium">Factura/Cheque</th>
+                        <th className="border border-border p-2 text-left text-sm font-medium">Loc #</th>
                         <th className="border border-border p-2 text-left text-sm font-medium">Ubicación</th>
                         <th className="border border-border p-2 text-left text-sm font-medium">Estado</th>
                         <th className="border border-border p-2 text-right text-sm font-medium">Cantidad</th>
                         <th className="border border-border p-2 text-right text-sm font-medium">Precio/Gal</th>
-                        <th className="border border-border p-2 text-right text-sm font-medium">Total Bruto</th>
+                        <th className="border border-border p-2 text-right text-sm font-medium">Imp. Ventas</th>
+                        <th className="border border-border p-2 text-right text-sm font-medium">Imp. Federal</th>
+                        <th className="border border-border p-2 text-right text-sm font-medium">Monto Bruto</th>
                         <th className="border border-border p-2 text-right text-sm font-medium">Descuento</th>
                         <th className="border border-border p-2 text-right text-sm font-medium">Comisiones</th>
                         <th className="border border-border p-2 text-right text-sm font-medium">Total</th>
@@ -194,17 +200,23 @@ export function PDFAnalyzer() {
                       {analysisResult.sampleData.map((transaction, index) => (
                         <tr key={index} className="hover:bg-muted/50">
                           <td className="border border-border p-2 text-sm">{transaction.date || '-'}</td>
+                          <td className="border border-border p-2 text-sm">{transaction.category || '-'}</td>
+                          <td className="border border-border p-2 text-sm">{transaction.description || '-'}</td>
                           <td className="border border-border p-2 text-sm">{transaction.card || '-'}</td>
                           <td className="border border-border p-2 text-sm">{transaction.unit || '-'}</td>
-                          <td className="border border-border p-2 text-sm">{transaction.invoice || '-'}</td>
-                          <td className="border border-border p-2 text-sm">{transaction.location || '-'}</td>
+                          <td className="border border-border p-2 text-sm">{transaction.prompt_data || '-'}</td>
+                          <td className="border border-border p-2 text-sm">{transaction.invoice_check || '-'}</td>
+                          <td className="border border-border p-2 text-sm">{transaction.loc || '-'}</td>
+                          <td className="border border-border p-2 text-sm">{transaction.location_name || '-'}</td>
                           <td className="border border-border p-2 text-sm">{transaction.state || '-'}</td>
                           <td className="border border-border p-2 text-sm text-right">{transaction.qty || '-'}</td>
                           <td className="border border-border p-2 text-sm text-right">${transaction.gross_ppg || '-'}</td>
+                          <td className="border border-border p-2 text-sm text-right">${transaction.sales_tax || '-'}</td>
+                          <td className="border border-border p-2 text-sm text-right">${transaction.fed_tax || '-'}</td>
                           <td className="border border-border p-2 text-sm text-right">${transaction.gross_amt || '-'}</td>
                           <td className="border border-border p-2 text-sm text-right">${transaction.disc_amt || '-'}</td>
                           <td className="border border-border p-2 text-sm text-right">${transaction.fees || '-'}</td>
-                          <td className="border border-border p-2 text-sm text-right font-medium">${transaction.total_amt || '-'}</td>
+                          <td className="border border-border p-2 text-sm text-right font-medium">${transaction.total || '-'}</td>
                         </tr>
                       ))}
                     </tbody>
