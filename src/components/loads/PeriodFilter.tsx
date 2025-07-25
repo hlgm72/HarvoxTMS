@@ -7,7 +7,7 @@ import { Calendar, CalendarDays, ChevronDown, Clock, X, TrendingUp, FileText, Lo
 import { usePaymentPeriods, useCurrentPaymentPeriod, usePreviousPaymentPeriod, useNextPaymentPeriod } from '@/hooks/usePaymentPeriods';
 import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { formatPaymentPeriod, formatDateOnly } from '@/lib/dateFormatting';
+import { formatPaymentPeriod, formatPaymentPeriodCompact, formatDateOnly } from '@/lib/dateFormatting';
 
 export interface PeriodFilterValue {
   type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
@@ -377,7 +377,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     <div className="flex flex-col items-start w-full min-w-0">
                       <div className="flex items-center justify-between w-full gap-2">
                         <span className="text-sm truncate flex-1 min-w-0">
-                          {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
+                          {formatPaymentPeriodCompact(period.period_start_date, period.period_end_date)}
                         </span>
                         <Badge className={`text-xs flex-shrink-0 ${getStatusColor(period.status)}`}>
                           {getStatusText(period.status)}
@@ -414,7 +414,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     <div className="flex flex-col items-start w-full">
                       <div className="flex items-center justify-between w-full">
                         <span className="text-sm">
-                          {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
+                          {formatPaymentPeriodCompact(period.period_start_date, period.period_end_date)}
                         </span>
                         <Badge className={`text-xs ${getStatusColor(period.status)}`}>
                           {getStatusText(period.status)}
@@ -446,7 +446,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     <div className="flex flex-col items-start w-full">
                       <div className="flex items-center justify-between w-full">
                         <span className="text-sm">
-                          {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
+                          {formatPaymentPeriodCompact(period.period_start_date, period.period_end_date)}
                         </span>
                         <Badge className={`text-xs ${getStatusColor(period.status)}`}>
                           {getStatusText(period.status)}

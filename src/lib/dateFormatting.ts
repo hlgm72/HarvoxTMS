@@ -63,6 +63,22 @@ export const formatPaymentPeriod = (startDate: string | null, endDate: string | 
 };
 
 /**
+ * Formateo compacto para períodos de pago (para filtros y espacios reducidos)
+ */
+export const formatPaymentPeriodCompact = (startDate: string | null, endDate: string | null): string => {
+  if (!startDate || !endDate) return 'No definido';
+  
+  const start = formatDateSafe(startDate, 'dd/MM/yy');
+  const end = formatDateSafe(endDate, 'dd/MM/yy');
+  
+  if (start === 'No definida' || end === 'No definida') {
+    return 'Incompleto';
+  }
+  
+  return `${start} - ${end}`;
+};
+
+/**
  * Formateo específico para deducciones
  */
 export const formatDeductionDate = (date: string | Date | null | undefined): string => {
