@@ -294,8 +294,8 @@ export function DeductionsFloatingActions({
                           {filters.dateRange.from ? (
                             filters.dateRange.to ? (
                               <>
-                                {format(filters.dateRange.from, "dd/MM/yy", { locale: es })} -{" "}
-                                {format(filters.dateRange.to, "dd/MM/yy", { locale: es })}
+                                {format(filters.dateRange.from, "dd/MM/yyyy", { locale: es })} -{" "}
+                                {format(filters.dateRange.to, "dd/MM/yyyy", { locale: es })}
                               </>
                             ) : (
                               format(filters.dateRange.from, "dd/MM/yyyy", { locale: es })
@@ -312,8 +312,7 @@ export function DeductionsFloatingActions({
                           defaultMonth={filters.dateRange.from}
                           selected={filters.dateRange}
                           onSelect={(range) => handleFilterChange("dateRange", range || { from: undefined, to: undefined })}
-                          numberOfMonths={2}
-                          className="p-3 pointer-events-auto"
+                          className="p-0 pointer-events-auto"
                         />
                       </PopoverContent>
                     </Popover>
