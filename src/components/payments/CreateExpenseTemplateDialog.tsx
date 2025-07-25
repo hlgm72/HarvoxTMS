@@ -184,7 +184,7 @@ export function CreateExpenseTemplateDialog({ onClose, onSuccess }: CreateExpens
               <SelectContent className="bg-background border-border">
                 {expenseTypes.map((type) => (
                   <SelectItem key={type.id} value={type.id}>
-                    {type.name} {type.category && `(${type.category})`}
+                    {type.name}
                   </SelectItem>
                 ))}
               </SelectContent>
