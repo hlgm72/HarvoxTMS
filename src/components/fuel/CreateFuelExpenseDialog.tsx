@@ -18,6 +18,7 @@ import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { useCompanyPaymentPeriods } from '@/hooks/useCompanyPaymentPeriods';
 import { useEquipment } from '@/hooks/useEquipment';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
+import { useDriverCards } from '@/hooks/useDriverCards';
 
 const formSchema = z.object({
   driver_user_id: z.string().min(1, 'Selecciona un conductor'),
@@ -32,6 +33,7 @@ const formSchema = z.object({
   station_name: z.string().optional(),
   station_address: z.string().optional(),
   fuel_card_number: z.string().optional(),
+  driver_card_id: z.string().optional(),
   vehicle_id: z.string().optional(),
   odometer_reading: z.coerce.number().optional(),
   receipt_url: z.string().optional(),
@@ -60,6 +62,9 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
     },
   });
 
+  const selectedDriverId = form.watch('driver_user_id');
+  const { data: driverCards = [] } = useDriverCards(selectedDriverId);
+
   const onSubmit = (data: FormData) => {
     createMutation.mutate({
       driver_user_id: data.driver_user_id,
@@ -72,6 +77,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       station_name: data.station_name,
       station_address: data.station_address,
       fuel_card_number: data.fuel_card_number,
+      
       vehicle_id: data.vehicle_id,
       odometer_reading: data.odometer_reading,
       receipt_url: data.receipt_url,
@@ -359,13 +365,25 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="fuel_card_number"
+                name="driver_card_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Número de Tarjeta</FormLabel>
-                    <FormControl>
-                      <Input placeholder="****1234" {...field} />
-                    </FormControl>
+                    <FormLabel>Tarjeta de Combustible</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar tarjeta" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {driverCards.map((card) => (
+                          <SelectItem key={card.id} value={card.id}>
+                            {card.card_provider.toUpperCase()} ****{card.card_number_last_four}
+                            {card.card_identifier ? ` (${card.card_identifier})` : ''}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
