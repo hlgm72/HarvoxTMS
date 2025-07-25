@@ -91,13 +91,19 @@ export function CreateEventualDeductionDialog({
   });
 
   // Obtener períodos de pago de la empresa para el conductor seleccionado
-  const { data: paymentPeriods = [] } = useQuery({
+  const { data: paymentPeriods = [], isLoading: isLoadingPeriods } = useQuery({
     queryKey: ['company-payment-periods-for-driver', formData.driver_user_id],
     queryFn: async () => {
-      if (!formData.driver_user_id) return [];
+      if (!formData.driver_user_id) {
+        console.log('No driver selected');
+        return [];
+      }
+
+      console.log('Fetching periods for driver:', formData.driver_user_id);
 
       try {
         // Primero obtenemos la empresa del conductor
+        console.log('Step 1: Getting user company...');
         const { data: userCompany, error: companyError } = await supabase
           .from('user_company_roles')
           .select('company_id')
@@ -105,12 +111,20 @@ export function CreateEventualDeductionDialog({
           .eq('is_active', true)
           .single();
 
-        if (companyError || !userCompany) {
+        if (companyError) {
           console.error('Error getting user company:', companyError);
           return [];
         }
 
+        if (!userCompany) {
+          console.log('No company found for user');
+          return [];
+        }
+
+        console.log('User company found:', userCompany.company_id);
+
         // Obtenemos los períodos abiertos de la empresa
+        console.log('Step 2: Getting company periods...');
         const { data: companyPeriods, error: periodsError } = await supabase
           .from('company_payment_periods')
           .select('*')
@@ -123,12 +137,20 @@ export function CreateEventualDeductionDialog({
           return [];
         }
 
-        if (!companyPeriods || companyPeriods.length === 0) return [];
+        console.log('Company periods found:', companyPeriods?.length || 0);
+
+        if (!companyPeriods || companyPeriods.length === 0) {
+          console.log('No company periods found');
+          return [];
+        }
 
         // Para cada período de empresa, verificamos/creamos el driver_period_calculation
+        console.log('Step 3: Processing driver calculations...');
         const driverPeriods = [];
         
         for (const companyPeriod of companyPeriods) {
+          console.log('Processing period:', companyPeriod.id);
+          
           // Verificar si existe el driver_period_calculation
           let { data: driverCalc, error: calcError } = await supabase
             .from('driver_period_calculations')
@@ -142,8 +164,11 @@ export function CreateEventualDeductionDialog({
             continue;
           }
 
+          console.log('Existing driver calc:', driverCalc?.id || 'none');
+
           // Si no existe, lo creamos
           if (!driverCalc) {
+            console.log('Creating new driver calculation...');
             const { data: newCalc, error: createError } = await supabase
               .from('driver_period_calculations')
               .insert({
@@ -163,6 +188,7 @@ export function CreateEventualDeductionDialog({
               console.error('Error creating driver calculation:', createError);
               continue;
             }
+            console.log('Created new driver calc:', newCalc?.id);
             driverCalc = newCalc;
           }
 
@@ -173,6 +199,7 @@ export function CreateEventualDeductionDialog({
           });
         }
 
+        console.log('Final driver periods:', driverPeriods.length);
         return driverPeriods;
       } catch (error) {
         console.error('Error in payment periods query:', error);
