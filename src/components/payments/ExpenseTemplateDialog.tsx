@@ -12,7 +12,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CalendarIcon, AlertTriangle } from "lucide-react";
+import { CalendarIcon, AlertTriangle, Check, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -337,9 +337,10 @@ export function ExpenseTemplateDialog({
                       ? drivers.find(driver => driver.user_id === formData.driver_user_id)?.first_name + ' ' + 
                         drivers.find(driver => driver.user_id === formData.driver_user_id)?.last_name
                       : "Seleccionar conductor..."}
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
+                <PopoverContent className="w-full p-0" align="start">
                   <Command>
                     <CommandInput 
                       placeholder="Buscar conductor..." 
@@ -359,6 +360,12 @@ export function ExpenseTemplateDialog({
                               setDriverSearchValue("");
                             }}
                           >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                formData.driver_user_id === driver.user_id ? "opacity-100" : "opacity-0"
+                              )}
+                            />
                             {driver.first_name} {driver.last_name}
                           </CommandItem>
                         ))}
