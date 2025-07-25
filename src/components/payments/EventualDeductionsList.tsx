@@ -21,7 +21,7 @@ export function EventualDeductionsList({ onRefresh }: EventualDeductionsListProp
   const { toast } = useToast();
   const [deletingExpense, setDeletingExpense] = useState<any>(null);
   const [filterDriver, setFilterDriver] = useState<string>('all');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>('planned');
 
   // Obtener deducciones eventuales
   const { data: eventualDeductions = [], refetch } = useQuery({
