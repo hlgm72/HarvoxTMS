@@ -11,12 +11,16 @@ function Calendar({
   className,
   classNames,
   showOutsideDays = true,
+  fromYear = 2020,
+  toYear = 2030,
   ...props
 }: CalendarProps) {
   return (
     <DayPicker
       weekStartsOn={1}
       showOutsideDays={showOutsideDays}
+      fromYear={fromYear}
+      toYear={toYear}
       className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
@@ -63,8 +67,8 @@ function Calendar({
             return (
               <input
                 type="number"
-                min="2020"
-                max="2030"
+                min={fromYear}
+                max={toYear}
                 value={props.value}
                 onChange={(e) => props.onChange?.(e as any)}
                 className="text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 w-[85px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium text-center"
