@@ -78,38 +78,42 @@ serve(async (req) => {
             content: `Eres un asistente experto en contabilidad de transporte. Analiza este texto extraído de un PDF de estado de cuenta de combustible.
 
 INSTRUCCIONES ESPECÍFICAS:
-1. Busca tablas de transacciones de combustible
-2. Identifica TODAS las columnas disponibles en las tablas
-3. Extrae TODAS las filas de transacciones, no solo muestras
+1. Busca tablas de transacciones de combustible (ignora balances y pagos)
+2. Identifica las columnas: DATE, CARD, UNIT, INVOICE #, LOCATION NAME, ST, QTY, GROSS PPG, GROSS AMT, DISC AMT, FEES, TOTAL AMT
+3. Para LOCATION NAME: busca nombres de estaciones como "P W I # 111 MAIN ST MKT" o "PWI #400"
+4. Extrae TODAS las filas de transacciones de combustible, no omitas ninguna
 
 Texto del PDF:
 ${extractedText}
 
 Responde SOLO con JSON válido en este formato exacto:
 {
-  "columnsFound": ["DATE", "CATEGORY", "DESCRIPTION", "CARD", "UNIT", "PROMPT_DATA", "INVOICE_CHECK", "LOC", "LOCATION_NAME", "ST", "QTY", "GROSS_PPG", "SALES_TAX", "FED_TAX", "GROSS_AMT", "DISC_AMT", "FEES", "TOTAL"],
+  "columnsFound": ["DATE", "CARD", "UNIT", "INVOICE", "LOCATION_NAME", "ST", "QTY", "GROSS_PPG", "GROSS_AMT", "DISC_AMT", "FEES", "TOTAL_AMT"],
   "hasAuthorizationCode": true/false,
   "authorizationCodeField": "nombre del campo si existe o null",
   "sampleData": [
     {
       "date": "YYYY-MM-DD",
-      "card": "últimos 4 dígitos",
-      "unit": "número de unidad",
-      "invoice": "número de factura",
-      "location_name": "nombre completo de ubicación",
-      "state": "código de estado",
-      "qty": cantidad_galones,
-      "gross_ppg": precio_por_galón,
-      "gross_amt": monto_bruto,
-      "disc_amt": descuento,
-      "fees": comisiones,
-      "total_amt": total_final
+      "card": "últimos 4 dígitos de la tarjeta",
+      "unit": "número de unidad/vehículo",
+      "invoice": "número de factura completo",
+      "location_name": "nombre completo de la estación (ej: P W I # 111 MAIN ST MKT)",
+      "state": "código de estado (ej: TX)",
+      "qty": cantidad_galones_numerica,
+      "gross_ppg": precio_por_galón_numerico,
+      "gross_amt": monto_bruto_numerico,
+      "disc_amt": descuento_numerico,
+      "fees": comisiones_numericas,
+      "total_amt": total_final_numerico
     }
   ],
-  "analysis": "Análisis detallado"
+  "analysis": "Análisis detallado de las transacciones encontradas"
 }
 
-CRÍTICO: Extrae TODAS las transacciones de combustible que veas en las tablas, no omitas ninguna.`
+CRÍTICO: 
+- Extrae TODAS las transacciones de combustible (tipo Diesel, Gas, etc.)
+- Para LOCATION NAME, captura el texto completo que identifica la estación
+- Asegúrate de que los valores numéricos sean números, no texto`
           }
         ],
         max_tokens: 2000,
