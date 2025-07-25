@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Filter, X, Settings } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Filter, X, Download, Settings, BarChart3 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { FuelFilters, FuelFiltersType } from './FuelFilters';
 
 interface FuelFloatingActionsProps {
@@ -12,6 +14,7 @@ interface FuelFloatingActionsProps {
 
 export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingActionsProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'view' | 'stats'>('filters');
 
   const getActiveFiltersCount = () => {
     let count = 0;
@@ -31,70 +34,164 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
     });
   };
 
-  const activeCount = getActiveFiltersCount();
+  const hasActiveFilters = getActiveFiltersCount() > 0;
+
+  const openSheet = (tab: 'filters' | 'export' | 'view' | 'stats') => {
+    setActiveTab(tab);
+    setIsOpen(true);
+  };
+
+  const actionButtons = [
+    {
+      id: 'filters',
+      icon: Filter,
+      label: 'Filtros',
+      color: 'text-blue-600 hover:text-blue-700',
+      bgColor: 'hover:bg-blue-50',
+      hasIndicator: hasActiveFilters
+    },
+    {
+      id: 'export',
+      icon: Download,
+      label: 'Exportar',
+      color: 'text-green-600 hover:text-green-700',
+      bgColor: 'hover:bg-green-50',
+      hasIndicator: false
+    },
+    {
+      id: 'view',
+      icon: Settings,
+      label: 'Vista',
+      color: 'text-purple-600 hover:text-purple-700',
+      bgColor: 'hover:bg-purple-50',
+      hasIndicator: false
+    },
+    {
+      id: 'stats',
+      icon: BarChart3,
+      label: 'Estadísticas',
+      color: 'text-orange-600 hover:text-orange-700',
+      bgColor: 'hover:bg-orange-50',
+      hasIndicator: false
+    }
+  ];
 
   return (
     <>
-      {/* Floating Action Button */}
-      <div className="fixed bottom-6 right-6 z-40">
-        <Button
-          onClick={() => setIsOpen(true)}
-          size="lg"
-          className="rounded-full shadow-lg hover:shadow-xl transition-all duration-200 h-14 w-14 p-0"
-        >
-          <div className="relative">
-            <Filter className="h-6 w-6" />
-            {activeCount > 0 && (
-              <Badge 
-                variant="destructive" 
-                className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
-              >
-                {activeCount}
-              </Badge>
-            )}
-          </div>
-        </Button>
+      {/* Floating Action Buttons */}
+      <div className="fixed right-0 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2">
+        <TooltipProvider>
+          {actionButtons.map((action) => {
+            const IconComponent = action.icon;
+            return (
+              <Tooltip key={action.id}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "h-14 w-12 rounded-l-xl rounded-r-none border-r-0 shadow-lg transition-all duration-300",
+                      "bg-background/95 backdrop-blur-sm",
+                      "hover:w-16 hover:shadow-xl hover:-translate-x-1",
+                      action.color,
+                      action.bgColor,
+                      "relative flex flex-col items-center justify-center gap-1 px-2"
+                    )}
+                    onClick={() => openSheet(action.id as any)}
+                  >
+                    <IconComponent className="h-4 w-4" />
+                    <span className="text-[8px] font-medium leading-none">{action.label}</span>
+                    {action.hasIndicator && (
+                      <div className="absolute -top-1 left-1 h-2 w-2 bg-red-500 rounded-full animate-pulse" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left" className="mr-2">
+                  <p>{action.label}</p>
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
+        </TooltipProvider>
       </div>
 
-      {/* Filters Sheet */}
+      {/* Sheet Modal */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetContent side="right" className="w-80 sm:w-96">
+        <SheetContent className="w-[400px] sm:w-[440px]">
           <SheetHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <SheetTitle className="flex items-center gap-2">
-                  <Filter className="h-5 w-5" />
-                  Filtros de Combustible
-                  {activeCount > 0 && (
-                    <Badge variant="secondary" className="ml-2">
-                      {activeCount}
-                    </Badge>
-                  )}
-                </SheetTitle>
-                <SheetDescription>
-                  Filtra los gastos de combustible por diferentes criterios
-                </SheetDescription>
-              </div>
-              {activeCount > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearAllFilters}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-4 w-4 mr-1" />
-                  Limpiar
-                </Button>
-              )}
-            </div>
+            <SheetTitle>
+              {activeTab === 'filters' && 'Filtros de Combustible'}
+              {activeTab === 'export' && 'Exportar Datos'}
+              {activeTab === 'view' && 'Configuración de Vista'}
+              {activeTab === 'stats' && 'Estadísticas'}
+            </SheetTitle>
+            <SheetDescription>
+              {activeTab === 'filters' && 'Filtra los gastos de combustible por diferentes criterios'}
+              {activeTab === 'export' && 'Exporta los datos de combustible en diferentes formatos'}
+              {activeTab === 'view' && 'Personaliza cómo se muestran los gastos'}
+              {activeTab === 'stats' && 'Ve estadísticas rápidas de combustible'}
+            </SheetDescription>
           </SheetHeader>
-          
+
           <div className="mt-6">
-            <FuelFilters 
-              filters={filters} 
-              onFiltersChange={onFiltersChange}
-              compact
-            />
+            {/* Filters Content */}
+            {activeTab === 'filters' && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-medium">Filtros Aplicados</h3>
+                  {hasActiveFilters && (
+                    <Button variant="outline" size="sm" onClick={clearAllFilters}>
+                      <X className="h-3 w-3 mr-1" />
+                      Limpiar
+                    </Button>
+                  )}
+                </div>
+
+                <FuelFilters 
+                  filters={filters} 
+                  onFiltersChange={onFiltersChange}
+                  compact
+                />
+              </div>
+            )}
+
+            {/* Export Content */}
+            {activeTab === 'export' && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-sm font-medium mb-3">Exportar Datos</h3>
+                  <div className="space-y-3">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Download className="h-4 w-4 mr-2" />
+                      Exportar a PDF
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <Download className="h-4 w-4 mr-2" />
+                      Exportar a Excel
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* View Content */}
+            {activeTab === 'view' && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-sm font-medium mb-3">Configuración de Vista</h3>
+                  <p className="text-sm text-muted-foreground">Opciones de vista próximamente.</p>
+                </div>
+              </div>
+            )}
+
+            {/* Stats Content */}
+            {activeTab === 'stats' && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-sm font-medium mb-3">Estadísticas</h3>
+                  <p className="text-sm text-muted-foreground">Estadísticas próximamente.</p>
+                </div>
+              </div>
+            )}
           </div>
         </SheetContent>
       </Sheet>
