@@ -35,9 +35,9 @@ serve(async (req) => {
         model: 'gpt-4o-mini',
         messages: [
           {
-            role: 'system',
+            role: 'user',
             content: `Eres un experto en análisis de documentos de combustible y transporte. 
-            Analiza este PDF/imagen y extrae TODAS las columnas y campos de datos que veas.
+            Analiza este documento y extrae TODAS las columnas y campos de datos que veas.
             
             Presta especial atención a encontrar:
             - authorization_code o authorization code
@@ -52,18 +52,9 @@ serve(async (req) => {
               "authorizationCodeField": "nombre del campo si existe",
               "sampleData": [{"campo1": "valor1", "campo2": "valor2"}],
               "analysis": "descripción detallada de lo que encontraste"
-            }`
-          },
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'image_url',
-                image_url: {
-                  url: `data:application/pdf;base64,${pdfBase64}`
-                }
-              }
-            ]
+            }
+            
+            Documento en base64: ${pdfBase64}`
           }
         ],
         max_tokens: 2000,
