@@ -289,11 +289,26 @@ export function ExpenseTemplateDialog({
     }
   };
 
+  // Validación cronológica de fechas
+  const dateValidation = useMemo(() => {
+    if (!effectiveUntil) return { isValid: true, message: null };
+    
+    if (effectiveUntil < effectiveFrom) {
+      return { 
+        isValid: false, 
+        message: "La fecha 'Vigente Hasta' no puede ser anterior a 'Vigente Desde'" 
+      };
+    }
+    
+    return { isValid: true, message: null };
+  }, [effectiveFrom, effectiveUntil]);
+
   const isFormValid = mode === 'edit' || (
     formData.driver_user_id && 
     formData.expenseTypeId && 
     formData.amount && 
-    parseFloat(formData.amount) > 0
+    parseFloat(formData.amount) > 0 &&
+    dateValidation.isValid
   );
 
   return (
@@ -478,6 +493,15 @@ export function ExpenseTemplateDialog({
                 </SelectContent>
               </Select>
             </div>
+          )}
+
+          {!dateValidation.isValid && (
+            <Alert className="mb-4">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                {dateValidation.message}
+              </AlertDescription>
+            </Alert>
           )}
 
           <div className="grid grid-cols-2 gap-4">
