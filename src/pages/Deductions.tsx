@@ -10,6 +10,7 @@ import { CreateEventualDeductionDialog } from "@/components/payments/CreateEvent
 import { DeductionsFloatingActions } from "@/components/payments/DeductionsFloatingActions";
 import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 import { useExpenseTypes } from "@/hooks/useExpenseTypes";
+import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Deductions() {
@@ -20,6 +21,7 @@ export default function Deductions() {
   const [isEventualDialogOpen, setIsEventualDialogOpen] = useState(false);
   const { data: stats, isLoading: statsLoading } = useDeductionsStats();
   const { data: expenseTypes = [] } = useExpenseTypes();
+  const { drivers = [] } = useCompanyDrivers();
 
   // Estado de filtros
   const [filters, setFilters] = useState({
@@ -108,6 +110,7 @@ export default function Deductions() {
         filters={filters}
         onFiltersChange={setFilters}
         onViewConfigChange={setViewConfig}
+        drivers={drivers}
         expenseTypes={expenseTypes}
       />
     </>
