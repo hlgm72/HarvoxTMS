@@ -90,36 +90,92 @@ export function CreateEventualDeductionDialog({
     enabled: !!user?.id && isOpen
   });
 
-  // Obtener períodos de pago del conductor seleccionado
+  // Obtener períodos de pago de la empresa para el conductor seleccionado
   const { data: paymentPeriods = [] } = useQuery({
-    queryKey: ['driver-payment-periods', formData.driver_user_id],
+    queryKey: ['company-payment-periods-for-driver', formData.driver_user_id],
     queryFn: async () => {
       if (!formData.driver_user_id) return [];
 
       try {
-        const { data, error } = await supabase
-          .from('driver_period_calculations')
-          .select(`
-            id,
-            company_payment_period_id,
-            company_payment_periods:company_payment_period_id (
-              period_start_date,
-              period_end_date,
-              period_frequency,
-              status
-            )
-          `)
-          .eq('driver_user_id', formData.driver_user_id)
-          .order('company_payment_period_id', { ascending: false });
+        // Primero obtenemos la empresa del conductor
+        const { data: userCompany, error: companyError } = await supabase
+          .from('user_company_roles')
+          .select('company_id')
+          .eq('user_id', formData.driver_user_id)
+          .eq('is_active', true)
+          .single();
 
-        if (error) throw error;
+        if (companyError || !userCompany) {
+          console.error('Error getting user company:', companyError);
+          return [];
+        }
+
+        // Obtenemos los períodos abiertos de la empresa
+        const { data: companyPeriods, error: periodsError } = await supabase
+          .from('company_payment_periods')
+          .select('*')
+          .eq('company_id', userCompany.company_id)
+          .in('status', ['open', 'processing'])
+          .order('period_start_date', { ascending: false });
+
+        if (periodsError) {
+          console.error('Error fetching company periods:', periodsError);
+          return [];
+        }
+
+        if (!companyPeriods || companyPeriods.length === 0) return [];
+
+        // Para cada período de empresa, verificamos/creamos el driver_period_calculation
+        const driverPeriods = [];
         
-        return data?.filter(period => 
-          period.company_payment_periods?.status === 'open' || 
-          period.company_payment_periods?.status === 'processing'
-        ) || [];
+        for (const companyPeriod of companyPeriods) {
+          // Verificar si existe el driver_period_calculation
+          let { data: driverCalc, error: calcError } = await supabase
+            .from('driver_period_calculations')
+            .select('id')
+            .eq('company_payment_period_id', companyPeriod.id)
+            .eq('driver_user_id', formData.driver_user_id)
+            .maybeSingle();
+
+          if (calcError && calcError.code !== 'PGRST116') {
+            console.error('Error checking driver calculation:', calcError);
+            continue;
+          }
+
+          // Si no existe, lo creamos
+          if (!driverCalc) {
+            const { data: newCalc, error: createError } = await supabase
+              .from('driver_period_calculations')
+              .insert({
+                company_payment_period_id: companyPeriod.id,
+                driver_user_id: formData.driver_user_id,
+                gross_earnings: 0,
+                total_deductions: 0,
+                other_income: 0,
+                total_income: 0,
+                net_payment: 0,
+                has_negative_balance: false
+              })
+              .select('id')
+              .single();
+
+            if (createError) {
+              console.error('Error creating driver calculation:', createError);
+              continue;
+            }
+            driverCalc = newCalc;
+          }
+
+          driverPeriods.push({
+            id: driverCalc.id,
+            company_payment_period_id: companyPeriod.id,
+            company_payment_periods: companyPeriod
+          });
+        }
+
+        return driverPeriods;
       } catch (error) {
-        console.error('Error fetching payment periods:', error);
+        console.error('Error in payment periods query:', error);
         return [];
       }
     },
