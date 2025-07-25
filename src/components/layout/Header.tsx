@@ -39,7 +39,7 @@ export function Header() {
   
   return (
     <header className="h-14 md:h-16 bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 shadow-sm">
-      <div className="flex h-full items-center justify-between pl-2 md:pl-4 pr-3 md:pr-6">
+      <div className="flex h-full items-center justify-between pr-3 md:pr-6">
         {/* Menu Toggle */}
         <MenuToggle />
 
