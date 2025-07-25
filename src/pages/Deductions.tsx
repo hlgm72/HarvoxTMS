@@ -29,6 +29,17 @@ export default function Deductions() {
     dateRange: { from: undefined as Date | undefined, to: undefined as Date | undefined }
   });
 
+  // Estado de configuración de vista
+  const [viewConfig, setViewConfig] = useState({
+    density: 'normal',
+    sortBy: 'date_desc',
+    groupBy: 'none',
+    showDriverInfo: true,
+    showAmounts: true,
+    showDates: true,
+    showExpenseType: true
+  });
+
   const handleCreateSuccess = () => {
     setIsCreateDialogOpen(false);
     // Invalidar las estadísticas para que se actualicen en la cabecera
@@ -96,6 +107,7 @@ export default function Deductions() {
       <DeductionsFloatingActions
         filters={filters}
         onFiltersChange={setFilters}
+        onViewConfigChange={setViewConfig}
         expenseTypes={expenseTypes}
       />
     </>

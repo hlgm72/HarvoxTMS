@@ -40,13 +40,15 @@ interface DeductionsFloatingActionsProps {
     dateRange: { from: Date | undefined; to: Date | undefined };
   };
   onFiltersChange: (filters: any) => void;
+  onViewConfigChange?: (config: any) => void;
   drivers?: Array<{ user_id: string; first_name: string; last_name: string }>;
   expenseTypes?: Array<{ id: string; name: string }>;
 }
 
 export function DeductionsFloatingActions({ 
   filters, 
-  onFiltersChange, 
+  onFiltersChange,
+  onViewConfigChange,
   drivers = [], 
   expenseTypes = [] 
 }: DeductionsFloatingActionsProps) {
@@ -58,6 +60,7 @@ export function DeductionsFloatingActions({
   const [viewConfig, setViewConfig] = useState({
     density: 'normal',
     sortBy: 'date_desc',
+    groupBy: 'none',
     showDriverInfo: true,
     showAmounts: true,
     showDates: true,
@@ -69,6 +72,12 @@ export function DeductionsFloatingActions({
       ...filters,
       [key]: value
     });
+  };
+
+  const handleViewConfigChange = (key: string, value: any) => {
+    const newConfig = { ...viewConfig, [key]: value };
+    setViewConfig(newConfig);
+    onViewConfigChange?.(newConfig);
   };
 
   const clearFilters = () => {
@@ -362,7 +371,7 @@ export function DeductionsFloatingActions({
                     <label className="text-sm font-medium">Ordenar por</label>
                     <Select 
                       value={viewConfig.sortBy} 
-                      onValueChange={(value) => setViewConfig({...viewConfig, sortBy: value})}
+                      onValueChange={(value) => handleViewConfigChange("sortBy", value)}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -379,10 +388,29 @@ export function DeductionsFloatingActions({
                   </div>
 
                   <div className="space-y-2 mb-4">
+                    <label className="text-sm font-medium">Agrupar por</label>
+                    <Select 
+                      value={viewConfig.groupBy} 
+                      onValueChange={(value) => handleViewConfigChange("groupBy", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Sin agrupar</SelectItem>
+                        <SelectItem value="driver">Por conductor</SelectItem>
+                        <SelectItem value="expense_type">Por tipo de gasto</SelectItem>
+                        <SelectItem value="status">Por estado</SelectItem>
+                        <SelectItem value="month">Por mes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2 mb-4">
                     <label className="text-sm font-medium">Densidad</label>
                     <Select 
                       value={viewConfig.density} 
-                      onValueChange={(value) => setViewConfig({...viewConfig, density: value})}
+                      onValueChange={(value) => handleViewConfigChange("density", value)}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -405,28 +433,28 @@ export function DeductionsFloatingActions({
                       <label className="text-sm">Información del Conductor</label>
                       <Switch 
                         checked={viewConfig.showDriverInfo}
-                        onCheckedChange={(checked) => setViewConfig({...viewConfig, showDriverInfo: checked})}
+                        onCheckedChange={(checked) => handleViewConfigChange("showDriverInfo", checked)}
                       />
                     </div>
                     <div className="flex items-center justify-between">
                       <label className="text-sm">Tipo de Gasto</label>
                       <Switch 
                         checked={viewConfig.showExpenseType}
-                        onCheckedChange={(checked) => setViewConfig({...viewConfig, showExpenseType: checked})}
+                        onCheckedChange={(checked) => handleViewConfigChange("showExpenseType", checked)}
                       />
                     </div>
                     <div className="flex items-center justify-between">
                       <label className="text-sm">Fechas</label>
                       <Switch 
                         checked={viewConfig.showDates}
-                        onCheckedChange={(checked) => setViewConfig({...viewConfig, showDates: checked})}
+                        onCheckedChange={(checked) => handleViewConfigChange("showDates", checked)}
                       />
                     </div>
                     <div className="flex items-center justify-between">
                       <label className="text-sm">Montos</label>
                       <Switch 
                         checked={viewConfig.showAmounts}
-                        onCheckedChange={(checked) => setViewConfig({...viewConfig, showAmounts: checked})}
+                        onCheckedChange={(checked) => handleViewConfigChange("showAmounts", checked)}
                       />
                     </div>
                   </div>
