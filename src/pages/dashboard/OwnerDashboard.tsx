@@ -266,7 +266,7 @@ export default function OwnerDashboard() {
       <PageToolbar 
         title="Dashboard Ejecutivo"
       />
-      <div className="p-6 pt-2 min-h-screen bg-gradient-subtle">
+      <div className="p-6 pt-2 min-h-screen bg-gradient-subtle !bg-red-500">
         {/* Content */}
         <div className="space-y-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
