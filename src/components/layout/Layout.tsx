@@ -24,7 +24,7 @@ export function Layout({ children }: LayoutProps) {
         <SidebarInset className="flex flex-col flex-1 min-w-0">
           <Header />
           <main className="flex-1 bg-gradient-subtle overflow-x-hidden">
-            <div className="animate-fade-in">
+            <div className="animate-fade-in !bg-red-500">
               {children}
             </div>
           </main>

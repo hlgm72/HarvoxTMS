@@ -24,7 +24,6 @@ All colors MUST be HSL.
     -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: red !important;
   }
   
   @media (min-width: 768px) {
