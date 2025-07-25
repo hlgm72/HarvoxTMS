@@ -509,14 +509,71 @@ export function CreateEventualDeductionDialog({
                     {expenseDate ? format(expenseDate, "PPP", { locale: es }) : "Seleccionar fecha"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={expenseDate}
-                    onSelect={(date) => date && setExpenseDate(date)}
-                    initialFocus
-                    className="p-3 pointer-events-auto"
-                  />
+                <PopoverContent className="w-auto p-0" align="start">
+                  <div className="p-4 space-y-4">
+                    {/* Selectores de mes y año */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <Select
+                        value={expenseDate ? format(expenseDate, 'MMMM', { locale: es }) : ""}
+                        onValueChange={(monthName) => {
+                          const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                                            'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+                                            .indexOf(monthName.toLowerCase());
+                          if (monthIndex !== -1) {
+                            const currentYear = expenseDate?.getFullYear() || new Date().getFullYear();
+                            const currentDay = expenseDate?.getDate() || 1;
+                            setExpenseDate(new Date(currentYear, monthIndex, currentDay));
+                          }
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Mes" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="enero">Enero</SelectItem>
+                          <SelectItem value="febrero">Febrero</SelectItem>
+                          <SelectItem value="marzo">Marzo</SelectItem>
+                          <SelectItem value="abril">Abril</SelectItem>
+                          <SelectItem value="mayo">Mayo</SelectItem>
+                          <SelectItem value="junio">Junio</SelectItem>
+                          <SelectItem value="julio">Julio</SelectItem>
+                          <SelectItem value="agosto">Agosto</SelectItem>
+                          <SelectItem value="septiembre">Septiembre</SelectItem>
+                          <SelectItem value="octubre">Octubre</SelectItem>
+                          <SelectItem value="noviembre">Noviembre</SelectItem>
+                          <SelectItem value="diciembre">Diciembre</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      <Select
+                        value={expenseDate?.getFullYear()?.toString() || ""}
+                        onValueChange={(year) => {
+                          const currentMonth = expenseDate?.getMonth() || 0;
+                          const currentDay = expenseDate?.getDate() || 1;
+                          setExpenseDate(new Date(parseInt(year), currentMonth, currentDay));
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Año" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="2024">2024</SelectItem>
+                          <SelectItem value="2025">2025</SelectItem>
+                          <SelectItem value="2026">2026</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Calendar */}
+                    <Calendar
+                      mode="single"
+                      selected={expenseDate}
+                      onSelect={(date) => date && setExpenseDate(date)}
+                      month={expenseDate}
+                      onMonthChange={setExpenseDate}
+                      className="p-0 pointer-events-auto"
+                    />
+                  </div>
                 </PopoverContent>
               </Popover>
             </div>
