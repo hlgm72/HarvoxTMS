@@ -18,6 +18,8 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
   }, []);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    console.log('🔑 handleKeyDown called with key:', e.key);
+    
     // Allow navigation keys
     if (['Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
       return;
@@ -27,6 +29,7 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
 
     if (e.key === 'Backspace') {
       const newValue = Math.floor(value / 10);
+      console.log('🔙 Backspace: new value:', newValue);
       setValue(newValue);
       onValueChange?.(newValue / 100);
       return;
@@ -45,6 +48,7 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
       return;
     }
 
+    console.log('🔢 Digit added:', digit, 'new value:', newValue);
     setValue(newValue);
     onValueChange?.(newValue / 100);
   }, [value, onValueChange]);

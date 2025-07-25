@@ -72,18 +72,12 @@ export function CreateEventualDeductionDialog({
     }
   });
 
-  console.log('🔍 ATM Input current state:', {
-    displayValue: atmInput.displayValue,
-    numericValue: atmInput.numericValue,
-    formDataAmount: formData.amount
-  });
-
   // Reset ATM input when dialog opens
   useEffect(() => {
     if (isOpen) {
       atmInput.reset();
     }
-  }, [isOpen, atmInput.reset]);
+  }, [isOpen]);
 
   // Obtener conductores de la compañía
   const { data: drivers = [] } = useQuery({
