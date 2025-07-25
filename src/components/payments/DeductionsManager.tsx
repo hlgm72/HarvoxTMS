@@ -266,22 +266,6 @@ export function DeductionsManager({ isCreateDialogOpen: externalIsCreateDialogOp
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-2">
-        <Button 
-          onClick={() => setIsCreateDialogOpen(true)}
-          className="flex-1 sm:flex-none"
-        >
-          Deducción Recurrente
-        </Button>
-        <Button 
-          variant="outline"
-          onClick={() => setIsEventualDialogOpen(true)}
-          className="flex-1 sm:flex-none"
-        >
-          Deducción Eventual
-        </Button>
-      </div>
-
       <Tabs defaultValue="active" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="active">Plantillas Activas</TabsTrigger>
