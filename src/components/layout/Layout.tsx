@@ -23,7 +23,7 @@ export function Layout({ children }: LayoutProps) {
         <AppSidebar />
         <SidebarInset className="flex flex-col flex-1 min-w-0 !bg-green-500">
           <Header />
-          <main className="flex-1 bg-gradient-subtle overflow-x-hidden !bg-blue-500">
+          <main className="flex-1 bg-gradient-subtle overflow-x-hidden">
             <div className="animate-fade-in">
               {children}
             </div>
