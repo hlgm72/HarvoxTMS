@@ -962,9 +962,12 @@ export type Database = {
           card_last_four: string | null
           created_at: string
           created_by: string | null
+          discount_amount: number | null
           driver_user_id: string
+          fees: number | null
           fuel_type: string
           gallons_purchased: number
+          gross_amount: number | null
           id: string
           invoice_number: string | null
           is_verified: boolean
@@ -988,9 +991,12 @@ export type Database = {
           card_last_four?: string | null
           created_at?: string
           created_by?: string | null
+          discount_amount?: number | null
           driver_user_id: string
+          fees?: number | null
           fuel_type?: string
           gallons_purchased: number
+          gross_amount?: number | null
           id?: string
           invoice_number?: string | null
           is_verified?: boolean
@@ -1014,9 +1020,12 @@ export type Database = {
           card_last_four?: string | null
           created_at?: string
           created_by?: string | null
+          discount_amount?: number | null
           driver_user_id?: string
+          fees?: number | null
           fuel_type?: string
           gallons_purchased?: number
+          gross_amount?: number | null
           id?: string
           invoice_number?: string | null
           is_verified?: boolean
