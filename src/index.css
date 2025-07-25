@@ -40,7 +40,7 @@ All colors MUST be HSL.
     --font-mono: 'JetBrains Mono', 'Consolas', monospace;
     
     /* Color System - usando color personalizado */
-    --background: 228 33% 97%;       /* #f2f4f8 - Color personalizado solicitado */
+    --background: 120 100% 50%;       /* Verde fuerte para identificar el elemento */
     --foreground: 222 84% 4%;
 
     --card: 0 0% 100%;
