@@ -81,7 +81,7 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
 
       showSuccess(
         "Invitación enviada",
-        "Se ha enviado la invitación al conductor por email."
+        `Se ha enviado la invitación al conductor a ${formData.email}`
       );
 
       // Reset form
