@@ -103,7 +103,7 @@ export function LoadDocumentsSection({
   const [showGenerateLoadOrder, setShowGenerateLoadOrder] = useState(false);
   const [hasLoadOrder, setHasLoadOrder] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const { notifyDocumentChange } = useLoadDocuments();
 
@@ -160,11 +160,7 @@ export function LoadDocumentsSection({
       });
     } catch (error) {
       console.error('Error loading documents:', error);
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar los documentos",
-        variant: "destructive",
-      });
+      showError("Error", "No se pudieron cargar los documentos");
     }
   };
 
