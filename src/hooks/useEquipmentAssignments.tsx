@@ -64,11 +64,6 @@ export function useEquipmentAssignments() {
             license_plate,
             status,
             company_id
-          ),
-          profiles!driver_user_id(
-            user_id,
-            first_name,
-            last_name
           )
         `)
         .eq('is_active', true)
