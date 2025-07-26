@@ -126,6 +126,8 @@ const handler = async (req: Request): Promise<Response> => {
           invitation_token: invitationToken,
           invited_by: user.id,
           expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
+          first_name: firstName,
+          last_name: lastName,
         },
       ])
       .select()

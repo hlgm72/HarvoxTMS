@@ -82,6 +82,15 @@ export default function Invitation() {
         ...invitationData,
         companyName: invitationData.company_name || 'Unknown Company'
       });
+
+      // Auto-fill name fields if available
+      if (invitationData.first_name || invitationData.last_name) {
+        setFormData(prev => ({
+          ...prev,
+          firstName: invitationData.first_name || '',
+          lastName: invitationData.last_name || ''
+        }));
+      }
     } catch (err: any) {
       setError(err.message || 'Error validating invitation');
     } finally {

@@ -2260,9 +2260,11 @@ export type Database = {
           created_at: string
           email: string
           expires_at: string
+          first_name: string | null
           id: string
           invitation_token: string
           invited_by: string | null
+          last_name: string | null
           role: Database["public"]["Enums"]["user_role"]
           updated_at: string
         }
@@ -2272,9 +2274,11 @@ export type Database = {
           created_at?: string
           email: string
           expires_at?: string
+          first_name?: string | null
           id?: string
           invitation_token: string
           invited_by?: string | null
+          last_name?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
         }
@@ -2284,9 +2288,11 @@ export type Database = {
           created_at?: string
           email?: string
           expires_at?: string
+          first_name?: string | null
           id?: string
           invitation_token?: string
           invited_by?: string | null
+          last_name?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
         }
@@ -2584,6 +2590,8 @@ export type Database = {
           role: Database["public"]["Enums"]["user_role"]
           is_valid: boolean
           company_name: string
+          first_name: string
+          last_name: string
         }[]
       }
       validate_reset_token: {
