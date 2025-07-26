@@ -96,7 +96,20 @@ const handler = async (req: Request): Promise<Response> => {
       .is("accepted_at", null);
 
     if (existingInvitation && existingInvitation.length > 0) {
-      throw new Error("Ya existe una invitación pendiente para este email");
+      console.log("Existing invitation found for email:", email);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Ya existe una invitación pendiente para este email"
+        }),
+        {
+          status: 409, // Conflict status code for duplicate resource
+          headers: { 
+            "Content-Type": "application/json",
+            ...corsHeaders 
+          },
+        }
+      );
     }
 
     // Generate invitation token

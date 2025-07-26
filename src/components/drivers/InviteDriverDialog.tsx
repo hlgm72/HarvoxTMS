@@ -69,11 +69,12 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
         }
       });
 
+      // Handle both error cases and non-success responses
       if (error) {
         throw error;
       }
 
-      if (!data.success) {
+      if (data && !data.success) {
         throw new Error(data.error || 'Error al enviar invitación');
       }
 
@@ -94,10 +95,20 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
       onClose();
     } catch (error: any) {
       console.error('Error sending driver invitation:', error);
-      showError(
-        "Error",
-        error.message || "No se pudo enviar la invitación"
-      );
+      
+      // Extract error message from different error types
+      let errorMessage = "No se pudo enviar la invitación";
+      
+      // Handle FunctionsHttpError specifically
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.details) {
+        errorMessage = error.details;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
+      showError("Error", errorMessage);
     } finally {
       setLoading(false);
     }
