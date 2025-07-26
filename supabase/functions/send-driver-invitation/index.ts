@@ -1,6 +1,9 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { Resend } from "npm:resend@2.0.0";
+import { Resend } from "npm:resend@4.0.0";
+import React from "npm:react@18.3.1";
+import { renderAsync } from "npm:@react-email/components@0.0.22";
+import { DriverInvite } from "../_shared/email-templates/DriverInvite.tsx";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -171,57 +174,21 @@ const handler = async (req: Request): Promise<Response> => {
 
     let emailResponse;
     try {
+      // Render the modern React email template
+      const emailHtml = await renderAsync(
+        React.createElement(DriverInvite, {
+          recipientName: firstName,
+          companyName: companyName,
+          invitationUrl: invitationUrl,
+          hireDate: new Date(hireDate).toLocaleDateString('es-ES')
+        })
+      );
+
       emailResponse = await resend.emails.send({
         from: "FleetNest <no-reply@fleetnest.app>",
         to: [email],
-        subject: `Invitación para unirte como conductor en ${companyName}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h1 style="color: #2563eb;">¡Bienvenido a ${companyName}!</h1>
-            
-            <p>Hola ${firstName},</p>
-            
-            <p>Has sido invitado a unirte como conductor en <strong>${companyName}</strong> a través de FleetNest.</p>
-            
-            <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <h3 style="margin-top: 0;">Detalles de tu contratación:</h3>
-              <p><strong>Nombre:</strong> ${firstName} ${lastName}</p>
-              <p><strong>Fecha de contratación:</strong> ${new Date(hireDate).toLocaleDateString('es-ES')}</p>
-            </div>
-            
-            <p>Para completar tu registro y acceder a la plataforma, haz clic en el siguiente enlace:</p>
-            
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${invitationUrl}" 
-                 target="_blank" 
-                 rel="noopener noreferrer"
-                 style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-                Aceptar Invitación
-              </a>
-            </div>
-            
-            <div style="background-color: #f1f5f9; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #2563eb;">
-              <p style="margin: 0; font-size: 14px; color: #475569;">
-                <strong>¿El enlace se abre en una ventana pequeña?</strong><br>
-                Algunos clientes de email abren enlaces en popups por seguridad. 
-                Si tienes problemas, copia este enlace y pégalo directamente en tu navegador:
-              </p>
-              <p style="margin: 10px 0 0 0; font-family: monospace; font-size: 12px; color: #1e293b; word-break: break-all; background: white; padding: 8px; border-radius: 4px;">
-                ${invitationUrl}
-              </p>
-            </div>
-            
-            <p style="color: #64748b; font-size: 14px;">
-              Este enlace expirará en 7 días. Si tienes problemas para acceder, contacta con tu administrador.
-            </p>
-            
-            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
-            
-            <p style="color: #64748b; font-size: 12px;">
-              Este email fue enviado desde FleetNest - Sistema de gestión de flotas.
-            </p>
-          </div>
-        `,
+        subject: `¡Bienvenido al equipo de ${companyName}!`,
+        html: emailHtml,
       });
 
       console.log("✅ Resend API call completed");

@@ -1,6 +1,9 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend@4.0.0";
+import React from "npm:react@18.3.1";
+import { renderAsync } from "npm:@react-email/components@0.0.22";
+import { UserInvite } from "../_shared/email-templates/UserInvite.tsx";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -125,51 +128,21 @@ const handler = async (req: Request): Promise<Response> => {
                            role === 'safety_manager' ? 'Safety Manager' : role;
     
     try {
+      // Render the modern React email template
+      const emailHtml = await renderAsync(
+        React.createElement(UserInvite, {
+          recipientName: first_name || email.split('@')[0],
+          companyName: companyName,
+          role: roleDisplayName,
+          invitationUrl: invitationUrl
+        })
+      );
+
       const emailResponse = await resend.emails.send({
         from: "FleetNest <noreply@fleetnest.app>",
         to: [email],
-        subject: `Invitation to join ${companyName} - FleetNest`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h1 style="color: #2563eb; margin-bottom: 24px;">Team Member Invitation</h1>
-            
-            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">
-              ${first_name ? `Hi ${first_name},` : 'Hello,'}
-            </p>
-            
-            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">
-              You have been invited to join <strong>${companyName}</strong> as a <strong>${roleDisplayName}</strong> on FleetNest.
-            </p>
-            
-            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 24px;">
-              Click the button below to set up your account and start using the platform:
-            </p>
-            
-            <div style="text-align: center; margin: 32px 0;">
-              <a href="${invitationUrl}" 
-                 style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; display: inline-block;">
-                Accept Invitation
-              </a>
-            </div>
-            
-            <div style="background-color: #f3f4f6; padding: 16px; border-radius: 8px; margin: 24px 0;">
-              <h3 style="margin: 0 0 8px 0; color: #374151;">Your Role Details:</h3>
-              <p style="margin: 0; color: #6b7280;"><strong>Company:</strong> ${companyName}</p>
-              <p style="margin: 0; color: #6b7280;"><strong>Role:</strong> ${roleDisplayName}</p>
-              <p style="margin: 0; color: #6b7280;"><strong>Email:</strong> ${email}</p>
-            </div>
-            
-            <p style="font-size: 14px; color: #6b7280; margin-top: 32px;">
-              This invitation will expire in 7 days. If you didn't expect this invitation, you can safely ignore this email.
-            </p>
-            
-            <hr style="margin: 32px 0; border: none; border-top: 1px solid #e5e7eb;">
-            
-            <p style="font-size: 12px; color: #9ca3af; text-align: center;">
-              FleetNest - Professional Fleet Management Platform
-            </p>
-          </div>
-        `,
+        subject: `Invitación para unirte a ${companyName} - FleetNest`,
+        html: emailHtml,
       });
 
       console.log("Email sent successfully:", emailResponse);
