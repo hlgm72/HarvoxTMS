@@ -348,30 +348,36 @@ export default function Invitation() {
               </div>
 
               {/* Manual Registration Form */}
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label htmlFor="firstName">Nombre</Label>
                     <Input
                       id="firstName"
+                      name="firstName"
                       type="text"
                       value={formData.firstName}
                       onChange={(e) => handleInputChange('firstName', e.target.value)}
                       required
                       disabled={submitting}
+                      autoComplete="off"
+                      data-form-type="other"
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label htmlFor="lastName">Apellido</Label>
                     <Input
                       id="lastName"
+                      name="lastName"
                       type="text"
                       value={formData.lastName}
                       onChange={(e) => handleInputChange('lastName', e.target.value)}
                       required
                       disabled={submitting}
+                      autoComplete="off"
+                      data-form-type="other"
                     />
                   </div>
                 </div>
@@ -393,12 +399,15 @@ export default function Invitation() {
                   <Label htmlFor="password">Contraseña</Label>
                   <Input
                     id="password"
+                    name="new-password"
                     type="password"
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     required
                     disabled={submitting}
                     minLength={6}
+                    autoComplete="new-password"
+                    data-form-type="other"
                   />
                   <p className="text-sm text-gray-500">
                     Debe tener al menos 6 caracteres
@@ -409,12 +418,15 @@ export default function Invitation() {
                   <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
                   <Input
                     id="confirmPassword"
+                    name="confirm-password"
                     type="password"
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                     required
                     disabled={submitting}
                     minLength={6}
+                    autoComplete="new-password"
+                    data-form-type="other"
                   />
                 </div>
 
