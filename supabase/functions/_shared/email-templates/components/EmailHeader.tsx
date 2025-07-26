@@ -27,30 +27,7 @@ export const EmailHeader = ({ title, subtitle }: EmailHeaderProps) => (
         fontStyle="normal"
       />
     </Head>
-    <Section style={headerSection}>
-      <Container style={headerContainer}>
-        {/* Logo y branding */}
-        <Section style={logoSection}>
-          <Img
-            src="https://fleetnest.app/eagle-logo.svg"
-            width="48"
-            height="48"
-            alt="FleetNest"
-            style={logoStyle}
-          />
-          <Text style={brandName}>FleetNest</Text>
-        </Section>
-        
-        {/* Gradient decorative line */}
-        <div style={gradientLine} />
-        
-        {/* Title and subtitle */}
-        <Section style={titleSection}>
-          <Text style={mainTitle}>{title}</Text>
-          {subtitle && <Text style={subtitle}>{subtitle}</Text>}
-        </Section>
-      </Container>
-    </Section>
+    {/* Cabecera simplificada sin logo ni branding repetitivo */}
   </>
 );
 
