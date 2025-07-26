@@ -35,7 +35,8 @@ export function EquipmentAssignmentDialog({
   onClose,
   driverUserId,
 }: EquipmentAssignmentDialogProps) {
-  const [selectedEquipmentId, setSelectedEquipmentId] = useState<string>('');
+  const [selectedTruckId, setSelectedTruckId] = useState<string>('');
+  const [selectedTrailerId, setSelectedTrailerId] = useState<string>('');
   const [selectedDriverId, setSelectedDriverId] = useState<string>(driverUserId || '');
   const [assignmentType, setAssignmentType] = useState<'permanent' | 'temporary'>('permanent');
   const [notes, setNotes] = useState('');
@@ -50,28 +51,45 @@ export function EquipmentAssignmentDialog({
     getAssignmentsByDriver 
   } = useEquipmentAssignments();
 
-  // Filtrar equipos disponibles (no asignados)
-  const availableEquipment = equipment?.filter(eq => {
+  // Filtrar equipos por tipo
+  const availableTrucks = equipment?.filter(eq => {
     const assignment = getAssignmentByEquipment(eq.id);
-    return !assignment && eq.status === 'active';
+    return !assignment && eq.status === 'active' && eq.equipment_type === 'truck';
+  }) || [];
+
+  const availableTrailers = equipment?.filter(eq => {
+    const assignment = getAssignmentByEquipment(eq.id);
+    return !assignment && eq.status === 'active' && eq.equipment_type === 'trailer';
   }) || [];
 
   // Filtrar conductores activos
   const activeDrivers = drivers?.filter(driver => driver.is_active) || [];
 
-  const handleSubmit = () => {
-    if (!selectedEquipmentId || !selectedDriverId) return;
+  const handleSubmit = async () => {
+    if (!selectedTruckId || !selectedDriverId) return;
 
+    // Asignar camión (siempre requerido)
     createAssignment({
-      equipment_id: selectedEquipmentId,
+      equipment_id: selectedTruckId,
       driver_user_id: selectedDriverId,
       assignment_type: assignmentType,
-      notes: notes.trim() || undefined,
+      notes: notes.trim() || 'Camión asignado',
     });
+
+    // Asignar trailer si se seleccionó
+    if (selectedTrailerId) {
+      createAssignment({
+        equipment_id: selectedTrailerId,
+        driver_user_id: selectedDriverId,
+        assignment_type: assignmentType,
+        notes: notes.trim() || 'Trailer asignado',
+      });
+    }
   };
 
   const handleClose = () => {
-    setSelectedEquipmentId('');
+    setSelectedTruckId('');
+    setSelectedTrailerId('');
     setSelectedDriverId(driverUserId || '');
     setAssignmentType('permanent');
     setNotes('');
@@ -81,6 +99,10 @@ export function EquipmentAssignmentDialog({
   // Obtener asignaciones del conductor seleccionado
   const driverAssignments = selectedDriverId ? getAssignmentsByDriver(selectedDriverId) : [];
   const selectedDriver = activeDrivers.find(d => d.user_id === selectedDriverId);
+  
+  // Separar equipos por tipo
+  const driverTrucks = driverAssignments.filter(a => a.company_equipment?.equipment_type === 'truck');
+  const driverTrailers = driverAssignments.filter(a => a.company_equipment?.equipment_type === 'trailer');
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -136,62 +158,98 @@ export function EquipmentAssignmentDialog({
                   Equipos Actuales de {selectedDriver.first_name}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
-                {driverAssignments.map((assignment) => (
-                  <div
-                    key={assignment.id}
-                    className="flex items-center justify-between p-2 bg-muted/50 rounded-lg"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Truck className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">
-                        {assignment.company_equipment?.equipment_number}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {assignment.company_equipment?.make} {assignment.company_equipment?.model}
-                      </span>
+              <CardContent className="space-y-4">
+                {/* Camiones */}
+                {driverTrucks.length > 0 && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground mb-2 block">Camiones</Label>
+                    <div className="space-y-2">
+                      {driverTrucks.map((assignment) => (
+                        <div
+                          key={assignment.id}
+                          className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Truck className="h-4 w-4 text-blue-600" />
+                            <span className="font-medium">
+                              {assignment.company_equipment?.equipment_number}
+                            </span>
+                            <span className="text-sm text-muted-foreground">
+                              {assignment.company_equipment?.make} {assignment.company_equipment?.model}
+                            </span>
+                          </div>
+                          <Badge variant="outline" className="text-xs border-blue-200">
+                            {assignment.assignment_type === 'permanent' ? 'Permanente' : 'Temporal'}
+                          </Badge>
+                        </div>
+                      ))}
                     </div>
-                    <Badge 
-                      variant={assignment.assignment_type === 'permanent' ? 'default' : 'secondary'}
-                      className="text-xs"
-                    >
-                      {assignment.assignment_type === 'permanent' ? 'Permanente' : 'Temporal'}
-                    </Badge>
                   </div>
-                ))}
+                )}
+
+                {/* Trailers */}
+                {driverTrailers.length > 0 && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground mb-2 block">Trailers</Label>
+                    <div className="space-y-2">
+                      {driverTrailers.map((assignment) => (
+                        <div
+                          key={assignment.id}
+                          className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Truck className="h-4 w-4 text-green-600" />
+                            <span className="font-medium">
+                              {assignment.company_equipment?.equipment_number}
+                            </span>
+                            <span className="text-sm text-muted-foreground">
+                              {assignment.company_equipment?.make} {assignment.company_equipment?.model}
+                            </span>
+                          </div>
+                          <Badge variant="outline" className="text-xs border-green-200">
+                            {assignment.assignment_type === 'permanent' ? 'Permanente' : 'Temporal'}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}
 
           {(!driverUserId || (driverUserId && driverAssignments.length > 0)) && <Separator />}
 
-          {/* Selección de Equipo */}
+          {/* Selección de Camión (Requerido) */}
           <div className="space-y-2">
-            <Label htmlFor="equipment-select">Equipo Disponible</Label>
-            <Select value={selectedEquipmentId} onValueChange={setSelectedEquipmentId}>
+            <Label htmlFor="truck-select" className="flex items-center gap-2">
+              <Truck className="h-4 w-4 text-blue-600" />
+              Camión (Requerido)
+            </Label>
+            <Select value={selectedTruckId} onValueChange={setSelectedTruckId}>
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar equipo..." />
+                <SelectValue placeholder="Seleccionar camión..." />
               </SelectTrigger>
               <SelectContent>
-                {availableEquipment.length === 0 ? (
+                {availableTrucks.length === 0 ? (
                   <div className="p-4 text-center text-muted-foreground">
                     <Truck className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p>No hay equipos disponibles</p>
-                    <p className="text-xs">Todos los equipos están asignados</p>
+                    <p>No hay camiones disponibles</p>
+                    <p className="text-xs">Todos los camiones están asignados</p>
                   </div>
                 ) : (
-                  availableEquipment.map((equipment) => (
-                    <SelectItem key={equipment.id} value={equipment.id}>
+                  availableTrucks.map((truck) => (
+                    <SelectItem key={truck.id} value={truck.id}>
                       <div className="flex items-center gap-2">
-                        <Truck className="h-4 w-4" />
-                        <span className="font-medium">{equipment.equipment_number}</span>
+                        <Truck className="h-4 w-4 text-blue-600" />
+                        <span className="font-medium">{truck.equipment_number}</span>
                         <span className="text-muted-foreground">
-                          {equipment.make} {equipment.model}
-                          {equipment.year && ` (${equipment.year})`}
+                          {truck.make} {truck.model}
+                          {truck.year && ` (${truck.year})`}
                         </span>
-                        {equipment.license_plate && (
+                        {truck.license_plate && (
                           <Badge variant="outline" className="text-xs">
-                            {equipment.license_plate}
+                            {truck.license_plate}
                           </Badge>
                         )}
                       </div>
@@ -200,6 +258,47 @@ export function EquipmentAssignmentDialog({
                 )}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Selección de Trailer (Opcional) */}
+          <div className="space-y-2">
+            <Label htmlFor="trailer-select" className="flex items-center gap-2">
+              <Truck className="h-4 w-4 text-green-600" />
+              Trailer (Opcional)
+            </Label>
+            <Select value={selectedTrailerId} onValueChange={setSelectedTrailerId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar trailer (opcional)..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">
+                  <div className="flex items-center gap-2">
+                    <X className="h-4 w-4 text-muted-foreground" />
+                    <span>Sin trailer (Power Only)</span>
+                  </div>
+                </SelectItem>
+                {availableTrailers.map((trailer) => (
+                  <SelectItem key={trailer.id} value={trailer.id}>
+                    <div className="flex items-center gap-2">
+                      <Truck className="h-4 w-4 text-green-600" />
+                      <span className="font-medium">{trailer.equipment_number}</span>
+                      <span className="text-muted-foreground">
+                        {trailer.make} {trailer.model}
+                        {trailer.year && ` (${trailer.year})`}
+                      </span>
+                      {trailer.license_plate && (
+                        <Badge variant="outline" className="text-xs">
+                          {trailer.license_plate}
+                        </Badge>
+                      )}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Deja vacío si es una operación "Power Only" (solo camión)
+            </p>
           </div>
 
           {/* Tipo de Asignación */}
@@ -249,7 +348,7 @@ export function EquipmentAssignmentDialog({
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={!selectedEquipmentId || !selectedDriverId || isCreatingAssignment}
+              disabled={!selectedTruckId || !selectedDriverId || isCreatingAssignment}
               className="gap-2"
             >
               {isCreatingAssignment ? (
@@ -260,7 +359,7 @@ export function EquipmentAssignmentDialog({
               ) : (
                 <>
                   <Plus className="h-4 w-4" />
-                  Asignar Equipo
+                  Asignar Equipos
                 </>
               )}
             </Button>
