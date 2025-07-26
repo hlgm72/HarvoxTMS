@@ -245,14 +245,23 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t("equipment.year", "Año")}</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            placeholder="2020" 
-                            {...field}
-                            onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                          />
-                        </FormControl>
+                         <FormControl>
+                           <Input 
+                             type="number" 
+                             placeholder="2020" 
+                             min="1990"
+                             max={new Date().getFullYear() + 1}
+                             {...field}
+                             onChange={(e) => {
+                               const value = parseInt(e.target.value);
+                               if (!isNaN(value) && value >= 1990 && value <= new Date().getFullYear() + 1) {
+                                 field.onChange(value);
+                               } else if (e.target.value === "") {
+                                 field.onChange(undefined);
+                               }
+                             }}
+                           />
+                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
