@@ -200,6 +200,17 @@ const handler = async (req: Request): Promise<Response> => {
               </a>
             </div>
             
+            <div style="background-color: #f1f5f9; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #2563eb;">
+              <p style="margin: 0; font-size: 14px; color: #475569;">
+                <strong>¿El enlace se abre en una ventana pequeña?</strong><br>
+                Algunos clientes de email abren enlaces en popups por seguridad. 
+                Si tienes problemas, copia este enlace y pégalo directamente en tu navegador:
+              </p>
+              <p style="margin: 10px 0 0 0; font-family: monospace; font-size: 12px; color: #1e293b; word-break: break-all; background: white; padding: 8px; border-radius: 4px;">
+                ${invitationUrl}
+              </p>
+            </div>
+            
             <p style="color: #64748b; font-size: 14px;">
               Este enlace expirará en 7 días. Si tienes problemas para acceder, contacta con tu administrador.
             </p>
