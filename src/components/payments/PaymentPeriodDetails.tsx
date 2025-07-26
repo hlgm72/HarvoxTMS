@@ -77,20 +77,13 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
 
       if (error) throw error;
 
-      toast({
-        title: "Período Procesado",
-        description: `Período procesado exitosamente`,
-      });
+      showSuccess("Período Procesado", "Período procesado exitosamente");
 
       refetchPeriod();
       refetchCalculations();
     } catch (error: any) {
       console.error('Error processing period:', error);
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo procesar el período",
-        variant: "destructive",
-      });
+      showError("Error", error.message || "No se pudo procesar el período");
     } finally {
       setIsProcessing(false);
     }

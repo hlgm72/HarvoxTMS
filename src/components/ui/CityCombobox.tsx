@@ -62,11 +62,7 @@ export function CityCombobox({
       setCities(data || []);
     } catch (error) {
       console.error('Error loading cities:', error);
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar las ciudades",
-        variant: "destructive",
-      });
+      showError("Error", "No se pudieron cargar las ciudades");
     } finally {
       setLoading(false);
     }

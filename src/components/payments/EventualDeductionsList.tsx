@@ -149,20 +149,13 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
       if (error) throw error;
 
-      toast({
-        title: "Éxito",
-        description: "Deducción eventual eliminada exitosamente",
-      });
+      showSuccess("Éxito", "Deducción eventual eliminada exitosamente");
 
       refetch();
       setDeletingExpense(null);
     } catch (error: any) {
       console.error('Error deleting expense:', error);
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo eliminar la deducción",
-        variant: "destructive",
-      });
+      showError("Error", error.message || "No se pudo eliminar la deducción");
     }
   };
 

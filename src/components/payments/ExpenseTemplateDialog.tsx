@@ -214,20 +214,13 @@ export function ExpenseTemplateDialog({
 
       if (error) throw error;
 
-      toast({
-        title: "Éxito",
-        description: "Plantilla de deducción reactivada exitosamente",
-      });
+      showSuccess("Éxito", "Plantilla de deducción reactivada exitosamente");
 
       onSuccess();
       onClose();
     } catch (error: any) {
       console.error('Error reactivating template:', error);
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo reactivar la plantilla",
-        variant: "destructive",
-      });
+      showError("Error", error.message || "No se pudo reactivar la plantilla");
     } finally {
       setIsLoading(false);
     }
@@ -257,10 +250,7 @@ export function ExpenseTemplateDialog({
 
         if (error) throw error;
 
-        toast({
-          title: "Éxito",
-          description: "Plantilla de deducción creada exitosamente",
-        });
+        showSuccess("Éxito", "Plantilla de deducción creada exitosamente");
       } else {
         const { error } = await supabase
           .from('recurring_expense_templates')
@@ -269,21 +259,14 @@ export function ExpenseTemplateDialog({
 
         if (error) throw error;
 
-        toast({
-          title: "Éxito",
-          description: "Plantilla de deducción actualizada exitosamente",
-        });
+        showSuccess("Éxito", "Plantilla de deducción actualizada exitosamente");
       }
 
       onSuccess();
       onClose();
     } catch (error: any) {
       console.error(`Error ${mode === 'create' ? 'creating' : 'updating'} expense template:`, error);
-      toast({
-        title: "Error",
-        description: error.message || `No se pudo ${mode === 'create' ? 'crear' : 'actualizar'} la plantilla de deducción`,
-        variant: "destructive",
-      });
+      showError("Error", error.message || `No se pudo ${mode === 'create' ? 'crear' : 'actualizar'} la plantilla de deducción`);
     } finally {
       setIsLoading(false);
     }

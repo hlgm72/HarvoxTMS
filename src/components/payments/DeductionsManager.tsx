@@ -274,18 +274,11 @@ export function DeductionsManager({
       if (error) throw error;
     },
     onSuccess: () => {
-      toast({
-        title: "Éxito",
-        description: "Plantilla desactivada exitosamente",
-      });
+      showSuccess("Éxito", "Plantilla desactivada exitosamente");
       handleCreateSuccess();
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo desactivar la plantilla",
-        variant: "destructive",
-      });
+      showError("Error", error.message || "No se pudo desactivar la plantilla");
     }
   });
 
@@ -303,18 +296,11 @@ export function DeductionsManager({
       if (error) throw error;
     },
     onSuccess: () => {
-      toast({
-        title: "Éxito",
-        description: "Plantilla reactivada exitosamente",
-      });
+      showSuccess("Éxito", "Plantilla reactivada exitosamente");
       handleCreateSuccess();
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo reactivar la plantilla",
-        variant: "destructive",
-      });
+      showError("Error", error.message || "No se pudo reactivar la plantilla");
     }
   });
 
