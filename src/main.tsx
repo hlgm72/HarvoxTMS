@@ -3,8 +3,12 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import { setupGlobalAuthErrorHandler } from './lib/authErrorHandler'
 
 console.log('🚀 main.tsx: Starting application initialization...');
+
+// Setup global auth error handling
+setupGlobalAuthErrorHandler();
 
 const rootElement = document.getElementById("root");
 

@@ -3,6 +3,28 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { cleanupAuthState } from '@/lib/authUtils';
 
+// Enhanced auth state cleanup utility
+const enhancedCleanupAuthState = () => {
+  console.log('🧹 Enhanced cleanup of auth state...');
+  
+  // Use the existing utility
+  cleanupAuthState();
+  
+  // Additional cleanup for specific auth keys
+  const authKeys = [
+    'supabase.auth.token',
+    'sb-auth-token',
+    'currentRole'
+  ];
+  
+  authKeys.forEach(key => {
+    localStorage.removeItem(key);
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem(key);
+    }
+  });
+};
+
 interface UserRole {
   role: string;
   company_id: string;
@@ -87,6 +109,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('❌ Error fetching user roles:', error);
+        
+        // If this is an auth error, clean up and sign out
+        if (error.message?.includes('refresh token') || 
+            error.message?.includes('JWT') || 
+            error.message?.includes('Invalid') ||
+            error.code === 'PGRST301') {
+          console.log('🚨 Auth error detected in fetchUserRoles, cleaning up');
+          enhancedCleanupAuthState();
+          window.location.href = '/auth';
+          return [];
+        }
+        
         return [];
       }
 
@@ -196,6 +230,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
       
+      console.log('🔄 Auth state changed:', event, session?.user?.email);
+      
+      // Handle auth errors by cleaning up state
+      if (event === 'TOKEN_REFRESHED' && !session) {
+        console.log('❌ Token refresh failed, cleaning up auth state');
+        enhancedCleanupAuthState();
+        setSession(null);
+        setUser(null);
+        setUserRoles(null);
+        setCurrentRole(null);
+        setLoading(false);
+        return;
+      }
+      
+      // Handle signed out state
+      if (event === 'SIGNED_OUT') {
+        console.log('👋 User signed out, cleaning up state');
+        enhancedCleanupAuthState();
+        setSession(null);
+        setUser(null);
+        setUserRoles(null);
+        setCurrentRole(null);
+        setLoading(false);
+        return;
+      }
+      
       setSession(session);
       setUser(session?.user ?? null);
       
@@ -276,9 +336,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     });
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Get initial session with error handling
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (!mounted) return;
+      
+      if (error) {
+        console.error('❌ Error getting initial session:', error);
+        // If session retrieval fails due to auth issues, clean up
+        if (error.message?.includes('refresh token') || 
+            error.message?.includes('Invalid') ||
+            error.message?.includes('JWT')) {
+          console.log('🚨 Session error detected, cleaning up auth state');
+          enhancedCleanupAuthState();
+          setSession(null);
+          setUser(null);
+          setUserRoles(null);
+          setCurrentRole(null);
+          setLoading(false);
+          return;
+        }
+      }
       
       setSession(session);
       setUser(session?.user ?? null);
@@ -380,22 +457,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      // Clean up all auth state using utility
-      cleanupAuthState();
+      console.log('👋 Starting sign out process...');
+      
+      // Clean up auth state first
+      enhancedCleanupAuthState();
+      
+      // Clear React state
+      setUser(null);
+      setSession(null);
       setUserRoles(null);
       setCurrentRole(null);
+      setLoading(false);
       
-      // Attempt to sign out from Supabase
-      await supabase.auth.signOut();
+      // Attempt global sign out from Supabase
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+        console.log('✅ Supabase sign out successful');
+      } catch (err) {
+        console.warn('⚠️ Supabase sign out error (continuing anyway):', err);
+      }
       
-      // No need for window.location.href - let React Router handle it
-      // The ProtectedRoute will detect no auth and redirect appropriately
+      // Force page reload to ensure completely clean state
+      console.log('🔄 Redirecting to auth page...');
+      window.location.href = '/auth';
     } catch (error) {
-      console.error('Error signing out:', error);
-      // Clean up state anyway
-      cleanupAuthState();
-      setUserRoles(null);
-      setCurrentRole(null);
+      console.error('❌ Error in sign out process:', error);
+      // Force cleanup and redirect anyway
+      enhancedCleanupAuthState();
+      window.location.href = '/auth';
     }
   };
 
