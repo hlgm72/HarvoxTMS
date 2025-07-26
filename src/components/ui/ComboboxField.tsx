@@ -95,7 +95,7 @@ export function ComboboxField({
           </Button>
         </FormControl>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="start">
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-white z-50" align="start">
         <Command>
           <CommandInput
             placeholder="Buscar marca..."
