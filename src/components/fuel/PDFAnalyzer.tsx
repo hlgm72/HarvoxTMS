@@ -437,12 +437,6 @@ export function PDFAnalyzer() {
                   <div className="text-sm text-muted-foreground">Conductores identificados</div>
                 </div>
                 <div className="text-center p-3 border rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {enrichedTransactions.filter(t => t.period_mapping_status === 'found').length}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Períodos asignados</div>
-                </div>
-                <div className="text-center p-3 border rounded-lg">
                   <div className="text-2xl font-bold text-green-600">
                     {enrichedTransactions.filter(t => 
                       t.card_mapping_status === 'found' && 
