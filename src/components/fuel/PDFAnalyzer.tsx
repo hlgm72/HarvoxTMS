@@ -42,6 +42,9 @@ interface EnrichedTransaction {
   card_mapping_status: 'found' | 'not_found' | 'multiple';
   period_mapping_status: 'found' | 'not_found';
   import_status: 'not_imported' | 'already_imported';
+  equipment_mapping_method?: 'assigned_to_driver' | 'pdf_unit_validated' | 'unit_not_found';
+  needs_attention?: boolean;
+  attention_reason?: string;
 }
 
 export function PDFAnalyzer() {
@@ -137,6 +140,24 @@ export function PDFAnalyzer() {
         .select('id, equipment_number')
         .eq('company_id', companyId)
         .eq('status', 'active');
+
+      // Obtener asignaciones de equipos (para mapeo robusto)
+      const { data: equipmentAssignments } = await supabase
+        .from('equipment_assignments')
+        .select(`
+          equipment_id,
+          driver_user_id,
+          assigned_date,
+          unassigned_date,
+          is_active,
+          company_equipment!inner(
+            id,
+            equipment_number,
+            company_id
+          )
+        `)
+        .eq('company_equipment.company_id', companyId)
+        .eq('is_active', true);
 
       // Obtener tarjetas de conductores
       const { data: driverCards } = await supabase
@@ -267,18 +288,46 @@ export function PDFAnalyzer() {
           enrichedTransaction.period_mapping_status = 'found';
         }
 
-        // Mapear vehículo por número de equipo al UUID correspondiente
+        // Mapear vehículo usando lógica robusta
         const equipmentNumber = transaction.unit;
-        const matchingEquipment = companyEquipment?.find(equipment => 
-          equipment.equipment_number === equipmentNumber
-        );
+        const transactionDate = new Date(transaction.date);
         
-        if (matchingEquipment) {
-          enrichedTransaction.vehicle_id = matchingEquipment.id;
-          enrichedTransaction.vehicle_number = matchingEquipment.equipment_number;
+        // Prioridad 1: Buscar equipo asignado al conductor en la fecha de transacción
+        let assignedEquipment = null;
+        if (enrichedTransaction.driver_user_id) {
+          assignedEquipment = equipmentAssignments?.find(assignment => {
+            const assignedDate = new Date(assignment.assigned_date);
+            const unassignedDate = assignment.unassigned_date ? new Date(assignment.unassigned_date) : null;
+            
+            return assignment.driver_user_id === enrichedTransaction.driver_user_id &&
+                   transactionDate >= assignedDate &&
+                   (unassignedDate === null || transactionDate <= unassignedDate);
+          });
+        }
+        
+        if (assignedEquipment) {
+          // Usar el equipo asignado al conductor
+          enrichedTransaction.vehicle_id = assignedEquipment.equipment_id;
+          enrichedTransaction.vehicle_number = assignedEquipment.company_equipment.equipment_number;
+          enrichedTransaction.equipment_mapping_method = 'assigned_to_driver';
         } else {
-          enrichedTransaction.vehicle_id = null;
-          enrichedTransaction.vehicle_number = equipmentNumber; // Mostrar el número original aunque no se haya mapeado
+          // Prioridad 2: Validar el UNIT del PDF contra equipos de la empresa
+          const matchingEquipment = companyEquipment?.find(equipment => 
+            equipment.equipment_number === equipmentNumber
+          );
+          
+          if (matchingEquipment) {
+            enrichedTransaction.vehicle_id = matchingEquipment.id;
+            enrichedTransaction.vehicle_number = matchingEquipment.equipment_number;
+            enrichedTransaction.equipment_mapping_method = 'pdf_unit_validated';
+          } else {
+            // Fallback: UNIT no válido, marcar para atención manual
+            enrichedTransaction.vehicle_id = null;
+            enrichedTransaction.vehicle_number = equipmentNumber;
+            enrichedTransaction.equipment_mapping_method = 'unit_not_found';
+            enrichedTransaction.needs_attention = true;
+            enrichedTransaction.attention_reason = `UNIT ${equipmentNumber} no encontrado en equipos de la empresa`;
+          }
         }
 
         return enrichedTransaction;
