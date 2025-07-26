@@ -251,7 +251,7 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                              placeholder="2020" 
                              min="1990"
                              max={new Date().getFullYear() + 1}
-                             {...field}
+                             value={field.value || ""}
                              onChange={(e) => {
                                const value = parseInt(e.target.value);
                                if (!isNaN(value) && value >= 1990 && value <= new Date().getFullYear() + 1) {
@@ -366,12 +366,12 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                       <FormItem>
                         <FormLabel>{t("equipment.currentMileage", "Kilometraje Actual")}</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
-                            placeholder="150000" 
-                            {...field}
-                            onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                          />
+                           <Input 
+                             type="number" 
+                             placeholder="150000" 
+                             value={field.value || ""}
+                             onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -480,13 +480,13 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                       <FormItem>
                         <FormLabel>{t("equipment.purchasePrice", "Precio de Compra")}</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
-                            step="0.01"
-                            placeholder="150000.00" 
-                            {...field}
-                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                          />
+                           <Input 
+                             type="number" 
+                             step="0.01"
+                             placeholder="150000.00" 
+                             value={field.value || ""}
+                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
