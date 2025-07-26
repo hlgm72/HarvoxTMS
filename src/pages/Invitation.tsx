@@ -27,7 +27,12 @@ export default function Invitation() {
   });
 
   useEffect(() => {
+    console.log('Invitation page mounted with token:', token);
+    console.log('Current URL:', window.location.href);
+    console.log('Referrer:', document.referrer);
+    
     if (token) {
+      console.log('Starting invitation validation...');
       validateInvitation();
     }
   }, [token]);
