@@ -30,20 +30,23 @@ const formSchema = z.object({
   gallons_purchased: z.coerce.number().positive('Los galones deben ser positivos'),
   price_per_gallon: z.coerce.number().positive('El precio por galón debe ser positivo'),
   total_amount: z.coerce.number().positive('El monto total debe ser positivo'),
+  vehicle_id: z.string().optional(),
+  
+  // Información de la estación
   station_name: z.string().optional(),
   station_address: z.string().optional(),
   station_state: z.string().optional(),
-  fuel_card_number: z.string().optional(),
-  driver_card_id: z.string().optional(),
-  vehicle_id: z.string().optional(),
-  odometer_reading: z.coerce.number().positive().optional(),
   
-  // Campos adicionales que se extraen de PDF
+  // Información de pago/tarjeta
+  driver_card_id: z.string().optional(),
+  fuel_card_number: z.string().optional(),
+  card_last_four: z.string().max(4).optional(),
+  invoice_number: z.string().optional(),
+  
+  // Desglose de costos (opcional)
   gross_amount: z.coerce.number().optional(),
   discount_amount: z.coerce.number().optional(),
   fees: z.coerce.number().optional(),
-  card_last_four: z.string().max(4).optional(),
-  invoice_number: z.string().optional(),
   
   receipt_url: z.string().optional(),
   notes: z.string().optional(),
@@ -83,20 +86,23 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       gallons_purchased: data.gallons_purchased,
       price_per_gallon: data.price_per_gallon,
       total_amount: data.total_amount,
+      vehicle_id: data.vehicle_id,
+      
+      // Información de la estación
       station_name: data.station_name,
       station_address: data.station_address,
       station_state: data.station_state,
-      fuel_card_number: data.fuel_card_number,
-      odometer_reading: data.odometer_reading,
       
-      // Campos adicionales de PDF
-      gross_amount: data.gross_amount,
-      discount_amount: data.discount_amount,
-      fees: data.fees,
+      // Información de pago/tarjeta
+      fuel_card_number: data.fuel_card_number,
       card_last_four: data.card_last_four,
       invoice_number: data.invoice_number,
       
-      vehicle_id: data.vehicle_id,
+      // Desglose de costos
+      gross_amount: data.gross_amount,
+      discount_amount: data.discount_amount,
+      fees: data.fees,
+      
       receipt_url: data.receipt_url,
       notes: data.notes,
     }, {
@@ -147,73 +153,102 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Fecha de transacción primero - es el campo más importante */}
-            <FormField
-              control={form.control}
-              name="transaction_date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Fecha de Transacción *</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Seleccionar fecha</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
-                        className="p-3 pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* SECCIÓN 1: Información Básica */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-foreground border-b pb-2">Información Básica</h4>
+              
               <FormField
                 control={form.control}
-                name="driver_user_id"
+                name="transaction_date"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Conductor</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar conductor" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {drivers.map((driver) => (
-                          <SelectItem key={driver.id} value={driver.id}>
-                            {driver.first_name} {driver.last_name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Fecha de Transacción *</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Seleccionar fecha</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                          className="p-3 pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="driver_user_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Conductor *</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Seleccionar conductor" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {drivers.map((driver) => (
+                            <SelectItem key={driver.id} value={driver.id}>
+                              {driver.first_name} {driver.last_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="vehicle_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Vehículo (Camión)</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Seleccionar camión" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {equipment.filter(eq => eq.equipment_type === 'truck').map((eq) => (
+                            <SelectItem key={eq.id} value={eq.id}>
+                              🚛 #{eq.equipment_number} - {eq.make} {eq.model}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}
@@ -241,120 +276,165 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="fuel_type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tipo de Combustible</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar tipo" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="diesel">Diesel</SelectItem>
-                      <SelectItem value="gasoline">Gasolina</SelectItem>
-                      <SelectItem value="def">DEF</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-3 gap-4">
+            {/* SECCIÓN 2: Detalles del Combustible */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-foreground border-b pb-2">Detalles del Combustible</h4>
+              
               <FormField
                 control={form.control}
-                name="gallons_purchased"
+                name="fuel_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Galones</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.001"
-                        placeholder="0.000"
-                        {...field}
-                      />
-                    </FormControl>
+                    <FormLabel>Tipo de Combustible *</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar tipo" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="diesel">Diesel</SelectItem>
+                        <SelectItem value="gasoline">Gasolina</SelectItem>
+                        <SelectItem value="def">DEF</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="price_per_gallon"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Precio/Galón</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.001"
-                        placeholder="0.000"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
+                  name="gallons_purchased"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Galones *</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.001"
+                          placeholder="0.000"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="total_amount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Total</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        {...field}
-                        readOnly
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="price_per_gallon"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Precio/Galón *</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.001"
+                          placeholder="0.000"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="total_amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Total *</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          {...field}
+                          readOnly
+                          className="bg-muted"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* SECCIÓN 3: Información de la Estación */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-foreground border-b pb-2">Información de la Estación</h4>
+              
               <FormField
                 control={form.control}
                 name="station_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Estación</FormLabel>
+                    <FormLabel>Nombre de la Estación</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nombre de la estación" {...field} />
+                      <Input placeholder="Shell, Pilot, Loves..." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="station_address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Dirección</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Dirección completa" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="station_state"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Estado</FormLabel>
+                      <FormControl>
+                        <Input placeholder="TX, CA, FL..." maxLength={2} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* SECCIÓN 4: Información de Pago y Tarjeta */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-foreground border-b pb-2">Información de Pago</h4>
+              
               <FormField
                 control={form.control}
-                name="vehicle_id"
+                name="driver_card_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Vehículo</FormLabel>
+                    <FormLabel>Tarjeta de Combustible</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar vehículo" />
+                          <SelectValue placeholder="Seleccionar tarjeta" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {equipment.map((eq) => (
-                          <SelectItem key={eq.id} value={eq.id}>
-                            {eq.equipment_number} - {eq.make} {eq.model}
+                        {driverCards.map((card) => (
+                          <SelectItem key={card.id} value={card.id}>
+                            {card.card_provider.toUpperCase()} ****{card.card_number_last_four}
+                            {card.card_identifier ? ` (${card.card_identifier})` : ''}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -363,93 +443,46 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                   </FormItem>
                 )}
               />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="invoice_number"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Número de Factura</FormLabel>
+                      <FormControl>
+                        <Input placeholder="INV-123456" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="card_last_four"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Últimos 4 dígitos</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="1234" 
+                          maxLength={4}
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="station_state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Estado de la Estación</FormLabel>
-                    <FormControl>
-                      <Input placeholder="TX, CA, FL..." maxLength={2} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="odometer_reading"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Lectura del Odómetro</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="123456"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="station_address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Dirección de la Estación</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Dirección completa" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="invoice_number"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Número de Factura</FormLabel>
-                    <FormControl>
-                      <Input placeholder="INV-123456" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="card_last_four"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Últimos 4 dígitos de tarjeta</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="1234" 
-                        maxLength={4}
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Desglose de Costos */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-muted-foreground">Desglose de Costos (Opcional)</h4>
+            {/* SECCIÓN 5: Desglose de Costos (Opcional) */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-muted-foreground border-b pb-2">Desglose de Costos (Opcional)</h4>
+              
               <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
@@ -509,32 +542,6 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                 />
               </div>
             </div>
-
-            <FormField
-              control={form.control}
-              name="driver_card_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tarjeta de Combustible</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar tarjeta" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {driverCards.map((card) => (
-                        <SelectItem key={card.id} value={card.id}>
-                          {card.card_provider.toUpperCase()} ****{card.card_number_last_four}
-                          {card.card_identifier ? ` (${card.card_identifier})` : ''}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}

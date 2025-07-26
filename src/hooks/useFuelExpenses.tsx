@@ -26,7 +26,6 @@ export interface CreateFuelExpenseData {
   station_state?: string;
   fuel_card_number?: string;
   vehicle_id?: string;
-  odometer_reading?: number;
   receipt_url?: string;
   notes?: string;
   
