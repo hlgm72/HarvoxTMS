@@ -48,6 +48,8 @@ export function EquipmentAssignmentDialog({
     createAssignment, 
     isCreatingAssignment, 
     createAssignmentSuccess,
+    unassignEquipment,
+    isUnassigning,
     getAssignmentByEquipment,
     getAssignmentsByDriver 
   } = useEquipmentAssignments();
@@ -204,9 +206,20 @@ export function EquipmentAssignmentDialog({
                               {assignment.company_equipment?.make} {assignment.company_equipment?.model}
                             </span>
                           </div>
-                          <Badge variant="outline" className="text-xs border-blue-200">
-                            {assignment.assignment_type === 'permanent' ? 'Permanente' : 'Temporal'}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="text-xs border-blue-200">
+                              {assignment.assignment_type === 'permanent' ? 'Permanente' : 'Temporal'}
+                            </Badge>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => unassignEquipment(assignment.id)}
+                              disabled={isUnassigning}
+                              className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -232,9 +245,20 @@ export function EquipmentAssignmentDialog({
                               {assignment.company_equipment?.make} {assignment.company_equipment?.model}
                             </span>
                           </div>
-                          <Badge variant="outline" className="text-xs border-green-200">
-                            {assignment.assignment_type === 'permanent' ? 'Permanente' : 'Temporal'}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="text-xs border-green-200">
+                              {assignment.assignment_type === 'permanent' ? 'Permanente' : 'Temporal'}
+                            </Badge>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => unassignEquipment(assignment.id)}
+                              disabled={isUnassigning}
+                              className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>
