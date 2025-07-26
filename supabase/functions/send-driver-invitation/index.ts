@@ -160,7 +160,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log('📧 Attempting to send email with Resend...');
     console.log('Email configuration:', {
       to: email,
-      from: "FleetNest <onboarding@resend.dev>",
+      from: "FleetNest <no-reply@fleetnest.app>",
       subject: `Invitación para unirte como conductor en ${companyName}`,
       invitationUrl: invitationUrl,
       resendKeyConfigured: !!resendApiKey,
@@ -170,7 +170,7 @@ const handler = async (req: Request): Promise<Response> => {
     let emailResponse;
     try {
       emailResponse = await resend.emails.send({
-        from: "FleetNest <onboarding@resend.dev>",
+        from: "FleetNest <no-reply@fleetnest.app>",
         to: [email],
         subject: `Invitación para unirte como conductor en ${companyName}`,
         html: `
