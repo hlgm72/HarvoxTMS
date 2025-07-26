@@ -76,8 +76,8 @@ export function EquipmentAssignmentDialog({
       notes: notes.trim() || 'Camión asignado',
     });
 
-    // Asignar trailer si se seleccionó
-    if (selectedTrailerId) {
+    // Asignar trailer si se seleccionó (y no es "none")
+    if (selectedTrailerId && selectedTrailerId !== 'none') {
       createAssignment({
         equipment_id: selectedTrailerId,
         driver_user_id: selectedDriverId,
@@ -271,7 +271,7 @@ export function EquipmentAssignmentDialog({
                 <SelectValue placeholder="Seleccionar trailer (opcional)..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">
+                <SelectItem value="none">
                   <div className="flex items-center gap-2">
                     <X className="h-4 w-4 text-muted-foreground" />
                     <span>Sin trailer (Power Only)</span>
