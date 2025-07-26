@@ -47,6 +47,7 @@ export const ProtectedRoute = ({
   // Check role requirement - check if user has the required role among ALL their roles
   const hasRequiredRole = requiredRole ? userRoles?.some(role => role.role === requiredRole) : true;
   if (requiredRole && !hasRequiredRole) {
+    console.log('🔒 Access denied - Required role:', requiredRole, 'User roles:', userRoles?.map(r => r.role));
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
@@ -63,11 +64,9 @@ export const ProtectedRoute = ({
                 <p className="text-sm text-muted-foreground mt-2">
                   {t('messages.required_role')} <span className="font-medium">{requiredRole}</span>
                 </p>
-                {userRole && (
-                  <p className="text-sm text-muted-foreground">
-                    {t('messages.current_role')} <span className="font-medium">{userRole.role}</span>
-                  </p>
-                )}
+                <p className="text-sm text-muted-foreground">
+                  {t('messages.current_role')} <span className="font-medium">{userRoles?.map(r => r.role).join(', ') || 'ninguno'}</span>
+                </p>
               </div>
             </div>
           </CardContent>
