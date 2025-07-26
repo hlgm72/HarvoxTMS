@@ -37,7 +37,7 @@ export function EquipmentAssignmentDialog({
 }: EquipmentAssignmentDialogProps) {
   const [selectedEquipmentId, setSelectedEquipmentId] = useState<string>('');
   const [selectedDriverId, setSelectedDriverId] = useState<string>(driverUserId || '');
-  const [assignmentType, setAssignmentType] = useState<'permanent' | 'temporary'>('temporary');
+  const [assignmentType, setAssignmentType] = useState<'permanent' | 'temporary'>('permanent');
   const [notes, setNotes] = useState('');
 
   const { equipment } = useEquipment();
@@ -73,7 +73,7 @@ export function EquipmentAssignmentDialog({
   const handleClose = () => {
     setSelectedEquipmentId('');
     setSelectedDriverId(driverUserId || '');
-    setAssignmentType('temporary');
+    setAssignmentType('permanent');
     setNotes('');
     onClose();
   };
@@ -96,36 +96,37 @@ export function EquipmentAssignmentDialog({
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Selección de Conductor */}
-          <div className="space-y-2">
-            <Label htmlFor="driver-select">Conductor</Label>
-            <Select
-              value={selectedDriverId}
-              onValueChange={setSelectedDriverId}
-              disabled={!!driverUserId} // Si viene pre-seleccionado, no se puede cambiar
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar conductor..." />
-              </SelectTrigger>
-              <SelectContent>
-                {activeDrivers.map((driver) => (
-                  <SelectItem key={driver.user_id} value={driver.user_id}>
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      <span>
-                        {driver.first_name} {driver.last_name}
-                      </span>
-                      {driver.license_number && (
-                        <Badge variant="outline" className="text-xs">
-                          {driver.cdl_class}-{driver.license_number}
-                        </Badge>
-                      )}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Solo mostrar selector de conductor si no viene predefinido */}
+          {!driverUserId && (
+            <div className="space-y-2">
+              <Label htmlFor="driver-select">Conductor</Label>
+              <Select
+                value={selectedDriverId}
+                onValueChange={setSelectedDriverId}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar conductor..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {activeDrivers.map((driver) => (
+                    <SelectItem key={driver.user_id} value={driver.user_id}>
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        <span>
+                          {driver.first_name} {driver.last_name}
+                        </span>
+                        {driver.license_number && (
+                          <Badge variant="outline" className="text-xs">
+                            {driver.cdl_class}-{driver.license_number}
+                          </Badge>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {/* Equipos Actuales del Conductor */}
           {selectedDriver && driverAssignments.length > 0 && (
@@ -162,7 +163,7 @@ export function EquipmentAssignmentDialog({
             </Card>
           )}
 
-          <Separator />
+          {(!driverUserId || (driverUserId && driverAssignments.length > 0)) && <Separator />}
 
           {/* Selección de Equipo */}
           <div className="space-y-2">
@@ -209,19 +210,19 @@ export function EquipmentAssignmentDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="temporary">
-                  <div>
-                    <div className="font-medium">Temporal</div>
-                    <div className="text-xs text-muted-foreground">
-                      Asignación por tiempo limitado
-                    </div>
-                  </div>
-                </SelectItem>
                 <SelectItem value="permanent">
-                  <div>
+                  <div className="flex flex-col items-start">
                     <div className="font-medium">Permanente</div>
                     <div className="text-xs text-muted-foreground">
                       Asignación fija al conductor
+                    </div>
+                  </div>
+                </SelectItem>
+                <SelectItem value="temporary">
+                  <div className="flex flex-col items-start">
+                    <div className="font-medium">Temporal</div>
+                    <div className="text-xs text-muted-foreground">
+                      Asignación por tiempo limitado
                     </div>
                   </div>
                 </SelectItem>
