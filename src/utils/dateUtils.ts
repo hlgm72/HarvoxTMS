@@ -96,7 +96,35 @@ export const formatDateTime = (
 export const formatDateOnly = (
   dateInput: string | Date | null | undefined
 ): string => {
-  return formatDateSafe(dateInput, 'dd/MM/yyyy');
+  if (!dateInput) return 'No definida';
+  
+  try {
+    let dateToFormat: Date;
+    
+    if (typeof dateInput === 'string') {
+      // Si es una fecha ISO o con hora, usar parseISO y ajustar zona horaria
+      if (dateInput.includes('T') || dateInput.includes('Z')) {
+        dateToFormat = parseISO(dateInput);
+      } else {
+        // Si es solo fecha (YYYY-MM-DD), crear Date en la zona horaria del usuario
+        const [year, month, day] = dateInput.split('-').map(Number);
+        dateToFormat = new Date(year, month - 1, day, 12, 0, 0); // Usar mediodía para evitar problemas de zona horaria
+      }
+    } else {
+      dateToFormat = dateInput;
+    }
+    
+    if (!isValid(dateToFormat)) {
+      return 'Fecha inválida';
+    }
+    
+    // Usar zona horaria del usuario para el formateo
+    const userTimeZone = getUserTimeZone();
+    return formatInTimeZone(dateToFormat, userTimeZone, 'dd/MM/yyyy', { locale: es });
+  } catch (error) {
+    console.error('Error formatting date:', error, 'Input:', dateInput);
+    return 'Error en fecha';
+  }
 };
 
 /**
