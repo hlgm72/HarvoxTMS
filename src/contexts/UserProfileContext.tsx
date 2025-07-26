@@ -107,6 +107,12 @@ export const UserProfileProvider: React.FC<UserProfileProviderProps> = ({ childr
 
   // Listen for profile refresh events (e.g., after invitation acceptance)
   useEffect(() => {
+    const handleCustomRefresh = (e: CustomEvent) => {
+      console.log('🔄 Profile refresh requested via custom event');
+      refreshProfile();
+      localStorage.removeItem('profile_refresh_needed');
+    };
+
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'profile_refresh_needed' && e.newValue === 'true') {
         console.log('🔄 Profile refresh requested via storage event');
@@ -115,6 +121,8 @@ export const UserProfileProvider: React.FC<UserProfileProviderProps> = ({ childr
       }
     };
 
+    // Listen for custom events (same tab) and storage events (other tabs)
+    window.addEventListener('profileRefreshNeeded', handleCustomRefresh as EventListener);
     window.addEventListener('storage', handleStorageChange);
     
     // Also check on mount in case flag was set
@@ -126,7 +134,10 @@ export const UserProfileProvider: React.FC<UserProfileProviderProps> = ({ childr
       }, 500); // Small delay to ensure user is loaded
     }
 
-    return () => window.removeEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('profileRefreshNeeded', handleCustomRefresh as EventListener);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [user?.id]);
 
   const value: UserProfileContextType = {

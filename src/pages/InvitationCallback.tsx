@@ -104,9 +104,13 @@ export default function InvitationCallback() {
           console.warn('⚠️ Roles not loaded after multiple attempts, forcing navigation');
         }
 
-        // Set flag to refresh profile data after successful invitation acceptance
+        // Set flag and dispatch custom event to refresh profile data
         localStorage.setItem('profile_refresh_needed', 'true');
         console.log('🔄 Setting profile refresh flag for new user');
+        
+        // Dispatch custom event for immediate refresh in same tab
+        window.dispatchEvent(new CustomEvent('profileRefreshNeeded'));
+        console.log('🔄 Dispatched profileRefreshNeeded event');
 
         // Redirect to appropriate dashboard based on role with invitation flag
         const role = result.user.role;
