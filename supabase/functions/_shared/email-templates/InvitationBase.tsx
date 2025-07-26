@@ -47,8 +47,7 @@ export const InvitationBase = ({
             </Text>
             
             <Text style={mainText}>
-              Has sido invitado(a) a formar parte de <strong>{companyName}</strong> 
-              en FleetNest como <strong>{role}</strong>.
+              Has sido invitado(a) a formar parte de <strong>{companyName}</strong> en FleetNest como <strong>{role}</strong>.
             </Text>
             
             {children}
