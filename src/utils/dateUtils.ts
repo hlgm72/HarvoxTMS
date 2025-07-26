@@ -47,14 +47,32 @@ export const formatDateSafe = (
     let dateToFormat: Date;
     
     if (typeof dateInput === 'string') {
-      // Si es una fecha ISO o con hora, usar parseISO
+      // Extraer año, mes, día directamente para evitar problemas de zona horaria
+      let year: number, month: number, day: number;
+      
       if (dateInput.includes('T') || dateInput.includes('Z')) {
-        dateToFormat = parseISO(dateInput);
+        // Formato ISO: 2025-07-14T00:00:00.000Z - extraer solo la parte de fecha
+        const datePart = dateInput.split('T')[0];
+        [year, month, day] = datePart.split('-').map(Number);
+      } else if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        // Formato solo fecha: 2025-07-14
+        [year, month, day] = dateInput.split('-').map(Number);
       } else {
-        // Si es solo fecha (YYYY-MM-DD), crear Date evitando zona horaria
-        const [year, month, day] = dateInput.split('-').map(Number);
-        dateToFormat = new Date(year, month - 1, day);
+        // Si no es un formato reconocido, usar parseISO como fallback
+        dateToFormat = parseISO(dateInput);
+        if (!isValid(dateToFormat)) {
+          return 'Fecha inválida';
+        }
+        return format(dateToFormat, formatPattern, options);
       }
+      
+      // Validar que los valores sean números válidos
+      if (isNaN(year) || isNaN(month) || isNaN(day)) {
+        return 'Fecha inválida';
+      }
+      
+      // Crear fecha local evitando zona horaria UTC (usar mediodía para seguridad)
+      dateToFormat = new Date(year, month - 1, day, 12, 0, 0);
     } else {
       dateToFormat = dateInput;
     }
@@ -96,35 +114,7 @@ export const formatDateTime = (
 export const formatDateOnly = (
   dateInput: string | Date | null | undefined
 ): string => {
-  if (!dateInput) return 'No definida';
-  
-  try {
-    let dateToFormat: Date;
-    
-    if (typeof dateInput === 'string') {
-      // Si es una fecha ISO o con hora, usar parseISO y ajustar zona horaria
-      if (dateInput.includes('T') || dateInput.includes('Z')) {
-        dateToFormat = parseISO(dateInput);
-      } else {
-        // Si es solo fecha (YYYY-MM-DD), crear Date en la zona horaria del usuario
-        const [year, month, day] = dateInput.split('-').map(Number);
-        dateToFormat = new Date(year, month - 1, day, 12, 0, 0); // Usar mediodía para evitar problemas de zona horaria
-      }
-    } else {
-      dateToFormat = dateInput;
-    }
-    
-    if (!isValid(dateToFormat)) {
-      return 'Fecha inválida';
-    }
-    
-    // Usar zona horaria del usuario para el formateo
-    const userTimeZone = getUserTimeZone();
-    return formatInTimeZone(dateToFormat, userTimeZone, 'dd/MM/yyyy', { locale: es });
-  } catch (error) {
-    console.error('Error formatting date:', error, 'Input:', dateInput);
-    return 'Error en fecha';
-  }
+  return formatDateSafe(dateInput, 'dd/MM/yyyy');
 };
 
 /**

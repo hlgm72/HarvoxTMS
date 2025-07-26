@@ -8,8 +8,6 @@ import { Fuel, MoreHorizontal, Edit, Trash2, Eye, MapPin, Receipt, User, Calenda
 import { useFuelExpenses, useDeleteFuelExpense } from '@/hooks/useFuelExpenses';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { formatDateTime, formatDateOnly } from '@/lib/dateFormatting';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface FuelExpensesListProps {
@@ -161,44 +159,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">
-                          {(() => {
-                            try {
-                              const dateStr = expense.transaction_date;
-                              if (!dateStr) {
-                                return 'Fecha no disponible';
-                              }
-                              
-                              // Convertir a string si no lo es
-                              const dateString = String(dateStr);
-                              
-                              // Extraer año, mes, día directamente de la string para evitar problemas de zona horaria
-                              let year: number, month: number, day: number;
-                              
-                              if (dateString.includes('T') || dateString.includes('Z')) {
-                                // Formato ISO: 2025-07-14T00:00:00.000Z - extraer solo la parte de fecha
-                                const datePart = dateString.split('T')[0];
-                                [year, month, day] = datePart.split('-').map(Number);
-                              } else if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                                // Formato solo fecha: 2025-07-14
-                                [year, month, day] = dateString.split('-').map(Number);
-                              } else {
-                                return `Formato no soportado: ${dateString}`;
-                              }
-                              
-                              // Crear fecha local evitando zona horaria UTC
-                              const localDate = new Date(year, month - 1, day, 12, 0, 0); // Usar mediodía
-                              
-                              // Verificar que la fecha sea válida
-                              if (isNaN(localDate.getTime())) {
-                                return `Fecha inválida: ${dateString}`;
-                              }
-                              
-                              return format(localDate, 'dd/MM/yyyy', { locale: es });
-                            } catch (error) {
-                              console.error('Error formateando fecha:', error, expense.transaction_date);
-                              return `Error: ${expense.transaction_date}`;
-                            }
-                          })()}
+                          {formatDateOnly(expense.transaction_date)}
                         </span>
                       </div>
                     </TableCell>
