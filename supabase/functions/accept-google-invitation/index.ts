@@ -27,12 +27,25 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { invitationToken, userEmail, userId, userTimezone }: AcceptGoogleInvitationRequest = await req.json();
 
-    console.log("Processing Google invitation acceptance:", { invitationToken, userEmail, userId, userTimezone });
+    console.log("Processing Google invitation acceptance:", { 
+      invitationToken, 
+      userEmail, 
+      userId, 
+      userTimezone: userTimezone || 'not provided' 
+    });
 
     // Validate input
     if (!invitationToken || !userEmail || !userId) {
       throw new Error("Missing required fields: invitationToken, userEmail, userId");
     }
+
+    // Log the timezone being processed
+    const finalTimezone = userTimezone || 'America/Chicago';
+    console.log('Timezone processing:', {
+      received: userTimezone,
+      final: finalTimezone,
+      wasProvided: !!userTimezone
+    });
 
     // Validate invitation token
     const { data: invitationData, error: tokenError } = await supabase.rpc(
@@ -112,19 +125,33 @@ const handler = async (req: Request): Promise<Response> => {
       console.error("Error checking existing profile:", profileCheckError);
     }
 
+    // Clean names data (trim whitespace)
+    const cleanFirstName = invitation.first_name?.trim() || 'Unknown';
+    const cleanLastName = invitation.last_name?.trim() || 'User';
+    
+    console.log("Processing names:", {
+      original_first: invitation.first_name,
+      original_last: invitation.last_name,
+      cleaned_first: cleanFirstName,
+      cleaned_last: cleanLastName
+    });
+
     // Create or update user profile with invitation data
     if (!existingProfile) {
       console.log("Creating new profile for user:", userId);
-      console.log("Invitation data:", { first_name: invitation.first_name, last_name: invitation.last_name });
-      console.log("User timezone:", userTimezone);
+      console.log("Profile data to insert:", { 
+        first_name: cleanFirstName, 
+        last_name: cleanLastName,
+        timezone: finalTimezone
+      });
       
       const { error: profileError } = await supabase
         .from("profiles")
         .insert({
           user_id: userId,
-          first_name: invitation.first_name || 'Unknown',
-          last_name: invitation.last_name || 'User',
-          timezone: userTimezone || 'America/Chicago'
+          first_name: cleanFirstName,
+          last_name: cleanLastName,
+          timezone: finalTimezone
         });
 
       if (profileError) {
@@ -133,24 +160,53 @@ const handler = async (req: Request): Promise<Response> => {
       } else {
         console.log("Profile created successfully for user:", userId);
       }
-    } else if (!existingProfile.first_name || !existingProfile.last_name) {
-      console.log("Updating existing profile with missing data");
-      console.log("Existing profile:", existingProfile);
-      console.log("Invitation data:", { first_name: invitation.first_name, last_name: invitation.last_name });
+    } else {
+      // Always update profile with timezone and clean names if missing
+      console.log("Profile exists, checking for updates needed");
+      console.log("Existing profile before update:", existingProfile);
       
-      const { error: updateProfileError } = await supabase
-        .from("profiles")
-        .update({
-          first_name: existingProfile.first_name || invitation.first_name || 'Unknown',
-          last_name: existingProfile.last_name || invitation.last_name || 'User',
-          timezone: existingProfile.timezone || userTimezone || 'America/Chicago'
-        })
-        .eq("user_id", userId);
+      const updateData: any = {};
+      
+      // Update first name if missing or different
+      if (!existingProfile.first_name || existingProfile.first_name.trim() !== cleanFirstName) {
+        updateData.first_name = cleanFirstName;
+      }
+      
+      // Update last name if missing or different
+      if (!existingProfile.last_name || existingProfile.last_name.trim() !== cleanLastName) {
+        updateData.last_name = cleanLastName;
+      }
+      
+      // Always force timezone update to ensure it's correct
+      updateData.timezone = finalTimezone;
+      updateData.updated_at = new Date().toISOString();
+      
+      console.log("Profile update data:", updateData);
+      
+      if (Object.keys(updateData).length > 2) { // More than just timezone and updated_at
+        const { error: updateProfileError } = await supabase
+          .from("profiles")
+          .update(updateData)
+          .eq("user_id", userId);
 
-      if (updateProfileError) {
-        console.error("Error updating profile:", updateProfileError);
+        if (updateProfileError) {
+          console.error("Error updating profile:", updateProfileError);
+        } else {
+          console.log("Profile updated successfully with data:", updateData);
+        }
       } else {
-        console.log("Profile updated successfully");
+        console.log("No profile updates needed besides timezone");
+        // Just update timezone
+        const { error: timezoneUpdateError } = await supabase
+          .from("profiles")
+          .update({ timezone: finalTimezone, updated_at: new Date().toISOString() })
+          .eq("user_id", userId);
+          
+        if (timezoneUpdateError) {
+          console.error("Error updating timezone:", timezoneUpdateError);
+        } else {
+          console.log("Timezone updated successfully to:", finalTimezone);
+        }
       }
     }
 
