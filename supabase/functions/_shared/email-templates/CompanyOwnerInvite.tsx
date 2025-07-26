@@ -21,7 +21,7 @@ export const CompanyOwnerInvite = ({
     companyName={companyName}
     role="Propietario de Empresa"
     invitationUrl={invitationUrl}
-    buttonText="Aceptar Invitación y Configurar Cuenta"
+    buttonText="Crear mi cuenta"
   >
     <Section style={ownerBenefitsSection}>
       <Text style={benefitsTitle}>

@@ -17,7 +17,7 @@ export const EmailButton = ({ href, text, variant = 'primary' }: EmailButtonProp
 );
 
 const primaryButtonStyle = {
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  background: '#3b82f6',
   borderRadius: '8px',
   color: '#ffffff',
   fontSize: '16px',
