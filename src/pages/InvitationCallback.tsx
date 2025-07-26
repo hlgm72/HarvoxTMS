@@ -104,6 +104,10 @@ export default function InvitationCallback() {
           console.warn('⚠️ Roles not loaded after multiple attempts, forcing navigation');
         }
 
+        // Set flag to refresh profile data after successful invitation acceptance
+        localStorage.setItem('profile_refresh_needed', 'true');
+        console.log('🔄 Setting profile refresh flag for new user');
+
         // Redirect to appropriate dashboard based on role with invitation flag
         const role = result.user.role;
         if (role === 'superadmin') {
