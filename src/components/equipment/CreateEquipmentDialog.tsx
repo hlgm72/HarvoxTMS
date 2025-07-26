@@ -139,7 +139,7 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle>
             {t("equipment.create.title", "Agregar Nuevo Equipo")}
@@ -173,7 +173,7 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                       <FormItem>
                         <FormLabel>{t("equipment.equipmentNumber", "Número de Equipo")} *</FormLabel>
                         <FormControl>
-                          <Input placeholder="T-001" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -215,7 +215,7 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                           options={availableBrands}
                           value={field.value || ""}
                           onValueChange={field.onChange}
-                          placeholder={t("equipment.selectMake", "Selecciona una marca...")}
+                          placeholder=""
                           emptyText={t("equipment.noMakesFound", "No se encontraron marcas.")}
                           allowCustom={true}
                           customText={t("equipment.addCustomMake", "Agregar marca personalizada")}
@@ -232,7 +232,7 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                       <FormItem>
                         <FormLabel>{t("equipment.model", "Modelo")}</FormLabel>
                         <FormControl>
-                          <Input placeholder="VNL 780" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -248,7 +248,7 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                          <FormControl>
                            <Input 
                              type="number" 
-                             placeholder="2020" 
+                             placeholder="" 
                              min="1990"
                              max={new Date().getFullYear() + 1}
                              value={field.value || ""}
@@ -275,8 +275,7 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                         <FormLabel>{t("equipment.vin", "Número VIN")}</FormLabel>
                         <FormControl>
                           <Input 
-                            placeholder="1HGBH41JXMN109186" 
-                            {...field}
+                             {...field}
                             onChange={(e) => {
                               // Remove all spaces from VIN input
                               const value = e.target.value.replace(/\s/g, '');
@@ -302,7 +301,7 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                       <FormItem>
                         <FormLabel>{t("equipment.licensePlate", "Placa")}</FormLabel>
                         <FormControl>
-                          <Input placeholder="ABC-123" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -368,7 +367,7 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                         <FormControl>
                            <Input 
                              type="number" 
-                             placeholder="150000" 
+                             placeholder="" 
                              value={field.value || ""}
                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                            />
@@ -386,10 +385,7 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                     <FormItem>
                       <FormLabel>{t("equipment.notes", "Notas")}</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          placeholder={t("equipment.notesPlaceholder", "Información adicional sobre el equipo...")}
-                          {...field} 
-                        />
+                         <Textarea {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -483,7 +479,7 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                            <Input 
                              type="number" 
                              step="0.01"
-                             placeholder="150000.00" 
+                             placeholder="" 
                              value={field.value || ""}
                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                            />
