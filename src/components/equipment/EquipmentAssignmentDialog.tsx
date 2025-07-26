@@ -126,7 +126,7 @@ export function EquipmentAssignmentDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ArrowRightLeft className="h-5 w-5" />
-            Asignar Equipo a Conductor
+            Asignar Equipo a Conductor{selectedDriver ? `: ${selectedDriver.first_name} ${selectedDriver.last_name}` : ''}
           </DialogTitle>
           <DialogDescription>
             Selecciona un equipo disponible y asígnalo a un conductor de tu flota.
