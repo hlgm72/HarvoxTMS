@@ -10,6 +10,8 @@ interface EmailButtonProps {
 export const EmailButton = ({ href, text, variant = 'primary' }: EmailButtonProps) => (
   <Button
     href={href}
+    target="_self"
+    rel="noopener noreferrer"
     style={variant === 'primary' ? primaryButtonStyle : secondaryButtonStyle}
   >
     {text}
