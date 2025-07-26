@@ -53,7 +53,7 @@ export const DriverInvite = ({
           <strong>💰 Pagos Transparentes:</strong> Consulta tus ingresos y deducciones
         </Text>
         <Text style={benefitItem}>
-          <strong>⛽ Control de Combustible:</strong> Registra gastos y mantén registros
+          <strong>⛽ Control de Combustible:</strong> Manténte informado de tu consumo de combustible
         </Text>
         <Text style={benefitItem}>
           <strong>📄 Documentos:</strong> Accede a tus documentos y certificaciones
@@ -69,7 +69,7 @@ export const DriverInvite = ({
         🚀 Comienza rápidamente:
       </Text>
       <Text style={stepText}>
-        1. Activa tu cuenta con el botón de arriba<br/>
+        1. Activa tu cuenta con el botón de abajo<br/>
         2. Completa tu perfil de conductor<br/>
         3. Revisa tus documentos y certificaciones<br/>
         4. Descarga la app móvil<br/>
