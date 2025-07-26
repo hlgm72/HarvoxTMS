@@ -52,20 +52,7 @@ export function useEquipmentAssignments() {
 
       const { data, error } = await supabase
         .from('equipment_assignments')
-        .select(`
-          *,
-          company_equipment(
-            id,
-            equipment_number,
-            equipment_type,
-            make,
-            model,
-            year,
-            license_plate,
-            status,
-            company_id
-          )
-        `)
+        .select('*')
         .eq('is_active', true)
         .order('assigned_date', { ascending: false });
 
