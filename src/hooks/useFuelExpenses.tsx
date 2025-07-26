@@ -49,10 +49,13 @@ export function useFuelExpenses(filters: FuelExpenseFilters = {}) {
         .from('fuel_expenses')
         .select(`
           *,
-          geotab_vehicles:vehicle_id (
+          company_equipment:vehicle_id (
             id,
-            name,
-            license_plate
+            equipment_number,
+            license_plate,
+            make,
+            model,
+            year
           )
         `)
         .order('transaction_date', { ascending: false });
@@ -213,10 +216,13 @@ export function useFuelExpense(id: string) {
         .from('fuel_expenses')
         .select(`
           *,
-          geotab_vehicles:vehicle_id (
+          company_equipment:vehicle_id (
             id,
-            name,
-            license_plate
+            equipment_number,
+            license_plate,
+            make,
+            model,
+            year
           )
         `)
         .eq('id', id)

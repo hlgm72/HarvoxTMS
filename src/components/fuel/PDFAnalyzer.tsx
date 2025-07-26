@@ -297,6 +297,7 @@ export function PDFAnalyzer() {
   };
 
   const importTransactions = async () => {
+    console.log('🚀 Starting import process...');
     setIsImporting(true);
     try {
       const validTransactions = enrichedTransactions.filter(
@@ -304,6 +305,8 @@ export function PDFAnalyzer() {
              t.period_mapping_status === 'found' && 
              t.import_status === 'not_imported'
       );
+      
+      console.log(`✅ Found ${validTransactions.length} valid transactions to import`);
 
       if (validTransactions.length === 0) {
         showError(
@@ -332,6 +335,9 @@ export function PDFAnalyzer() {
         status: 'pending',
         created_by: user?.id
       }));
+
+      console.log('📋 Mapped fuel expenses:', fuelExpenses);
+      console.log('🎯 About to insert into fuel_expenses table...');
 
       const { data, error } = await supabase
         .from('fuel_expenses')

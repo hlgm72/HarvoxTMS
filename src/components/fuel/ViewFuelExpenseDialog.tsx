@@ -82,15 +82,18 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
                   </div>
                 </div>
 
-                {expense.geotab_vehicles && (
+                {expense.company_equipment && (
                   <div className="flex items-center gap-2">
                     <Car className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <div className="text-sm text-muted-foreground">Vehículo</div>
                       <div className="font-medium">
-                        {expense.geotab_vehicles.name}
-                        {expense.geotab_vehicles.license_plate && 
-                          ` - ${expense.geotab_vehicles.license_plate}`
+                        {expense.company_equipment.equipment_number}
+                        {expense.company_equipment.make && ` - ${expense.company_equipment.make}`}
+                        {expense.company_equipment.model && ` ${expense.company_equipment.model}`}
+                        {expense.company_equipment.year && ` (${expense.company_equipment.year})`}
+                        {expense.company_equipment.license_plate && 
+                          ` - Placa: ${expense.company_equipment.license_plate}`
                         }
                       </div>
                     </div>

@@ -1050,7 +1050,14 @@ export type Database = {
             foreignKeyName: "fuel_expenses_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
-            referencedRelation: "geotab_vehicles"
+            referencedRelation: "company_equipment"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fuel_expenses_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "equipment_status_summary"
             referencedColumns: ["id"]
           },
         ]
