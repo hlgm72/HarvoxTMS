@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Mail, Building2, UserPlus } from 'lucide-react';
+import { Loader2, Mail, Building2, UserPlus, User } from 'lucide-react';
 import { useFleetNotifications } from '@/components/notifications';
 import { supabase } from '@/integrations/supabase/client';
 import { handleTextBlur, handleEmailInput } from '@/lib/textUtils';
@@ -25,14 +25,16 @@ export function InviteCompanyOwnerDialog({
 }: InviteCompanyOwnerDialogProps) {
   const { showSuccess, showError } = useFleetNotifications();
   const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!company || !handleTextBlur(email)) {
-      setError('Email is required');
+    if (!company || !handleTextBlur(email) || !handleTextBlur(firstName) || !handleTextBlur(lastName)) {
+      setError('All fields are required');
       return;
     }
 
@@ -55,7 +57,9 @@ export function InviteCompanyOwnerDialog({
         body: {
           companyId: company.id,
           email: handleEmailInput(email),
-          companyName: company.name
+          companyName: company.name,
+          firstName: handleTextBlur(firstName),
+          lastName: handleTextBlur(lastName)
         },
         headers: {
           'Authorization': `Bearer ${session.session.access_token}`
@@ -79,6 +83,8 @@ export function InviteCompanyOwnerDialog({
 
       // Reset form and close dialog
       setEmail('');
+      setFirstName('');
+      setLastName('');
       onOpenChange(false);
 
     } catch (err: any) {
@@ -123,6 +129,42 @@ export function InviteCompanyOwnerDialog({
               </div>
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="firstName"
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="John"
+                    className="pl-10"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="lastName"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Doe"
+                    className="pl-10"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
               <div className="relative">
@@ -163,7 +205,7 @@ export function InviteCompanyOwnerDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading || !handleTextBlur(email)}>
+            <Button type="submit" disabled={loading || !handleTextBlur(email) || !handleTextBlur(firstName) || !handleTextBlur(lastName)}>
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -12,6 +12,8 @@ interface InvitationRequest {
   companyId: string;
   email: string;
   companyName: string;
+  firstName: string;
+  lastName: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -39,13 +41,13 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Parse request body
     const requestBody = await req.json();
-    const { companyId, email, companyName } = requestBody as InvitationRequest;
+    const { companyId, email, companyName, firstName, lastName } = requestBody as InvitationRequest;
 
-    console.log("Request data:", { companyId, email, companyName });
+    console.log("Request data:", { companyId, email, companyName, firstName, lastName });
 
     // Validate input
-    if (!companyId || !email || !companyName) {
-      throw new Error("Missing required fields: companyId, email, companyName");
+    if (!companyId || !email || !companyName || !firstName || !lastName) {
+      throw new Error("Missing required fields: companyId, email, companyName, firstName, lastName");
     }
 
     // Verify the user token (but use service role for database operations)
@@ -81,7 +83,9 @@ const handler = async (req: Request): Promise<Response> => {
         email: email.toLowerCase(),
         invitation_token: invitationToken,
         role: 'company_owner',
-        invited_by: user.id
+        invited_by: user.id,
+        first_name: firstName,
+        last_name: lastName
       })
       .select('id')
       .single();
@@ -111,6 +115,10 @@ const handler = async (req: Request): Promise<Response> => {
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <h1 style="color: #2563eb; margin-bottom: 24px;">Company Owner Invitation</h1>
+            
+            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">
+              Hello ${firstName},
+            </p>
             
             <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">
               You have been invited to become the Company Owner for <strong>${companyName}</strong> on FleetNest.
