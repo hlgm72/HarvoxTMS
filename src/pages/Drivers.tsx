@@ -248,7 +248,7 @@ export default function Drivers() {
                             variant="outline"
                             className="text-xs"
                           >
-                            {assignment.company_equipment?.equipment_number}
+                            {assignment.company_equipment?.equipment_type === 'truck' ? '🚛' : '🚚'} {assignment.company_equipment?.equipment_type} #{assignment.company_equipment?.equipment_number}
                           </Badge>
                         ))}
                       </div>
