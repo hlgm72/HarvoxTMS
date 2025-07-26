@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Upload, FileText, CheckCircle, XCircle, Loader2, User, Calendar, CreditCard, MapPin, Fuel } from 'lucide-react';
+import { Upload, FileText, CheckCircle, Info, Loader2, User, Calendar, CreditCard, MapPin, Fuel } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -370,7 +370,7 @@ export function PDFAnalyzer() {
                 {analysisResult.hasAuthorizationCode ? (
                   <CheckCircle className="h-5 w-5 text-green-500" />
                 ) : (
-                  <XCircle className="h-5 w-5 text-red-500" />
+                  <Info className="h-5 w-5 text-blue-500" />
                 )}
                 Resultado del Análisis
               </CardTitle>
