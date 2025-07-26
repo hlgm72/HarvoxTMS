@@ -149,7 +149,7 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
           </div>
 
           <div className="space-y-2">
-            <Label>Fecha de Contratación *</Label>
+            <Label>📅 Fecha de contratación *</Label>
             <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
               <PopoverTrigger asChild>
                 <Button
