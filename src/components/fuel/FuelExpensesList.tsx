@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Fuel, MoreHorizontal, Edit, Trash2, Eye, MapPin, Receipt, User, Calendar, DollarSign } from 'lucide-react';
 import { useFuelExpenses, useDeleteFuelExpense } from '@/hooks/useFuelExpenses';
+import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { formatDateTime, formatDateOnly } from '@/lib/dateFormatting';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
@@ -24,9 +25,25 @@ interface FuelExpensesListProps {
 
 export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListProps) {
   const { data: expenses = [], isLoading } = useFuelExpenses(filters);
+  const { drivers = [] } = useCompanyDrivers();
   const deleteMutation = useDeleteFuelExpense();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
+
+  // Función para obtener el nombre del conductor
+  const getDriverName = (driverUserId: string) => {
+    const driver = drivers.find(d => d.user_id === driverUserId);
+    if (driver && driver.first_name && driver.last_name) {
+      return `${driver.first_name} ${driver.last_name}`;
+    }
+    return 'Conductor no encontrado';
+  };
+
+  // Función para obtener la licencia del conductor
+  const getDriverLicense = (driverUserId: string) => {
+    const driver = drivers.find(d => d.user_id === driverUserId);
+    return driver?.license_number;
+  };
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -128,8 +145,13 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                         <User className="h-4 w-4 text-muted-foreground" />
                         <div>
                           <div className="font-medium">
-                            Conductor ID: {expense.driver_user_id}
+                            {getDriverName(expense.driver_user_id)}
                           </div>
+                          {getDriverLicense(expense.driver_user_id) && (
+                            <div className="text-xs text-muted-foreground">
+                              Licencia: {getDriverLicense(expense.driver_user_id)}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </TableCell>
