@@ -8,7 +8,6 @@ const corsHeaders = {
 };
 
 interface DeleteUserRequest {
-  userId: string;
   confirmEmail: string;
 }
 
@@ -23,38 +22,53 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { userId, confirmEmail }: DeleteUserRequest = await req.json();
+    const { confirmEmail }: DeleteUserRequest = await req.json();
 
-    console.log("Attempting to delete user:", { userId, confirmEmail });
+    console.log("Attempting to delete user with email:", confirmEmail);
 
     // Validate input
-    if (!userId || !confirmEmail) {
-      throw new Error("Missing required fields: userId, confirmEmail");
+    if (!confirmEmail) {
+      throw new Error("Missing required field: confirmEmail");
     }
 
-    // Verify the email matches the user we want to delete
+    // Verify the email matches the test user
     if (confirmEmail !== "hgig7274@gmail.com") {
       throw new Error("This function can only delete the test user hgig7274@gmail.com");
     }
 
-    // Verify the user exists
-    const { data: userData, error: userError } = await supabase.auth.admin.getUserById(userId);
+    // Find the user by email
+    const { data: userList, error: listError } = await supabase.auth.admin.listUsers();
     
-    if (userError) {
-      throw new Error(`Error finding user: ${userError.message}`);
+    if (listError) {
+      throw new Error(`Error listing users: ${listError.message}`);
     }
 
-    if (!userData.user || userData.user.email !== confirmEmail) {
-      throw new Error("User not found or email mismatch");
+    const targetUser = userList.users.find(user => user.email === confirmEmail);
+    
+    if (!targetUser) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: `User ${confirmEmail} not found - already deleted or never existed`,
+          alreadyDeleted: true
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
+          },
+        }
+      );
     }
 
-    console.log("User found, proceeding with deletion:", userData.user.email);
+    console.log("User found, proceeding with deletion:", targetUser.email, "ID:", targetUser.id);
 
     // Delete related records first (they should cascade but let's be explicit)
     const { error: rolesError } = await supabase
       .from("user_company_roles")
       .delete()
-      .eq("user_id", userId);
+      .eq("user_id", targetUser.id);
 
     if (rolesError) {
       console.error("Error deleting user roles:", rolesError);
@@ -63,14 +77,14 @@ const handler = async (req: Request): Promise<Response> => {
     const { error: profileError } = await supabase
       .from("profiles")
       .delete()
-      .eq("user_id", userId);
+      .eq("user_id", targetUser.id);
 
     if (profileError) {
       console.error("Error deleting profile:", profileError);
     }
 
     // Delete the user from auth
-    const { error: deleteError } = await supabase.auth.admin.deleteUser(userId);
+    const { error: deleteError } = await supabase.auth.admin.deleteUser(targetUser.id);
 
     if (deleteError) {
       throw new Error(`Error deleting user: ${deleteError.message}`);
@@ -82,7 +96,7 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({
         success: true,
         message: `User ${confirmEmail} deleted successfully`,
-        deletedUserId: userId
+        deletedUserId: targetUser.id
       }),
       {
         status: 200,

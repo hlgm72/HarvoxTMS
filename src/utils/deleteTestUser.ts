@@ -2,10 +2,9 @@ import { supabase } from '@/integrations/supabase/client';
 
 export const deleteTestUser = async () => {
   try {
-    // Llamar a la edge function para eliminar el usuario
+    // Llamar a la edge function para eliminar el usuario por email
     const { data, error } = await supabase.functions.invoke('delete-test-user', {
       body: {
-        userId: '6f870d79-306f-4d14-8863-aed23431a2cd',
         confirmEmail: 'hgig7274@gmail.com'
       }
     });
