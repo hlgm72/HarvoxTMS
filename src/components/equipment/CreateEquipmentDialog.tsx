@@ -211,9 +211,9 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t("equipment.make", "Marca")}</FormLabel>
-                        <ComboboxField
+                         <ComboboxField
                           options={availableBrands}
-                          value={field.value}
+                          value={field.value || ""}
                           onValueChange={field.onChange}
                           placeholder={t("equipment.selectMake", "Selecciona una marca...")}
                           emptyText={t("equipment.noMakesFound", "No se encontraron marcas.")}
