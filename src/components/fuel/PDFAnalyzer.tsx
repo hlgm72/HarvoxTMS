@@ -40,6 +40,7 @@ interface EnrichedTransaction {
   vehicle_id?: string;
   card_mapping_status: 'found' | 'not_found' | 'multiple';
   period_mapping_status: 'found' | 'not_found';
+  import_status: 'not_imported' | 'already_imported';
 }
 
 export function PDFAnalyzer() {
@@ -165,6 +166,12 @@ export function PDFAnalyzer() {
         .eq('company_id', companyId)
         .eq('status', 'open');
 
+      // Obtener gastos de combustible existentes para verificar duplicados
+      const { data: existingFuelExpenses } = await supabase
+        .from('fuel_expenses')
+        .select('transaction_date, invoice_number, card_last_four, total_amount, station_name')
+        .in('driver_user_id', driverIds);
+
       const enriched: EnrichedTransaction[] = transactions.map(transaction => {
         const enrichedTransaction: EnrichedTransaction = {
           date: transaction.date,
@@ -181,8 +188,29 @@ export function PDFAnalyzer() {
           fees: parseFloat(transaction.fees) || 0,
           total_amt: parseFloat(transaction.total_amt) || 0,
           card_mapping_status: 'not_found',
-          period_mapping_status: 'not_found'
+          period_mapping_status: 'not_found',
+          import_status: 'not_imported'
         };
+
+        // Verificar si la transacción ya existe en la base de datos
+        const transactionDateStr = new Date(transaction.date).toISOString().split('T')[0];
+        const existingTransaction = existingFuelExpenses?.find(existing => {
+          const existingDate = new Date(existing.transaction_date).toISOString().split('T')[0];
+          const sameDate = existingDate === transactionDateStr;
+          const sameInvoice = existing.invoice_number === transaction.invoice;
+          const sameCard = existing.card_last_four?.includes(transaction.card.slice(-4)) || 
+                          existing.card_last_four === transaction.card;
+          const sameAmount = Math.abs(parseFloat(existing.total_amount.toString()) - parseFloat(transaction.total_amt.toString())) < 0.01;
+          const sameStation = existing.station_name === transaction.location_name;
+          
+          // Considerar duplicado si coinciden al menos 3 de estos criterios
+          const matches = [sameDate, sameInvoice, sameCard, sameAmount, sameStation].filter(Boolean).length;
+          return matches >= 3;
+        });
+
+        if (existingTransaction) {
+          enrichedTransaction.import_status = 'already_imported';
+        }
 
         // Mapear conductor por tarjeta (flexible con 4 o 5 dígitos)
         const cardNumber = transaction.card;
@@ -218,11 +246,11 @@ export function PDFAnalyzer() {
         }
 
         // Mapear período de pago por fecha (simplificado - directo a company_payment_periods)
-        const transactionDate = new Date(transaction.date);
+        const periodTransactionDate = new Date(transaction.date);
         const matchingPeriod = companyPeriods?.find(period => {
           const startDate = new Date(period.period_start_date);
           const endDate = new Date(period.period_end_date);
-          return transactionDate >= startDate && transactionDate <= endDate;
+          return periodTransactionDate >= startDate && periodTransactionDate <= endDate;
         });
 
         if (matchingPeriod) {
@@ -254,7 +282,9 @@ export function PDFAnalyzer() {
     setIsImporting(true);
     try {
       const validTransactions = enrichedTransactions.filter(
-        t => t.card_mapping_status === 'found' && t.period_mapping_status === 'found'
+        t => t.card_mapping_status === 'found' && 
+             t.period_mapping_status === 'found' && 
+             t.import_status === 'not_imported'
       );
 
       if (validTransactions.length === 0) {
@@ -395,15 +425,24 @@ export function PDFAnalyzer() {
                 <div className="text-center p-3 border rounded-lg">
                   <div className="text-2xl font-bold text-green-600">
                     {enrichedTransactions.filter(t => 
-                      t.card_mapping_status === 'found' && t.period_mapping_status === 'found'
+                      t.card_mapping_status === 'found' && 
+                      t.period_mapping_status === 'found' && 
+                      t.import_status === 'not_imported'
                     ).length}
                   </div>
                   <div className="text-sm text-muted-foreground">Listas para importar</div>
                 </div>
                 <div className="text-center p-3 border rounded-lg">
+                  <div className="text-2xl font-bold text-orange-600">
+                    {enrichedTransactions.filter(t => t.import_status === 'already_imported').length}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Ya importadas</div>
+                </div>
+                <div className="text-center p-3 border rounded-lg">
                   <div className="text-2xl font-bold text-red-600">
                     {enrichedTransactions.filter(t => 
-                      t.card_mapping_status === 'not_found' || t.period_mapping_status === 'not_found'
+                      (t.card_mapping_status === 'not_found' || t.period_mapping_status === 'not_found') &&
+                      t.import_status === 'not_imported'
                     ).length}
                   </div>
                   <div className="text-sm text-muted-foreground">Requieren atención</div>
@@ -411,7 +450,9 @@ export function PDFAnalyzer() {
               </div>
 
               {enrichedTransactions.filter(t => 
-                t.card_mapping_status === 'found' && t.period_mapping_status === 'found'
+                t.card_mapping_status === 'found' && 
+                t.period_mapping_status === 'found' && 
+                t.import_status === 'not_imported'
               ).length > 0 && (
                 <div className="flex gap-2">
                   <Button 
@@ -447,9 +488,11 @@ export function PDFAnalyzer() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {enrichedTransactions.map((transaction, index) => (
                   <Card key={index} className={`
-                    ${transaction.card_mapping_status === 'found' && transaction.period_mapping_status === 'found' 
-                      ? 'border-green-200 bg-green-50/50' 
-                      : 'border-orange-200 bg-orange-50/50'}
+                    ${transaction.import_status === 'already_imported' 
+                      ? 'border-gray-200 bg-gray-50/50 opacity-75' 
+                      : transaction.card_mapping_status === 'found' && transaction.period_mapping_status === 'found' 
+                        ? 'border-green-200 bg-green-50/50' 
+                        : 'border-orange-200 bg-orange-50/50'}
                   `}>
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
@@ -458,12 +501,19 @@ export function PDFAnalyzer() {
                           Transacción #{index + 1}
                         </CardTitle>
                         <div className="flex gap-1">
-                          <Badge variant={transaction.card_mapping_status === 'found' ? 'default' : 'destructive'}>
-                            {transaction.card_mapping_status === 'found' ? 'Conductor OK' : 'Sin conductor'}
-                          </Badge>
-                          <Badge variant={transaction.period_mapping_status === 'found' ? 'default' : 'destructive'}>
-                            {transaction.period_mapping_status === 'found' ? 'Período OK' : 'Sin período'}
-                          </Badge>
+                          {transaction.import_status === 'already_imported' ? (
+                            <Badge variant="secondary">Ya Importada</Badge>
+                          ) : (
+                            <>
+                              <Badge variant={transaction.card_mapping_status === 'found' ? 'default' : 'destructive'}>
+                                {transaction.card_mapping_status === 'found' ? 'Conductor OK' : 
+                                 transaction.card_mapping_status === 'multiple' ? 'Múltiples' : 'Sin Conductor'}
+                              </Badge>
+                              <Badge variant={transaction.period_mapping_status === 'found' ? 'default' : 'destructive'}>
+                                {transaction.period_mapping_status === 'found' ? 'Período OK' : 'Sin Período'}
+                              </Badge>
+                            </>
+                          )}
                         </div>
                       </div>
                     </CardHeader>

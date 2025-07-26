@@ -174,15 +174,6 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
               </CardHeader>
               <CardContent className="space-y-4">
 
-                {expense.odometer_reading && (
-                  <div className="flex items-center gap-2">
-                    <Gauge className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <div className="text-sm text-muted-foreground">Lectura del Odómetro</div>
-                      <div className="font-medium">{expense.odometer_reading?.toLocaleString()} millas</div>
-                    </div>
-                  </div>
-                )}
 
                 {expense.receipt_url && (
                   <div className="flex items-center gap-2">
