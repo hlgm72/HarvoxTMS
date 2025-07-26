@@ -18,7 +18,7 @@ import { es } from "date-fns/locale";
 import { formatDateOnly, formatDateInUserTimeZone } from "@/utils/dateUtils";
 import { useATMInput } from "@/hooks/useATMInput";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
+import { useFleetNotifications } from '@/components/notifications';
 
 interface CreateEventualDeductionDialogProps {
   isOpen: boolean;
@@ -32,7 +32,7 @@ export function CreateEventualDeductionDialog({
   onSuccess 
 }: CreateEventualDeductionDialogProps) {
   const { user } = useAuth();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -263,20 +263,13 @@ export function CreateEventualDeductionDialog({
 
       if (error) throw error;
 
-      toast({
-        title: "Éxito",
-        description: "Deducción eventual creada exitosamente",
-      });
+      showSuccess("Éxito", "Deducción eventual creada exitosamente");
 
       onSuccess();
       onClose();
     } catch (error: any) {
       console.error('Error creating eventual deduction:', error);
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo crear la deducción eventual",
-        variant: "destructive",
-      });
+      showError("Error", error.message || "No se pudo crear la deducción eventual");
     } finally {
       setIsLoading(false);
     }

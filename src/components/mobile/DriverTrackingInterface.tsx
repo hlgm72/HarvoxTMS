@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useGPSTracking } from '@/hooks/useGPSTracking';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 
 export const DriverTrackingInterface = () => {
   const { 
@@ -32,7 +32,7 @@ export const DriverTrackingInterface = () => {
   } = useGPSTracking();
   
   const { user, signOut } = useAuth();
-  const { toast } = useToast();
+  const { showSuccess } = useFleetNotifications();
   const [watchId, setWatchId] = useState<string | null>(null);
 
   const handleStartTracking = async () => {
@@ -52,10 +52,7 @@ export const DriverTrackingInterface = () => {
   const handleGetCurrentLocation = async () => {
     const pos = await getCurrentPosition();
     if (pos) {
-      toast({
-        title: "Ubicación actualizada",
-        description: `Lat: ${pos.coords.latitude.toFixed(6)}, Lng: ${pos.coords.longitude.toFixed(6)}`
-      });
+      showSuccess("Ubicación actualizada", `Lat: ${pos.coords.latitude.toFixed(6)}, Lng: ${pos.coords.longitude.toFixed(6)}`);
     }
   };
 

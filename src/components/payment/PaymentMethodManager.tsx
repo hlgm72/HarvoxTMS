@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { usePaymentMethods } from '@/hooks/usePaymentMethods';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { 
   Plus, 
   CreditCard, 
@@ -35,7 +35,7 @@ export const PaymentMethodManager = ({ companyId }: PaymentMethodManagerProps) =
   });
 
   const { paymentMethods, createPaymentMethod, fetchPaymentMethods, isLoading } = usePaymentMethods();
-  const { toast } = useToast();
+  const { showError } = useFleetNotifications();
 
   const methodTypeOptions = [
     { value: 'manual', label: 'Manual', icon: FileText },
@@ -73,11 +73,7 @@ export const PaymentMethodManager = ({ companyId }: PaymentMethodManagerProps) =
     e.preventDefault();
     
     if (!handleTextBlur(newMethod.name)) {
-      toast({
-        title: "Error",
-        description: "El nombre del método es requerido",
-        variant: "destructive"
-      });
+      showError("Error", "El nombre del método es requerido");
       return;
     }
 

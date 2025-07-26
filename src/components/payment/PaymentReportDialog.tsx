@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { usePaymentMethods } from '@/hooks/usePaymentMethods';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { DollarSign, Receipt, FileText, CreditCard } from 'lucide-react';
 
 interface PaymentReportDialogProps {
@@ -32,7 +32,7 @@ export const PaymentReportDialog = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { paymentMethods, reportPayment, isLoading } = usePaymentMethods();
-  const { toast } = useToast();
+  const { showError } = useFleetNotifications();
 
   const selectedMethod = paymentMethods.find(method => method.id === selectedMethodId);
   const amountNumber = parseFloat(amount) || 0;
@@ -41,29 +41,17 @@ export const PaymentReportDialog = ({
     e.preventDefault();
     
     if (!selectedMethodId) {
-      toast({
-        title: "Error",
-        description: "Selecciona un método de pago",
-        variant: "destructive"
-      });
+      showError("Error", "Selecciona un método de pago");
       return;
     }
 
     if (amountNumber <= 0) {
-      toast({
-        title: "Error", 
-        description: "El monto debe ser mayor a $0",
-        variant: "destructive"
-      });
+      showError("Error", "El monto debe ser mayor a $0");
       return;
     }
 
     if (selectedMethod?.requires_reference && !handleTextBlur(referenceNumber)) {
-      toast({
-        title: "Error",
-        description: "Este método de pago requiere número de referencia",
-        variant: "destructive"
-      });
+      showError("Error", "Este método de pago requiere número de referencia");
       return;
     }
 

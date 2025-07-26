@@ -12,7 +12,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useFleetNotifications } from '@/components/notifications';
 
 interface CreateSpecialPeriodDialogProps {
   onClose: () => void;
@@ -21,7 +21,7 @@ interface CreateSpecialPeriodDialogProps {
 
 export function CreateSpecialPeriodDialog({ onClose, onSuccess }: CreateSpecialPeriodDialogProps) {
   const { user } = useAuth();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -38,20 +38,12 @@ export function CreateSpecialPeriodDialog({ onClose, onSuccess }: CreateSpecialP
     e.preventDefault();
     
     if (!startDate || !endDate) {
-      toast({
-        title: "Error",
-        description: "Por favor selecciona las fechas de inicio y fin",
-        variant: "destructive",
-      });
+      showError("Error", "Por favor selecciona las fechas de inicio y fin");
       return;
     }
 
     if (!user?.user_metadata?.company_id) {
-      toast({
-        title: "Error",
-        description: "No se pudo identificar la empresa",
-        variant: "destructive",
-      });
+      showError("Error", "No se pudo identificar la empresa");
       return;
     }
 
@@ -71,19 +63,12 @@ export function CreateSpecialPeriodDialog({ onClose, onSuccess }: CreateSpecialP
 
       if (error) throw error;
 
-      toast({
-        title: "Éxito",
-        description: "Período especial creado exitosamente",
-      });
+      showSuccess("Éxito", "Período especial creado exitosamente");
 
       onSuccess();
     } catch (error: any) {
       console.error('Error creating special period:', error);
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo crear el período especial",
-        variant: "destructive",
-      });
+      showError("Error", error.message || "No se pudo crear el período especial");
     } finally {
       setIsLoading(false);
     }
