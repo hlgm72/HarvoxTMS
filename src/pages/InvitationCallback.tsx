@@ -2,12 +2,14 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 
 export default function InvitationCallback() {
   const navigate = useNavigate();
   const { showSuccess, showError } = useFleetNotifications();
+  const { refreshRoles } = useAuth();
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
@@ -51,6 +53,13 @@ export default function InvitationCallback() {
         }
 
         showSuccess("¡Invitación Aceptada!", `Bienvenido a ${result.user.company}. Tu rol es: ${result.user.role}`);
+
+        // **CRÍTICO**: Refrescar los roles antes de redirigir
+        console.log('🔄 Refreshing user roles after invitation acceptance...');
+        await refreshRoles();
+        
+        // Pequeña pausa para asegurar que los roles se carguen
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         // Redirect to appropriate dashboard based on role
         const role = result.user.role;
