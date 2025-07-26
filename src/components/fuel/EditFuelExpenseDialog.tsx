@@ -31,7 +31,7 @@ const formSchema = z.object({
   station_name: z.string().optional(),
   station_state: z.string().optional(),
   vehicle_id: z.string().optional(),
-  odometer_reading: z.coerce.number().optional(),
+  
   receipt_url: z.string().optional(),
   notes: z.string().optional(),
 });
@@ -68,7 +68,7 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
         station_name: expense.station_name || '',
         station_state: expense.station_state || '',
         vehicle_id: expense.vehicle_id || '',
-        odometer_reading: expense.odometer_reading || undefined,
+        
         receipt_url: expense.receipt_url || '',
         notes: expense.notes || '',
       });
@@ -331,39 +331,19 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="station_state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Estado</FormLabel>
-                    <FormControl>
-                      <Input placeholder="TX, CA, NY..." maxLength={2} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="odometer_reading"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Odómetro</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Millas"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="station_state"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Estado</FormLabel>
+                  <FormControl>
+                    <Input placeholder="TX, CA, NY..." maxLength={2} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}

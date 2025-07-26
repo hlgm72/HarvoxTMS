@@ -35,7 +35,7 @@ const formSchema = z.object({
   fuel_card_number: z.string().optional(),
   driver_card_id: z.string().optional(),
   vehicle_id: z.string().optional(),
-  odometer_reading: z.coerce.number().optional(),
+  
   receipt_url: z.string().optional(),
   notes: z.string().optional(),
 });
@@ -79,7 +79,6 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       fuel_card_number: data.fuel_card_number,
       
       vehicle_id: data.vehicle_id,
-      odometer_reading: data.odometer_reading,
       receipt_url: data.receipt_url,
       notes: data.notes,
     }, {
@@ -362,51 +361,31 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="driver_card_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tarjeta de Combustible</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar tarjeta" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {driverCards.map((card) => (
-                          <SelectItem key={card.id} value={card.id}>
-                            {card.card_provider.toUpperCase()} ****{card.card_number_last_four}
-                            {card.card_identifier ? ` (${card.card_identifier})` : ''}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="odometer_reading"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Odómetro</FormLabel>
+            <FormField
+              control={form.control}
+              name="driver_card_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tarjeta de Combustible</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Millas"
-                        {...field}
-                      />
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar tarjeta" />
+                      </SelectTrigger>
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                    <SelectContent>
+                      {driverCards.map((card) => (
+                        <SelectItem key={card.id} value={card.id}>
+                          {card.card_provider.toUpperCase()} ****{card.card_number_last_four}
+                          {card.card_identifier ? ` (${card.card_identifier})` : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
