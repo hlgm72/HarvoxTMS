@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Filter, X, Download, Settings, BarChart3, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FuelFilters, FuelFiltersType } from './FuelFilters';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { supabase } from '@/integrations/supabase/client';
 
 interface FuelFloatingActionsProps {
@@ -22,7 +22,7 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
   const [syncLoading, setSyncLoading] = useState(false);
   const [syncDateFrom, setSyncDateFrom] = useState('');
   const [syncDateTo, setSyncDateTo] = useState('');
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
 
   const getActiveFiltersCount = () => {
     let count = 0;
@@ -63,10 +63,10 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
       if (error) throw error;
 
       if (data?.success) {
-        toast({
-          title: "Sincronización Exitosa",
-          description: `Se sincronizaron ${data.synced} transacciones. ${data.skipped} ya existían.`,
-        });
+        showSuccess(
+          "Sincronización Exitosa",
+          `Se sincronizaron ${data.synced} transacciones. ${data.skipped} ya existían.`
+        );
         
         // Refrescar la página para mostrar las nuevas transacciones
         window.location.reload();
@@ -75,11 +75,10 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
       }
     } catch (error: any) {
       console.error('Error syncing FleetOne transactions:', error);
-      toast({
-        title: "Error de Sincronización",
-        description: error.message || 'No se pudieron sincronizar las transacciones de FleetOne',
-        variant: "destructive"
-      });
+      showError(
+        "Error de Sincronización",
+        error.message || 'No se pudieron sincronizar las transacciones de FleetOne'
+      );
     } finally {
       setSyncLoading(false);
     }

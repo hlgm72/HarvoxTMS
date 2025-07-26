@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useToast } from "@/hooks/use-toast";
+import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from "@/integrations/supabase/client";
 
 interface InviteDriverDialogProps {
@@ -22,7 +22,7 @@ interface InviteDriverDialogProps {
 
 export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverDialogProps) {
   const { t } = useTranslation();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -50,11 +50,10 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
     
     // Validación adicional antes de enviar
     if (!isFormValid) {
-      toast({
-        title: "Error de validación",
-        description: "Por favor complete todos los campos correctamente",
-        variant: "destructive",
-      });
+      showError(
+        "Error de validación",
+        "Por favor complete todos los campos correctamente"
+      );
       return;
     }
 
@@ -78,10 +77,10 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
         throw new Error(data.error || 'Error al enviar invitación');
       }
 
-      toast({
-        title: "Invitación enviada",
-        description: "Se ha enviado la invitación al conductor por email.",
-      });
+      showSuccess(
+        "Invitación enviada",
+        "Se ha enviado la invitación al conductor por email."
+      );
 
       // Reset form
       setFormData({
@@ -95,11 +94,10 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
       onClose();
     } catch (error: any) {
       console.error('Error sending driver invitation:', error);
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo enviar la invitación",
-        variant: "destructive",
-      });
+      showError(
+        "Error",
+        error.message || "No se pudo enviar la invitación"
+      );
     } finally {
       setLoading(false);
     }

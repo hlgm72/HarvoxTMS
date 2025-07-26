@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Upload, FileText, CheckCircle, Info, Loader2, User, Calendar, CreditCard, MapPin, Fuel } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { useAuth } from '@/hooks/useAuth';
 
 interface AnalysisResult {
@@ -46,6 +46,7 @@ interface EnrichedTransaction {
 
 export function PDFAnalyzer() {
   const { user } = useAuth();
+  const { showSuccess, showError } = useFleetNotifications();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isEnriching, setIsEnriching] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
@@ -59,11 +60,10 @@ export function PDFAnalyzer() {
       setSelectedFile(file);
       setAnalysisResult(null);
     } else {
-      toast({
-        title: "Archivo no válido",
-        description: "Por favor selecciona un archivo PDF",
-        variant: "destructive"
-      });
+      showError(
+        "Archivo no válido",
+        "Por favor selecciona un archivo PDF"
+      );
     }
   };
 
@@ -97,20 +97,19 @@ export function PDFAnalyzer() {
       if (data.success) {
         setAnalysisResult(data.analysis);
         await enrichTransactions(data.analysis.sampleData);
-        toast({
-          title: "Análisis completado",
-          description: "El PDF ha sido analizado exitosamente"
-        });
+        showSuccess(
+          "Análisis completado",
+          "El PDF ha sido analizado exitosamente"
+        );
       } else {
         throw new Error(data.error || 'Error analyzing PDF');
       }
     } catch (error) {
       console.error('Error analyzing PDF:', error);
-      toast({
-        title: "Error en el análisis",
-        description: "No se pudo analizar el PDF. Intenta de nuevo.",
-        variant: "destructive"
-      });
+      showError(
+        "Error en el análisis",
+        "No se pudo analizar el PDF. Intenta de nuevo."
+      );
     } finally {
       setIsAnalyzing(false);
     }
@@ -288,11 +287,10 @@ export function PDFAnalyzer() {
       setEnrichedTransactions(enriched);
     } catch (error) {
       console.error('Error enriching transactions:', error);
-      toast({
-        title: "Error enriqueciendo datos",
-        description: "No se pudieron mapear todos los datos automáticamente",
-        variant: "destructive"
-      });
+      showError(
+        "Error enriqueciendo datos",
+        "No se pudieron mapear todos los datos automáticamente"
+      );
     } finally {
       setIsEnriching(false);
     }
@@ -308,11 +306,10 @@ export function PDFAnalyzer() {
       );
 
       if (validTransactions.length === 0) {
-        toast({
-          title: "Sin transacciones válidas",
-          description: "No hay transacciones con mapeo completo para importar",
-          variant: "destructive"
-        });
+        showError(
+          "Sin transacciones válidas",
+          "No hay transacciones con mapeo completo para importar"
+        );
         return;
       }
 
@@ -342,10 +339,10 @@ export function PDFAnalyzer() {
 
       if (error) throw error;
 
-      toast({
-        title: "Importación exitosa",
-        description: `Se importaron ${validTransactions.length} transacciones de combustible`
-      });
+      showSuccess(
+        "Importación exitosa",
+        `Se importaron ${validTransactions.length} transacciones de combustible`
+      );
 
       // Limpiar datos después de la importación
       setAnalysisResult(null);
@@ -354,11 +351,10 @@ export function PDFAnalyzer() {
 
     } catch (error) {
       console.error('Error importing transactions:', error);
-      toast({
-        title: "Error en la importación",
-        description: "No se pudieron importar las transacciones",
-        variant: "destructive"
-      });
+      showError(
+        "Error en la importación",
+        "No se pudieron importar las transacciones"
+      );
     } finally {
       setIsImporting(false);
     }
