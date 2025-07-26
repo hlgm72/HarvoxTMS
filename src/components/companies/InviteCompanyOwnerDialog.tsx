@@ -33,8 +33,17 @@ export function InviteCompanyOwnerDialog({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!company || !handleTextBlur(email) || !handleTextBlur(firstName) || !handleTextBlur(lastName)) {
+    const trimmedEmail = handleTextBlur(email);
+    const trimmedFirstName = handleTextBlur(firstName);
+    const trimmedLastName = handleTextBlur(lastName);
+    
+    if (!company || !trimmedEmail || !trimmedFirstName || !trimmedLastName) {
       setError('All fields are required');
+      return;
+    }
+
+    if (!isValidEmail(trimmedEmail)) {
+      setError('Please enter a valid email address');
       return;
     }
 
@@ -94,8 +103,14 @@ export function InviteCompanyOwnerDialog({
     }
   };
 
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleEmailChange = (value: string) => {
-    setEmail(value);
+    const cleanedEmail = handleEmailInput(value);
+    setEmail(cleanedEmail);
     if (error) setError('');
   };
 
@@ -211,7 +226,7 @@ export function InviteCompanyOwnerDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading || !handleTextBlur(email) || !handleTextBlur(firstName) || !handleTextBlur(lastName)}>
+            <Button type="submit" disabled={loading || !handleTextBlur(email) || !isValidEmail(handleTextBlur(email)) || !handleTextBlur(firstName) || !handleTextBlur(lastName)}>
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
