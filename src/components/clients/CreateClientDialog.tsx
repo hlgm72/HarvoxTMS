@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { ClientLogoUpload } from '@/components/clients/ClientLogoUpload';
 import { FMCSALookupModal } from '@/components/clients/FMCSALookupModal';
 import { createTextHandlers, createPhoneHandlers, createMCHandlers, createDOTHandlers } from '@/lib/textUtils';
@@ -54,7 +54,7 @@ interface CreateClientDialogProps {
 export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientDialogProps) {
   const { user } = useAuth();
   const { userCompany } = useCompanyCache();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(1);
   const [showFMCSAModal, setShowFMCSAModal] = useState(false);
@@ -145,10 +145,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
         exact: false
       });
       
-      toast({
-        title: "Cliente creado exitosamente",
-        description: `${client.name} ha sido agregado al sistema`,
-      });
+      showSuccess(
+        "Cliente creado exitosamente",
+        `${client.name} ha sido agregado al sistema`
+      );
 
       // Resetear formulario y cerrar
       form.reset();
@@ -158,11 +158,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
     },
     onError: (error: any) => {
       console.error('Error creando cliente:', error);
-      toast({
-        title: "Error",
-        description: "No se pudo crear el cliente. Intenta nuevamente.",
-        variant: "destructive",
-      });
+      showError(
+        "Error",
+        "No se pudo crear el cliente. Intenta nuevamente."
+      );
     },
   });
 

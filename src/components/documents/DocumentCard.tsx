@@ -16,7 +16,7 @@ import {
 import { AlertCircle, Calendar, Download, FileText, MoreVertical, Archive, ArchiveRestore, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { useFleetNotifications } from "@/components/notifications";
 import { formatExpiryDate, formatDateOnly } from '@/lib/dateFormatting';
 
 interface PredefinedDocumentType {
@@ -60,6 +60,7 @@ export function DocumentCard({
   isArchived = false
 }: DocumentCardProps) {
   const { isCompanyOwner } = useAuth();
+  const { showSuccess, showError } = useFleetNotifications();
   // Find document type info
   const getDocumentTypeInfo = () => {
     for (const category of Object.values(predefinedTypes)) {
@@ -117,37 +118,34 @@ export function DocumentCard({
 
       if (error) {
         console.error('Error al eliminar documento:', error);
-        toast({
-          title: "Error",
-          description: "Hubo un error al eliminar el documento",
-          variant: "destructive",
-        });
+        showError(
+          "Error",
+          "Hubo un error al eliminar el documento"
+        );
         return;
       }
 
       if (data && typeof data === 'object' && 'success' in data && !data.success) {
-        toast({
-          title: "Error",
-          description: typeof data === 'object' && 'message' in data ? String(data.message) : "Error desconocido",
-          variant: "destructive",
-        });
+        showError(
+          "Error",
+          typeof data === 'object' && 'message' in data ? String(data.message) : "Error desconocido"
+        );
         return;
       }
 
-      toast({
-        title: "Documento eliminado",
-        description: "El documento ha sido eliminado permanentemente",
-      });
+      showSuccess(
+        "Documento eliminado",
+        "El documento ha sido eliminado permanentemente"
+      );
       
       // Refresh the parent component
       window.location.reload();
     } catch (error) {
       console.error('Error:', error);
-      toast({
-        title: "Error",
-        description: "Hubo un error al eliminar el documento",
-        variant: "destructive",
-      });
+      showError(
+        "Error",
+        "Hubo un error al eliminar el documento"
+      );
     }
   };
 
