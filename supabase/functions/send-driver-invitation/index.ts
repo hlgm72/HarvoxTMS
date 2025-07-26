@@ -157,47 +157,92 @@ const handler = async (req: Request): Promise<Response> => {
 
     const companyName = company?.name || "la empresa";
 
-    const emailResponse = await resend.emails.send({
+    console.log('📧 Attempting to send email with Resend...');
+    console.log('Email configuration:', {
+      to: email,
       from: "FleetNest <onboarding@resend.dev>",
-      to: [email],
       subject: `Invitación para unirte como conductor en ${companyName}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #2563eb;">¡Bienvenido a ${companyName}!</h1>
-          
-          <p>Hola ${firstName},</p>
-          
-          <p>Has sido invitado a unirte como conductor en <strong>${companyName}</strong> a través de FleetNest.</p>
-          
-          <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0;">Detalles de tu contratación:</h3>
-            <p><strong>Nombre:</strong> ${firstName} ${lastName}</p>
-            <p><strong>Fecha de contratación:</strong> ${new Date(hireDate).toLocaleDateString('es-ES')}</p>
-          </div>
-          
-          <p>Para completar tu registro y acceder a la plataforma, haz clic en el siguiente enlace:</p>
-          
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${invitationUrl}" 
-               style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-              Aceptar Invitación
-            </a>
-          </div>
-          
-          <p style="color: #64748b; font-size: 14px;">
-            Este enlace expirará en 7 días. Si tienes problemas para acceder, contacta con tu administrador.
-          </p>
-          
-          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
-          
-          <p style="color: #64748b; font-size: 12px;">
-            Este email fue enviado desde FleetNest - Sistema de gestión de flotas.
-          </p>
-        </div>
-      `,
+      invitationUrl: invitationUrl,
+      resendKeyConfigured: !!resendApiKey,
+      resendKeyLength: resendApiKey?.length || 0
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    let emailResponse;
+    try {
+      emailResponse = await resend.emails.send({
+        from: "FleetNest <onboarding@resend.dev>",
+        to: [email],
+        subject: `Invitación para unirte como conductor en ${companyName}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #2563eb;">¡Bienvenido a ${companyName}!</h1>
+            
+            <p>Hola ${firstName},</p>
+            
+            <p>Has sido invitado a unirte como conductor en <strong>${companyName}</strong> a través de FleetNest.</p>
+            
+            <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <h3 style="margin-top: 0;">Detalles de tu contratación:</h3>
+              <p><strong>Nombre:</strong> ${firstName} ${lastName}</p>
+              <p><strong>Fecha de contratación:</strong> ${new Date(hireDate).toLocaleDateString('es-ES')}</p>
+            </div>
+            
+            <p>Para completar tu registro y acceder a la plataforma, haz clic en el siguiente enlace:</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${invitationUrl}" 
+                 style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                Aceptar Invitación
+              </a>
+            </div>
+            
+            <p style="color: #64748b; font-size: 14px;">
+              Este enlace expirará en 7 días. Si tienes problemas para acceder, contacta con tu administrador.
+            </p>
+            
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
+            
+            <p style="color: #64748b; font-size: 12px;">
+              Este email fue enviado desde FleetNest - Sistema de gestión de flotas.
+            </p>
+          </div>
+        `,
+      });
+
+      console.log("✅ Resend API call completed");
+      console.log("Full Resend response:", JSON.stringify(emailResponse, null, 2));
+      
+      if (emailResponse.error) {
+        console.error("❌ Resend returned an error:", emailResponse.error);
+        throw new Error(`Error de Resend: ${JSON.stringify(emailResponse.error)}`);
+      }
+
+      if (!emailResponse.data?.id) {
+        console.error("❌ No email ID returned from Resend");
+        console.error("Response structure:", Object.keys(emailResponse));
+        throw new Error("Error: No se pudo obtener confirmación del envío del email");
+      }
+
+      console.log(`📧 Email sent successfully with ID: ${emailResponse.data.id}`);
+      
+    } catch (emailError: any) {
+      console.error("❌ Failed to send email:", emailError);
+      console.error("Email error details:", {
+        name: emailError.name,
+        message: emailError.message,
+        cause: emailError.cause,
+        stack: emailError.stack?.split('\n').slice(0, 3)
+      });
+      
+      // Check if it's a specific Resend error
+      if (emailError.message?.includes('forbidden') || emailError.message?.includes('401')) {
+        throw new Error("Error: API key de Resend inválida o sin permisos");
+      } else if (emailError.message?.includes('domain')) {
+        throw new Error("Error: Dominio no verificado en Resend");
+      } else {
+        throw new Error(`Error al enviar email: ${emailError.message}`);
+      }
+    }
 
     // Store hire date in invitation metadata (we'll use this when the user accepts)
     await supabase
