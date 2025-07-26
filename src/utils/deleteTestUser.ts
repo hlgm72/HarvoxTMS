@@ -23,7 +23,7 @@ export const deleteTestUser = async () => {
   }
 };
 
-// Llamar inmediatamente
-deleteTestUser().then(result => {
-  console.log('Deletion result:', result);
-});
+// Función para ser llamada cuando sea necesario
+// deleteTestUser().then(result => {
+//   console.log('Deletion result:', result);
+// });
