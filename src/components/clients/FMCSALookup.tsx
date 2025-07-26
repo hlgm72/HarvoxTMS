@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useFleetNotifications } from "@/components/notifications";
 
 interface FMCSAData {
   legalName: string | null;
@@ -73,10 +73,11 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<FMCSAData | null>(null);
   const [debugData, setDebugData] = useState<any>(null);
+  const { showSuccess, showError } = useFleetNotifications();
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
-      toast.error("Por favor ingresa un término de búsqueda");
+      showError("Por favor ingresa un término de búsqueda");
       return;
     }
 
@@ -91,14 +92,14 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
 
       if (error) {
         console.error('FMCSA lookup error:', error);
-        toast.error("Error al buscar en FMCSA");
+        showError("Error al buscar en FMCSA");
         setLoading(false);
         return;
       }
 
       if (!responseData || !responseData.success) {
         const errorMessage = responseData?.error || "No se encontró información en FMCSA";
-        toast.error(errorMessage);
+        showError(errorMessage);
         console.log('FMCSA search failed:', errorMessage);
         setData(null);
         setDebugData(responseData?.debug || null);
@@ -109,12 +110,12 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
       const fmcsaData = responseData.data as FMCSAData;
       setData(fmcsaData);
       setDebugData(responseData.debug);
-      toast.success("Información encontrada en FMCSA");
+      showSuccess("Información encontrada en FMCSA");
       setLoading(false);
 
     } catch (error) {
       console.error('Error calling FMCSA function:', error);
-      toast.error("Error al buscar en FMCSA");
+      showError("Error al buscar en FMCSA");
       setLoading(false);
     }
   };
@@ -129,7 +130,7 @@ export function FMCSALookup({ onDataFound }: FMCSALookupProps) {
         mc_number: data.mcNumber || "",
         email: data.email || "",
       });
-      toast.success("Información aplicada al formulario");
+      showSuccess("Información aplicada al formulario");
     }
   };
 

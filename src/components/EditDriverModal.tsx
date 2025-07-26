@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
+import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from "@/integrations/supabase/client";
 import { createPhoneHandlers } from '@/lib/textUtils';
 
@@ -53,6 +53,7 @@ interface EditDriverModalProps {
 
 export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDriverModalProps) {
   const { t } = useTranslation();
+  const { showSuccess, showError } = useFleetNotifications();
   const [activeOwnerTab, setActiveOwnerTab] = useState('business');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -136,7 +137,7 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
       });
     } catch (error) {
       console.error('Error loading driver data:', error);
-      toast.error('Error al cargar los datos del conductor');
+      showError('Error al cargar los datos del conductor');
     } finally {
       setLoading(false);
     }
@@ -266,11 +267,11 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
         }
       }
 
-      toast.success('Información del conductor actualizada correctamente');
+      showSuccess('Información del conductor actualizada correctamente');
       onClose();
     } catch (error) {
       console.error('Error saving driver data:', error);
-      toast.error('Error al guardar los datos del conductor');
+      showError('Error al guardar los datos del conductor');
     } finally {
       setSaving(false);
     }

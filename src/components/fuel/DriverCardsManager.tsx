@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Plus, CreditCard, Trash2, AlertCircle, Edit } from 'lucide-react';
-import { toast } from 'sonner';
+import { useFleetNotifications } from "@/components/notifications";
 import {
   Dialog,
   DialogContent,
@@ -51,6 +51,7 @@ interface Driver {
 export function DriverCardsManager() {
   const [isCardDialogOpen, setIsCardDialogOpen] = useState(false);
   const [editingCard, setEditingCard] = useState<DriverCard | null>(null);
+  const { showSuccess, showError } = useFleetNotifications();
   const [selectedDriver, setSelectedDriver] = useState<string>('');
   const [selectedProvider, setSelectedProvider] = useState<string>('');
   const [cardLastFour, setCardLastFour] = useState('');
@@ -188,10 +189,10 @@ export function DriverCardsManager() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['driver-cards'] });
       resetForm();
-      toast.success(editingCard ? 'Tarjeta actualizada exitosamente' : 'Tarjeta asignada exitosamente');
+      showSuccess(editingCard ? 'Tarjeta actualizada exitosamente' : 'Tarjeta asignada exitosamente');
     },
     onError: (error) => {
-      toast.error('Error al guardar tarjeta: ' + error.message);
+      showError('Error al guardar tarjeta: ' + error.message);
     }
   });
 
@@ -210,10 +211,10 @@ export function DriverCardsManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['driver-cards'] });
-      toast.success('Tarjeta desactivada');
+      showSuccess('Tarjeta desactivada');
     },
     onError: (error) => {
-      toast.error('Error al desactivar tarjeta: ' + error.message);
+      showError('Error al desactivar tarjeta: ' + error.message);
     }
   });
 

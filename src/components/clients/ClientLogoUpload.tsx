@@ -3,7 +3,7 @@ import { Upload, X, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useFleetNotifications } from "@/components/notifications";
 import { SmartLogoSearch } from "@/components/ui/SmartLogoSearch";
 
 interface ClientLogoUploadProps {
@@ -16,6 +16,7 @@ interface ClientLogoUploadProps {
 
 export function ClientLogoUpload({ logoUrl, clientName, emailDomain, onLogoChange, disabled }: ClientLogoUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const { showSuccess, showError } = useFleetNotifications();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const uploadLogo = async (file: File) => {
@@ -39,10 +40,10 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, onLogoChang
         .getPublicUrl(filePath);
 
       onLogoChange(data.publicUrl);
-      toast.success('Logo cargado exitosamente');
+      showSuccess('Logo cargado exitosamente');
     } catch (error) {
       console.error('Error uploading logo:', error);
-      toast.error('Error al cargar el logo');
+      showError('Error al cargar el logo');
     } finally {
       setUploading(false);
     }
@@ -54,13 +55,13 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, onLogoChang
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast.error('Por favor selecciona un archivo de imagen');
+      showError('Por favor selecciona un archivo de imagen');
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('El archivo es demasiado grande. Máximo 5MB');
+      showError('El archivo es demasiado grande. Máximo 5MB');
       return;
     }
 
@@ -80,10 +81,10 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, onLogoChang
           .remove([filePath]);
 
         onLogoChange(null);
-        toast.success('Logo eliminado');
+        showSuccess('Logo eliminado');
       } catch (error) {
         console.error('Error removing logo:', error);
-        toast.error('Error al eliminar el logo');
+        showError('Error al eliminar el logo');
       }
     }
   };
