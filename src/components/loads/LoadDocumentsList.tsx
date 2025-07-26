@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { FileText, Download, Eye, Loader2 } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 
 interface LoadDocument {
   id: string;
@@ -63,7 +63,7 @@ export function LoadDocumentsList({
   const [documents, setDocuments] = useState<LoadDocument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [forceRefresh, setForceRefresh] = useState(0);
-  const { toast } = useToast();
+  const { showError } = useFleetNotifications();
 
   useEffect(() => {
     let mounted = true;
@@ -96,11 +96,10 @@ export function LoadDocumentsList({
         if (mounted) {
           console.error('Error fetching load documents:', error);
           setIsLoading(false);
-          toast({
-            title: "Error",
-            description: "No se pudieron cargar los documentos",
-            variant: "destructive",
-          });
+          showError(
+            "Error",
+            "No se pudieron cargar los documentos"
+          );
         }
       }
     };
@@ -146,11 +145,10 @@ export function LoadDocumentsList({
       window.document.body.removeChild(link);
     } catch (error) {
       console.error('Error downloading document:', error);
-      toast({
-        title: "Error",
-        description: "No se pudo descargar el documento",
-        variant: "destructive",
-      });
+      showError(
+        "Error",
+        "No se pudo descargar el documento"
+      );
     }
   };
 

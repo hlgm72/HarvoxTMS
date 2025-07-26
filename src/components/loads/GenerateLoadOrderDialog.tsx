@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, AlertTriangle } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { useFleetNotifications } from "@/components/notifications";
 import { generateLoadOrderPDF } from "@/lib/loadOrderPDF";
 
 const loadOrderSchema = z.object({
@@ -41,6 +41,7 @@ export function GenerateLoadOrderDialog({
   onLoadOrderGenerated 
 }: GenerateLoadOrderDialogProps) {
   const [isGenerating, setIsGenerating] = useState(false);
+  const { showSuccess, showError } = useFleetNotifications();
   
   console.log('🔍 GenerateLoadOrderDialog - Rendering with props:', { isOpen, loadData });
   
@@ -105,20 +106,19 @@ export function GenerateLoadOrderDialog({
       });
 
       console.log('🎉 GenerateLoadOrderDialog - Load Order generated successfully');
-      toast({
-        title: "Load Order generado",
-        description: `Load Order creado exitosamente con monto $${values.customAmount.toFixed(2)}`,
-      });
+      showSuccess(
+        "Load Order generado",
+        `Load Order creado exitosamente con monto $${values.customAmount.toFixed(2)}`
+      );
 
       console.log('🚪 GenerateLoadOrderDialog - Closing modal...');
       onClose();
     } catch (error) {
       console.error('❌ GenerateLoadOrderDialog - Error generating Load Order:', error);
-      toast({
-        title: "Error",
-        description: "No se pudo generar el Load Order. Intenta nuevamente.",
-        variant: "destructive",
-      });
+      showError(
+        "Error",
+        "No se pudo generar el Load Order. Intenta nuevamente."
+      );
     } finally {
       console.log('🏁 GenerateLoadOrderDialog - Finishing, setting isGenerating to false');
       setIsGenerating(false);

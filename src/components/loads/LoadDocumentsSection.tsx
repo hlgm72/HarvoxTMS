@@ -7,7 +7,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { FileText, Upload, Download, Trash2, FileCheck, Plus, Eye, RotateCcw } from "lucide-react";
 import { GenerateLoadOrderDialog } from "./GenerateLoadOrderDialog";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useFleetNotifications } from "@/components/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
 

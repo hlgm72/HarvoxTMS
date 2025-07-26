@@ -8,7 +8,7 @@ import { ArrowRight, Calendar, Truck, DollarSign, Fuel, Receipt, Plus } from 'lu
 import { usePaymentPeriods } from '@/hooks/usePaymentPeriods';
 import { formatCurrency } from '@/lib/utils';
 import { formatPaymentPeriod, formatDateOnly } from '@/lib/dateFormatting';
-import { toast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 
 interface PeriodReassignmentDialogProps {
   isOpen: boolean;
@@ -34,14 +34,14 @@ const PeriodReassignmentDialog = ({
     reassignElement, 
     isReassigningElement 
   } = usePaymentPeriods();
+  const { showError } = useFleetNotifications();
 
   const handleReassign = () => {
     if (!selectedPeriodId) {
-      toast({
-        title: "Error",
-        description: "Selecciona un período de destino",
-        variant: "destructive",
-      });
+      showError(
+        "Error",
+        "Selecciona un período de destino"
+      );
       return;
     }
 
