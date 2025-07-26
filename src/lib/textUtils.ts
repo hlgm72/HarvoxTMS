@@ -12,8 +12,13 @@ export const handleTextInput = (value: string): string => {
     return '';
   }
   
-  // Prevent leading spaces by removing them
-  let cleanValue = value.replace(/^\s+/, '');
+  // Enhanced security: Remove dangerous characters and patterns
+  let cleanValue = value
+    .replace(/[<>]/g, '') // Remove angle brackets
+    .replace(/javascript:/gi, '') // Remove javascript protocol
+    .replace(/data:/gi, '') // Remove data protocol
+    .replace(/vbscript:/gi, '') // Remove vbscript protocol
+    .replace(/^\s+/, ''); // Prevent leading spaces
   
   // Replace multiple consecutive spaces with single space
   cleanValue = cleanValue.replace(/\s{2,}/g, ' ');
@@ -26,8 +31,13 @@ export const handleTextInput = (value: string): string => {
  * Emails should never have spaces
  */
 export const handleEmailInput = (value: string): string => {
-  // Remove all spaces completely and return only valid characters
-  return value.replace(/\s/g, '');
+  // Enhanced security: Remove all spaces and dangerous patterns
+  return value
+    .replace(/\s/g, '') // Remove all spaces
+    .replace(/[<>]/g, '') // Remove angle brackets
+    .replace(/javascript:/gi, '') // Remove javascript protocol
+    .replace(/data:/gi, '') // Remove data protocol
+    .replace(/vbscript:/gi, ''); // Remove vbscript protocol
 };
 
 /**

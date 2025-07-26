@@ -1,19 +1,29 @@
 import { supabase } from '@/integrations/supabase/client';
 
 export const cleanupAuthState = () => {
-  // Clear all auth-related keys from localStorage
+  // Enhanced cleanup: Clear all auth-related keys from localStorage
   Object.keys(localStorage).forEach((key) => {
-    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+    if (key.startsWith('supabase.auth.') || 
+        key.includes('sb-') || 
+        key === 'currentRole' || 
+        key === 'lastActiveRole' ||
+        key === 'loginSuccess' ||
+        key === 'profile_refresh_needed') {
       localStorage.removeItem(key);
     }
   });
   
-  // Clear from sessionStorage if in use
+  // Enhanced cleanup: Clear from sessionStorage if in use
   Object.keys(sessionStorage || {}).forEach((key) => {
-    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+    if (key.startsWith('supabase.auth.') || 
+        key.includes('sb-') || 
+        key === 'activeRole') {
       sessionStorage.removeItem(key);
     }
   });
+
+  // Clear any custom role-related keys
+  localStorage.removeItem('i18nextLng'); // Optional: reset language on logout
 };
 
 export const refreshAuthSession = async () => {
