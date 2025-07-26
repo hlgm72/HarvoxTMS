@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Truck, User, Plus, ArrowRightLeft, X } from 'lucide-react';
 import {
   Dialog,
@@ -41,6 +41,27 @@ export function EquipmentAssignmentDialog({
   const [assignmentType, setAssignmentType] = useState<'permanent' | 'temporary'>('permanent');
   const [notes, setNotes] = useState('');
 
+  const { equipment } = useEquipment();
+  const { drivers } = useCompanyDrivers();
+  const { 
+    assignments, 
+    createAssignment, 
+    isCreatingAssignment, 
+    createAssignmentSuccess,
+    getAssignmentByEquipment,
+    getAssignmentsByDriver 
+  } = useEquipmentAssignments();
+
+  // Función para cerrar el modal
+  const handleClose = useCallback(() => {
+    setSelectedTruckId('');
+    setSelectedTrailerId('');
+    setSelectedDriverId(driverUserId || '');
+    setAssignmentType('permanent');
+    setNotes('');
+    onClose();
+  }, [driverUserId, onClose]);
+
   // Asegurar que selectedDriverId se inicialice correctamente
   useEffect(() => {
     if (driverUserId && selectedDriverId !== driverUserId) {
@@ -48,15 +69,6 @@ export function EquipmentAssignmentDialog({
     }
   }, [driverUserId, selectedDriverId]);
 
-  const { equipment } = useEquipment();
-  const { drivers } = useCompanyDrivers();
-  const { 
-    assignments, 
-    createAssignment, 
-    isCreatingAssignment, 
-    getAssignmentByEquipment,
-    getAssignmentsByDriver 
-  } = useEquipmentAssignments();
 
   // Debug logs
   console.log('🚛 Available equipment:', equipment?.length || 0);
@@ -81,7 +93,7 @@ export function EquipmentAssignmentDialog({
   // Filtrar conductores activos
   const activeDrivers = drivers?.filter(driver => driver.is_active) || [];
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!selectedTruckId || !selectedDriverId) return;
 
     // Asignar camión (siempre requerido)
@@ -101,16 +113,14 @@ export function EquipmentAssignmentDialog({
         notes: notes.trim() || 'Trailer asignado',
       });
     }
+
+    // Cerrar modal después de llamar a las asignaciones
+    // El toast de éxito se maneja en el hook
+    setTimeout(() => {
+      handleClose();
+    }, 1000); // Dar tiempo a que se ejecuten las mutaciones
   };
 
-  const handleClose = () => {
-    setSelectedTruckId('');
-    setSelectedTrailerId('');
-    setSelectedDriverId(driverUserId || '');
-    setAssignmentType('permanent');
-    setNotes('');
-    onClose();
-  };
 
   // Obtener asignaciones del conductor seleccionado
   const driverAssignments = selectedDriverId ? getAssignmentsByDriver(selectedDriverId) : [];

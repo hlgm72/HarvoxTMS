@@ -52,7 +52,24 @@ export function useEquipmentAssignments() {
 
       const { data, error } = await supabase
         .from('equipment_assignments')
-        .select('*')
+        .select(`
+          *,
+          company_equipment (
+            id,
+            equipment_number,
+            equipment_type,
+            make,
+            model,
+            year,
+            license_plate,
+            status
+          ),
+          profiles (
+            user_id,
+            first_name,
+            last_name
+          )
+        `)
         .eq('is_active', true)
         .order('assigned_date', { ascending: false });
 
@@ -102,6 +119,8 @@ export function useEquipmentAssignments() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['equipment-assignments'] });
+      queryClient.invalidateQueries({ queryKey: ['equipment'] });
+      queryClient.invalidateQueries({ queryKey: ['company-drivers'] });
       toast.success('Equipo asignado exitosamente');
     },
     onError: (error: Error) => {
@@ -208,6 +227,8 @@ export function useEquipmentAssignments() {
     // Mutaciones
     createAssignment: createAssignmentMutation.mutate,
     isCreatingAssignment: createAssignmentMutation.isPending,
+    createAssignmentSuccess: createAssignmentMutation.isSuccess,
+    createAssignmentError: createAssignmentMutation.error,
     
     unassignEquipment: unassignEquipmentMutation.mutate,
     isUnassigning: unassignEquipmentMutation.isPending,
