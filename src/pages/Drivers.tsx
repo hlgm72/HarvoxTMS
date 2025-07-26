@@ -9,6 +9,7 @@ import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
 import { formatExpiryDate } from '@/lib/dateFormatting';
 import { useState } from "react";
 import { InviteDriverDialog } from "@/components/drivers/InviteDriverDialog";
+import { supabase } from "@/integrations/supabase/client";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -98,6 +99,19 @@ export default function Drivers() {
     const { deleteTestUser } = await import('@/utils/deleteTestUser');
     const result = await deleteTestUser();
     console.log('Delete result:', result);
+    
+    // También limpiar las invitaciones viejas
+    try {
+      const { data, error } = await supabase
+        .from('user_invitations')
+        .delete()
+        .eq('email', 'hgig7274@gmail.com');
+      
+      console.log('Invitations cleanup result:', { data, error });
+    } catch (error) {
+      console.error('Error cleaning up invitations:', error);
+    }
+    
     alert(JSON.stringify(result));
   };
   
