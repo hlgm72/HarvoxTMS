@@ -44,8 +44,9 @@ export const ProtectedRoute = ({
     return <Navigate to="/" replace />;
   }
 
-  // Check role requirement
-  if (requiredRole && userRole?.role !== requiredRole) {
+  // Check role requirement - check if user has the required role among ALL their roles
+  const hasRequiredRole = requiredRole ? userRoles?.some(role => role.role === requiredRole) : true;
+  if (requiredRole && !hasRequiredRole) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
