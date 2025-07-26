@@ -127,13 +127,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const refreshRoles = useCallback(async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      console.log('🚫 No user found, cannot refresh roles');
+      return;
+    }
+    
+    console.log('🔄 Starting role refresh for user:', user.id);
+    
+    // Add a small delay to ensure database consistency after invitation acceptance
+    await new Promise(resolve => setTimeout(resolve, 250));
     
     const roles = await fetchUserRoles(user.id);
+    console.log('🔄 Fetched roles after refresh:', roles);
+    console.log('🔄 Roles count:', (roles || []).length);
+    
     setUserRoles(roles);
     
     const selectedRole = determineCurrentRole(roles);
+    console.log('🔄 Selected role after refresh:', selectedRole);
     setCurrentRole(selectedRole);
+    
+    // Force update to ensure state changes are propagated
+    _forceUpdate();
   }, [user?.id, fetchUserRoles, determineCurrentRole]);
 
   const switchRole = useCallback((roleId: string) => {

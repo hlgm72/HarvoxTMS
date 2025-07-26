@@ -56,9 +56,13 @@ export default function InvitationCallback() {
 
         // **CRÍTICO**: Refrescar los roles antes de redirigir
         console.log('🔄 Refreshing user roles after invitation acceptance...');
+        
+        // Esperar un poco más para asegurar que la inserción en la BD se complete
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
         await refreshRoles();
         
-        // Pequeña pausa para asegurar que los roles se carguen
+        // Pausa adicional para asegurar que los roles se carguen completamente
         await new Promise(resolve => setTimeout(resolve, 500));
 
         // Redirect to appropriate dashboard based on role
