@@ -132,10 +132,34 @@ export default function Invitation() {
         throw new Error(result.error || 'Error accepting invitation');
       }
 
-      showSuccess("Account Created Successfully!", `Welcome to ${invitation.companyName}. You can now log in with your credentials.`);
+      showSuccess("¡Cuenta Creada Exitosamente!", `Bienvenido a ${invitation.companyName}. Iniciando sesión automáticamente...`);
 
-      // Redirect to login page with email pre-filled
-      navigate(`/auth?email=${encodeURIComponent(invitation.email)}&message=account_created`);
+      // Auto-login the user after account creation
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: invitation.email,
+        password: formData.password,
+      });
+
+      if (signInError) {
+        throw new Error(`Error al iniciar sesión: ${signInError.message}`);
+      }
+
+      // Wait for auth state to update and then refresh roles
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Redirect to appropriate dashboard based on role
+      const userRole = result.user?.role || invitation.role;
+      if (userRole === 'driver') {
+        navigate('/dashboard/driver');
+      } else if (userRole === 'dispatcher') {
+        navigate('/dashboard/dispatch');
+      } else if (userRole === 'operations_manager') {
+        navigate('/dashboard/operations');
+      } else if (userRole === 'company_owner') {
+        navigate('/dashboard/owner');
+      } else {
+        navigate('/dashboard');
+      }
 
     } catch (err: any) {
       setError(err.message || 'Error creating account');
