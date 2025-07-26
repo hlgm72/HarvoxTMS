@@ -32,7 +32,7 @@ export const DriverInvite = ({
       </Text>
       {hireDate && (
         <Text style={hireDateText}>
-          📅 <strong>Fecha de contratación:</strong> {hireDate}
+          📅 <strong>Fecha de contratacion:</strong> {hireDate}
         </Text>
       )}
     </Section>
