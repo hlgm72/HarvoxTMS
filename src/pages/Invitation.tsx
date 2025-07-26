@@ -147,30 +147,9 @@ export default function Invitation() {
         throw new Error(`Error al iniciar sesión: ${signInError.message}`);
       }
 
-      // Set flag and dispatch custom event to refresh profile data
-      localStorage.setItem('profile_refresh_needed', 'true');
-      console.log('🔄 Setting profile refresh flag for new user');
-      
-      // Dispatch custom event for immediate refresh in same tab
-      window.dispatchEvent(new CustomEvent('profileRefreshNeeded'));
-      console.log('🔄 Dispatched profileRefreshNeeded event');
-
-      // Wait for auth state to update and then refresh roles
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Redirect to appropriate dashboard based on role with invitation flag
+      // Redirect to processing page with invitation token and role
       const userRole = result.user?.role || invitation.role;
-      if (userRole === 'driver') {
-        navigate('/dashboard/driver?from_invitation=true');
-      } else if (userRole === 'dispatcher') {
-        navigate('/dashboard/dispatch?from_invitation=true');
-      } else if (userRole === 'operations_manager') {
-        navigate('/dashboard/operations?from_invitation=true');
-      } else if (userRole === 'company_owner') {
-        navigate('/dashboard/owner?from_invitation=true');
-      } else {
-        navigate('/dashboard?from_invitation=true');
-      }
+      navigate(`/invitation/callback?token=${token}&role=${userRole}&from_manual=true`);
 
     } catch (err: any) {
       setError(err.message || 'Error creating account');

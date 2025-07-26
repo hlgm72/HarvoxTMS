@@ -16,12 +16,14 @@ export default function InvitationCallback() {
     const handleInvitationCallback = async () => {
       try {
         const invitationToken = searchParams.get('token');
+        const isFromManual = searchParams.get('from_manual') === 'true';
+        const presetRole = searchParams.get('role');
         
         if (!invitationToken) {
           throw new Error('No invitation token provided');
         }
 
-        // Get the current session after OAuth redirect
+        // Get the current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -33,28 +35,37 @@ export default function InvitationCallback() {
           throw new Error('No user session found');
         }
 
-        console.log('Processing Google invitation for user:', session.user.id);
+        console.log('Processing invitation for user:', session.user.id, '(from manual:', isFromManual, ')');
 
-        // Detect user's timezone from browser
-        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        console.log('Detected user timezone:', userTimezone);
+        let result;
+        
+        if (isFromManual) {
+          // For manual email/password signup, the invitation was already processed
+          // We just need to handle the role setup and navigation
+          result = { success: true, user: { role: presetRole } };
+        } else {
+          // For Google OAuth, we need to call the accept-google-invitation function
+          const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          console.log('Detected user timezone:', userTimezone);
 
-        // Call the accept-google-invitation function
-        const { data: result, error: functionError } = await supabase.functions.invoke('accept-google-invitation', {
-          body: {
-            invitationToken: invitationToken,
-            userEmail: session.user.email,
-            userId: session.user.id,
-            userTimezone: userTimezone
+          const { data: functionResult, error: functionError } = await supabase.functions.invoke('accept-google-invitation', {
+            body: {
+              invitationToken: invitationToken,
+              userEmail: session.user.email,
+              userId: session.user.id,
+              userTimezone: userTimezone
+            }
+          });
+
+          if (functionError) {
+            throw new Error(functionError.message || 'Error accepting invitation');
           }
-        });
 
-        if (functionError) {
-          throw new Error(functionError.message || 'Error accepting invitation');
-        }
-
-        if (!result.success) {
-          throw new Error(result.error || 'Error accepting invitation');
+          if (!functionResult.success) {
+            throw new Error(functionResult.error || 'Error accepting invitation');
+          }
+          
+          result = functionResult;
         }
 
         // Don't show success message here - it will be shown in the Dashboard
