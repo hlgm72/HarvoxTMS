@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 
 interface PaymentMethod {
   id: string;
@@ -31,7 +31,7 @@ interface PaymentReport {
 export const usePaymentMethods = () => {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
 
   /**
    * Cargar métodos de pago disponibles para la compañía

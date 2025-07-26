@@ -41,7 +41,6 @@ import {
   Activity, Clock, AlertCircle, TrendingUp, Search, Filter, X, UserPlus, Mail, Shield, Edit, Trash2, Eye,
   Truck
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { useFleetNotifications } from "@/components/notifications";
 import { handleTextBlur, createTextHandlers } from "@/lib/textUtils";
 import { supabase } from "@/integrations/supabase/client";
@@ -84,8 +83,7 @@ const ROLE_OPTIONS = [
 export default function Users() {
   const { t } = useTranslation(['common']);
   const { user, userRole } = useAuth();
-  const { showSuccess, showError } = useFleetNotifications();
-  const { toast } = useToast();
+  const { showSuccess, showError, showInfo } = useFleetNotifications();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -711,7 +709,7 @@ export default function Users() {
                                 size="sm"
                                 onClick={() => {
                                   // TODO: Implementar eliminación de usuario
-                                  toast({ title: 'Función de eliminar usuario próximamente', variant: 'default' });
+                                  showInfo('Función de eliminar usuario próximamente');
                                 }}
                               >
                                 <Trash2 className="h-4 w-4" />

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { useFleetNotifications } from '@/components/notifications/NotificationProvider';
 
 interface PWAInstallPrompt extends Event {
@@ -21,7 +21,7 @@ export const usePWA = (): PWAHook => {
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const { showNotification } = useFleetNotifications();
 
   // Check if device is mobile and potentially installable

@@ -7,12 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Building2, Shield, Users, BarChart3 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 
 export default function Invitation() {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -106,10 +106,7 @@ export default function Invitation() {
         throw new Error(result.error || 'Error accepting invitation');
       }
 
-      toast({
-        title: "Account Created Successfully!",
-        description: `Welcome to ${invitation.companyName}. You can now log in with your credentials.`,
-      });
+      showSuccess("Account Created Successfully!", `Welcome to ${invitation.companyName}. You can now log in with your credentials.`);
 
       // Redirect to login page with email pre-filled
       navigate(`/auth?email=${encodeURIComponent(invitation.email)}&message=account_created`);

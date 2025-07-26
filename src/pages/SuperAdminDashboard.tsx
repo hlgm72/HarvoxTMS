@@ -17,7 +17,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Layout } from '@/components/layout/Layout';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 // import { useFleetNotifications } from '@/components/notifications'; // Temporarily disabled due to provider context issue
 import { createTextHandlers, handlePhoneInput } from '@/lib/textUtils';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +55,7 @@ interface Company {
 export default function SuperAdminDashboard() {
   const { t, i18n } = useTranslation(['admin', 'common']);
   const { user, isSuperAdmin, loading } = useAuth();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   // Temporarily using toast instead of fleet notifications
 
   // Debug logs removed for performance optimization

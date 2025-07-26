@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 
 export const useDeleteLoad = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -110,18 +110,11 @@ export const useDeleteLoad = () => {
       // Invalidar las queries de cargas para refrescar la lista
       queryClient.invalidateQueries({ queryKey: ['loads'] });
       
-      toast({
-        title: "Éxito",
-        description: "Carga eliminada exitosamente",
-      });
+      showSuccess('Carga eliminada exitosamente');
     },
     onError: (error: Error) => {
       console.error('❌ useDeleteLoad - Error:', error);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      showError(`Error: ${error.message}`);
     },
   });
 };

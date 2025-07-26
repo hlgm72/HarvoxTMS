@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
-import { useToast } from './use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { getTodayInUserTimeZone } from '@/utils/dateUtils';
 
 export interface PaymentPeriod {
@@ -30,7 +30,7 @@ interface ReassignElementParams {
 export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFilters) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
 
   // Determine if parameter is a string (companyId) or filters object
   const filters: PaymentPeriodsFilters = typeof companyIdOrFilters === 'string' 
@@ -96,21 +96,14 @@ export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFi
       return data;
     },
     onSuccess: (data: any) => {
-      toast({
-        title: "Reasignación exitosa",
-        description: (data && typeof data === 'object' && data.message) || "El elemento ha sido reasignado correctamente",
-      });
+      showSuccess('El elemento ha sido reasignado correctamente');
       
       // Invalidar queries relacionadas
       queryClient.invalidateQueries({ queryKey: ['company-payment-periods'] });
       queryClient.invalidateQueries({ queryKey: ['loads'] });
     },
     onError: (error: any) => {
-      toast({
-        title: "Error en la reasignación",
-        description: error.message || "No se pudo reasignar el elemento",
-        variant: "destructive",
-      });
+      showError(error.message || 'No se pudo reasignar el elemento');
     },
   });
 
@@ -276,7 +269,7 @@ export const useNextPaymentPeriod = (companyId?: string) => {
 
 export const useReassignElement = () => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
 
   return useMutation({
     mutationFn: async (params: ReassignElementParams) => {
@@ -290,21 +283,14 @@ export const useReassignElement = () => {
       return data;
     },
     onSuccess: (data: any) => {
-      toast({
-        title: "Reasignación exitosa",
-        description: (data && typeof data === 'object' && data.message) || "El elemento ha sido reasignado correctamente",
-      });
+      showSuccess('El elemento ha sido reasignado correctamente');
       
       // Invalidar queries relacionadas
       queryClient.invalidateQueries({ queryKey: ['company-payment-periods'] });
       queryClient.invalidateQueries({ queryKey: ['loads'] });
     },
     onError: (error: any) => {
-      toast({
-        title: "Error en la reasignación",
-        description: error.message || "No se pudo reasignar el elemento",
-        variant: "destructive",
-      });
+      showError(error.message || 'No se pudo reasignar el elemento');
     },
   });
 };

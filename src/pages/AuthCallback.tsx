@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -17,11 +17,7 @@ export default function AuthCallback() {
         
         if (sessionError) {
           console.error('Session error:', sessionError);
-          toast({
-            title: "Authentication Error",
-            description: sessionError.message,
-            variant: "destructive"
-          });
+          showError(`Authentication Error: ${sessionError.message}`);
           navigate('/auth');
           return;
         }
@@ -39,10 +35,7 @@ export default function AuthCallback() {
           console.log('OAuth role query result:', { roleData, roleError });
 
           // Show success message
-          toast({
-            title: "¡Bienvenido!",
-            description: "Has sido autenticado exitosamente con Google.",
-          });
+          showSuccess('¡Bienvenido!', 'Has sido autenticado exitosamente con Google.');
 
           const roles = roleData || [];
           
@@ -100,11 +93,7 @@ export default function AuthCallback() {
           } else {
             // Usuario sin roles asignados - redirigir a página de acceso restringido
             console.log('OAuth: No roles found for user, redirecting to no-access page');
-            toast({
-              title: "Acceso Restringido",
-              description: "Tu cuenta no tiene permisos para acceder a esta aplicación.",
-              variant: "destructive"
-            });
+            showError('Acceso Restringido', 'Tu cuenta no tiene permisos para acceder a esta aplicación.');
             navigate('/no-access');
           }
         } else {
@@ -114,17 +103,13 @@ export default function AuthCallback() {
         }
       } catch (error) {
         console.error('Auth callback error:', error);
-        toast({
-          title: "Authentication Error",
-          description: "Something went wrong during authentication.",
-          variant: "destructive"
-        });
+        showError('Authentication Error', 'Something went wrong during authentication.');
         navigate('/auth');
       }
     };
 
     handleAuthCallback();
-  }, [navigate, toast]);
+  }, [navigate, showSuccess, showError]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

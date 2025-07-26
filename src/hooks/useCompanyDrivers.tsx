@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { useCompanyCache } from './useCompanyCache';
 import { useMemo } from 'react';
 
@@ -26,7 +26,7 @@ export interface CompanyDriver {
 
 export const useCompanyDrivers = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const { userCompany, companyUsers, isLoading: cacheLoading, error: cacheError } = useCompanyCache();
 
   // Memoizar queryKey para evitar re-renders y deduplicar queries

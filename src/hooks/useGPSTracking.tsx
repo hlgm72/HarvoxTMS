@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
-import { useToast } from './use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 
 // Global Capacitor interface declaration
 declare global {
@@ -36,7 +36,7 @@ interface GPSTrackingState {
 
 export const useGPSTracking = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const [state, setState] = useState<GPSTrackingState>({
     position: null,
     isTracking: false,
@@ -58,22 +58,14 @@ export const useGPSTracking = () => {
         setState(prev => ({ ...prev, isPermissionGranted: isGranted }));
         
         if (!isGranted) {
-          toast({
-            title: "Permisos de ubicación requeridos",
-            description: "Para rastrear el vehículo necesitamos acceso a la ubicación",
-            variant: "destructive"
-          });
+          showError("Permisos de ubicación requeridos", "Para rastrear el vehículo necesitamos acceso a la ubicación");
         }
         
         return isGranted;
       } else {
         // Web environment - check navigator.geolocation
         if (!navigator.geolocation) {
-          toast({
-            title: "Geolocalización no disponible",
-            description: "Tu navegador no soporta geolocalización",
-            variant: "destructive"
-          });
+          showError("Geolocalización no disponible", "Tu navegador no soporta geolocalización");
           return false;
         }
         
@@ -83,14 +75,10 @@ export const useGPSTracking = () => {
       }
     } catch (error) {
       console.error('Error requesting permissions:', error);
-      toast({
-        title: "Error de permisos",
-        description: "No se pudieron solicitar los permisos de ubicación",
-        variant: "destructive"
-      });
+      showError("Error de permisos", "No se pudieron solicitar los permisos de ubicación");
       return false;
     }
-  }, [toast]);
+  }, [showError]);
 
   // Get current position
   const getCurrentPosition = useCallback(async () => {
@@ -139,14 +127,10 @@ export const useGPSTracking = () => {
       return position;
     } catch (error) {
       console.error('Error getting position:', error);
-      toast({
-        title: "Error de ubicación",
-        description: "No se pudo obtener la ubicación actual",
-        variant: "destructive"
-      });
+      showError("Error de ubicación", "No se pudo obtener la ubicación actual");
       return null;
     }
-  }, [toast]);
+  }, [showError]);
 
   // Save location to database
   const saveLocationToDatabase = useCallback(async (position: Position) => {
@@ -248,21 +232,14 @@ export const useGPSTracking = () => {
 
       setState(prev => ({ ...prev, isTracking: true }));
       
-      toast({
-        title: "Tracking iniciado",
-        description: "La ubicación del vehículo se está rastreando"
-      });
+      showSuccess("Tracking iniciado", "La ubicación del vehículo se está rastreando");
 
       return watchId.toString();
     } catch (error) {
       console.error('Error starting tracking:', error);
-      toast({
-        title: "Error de tracking",
-        description: "No se pudo iniciar el rastreo de ubicación",
-        variant: "destructive"
-      });
+      showError("Error de tracking", "No se pudo iniciar el rastreo de ubicación");
     }
-  }, [state.isPermissionGranted, requestPermissions, saveLocationToDatabase, toast]);
+  }, [state.isPermissionGranted, requestPermissions, saveLocationToDatabase, showSuccess, showError]);
 
   // Stop tracking
   const stopTracking = useCallback(async (watchId: string) => {
@@ -276,14 +253,11 @@ export const useGPSTracking = () => {
       
       setState(prev => ({ ...prev, isTracking: false }));
       
-      toast({
-        title: "Tracking detenido",
-        description: "El rastreo de ubicación se ha detenido"
-      });
+      showSuccess("Tracking detenido", "El rastreo de ubicación se ha detenido");
     } catch (error) {
       console.error('Error stopping tracking:', error);
     }
-  }, [toast]);
+  }, [showSuccess]);
 
   // Check permissions on mount
   useEffect(() => {

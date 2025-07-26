@@ -2,7 +2,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 
 export interface CreateLoadData {
   id?: string;
@@ -296,7 +296,7 @@ const assignPaymentPeriodToLoad = async (loadId: string): Promise<void> => {
 
 export const useCreateLoad = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
 
   return useMutation({

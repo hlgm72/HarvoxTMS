@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 
 interface PaymentPeriodStatus {
   isLocked: boolean;
@@ -16,7 +16,7 @@ interface PaymentPeriodStatus {
  */
 export const usePaymentPeriodProtection = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
 
   /**
    * Verifica el estado de bloqueo de un período de pago

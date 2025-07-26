@@ -1,6 +1,20 @@
-// Re-export FleetNotifications for consistent toast usage across the app
-import { useFleetNotifications } from "@/components/notifications";
+// This file has been deprecated in favor of useFleetNotifications
+// All notification functionality has been unified under the FleetNotifications system
+// 
+// To migrate from useToast to useFleetNotifications:
+// OLD: const { toast } = useToast();
+// NEW: const { showSuccess, showError, showWarning, showInfo } = useFleetNotifications();
+//
+// Migration examples:
+// OLD: toast({ title: "Success", description: "Action completed" });
+// NEW: showSuccess("Success", "Action completed");
+//
+// OLD: toast({ title: "Error", description: "Something went wrong", variant: "destructive" });
+// NEW: showError("Error", "Something went wrong");
 
+export { useFleetNotifications } from '@/components/notifications';
+
+// Re-export types for backward compatibility
 export interface Toast {
   id: string;
   title?: string;
@@ -9,23 +23,3 @@ export interface Toast {
   duration?: number;
   variant?: 'default' | 'destructive';
 }
-
-function useToast() {
-  const fleetNotifications = useFleetNotifications();
-  
-  const toast = ({ title, description, variant, duration }: Omit<Toast, 'id'>) => {
-    if (variant === 'destructive') {
-      fleetNotifications.showError(title || 'Error', description);
-    } else {
-      fleetNotifications.showSuccess(title || 'Success', description);
-    }
-  };
-
-  return {
-    toast,
-    toasts: [] as Toast[], // Empty array to satisfy existing code
-    dismiss: () => {} // Not needed with FleetNotifications
-  };
-}
-
-export { useToast };

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { useUserCompanies } from '@/hooks/useUserCompanies';
 
 export interface FuelExpenseFilters {
@@ -97,7 +97,7 @@ export function useCreateFuelExpense() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
 
   return useMutation({
     mutationFn: async (data: CreateFuelExpenseData) => {
@@ -118,10 +118,7 @@ export function useCreateFuelExpense() {
       return result;
     },
     onSuccess: () => {
-      toast({
-        title: 'Gasto de combustible creado',
-        description: 'El gasto ha sido registrado exitosamente.',
-      });
+      showSuccess('Gasto de combustible creado exitosamente');
       queryClient.invalidateQueries({ 
         queryKey: ['fuel-expenses', user?.id, selectedCompany?.id] 
       });
@@ -131,11 +128,7 @@ export function useCreateFuelExpense() {
     },
     onError: (error) => {
       console.error('Error creating fuel expense:', error);
-      toast({
-        title: 'Error',
-        description: 'No se pudo crear el gasto de combustible.',
-        variant: 'destructive',
-      });
+      showError('No se pudo crear el gasto de combustible');
     },
   });
 }
@@ -144,7 +137,7 @@ export function useUpdateFuelExpense() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
 
   return useMutation({
     mutationFn: async ({ id, ...data }: UpdateFuelExpenseData) => {
@@ -163,10 +156,7 @@ export function useUpdateFuelExpense() {
       return result;
     },
     onSuccess: () => {
-      toast({
-        title: 'Gasto actualizado',
-        description: 'El gasto de combustible ha sido actualizado exitosamente.',
-      });
+      showSuccess('Gasto de combustible actualizado exitosamente');
       queryClient.invalidateQueries({ 
         queryKey: ['fuel-expenses', user?.id, selectedCompany?.id] 
       });
@@ -176,11 +166,7 @@ export function useUpdateFuelExpense() {
     },
     onError: (error) => {
       console.error('Error updating fuel expense:', error);
-      toast({
-        title: 'Error',
-        description: 'No se pudo actualizar el gasto de combustible.',
-        variant: 'destructive',
-      });
+      showError('No se pudo actualizar el gasto de combustible');
     },
   });
 }
@@ -189,7 +175,7 @@ export function useDeleteFuelExpense() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -204,10 +190,7 @@ export function useDeleteFuelExpense() {
       }
     },
     onSuccess: () => {
-      toast({
-        title: 'Gasto eliminado',
-        description: 'El gasto de combustible ha sido eliminado exitosamente.',
-      });
+      showSuccess('Gasto de combustible eliminado exitosamente');
       queryClient.invalidateQueries({ 
         queryKey: ['fuel-expenses', user?.id, selectedCompany?.id] 
       });
@@ -217,11 +200,7 @@ export function useDeleteFuelExpense() {
     },
     onError: (error) => {
       console.error('Error deleting fuel expense:', error);
-      toast({
-        title: 'Error',
-        description: 'No se pudo eliminar el gasto de combustible.',
-        variant: 'destructive',
-      });
+      showError('No se pudo eliminar el gasto de combustible');
     },
   });
 }

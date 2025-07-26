@@ -10,7 +10,6 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 import { useFleetNotifications } from '@/components/notifications';
 import { createTextHandlers } from '@/lib/textUtils';
 import eagleLogo from "@/assets/high_res_eagle.svg";
@@ -20,7 +19,6 @@ export default function Auth() {
   const { t, i18n } = useTranslation(['auth', 'common']);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { toast } = useToast();
   const { showSuccess, showError } = useFleetNotifications();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);

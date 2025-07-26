@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 
 export default function InvitationCallback() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
@@ -50,10 +50,7 @@ export default function InvitationCallback() {
           throw new Error(result.error || 'Error accepting invitation');
         }
 
-        toast({
-          title: "¡Invitación Aceptada!",
-          description: `Bienvenido a ${result.user.company}. Tu rol es: ${result.user.role}`,
-        });
+        showSuccess("¡Invitación Aceptada!", `Bienvenido a ${result.user.company}. Tu rol es: ${result.user.role}`);
 
         // Redirect to appropriate dashboard based on role
         const role = result.user.role;
@@ -73,17 +70,13 @@ export default function InvitationCallback() {
 
       } catch (error: any) {
         console.error('Invitation callback error:', error);
-        toast({
-          title: "Error",
-          description: error.message || "Error processing invitation",
-          variant: "destructive"
-        });
+        showError("Error", error.message || "Error processing invitation");
         navigate('/auth');
       }
     };
 
     handleInvitationCallback();
-  }, [navigate, toast, searchParams]);
+  }, [navigate, showSuccess, showError, searchParams]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
