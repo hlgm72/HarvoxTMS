@@ -60,13 +60,6 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
     setLoading(true);
 
     try {
-      console.log('Sending driver invitation with data:', {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        hireDate: formData.hireDate.toISOString().split('T')[0]
-      });
-
       const { data, error } = await supabase.functions.invoke('send-driver-invitation', {
         body: {
           firstName: formData.firstName,
@@ -76,17 +69,13 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
         }
       });
 
-      console.log('Function response:', { data, error });
-
-      // Check for edge function errors first
+      // Handle Supabase function errors (network/connection issues)
       if (error) {
-        console.error('Supabase function error:', error);
-        throw error;
+        throw new Error('Error de conexión al enviar invitación');
       }
 
       // Check if the function returned an error response
       if (data && !data.success) {
-        console.error('Function returned error:', data.error);
         throw new Error(data.error || 'Error al enviar invitación');
       }
 
@@ -107,43 +96,8 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
       onClose();
     } catch (error: any) {
       console.error('Error sending driver invitation:', error);
-      console.error('Error details:', {
-        name: error.name,
-        message: error.message,
-        context: error.context,
-        details: error.details
-      });
       
-      let errorMessage = "No se pudo enviar la invitación";
-      
-      // For FunctionsHttpError, the actual error response is in a different location
-      if (error.name === 'FunctionsHttpError') {
-        try {
-          // The error response should be available through different paths
-          const response = await error.response?.json?.() || error.context?.body;
-          console.log('Extracted error response:', response);
-          
-          if (response && response.error) {
-            errorMessage = response.error;
-          } else if (typeof response === 'string') {
-            try {
-              const parsed = JSON.parse(response);
-              errorMessage = parsed.error || parsed.message || errorMessage;
-            } catch {
-              errorMessage = response;
-            }
-          }
-        } catch (parseError) {
-          console.error('Could not parse error response:', parseError);
-          // For 409 conflicts, provide a helpful default message
-          if (error.message?.includes('409') || error.context?.status === 409) {
-            errorMessage = "Ya existe una invitación pendiente para este email";
-          }
-        }
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-
+      const errorMessage = error.message || "No se pudo enviar la invitación";
       showError("Error", errorMessage);
     } finally {
       setLoading(false);

@@ -103,7 +103,7 @@ const handler = async (req: Request): Promise<Response> => {
           error: "Ya existe una invitación pendiente para este email"
         }),
         {
-          status: 409, // Conflict status code for duplicate resource
+          status: 200, // Always return 200 to make error handling consistent
           headers: { 
             "Content-Type": "application/json",
             ...corsHeaders 
@@ -234,7 +234,7 @@ const handler = async (req: Request): Promise<Response> => {
         error: error.message || "Internal server error"
       }),
       {
-        status: 400,
+        status: 200, // Always return 200 for consistent error handling
         headers: { 
           "Content-Type": "application/json",
           ...corsHeaders 
