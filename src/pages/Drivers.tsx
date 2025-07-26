@@ -9,7 +9,6 @@ import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
 import { formatExpiryDate } from '@/lib/dateFormatting';
 import { useState } from "react";
 import { InviteDriverDialog } from "@/components/drivers/InviteDriverDialog";
-import { supabase } from "@/integrations/supabase/client";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -92,37 +91,10 @@ const DriverSkeleton = () => (
 );
 
 export default function Drivers() {
-  console.log('🎯 Drivers page rendering...');
-  
-  // Temporary deletion helper
-  const handleDeleteTestUser = async () => {
-    const { deleteTestUser } = await import('@/utils/deleteTestUser');
-    const result = await deleteTestUser();
-    console.log('Delete result:', result);
-    
-    // También limpiar las invitaciones viejas
-    try {
-      const { data, error } = await supabase
-        .from('user_invitations')
-        .delete()
-        .eq('email', 'hgig7274@gmail.com');
-      
-      console.log('Invitations cleanup result:', { data, error });
-    } catch (error) {
-      console.error('Error cleaning up invitations:', error);
-    }
-    
-    alert(JSON.stringify(result));
-  };
-  
-  
   const { drivers, loading, refetch } = useCompanyDrivers();
   const [showInviteDialog, setShowInviteDialog] = useState(false);
-  
-  console.log('🎯 Drivers page - state:', { driversCount: drivers.length, loading });
 
   if (loading) {
-    console.log('⏳ Mostrando skeleton de conductores...');
     return (
       <>
         <PageToolbar 
@@ -148,7 +120,6 @@ export default function Drivers() {
   }
 
   if (drivers.length === 0) {
-    console.log('📋 Sin conductores registrados');
     return (
       <>
         <PageToolbar 
@@ -179,9 +150,6 @@ export default function Drivers() {
     );
   }
 
-  console.log(`✅ Renderizando lista de ${drivers.length} conductores`);
-  
-
   return (
       <>
         <PageToolbar 
@@ -189,15 +157,10 @@ export default function Drivers() {
           title={`Gestión de Conductores`}
           subtitle={`${drivers.length} conductores • ${drivers.filter(d => d.current_status === 'available').length} disponibles • ${drivers.filter(d => d.current_status === 'on_route').length} en ruta`}
           actions={
-            <div className="flex gap-2">
-              <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
-                <UserPlus className="h-4 w-4" />
-                Nuevo Conductor
-              </Button>
-              <Button variant="destructive" size="sm" onClick={handleDeleteTestUser}>
-                Borrar Test User
-              </Button>
-            </div>
+            <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
+              <UserPlus className="h-4 w-4" />
+              Nuevo Conductor
+            </Button>
           }
         />
         <div className="p-2 md:p-4 space-y-6">
