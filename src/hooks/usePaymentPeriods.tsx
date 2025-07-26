@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
-import { toast } from './use-toast';
+import { useToast } from './use-toast';
 import { getTodayInUserTimeZone } from '@/utils/dateUtils';
 
 export interface PaymentPeriod {
@@ -30,6 +30,7 @@ interface ReassignElementParams {
 export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFilters) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Determine if parameter is a string (companyId) or filters object
   const filters: PaymentPeriodsFilters = typeof companyIdOrFilters === 'string' 
@@ -275,6 +276,7 @@ export const useNextPaymentPeriod = (companyId?: string) => {
 
 export const useReassignElement = () => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   return useMutation({
     mutationFn: async (params: ReassignElementParams) => {

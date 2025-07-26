@@ -28,9 +28,4 @@ function useToast() {
   };
 }
 
-const toast = ({ title, description, variant, duration }: Omit<Toast, 'id'>) => {
-  // This standalone function can't use the hook, so we'll keep basic functionality
-  console.warn('Using standalone toast function - consider using useFleetNotifications hook instead');
-};
-
-export { useToast, toast };
+export { useToast };

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useUserCompanies } from '@/hooks/useUserCompanies';
 
 export interface FuelExpenseFilters {
@@ -97,6 +97,7 @@ export function useCreateFuelExpense() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
+  const { toast } = useToast();
 
   return useMutation({
     mutationFn: async (data: CreateFuelExpenseData) => {
@@ -143,6 +144,7 @@ export function useUpdateFuelExpense() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
+  const { toast } = useToast();
 
   return useMutation({
     mutationFn: async ({ id, ...data }: UpdateFuelExpenseData) => {
@@ -187,6 +189,7 @@ export function useDeleteFuelExpense() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
+  const { toast } = useToast();
 
   return useMutation({
     mutationFn: async (id: string) => {
