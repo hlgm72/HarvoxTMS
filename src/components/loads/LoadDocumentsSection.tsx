@@ -18,88 +18,74 @@ interface LoadDocument {
   fileName: string;
   fileSize?: number;
   uploadedAt: Date | string;
-  url?: string;
-  isRequired?: boolean;
-  file?: File; // For temporary documents
+  url: string;
 }
 
 interface LoadDocumentsSectionProps {
-  loadId?: string | null; // Optional for when creating a new load
-  loadData?: {
-    load_number: string;
-    total_amount: number;
-    commodity: string;
-    weight_lbs?: number;
-    client_name?: string;
-    driver_name?: string;
-    loadStops: any[];
-    company_name?: string;
-    company_phone?: string;
-    company_email?: string;
-  };
-  onDocumentsChange?: (documents: LoadDocument[]) => void;
+  loadId?: string;
+  loadNumber?: string; // Added for backward compatibility
+  loadData?: any;
+  documents?: LoadDocument[];
   temporaryDocuments?: LoadDocument[];
+  onDocumentsChange?: (documents: LoadDocument[]) => void;
   onTemporaryDocumentsChange?: (documents: LoadDocument[]) => void;
-  
-  // Dialog mode props
   isDialogMode?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onClose?: () => void; // Added for backward compatibility
   isOpen?: boolean;
-  onClose?: () => void;
-  loadNumber?: string;
+  wizardMode?: boolean;
+  canGenerate?: boolean;
+  showGenerateButton?: boolean;
 }
 
 const documentTypes = [
   {
     type: 'rate_confirmation' as const,
     label: 'Rate Confirmation',
-    description: 'Documento del broker con tarifas y términos',
+    description: 'Confirmación de tarifa del broker',
     required: true,
-    color: 'destructive'
+    generated: false
   },
   {
     type: 'driver_instructions' as const,
     label: 'Driver Instructions',
-    description: 'Instrucciones específicas del broker',
+    description: 'Instrucciones específicas para el conductor',
     required: false,
-    color: 'secondary'
+    generated: false
   },
   {
     type: 'bol' as const,
-    label: 'Bill of Lading (BOL)',
+    label: 'Bill of Lading',
     description: 'Documento de embarque',
     required: false,
-    color: 'secondary'
+    generated: false
   },
   {
     type: 'load_order' as const,
     label: 'Load Order',
-    description: 'Documento personalizado para el conductor',
+    description: 'Orden de carga generada automáticamente',
     required: false,
-    color: 'default',
-    isGenerated: true // Flag to distinguish generated docs
+    generated: true
   }
 ];
 
-export function LoadDocumentsSection({ 
-  loadId, 
-  loadData, 
-  onDocumentsChange,
+export function LoadDocumentsSection({
+  loadId,
+  loadData,
+  documents: propDocuments = [],
   temporaryDocuments = [],
+  onDocumentsChange,
   onTemporaryDocumentsChange,
-  // Dialog mode props
   isDialogMode = false,
+  onOpenChange,
   isOpen = false,
-  onClose,
-  loadNumber
+  wizardMode = false,
+  canGenerate = false,
+  showGenerateButton = false
 }: LoadDocumentsSectionProps) {
-  console.log('🔍 LoadDocumentsSection props:', { 
-    loadId, 
-    loadNumber, 
-    loadDataNumber: loadData?.load_number,
-    isDialogMode,
-    hasLoadData: !!loadData
-  });
-  const [documents, setDocuments] = useState<LoadDocument[]>([]);
+  const [documents, setDocuments] = useState<LoadDocument[]>(propDocuments);
+  const [uploadingDocuments, setUploadingDocuments] = useState<Set<string>>(new Set());
+  const [removingDocuments, setRemovingDocuments] = useState<Set<string>>(new Set());
   const [showGenerateLoadOrder, setShowGenerateLoadOrder] = useState(false);
   const [hasLoadOrder, setHasLoadOrder] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
@@ -107,498 +93,476 @@ export function LoadDocumentsSection({
   const queryClient = useQueryClient();
   const { notifyDocumentChange } = useLoadDocuments();
 
-  // Debug state changes - but don't close modal when loadData changes if it's open
+  // Check if Load Order exists
   useEffect(() => {
-    console.log('🔍 LoadDocumentsSection - loadData changed:', loadData);
-    console.log('🔍 LoadDocumentsSection - showGenerateLoadOrder:', showGenerateLoadOrder);
-  }, [loadData, showGenerateLoadOrder]);
+    const loadOrderExists = [...documents, ...temporaryDocuments].some(doc => doc.type === 'load_order');
+    setHasLoadOrder(loadOrderExists);
+  }, [documents, temporaryDocuments]);
 
-  // Debug temporaryDocuments changes
+  // Load documents from database when loadId changes
   useEffect(() => {
-    console.log('📋 LoadDocumentsSection - temporaryDocuments changed:', temporaryDocuments);
-  }, [temporaryDocuments]);
-
-  // Load existing documents when loadId is available (both modes)
-  useEffect(() => {
-    if (loadId && (isDialogMode || !isDialogMode)) {
+    if (loadId && loadId !== 'temp' && !wizardMode) {
       loadDocuments();
     }
-  }, [loadId, isDialogMode, isOpen]);
+  }, [loadId, wizardMode]);
+
+  // Update local state when prop documents change
+  useEffect(() => {
+    if (propDocuments) {
+      setDocuments(propDocuments);
+    }
+  }, [propDocuments]);
 
   const loadDocuments = async () => {
-    if (!loadId) return;
+    if (!loadId || loadId === 'temp') return;
 
     try {
-      const { data, error } = await supabase
+      console.log('🔄 LoadDocumentsSection - Loading documents for load:', loadId);
+      
+      const { data: loadDocuments, error } = await supabase
         .from('load_documents')
         .select('*')
         .eq('load_id', loadId)
-        .is('archived_at', null);
+        .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ LoadDocumentsSection - Error loading documents:', error);
+        throw error;
+      }
 
-      const loadDocuments: LoadDocument[] = data.map(doc => ({
+      console.log('✅ LoadDocumentsSection - Documents loaded:', loadDocuments?.length || 0);
+
+      const formattedDocuments: LoadDocument[] = (loadDocuments || []).map(doc => ({
         id: doc.id,
         type: doc.document_type as LoadDocument['type'],
         name: documentTypes.find(dt => dt.type === doc.document_type)?.label || doc.document_type,
         fileName: doc.file_name,
-        fileSize: doc.file_size,
-        uploadedAt: new Date(doc.created_at),
-        url: doc.file_url,
-        isRequired: doc.document_type === 'rate_confirmation'
+        fileSize: doc.file_size || undefined,
+        uploadedAt: doc.created_at,
+        url: doc.file_url
       }));
 
-      setDocuments(loadDocuments);
-      setHasLoadOrder(loadDocuments.some(doc => doc.type === 'load_order'));
-      onDocumentsChange?.(loadDocuments);
-      
-      console.log('📋 LoadDocumentsSection - Documents loaded:', {
-        total: loadDocuments.length,
-        types: loadDocuments.map(d => d.type),
-        hasLoadOrder: loadDocuments.some(doc => doc.type === 'load_order'),
-        loadOrderDoc: loadDocuments.find(doc => doc.type === 'load_order')
-      });
+      setDocuments(formattedDocuments);
+      onDocumentsChange?.(formattedDocuments);
     } catch (error) {
       console.error('Error loading documents:', error);
       showError("Error", "No se pudieron cargar los documentos");
     }
   };
 
-  const handleFileUpload = async (type: LoadDocument['type'], files: FileList | null) => {
-    console.log('🔄 handleFileUpload called', { 
-      type, 
-      filesCount: files?.length || 0, 
-      loadId,
-      loadNumber,
-      isDialogMode,
-      hasLoadData: !!loadData
-    });
-    
-    if (!files || files.length === 0) {
-      console.log('❌ No files selected');
-      return;
-    }
-    
-    // If no loadId, handle as temporary document
-    if (!loadId) {
-      console.log('📁 Handling as temporary document (no loadId)');
-      handleTemporaryFileUpload(type, files);
-      return;
+  const handleFileUpload = async (file: File, documentType: LoadDocument['type'], isReplacement = false) => {
+    if (!loadId || loadId === 'temp') {
+      return handleTemporaryFileUpload(file, documentType);
     }
 
-    const file = files[0];
-    
     // Validate file size (10MB limit)
     if (file.size > 10 * 1024 * 1024) {
-      toast({
-        title: "Error",
-        description: "El archivo es muy grande. Máximo 10MB permitido.",
-        variant: "destructive",
-      });
+      showError("Error", "El archivo es muy grande. Máximo 10MB permitido.");
       return;
     }
 
-    setUploading(type);
+    setUploading(documentType);
+    setUploadingDocuments(prev => new Set([...prev, documentType]));
 
     try {
-      // Generate custom file name based on load number and document type
-      const fileExt = file.name.split('.').pop();
-      const currentLoadNumber = loadNumber || loadData?.load_number || 'UNKNOWN';
-      console.log('🏷️ File naming - loadNumber:', loadNumber, 'loadData?.load_number:', loadData?.load_number, 'currentLoadNumber:', currentLoadNumber);
-      console.log('🏷️ Using load number for file naming:', currentLoadNumber);
-      
-      // Map document types to custom names
-      const documentNameMap: Record<string, string> = {
-        'rate_confirmation': 'Rate_Confirmation',
-        'driver_instructions': 'Driver_Instructions', 
-        'bol': 'Bill_of_Lading',
-        'load_order': 'Load_Order'
-      };
-      
-      const customName = documentNameMap[type];
-      let fileName = customName 
-        ? `${currentLoadNumber}_${customName}.${fileExt}`
-        : `${type}.${fileExt}`;
-      
-      console.log('🏷️ Generated fileName:', fileName);
-      
-      let filePath = `${loadId}/${fileName}`;
+      console.log('🔄 LoadDocumentsSection - Starting file upload:', {
+        fileName: file.name,
+        fileSize: file.size,
+        documentType,
+        loadId,
+        isReplacement
+      });
 
-      // Upload file to Supabase Storage
-      let uploadData, uploadError;
-      
-      // First try with upsert to replace existing files
-      ({ data: uploadData, error: uploadError } = await supabase.storage
-        .from('load-documents')
-        .upload(filePath, file, {
-          upsert: true
-        }));
-
-      // If still getting duplicate error, try with a new unique name
-      if (uploadError?.message?.includes('already exists') || uploadError?.message?.includes('Duplicate')) {
-        console.log('🔄 File exists, trying with unique name...');
-        const uniqueTimestamp = Date.now() + Math.random().toString(36).substr(2, 9);
-        const uniqueFileName = customName 
-          ? `${currentLoadNumber}_${customName}_${uniqueTimestamp}.${fileExt}`
-          : `${type}_${uniqueTimestamp}.${fileExt}`;
-        const uniqueFilePath = `${loadId}/${uniqueFileName}`;
-        
-        ({ data: uploadData, error: uploadError } = await supabase.storage
-          .from('load-documents')
-          .upload(uniqueFilePath, file));
-          
-        // Update the file path and name for the rest of the process
-        if (!uploadError) {
-          filePath = uniqueFilePath;
-          fileName = uniqueFileName;
-        }
-      }
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('load-documents')
-        .getPublicUrl(filePath);
-
-      // Get current user
+      // Get user info for folder structure
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) {
         throw new Error('Usuario no autenticado');
       }
 
-      // Save document metadata to database
-      const { data: docData, error: docError } = await supabase
-        .from('load_documents')
-        .insert({
-          load_id: loadId,
-          document_type: type,
-          file_name: fileName,
-          file_url: urlData.publicUrl,
-          file_size: file.size,
-          content_type: file.type,
-          uploaded_by: user.id
-        })
-        .select()
-        .single();
+      // Create unique file name with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const fileExtension = file.name.split('.').pop();
+      const fileName = `${documentType}_${loadData?.load_number || loadId}_${timestamp}.${fileExtension}`;
+      const filePath = `load-documents/${user.id}/${loadId}/${fileName}`;
 
-      if (docError) {
-        console.error('Database insert error:', docError);
-        throw docError;
+      console.log('📁 LoadDocumentsSection - Upload path:', filePath);
+
+      // If it's a replacement, find and remove the old document
+      let existingDocId = null;
+      if (isReplacement) {
+        const existingDoc = documents.find(doc => doc.type === documentType);
+        if (existingDoc) {
+          existingDocId = existingDoc.id;
+          // Remove old file from storage
+          const oldFilePath = existingDoc.url.split('/').slice(-4).join('/');
+          await supabase.storage
+            .from('documents')
+            .remove([oldFilePath]);
+        }
       }
 
-      // Add to local state
-      const newDocument: LoadDocument = {
-        id: docData.id,
-        type,
-        name: documentTypes.find(dt => dt.type === type)?.label || type,
-        fileName: fileName, // Use custom file name instead of original
-        fileSize: file.size,
-        uploadedAt: new Date(),
-        url: urlData.publicUrl,
-        isRequired: type === 'rate_confirmation'
+      // Upload file to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) {
+        console.error('❌ LoadDocumentsSection - Storage upload error:', uploadError);
+        throw uploadError;
+      }
+
+      console.log('✅ LoadDocumentsSection - File uploaded to storage:', uploadData.path);
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('documents')
+        .getPublicUrl(uploadData.path);
+
+      const publicUrl = urlData.publicUrl;
+      console.log('🔗 LoadDocumentsSection - Public URL generated:', publicUrl);
+
+      // Save document info to database
+      const documentData = {
+        load_id: loadId,
+        document_type: documentType,
+        file_name: file.name,
+        file_size: file.size,
+        file_url: publicUrl
       };
 
-      const updatedDocuments = [...documents, newDocument];
+      let result;
+      if (isReplacement && existingDocId) {
+        // Update existing record
+        result = await supabase
+          .from('load_documents')
+          .update(documentData)
+          .eq('id', existingDocId)
+          .select()
+          .single();
+      } else {
+        // Insert new record
+        result = await supabase
+          .from('load_documents')
+          .insert(documentData)
+          .select()
+          .single();
+      }
+
+      if (result.error) {
+        console.error('❌ LoadDocumentsSection - Database insert error:', result.error);
+        throw result.error;
+      }
+
+      console.log('✅ LoadDocumentsSection - Document saved to database:', result.data);
+
+      const newDocument: LoadDocument = {
+        id: result.data.id,
+        type: documentType,
+        name: documentTypes.find(dt => dt.type === documentType)?.label || documentType,
+        fileName: result.data.file_name,
+        fileSize: result.data.file_size,
+        uploadedAt: result.data.created_at,
+        url: result.data.file_url
+      };
+
+      // Update documents list
+      let updatedDocuments;
+      if (isReplacement) {
+        updatedDocuments = documents.map(doc => 
+          doc.type === documentType ? newDocument : doc
+        );
+      } else {
+        updatedDocuments = [...documents, newDocument];
+      }
+
       setDocuments(updatedDocuments);
       onDocumentsChange?.(updatedDocuments);
 
-      // Invalidate loads query to refresh the loads list
-      queryClient.invalidateQueries({ queryKey: ['loads'] });
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['load-documents', loadId] });
+      
+      // Notify context about the change
       notifyDocumentChange();
 
-      toast({
-        title: "Éxito",
-        description: `${newDocument.name} subido correctamente`,
-      });
+      showSuccess("Éxito", `${newDocument.name} subido correctamente`);
 
     } catch (error) {
       console.error('Error uploading document:', error);
-      toast({
-        title: "Error",
-        description: "No se pudo subir el documento. Intenta nuevamente.",
-        variant: "destructive",
-      });
+      showError("Error", "No se pudo subir el documento. Intenta nuevamente.");
     } finally {
       setUploading(null);
+      setUploadingDocuments(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(documentType);
+        return newSet;
+      });
     }
   };
 
-  const handleTemporaryFileUpload = (type: LoadDocument['type'], files: FileList) => {
-    console.log('📂 handleTemporaryFileUpload called', { type, file: files[0]?.name });
-    console.log('📂 Current temporaryDocuments BEFORE:', temporaryDocuments);
-    console.log('📂 onTemporaryDocumentsChange callback exists:', !!onTemporaryDocumentsChange);
-    
-    const file = files[0];
-    
-    // Validate file size (50MB limit)
+  const handleTemporaryFileUpload = async (file: File, documentType: LoadDocument['type']) => {
     const maxSize = 50 * 1024 * 1024;
     if (file.size > maxSize) {
-      toast({
-        title: "Error",
-        description: "El archivo es demasiado grande. Máximo 50MB.",
-        variant: "destructive",
-      });
+      showError("Error", "El archivo es demasiado grande. Máximo 50MB.");
       return;
     }
 
-    // Generate custom file name based on load number and document type
-    const fileExt = file.name.split('.').pop();
-    const currentLoadNumber = loadNumber || loadData?.load_number || 'TEMP';
-    console.log('📂 Temporary file naming - loadNumber:', loadNumber, 'loadData?.load_number:', loadData?.load_number, 'currentLoadNumber:', currentLoadNumber);
-    
-    // Map document types to custom names
-    const documentNameMap: Record<string, string> = {
-      'rate_confirmation': 'Rate_Confirmation',
-      'driver_instructions': 'Driver_Instructions', 
-      'bol': 'Bill_of_Lading',
-      'load_order': 'Load_Order'
-    };
-    
-    const customName = documentNameMap[type];
-    const customFileName = customName 
-      ? `${currentLoadNumber}_${customName}.${fileExt}`
-      : `${type}.${fileExt}`;
-    
-    console.log('📂 Generated custom fileName for temp document:', customFileName);
+    setUploading(documentType);
 
-    // Create temporary document with file data and custom name
-    const tempDocument: LoadDocument = {
-      id: `temp-${Date.now()}`,
-      type,
-      name: customFileName,
-      fileName: customFileName,
-      fileSize: file.size,
-      uploadedAt: new Date().toISOString(),
-      url: URL.createObjectURL(file), // Create blob URL for preview
-      isRequired: ['rate_confirmation', 'signed_contract'].includes(type),
-      file: file // Store the actual file for later upload
-    };
+    try {
+      // Create a temporary document that will be saved later
+      const tempDocument: LoadDocument = {
+        id: crypto.randomUUID(),
+        type: documentType,
+        name: documentTypes.find(dt => dt.type === documentType)?.label || documentType,
+        fileName: file.name,
+        fileSize: file.size,
+        uploadedAt: new Date(),
+        url: URL.createObjectURL(file) // Temporary URL
+      };
 
-    console.log('📂 Creating tempDocument:', tempDocument);
+      // Add file reference for later upload
+      (tempDocument as any).file = file;
 
-    const updatedTempDocs = [...temporaryDocuments, tempDocument];
-    console.log('📂 Updated temporaryDocuments AFTER:', updatedTempDocs);
-    
-    // Call the callback to update parent state
-    console.log('📂 Calling onTemporaryDocumentsChange with:', updatedTempDocs);
-    onTemporaryDocumentsChange?.(updatedTempDocs);
+      // Update temporary documents
+      const updatedTempDocs = [...temporaryDocuments, tempDocument];
+      onTemporaryDocumentsChange?.(updatedTempDocs);
 
-    // Also update local documents state for immediate UI feedback
-    const updatedDocuments = [...documents, tempDocument];
-    console.log('📂 Updating local documents state:', updatedDocuments);
-    setDocuments(updatedDocuments);
-    onDocumentsChange?.(updatedDocuments);
+      // Also add to local documents for display
+      const updatedDocuments = [...documents, tempDocument];
+      setDocuments(updatedDocuments);
+      onDocumentsChange?.(updatedDocuments);
 
-    toast({
-      title: "Documento agregado",
-      description: `${file.name} se subirá cuando guardes la carga.`,
-    });
+      showSuccess("Documento agregado", `${file.name} se subirá cuando guardes la carga.`);
+    } finally {
+      setUploading(null);
+    }
   };
 
   const handleRemoveTemporaryDocument = (documentId: string) => {
     const updatedTempDocs = temporaryDocuments.filter(doc => doc.id !== documentId);
     onTemporaryDocumentsChange?.(updatedTempDocs);
     
-    toast({
-      title: "Documento removido",
-      description: "El documento temporal ha sido eliminado.",
-    });
+    showSuccess("Documento removido", "El documento temporal ha sido eliminado.");
   };
 
   const handleRemoveDocument = async (documentId: string) => {
-    if (!loadId) return;
+    if (!loadId || loadId === 'temp') {
+      // Handle removal of temporary document
+      const docToRemove = documents.find(doc => doc.id === documentId);
+      if (docToRemove) {
+        URL.revokeObjectURL(docToRemove.url); // Clean up blob URL
+        const updatedDocuments = documents.filter(doc => doc.id !== documentId);
+        setDocuments(updatedDocuments);
+        onDocumentsChange?.(updatedDocuments);
+        handleRemoveTemporaryDocument(documentId);
+      }
+      return;
+    }
+
+    setRemovingDocuments(prev => new Set([...prev, documentId]));
 
     try {
-      // Get document info before deleting
+      console.log('🔄 LoadDocumentsSection - Removing document:', documentId);
+
+      // Get document info first
       const { data: documentData, error: fetchError } = await supabase
         .from('load_documents')
         .select('file_url')
         .eq('id', documentId)
         .single();
 
-      if (fetchError) throw fetchError;
+      if (fetchError) {
+        console.error('❌ LoadDocumentsSection - Error fetching document for removal:', fetchError);
+        throw fetchError;
+      }
 
-      // Extract file path from URL to delete from Storage
-      if (documentData?.file_url) {
-        const url = new URL(documentData.file_url);
-        const pathParts = url.pathname.split('/');
-        const bucketIndex = pathParts.findIndex(part => part === 'load-documents');
-        if (bucketIndex !== -1 && bucketIndex < pathParts.length - 1) {
-          const filePath = pathParts.slice(bucketIndex + 1).join('/');
-          
-          // Delete file from Storage
-          const { error: storageError } = await supabase.storage
-            .from('load-documents')
-            .remove([filePath]);
+      // Remove from storage by extracting path from URL
+      if (documentData.file_url) {
+        try {
+          const urlPath = new URL(documentData.file_url).pathname;
+          const filePath = urlPath.split('/documents/')[1]; // Extract the path after /documents/
+          if (filePath) {
+            const { error: storageError } = await supabase.storage
+              .from('documents')
+              .remove([filePath]);
 
-          if (storageError) {
-            console.error('Error deleting file from storage:', storageError);
+            if (storageError) {
+              console.error('❌ LoadDocumentsSection - Error removing from storage:', storageError);
+              // Continue with database removal even if storage fails
+            }
           }
+        } catch (urlError) {
+          console.error('❌ LoadDocumentsSection - Error parsing URL for storage removal:', urlError);
+          // Continue with database removal even if storage fails
         }
       }
 
-      // Delete document record from database (hard delete)
-      const { error } = await supabase
+      // Remove from database
+      const { error: dbError } = await supabase
         .from('load_documents')
         .delete()
         .eq('id', documentId);
 
-      if (error) throw error;
+      if (dbError) {
+        console.error('❌ LoadDocumentsSection - Error removing from database:', dbError);
+        throw dbError;
+      }
 
+      console.log('✅ LoadDocumentsSection - Document removed successfully');
+
+      // Update local state
       const updatedDocuments = documents.filter(doc => doc.id !== documentId);
       setDocuments(updatedDocuments);
       onDocumentsChange?.(updatedDocuments);
 
-      // Invalidate loads query to refresh the loads list
-      queryClient.invalidateQueries({ queryKey: ['loads'] });
+      // Invalidate queries and notify context
+      queryClient.invalidateQueries({ queryKey: ['load-documents', loadId] });
       notifyDocumentChange();
-      
-      // Refrescar los documentos locales también
-      console.log('🔄 LoadDocumentsSection - Reloading documents after deletion');
+
+      // Reload documents to ensure sync
       setTimeout(() => loadDocuments(), 100);
 
-      toast({
-        title: "Éxito",
-        description: "Documento eliminado correctamente",
-      });
+      showSuccess("Éxito", "Documento eliminado correctamente");
 
     } catch (error) {
       console.error('Error removing document:', error);
-      toast({
-        title: "Error",
-        description: "No se pudo eliminar el documento",
-        variant: "destructive",
+      showError("Error", "No se pudo eliminar el documento");
+    } finally {
+      setRemovingDocuments(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(documentId);
+        return newSet;
       });
     }
   };
 
-  const handleLoadOrderGenerated = async (loadOrderData: any) => {
-    console.log('📋 LoadDocumentsSection - handleLoadOrderGenerated called with:', loadOrderData);
-    console.log('📋 Current loadId:', loadId);
-    console.log('📋 Current documents before Load Order:', documents);
-    console.log('📋 Current temporaryDocuments before Load Order:', temporaryDocuments);
+  const handleLoadOrderGenerated = async (loadOrderData: { url: string; fileName: string }) => {
+    console.log('🔄 LoadDocumentsSection - Processing Load Order generation:', loadOrderData);
 
-    // Si tenemos loadId, guardar automáticamente en la BD y Storage
-    if (loadId) {
+    if (loadId && loadId !== 'temp') {
+      console.log('🔄 LoadDocumentsSection - Saving Load Order to database for existing load:', loadId);
+      
       try {
-        console.log('💾 LoadDocumentsSection - Uploading Load Order to storage...');
-        
-        // Convert blob URL to actual file
+        // Convert blob URL to actual blob for upload
         const response = await fetch(loadOrderData.url);
         const blob = await response.blob();
-        const loadNumber = loadData?.load_number || 'UNKNOWN';
-        const fileName = `${loadNumber}_Load_Order.pdf`;
-        const file = new File([blob], fileName, { type: 'application/pdf' });
         
-        // Create file path using the custom name
-        const filePath = `${loadId}/${fileName}`;
-
-        // Upload file to Supabase Storage
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('load-documents')
-          .upload(filePath, file);
-
-        if (uploadError) throw uploadError;
-
-        // Get public URL
-        const { data: urlData } = supabase.storage
-          .from('load-documents')
-          .getPublicUrl(filePath);
-
-        console.log('🔗 LoadDocumentsSection - Storage URL:', urlData.publicUrl);
-        
-        // Get current user
+        // Get user info for folder structure
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError || !user) {
           throw new Error('Usuario no autenticado');
         }
-        
-        const { data: docData, error: docError } = await supabase
+
+        // Create file path
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const fileName = `load_order_${loadData?.load_number || loadId}_${timestamp}.pdf`;
+        const filePath = `load-documents/${user.id}/${loadId}/${fileName}`;
+
+        console.log('📁 LoadDocumentsSection - Upload path for Load Order:', filePath);
+
+        // Upload to Supabase Storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('documents')
+          .upload(filePath, blob, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (uploadError) {
+          console.error('❌ LoadDocumentsSection - Storage upload error for Load Order:', uploadError);
+          throw uploadError;
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from('documents')
+          .getPublicUrl(uploadData.path);
+
+        const publicUrl = urlData.publicUrl;
+
+        // Save to database
+        const { data: dbData, error: dbError } = await supabase
           .from('load_documents')
           .insert({
             load_id: loadId,
             document_type: 'load_order',
-            file_name: fileName,
-            file_url: urlData.publicUrl, // Use the permanent Storage URL
-            file_size: file.size,
-            content_type: 'application/pdf',
-            uploaded_by: user.id
+            file_name: loadOrderData.fileName,
+            file_size: blob.size,
+            file_url: publicUrl
           })
           .select()
           .single();
 
-        if (docError) {
-          console.error('Database insert error for Load Order:', docError);
-          throw docError;
+        if (dbError) {
+          console.error('❌ LoadDocumentsSection - Database insert error for Load Order:', dbError);
+          throw dbError;
         }
 
-        console.log('✅ LoadDocumentsSection - Load Order saved to database with permanent URL:', urlData.publicUrl);
-        
-        // Refresh documents from database to get the updated list
-        await loadDocuments();
-        
-        // Invalidate loads query to refresh the loads list
-        queryClient.invalidateQueries({ queryKey: ['loads'] });
+        console.log('✅ LoadDocumentsSection - Load Order saved to database:', dbData);
+
+        // Update local state
+        const newDocument: LoadDocument = {
+          id: dbData.id,
+          type: 'load_order',
+          name: 'Load Order',
+          fileName: dbData.file_name,
+          fileSize: dbData.file_size,
+          uploadedAt: dbData.created_at,
+          url: dbData.file_url
+        };
+
+        const updatedDocuments = [...documents, newDocument];
+        setDocuments(updatedDocuments);
+        setHasLoadOrder(true);
+        onDocumentsChange?.(updatedDocuments);
+
+        // Invalidate queries and notify context
+        queryClient.invalidateQueries({ queryKey: ['load-documents', loadId] });
         notifyDocumentChange();
         
-        toast({
-          title: "Load Order guardado",
-          description: "El Load Order se ha guardado automáticamente en Storage y la base de datos",
-        });
+        showSuccess("Load Order guardado", "El Load Order se ha guardado automáticamente en Storage y la base de datos");
 
         // Clean up the temporary blob URL
         URL.revokeObjectURL(loadOrderData.url);
         
       } catch (error) {
         console.error('❌ LoadDocumentsSection - Error saving Load Order:', error);
-        toast({
-          title: "Error",
-          description: "No se pudo guardar el Load Order. Intenta nuevamente.",
-          variant: "destructive",
-        });
+        showError("Error", "No se pudo guardar el Load Order. Intenta nuevamente.");
       }
     } else {
-      // En modo creación, agregar como documento temporal
-      console.log('📂 LoadDocumentsSection - Adding Load Order as temporary document');
+      console.log('🔄 LoadDocumentsSection - Processing temporary Load Order for wizard mode');
       
-      // Convert blob URL to get file size for temporary document
       try {
+        // For temporary loads, convert blob URL to a proper blob with file size
         const response = await fetch(loadOrderData.url);
         const blob = await response.blob();
-        const loadNumber = loadData?.load_number || 'UNKNOWN';
-        const fileName = `${loadNumber}_Load_Order.pdf`;
         
         const loadOrderDocument: LoadDocument = {
           id: crypto.randomUUID(),
           type: 'load_order',
           name: 'Load Order',
-          fileName: fileName,
-          fileSize: blob.size, // Include file size for temporary documents
+          fileName: `Load_Order_${loadData?.load_number || 'unknown'}.pdf`,
+          fileSize: blob.size,
           uploadedAt: new Date(),
-          url: loadOrderData.url // Keep blob URL for temporary documents
+          url: loadOrderData.url
         };
 
-        console.log('📂 LoadDocumentsSection - Temporary Load Order with size:', loadOrderDocument);
+        // Add file reference for later upload
+        (loadOrderDocument as any).file = blob;
 
-        console.log('📂 Before updating temporaryDocuments:', temporaryDocuments);
+        // Update temporary documents
         const updatedTempDocs = [...temporaryDocuments, loadOrderDocument];
-        console.log('📂 After creating updatedTempDocs:', updatedTempDocs);
         onTemporaryDocumentsChange?.(updatedTempDocs);
 
-        console.log('📂 Before updating documents state:', documents);
-        // Include both existing documents AND temporary documents
-        const allCurrentDocuments = [...documents, ...temporaryDocuments.filter(td => td.type !== 'load_order')];
-        const updatedDocuments = [...allCurrentDocuments, loadOrderDocument];
-        console.log('📂 After creating updatedDocuments:', updatedDocuments);
+        const updatedDocuments = [...documents, loadOrderDocument];
         setDocuments(updatedDocuments);
         setHasLoadOrder(true);
         onDocumentsChange?.(updatedDocuments);
         
-        toast({
-          title: "Load Order generado",
-          description: `Load Order creado (${(blob.size / 1024 / 1024).toFixed(2)} MB). Se guardará al crear la carga.`,
-        });
+        showSuccess("Load Order generado", `Load Order creado (${(blob.size / 1024 / 1024).toFixed(2)} MB). Se guardará al crear la carga.`);
         
       } catch (error) {
         console.error('❌ Error processing temporary Load Order:', error);
@@ -620,730 +584,444 @@ export function LoadDocumentsSection({
         setHasLoadOrder(true);
         onDocumentsChange?.(updatedDocuments);
         
-        toast({
-          title: "Load Order generado",
-          description: "Load Order creado. Se guardará al crear la carga.",
-        });
+        showSuccess("Load Order generado", "Load Order creado. Se guardará al crear la carga.");
       }
     }
-    
-    console.log('✅ LoadDocumentsSection - Load Order processing completed');
+
+    setShowGenerateLoadOrder(false);
   };
 
-  // Dialog mode specific functions
-  const handleFileUploadWithReplacement = async (type: LoadDocument['type'], files: FileList | null, isReplacement = false) => {
-    if (!files || files.length === 0 || !loadId) return;
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>, documentType: LoadDocument['type']) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    const file = files[0];
-    
-    // Validate file size (10MB limit)
     if (file.size > 10 * 1024 * 1024) {
-      toast({
-        title: "Error",
-        description: "El archivo es muy grande. Máximo 10MB permitido.",
-        variant: "destructive",
-      });
+      showError("Error", "El archivo es muy grande. Máximo 10MB permitido.");
       return;
     }
 
-    setUploading(type);
+    const existingDoc = documents.find(doc => doc.type === documentType);
+    const isReplacement = !!existingDoc;
 
-    try {
-      // If replacing, first remove the existing document
-      if (isReplacement) {
-        const existingDoc = documents.find(doc => doc.type === type);
-        if (existingDoc) {
-          await handleRemoveDocument(existingDoc.id);
-        }
-      }
-
-      // Generate custom file name based on load number and document type
-      const fileExt = file.name.split('.').pop();
-      const currentLoadNumber = loadNumber || loadData?.load_number || 'UNKNOWN';
-      
-      // Map document types to custom names
-      const documentNameMap: Record<string, string> = {
-        'rate_confirmation': 'Rate_Confirmation',
-        'driver_instructions': 'Driver_Instructions', 
-        'bol': 'Bill_of_Lading',
-        'load_order': 'Load_Order'
-      };
-      
-      const customName = documentNameMap[type];
-      const fileName = customName 
-        ? `${currentLoadNumber}_${customName}.${fileExt}`
-        : `${type}.${fileExt}`;
-      const filePath = `${loadId}/${fileName}`;
-      
-      console.log('🔄 handleFileUploadWithReplacement - Generated fileName:', fileName);
-
-      // Upload file to Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('load-documents')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('load-documents')
-        .getPublicUrl(filePath);
-
-      // Save document metadata to database
-      const { data: docData, error: docError } = await supabase
-        .from('load_documents')
-        .insert({
-          load_id: loadId,
-          document_type: type,
-          file_name: fileName,
-          file_url: urlData.publicUrl,
-          file_size: file.size,
-          content_type: file.type,
-          uploaded_by: (await supabase.auth.getUser()).data.user?.id
-        })
-        .select()
-        .single();
-
-      if (docError) throw docError;
-
-      // Reload documents to get updated list
-      await loadDocuments();
-      
-      // Invalidate loads query to refresh the loads list
-      queryClient.invalidateQueries({ queryKey: ['loads'] });
-      notifyDocumentChange();
-
-      toast({
-        title: "Éxito",
-        description: `${file.name} ${isReplacement ? 'reemplazado' : 'subido'} correctamente`,
-      });
-
-    } catch (error) {
-      console.error('Error uploading document:', error);
-      toast({
-        title: "Error",
-        description: "No se pudo subir el documento. Intenta nuevamente.",
-        variant: "destructive",
-      });
-    } finally {
-      setUploading(null);
-    }
-  };
-
-  const handleRemoveDocumentForDialog = async (documentId: string) => {
-    try {
-      // Get document info before deleting
-      const { data: documentData, error: fetchError } = await supabase
-        .from('load_documents')
-        .select('file_url')
-        .eq('id', documentId)
-        .single();
-
-      if (fetchError) throw fetchError;
-
-      // Extract file path from URL to delete from Storage
-      if (documentData?.file_url) {
-        const url = new URL(documentData.file_url);
-        const pathParts = url.pathname.split('/');
-        const bucketIndex = pathParts.findIndex(part => part === 'load-documents');
-        if (bucketIndex !== -1 && bucketIndex < pathParts.length - 1) {
-          const filePath = pathParts.slice(bucketIndex + 1).join('/');
-          
-          // Delete file from Storage
-          const { error: storageError } = await supabase.storage
-            .from('load-documents')
-            .remove([filePath]);
-
-          if (storageError) {
-            console.error('Error deleting file from storage:', storageError);
-          }
-        }
-      }
-
-      // Delete document record from database (hard delete - same as wizard)
-      const { error } = await supabase
-        .from('load_documents')
-        .delete()
-        .eq('id', documentId);
-
-      if (error) throw error;
-
-      // Reload documents to get updated list
-      await loadDocuments();
-      
-      // Invalidate loads query to refresh the loads list
-      queryClient.invalidateQueries({ queryKey: ['loads'] });
-      notifyDocumentChange();
-      
-      // Refrescar los documentos locales también
-      console.log('🔄 LoadDocumentsSection - Reloading documents after deletion in dialog');
-      setTimeout(() => loadDocuments(), 100);
-
-      toast({
-        title: "Éxito",
-        description: "Documento eliminado correctamente",
-      });
-
-    } catch (error) {
-      console.error('Error removing document:', error);
-      toast({
-        title: "Error",
-        description: "No se pudo eliminar el documento",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Helper functions
-  const formatFileSize = (bytes?: number) => {
-    if (!bytes) return '';
-    const mb = bytes / 1024 / 1024;
-    return `${mb.toFixed(2)} MB`;
-  };
-
-  const getDocumentStatus = (type: LoadDocument['type']) => {
-    const hasDoc = documents.some(doc => doc.type === type) || temporaryDocuments.some(doc => doc.type === type);
-    const docType = documentTypes.find(dt => dt.type === type);
+    handleFileUpload(file, documentType, isReplacement);
     
-    if (hasDoc) {
-      return { status: 'uploaded', color: 'default' };
-    } else if (docType?.required) {
-      return { status: 'required', color: 'destructive' };
-    } else {
-      return { status: 'optional', color: 'secondary' };
-    }
+    // Reset the input
+    event.target.value = '';
   };
 
-  const renderDocumentManagement = () => (
-    <div className="space-y-6">
-      {/* Document Upload Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h4 className="text-sm font-medium text-muted-foreground">
-            {isDialogMode ? 'Documentos de la carga' : 'Documentos requeridos'}
-          </h4>
-        </div>
-        
-        <div className={isDialogMode ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-4"}>
+  const handleReplaceDocument = (event: React.ChangeEvent<HTMLInputElement>, documentType: LoadDocument['type']) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    handleFileUpload(file, documentType, true);
+    
+    // Reset the input
+    event.target.value = '';
+  };
+
+  const renderDocumentManagement = () => {
+    const allDocuments = [...documents, ...temporaryDocuments];
+    
+    return (
+      <div className="space-y-6">
+        <div className="grid gap-4">
           {documentTypes.map((docType) => {
-            const status = getDocumentStatus(docType.type);
-            const uploadedDoc = documents.find(doc => doc.type === docType.type);
-            const tempDoc = temporaryDocuments.find(doc => doc.type === docType.type);
-            
-            console.log('🔍 Document check for type:', docType.type, { 
-              uploadedDoc, 
-              hasUrl: !!uploadedDoc?.url,
-              url: uploadedDoc?.url,
-              fileName: uploadedDoc?.fileName 
-            });
-            
-            if (isDialogMode) {
-              // Dialog mode rendering - similar to LoadDocumentsManagementDialog
-              return (
-                <Card key={docType.type} className="h-fit">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <FileText className="h-4 w-4" />
-                        {docType.label}
-                      </CardTitle>
-                      <Badge variant={status.color as any}>
-                        {status.status === 'uploaded' ? 'Subido' : 
-                         status.status === 'required' ? 'Requerido' : 'Opcional'}
-                      </Badge>
+            const existingDoc = allDocuments.find(doc => doc.type === docType.type);
+            const isUploading = uploadingDocuments.has(docType.type) || uploading === docType.type;
+            const isRemoving = existingDoc ? removingDocuments.has(existingDoc.id) : false;
+
+            return (
+              <div key={docType.type} className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <FileText className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{docType.label}</span>
+                      {docType.required && <Badge variant="destructive" className="text-xs">Requerido</Badge>}
+                      {docType.generated && <Badge variant="secondary" className="text-xs">Generado</Badge>}
                     </div>
-                    <CardDescription>
-                      {docType.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {(uploadedDoc || tempDoc) ? (
-                      <div className="space-y-3">
-                        {/* Document Info */}
-                        <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
-                          <FileCheck className="h-5 w-5 text-green-500 mt-0.5" />
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">{(uploadedDoc || tempDoc)?.fileName}</p>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <span>{formatFileSize((uploadedDoc || tempDoc)?.fileSize)}</span>
-                              <span>•</span>
-                              <span>
-                                {new Date((uploadedDoc || tempDoc)?.uploadedAt || new Date()).toLocaleDateString('es-ES')}
-                              </span>
-                              {tempDoc && !uploadedDoc && (
-                                <Badge variant="secondary" className="text-xs">Temporal</Badge>
-                              )}
-                            </div>
-                          </div>
-                        </div>
+                    <p className="text-sm text-muted-foreground">{docType.description}</p>
+                  </div>
+                </div>
 
-                        {/* Actions */}
-                        <div className="flex items-center gap-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => {
-                              const docToView = uploadedDoc || tempDoc;
-                              if (docToView?.url) {
-                                window.open(docToView.url, '_blank');
-                              }
-                            }}
-                          >
-                            <Eye className="h-4 w-4 mr-2" />
-                            Ver
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={async () => {
-                              const docToDownload = uploadedDoc || tempDoc;
-                              if (!docToDownload?.url) {
-                                toast({
-                                  title: "Error",
-                                  description: "No se pudo encontrar la URL del documento para descargar",
-                                  variant: "destructive",
-                                });
-                                return;
-                              }
-                              
-                              try {
-                                const response = await fetch(docToDownload.url);
-                                if (!response.ok) {
-                                  throw new Error(`HTTP error! status: ${response.status}`);
-                                }
-                                
-                                const blob = await response.blob();
-                                const blobUrl = window.URL.createObjectURL(blob);
-                                const link = document.createElement('a');
-                                link.href = blobUrl;
-                                link.download = docToDownload.fileName;
-                                link.style.display = 'none';
-                                
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-                                
-                                window.URL.revokeObjectURL(blobUrl);
-                                
-                                toast({
-                                  title: "Descarga iniciada",
-                                  description: `${docToDownload.fileName} se está descargando`,
-                                });
-                              } catch (error) {
-                                // Fallback to direct download
-                                const link = document.createElement('a');
-                                link.href = docToDownload.url;
-                                link.download = docToDownload.fileName;
-                                link.target = '_blank';
-                                link.rel = 'noopener noreferrer';
-                                
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-                              }
-                            }}
-                          >
-                            <Download className="h-4 w-4 mr-2" />
-                            Descargar
-                          </Button>
-                        </div>
-
-                        {/* Replace Document */}
-                        <div className="border-t pt-3">
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="file"
-                              id={`replace-${docType.type}`}
-                              className="hidden"
-                              accept=".pdf,.jpg,.jpeg,.png"
-                              onChange={(e) => handleFileUploadWithReplacement(docType.type, e.target.files, true)}
-                              disabled={uploading === docType.type}
-                            />
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              disabled={uploading === docType.type}
-                              onClick={() => {
-                                const fileInput = document.getElementById(`replace-${docType.type}`) as HTMLInputElement;
-                                fileInput?.click();
-                              }}
-                            >
-                              <RotateCcw className="h-4 w-4 mr-2" />
-                              {uploading === docType.type ? 'Reemplazando...' : 'Reemplazar'}
-                            </Button>
-                            
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="outline" size="sm">
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Eliminar
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>¿Eliminar documento?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Esta acción eliminará permanentemente el documento "{uploadedDoc.fileName}". 
-                                    No se puede deshacer.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleRemoveDocumentForDialog(uploadedDoc.id)}
-                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                  >
-                                    Eliminar
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
-                        </div>
+                <div className="flex items-center space-x-2">
+                  {existingDoc ? (
+                    <>
+                      <div className="flex flex-col items-end mr-2">
+                        <span className="text-sm font-medium">{existingDoc.fileName}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {existingDoc.fileSize ? `${(existingDoc.fileSize / 1024 / 1024).toFixed(2)} MB` : 'Tamaño desconocido'}
+                        </span>
                       </div>
-                    ) : (
-                      /* Upload New Document */
-                      <div className="space-y-3">
-                        <div className="text-center py-6 border-2 border-dashed border-muted rounded-lg">
-                          <FileText className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                          <p className="text-sm text-muted-foreground mb-3">
-                            Sin documento {docType.isGenerated ? 'generado' : 'subido'}
-                          </p>
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => {
+                          if (!existingDoc.url) {
+                            showError("Error", "No se pudo encontrar la URL del documento");
+                            return;
+                          }
+                          window.open(existingDoc.url, '_blank');
+                        }}
+                        title="Ver documento"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={async () => {
+                          if (!existingDoc.url) {
+                            showError("Error", "No se pudo encontrar la URL del documento para descargar");
+                            return;
+                          }
                           
-                          {docType.isGenerated ? (
-                            /* Generated Document Button */
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              type="button"
-                              onClick={() => {
-                                console.log('🔍 Generate Load Order button clicked - Modal');
-                                console.log('🔍 docType:', docType);
-                                console.log('🔍 loadData:', loadData);
-                                console.log('🔍 Current showGenerateLoadOrder:', showGenerateLoadOrder);
-                                if (docType.type === 'load_order') {
-                                  setShowGenerateLoadOrder(true);
-                                  console.log('🔍 setShowGenerateLoadOrder(true) called');
-                                }
-                              }}
-                              disabled={uploading === docType.type}
-                            >
-                              <Plus className="h-4 w-4 mr-2" />
-                              Generar {docType.label}
-                            </Button>
-                          ) : (
-                            /* Regular Upload */
-                            <>
-                              <input
-                                type="file"
-                                id={`upload-${docType.type}`}
-                                className="hidden"
-                                accept=".pdf,.jpg,.jpeg,.png"
-                                onChange={(e) => handleFileUploadWithReplacement(docType.type, e.target.files)}
-                                disabled={uploading === docType.type}
-                              />
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                disabled={uploading === docType.type}
-                                onClick={() => {
-                                  const fileInput = document.getElementById(`upload-${docType.type}`) as HTMLInputElement;
-                                  fileInput?.click();
-                                }}
-                              >
-                                <Upload className="h-4 w-4 mr-2" />
-                                {uploading === docType.type ? 'Subiendo...' : 'Subir archivo'}
-                              </Button>
-                            </>
-                          )}
-                          
-                          <p className="text-xs text-muted-foreground mt-2">
-                            {docType.isGenerated 
-                              ? 'Documento generado automáticamente'
-                              : 'PDF, JPG, PNG (máx. 10MB)'
+                          try {
+                            const response = await fetch(existingDoc.url);
+                            if (!response.ok) {
+                              throw new Error(`HTTP error! status: ${response.status}`);
                             }
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              );
-            } else {
-              // Wizard mode rendering - existing layout
-              return (
-                <div key={docType.type} className="border rounded-lg p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h5 className="font-medium">{docType.label}</h5>
-                        <Badge variant={status.color as any}>
-                          {status.status === 'uploaded' ? 'Subido' : 
-                           status.status === 'required' ? 'Requerido' : 'Opcional'}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        {docType.description}
-                      </p>
+                            
+                            const blob = await response.blob();
+                            const blobUrl = window.URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = blobUrl;
+                            link.download = existingDoc.fileName;
+                            link.style.display = 'none';
+                            
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            
+                            window.URL.revokeObjectURL(blobUrl);
+                            
+                            showSuccess("Descarga iniciada", `${existingDoc.fileName} se está descargando`);
+                          } catch (error) {
+                            console.error('Error downloading document:', error);
+                            showError("Error", "No se pudo descargar el documento");
+                          }
+                        }}
+                        title="Descargar documento"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
                       
-                      {uploadedDoc || tempDoc ? (
-                        <div className="flex items-center gap-2 text-sm">
-                          <FileCheck className="h-4 w-4 text-green-500" />
-                          <span>{uploadedDoc?.fileName || tempDoc?.fileName}</span>
-                          {(uploadedDoc?.fileSize || tempDoc?.fileSize) && (
-                            <span className="text-muted-foreground">
-                              ({formatFileSize(uploadedDoc?.fileSize || tempDoc?.fileSize)})
-                            </span>
-                          )}
-                          {!loadId && (
-                            <Badge variant="secondary" className="text-xs">Pendiente</Badge>
-                          )}
-                        </div>
-                       ) : (
-                         <div className="flex items-center gap-2">
-                           {/* For generated documents like Load Order */}
-                           {docType.isGenerated ? (
+                      {!docType.generated && (
+                        <>
+                          <label htmlFor={`replace-${docType.type}`}>
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              className="h-8 w-8"
+                              disabled={isUploading}
+                              title="Reemplazar documento"
+                              asChild
+                            >
+                              <span>
+                                <RotateCcw className="h-4 w-4" />
+                              </span>
+                            </Button>
+                          </label>
+                          <input
+                            id={`replace-${docType.type}`}
+                            type="file"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                            onChange={(e) => handleReplaceDocument(e, docType.type)}
+                            className="hidden"
+                          />
+                          
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
                               <Button 
-                                variant="outline" 
-                                size="sm"
-                                type="button"
-                                 onClick={(e) => {
-                                   e.preventDefault();
-                                   e.stopPropagation();
-                                   console.log('🔍 Generate Load Order button clicked - Wizard');
-                                   console.log('🔍 docType:', docType);
-                                   console.log('🔍 loadData:', loadData);
-                                   console.log('🔍 Current showGenerateLoadOrder:', showGenerateLoadOrder);
-                                   if (docType.type === 'load_order') {
-                                     setShowGenerateLoadOrder(true);
-                                     console.log('🔍 setShowGenerateLoadOrder(true) called');
-                                   }
-                                 }}
-                               disabled={uploading === docType.type}
-                             >
-                               <Plus className="h-4 w-4 mr-2" />
-                               Generar {docType.label}
-                             </Button>
-                           ) : (
-                             <>
-                               <input
-                                 type="file"
-                                 id={`file-upload-${docType.type}`}
-                                 className="hidden"
-                                 accept=".pdf,.jpg,.jpeg,.png"
-                                 onChange={(e) => handleFileUpload(docType.type, e.target.files)}
-                                 disabled={uploading === docType.type}
-                               />
-                               <Button 
-                                 variant="outline" 
-                                 size="sm"
-                                 disabled={uploading === docType.type}
-                                 onClick={() => {
-                                   const fileInput = document.getElementById(`file-upload-${docType.type}`) as HTMLInputElement;
-                                   fileInput?.click();
-                                 }}
-                               >
-                                 <Upload className="h-4 w-4 mr-2" />
-                                 {uploading === docType.type ? 'Subiendo...' : 'Subir archivo'}
-                               </Button>
-                             </>
-                           )}
-                           <span className="text-xs text-muted-foreground">
-                             {docType.isGenerated 
-                               ? 'Documento generado automáticamente'
-                               : loadId ? 'PDF, JPG, PNG (máx. 10MB)' : 'Se subirá al guardar la carga'
-                             }
-                           </span>
-                         </div>
+                                variant="ghost" 
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:text-destructive"
+                                disabled={isRemoving}
+                                title="Eliminar documento"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>¿Eliminar documento?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Esta acción eliminará permanentemente "{existingDoc.fileName}". 
+                                  No se puede deshacer.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleRemoveDocument(existingDoc.id)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Eliminar
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </>
                       )}
+                    </>
+                  ) : (
+                    <>
+                      {docType.generated && docType.type === 'load_order' ? (
+                        <Button 
+                          onClick={() => setShowGenerateLoadOrder(true)}
+                          disabled={hasLoadOrder || !canGenerate}
+                          className="flex items-center gap-2"
+                        >
+                          <Plus className="h-4 w-4" />
+                          Generar Load Order
+                        </Button>
+                      ) : (
+                        <>
+                          <label htmlFor={`upload-${docType.type}`}>
+                            <Button 
+                              variant="outline" 
+                              disabled={isUploading}
+                              className="flex items-center gap-2"
+                              asChild
+                            >
+                              <span>
+                                <Upload className="h-4 w-4" />
+                                {isUploading ? 'Subiendo...' : 'Subir'}
+                              </span>
+                            </Button>
+                          </label>
+                          <input
+                            id={`upload-${docType.type}`}
+                            type="file"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                            onChange={(e) => handleFileSelect(e, docType.type)}
+                            className="hidden"
+                          />
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Summary */}
+        <div className="pt-4 border-t">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">
+              Documentos subidos: {allDocuments.length} de {documentTypes.length}
+            </span>
+            <div className="flex items-center gap-2">
+              {allDocuments.filter(doc => 
+                documentTypes.find(dt => dt.type === doc.type)?.required
+              ).length > 0 && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <FileCheck className="h-3 w-3" />
+                  Documentos requeridos completados
+                </Badge>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Documents Section */}
+        <div className="space-y-4">
+          <h4 className="font-medium">Documentos adicionales</h4>
+          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+            <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground mb-2">
+              Arrastra archivos aquí o haz clic para subir documentos adicionales
+            </p>
+            <label htmlFor="additional-upload">
+              <Button variant="outline" size="sm" asChild>
+                <span>Seleccionar archivos</span>
+              </Button>
+            </label>
+            <input
+              id="additional-upload"
+              type="file"
+              multiple
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              onChange={(e) => {
+                const files = Array.from(e.target.files || []);
+                files.forEach(file => {
+                  // For additional documents, we'll use a generic type
+                  // You might want to add a new document type for this
+                  handleFileUpload(file, 'driver_instructions'); // Using driver_instructions as fallback
+                });
+                e.target.value = '';
+              }}
+              className="hidden"
+            />
+          </div>
+        </div>
+
+        {/* Additional uploaded documents */}
+        {allDocuments.filter(doc => !documentTypes.some(dt => dt.type === doc.type)).length > 0 && (
+          <div className="space-y-2">
+            <h5 className="font-medium text-sm">Documentos adicionales subidos</h5>
+            {allDocuments
+              .filter(doc => !documentTypes.some(dt => dt.type === doc.type))
+              .map(doc => (
+                <div key={doc.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                    <div>
+                      <span className="text-sm font-medium">{doc.fileName}</span>
+                      <div className="text-xs text-muted-foreground">
+                        {doc.fileSize ? `${(doc.fileSize / 1024 / 1024).toFixed(2)} MB` : 'Tamaño desconocido'}
+                      </div>
                     </div>
-                    
-                    {(uploadedDoc || tempDoc) && !isDialogMode && (
-                      <div className="flex items-center gap-0.5">
-                        {uploadedDoc && (
-                           <>
-                             <Button 
-                               variant="ghost" 
-                               size="icon"
-                               className="h-8 w-8"
-                               onClick={() => {
-                                 if (!uploadedDoc.url) {
-                                   toast({
-                                     title: "Error",
-                                     description: "No se pudo encontrar la URL del documento",
-                                     variant: "destructive",
-                                   });
-                                   return;
-                                 }
-                                 window.open(uploadedDoc.url, '_blank');
-                               }}
-                               title="Ver documento"
-                             >
-                               <Eye className="h-4 w-4" />
-                             </Button>
-                             <Button 
-                               variant="ghost" 
-                               size="icon"
-                               className="h-8 w-8"
-                               onClick={async () => {
-                                 if (!uploadedDoc.url) {
-                                   toast({
-                                     title: "Error",
-                                     description: "No se pudo encontrar la URL del documento para descargar",
-                                     variant: "destructive",
-                                   });
-                                   return;
-                                 }
-                                 
-                                 try {
-                                   const response = await fetch(uploadedDoc.url);
-                                   if (!response.ok) {
-                                     throw new Error(`HTTP error! status: ${response.status}`);
-                                   }
-                                   
-                                   const blob = await response.blob();
-                                   const blobUrl = window.URL.createObjectURL(blob);
-                                   const link = document.createElement('a');
-                                   link.href = blobUrl;
-                                   link.download = uploadedDoc.fileName;
-                                   link.style.display = 'none';
-                                   
-                                   document.body.appendChild(link);
-                                   link.click();
-                                   document.body.removeChild(link);
-                                   
-                                   window.URL.revokeObjectURL(blobUrl);
-                                   
-                                   toast({
-                                     title: "Descarga iniciada",
-                                     description: `${uploadedDoc.fileName} se está descargando`,
-                                   });
-                                 } catch (error) {
-                                   const link = document.createElement('a');
-                                   link.href = uploadedDoc.url;
-                                   link.download = uploadedDoc.fileName;
-                                   link.target = '_blank';
-                                   link.rel = 'noopener noreferrer';
-                                   
-                                   document.body.appendChild(link);
-                                   link.click();
-                                   document.body.removeChild(link);
-                                 }
-                               }}
-                               title="Descargar documento"
-                             >
-                               <Download className="h-4 w-4" />
-                             </Button>
-                           </>
-                        )}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className="h-6 w-6"
+                      onClick={() => {
+                        if (!doc.url) {
+                          showError("Error", "No se pudo encontrar la URL del documento");
+                          return;
+                        }
+                        window.open(doc.url, '_blank');
+                      }}
+                      title="Ver documento"
+                    >
+                      <Eye className="h-3 w-3" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className="h-6 w-6"
+                      onClick={async () => {
+                        if (!doc.url) {
+                          showError("Error", "No se pudo encontrar la URL del documento para descargar");
+                          return;
+                        }
+                        
+                        try {
+                          const response = await fetch(doc.url);
+                          if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                          }
+                          
+                          const blob = await response.blob();
+                          const blobUrl = window.URL.createObjectURL(blob);
+                          const link = document.createElement('a');
+                          link.href = blobUrl;
+                          link.download = doc.fileName;
+                          link.style.display = 'none';
+                          
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                          
+                          window.URL.revokeObjectURL(blobUrl);
+                          
+                          showSuccess("Descarga iniciada", `${doc.fileName} se está descargando`);
+                        } catch (error) {
+                          console.error('Error downloading document:', error);
+                          showError("Error", "No se pudo descargar el documento");
+                        }
+                      }}
+                      title="Descargar documento"
+                    >
+                      <Download className="h-3 w-3" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
                         <Button 
                           variant="ghost" 
                           size="icon"
-                          className="h-8 w-8"
-                          onClick={async () => {
-                            if (uploadedDoc) {
-                              await handleRemoveDocument(uploadedDoc.id);
-                            }
-                            if (tempDoc) {
-                              handleRemoveTemporaryDocument(tempDoc.id);
-                            }
-                            if (docType.type === 'load_order') {
-                              setHasLoadOrder(false);
-                            }
-                          }}
+                          className="h-6 w-6 text-destructive hover:text-destructive"
                           title="Eliminar documento"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3 w-3" />
                         </Button>
-                      </div>
-                    )}
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>¿Eliminar documento?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta acción eliminará permanentemente "{doc.fileName}". 
+                            No se puede deshacer.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleRemoveDocument(doc.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Eliminar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
-              );
-            }
-          })}
-        </div>
+              ))}
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
-  // Conditional rendering based on dialog mode
   if (isDialogMode) {
     return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" />
-              Gestión de Documentos - Carga {loadNumber}
-            </DialogTitle>
-          </DialogHeader>
+      <>
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Documentos de la Carga</DialogTitle>
+            </DialogHeader>
+            {renderDocumentManagement()}
+          </DialogContent>
+        </Dialog>
 
-          {uploading ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          ) : (
-            renderDocumentManagement()
-          )}
-
-          {/* Generate Load Order Dialog - Available in Dialog Mode */}
-          <GenerateLoadOrderDialog
-            isOpen={showGenerateLoadOrder}
-            onClose={() => {
-              console.log('🔍 LoadDocumentsSection - onClose called in dialog mode, setting showGenerateLoadOrder to false');
-              setShowGenerateLoadOrder(false);
-            }}
-            loadData={loadData || {
-              load_number: '',
-              total_amount: 0,
-              commodity: '',
-              weight_lbs: 0,
-              client_name: '',
-              driver_name: '',
-              loadStops: []
-            }}
-            onLoadOrderGenerated={handleLoadOrderGenerated}
-          />
-        </DialogContent>
-      </Dialog>
+        <GenerateLoadOrderDialog
+          isOpen={showGenerateLoadOrder}
+          onClose={() => setShowGenerateLoadOrder(false)}
+          loadData={loadData}
+          onLoadOrderGenerated={(data) => handleLoadOrderGenerated({ 
+            url: data.url, 
+            fileName: `Load_Order_${loadData?.load_number || 'unknown'}.pdf` 
+          })}
+        />
+      </>
     );
   }
 
-  // Wizard mode rendering
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5 text-primary" />
-          Documentos de la Carga
-        </CardTitle>
-        <CardDescription>
-          Gestiona los documentos necesarios para la carga. Puedes subir documentos ahora o generarlos automáticamente.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {renderDocumentManagement()}
-      </CardContent>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Documentos de la Carga
+          </CardTitle>
+          <CardDescription>
+            Gestiona todos los documentos relacionados con esta carga
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {renderDocumentManagement()}
+        </CardContent>
+      </Card>
 
-      {/* Generate Load Order Dialog */}
       <GenerateLoadOrderDialog
         isOpen={showGenerateLoadOrder}
-        onClose={() => {
-          console.log('🔍 LoadDocumentsSection - onClose called, setting showGenerateLoadOrder to false');
-          setShowGenerateLoadOrder(false);
-        }}
-        loadData={loadData || {
-          load_number: '',
-          total_amount: 0,
-          commodity: '',
-          weight_lbs: 0,
-          client_name: '',
-          driver_name: '',
-          loadStops: []
-        }}
-        onLoadOrderGenerated={handleLoadOrderGenerated}
+        onClose={() => setShowGenerateLoadOrder(false)}
+        loadData={loadData}
+        onLoadOrderGenerated={(data) => handleLoadOrderGenerated({ 
+          url: data.url, 
+          fileName: `Load_Order_${loadData?.load_number || 'unknown'}.pdf` 
+        })}
       />
-    </Card>
+    </>
   );
 }
