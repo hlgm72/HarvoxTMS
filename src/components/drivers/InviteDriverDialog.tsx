@@ -106,11 +106,26 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
       // Extract error message from different error types
       let errorMessage = "No se pudo enviar la invitación";
       
-      // Handle FunctionsHttpError specifically
-      if (error.message) {
+      // Handle FunctionsHttpError specifically - try different ways to extract the message
+      if (error.name === 'FunctionsHttpError') {
+        try {
+          // Try to get the response from the error context
+          if (error.context?.body) {
+            const errorBody = typeof error.context.body === 'string' 
+              ? JSON.parse(error.context.body) 
+              : error.context.body;
+            errorMessage = errorBody.error || errorBody.message || error.message;
+          } else if (error.details) {
+            errorMessage = error.details;
+          } else if (error.message && error.message !== 'Edge Function returned a non-2xx status code') {
+            errorMessage = error.message;
+          }
+        } catch (parseError) {
+          console.error('Error parsing error response:', parseError);
+          errorMessage = "Ya existe una invitación pendiente para este email"; // Fallback para 409
+        }
+      } else if (error.message) {
         errorMessage = error.message;
-      } else if (error.details) {
-        errorMessage = error.details;
       } else if (typeof error === 'string') {
         errorMessage = error;
       }
