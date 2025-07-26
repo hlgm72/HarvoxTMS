@@ -48,22 +48,14 @@ export const usePaymentMethods = () => {
 
       if (error) {
         console.error('Error fetching payment methods:', error);
-        toast({
-          title: "Error",
-          description: "No se pudieron cargar los métodos de pago",
-          variant: "destructive"
-        });
+        showError("No se pudieron cargar los métodos de pago");
         return;
       }
 
       setPaymentMethods(data || []);
     } catch (error) {
       console.error('Unexpected error:', error);
-      toast({
-        title: "Error",
-        description: "Error inesperado al cargar métodos de pago",
-        variant: "destructive"
-      });
+      showError("Error inesperado al cargar métodos de pago");
     } finally {
       setIsLoading(false);
     }
@@ -92,38 +84,22 @@ export const usePaymentMethods = () => {
 
       if (error) {
         console.error('Error reporting payment:', error);
-        toast({
-          title: "Error",
-          description: "No se pudo reportar el pago",
-          variant: "destructive"
-        });
+        showError("No se pudo reportar el pago");
         return false;
       }
 
       if (data && typeof data === 'object' && 'success' in data && data.success) {
         const result = data as { success: boolean; message?: string; report_id?: string };
-        toast({
-          title: "Pago Reportado",
-          description: result.message || "Pago reportado y período bloqueado exitosamente",
-          variant: "default"
-        });
+        showSuccess("Pago Reportado", result.message || "Pago reportado y período bloqueado exitosamente");
         return true;
       } else {
         const result = data as { message?: string } | null;
-        toast({
-          title: "Error",
-          description: result?.message || "No se pudo reportar el pago",
-          variant: "destructive"
-        });
+        showError(result?.message || "No se pudo reportar el pago");
         return false;
       }
     } catch (error) {
       console.error('Unexpected error reporting payment:', error);
-      toast({
-        title: "Error",
-        description: "Error inesperado al reportar el pago",
-        variant: "destructive"
-      });
+      showError("Error inesperado al reportar el pago");
       return false;
     } finally {
       setIsLoading(false);
@@ -155,30 +131,18 @@ export const usePaymentMethods = () => {
 
       if (error) {
         console.error('Error creating payment method:', error);
-        toast({
-          title: "Error",
-          description: "No se pudo crear el método de pago",
-          variant: "destructive"
-        });
+        showError("No se pudo crear el método de pago");
         return false;
       }
 
-      toast({
-        title: "Método Creado",
-        description: `Método de pago "${name}" creado exitosamente`,
-        variant: "default"
-      });
+      showSuccess("Método Creado", `Método de pago "${name}" creado exitosamente`);
       
       // Recargar métodos
       await fetchPaymentMethods();
       return true;
     } catch (error) {
       console.error('Unexpected error creating payment method:', error);
-      toast({
-        title: "Error",
-        description: "Error inesperado al crear método de pago",
-        variant: "destructive"
-      });
+      showError("Error inesperado al crear método de pago");
       return false;
     } finally {
       setIsLoading(false);

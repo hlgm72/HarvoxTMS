@@ -33,11 +33,7 @@ export const usePaymentPeriodProtection = () => {
 
       if (error) {
         console.error('Error checking period status:', error);
-        toast({
-          title: "Error",
-          description: "No se pudo verificar el estado del período de pago",
-          variant: "destructive"
-        });
+        showError("No se pudo verificar el estado del período de pago");
         return null;
       }
 
@@ -52,7 +48,7 @@ export const usePaymentPeriodProtection = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [toast]);
+  }, [showError]);
 
   /**
    * Bloquea un período de pago utilizando la función de base de datos
@@ -73,43 +69,27 @@ export const usePaymentPeriodProtection = () => {
 
       if (error) {
         console.error('Error locking period:', error);
-        toast({
-          title: "Error",
-          description: "No se pudo bloquear el período de pago",
-          variant: "destructive"
-        });
+        showError("No se pudo bloquear el período de pago");
         return false;
       }
 
       if (data && typeof data === 'object' && 'success' in data && data.success) {
         const result = data as { success: boolean; locked_records?: number; message?: string };
-        toast({
-          title: "Período Bloqueado",
-          description: `Período bloqueado exitosamente. Se protegieron ${result.locked_records || 0} registros.`,
-          variant: "default"
-        });
+        showSuccess("Período Bloqueado", `Período bloqueado exitosamente. Se protegieron ${result.locked_records || 0} registros.`);
         return true;
       } else {
         const result = data as { message?: string } | null;
-        toast({
-          title: "Error",
-          description: result?.message || "No se pudo bloquear el período",
-          variant: "destructive"
-        });
+        showError(result?.message || "No se pudo bloquear el período");
         return false;
       }
     } catch (error) {
       console.error('Unexpected error locking period:', error);
-      toast({
-        title: "Error",
-        description: "Error inesperado al bloquear el período",
-        variant: "destructive"
-      });
+      showError("Error inesperado al bloquear el período");
       return false;
     } finally {
       setIsLoading(false);
     }
-  }, [toast]);
+  }, [showSuccess, showError]);
 
   /**
    * Ejecuta una acción protegida y maneja automáticamente los errores RLS
@@ -128,37 +108,25 @@ export const usePaymentPeriodProtection = () => {
       
       // Error específico de RLS - período bloqueado
       if (error?.code === '42501' || error?.message?.includes('row-level security policy')) {
-        toast({
-          title: "Acción No Permitida",
-          description: errorMessage || defaultErrorMessage,
-          variant: "destructive"
-        });
+        showError(errorMessage || defaultErrorMessage);
         return null;
       }
       
       // Otros errores específicos de Supabase
       if (error?.code === 'PGRST116') {
-        toast({
-          title: "Registro No Encontrado",
-          description: "El registro solicitado no existe o no tienes permisos para acceder a él",
-          variant: "destructive"
-        });
+        showError("El registro solicitado no existe o no tienes permisos para acceder a él");
         return null;
       }
 
       // Error genérico
-      toast({
-        title: "Error",
-        description: error?.message || "Ocurrió un error inesperado",
-        variant: "destructive"
-      });
+      showError(error?.message || "Ocurrió un error inesperado");
       
       // Re-lanzar el error para que el componente pueda manejarlo si es necesario
       throw error;
     } finally {
       setIsLoading(false);
     }
-  }, [toast]);
+  }, [showError]);
 
   return {
     checkPeriodStatus,

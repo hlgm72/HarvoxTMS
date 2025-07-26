@@ -173,10 +173,7 @@ export default function SuperAdminDashboard() {
 
       if (error) throw error;
 
-      toast({
-        title: t('admin:pages.companies.messages.company_created_success'),
-        description: `${newCompany.name} ${t('admin:pages.companies.messages.company_created_desc')}`,
-      });
+      showSuccess(t('admin:pages.companies.messages.company_created_success'), `${newCompany.name} ${t('admin:pages.companies.messages.company_created_desc')}`);
 
       // Reset form and close dialog
       setNewCompany({
@@ -197,11 +194,7 @@ export default function SuperAdminDashboard() {
         initializeDashboard();
     } catch (error: any) {
       console.error('Error creating company:', error);
-      toast({
-        title: t('admin:pages.companies.messages.company_creation_error'),
-        description: error.message || t('admin:pages.companies.messages.company_creation_error_desc'),
-        variant: "destructive",
-      });
+      showError(t('admin:pages.companies.messages.company_creation_error'), error.message || t('admin:pages.companies.messages.company_creation_error_desc'));
     } finally {
       setIsCreatingCompany(false);
     }
@@ -219,11 +212,7 @@ export default function SuperAdminDashboard() {
       setCompanyToDelete(company);
     } catch (error: any) {
       console.error('Error validating company deletion:', error);
-      toast({
-        title: "Error validating deletion",
-        description: error.message || "Could not validate if company can be deleted",
-        variant: "destructive",
-      });
+      showError("Error validating deletion", error.message || "Could not validate if company can be deleted");
     }
   };
 
@@ -239,23 +228,16 @@ export default function SuperAdminDashboard() {
       if (error) throw error;
 
       if ((data as any)?.success) {
-        toast({
-          title: "Company deleted successfully",
-          description: `${(data as any).company_name} and all related data has been permanently removed`,
-        });
+        showSuccess("Company deleted successfully", `${(data as any).company_name} and all related data has been permanently removed`);
         
         // Refresh data
         initializeDashboard();
       } else {
-        toast({ title: "Deletion failed", description: (data as any)?.message || "Unknown error occurred", variant: "destructive" });
+        showError("Deletion failed", (data as any)?.message || "Unknown error occurred");
       }
     } catch (error: any) {
       console.error('Error deleting company:', error);
-      toast({
-        title: "Error deleting company",
-        description: error.message || "An error occurred while deleting the company",
-        variant: "destructive",
-      });
+      showError("Error deleting company", error.message || "An error occurred while deleting the company");
     } finally {
       setIsDeletingCompany(false);
       setCompanyToDelete(null);
@@ -300,10 +282,7 @@ export default function SuperAdminDashboard() {
 
       if (error) throw error;
 
-      toast({
-        title: "Company updated successfully",
-        description: `${companyToEdit.name} has been updated in the system`,
-      });
+      showSuccess("Company updated successfully", `${companyToEdit.name} has been updated in the system`);
       
       // Refresh data and close dialog
       fetchCompanies();
@@ -311,11 +290,7 @@ export default function SuperAdminDashboard() {
       setCompanyToEdit(null);
     } catch (error: any) {
       console.error('Error updating company:', error);
-      toast({
-        title: "Error updating company",
-        description: error.message || "An error occurred while updating the company",
-        variant: "destructive",
-      });
+      showError("Error updating company", error.message || "An error occurred while updating the company");
     } finally {
       setIsUpdatingCompany(false);
     }
@@ -393,14 +368,14 @@ export default function SuperAdminDashboard() {
                     try {
                       const success = await refreshAuthSession();
                       if (success) {
-                        toast({ title: "Session refreshed", description: "Your authentication session has been refreshed" });
+                        showSuccess("Session refreshed", "Your authentication session has been refreshed");
                         window.location.reload();
                       } else {
-                        toast({ title: "Session refresh failed", description: "Could not refresh session, please re-login", variant: "destructive" });
+                        showError("Session refresh failed", "Could not refresh session, please re-login");
                       }
                     } catch (error) {
                       console.error('Error refreshing session:', error);
-                      toast({ title: "Authentication error", description: "Please sign out and sign in again", variant: "destructive" });
+                      showError("Authentication error", "Please sign out and sign in again");
                     }
                   }}
                   className="bg-white/10 border-white text-white hover:bg-white hover:text-primary transition-all hover:scale-105 font-medium"
