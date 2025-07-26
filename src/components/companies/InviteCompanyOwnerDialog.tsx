@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, Building2, UserPlus, User } from 'lucide-react';
 import { useFleetNotifications } from '@/components/notifications';
 import { supabase } from '@/integrations/supabase/client';
-import { handleTextBlur, handleEmailInput } from '@/lib/textUtils';
+import { handleTextBlur, handleEmailInput, createTextHandlers } from '@/lib/textUtils';
 
 interface InviteCompanyOwnerDialogProps {
   open: boolean;
@@ -99,6 +99,10 @@ export function InviteCompanyOwnerDialog({
     if (error) setError('');
   };
 
+  // Create text handlers for name fields
+  const firstNameHandlers = createTextHandlers(setFirstName, 'text');
+  const lastNameHandlers = createTextHandlers(setLastName, 'text');
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -138,7 +142,8 @@ export function InviteCompanyOwnerDialog({
                     id="firstName"
                     type="text"
                     value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    onChange={firstNameHandlers.onChange}
+                    onBlur={firstNameHandlers.onBlur}
                     placeholder="John"
                     className="pl-10"
                     required
@@ -155,7 +160,8 @@ export function InviteCompanyOwnerDialog({
                     id="lastName"
                     type="text"
                     value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    onChange={lastNameHandlers.onChange}
+                    onBlur={lastNameHandlers.onBlur}
                     placeholder="Doe"
                     className="pl-10"
                     required
