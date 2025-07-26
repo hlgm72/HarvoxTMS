@@ -93,14 +93,6 @@ const DriverSkeleton = () => (
 export default function Drivers() {
   console.log('🎯 Drivers page rendering...');
   
-  // Temporary deletion helper
-  const handleDeleteTestUser = async () => {
-    const { deleteTestUser } = await import('@/utils/deleteTestUser');
-    const result = await deleteTestUser();
-    console.log('Delete result:', result);
-    alert(JSON.stringify(result));
-  };
-  
   
   const { drivers, loading, refetch } = useCompanyDrivers();
   const [showInviteDialog, setShowInviteDialog] = useState(false);
@@ -175,15 +167,10 @@ export default function Drivers() {
           title={`Gestión de Conductores`}
           subtitle={`${drivers.length} conductores • ${drivers.filter(d => d.current_status === 'available').length} disponibles • ${drivers.filter(d => d.current_status === 'on_route').length} en ruta`}
           actions={
-            <div className="flex gap-2">
-              <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
-                <UserPlus className="h-4 w-4" />
-                Nuevo Conductor
-              </Button>
-              <Button variant="destructive" size="sm" onClick={handleDeleteTestUser}>
-                Borrar Test User
-              </Button>
-            </div>
+            <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
+              <UserPlus className="h-4 w-4" />
+              Nuevo Conductor
+            </Button>
           }
         />
         <div className="p-2 md:p-4 space-y-6">
