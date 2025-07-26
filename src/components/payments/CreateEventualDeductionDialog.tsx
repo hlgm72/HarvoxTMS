@@ -250,6 +250,7 @@ export function CreateEventualDeductionDialog({
         .from('expense_instances')
         .insert({
           payment_period_id: companyPeriod.id,
+          driver_user_id: formData.driver_user_id, // Nuevo campo agregado
           expense_type_id: formData.expense_type_id,
           amount: parseFloat(formData.amount),
           description: formData.description,
