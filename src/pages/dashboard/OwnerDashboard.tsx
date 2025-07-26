@@ -90,6 +90,24 @@ export default function OwnerDashboard() {
     }
   }, [loading, user, userRole]);
 
+  // Handle success message from invitation signup
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('from_invitation') === 'true') {
+      // Wait for profile to load before showing success message
+      setTimeout(() => {
+        showSuccess(
+          "¡Cuenta Creada Exitosamente!", 
+          `Bienvenido a ${companyInfo?.name || 'la plataforma'}. Tu cuenta ha sido configurada correctamente.`
+        );
+      }, 2000);
+      
+      // Clean up URL parameter
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }, [companyInfo, showSuccess]);
+
   const fetchCompanyData = async () => {
     if (!userRole?.company_id) return;
     
@@ -264,7 +282,7 @@ export default function OwnerDashboard() {
       <PageToolbar 
         title="Dashboard Ejecutivo"
       />
-      <div className="p-6 pt-2 min-h-screen bg-gradient-subtle !bg-pink-500">
+      <div className="p-6 pt-2 min-h-screen bg-gradient-subtle">
         {/* Content */}
         <div className="space-y-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

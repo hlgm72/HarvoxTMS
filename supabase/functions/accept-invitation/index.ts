@@ -94,16 +94,20 @@ const handler = async (req: Request): Promise<Response> => {
     // Create user profile with timezone
     const { error: profileError } = await supabase
       .from("profiles")
-      .insert({
+      .upsert({
         user_id: newUser.user.id,
         first_name: firstName,
         last_name: lastName,
         timezone: detectedTimezone
+      }, {
+        onConflict: 'user_id'
       });
 
     if (profileError) {
-      console.error("Error creating profile:", profileError);
-      // Don't fail the whole process for profile creation error
+      console.error("Error creating/updating profile:", profileError);
+      // Continue with the process but log the error
+    } else {
+      console.log("Profile created/updated successfully with timezone:", detectedTimezone);
     }
 
     // Assign the company role
