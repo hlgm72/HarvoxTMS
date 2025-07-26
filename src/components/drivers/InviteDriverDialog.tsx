@@ -69,8 +69,15 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
         }
       });
 
-      // Handle both error cases and non-success responses
+      // Check for edge function errors (including 409 conflicts)
       if (error) {
+        // For FunctionsHttpError, try to extract the actual error message
+        if (error.name === 'FunctionsHttpError' && error.context?.body) {
+          const errorBody = typeof error.context.body === 'string' 
+            ? JSON.parse(error.context.body) 
+            : error.context.body;
+          throw new Error(errorBody.error || error.message);
+        }
         throw error;
       }
 
