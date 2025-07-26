@@ -171,27 +171,29 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                               // Convertir a string si no lo es
                               const dateString = String(dateStr);
                               
-                              // Manejar diferentes formatos de fecha que pueden venir de Supabase
-                              let dateToFormat: Date;
+                              // Extraer año, mes, día directamente de la string para evitar problemas de zona horaria
+                              let year: number, month: number, day: number;
                               
                               if (dateString.includes('T') || dateString.includes('Z')) {
-                                // Formato ISO con tiempo: 2025-07-14T00:00:00.000Z
-                                dateToFormat = new Date(dateString);
+                                // Formato ISO: 2025-07-14T00:00:00.000Z - extraer solo la parte de fecha
+                                const datePart = dateString.split('T')[0];
+                                [year, month, day] = datePart.split('-').map(Number);
                               } else if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
                                 // Formato solo fecha: 2025-07-14
-                                const [year, month, day] = dateString.split('-').map(Number);
-                                dateToFormat = new Date(year, month - 1, day);
+                                [year, month, day] = dateString.split('-').map(Number);
                               } else {
-                                // Intentar parsearlo directamente
-                                dateToFormat = new Date(dateString);
+                                return `Formato no soportado: ${dateString}`;
                               }
                               
+                              // Crear fecha local evitando zona horaria UTC
+                              const localDate = new Date(year, month - 1, day, 12, 0, 0); // Usar mediodía
+                              
                               // Verificar que la fecha sea válida
-                              if (isNaN(dateToFormat.getTime())) {
+                              if (isNaN(localDate.getTime())) {
                                 return `Fecha inválida: ${dateString}`;
                               }
                               
-                              return format(dateToFormat, 'dd/MM/yyyy', { locale: es });
+                              return format(localDate, 'dd/MM/yyyy', { locale: es });
                             } catch (error) {
                               console.error('Error formateando fecha:', error, expense.transaction_date);
                               return `Error: ${expense.transaction_date}`;
