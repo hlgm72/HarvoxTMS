@@ -1,13 +1,35 @@
 import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { PageToolbar } from "@/components/layout/PageToolbar";
+import { useFleetNotifications } from '@/components/notifications';
+import { useUserCompanies } from '@/hooks/useUserCompanies';
 import { MapPin, Clock, DollarSign, Fuel, Phone, MessageSquare, FileText, AlertTriangle } from "lucide-react";
 
 export default function DriverDashboard() {
   const { t } = useTranslation(['common', 'fleet']);
+  const { showSuccess } = useFleetNotifications();
+  const { companies } = useUserCompanies();
+  const [searchParams] = useSearchParams();
+  
+  useEffect(() => {
+    // Check if user just completed invitation acceptance
+    const fromInvitation = searchParams.get('from_invitation');
+    if (fromInvitation === 'true' && companies && companies.length > 0) {
+      // Show welcome message after a short delay to ensure Dashboard is loaded
+      setTimeout(() => {
+        const companyName = companies[0]?.name || 'la empresa';
+        showSuccess(
+          "¡Invitación Aceptada!",
+          `Bienvenido a ${companyName}. Has sido registrado como Conductor de la compañía.`
+        );
+      }, 1000);
+    }
+  }, [searchParams, companies, showSuccess]);
   
   return (
     <>

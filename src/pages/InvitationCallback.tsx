@@ -52,7 +52,7 @@ export default function InvitationCallback() {
           throw new Error(result.error || 'Error accepting invitation');
         }
 
-        showSuccess("¡Invitación Aceptada!", `Bienvenido a ${result.user.company}. Tu rol es: ${result.user.role}`);
+        // Don't show success message here - it will be shown in the Dashboard
 
         // **CRÍTICO**: Refrescar los roles antes de redirigir
         console.log('🔄 Refreshing user roles after invitation acceptance...');
@@ -99,20 +99,20 @@ export default function InvitationCallback() {
           console.warn('⚠️ Roles not loaded after multiple attempts, forcing navigation');
         }
 
-        // Redirect to appropriate dashboard based on role
+        // Redirect to appropriate dashboard based on role with invitation flag
         const role = result.user.role;
         if (role === 'superadmin') {
-          navigate('/superadmin', { replace: true });
+          navigate('/superadmin?from_invitation=true', { replace: true });
         } else if (role === 'company_owner') {
-          navigate('/dashboard/owner', { replace: true });
+          navigate('/dashboard/owner?from_invitation=true', { replace: true });
         } else if (role === 'operations_manager') {
-          navigate('/dashboard/operations', { replace: true });
+          navigate('/dashboard/operations?from_invitation=true', { replace: true });
         } else if (role === 'dispatcher') {
-          navigate('/dashboard/dispatch', { replace: true });
+          navigate('/dashboard/dispatch?from_invitation=true', { replace: true });
         } else if (role === 'driver') {
-          navigate('/dashboard/driver', { replace: true });
+          navigate('/dashboard/driver?from_invitation=true', { replace: true });
         } else {
-          navigate('/dashboard', { replace: true });
+          navigate('/dashboard?from_invitation=true', { replace: true });
         }
 
       } catch (error: any) {
