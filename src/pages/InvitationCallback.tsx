@@ -35,12 +35,17 @@ export default function InvitationCallback() {
 
         console.log('Processing Google invitation for user:', session.user.id);
 
+        // Detect user's timezone from browser
+        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        console.log('Detected user timezone:', userTimezone);
+
         // Call the accept-google-invitation function
         const { data: result, error: functionError } = await supabase.functions.invoke('accept-google-invitation', {
           body: {
             invitationToken: invitationToken,
             userEmail: session.user.email,
-            userId: session.user.id
+            userId: session.user.id,
+            userTimezone: userTimezone
           }
         });
 

@@ -11,6 +11,7 @@ interface AcceptGoogleInvitationRequest {
   invitationToken: string;
   userEmail: string;
   userId: string;
+  userTimezone?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -24,9 +25,9 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { invitationToken, userEmail, userId }: AcceptGoogleInvitationRequest = await req.json();
+    const { invitationToken, userEmail, userId, userTimezone }: AcceptGoogleInvitationRequest = await req.json();
 
-    console.log("Processing Google invitation acceptance:", { invitationToken, userEmail, userId });
+    console.log("Processing Google invitation acceptance:", { invitationToken, userEmail, userId, userTimezone });
 
     // Validate input
     if (!invitationToken || !userEmail || !userId) {
@@ -115,6 +116,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (!existingProfile) {
       console.log("Creating new profile for user:", userId);
       console.log("Invitation data:", { first_name: invitation.first_name, last_name: invitation.last_name });
+      console.log("User timezone:", userTimezone);
       
       const { error: profileError } = await supabase
         .from("profiles")
@@ -122,7 +124,7 @@ const handler = async (req: Request): Promise<Response> => {
           user_id: userId,
           first_name: invitation.first_name || 'Unknown',
           last_name: invitation.last_name || 'User',
-          timezone: 'America/Chicago' // Central Time Zone for US Central region
+          timezone: userTimezone || 'America/Chicago'
         });
 
       if (profileError) {
@@ -141,7 +143,7 @@ const handler = async (req: Request): Promise<Response> => {
         .update({
           first_name: existingProfile.first_name || invitation.first_name || 'Unknown',
           last_name: existingProfile.last_name || invitation.last_name || 'User',
-          timezone: existingProfile.timezone || 'America/Chicago'
+          timezone: existingProfile.timezone || userTimezone || 'America/Chicago'
         })
         .eq("user_id", userId);
 
