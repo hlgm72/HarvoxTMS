@@ -115,12 +115,17 @@ export default function Invitation() {
     setError('');
 
     try {
+      // Detect user timezone
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      console.log('Detected user timezone:', userTimezone);
+
       const { data: result, error: functionError } = await supabase.functions.invoke('accept-invitation', {
         body: {
           invitationToken: token,
           password: formData.password,
           firstName: formData.firstName,
-          lastName: formData.lastName
+          lastName: formData.lastName,
+          userTimezone: userTimezone
         }
       });
 
@@ -132,8 +137,6 @@ export default function Invitation() {
         throw new Error(result.error || 'Error accepting invitation');
       }
 
-      showSuccess("¡Cuenta Creada Exitosamente!", `Bienvenido a ${invitation.companyName}. Iniciando sesión automáticamente...`);
-
       // Auto-login the user after account creation
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: invitation.email,
@@ -144,21 +147,29 @@ export default function Invitation() {
         throw new Error(`Error al iniciar sesión: ${signInError.message}`);
       }
 
+      // Set flag and dispatch custom event to refresh profile data
+      localStorage.setItem('profile_refresh_needed', 'true');
+      console.log('🔄 Setting profile refresh flag for new user');
+      
+      // Dispatch custom event for immediate refresh in same tab
+      window.dispatchEvent(new CustomEvent('profileRefreshNeeded'));
+      console.log('🔄 Dispatched profileRefreshNeeded event');
+
       // Wait for auth state to update and then refresh roles
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Redirect to appropriate dashboard based on role
+      // Redirect to appropriate dashboard based on role with invitation flag
       const userRole = result.user?.role || invitation.role;
       if (userRole === 'driver') {
-        navigate('/dashboard/driver');
+        navigate('/dashboard/driver?from_invitation=true');
       } else if (userRole === 'dispatcher') {
-        navigate('/dashboard/dispatch');
+        navigate('/dashboard/dispatch?from_invitation=true');
       } else if (userRole === 'operations_manager') {
-        navigate('/dashboard/operations');
+        navigate('/dashboard/operations?from_invitation=true');
       } else if (userRole === 'company_owner') {
-        navigate('/dashboard/owner');
+        navigate('/dashboard/owner?from_invitation=true');
       } else {
-        navigate('/dashboard');
+        navigate('/dashboard?from_invitation=true');
       }
 
     } catch (err: any) {

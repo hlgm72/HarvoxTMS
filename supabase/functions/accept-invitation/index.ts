@@ -12,6 +12,7 @@ interface AcceptInvitationRequest {
   password: string;
   firstName: string;
   lastName: string;
+  userTimezone?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -25,7 +26,15 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { invitationToken, password, firstName, lastName }: AcceptInvitationRequest = await req.json();
+    const { invitationToken, password, firstName, lastName, userTimezone }: AcceptInvitationRequest = await req.json();
+    
+    // Detect and process timezone
+    const detectedTimezone = userTimezone || 'America/New_York'; // Default fallback
+    console.log('Timezone processing:', {
+      received: userTimezone,
+      final: detectedTimezone,
+      wasProvided: !!userTimezone
+    });
 
     // Validate input
     if (!invitationToken || !password || !firstName || !lastName) {
@@ -82,13 +91,14 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error(`Error creating user: ${createUserError?.message || "Unknown error"}`);
     }
 
-    // Create user profile
+    // Create user profile with timezone
     const { error: profileError } = await supabase
       .from("profiles")
       .insert({
         user_id: newUser.user.id,
         first_name: firstName,
-        last_name: lastName
+        last_name: lastName,
+        timezone: detectedTimezone
       });
 
     if (profileError) {
