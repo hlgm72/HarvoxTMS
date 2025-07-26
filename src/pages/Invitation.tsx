@@ -18,6 +18,7 @@ export default function Invitation() {
   const [submitting, setSubmitting] = useState(false);
   const [invitation, setInvitation] = useState<any>(null);
   const [error, setError] = useState<string>('');
+  const [userAlreadyAuth, setUserAlreadyAuth] = useState(false);
   
   const [formData, setFormData] = useState({
     firstName: '',
@@ -31,10 +32,32 @@ export default function Invitation() {
     console.log('Current URL:', window.location.href);
     console.log('Referrer:', document.referrer);
     
-    if (token) {
-      console.log('Starting invitation validation...');
-      validateInvitation();
-    }
+    // Check if user is already authenticated
+    const checkAuthStatus = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          console.log('🚨 User already authenticated:', session.user.email);
+          setUserAlreadyAuth(true);
+          setLoading(false);
+          return; // Don't proceed with invitation validation
+        }
+        
+        // Only validate invitation if user is not authenticated
+        if (token) {
+          console.log('Starting invitation validation...');
+          validateInvitation();
+        }
+      } catch (err) {
+        console.error('Error checking auth status:', err);
+        if (token) {
+          validateInvitation();
+        }
+      }
+    };
+    
+    checkAuthStatus();
   }, [token]);
 
   // Clear form autofill on component mount
@@ -166,6 +189,12 @@ export default function Invitation() {
   const handleGoogleSignIn = async () => {
     if (!token) return;
     
+    // Prevent Google OAuth if user is already authenticated
+    if (userAlreadyAuth) {
+      showError('Error', 'Ya tienes una sesión activa. Por favor, cierra sesión primero.');
+      return;
+    }
+    
     setSubmitting(true);
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -188,10 +217,60 @@ export default function Invitation() {
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      setSubmitting(true);
+      await supabase.auth.signOut({ scope: 'global' });
+      
+      // Clean up local storage
+      localStorage.clear();
+      
+      // Reload page to ensure clean state
+      window.location.reload();
+    } catch (err: any) {
+      console.error('Error signing out:', err);
+      showError('Error', 'Error al cerrar sesión');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (error) setError('');
   };
+
+  // Show user already authenticated message
+  if (userAlreadyAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-orange-600">Sesión Activa Detectada</CardTitle>
+            <CardDescription>
+              Ya tienes una sesión activa. Para procesar esta invitación, necesitas cerrar tu sesión actual primero.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button 
+              onClick={handleSignOut} 
+              className="w-full"
+              disabled={submitting}
+            >
+              {submitting ? 'Cerrando sesión...' : 'Cerrar Sesión y Continuar'}
+            </Button>
+            <Button 
+              onClick={() => navigate('/dashboard')} 
+              variant="outline"
+              className="w-full"
+            >
+              Ir al Dashboard
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
