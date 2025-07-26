@@ -54,7 +54,7 @@ export function useEquipmentAssignments() {
         .from('equipment_assignments')
         .select(`
           *,
-          company_equipment!inner(
+          company_equipment(
             id,
             equipment_number,
             equipment_type,
@@ -65,7 +65,7 @@ export function useEquipmentAssignments() {
             status,
             company_id
           ),
-          profiles(
+          profiles!driver_user_id(
             user_id,
             first_name,
             last_name
