@@ -32,6 +32,29 @@ export default function Invitation() {
     }
   }, [token]);
 
+  // Clear form autofill on component mount
+  useEffect(() => {
+    // Reset form data to ensure clean state
+    setFormData({
+      firstName: '',
+      lastName: '',
+      password: '',
+      confirmPassword: ''
+    });
+
+    // Also clear browser autofill if any
+    const timer = setTimeout(() => {
+      const inputs = document.querySelectorAll('input[type="text"], input[type="password"]');
+      inputs.forEach((input: any) => {
+        if (input.autocomplete !== 'off') {
+          input.value = '';
+        }
+      });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const validateInvitation = async () => {
     try {
       const { data, error } = await supabase.rpc('validate_invitation_token', {
@@ -54,16 +77,10 @@ export default function Invitation() {
         return;
       }
 
-      // Get company information
-      const { data: company, error: companyError } = await supabase
-        .from('companies')
-        .select('name')
-        .eq('id', invitationData.company_id)
-        .single();
-
+      // Get company information from the RPC result
       setInvitation({
         ...invitationData,
-        companyName: company?.name || 'Unknown Company'
+        companyName: invitationData.company_name || 'Unknown Company'
       });
     } catch (err: any) {
       setError(err.message || 'Error validating invitation');

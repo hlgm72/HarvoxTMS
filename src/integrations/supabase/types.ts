@@ -2583,6 +2583,7 @@ export type Database = {
           email: string
           role: Database["public"]["Enums"]["user_role"]
           is_valid: boolean
+          company_name: string
         }[]
       }
       validate_reset_token: {
