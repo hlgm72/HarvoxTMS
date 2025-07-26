@@ -8,6 +8,8 @@ import { Fuel, MoreHorizontal, Edit, Trash2, Eye, MapPin, Receipt, User, Calenda
 import { useFuelExpenses, useDeleteFuelExpense } from '@/hooks/useFuelExpenses';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { formatDateTime, formatDateOnly } from '@/lib/dateFormatting';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface FuelExpensesListProps {
@@ -159,7 +161,16 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">
-                          {formatDateOnly(expense.transaction_date)}
+                          {(() => {
+                            // Crear fecha en zona horaria local para evitar problemas de UTC
+                            const dateStr = expense.transaction_date;
+                            if (dateStr) {
+                              const [year, month, day] = dateStr.split('-').map(Number);
+                              const localDate = new Date(year, month - 1, day);
+                              return format(localDate, 'dd/MM/yyyy', { locale: es });
+                            }
+                            return 'Fecha no disponible';
+                          })()}
                         </span>
                       </div>
                     </TableCell>
