@@ -25,7 +25,7 @@ const equipmentSchema = z.object({
   equipment_type: z.string().min(1, "El tipo de equipo es requerido"),
   make: z.string().optional(),
   model: z.string().optional(),
-  year: z.number().optional(),
+  year: z.number().min(1990, "El año debe ser mayor a 1990").max(new Date().getFullYear() + 1, `El año no puede ser mayor a ${new Date().getFullYear() + 1}`).optional(),
   vin_number: z.string().optional(),
   license_plate: z.string().optional(),
   license_plate_expiry_date: z.string().optional(),
