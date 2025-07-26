@@ -487,12 +487,12 @@ export function PDFAnalyzer() {
               <h3 className="text-lg font-semibold">Transacciones de Combustible</h3>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {enrichedTransactions.map((transaction, index) => (
-                  <Card key={index} className={`
+                  <Card key={index} className={`bg-white
                     ${transaction.import_status === 'already_imported' 
-                      ? 'border-gray-200 bg-gray-50/50 opacity-75' 
+                      ? 'border-gray-200 opacity-75' 
                       : transaction.card_mapping_status === 'found' && transaction.period_mapping_status === 'found' 
-                        ? 'border-green-200 bg-green-50/50' 
-                        : 'border-orange-200 bg-orange-50/50'}
+                        ? 'border-green-200' 
+                        : 'border-orange-200'}
                   `}>
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
