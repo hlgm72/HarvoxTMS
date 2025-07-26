@@ -968,7 +968,6 @@ export type Database = {
           invoice_number: string | null
           is_verified: boolean
           notes: string | null
-          odometer_reading: number | null
           payment_period_id: string
           price_per_gallon: number
           raw_webhook_data: Json | null
@@ -997,7 +996,6 @@ export type Database = {
           invoice_number?: string | null
           is_verified?: boolean
           notes?: string | null
-          odometer_reading?: number | null
           payment_period_id: string
           price_per_gallon: number
           raw_webhook_data?: Json | null
@@ -1026,7 +1024,6 @@ export type Database = {
           invoice_number?: string | null
           is_verified?: boolean
           notes?: string | null
-          odometer_reading?: number | null
           payment_period_id?: string
           price_per_gallon?: number
           raw_webhook_data?: Json | null
