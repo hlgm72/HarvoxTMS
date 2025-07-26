@@ -1,7 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Toaster } from "sonner";
-import { Toaster as ShadcnToaster } from "@/components/ui/toaster";
 import Index from "./pages/Index";
 import Setup from "./pages/Setup";
 import Auth from "./pages/Auth";
@@ -332,8 +330,6 @@ const App = () => {
         <UserProfileProvider>
           <NotificationProvider>
             <AppContent />
-            <Toaster />
-            <ShadcnToaster />
           </NotificationProvider>
         </UserProfileProvider>
       </AuthProvider>
