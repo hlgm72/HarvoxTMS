@@ -79,19 +79,21 @@ export function ComboboxField({
               !value && "text-muted-foreground"
             )}
           >
-            {selectedOption ? (
-              <div className="flex items-center gap-2">
-                {selectedOption.label}
-                {selectedOption.popular && (
-                  <Badge variant="secondary" className="text-xs">
-                    Popular
-                  </Badge>
-                )}
-              </div>
-            ) : (
-              placeholder
-            )}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <div className="flex items-center gap-2">
+              {selectedOption ? (
+                <>
+                  {selectedOption.label}
+                  {selectedOption.popular && (
+                    <Badge variant="secondary" className="text-xs">
+                      Popular
+                    </Badge>
+                  )}
+                </>
+              ) : (
+                placeholder
+              )}
+            </div>
+            <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </FormControl>
       </PopoverTrigger>
