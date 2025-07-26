@@ -519,9 +519,11 @@ export function PDFAnalyzer() {
                                 {transaction.card_mapping_status === 'found' ? 'Conductor OK' : 
                                  transaction.card_mapping_status === 'multiple' ? 'Múltiples' : 'Sin Conductor'}
                               </Badge>
-                              <Badge variant={transaction.period_mapping_status === 'found' ? 'default' : 'destructive'}>
-                                {transaction.period_mapping_status === 'found' ? 'Período OK' : 'Sin Período'}
-                              </Badge>
+                              {transaction.period_mapping_status === 'not_found' && (
+                                <Badge variant="destructive">
+                                  Sin Período
+                                </Badge>
+                              )}
                             </>
                           )}
                         </div>
