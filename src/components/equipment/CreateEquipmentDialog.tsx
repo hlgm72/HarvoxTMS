@@ -248,15 +248,18 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
                          <FormControl>
                            <Input 
                              type="number" 
-                             placeholder="" 
+                             placeholder=""
                              min="1990"
                              max={new Date().getFullYear() + 1}
                              value={field.value || ""}
                              onChange={(e) => {
+                               const value = e.target.value;
+                               field.onChange(value ? parseInt(value) : undefined);
+                             }}
+                             onBlur={(e) => {
                                const value = parseInt(e.target.value);
-                               if (!isNaN(value) && value >= 1990 && value <= new Date().getFullYear() + 1) {
-                                 field.onChange(value);
-                               } else if (e.target.value === "") {
+                               if (!isNaN(value) && (value < 1990 || value > new Date().getFullYear() + 1)) {
+                                 // Si está fuera del rango, limpiar el campo
                                  field.onChange(undefined);
                                }
                              }}
