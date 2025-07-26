@@ -164,39 +164,37 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                           {(() => {
                             try {
                               const dateStr = expense.transaction_date;
-                              if (!dateStr || typeof dateStr !== 'string') {
+                              if (!dateStr) {
                                 return 'Fecha no disponible';
                               }
                               
-                              // Validar formato de fecha YYYY-MM-DD
-                              const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-                              if (!dateRegex.test(dateStr)) {
-                                return 'Formato de fecha inválido';
+                              // Convertir a string si no lo es
+                              const dateString = String(dateStr);
+                              
+                              // Manejar diferentes formatos de fecha que pueden venir de Supabase
+                              let dateToFormat: Date;
+                              
+                              if (dateString.includes('T') || dateString.includes('Z')) {
+                                // Formato ISO con tiempo: 2025-07-14T00:00:00.000Z
+                                dateToFormat = new Date(dateString);
+                              } else if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                                // Formato solo fecha: 2025-07-14
+                                const [year, month, day] = dateString.split('-').map(Number);
+                                dateToFormat = new Date(year, month - 1, day);
+                              } else {
+                                // Intentar parsearlo directamente
+                                dateToFormat = new Date(dateString);
                               }
                               
-                              const [year, month, day] = dateStr.split('-').map(Number);
-                              
-                              // Validar que los valores sean números válidos
-                              if (isNaN(year) || isNaN(month) || isNaN(day)) {
-                                return 'Fecha inválida';
+                              // Verificar que la fecha sea válida
+                              if (isNaN(dateToFormat.getTime())) {
+                                return `Fecha inválida: ${dateString}`;
                               }
                               
-                              // Validar rangos válidos
-                              if (year < 1900 || year > 2100 || month < 1 || month > 12 || day < 1 || day > 31) {
-                                return 'Fecha fuera de rango';
-                              }
-                              
-                              const localDate = new Date(year, month - 1, day);
-                              
-                              // Verificar que la fecha creada sea válida
-                              if (isNaN(localDate.getTime())) {
-                                return 'Fecha inválida';
-                              }
-                              
-                              return format(localDate, 'dd/MM/yyyy', { locale: es });
+                              return format(dateToFormat, 'dd/MM/yyyy', { locale: es });
                             } catch (error) {
                               console.error('Error formateando fecha:', error, expense.transaction_date);
-                              return 'Error en fecha';
+                              return `Error: ${expense.transaction_date}`;
                             }
                           })()}
                         </span>
