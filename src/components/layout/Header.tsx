@@ -38,7 +38,7 @@ export function Header() {
   };
   
   return (
-    <header className="h-14 md:h-16 bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 shadow-sm">
+    <header className="sticky top-0 z-50 h-14 md:h-16 bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 shadow-sm border-b border-border/50">
       <div className="flex h-full items-center justify-between pr-3 md:pr-6">
         {/* Menu Toggle */}
         <MenuToggle />
