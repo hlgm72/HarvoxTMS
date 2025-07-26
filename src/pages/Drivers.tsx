@@ -1,4 +1,4 @@
-import { Truck, UserPlus } from "lucide-react";
+import { Truck, UserPlus, Settings } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,9 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
+import { useEquipmentAssignments } from "@/hooks/useEquipmentAssignments";
 import { formatExpiryDate } from '@/lib/dateFormatting';
 import { useState } from "react";
 import { InviteDriverDialog } from "@/components/drivers/InviteDriverDialog";
+import { EquipmentAssignmentDialog } from "@/components/equipment/EquipmentAssignmentDialog";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -92,7 +94,10 @@ const DriverSkeleton = () => (
 
 export default function Drivers() {
   const { drivers, loading, refetch } = useCompanyDrivers();
+  const { getAssignmentsByDriver } = useEquipmentAssignments();
   const [showInviteDialog, setShowInviteDialog] = useState(false);
+  const [showAssignmentDialog, setShowAssignmentDialog] = useState(false);
+  const [selectedDriverId, setSelectedDriverId] = useState<string>('');
 
   if (loading) {
     return (
@@ -173,6 +178,9 @@ export default function Drivers() {
               .join('')
               .toUpperCase();
 
+            // Obtener equipos asignados al conductor
+            const assignedEquipment = getAssignmentsByDriver(driver.user_id);
+
             return (
               <Card key={driver.id} className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
                 <CardHeader className="pb-3">
@@ -219,6 +227,33 @@ export default function Drivers() {
                         }
                       </span>
                     </div>
+                    
+                    {/* Mostrar equipos asignados */}
+                    <div className="flex items-center gap-2">
+                      <span>🔧</span>
+                      <span className="text-sm">
+                        {assignedEquipment.length > 0 
+                          ? `${assignedEquipment.length} equipo${assignedEquipment.length !== 1 ? 's' : ''} asignado${assignedEquipment.length !== 1 ? 's' : ''}`
+                          : 'Sin equipos asignados'
+                        }
+                      </span>
+                    </div>
+                    
+                    {/* Lista de equipos asignados */}
+                    {assignedEquipment.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {assignedEquipment.map((assignment) => (
+                          <Badge
+                            key={assignment.id}
+                            variant="outline"
+                            className="text-xs"
+                          >
+                            {assignment.company_equipment?.equipment_number}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    
                     <div className="flex items-center gap-2">
                       <span>🕐</span>
                       <span className="text-sm">{formatExperience(driver.hire_date)} de experiencia</span>
@@ -238,8 +273,17 @@ export default function Drivers() {
                     <Button variant="outline" size="sm" className="flex-1">
                       Ver Detalles
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1">
-                      Asignar Carga
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 gap-1"
+                      onClick={() => {
+                        setSelectedDriverId(driver.user_id);
+                        setShowAssignmentDialog(true);
+                      }}
+                    >
+                      <Settings className="h-3 w-3" />
+                      Equipos
                     </Button>
                   </div>
                 </CardContent>
@@ -255,6 +299,15 @@ export default function Drivers() {
         onSuccess={() => {
           refetch();
         }}
+      />
+
+      <EquipmentAssignmentDialog
+        isOpen={showAssignmentDialog}
+        onClose={() => {
+          setShowAssignmentDialog(false);
+          setSelectedDriverId('');
+        }}
+        driverUserId={selectedDriverId}
       />
     </>
   );
