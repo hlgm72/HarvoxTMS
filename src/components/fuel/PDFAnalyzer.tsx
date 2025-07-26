@@ -38,6 +38,7 @@ interface EnrichedTransaction {
   payment_period_id?: string;
   payment_period_dates?: string;
   vehicle_id?: string;
+  vehicle_number?: string; // Para mostrar el número de equipo en la UI
   card_mapping_status: 'found' | 'not_found' | 'multiple';
   period_mapping_status: 'found' | 'not_found';
   import_status: 'not_imported' | 'already_imported';
@@ -131,6 +132,13 @@ export function PDFAnalyzer() {
 
       const companyId = userCompanies[0].company_id;
 
+      // Obtener equipos de la empresa
+      const { data: companyEquipment } = await supabase
+        .from('company_equipment')
+        .select('id, equipment_number')
+        .eq('company_id', companyId)
+        .eq('status', 'active');
+
       // Obtener tarjetas de conductores
       const { data: driverCards } = await supabase
         .from('driver_cards')
@@ -159,12 +167,18 @@ export function PDFAnalyzer() {
         .eq('is_active', true)
         .in('user_id', driverIds);
 
-      // Obtener períodos de pago de la empresa (simplificado)
+      // Obtener períodos de pago de la empresa
       const { data: companyPeriods } = await supabase
         .from('company_payment_periods')
         .select('*')
         .eq('company_id', companyId)
         .eq('status', 'open');
+
+      // Obtener cálculos de períodos de conductores para poder asignar el payment_period_id correcto
+      const { data: driverPeriodCalculations } = await supabase
+        .from('driver_period_calculations')
+        .select('id, driver_user_id, company_payment_period_id')
+        .in('company_payment_period_id', companyPeriods?.map(p => p.id) || []);
 
       // Obtener gastos de combustible existentes para verificar duplicados
       const { data: existingFuelExpenses } = await supabase
@@ -253,14 +267,41 @@ export function PDFAnalyzer() {
           return periodTransactionDate >= startDate && periodTransactionDate <= endDate;
         });
 
-        if (matchingPeriod) {
-          enrichedTransaction.payment_period_id = matchingPeriod.id;
-          enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date}`;
-          enrichedTransaction.period_mapping_status = 'found';
+        if (matchingPeriod && enrichedTransaction.driver_user_id) {
+          // Buscar el cálculo del conductor para este período y conductor
+          let driverPeriodCalc = driverPeriodCalculations?.find(calc => 
+            calc.company_payment_period_id === matchingPeriod.id && 
+            calc.driver_user_id === enrichedTransaction.driver_user_id
+          );
+          
+          // Si no existe el cálculo del conductor, lo creamos temporalmente en memoria
+          // (la inserción real se hará cuando se importen las transacciones)
+          if (!driverPeriodCalc) {
+            console.log(`No se encontró driver_period_calculation para conductor ${enrichedTransaction.driver_user_id} y período ${matchingPeriod.id}. Se creará automáticamente durante la importación.`);
+            // Marca que el período se encontró pero necesita crearse el calculation
+            enrichedTransaction.payment_period_id = `CREATE_FOR_${matchingPeriod.id}_${enrichedTransaction.driver_user_id}`;
+            enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date}`;
+            enrichedTransaction.period_mapping_status = 'found';
+          } else {
+            enrichedTransaction.payment_period_id = driverPeriodCalc.id;
+            enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date}`;
+            enrichedTransaction.period_mapping_status = 'found';
+          }
         }
 
-        // Mapear vehículo (si existe en el campo unit)
-        enrichedTransaction.vehicle_id = transaction.unit;
+        // Mapear vehículo por número de equipo al UUID correspondiente
+        const equipmentNumber = transaction.unit;
+        const matchingEquipment = companyEquipment?.find(equipment => 
+          equipment.equipment_number === equipmentNumber
+        );
+        
+        if (matchingEquipment) {
+          enrichedTransaction.vehicle_id = matchingEquipment.id;
+          enrichedTransaction.vehicle_number = matchingEquipment.equipment_number;
+        } else {
+          enrichedTransaction.vehicle_id = null;
+          enrichedTransaction.vehicle_number = equipmentNumber; // Mostrar el número original aunque no se haya mapeado
+        }
 
         return enrichedTransaction;
       });
@@ -296,7 +337,61 @@ export function PDFAnalyzer() {
         return;
       }
 
-      const fuelExpenses = validTransactions.map(transaction => ({
+      // Procesar transacciones que necesitan crear driver_period_calculations
+      const transactionsToProcess = [];
+      
+      for (const transaction of validTransactions) {
+        let finalPaymentPeriodId = transaction.payment_period_id;
+        
+        // Si el payment_period_id tiene el formato especial, necesitamos crear el driver_period_calculation
+        if (finalPaymentPeriodId?.startsWith('CREATE_FOR_')) {
+          const parts = finalPaymentPeriodId.split('_');
+          const companyPaymentPeriodId = parts[2];
+          const driverUserId = parts[3];
+          
+          // Crear el driver_period_calculation
+          const { data: newCalculation, error: calculationError } = await supabase
+            .from('driver_period_calculations')
+            .insert({
+              company_payment_period_id: companyPaymentPeriodId,
+              driver_user_id: driverUserId,
+              gross_earnings: 0,
+              total_deductions: 0,
+              other_income: 0,
+              total_income: 0,
+              net_payment: 0,
+              has_negative_balance: false
+            })
+            .select()
+            .single();
+          
+          if (calculationError) {
+            console.error('Error creating driver_period_calculation:', calculationError);
+            // Intentar obtener uno existente en caso de que ya se haya creado
+            const { data: existingCalculation } = await supabase
+              .from('driver_period_calculations')
+              .select('id')
+              .eq('company_payment_period_id', companyPaymentPeriodId)
+              .eq('driver_user_id', driverUserId)
+              .single();
+            
+            if (existingCalculation) {
+              finalPaymentPeriodId = existingCalculation.id;
+            } else {
+              throw calculationError;
+            }
+          } else {
+            finalPaymentPeriodId = newCalculation.id;
+          }
+        }
+        
+        transactionsToProcess.push({
+          ...transaction,
+          payment_period_id: finalPaymentPeriodId
+        });
+      }
+
+      const fuelExpenses = transactionsToProcess.map(transaction => ({
         driver_user_id: transaction.driver_user_id!,
         payment_period_id: transaction.payment_period_id!,
         transaction_date: new Date(transaction.date).toISOString(),
@@ -586,7 +681,7 @@ export function PDFAnalyzer() {
                       {/* Información adicional */}
                       <div className="text-xs text-muted-foreground pt-2 border-t">
                         <div>Factura: {transaction.invoice}</div>
-                        {transaction.vehicle_id && <div>Unidad: {transaction.vehicle_id}</div>}
+                        {transaction.vehicle_number && <div>Unidad: {transaction.vehicle_number}</div>}
                       </div>
                     </CardContent>
                   </Card>
