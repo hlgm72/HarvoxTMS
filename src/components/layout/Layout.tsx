@@ -21,11 +21,13 @@ export function Layout({ children }: LayoutProps) {
     >
       <div className="min-h-screen w-full bg-background prevent-horizontal-scroll" style={{ display: 'flex', gap: '0px', margin: 0, padding: 0 }}>
         <AppSidebar />
-        <SidebarInset className="flex flex-col flex-1 min-w-0 h-screen overflow-hidden" style={{ marginLeft: '0px', padding: 0 }}>
+        <SidebarInset className="flex flex-col flex-1 min-w-0" style={{ marginLeft: '0px', padding: 0 }}>
           <Header />
-          <main className="flex-1 bg-gradient-subtle overflow-y-auto">
-            <div className="animate-fade-in">
-              {children}
+          <main className="flex-1 bg-gradient-subtle overflow-hidden">
+            <div className="h-full overflow-y-auto">
+              <div className="animate-fade-in min-h-full">
+                {children}
+              </div>
             </div>
           </main>
         </SidebarInset>
