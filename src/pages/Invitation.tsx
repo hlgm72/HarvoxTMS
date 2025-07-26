@@ -126,7 +126,11 @@ export default function Invitation() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/invitation/callback?token=${token}`
+          redirectTo: `${window.location.origin}/invitation/callback?token=${token}`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         }
       });
 
@@ -186,52 +190,99 @@ export default function Invitation() {
               Welcome to FleetNest!
             </h1>
             <p className="text-gray-600">
-              You've been invited to manage <strong>{invitation?.companyName}</strong>
+              {invitation?.role === 'driver' 
+                ? `Has sido invitado a unirte como conductor a ${invitation?.companyName}`
+                : `You've been invited to manage ${invitation?.companyName}`
+              }
             </p>
           </div>
 
-          {/* Features Overview */}
-          <div className="grid md:grid-cols-2 gap-4 mb-8">
-            <div className="bg-white p-4 rounded-lg shadow-sm border">
-              <div className="flex items-center space-x-3">
-                <Building2 className="h-8 w-8 text-blue-600" />
-                <div>
-                  <h3 className="font-semibold">Company Management</h3>
-                  <p className="text-sm text-gray-600">Manage your fleet operations</p>
+          {/* Features Overview - Adapt based on role */}
+          {invitation?.role === 'driver' ? (
+            <div className="grid md:grid-cols-2 gap-4 mb-8">
+              <div className="bg-white p-4 rounded-lg shadow-sm border">
+                <div className="flex items-center space-x-3">
+                  <Users className="h-8 w-8 text-blue-600" />
+                  <div>
+                    <h3 className="font-semibold">Mis Cargas</h3>
+                    <p className="text-sm text-gray-600">Ve y gestiona tus cargas asignadas</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg shadow-sm border">
+                <div className="flex items-center space-x-3">
+                  <Shield className="h-8 w-8 text-green-600" />
+                  <div>
+                    <h3 className="font-semibold">Pagos</h3>
+                    <p className="text-sm text-gray-600">Consulta tus ingresos y deducciones</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg shadow-sm border">
+                <div className="flex items-center space-x-3">
+                  <BarChart3 className="h-8 w-8 text-purple-600" />
+                  <div>
+                    <h3 className="font-semibold">Reportes</h3>
+                    <p className="text-sm text-gray-600">Historial de viajes y ganancias</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg shadow-sm border">
+                <div className="flex items-center space-x-3">
+                  <Building2 className="h-8 w-8 text-orange-600" />
+                  <div>
+                    <h3 className="font-semibold">Documentos</h3>
+                    <p className="text-sm text-gray-600">Gestiona tus documentos de conductor</p>
+                  </div>
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white p-4 rounded-lg shadow-sm border">
-              <div className="flex items-center space-x-3">
-                <Users className="h-8 w-8 text-green-600" />
-                <div>
-                  <h3 className="font-semibold">Driver Management</h3>
-                  <p className="text-sm text-gray-600">Add and manage drivers</p>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-4 mb-8">
+              <div className="bg-white p-4 rounded-lg shadow-sm border">
+                <div className="flex items-center space-x-3">
+                  <Building2 className="h-8 w-8 text-blue-600" />
+                  <div>
+                    <h3 className="font-semibold">Company Management</h3>
+                    <p className="text-sm text-gray-600">Manage your fleet operations</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg shadow-sm border">
+                <div className="flex items-center space-x-3">
+                  <Users className="h-8 w-8 text-green-600" />
+                  <div>
+                    <h3 className="font-semibold">Driver Management</h3>
+                    <p className="text-sm text-gray-600">Add and manage drivers</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg shadow-sm border">
+                <div className="flex items-center space-x-3">
+                  <Shield className="h-8 w-8 text-purple-600" />
+                  <div>
+                    <h3 className="font-semibold">Payment Tracking</h3>
+                    <p className="text-sm text-gray-600">Track loads and payments</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg shadow-sm border">
+                <div className="flex items-center space-x-3">
+                  <BarChart3 className="h-8 w-8 text-orange-600" />
+                  <div>
+                    <h3 className="font-semibold">Reporting</h3>
+                    <p className="text-sm text-gray-600">Comprehensive reports</p>
+                  </div>
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white p-4 rounded-lg shadow-sm border">
-              <div className="flex items-center space-x-3">
-                <Shield className="h-8 w-8 text-purple-600" />
-                <div>
-                  <h3 className="font-semibold">Payment Tracking</h3>
-                  <p className="text-sm text-gray-600">Track loads and payments</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white p-4 rounded-lg shadow-sm border">
-              <div className="flex items-center space-x-3">
-                <BarChart3 className="h-8 w-8 text-orange-600" />
-                <div>
-                  <h3 className="font-semibold">Reporting</h3>
-                  <p className="text-sm text-gray-600">Comprehensive reports</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          )}
 
           {/* Registration Form */}
           <Card>

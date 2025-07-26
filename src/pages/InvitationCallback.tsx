@@ -65,7 +65,7 @@ export default function InvitationCallback() {
         } else if (role === 'driver') {
           navigate('/dashboard/driver');
         } else {
-          navigate('/');
+          navigate('/dashboard');
         }
 
       } catch (error: any) {
