@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import { useFleetNotifications } from '@/components/notifications';
-import { useFleetNotifications } from '@/components/notifications/NotificationProvider';
 
 interface PWAInstallPrompt extends Event {
   prompt: () => Promise<void>;
@@ -21,8 +20,7 @@ export const usePWA = (): PWAHook => {
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const { showSuccess, showError } = useFleetNotifications();
-  const { showNotification } = useFleetNotifications();
+  const { showSuccess, showError, showNotification } = useFleetNotifications();
 
   // Check if device is mobile and potentially installable
   const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -71,28 +69,18 @@ export const usePWA = (): PWAHook => {
       setIsInstallable(false);
       setDeferredPrompt(null);
       
-      toast({
-        title: "¡FleetNest instalado!",
-        description: "La aplicación se ha instalado correctamente en tu dispositivo.",
-      });
+      showSuccess("¡FleetNest instalado!", "La aplicación se ha instalado correctamente en tu dispositivo.");
     };
 
     // Online/offline status
     const handleOnline = () => {
       setIsOnline(true);
-      toast({
-        title: "Conexión restaurada",
-        description: "FleetNest está nuevamente en línea.",
-      });
+      showSuccess("Conexión restaurada", "FleetNest está nuevamente en línea.");
     };
 
     const handleOffline = () => {
       setIsOnline(false);
-      toast({
-        title: "Sin conexión",
-        description: "FleetNest funcionará en modo offline con datos guardados.",
-        variant: "destructive",
-      });
+      showError("Sin conexión", "FleetNest funcionará en modo offline con datos guardados.");
     };
 
     // Add event listeners
@@ -145,15 +133,11 @@ export const usePWA = (): PWAHook => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [toast, showNotification]);
+  }, [showSuccess, showError, showNotification]);
 
   const promptInstall = async (): Promise<void> => {
     if (!deferredPrompt) {
-      toast({
-        title: "Instalación no disponible",
-        description: "La instalación no está disponible en este momento o ya está instalada.",
-        variant: "destructive",
-      });
+      showError("Instalación no disponible", "La instalación no está disponible en este momento o ya está instalada.");
       return;
     }
 
@@ -171,11 +155,7 @@ export const usePWA = (): PWAHook => {
       setIsInstallable(false);
     } catch (error) {
       console.error('PWA: Error during install prompt:', error);
-      toast({
-        title: "Error de instalación",
-        description: "No se pudo completar la instalación. Inténtalo de nuevo.",
-        variant: "destructive",
-      });
+      showError("Error de instalación", "No se pudo completar la instalación. Inténtalo de nuevo.");
     }
   };
 

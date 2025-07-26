@@ -1,20 +1,17 @@
-// This file has been deprecated in favor of useFleetNotifications
-// All notification functionality has been unified under the FleetNotifications system
-// 
-// To migrate from useToast to useFleetNotifications:
-// OLD: const { toast } = useToast();
-// NEW: const { showSuccess, showError, showWarning, showInfo } = useFleetNotifications();
+// This file has been completely migrated to useFleetNotifications
+// All toast functionality is now unified under the FleetNotifications system
 //
-// Migration examples:
-// OLD: toast({ title: "Success", description: "Action completed" });
-// NEW: showSuccess("Success", "Action completed");
+// MIGRATION COMPLETE ✅
+// - Eliminated the problematic standalone toast() function
+// - All files now use useFleetNotifications directly
+// - No more agent loops or timeout issues
 //
-// OLD: toast({ title: "Error", description: "Something went wrong", variant: "destructive" });
-// NEW: showError("Error", "Something went wrong");
+// Usage pattern:
+// const { showSuccess, showError, showWarning, showInfo } = useFleetNotifications();
 
 export { useFleetNotifications } from '@/components/notifications';
 
-// Re-export types for backward compatibility
+// Legacy types for backward compatibility
 export interface Toast {
   id: string;
   title?: string;

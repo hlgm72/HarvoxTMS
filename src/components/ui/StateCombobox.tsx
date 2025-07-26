@@ -31,7 +31,7 @@ export function StateCombobox({
   const [states, setStates] = useState<State[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const { toast } = useToast();
+  const { showError } = useFleetNotifications();
 
   useEffect(() => {
     loadStates();
@@ -49,11 +49,7 @@ export function StateCombobox({
       setStates(data || []);
     } catch (error) {
       console.error('Error loading states:', error);
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar los estados",
-        variant: "destructive",
-      });
+      showError("No se pudieron cargar los estados");
     } finally {
       setLoading(false);
     }
