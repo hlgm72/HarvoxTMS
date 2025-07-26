@@ -75,6 +75,35 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("You already have a role in this company");
     }
 
+    // Check if user profile exists, create if it doesn't
+    const { data: existingProfile, error: profileCheckError } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .single();
+
+    if (profileCheckError && profileCheckError.code !== 'PGRST116') { // Not "no rows" error
+      console.error("Error checking existing profile:", profileCheckError);
+    }
+
+    // Create user profile if it doesn't exist and we have invitation data
+    if (!existingProfile && invitation.first_name && invitation.last_name) {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert({
+          user_id: userId,
+          first_name: invitation.first_name,
+          last_name: invitation.last_name
+        });
+
+      if (profileError) {
+        console.error("Error creating profile:", profileError);
+        // Don't fail the whole process for profile creation error
+      } else {
+        console.log("Profile created successfully for user:", userId);
+      }
+    }
+
     // Assign the company role
     const { error: roleError } = await supabase
       .from("user_company_roles")
