@@ -23,11 +23,19 @@ export interface CreateFuelExpenseData {
   total_amount: number;
   station_name?: string;
   station_address?: string;
+  station_state?: string;
   fuel_card_number?: string;
   vehicle_id?: string;
   odometer_reading?: number;
   receipt_url?: string;
   notes?: string;
+  
+  // Campos adicionales de PDF
+  gross_amount?: number;
+  discount_amount?: number;
+  fees?: number;
+  card_last_four?: string;
+  invoice_number?: string;
 }
 
 export interface UpdateFuelExpenseData extends Partial<CreateFuelExpenseData> {

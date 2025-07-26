@@ -32,9 +32,18 @@ const formSchema = z.object({
   total_amount: z.coerce.number().positive('El monto total debe ser positivo'),
   station_name: z.string().optional(),
   station_address: z.string().optional(),
+  station_state: z.string().optional(),
   fuel_card_number: z.string().optional(),
   driver_card_id: z.string().optional(),
   vehicle_id: z.string().optional(),
+  odometer_reading: z.coerce.number().positive().optional(),
+  
+  // Campos adicionales que se extraen de PDF
+  gross_amount: z.coerce.number().optional(),
+  discount_amount: z.coerce.number().optional(),
+  fees: z.coerce.number().optional(),
+  card_last_four: z.string().max(4).optional(),
+  invoice_number: z.string().optional(),
   
   receipt_url: z.string().optional(),
   notes: z.string().optional(),
@@ -76,7 +85,16 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       total_amount: data.total_amount,
       station_name: data.station_name,
       station_address: data.station_address,
+      station_state: data.station_state,
       fuel_card_number: data.fuel_card_number,
+      odometer_reading: data.odometer_reading,
+      
+      // Campos adicionales de PDF
+      gross_amount: data.gross_amount,
+      discount_amount: data.discount_amount,
+      fees: data.fees,
+      card_last_four: data.card_last_four,
+      invoice_number: data.invoice_number,
       
       vehicle_id: data.vehicle_id,
       receipt_url: data.receipt_url,
@@ -347,6 +365,40 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
               />
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="station_state"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Estado de la Estación</FormLabel>
+                    <FormControl>
+                      <Input placeholder="TX, CA, FL..." maxLength={2} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="odometer_reading"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Lectura del Odómetro</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="123456"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             <FormField
               control={form.control}
               name="station_address"
@@ -360,6 +412,103 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                 </FormItem>
               )}
             />
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="invoice_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Número de Factura</FormLabel>
+                    <FormControl>
+                      <Input placeholder="INV-123456" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="card_last_four"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Últimos 4 dígitos de tarjeta</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="1234" 
+                        maxLength={4}
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Desglose de Costos */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-muted-foreground">Desglose de Costos (Opcional)</h4>
+              <div className="grid grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
+                  name="gross_amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Monto Bruto</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="discount_amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Descuentos</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="fees"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Comisiones</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
 
             <FormField
               control={form.control}
