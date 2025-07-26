@@ -51,6 +51,12 @@ export function EquipmentAssignmentDialog({
     getAssignmentsByDriver 
   } = useEquipmentAssignments();
 
+  // Debug logs
+  console.log('🚛 Available equipment:', equipment?.length || 0);
+  console.log('👨‍💼 Available drivers:', drivers?.length || 0);
+  console.log('🔧 Selected truck ID:', selectedTruckId);
+  console.log('👤 Selected driver ID:', selectedDriverId);
+
   // Filtrar equipos por tipo
   const availableTrucks = equipment?.filter(eq => {
     const assignment = getAssignmentByEquipment(eq.id);
@@ -61,6 +67,9 @@ export function EquipmentAssignmentDialog({
     const assignment = getAssignmentByEquipment(eq.id);
     return !assignment && eq.status === 'active' && eq.equipment_type === 'trailer';
   }) || [];
+
+  console.log('🚛 Available trucks:', availableTrucks.length);
+  console.log('🚚 Available trailers:', availableTrailers.length);
 
   // Filtrar conductores activos
   const activeDrivers = drivers?.filter(driver => driver.is_active) || [];
@@ -129,7 +138,7 @@ export function EquipmentAssignmentDialog({
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar conductor..." />
                 </SelectTrigger>
-                <SelectContent>
+                 <SelectContent className="bg-white z-50">
                   {activeDrivers.map((driver) => (
                     <SelectItem key={driver.user_id} value={driver.user_id}>
                       <div className="flex items-center gap-2">
@@ -230,7 +239,7 @@ export function EquipmentAssignmentDialog({
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar camión..." />
               </SelectTrigger>
-              <SelectContent>
+               <SelectContent className="bg-white z-50">
                 {availableTrucks.length === 0 ? (
                   <div className="p-4 text-center text-muted-foreground">
                     <Truck className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -270,7 +279,7 @@ export function EquipmentAssignmentDialog({
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar trailer (opcional)..." />
               </SelectTrigger>
-              <SelectContent>
+               <SelectContent className="bg-white z-50">
                 <SelectItem value="none">
                   <div className="flex items-center gap-2">
                     <X className="h-4 w-4 text-muted-foreground" />
@@ -308,7 +317,7 @@ export function EquipmentAssignmentDialog({
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white z-50">
                 <SelectItem value="permanent">
                   <div className="flex flex-col items-start">
                     <div className="font-medium">Permanente</div>
