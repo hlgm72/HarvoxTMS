@@ -328,9 +328,6 @@ export default function Invitation() {
           <Card>
             <CardHeader>
               <CardTitle>Crear Tu Cuenta</CardTitle>
-              <CardDescription>
-                Configura tu cuenta para comenzar a usar FleetNest
-              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {error && (
