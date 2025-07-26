@@ -12,7 +12,7 @@ import { CreateEventualDeductionDialog } from "./CreateEventualDeductionDialog";
 import { EventualDeductionsList } from "./EventualDeductionsList";
 import { formatDateOnly } from '@/lib/dateFormatting';
 import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useFleetNotifications } from "@/components/notifications";
 
 interface DeductionsManagerProps {
   isCreateDialogOpen?: boolean;
@@ -42,7 +42,7 @@ export function DeductionsManager({
 }: DeductionsManagerProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEventualDialogOpen, setIsEventualDialogOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<any>(null);

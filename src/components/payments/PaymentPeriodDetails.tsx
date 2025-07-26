@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertTriangle, Calculator, DollarSign, Lock, Play, Users } from "lucide-react";
 import { formatPaymentPeriod } from '@/lib/dateFormatting';
-import { useToast } from "@/hooks/use-toast";
+import { useFleetNotifications } from "@/components/notifications";
 import { PaymentPeriodAlerts } from "./PaymentPeriodAlerts";
 
 interface PaymentPeriodDetailsProps {
@@ -33,7 +33,7 @@ interface DriverCalculation {
 }
 
 export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetailsProps) {
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Obtener detalles del período

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { formatPaymentPeriod, formatDeductionDate } from "@/lib/dateFormatting";
 import { Trash2, AlertTriangle, Calendar, DollarSign, User, FileText } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useFleetNotifications } from "@/components/notifications";
 
 interface EventualDeductionsListProps {
   onRefresh: () => void;
@@ -31,7 +31,7 @@ interface EventualDeductionsListProps {
 
 export function EventualDeductionsList({ onRefresh, filters, viewConfig }: EventualDeductionsListProps) {
   const { user } = useAuth();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const [deletingExpense, setDeletingExpense] = useState<any>(null);
 
   // Obtener deducciones eventuales

@@ -16,7 +16,7 @@ import { CalendarIcon, AlertTriangle, Check, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
+import { useFleetNotifications } from "@/components/notifications";
 import { useATMInput } from "@/hooks/useATMInput";
 
 interface ExpenseTemplateDialogProps {
@@ -35,7 +35,7 @@ export function ExpenseTemplateDialog({
   template 
 }: ExpenseTemplateDialogProps) {
   const { user } = useAuth();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
   const [inactiveTemplate, setInactiveTemplate] = useState<any>(null);
   const [driverSearchOpen, setDriverSearchOpen] = useState(false);
