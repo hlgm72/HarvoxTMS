@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Truck, User, Plus, ArrowRightLeft, X } from 'lucide-react';
 import {
   Dialog,
@@ -37,9 +37,16 @@ export function EquipmentAssignmentDialog({
 }: EquipmentAssignmentDialogProps) {
   const [selectedTruckId, setSelectedTruckId] = useState<string>('');
   const [selectedTrailerId, setSelectedTrailerId] = useState<string>('');
-  const [selectedDriverId, setSelectedDriverId] = useState<string>(driverUserId || '');
+  const [selectedDriverId, setSelectedDriverId] = useState<string>('');
   const [assignmentType, setAssignmentType] = useState<'permanent' | 'temporary'>('permanent');
   const [notes, setNotes] = useState('');
+
+  // Asegurar que selectedDriverId se inicialice correctamente
+  useEffect(() => {
+    if (driverUserId && selectedDriverId !== driverUserId) {
+      setSelectedDriverId(driverUserId);
+    }
+  }, [driverUserId, selectedDriverId]);
 
   const { equipment } = useEquipment();
   const { drivers } = useCompanyDrivers();
