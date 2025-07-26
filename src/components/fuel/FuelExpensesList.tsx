@@ -162,14 +162,42 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">
                           {(() => {
-                            // Crear fecha en zona horaria local para evitar problemas de UTC
-                            const dateStr = expense.transaction_date;
-                            if (dateStr) {
+                            try {
+                              const dateStr = expense.transaction_date;
+                              if (!dateStr || typeof dateStr !== 'string') {
+                                return 'Fecha no disponible';
+                              }
+                              
+                              // Validar formato de fecha YYYY-MM-DD
+                              const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+                              if (!dateRegex.test(dateStr)) {
+                                return 'Formato de fecha inválido';
+                              }
+                              
                               const [year, month, day] = dateStr.split('-').map(Number);
+                              
+                              // Validar que los valores sean números válidos
+                              if (isNaN(year) || isNaN(month) || isNaN(day)) {
+                                return 'Fecha inválida';
+                              }
+                              
+                              // Validar rangos válidos
+                              if (year < 1900 || year > 2100 || month < 1 || month > 12 || day < 1 || day > 31) {
+                                return 'Fecha fuera de rango';
+                              }
+                              
                               const localDate = new Date(year, month - 1, day);
+                              
+                              // Verificar que la fecha creada sea válida
+                              if (isNaN(localDate.getTime())) {
+                                return 'Fecha inválida';
+                              }
+                              
                               return format(localDate, 'dd/MM/yyyy', { locale: es });
+                            } catch (error) {
+                              console.error('Error formateando fecha:', error, expense.transaction_date);
+                              return 'Error en fecha';
                             }
-                            return 'Fecha no disponible';
                           })()}
                         </span>
                       </div>
