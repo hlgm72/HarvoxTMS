@@ -57,43 +57,62 @@ export default function InvitationCallback() {
         // **CRÍTICO**: Refrescar los roles antes de redirigir
         console.log('🔄 Refreshing user roles after invitation acceptance...');
         
-        // Esperar un poco más para asegurar que la inserción en la BD se complete
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Wait for role propagation and try multiple times if needed
+        let attempts = 0;
+        const maxAttempts = 5;
+        let rolesRefreshed = false;
         
-        // Verificar que el usuario sigue disponible en el contexto
-        const { data: { session: currentSession }, error: currentSessionError } = await supabase.auth.getSession();
-        
-        if (currentSessionError) {
-          console.error('❌ Error getting current session:', currentSessionError);
-          throw new Error('Error getting current session');
+        while (attempts < maxAttempts && !rolesRefreshed) {
+          // Progressive delay: 1s, 2s, 3s, 4s, 5s
+          await new Promise(resolve => setTimeout(resolve, 1000 * (attempts + 1)));
+          
+          // Refresh roles
+          const refreshedRoles = await refreshRoles();
+          
+          // Verificar que el usuario sigue disponible en el contexto
+          const { data: { session: currentSession }, error: currentSessionError } = await supabase.auth.getSession();
+          
+          if (currentSessionError) {
+            console.error('❌ Error getting current session:', currentSessionError);
+            throw new Error('Error getting current session');
+          }
+          
+          if (!currentSession?.user) {
+            console.error('❌ No user in current session after invitation acceptance');
+            throw new Error('User session lost after invitation acceptance');
+          }
+          
+          console.log('✅ User confirmed in session:', currentSession.user.id);
+          
+          // Check if roles are now available
+          if (refreshedRoles && refreshedRoles.length > 0) {
+            console.log('🎯 Roles found after attempt', attempts + 1);
+            rolesRefreshed = true;
+            break;
+          }
+          
+          attempts++;
+          console.log(`🔄 Attempt ${attempts}/${maxAttempts} - roles not yet available`);
         }
         
-        if (!currentSession?.user) {
-          console.error('❌ No user in current session after invitation acceptance');
-          throw new Error('User session lost after invitation acceptance');
+        if (!rolesRefreshed) {
+          console.warn('⚠️ Roles not loaded after multiple attempts, forcing navigation');
         }
-        
-        console.log('✅ User confirmed in session:', currentSession.user.id);
-        
-        await refreshRoles();
-        
-        // Pausa adicional para asegurar que los roles se carguen completamente
-        await new Promise(resolve => setTimeout(resolve, 500));
 
         // Redirect to appropriate dashboard based on role
         const role = result.user.role;
         if (role === 'superadmin') {
-          navigate('/superadmin');
+          navigate('/superadmin', { replace: true });
         } else if (role === 'company_owner') {
-          navigate('/dashboard/owner');
+          navigate('/dashboard/owner', { replace: true });
         } else if (role === 'operations_manager') {
-          navigate('/dashboard/operations');
+          navigate('/dashboard/operations', { replace: true });
         } else if (role === 'dispatcher') {
-          navigate('/dashboard/dispatch');
+          navigate('/dashboard/dispatch', { replace: true });
         } else if (role === 'driver') {
-          navigate('/dashboard/driver');
+          navigate('/dashboard/driver', { replace: true });
         } else {
-          navigate('/dashboard');
+          navigate('/dashboard', { replace: true });
         }
 
       } catch (error: any) {

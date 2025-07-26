@@ -31,7 +31,7 @@ interface AuthContextType {
   isDispatcher: boolean;
   isDriver: boolean;
   switchRole: (roleId: string) => void;
-  refreshRoles: () => Promise<void>;
+  refreshRoles: () => Promise<UserRole[] | undefined>;
   _forceUpdate: () => void;
 }
 
@@ -131,17 +131,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const refreshRoles = useCallback(async () => {
-    if (!user?.id) {
-      console.log('🚫 No user found, cannot refresh roles');
+    console.log('🔄 Starting refreshRoles...');
+    
+    // Get current session directly from Supabase instead of relying on state
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) {
+      console.error('❌ Error getting session for role refresh:', sessionError);
       return;
     }
     
-    console.log('🔄 Starting role refresh for user:', user.id);
+    if (!session?.user) {
+      console.log('🚫 No session user found, cannot refresh roles');
+      return;
+    }
     
-    // Add a small delay to ensure database consistency after invitation acceptance
-    await new Promise(resolve => setTimeout(resolve, 250));
+    console.log('🔄 Refreshing roles for user:', session.user.id);
     
-    const roles = await fetchUserRoles(user.id);
+    // Add a delay to ensure database consistency after invitation acceptance
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const roles = await fetchUserRoles(session.user.id);
     console.log('🔄 Fetched roles after refresh:', roles);
     console.log('🔄 Roles count:', (roles || []).length);
     
@@ -153,7 +163,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // Force update to ensure state changes are propagated
     _forceUpdate();
-  }, [user?.id, fetchUserRoles, determineCurrentRole]);
+    
+    return roles;
+  }, [fetchUserRoles, determineCurrentRole]);
 
   const switchRole = useCallback((roleId: string) => {
     const role = userRoles?.find(r => r.id === roleId);

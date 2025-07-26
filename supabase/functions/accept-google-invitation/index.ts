@@ -111,14 +111,16 @@ const handler = async (req: Request): Promise<Response> => {
       console.error("Error checking existing profile:", profileCheckError);
     }
 
-    // Create user profile if it doesn't exist and we have invitation data
-    if (!existingProfile && invitation.first_name && invitation.last_name) {
+    // Create or update user profile with invitation data
+    if (!existingProfile) {
+      console.log("Creating new profile for user:", userId);
       const { error: profileError } = await supabase
         .from("profiles")
         .insert({
           user_id: userId,
-          first_name: invitation.first_name,
-          last_name: invitation.last_name
+          first_name: invitation.first_name || 'Unknown',
+          last_name: invitation.last_name || 'User',
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York'
         });
 
       if (profileError) {
@@ -126,6 +128,22 @@ const handler = async (req: Request): Promise<Response> => {
         // Don't fail the whole process for profile creation error
       } else {
         console.log("Profile created successfully for user:", userId);
+      }
+    } else if (!existingProfile.first_name || !existingProfile.last_name) {
+      console.log("Updating existing profile with missing data");
+      const { error: updateProfileError } = await supabase
+        .from("profiles")
+        .update({
+          first_name: existingProfile.first_name || invitation.first_name || 'Unknown',
+          last_name: existingProfile.last_name || invitation.last_name || 'User',
+          timezone: existingProfile.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York'
+        })
+        .eq("user_id", userId);
+
+      if (updateProfileError) {
+        console.error("Error updating profile:", updateProfileError);
+      } else {
+        console.log("Profile updated successfully");
       }
     }
 
