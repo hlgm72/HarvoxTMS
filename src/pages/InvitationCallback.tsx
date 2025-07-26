@@ -60,6 +60,21 @@ export default function InvitationCallback() {
         // Esperar un poco más para asegurar que la inserción en la BD se complete
         await new Promise(resolve => setTimeout(resolve, 1000));
         
+        // Verificar que el usuario sigue disponible en el contexto
+        const { data: { session: currentSession }, error: currentSessionError } = await supabase.auth.getSession();
+        
+        if (currentSessionError) {
+          console.error('❌ Error getting current session:', currentSessionError);
+          throw new Error('Error getting current session');
+        }
+        
+        if (!currentSession?.user) {
+          console.error('❌ No user in current session after invitation acceptance');
+          throw new Error('User session lost after invitation acceptance');
+        }
+        
+        console.log('✅ User confirmed in session:', currentSession.user.id);
+        
         await refreshRoles();
         
         // Pausa adicional para asegurar que los roles se carguen completamente
