@@ -93,39 +93,29 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
         if (error) throw error;
         
-        // Get driver info separately for each expense
+        // Con la nueva lógica, expense_instances apuntan directamente a company_payment_periods
+        // Necesitamos derivar el driver del created_by ya que no hay tabla intermedia
         const expensesWithDriverInfo = await Promise.all(
           (data || []).map(async (expense) => {
-            // Get driver calculation to find the driver
-            const { data: driverCalc } = await supabase
-              .from('driver_period_calculations')
-              .select(`
-                driver_user_id,
-                company_payment_period_id,
-                company_payment_periods:company_payment_period_id(
-                  period_start_date,
-                  period_end_date,
-                  period_frequency
-                )
-              `)
+            // Obtener información del período de pago
+            const { data: period } = await supabase
+              .from('company_payment_periods')
+              .select('period_start_date, period_end_date, period_frequency')
               .eq('id', expense.payment_period_id)
               .single();
 
-            if (!driverCalc) return { ...expense, driver_period_calculations: null };
-
-            // Get driver profile
+            // Obtener información del conductor que creó el expense (created_by)
             const { data: profile } = await supabase
               .from('profiles')
               .select('first_name, last_name')
-              .eq('user_id', driverCalc.driver_user_id)
+              .eq('user_id', expense.created_by)
               .single();
 
             return {
               ...expense,
-              driver_period_calculations: {
-                ...driverCalc,
-                profiles: profile
-              }
+              company_payment_period: period,
+              driver_profile: profile,
+              driver_user_id: expense.created_by // Usamos created_by como driver_user_id
             };
           })
         );
@@ -134,7 +124,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         let filteredExpenses = expensesWithDriverInfo;
         if (filters?.driver && filters.driver !== 'all') {
           filteredExpenses = expensesWithDriverInfo.filter(expense => 
-            expense.driver_period_calculations?.driver_user_id === filters.driver
+            expense.driver_user_id === filters.driver
           );
         }
 
@@ -217,16 +207,16 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 <div className="space-y-1">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <User className="h-4 w-4" />
-                    {deduction.driver_period_calculations?.profiles?.first_name} {' '}
-                    {deduction.driver_period_calculations?.profiles?.last_name}
+                    {deduction.driver_profile?.first_name} {' '}
+                    {deduction.driver_profile?.last_name}
                   </CardTitle>
                   <CardDescription className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
                     Período: {' '}
-                    {deduction.driver_period_calculations?.company_payment_periods && 
+                    {deduction.company_payment_period && 
                       formatPaymentPeriod(
-                        deduction.driver_period_calculations.company_payment_periods.period_start_date,
-                        deduction.driver_period_calculations.company_payment_periods.period_end_date
+                        deduction.company_payment_period.period_start_date,
+                        deduction.company_payment_period.period_end_date
                       )
                     }
                   </CardDescription>

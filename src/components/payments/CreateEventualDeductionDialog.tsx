@@ -249,7 +249,7 @@ export function CreateEventualDeductionDialog({
       const { error } = await supabase
         .from('expense_instances')
         .insert({
-          payment_period_id: formData.payment_period_id,
+          payment_period_id: companyPeriod.id,
           expense_type_id: formData.expense_type_id,
           amount: parseFloat(formData.amount),
           description: formData.description,
@@ -305,9 +305,17 @@ export function CreateEventualDeductionDialog({
     return '';
   };
 
+  // Derivar el período de empresa actual desde paymentPeriods
+  const companyPeriod = paymentPeriods.find(period => {
+    const today = new Date();
+    const startDate = parseISO(period.company_payment_periods.period_start_date);
+    const endDate = parseISO(period.company_payment_periods.period_end_date);
+    return isWithinInterval(today, { start: startDate, end: endDate });
+  })?.company_payment_periods;
+
   const isFormValid = 
     formData.driver_user_id && 
-    formData.payment_period_id &&
+    companyPeriod &&
     formData.expense_type_id && 
     formData.amount && 
     parseFloat(formData.amount) > 0 &&
@@ -354,7 +362,7 @@ export function CreateEventualDeductionDialog({
                             setFormData(prev => ({
                               ...prev,
                               driver_user_id: driver.user_id,
-                              payment_period_id: '' // Reset period when driver changes
+                              payment_period_id: '' // No longer needed with global periods
                             }));
                             setDriverComboboxOpen(false);
                           }}
@@ -414,8 +422,8 @@ export function CreateEventualDeductionDialog({
                 </div>
               ) : (
                 <Select 
-                  value={formData.payment_period_id} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, payment_period_id: value }))}
+                  value={companyPeriod?.id || ''} 
+                  onValueChange={() => {}} // Readonly since we use global periods
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar período" />
