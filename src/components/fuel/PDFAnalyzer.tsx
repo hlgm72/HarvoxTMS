@@ -134,14 +134,15 @@ export function PDFAnalyzer() {
 
       const companyId = userCompanies[0].company_id;
 
-      // Obtener equipos de la empresa
+      // Obtener equipos de la empresa (solo camiones para combustible)
       const { data: companyEquipment } = await supabase
         .from('company_equipment')
-        .select('id, equipment_number')
+        .select('id, equipment_number, equipment_type, make, model, year')
         .eq('company_id', companyId)
+        .eq('equipment_type', 'truck')
         .eq('status', 'active');
 
-      // Obtener asignaciones de equipos (para mapeo robusto)
+      // Obtener asignaciones de equipos (solo camiones para combustible)
       const { data: equipmentAssignments } = await supabase
         .from('equipment_assignments')
         .select(`
@@ -153,10 +154,15 @@ export function PDFAnalyzer() {
           company_equipment!inner(
             id,
             equipment_number,
-            company_id
+            equipment_type,
+            company_id,
+            make,
+            model,
+            year
           )
         `)
         .eq('company_equipment.company_id', companyId)
+        .eq('company_equipment.equipment_type', 'truck')
         .eq('is_active', true);
 
       // Obtener tarjetas de conductores
@@ -326,7 +332,7 @@ export function PDFAnalyzer() {
             enrichedTransaction.vehicle_number = equipmentNumber;
             enrichedTransaction.equipment_mapping_method = 'unit_not_found';
             enrichedTransaction.needs_attention = true;
-            enrichedTransaction.attention_reason = `UNIT ${equipmentNumber} no encontrado en equipos de la empresa`;
+            enrichedTransaction.attention_reason = `UNIT ${equipmentNumber} no encontrado en camiones de la empresa (solo camiones pueden usar combustible)`;
           }
         }
 
@@ -650,10 +656,38 @@ export function PDFAnalyzer() {
                         </div>
                       </div>
 
+                      {/* Información del vehículo (camión) */}
+                      {transaction.vehicle_id && (
+                        <div className="flex items-center gap-2">
+                          <Fuel className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <div className="font-medium flex items-center gap-2">
+                              🚛 Camión #{transaction.vehicle_number}
+                              <Badge variant="outline" className="text-xs">
+                                {transaction.equipment_mapping_method === 'assigned_to_driver' ? 'Asignado' : 'Validado PDF'}
+                              </Badge>
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              Vehículo verificado para combustible
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Alertas de atención */}
+                      {transaction.needs_attention && (
+                        <Alert className="border-orange-200 bg-orange-50">
+                          <Info className="h-4 w-4" />
+                          <AlertDescription className="text-sm">
+                            {transaction.attention_reason}
+                          </AlertDescription>
+                        </Alert>
+                      )}
+
                       {/* Información adicional */}
                       <div className="text-xs text-muted-foreground pt-2 border-t">
                         <div>Factura: {transaction.invoice}</div>
-                        {transaction.vehicle_number && <div>Unidad: {transaction.vehicle_number}</div>}
+                        <div>Unidad del PDF: {transaction.unit}</div>
                       </div>
                     </CardContent>
                   </Card>
