@@ -161,6 +161,10 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                         <span className="text-sm">
                           {formatDateOnly(expense.transaction_date)}
                         </span>
+                        {/* Debug: mostrar fecha cruda temporalmente */}
+                        <span className="text-xs text-muted-foreground ml-2">
+                          (Raw: {expense.transaction_date})
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell>
