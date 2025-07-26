@@ -66,7 +66,7 @@ export const DriverInvite = ({
     
     <Section style={quickStartSection}>
       <Text style={quickStartTitle}>
-        🚀 Comienza rápidamente:
+        🚀 Comienza a utilizar tu nueva herramienta:
       </Text>
       <Text style={stepText}>
         1. Activa tu cuenta con el botón de abajo<br/>
