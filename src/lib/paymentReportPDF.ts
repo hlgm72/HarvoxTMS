@@ -234,21 +234,32 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   });
   
   if (data.company.address) {
-    addText(data.company.address, col1X, currentY + 12, {
-      fontSize: 9,
-      color: colors.text
+    const addressLines = data.company.address.split('\n');
+    let addressY = currentY + 12;
+    
+    addressLines.forEach((line, index) => {
+      addText(line.trim(), col1X, addressY + (index * 8), {
+        fontSize: 9,
+        color: colors.text
+      });
     });
   }
   
+  let phoneY = currentY + 28;
+  if (data.company.address) {
+    const addressLines = data.company.address.split('\n');
+    phoneY = currentY + 12 + (addressLines.length * 8) + 4;
+  }
+  
   if (data.company.phone) {
-    addText(data.company.phone, col1X, currentY + 28, {
+    addText(data.company.phone, col1X, phoneY, {
       fontSize: 9,
       color: colors.text
     });
   }
   
   if (data.company.email) {
-    addText(data.company.email, col1X, currentY + 36, {
+    addText(data.company.email, col1X, phoneY + 8, {
       fontSize: 9,
       color: colors.text
     });
