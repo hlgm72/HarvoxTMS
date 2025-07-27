@@ -25,6 +25,7 @@ import { useDriverCards } from '@/hooks/useDriverCards';
 import { StateCombobox } from '@/components/ui/StateCombobox';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
+import { useATMInput } from '@/hooks/useATMInput';
 
 const formSchema = z.object({
   driver_user_id: z.string().min(1, 'Selecciona un conductor'),
@@ -99,6 +100,22 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
   const selectedDriverId = form.watch('driver_user_id');
   const { data: driverCards = [] } = useDriverCards(selectedDriverId);
   const { data: driverEquipment = [] } = useDriverEquipment(selectedDriverId);
+
+  // ATM Input hooks para campos monetarios
+  const pricePerGallonATM = useATMInput({
+    initialValue: 0,
+    onValueChange: (value) => form.setValue('price_per_gallon', value)
+  });
+
+  const discountAmountATM = useATMInput({
+    initialValue: 0,
+    onValueChange: (value) => form.setValue('discount_amount', value)
+  });
+
+  const feesATM = useATMInput({
+    initialValue: 0,
+    onValueChange: (value) => form.setValue('fees', value)
+  });
 
   const onSubmit = async (data: FormData) => {
     // Si no hay período seleccionado, generar uno antes de guardar
@@ -569,21 +586,14 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                     <FormItem>
                       <FormLabel>Precio/Galón *</FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            className="pl-8"
-                            {...field}
-                            onChange={(e) => {
-                              const value = parseFloat(e.target.value);
-                              field.onChange(isNaN(value) ? "" : value);
-                            }}
-                            value={field.value ? Number(field.value).toFixed(2) : ""}
-                          />
-                        </div>
+                        <Input
+                          className="text-right pr-3"
+                          value={pricePerGallonATM.displayValue}
+                          onKeyDown={pricePerGallonATM.handleKeyDown}
+                          onPaste={pricePerGallonATM.handlePaste}
+                          placeholder="$0.00"
+                          readOnly
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -624,21 +634,14 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                     <FormItem>
                       <FormLabel>Descuentos</FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            className="pl-8"
-                            {...field}
-                            onChange={(e) => {
-                              const value = parseFloat(e.target.value);
-                              field.onChange(isNaN(value) ? "" : value);
-                            }}
-                            value={field.value ? Number(field.value).toFixed(2) : ""}
-                          />
-                        </div>
+                        <Input
+                          className="text-right pr-3"
+                          value={discountAmountATM.displayValue}
+                          onKeyDown={discountAmountATM.handleKeyDown}
+                          onPaste={discountAmountATM.handlePaste}
+                          placeholder="$0.00"
+                          readOnly
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -652,21 +655,14 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                     <FormItem>
                       <FormLabel>Comisiones</FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            className="pl-8"
-                            {...field}
-                            onChange={(e) => {
-                              const value = parseFloat(e.target.value);
-                              field.onChange(isNaN(value) ? "" : value);
-                            }}
-                            value={field.value ? Number(field.value).toFixed(2) : ""}
-                          />
-                        </div>
+                        <Input
+                          className="text-right pr-3"
+                          value={feesATM.displayValue}
+                          onKeyDown={feesATM.handleKeyDown}
+                          onPaste={feesATM.handlePaste}
+                          placeholder="$0.00"
+                          readOnly
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
