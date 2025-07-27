@@ -405,11 +405,11 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {paymentPeriods.map((period) => (
-                            <SelectItem key={period.id} value={period.id}>
-                              {format(new Date(period.period_start_date), 'dd/MM/yyyy')} - {format(new Date(period.period_end_date), 'dd/MM/yyyy')}
-                            </SelectItem>
-                          ))}
+                           {paymentPeriods.map((period) => (
+                             <SelectItem key={period.id} value={period.id}>
+                               {formatDateSafe(period.period_start_date, 'dd/MM/yyyy')} - {formatDateSafe(period.period_end_date, 'dd/MM/yyyy')}
+                             </SelectItem>
+                           ))}
                         </SelectContent>
                       </Select>
                       {predictedPeriod && (

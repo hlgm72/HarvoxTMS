@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useFleetNotifications } from '@/components/notifications';
 import { useUserCompanies } from '@/hooks/useUserCompanies';
 import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
+import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 
 export interface FuelExpenseFilters {
   driverId?: string;
@@ -117,7 +118,7 @@ export function useCreateFuelExpense() {
       if (!data.payment_period_id && selectedCompany?.id && data.driver_user_id && data.transaction_date) {
         console.log('🔍 Auto-generating payment period for fuel expense');
         
-        const targetDate = new Date(data.transaction_date).toISOString().split('T')[0];
+        const targetDate = formatDateInUserTimeZone(new Date(data.transaction_date));
         const generatedPeriodId = await ensurePaymentPeriodExists({
           companyId: selectedCompany.id,
           userId: data.driver_user_id,
