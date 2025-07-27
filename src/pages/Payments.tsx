@@ -29,7 +29,8 @@ export default function Payments() {
     currentPeriod: {
       grossEarnings: 2840.50,
       otherIncome: 320.00,
-      totalDeductions: 485.75,
+      fuelExpenses: 307.10,
+      totalDeductions: 178.65,
       netPayment: 2674.75,
       status: "in_progress" as const
     },
@@ -61,7 +62,7 @@ export default function Payments() {
       />
 
       {/* Resumen de período actual */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
@@ -84,7 +85,7 @@ export default function Payments() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Otros Ingresos</p>
-                <p className="text-xl font-semibold">${paymentStats.currentPeriod.otherIncome.toLocaleString()}</p>
+                <p className="text-xl font-semibold text-success">${paymentStats.currentPeriod.otherIncome.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -98,7 +99,21 @@ export default function Payments() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Deducciones</p>
-                <p className="text-xl font-semibold">-${paymentStats.currentPeriod.totalDeductions.toLocaleString()}</p>
+                <p className="text-xl font-semibold text-destructive">-${paymentStats.currentPeriod.totalDeductions.toLocaleString()}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-warning/10 rounded-lg">
+                <Fuel className="h-5 w-5 text-warning" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Combustible</p>
+                <p className="text-xl font-semibold text-warning">-${paymentStats.currentPeriod.fuelExpenses.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
