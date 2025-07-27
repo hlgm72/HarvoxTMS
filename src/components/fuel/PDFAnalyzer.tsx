@@ -486,7 +486,7 @@ export function PDFAnalyzer() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                 <div className="text-center p-3 border rounded-lg">
                   <div className="text-2xl font-bold text-blue-600">
                     {enrichedTransactions.length}
@@ -517,15 +517,6 @@ export function PDFAnalyzer() {
                     ).length}
                   </div>
                   <div className="text-sm text-muted-foreground">Sin conductor identificado</div>
-                </div>
-                <div className="text-center p-3 border rounded-lg">
-                  <div className="text-2xl font-bold text-red-600">
-                    {enrichedTransactions.filter(t => 
-                      (t.period_mapping_status === 'not_found' || t.needs_attention) &&
-                      t.import_status === 'not_imported'
-                    ).length}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Requieren atención</div>
                 </div>
               </div>
 
