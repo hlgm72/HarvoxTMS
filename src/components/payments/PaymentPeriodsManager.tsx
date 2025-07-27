@@ -191,7 +191,7 @@ export function PaymentPeriodsManager() {
               {/* Conceptos financieros */}
               {summary && (
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {/* Ingresos Brutos */}
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 bg-primary/10 rounded">
@@ -212,7 +212,7 @@ export function PaymentPeriodsManager() {
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground">Otros Ingresos</p>
-                        <p className="text-sm font-medium">
+                        <p className="text-sm font-medium text-success">
                           ${(summary.other_income || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                         </p>
                       </div>
@@ -227,6 +227,19 @@ export function PaymentPeriodsManager() {
                         <p className="text-xs text-muted-foreground">Deducciones</p>
                         <p className="text-sm font-medium text-destructive">
                           -${(summary.deductions || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Combustible */}
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 bg-warning/10 rounded">
+                        <Fuel className="h-3 w-3 text-warning" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Combustible</p>
+                        <p className="text-sm font-medium text-warning">
+                          -${(summary.fuel_expenses || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                         </p>
                       </div>
                     </div>
