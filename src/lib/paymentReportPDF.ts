@@ -188,25 +188,26 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     color: colors.darkGray
   });
   
-  addText(data.company.address || '10402 Sun River Falls Dr', col1X, currentY + 12, {
-    fontSize: 9,
-    color: colors.text
-  });
+  if (data.company.address) {
+    addText(data.company.address, col1X, currentY + 12, {
+      fontSize: 9,
+      color: colors.text
+    });
+  }
   
-  addText('Humble, TX, 77396', col1X, currentY + 20, {
-    fontSize: 9,
-    color: colors.text
-  });
+  if (data.company.phone) {
+    addText(data.company.phone, col1X, currentY + 28, {
+      fontSize: 9,
+      color: colors.text
+    });
+  }
   
-  addText(data.company.phone || '(281) 713-3044', col1X, currentY + 28, {
-    fontSize: 9,
-    color: colors.text
-  });
-  
-  addText(data.company.email || 'hgtransport16@gmail.com', col1X, currentY + 36, {
-    fontSize: 9,
-    color: colors.text
-  });
+  if (data.company.email) {
+    addText(data.company.email, col1X, currentY + 36, {
+      fontSize: 9,
+      color: colors.text
+    });
+  }
 
   // === COLUMNA 2: INFORMACIÓN DEL PERIODO ===
   const weekInfo = formatWeekInfo();
