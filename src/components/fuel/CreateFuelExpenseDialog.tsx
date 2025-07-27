@@ -12,6 +12,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { useCreateFuelExpense } from '@/hooks/useFuelExpenses';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
@@ -154,7 +155,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle>Registrar Gasto de Combustible</DialogTitle>
           <DialogDescription>
@@ -186,7 +187,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                               )}
                             >
                               {field.value ? (
-                                format(field.value, "PPP")
+                                format(field.value, "PPP", { locale: es })
                               ) : (
                                 <span>Seleccionar fecha</span>
                               )}
@@ -195,13 +196,70 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                           </FormControl>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            initialFocus
-                            className="p-3 pointer-events-auto"
-                          />
+                          <div className="p-4 space-y-4 bg-white">
+                            {/* Selectores de mes y año */}
+                            <div className="grid grid-cols-2 gap-2">
+                              <Select
+                                value={field.value ? format(field.value, 'MMMM', { locale: es }) : ""}
+                                onValueChange={(monthName) => {
+                                  const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                                                    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+                                                    .indexOf(monthName.toLowerCase());
+                                  if (monthIndex !== -1) {
+                                    const currentYear = field.value?.getFullYear() || new Date().getFullYear();
+                                    const currentDay = field.value?.getDate() || 1;
+                                    field.onChange(new Date(currentYear, monthIndex, currentDay));
+                                  }
+                                }}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Mes" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="enero">Enero</SelectItem>
+                                  <SelectItem value="febrero">Febrero</SelectItem>
+                                  <SelectItem value="marzo">Marzo</SelectItem>
+                                  <SelectItem value="abril">Abril</SelectItem>
+                                  <SelectItem value="mayo">Mayo</SelectItem>
+                                  <SelectItem value="junio">Junio</SelectItem>
+                                  <SelectItem value="julio">Julio</SelectItem>
+                                  <SelectItem value="agosto">Agosto</SelectItem>
+                                  <SelectItem value="septiembre">Septiembre</SelectItem>
+                                  <SelectItem value="octubre">Octubre</SelectItem>
+                                  <SelectItem value="noviembre">Noviembre</SelectItem>
+                                  <SelectItem value="diciembre">Diciembre</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              
+                              <Select
+                                value={field.value?.getFullYear()?.toString() || ""}
+                                onValueChange={(year) => {
+                                  const currentMonth = field.value?.getMonth() || 0;
+                                  const currentDay = field.value?.getDate() || 1;
+                                  field.onChange(new Date(parseInt(year), currentMonth, currentDay));
+                                }}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Año" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="2024">2024</SelectItem>
+                                  <SelectItem value="2025">2025</SelectItem>
+                                  <SelectItem value="2026">2026</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            
+                            {/* Calendar */}
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              month={field.value}
+                              onMonthChange={field.onChange}
+                              className="p-0 pointer-events-auto"
+                            />
+                          </div>
                         </PopoverContent>
                       </Popover>
                       <FormMessage />
