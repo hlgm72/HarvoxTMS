@@ -90,7 +90,7 @@ export function StateCombobox({
             <CommandEmpty>
               {loading ? "Cargando estados..." : searchTerm ? "No se encontró el estado." : "Escribe para buscar..."}
             </CommandEmpty>
-            <ScrollArea className="h-60">
+            <ScrollArea className="h-60 overflow-auto"  onWheel={(e) => e.stopPropagation()}>
               <CommandGroup>
                 <CommandItem
                   key="unspecified"
