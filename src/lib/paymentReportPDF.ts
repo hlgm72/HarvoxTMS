@@ -463,12 +463,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         color: colors.gray
       });
       
-      addText(`${fuel.gallons_purchased.toFixed(2)} gal`, margin + 100, currentY, {
+      addText(`${(fuel.gallons_purchased || 0).toFixed(2)} gal`, margin + 100, currentY, {
         fontSize: 9,
         color: colors.gray
       });
       
-      addText(`$${fuel.price_per_gallon.toFixed(3)}`, margin + 140, currentY, {
+      addText(`$${(fuel.price_per_gallon || 0).toFixed(3)}`, margin + 140, currentY, {
         fontSize: 9,
         color: colors.gray
       });

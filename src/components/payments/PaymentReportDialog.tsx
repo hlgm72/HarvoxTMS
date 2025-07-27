@@ -162,8 +162,9 @@ export function PaymentReportDialog({
       fuelExpenses: fuelExpenses.map(expense => ({
         transaction_date: expense.transaction_date,
         station_name: expense.station_name || 'Estación',
-        gallons_purchased: expense.gallons_purchased,
-        total_amount: expense.total_amount
+        gallons_purchased: expense.gallons_purchased || 0,
+        total_amount: expense.total_amount || 0,
+        price_per_gallon: expense.price_per_gallon || 0
       }))
     };
   };
