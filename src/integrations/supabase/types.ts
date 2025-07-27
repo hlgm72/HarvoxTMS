@@ -2583,10 +2583,6 @@ export type Database = {
         Args: { period_id_param: string }
         Returns: Json
       }
-      get_authenticated_user_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
       get_company_current_payment_period: {
         Args: { company_id_param: string; target_date?: string }
         Returns: string
