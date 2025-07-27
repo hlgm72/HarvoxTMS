@@ -80,20 +80,20 @@ export function AddressForm({
         />
       </div>
 
-      <div className="space-y-2">
-        <Label>
-          {stateLabel}
-          {required && " *"}
-        </Label>
-        <StateCombobox
-          value={stateId}
-          onValueChange={onStateChange}
-          disabled={disabled}
-          placeholder="Buscar estado..."
-        />
-      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <Label>
+            {stateLabel}
+            {required && " *"}
+          </Label>
+          <StateCombobox
+            value={stateId}
+            onValueChange={onStateChange}
+            disabled={disabled}
+            placeholder="Buscar estado..."
+          />
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>
             {cityLabel}
