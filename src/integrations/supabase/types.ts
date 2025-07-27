@@ -2618,6 +2618,12 @@ export type Database = {
           id: string
         }[]
       }
+      get_user_admin_companies: {
+        Args: { user_id_param: string }
+        Returns: {
+          company_id: string
+        }[]
+      }
       get_user_company_roles: {
         Args: { user_id_param: string }
         Returns: {
@@ -2722,6 +2728,18 @@ export type Database = {
       }
       user_belongs_to_company: {
         Args: { company_id_param: string }
+        Returns: boolean
+      }
+      user_has_role_in_company: {
+        Args: {
+          user_id_param: string
+          company_id_param: string
+          role_param: Database["public"]["Enums"]["user_role"]
+        }
+        Returns: boolean
+      }
+      user_is_admin_in_company: {
+        Args: { user_id_param: string; company_id_param: string }
         Returns: boolean
       }
       validate_invitation_token: {
