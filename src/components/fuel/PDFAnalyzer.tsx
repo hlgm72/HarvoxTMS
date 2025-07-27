@@ -558,7 +558,7 @@ export function PDFAnalyzer() {
                   <div className="text-2xl font-bold text-blue-600">
                     {enrichedTransactions.length}
                   </div>
-                  <div className="text-sm text-muted-foreground">Total encontradas</div>
+                  <div className="text-sm text-muted-foreground">Transacciones</div>
                 </div>
                 <div className="text-center p-3 border rounded-lg">
                   <div className="text-2xl font-bold text-orange-600">
