@@ -112,15 +112,28 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
 
   const gallons = form.watch('gallons_purchased');
   const pricePerGallon = form.watch('price_per_gallon');
+  const grossAmount = form.watch('gross_amount');
+  const discountAmount = form.watch('discount_amount');
+  const fees = form.watch('fees');
   const transactionDate = form.watch('transaction_date');
 
-  // Auto-calculate total amount
+  // Auto-calculate gross amount (gallons * price)
   React.useEffect(() => {
     if (gallons && pricePerGallon) {
-      const total = gallons * pricePerGallon;
-      form.setValue('total_amount', Number(total.toFixed(2)));
+      const gross = gallons * pricePerGallon;
+      form.setValue('gross_amount', Number(gross.toFixed(2)));
     }
   }, [gallons, pricePerGallon, form]);
+
+  // Auto-calculate total amount (gross - discounts + fees)
+  React.useEffect(() => {
+    if (grossAmount !== undefined) {
+      const discount = discountAmount || 0;
+      const fee = fees || 0;
+      const total = grossAmount - discount + fee;
+      form.setValue('total_amount', Number(total.toFixed(2)));
+    }
+  }, [grossAmount, discountAmount, fees, form]);
 
   // Auto-select payment period based on transaction date
   React.useEffect(() => {
@@ -305,6 +318,44 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
               <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
+                  name="gallons_purchased"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Galones *</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.001"
+                          placeholder="0.000"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="price_per_gallon"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Precio/Galón *</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.001"
+                          placeholder="0.000"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="gross_amount"
                   render={({ field }) => (
                     <FormItem>
@@ -315,13 +366,17 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                           step="0.01"
                           placeholder="0.00"
                           {...field}
+                          readOnly
+                          className="bg-muted"
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+              </div>
 
+              <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="discount_amount"
@@ -352,46 +407,6 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                           type="number"
                           step="0.01"
                           placeholder="0.00"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <FormField
-                  control={form.control}
-                  name="gallons_purchased"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Galones *</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.001"
-                          placeholder="0.000"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="price_per_gallon"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Precio/Galón *</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.001"
-                          placeholder="0.000"
                           {...field}
                         />
                       </FormControl>
