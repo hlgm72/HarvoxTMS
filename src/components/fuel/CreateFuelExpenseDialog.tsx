@@ -74,8 +74,24 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      driver_user_id: '',
+      payment_period_id: '',
       transaction_date: new Date(),
       fuel_type: 'diesel',
+      gallons_purchased: 0,
+      price_per_gallon: 0,
+      total_amount: 0,
+      vehicle_id: '',
+      station_name: '',
+      station_state: '',
+      driver_card_id: '',
+      fuel_card_number: '',
+      invoice_number: '',
+      gross_amount: 0,
+      discount_amount: 0,
+      fees: 0,
+      receipt_url: '',
+      notes: '',
     },
   });
 
