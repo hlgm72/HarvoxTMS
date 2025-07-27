@@ -57,16 +57,29 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
     queryFn: async () => {
       if (!periodId) return [];
       
-      const { data, error } = await supabase
+      // Obtener los cálculos primero
+      const { data: calculations, error: calcError } = await supabase
         .from('driver_period_calculations')
-        .select(`
-          *,
-          profiles!driver_user_id(first_name, last_name)
-        `)
+        .select('*')
         .eq('company_payment_period_id', periodId);
 
-      if (error) throw error;
-      return data as any[];
+      if (calcError) throw calcError;
+      if (!calculations || calculations.length === 0) return [];
+
+      // Obtener los perfiles de los conductores
+      const driverIds = calculations.map(calc => calc.driver_user_id);
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, first_name, last_name')
+        .in('user_id', driverIds);
+
+      if (profilesError) throw profilesError;
+
+      // Combinar los datos
+      return calculations.map(calc => ({
+        ...calc,
+        profiles: profiles?.find(p => p.user_id === calc.driver_user_id) || null
+      }));
     },
     enabled: !!periodId
   });
