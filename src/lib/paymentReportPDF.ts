@@ -185,7 +185,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   };
 
   // === HEADER EN TRES COLUMNAS ===
-  currentY = 20;
+  currentY = 15;
   
   // Definir columnas
   const colWidth = (pageWidth - margin*2) / 3;
