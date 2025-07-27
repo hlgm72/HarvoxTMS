@@ -7,8 +7,6 @@ import pandas as pd
 import os
 from supabase import create_client, Client
 from typing import Dict, Any
-import requests
-from io import StringIO
 
 # Configuración de Supabase
 SUPABASE_URL = "https://htaotttcnjxqzpsrqwll.supabase.co"
@@ -21,11 +19,11 @@ def get_supabase_client() -> Client:
     
     return create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
-def download_csv_from_github(url: str) -> pd.DataFrame:
-    """Descargar y leer CSV desde GitHub"""
-    response = requests.get(url)
-    response.raise_for_status()
-    return pd.read_csv(StringIO(response.text))
+def read_csv_file(file_path: str) -> pd.DataFrame:
+    """Leer archivo CSV local"""
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Archivo CSV no encontrado: {file_path}")
+    return pd.read_csv(file_path)
 
 def populate_counties(supabase: Client, counties_df: pd.DataFrame) -> Dict[str, Any]:
     """Poblar tabla us_counties"""
@@ -123,19 +121,19 @@ def populate_cities(supabase: Client, cities_df: pd.DataFrame) -> Dict[str, Any]
 
 def main():
     """Función principal"""
-    # URLs de los archivos CSV en GitHub (actualizar con las URLs reales)
-    COUNTIES_CSV_URL = "https://raw.githubusercontent.com/USER/REPO/main/us-counties.csv"
-    CITIES_CSV_URL = "https://raw.githubusercontent.com/USER/REPO/main/us-cities.csv"
+    # Rutas de los archivos CSV locales
+    COUNTIES_CSV_PATH = "../public/lovable-uploads/uscounties.csv"
+    CITIES_CSV_PATH = "../public/lovable-uploads/uscities.csv"
     
     try:
         # Crear cliente Supabase
         supabase = get_supabase_client()
         print("Conectado a Supabase")
         
-        # Descargar y procesar archivos CSV
-        print("Descargando archivos CSV...")
-        counties_df = download_csv_from_github(COUNTIES_CSV_URL)
-        cities_df = download_csv_from_github(CITIES_CSV_URL)
+        # Leer archivos CSV locales
+        print("Leyendo archivos CSV...")
+        counties_df = read_csv_file(COUNTIES_CSV_PATH)
+        cities_df = read_csv_file(CITIES_CSV_PATH)
         
         print(f"Condados CSV: {len(counties_df)} filas")
         print(f"Ciudades CSV: {len(cities_df)} filas")

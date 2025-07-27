@@ -12,9 +12,10 @@ pip install -r requirements.txt
 export SUPABASE_SERVICE_KEY="tu_service_key_aqui"
 ```
 
-3. Actualizar las URLs de los archivos CSV en `populate_us_data.py`:
-   - Reemplazar `COUNTIES_CSV_URL` con la URL raw del archivo us-counties.csv
-   - Reemplazar `CITIES_CSV_URL` con la URL raw del archivo us-cities.csv
+3. Verificar archivos CSV:
+   - Los archivos deben estar en `public/lovable-uploads/`:
+     - `uscounties.csv`
+     - `uscities.csv`
 
 ## Ejecución
 
