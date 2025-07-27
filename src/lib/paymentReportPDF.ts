@@ -67,7 +67,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const doc = new jsPDF('p', 'mm', 'a4');
   const pageWidth = doc.internal.pageSize.width;
   const pageHeight = doc.internal.pageSize.height;
-  const margin = 20;
+  const margin = 12;
   let currentY = margin;
 
   // Función para convertir RGB a array para jsPDF
