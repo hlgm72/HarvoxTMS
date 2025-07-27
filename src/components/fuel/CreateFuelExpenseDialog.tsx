@@ -460,7 +460,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-foreground border-b pb-2">Detalles del Combustible</h4>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="fuel_type"
@@ -488,7 +488,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                   control={form.control}
                   name="driver_card_id"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="col-span-2">
                       <FormLabel>Tarjeta de Combustible</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
