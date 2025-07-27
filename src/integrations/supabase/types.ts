@@ -2812,12 +2812,20 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: boolean
       }
+      is_company_user: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_period_locked: {
         Args: { period_id: string }
         Returns: boolean
       }
       is_superadmin: {
         Args: { user_id_param?: string }
+        Returns: boolean
+      }
+      is_superadmin_user: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       lock_payment_period: {
