@@ -228,38 +228,37 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   }
   
   addText(data.company.name || 'Transport LLC', col1X + logoWidth, currentY, {
-    fontSize: 14,
+    fontSize: 12,
     fontStyle: 'bold',
     color: colors.darkGray
   });
   
+  // Posicionar toda la información debajo del nombre de la compañía
+  let companyInfoY = currentY + 10;
+  
   if (data.company.address) {
     const addressLines = data.company.address.split('\n');
-    let addressY = currentY + 12;
     
     addressLines.forEach((line, index) => {
-      addText(line.trim(), col1X, addressY + (index * 8), {
+      addText(line.trim(), col1X + logoWidth, companyInfoY + (index * 8), {
         fontSize: 9,
         color: colors.text
       });
     });
-  }
-  
-  let phoneY = currentY + 28;
-  if (data.company.address) {
-    const addressLines = data.company.address.split('\n');
-    phoneY = currentY + 12 + (addressLines.length * 8) + 4;
+    
+    companyInfoY += (addressLines.length * 8) + 2;
   }
   
   if (data.company.phone) {
-    addText(data.company.phone, col1X, phoneY, {
+    addText(data.company.phone, col1X + logoWidth, companyInfoY, {
       fontSize: 9,
       color: colors.text
     });
+    companyInfoY += 8;
   }
   
   if (data.company.email) {
-    addText(data.company.email, col1X, phoneY + 8, {
+    addText(data.company.email, col1X + logoWidth, companyInfoY, {
       fontSize: 9,
       color: colors.text
     });
