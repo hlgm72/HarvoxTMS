@@ -137,7 +137,7 @@ export default function PaymentReports() {
     if (calculation.has_negative_balance) {
       return <Badge variant="destructive">Balance Negativo</Badge>;
     }
-    return <Badge variant="secondary">Listo para Pago</Badge>;
+    return <Badge variant="default" className="bg-green-100 text-green-800">Listo para Pago</Badge>;
   };
 
   const handleMarkAsPaid = (calculation: any) => {
