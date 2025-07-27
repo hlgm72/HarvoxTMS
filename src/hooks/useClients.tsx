@@ -37,17 +37,39 @@ export const useClients = () => {
   return useQuery({
     queryKey: ["clients"],
     queryFn: async () => {
-      // Get current user's company from user metadata
+      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user?.user_metadata?.company_id) {
-        console.warn("⚠️ No company_id found in user metadata");
+      if (!user) {
+        console.warn("⚠️ User not authenticated");
         return [];
       }
 
+      // Get user's company_id from user_company_roles
+      const { data: userRole, error: roleError } = await supabase
+        .from('user_company_roles')
+        .select('company_id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle();
+
+      if (roleError) {
+        console.error("❌ Error fetching user role:", roleError);
+        throw roleError;
+      }
+
+      if (!userRole?.company_id) {
+        console.warn("⚠️ No company_id found for user");
+        return [];
+      }
+
+      console.log("🏢 Company ID:", userRole.company_id);
+
+      // Fetch clients for the user's company
       const { data, error } = await supabase
         .from("company_clients")
         .select("id, name, alias, company_id, is_active, email_domain, address, notes, logo_url, mc_number, dot_number, created_at, updated_at")
-        .eq("company_id", user.user_metadata.company_id)
+        .eq("company_id", userRole.company_id)
         .order("name");
 
       if (error) {
