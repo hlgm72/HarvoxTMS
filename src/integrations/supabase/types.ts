@@ -970,7 +970,7 @@ export type Database = {
       }
       fuel_expenses: {
         Row: {
-          card_last_four: string | null
+          card_last_five: string | null
           created_at: string
           created_by: string | null
           discount_amount: number | null
@@ -998,7 +998,7 @@ export type Database = {
           verified_by: string | null
         }
         Insert: {
-          card_last_four?: string | null
+          card_last_five?: string | null
           created_at?: string
           created_by?: string | null
           discount_amount?: number | null
@@ -1026,7 +1026,7 @@ export type Database = {
           verified_by?: string | null
         }
         Update: {
-          card_last_four?: string | null
+          card_last_five?: string | null
           created_at?: string
           created_by?: string | null
           discount_amount?: number | null
