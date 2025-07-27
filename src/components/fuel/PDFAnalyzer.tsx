@@ -7,6 +7,7 @@ import { Upload, FileText, CheckCircle, Info, Loader2, User, Calendar, CreditCar
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
 import { useAuth } from '@/hooks/useAuth';
+import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
 
 interface AnalysisResult {
   columnsFound: string[];
@@ -50,11 +51,13 @@ interface EnrichedTransaction {
 export function PDFAnalyzer() {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
+  const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
+  
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isEnriching, setIsEnriching] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [enrichedTransactions, setEnrichedTransactions] = useState<EnrichedTransaction[]>([]);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isImporting, setIsImporting] = useState(false);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -206,7 +209,10 @@ export function PDFAnalyzer() {
         .select('transaction_date, invoice_number, card_last_four, total_amount, station_name')
         .in('driver_user_id', driverIds);
 
-      const enriched: EnrichedTransaction[] = transactions.map(transaction => {
+      // Procesar cada transacción de manera secuencial para manejar async
+      const enriched: EnrichedTransaction[] = [];
+      
+      for (const transaction of transactions) {
         const enrichedTransaction: EnrichedTransaction = {
           date: transaction.date,
           card: transaction.card,
@@ -227,10 +233,10 @@ export function PDFAnalyzer() {
         };
 
         // Verificar si la transacción ya existe en la base de datos
-        const transactionDateStr = new Date(transaction.date).toISOString().split('T')[0];
+        const txnDateStr = new Date(transaction.date).toISOString().split('T')[0];
         const existingTransaction = existingFuelExpenses?.find(existing => {
           const existingDate = new Date(existing.transaction_date).toISOString().split('T')[0];
-          const sameDate = existingDate === transactionDateStr;
+          const sameDate = existingDate === txnDateStr;
           const sameInvoice = existing.invoice_number === transaction.invoice;
           const sameCard = existing.card_last_four?.includes(transaction.card.slice(-4)) || 
                           existing.card_last_four === transaction.card;
@@ -279,19 +285,66 @@ export function PDFAnalyzer() {
           enrichedTransaction.card_mapping_status = 'multiple';
         }
 
-        // Mapear período de pago por fecha (simplificado - directo a company_payment_periods)
+        // Mapear período de pago por fecha - ahora con auto-generación
         const periodTransactionDate = new Date(transaction.date);
-        const matchingPeriod = companyPeriods?.find(period => {
+        const periodDateStr = periodTransactionDate.toISOString().split('T')[0];
+        
+        let matchingPeriod = companyPeriods?.find(period => {
           const startDate = new Date(period.period_start_date);
           const endDate = new Date(period.period_end_date);
           return periodTransactionDate >= startDate && periodTransactionDate <= endDate;
         });
 
         if (matchingPeriod) {
-          // Usar directamente el ID del company_payment_period
+          // Período existente encontrado
           enrichedTransaction.payment_period_id = matchingPeriod.id;
           enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date}`;
           enrichedTransaction.period_mapping_status = 'found';
+        } else {
+          // Intentar auto-generar período para esta fecha
+          console.log('🔍 No period found for date, attempting auto-generation:', periodDateStr);
+          
+          try {
+            // Solo auto-generar si tenemos conductor identificado
+            if (enrichedTransaction.driver_user_id) {
+              const generatedPeriodId = await ensurePaymentPeriodExists({
+                companyId: companyId,
+                userId: enrichedTransaction.driver_user_id,
+                targetDate: periodDateStr
+              });
+              
+              if (generatedPeriodId) {
+                // Buscar el período recién creado para obtener las fechas
+                const { data: newPeriod } = await supabase
+                  .from('company_payment_periods')
+                  .select('*')
+                  .eq('id', generatedPeriodId)
+                  .single();
+                
+                if (newPeriod) {
+                  enrichedTransaction.payment_period_id = newPeriod.id;
+                  enrichedTransaction.payment_period_dates = `${newPeriod.period_start_date} - ${newPeriod.period_end_date}`;
+                  enrichedTransaction.period_mapping_status = 'found';
+                  console.log('✅ Auto-generated period:', generatedPeriodId);
+                  
+                  // Actualizar la lista de períodos de la empresa para futuras transacciones
+                  if (companyPeriods) {
+                    companyPeriods.push(newPeriod);
+                  }
+                } else {
+                  enrichedTransaction.period_mapping_status = 'not_found';
+                }
+              } else {
+                enrichedTransaction.period_mapping_status = 'not_found';
+              }
+            } else {
+              // Sin conductor identificado, no podemos auto-generar
+              enrichedTransaction.period_mapping_status = 'not_found';
+            }
+          } catch (error) {
+            console.error('Error auto-generating period:', error);
+            enrichedTransaction.period_mapping_status = 'not_found';
+          }
         }
 
         // Mapear vehículo usando lógica robusta
@@ -336,8 +389,8 @@ export function PDFAnalyzer() {
           }
         }
 
-        return enrichedTransaction;
-      });
+        enriched.push(enrichedTransaction);
+      }
 
       setEnrichedTransactions(enriched);
     } catch (error) {
@@ -583,6 +636,11 @@ export function PDFAnalyzer() {
                               {transaction.period_mapping_status === 'not_found' && (
                                 <Badge variant="destructive">
                                   Sin Período
+                                </Badge>
+                              )}
+                              {transaction.period_mapping_status === 'found' && (
+                                <Badge variant="default">
+                                  Período OK
                                 </Badge>
                               )}
                             </>
