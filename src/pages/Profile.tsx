@@ -209,17 +209,26 @@ export default function Profile() {
             <Tabs defaultValue="profile" className="w-full">
               <CardHeader className="p-4 md:p-6">
                 <TabsList className="grid w-full grid-cols-3 h-auto">
-                  <TabsTrigger value="profile" className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4">
+                  <TabsTrigger 
+                    value="profile" 
+                    className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+                  >
                     <User className="h-3 w-3 md:h-4 md:w-4" />
                     <span className="hidden sm:inline">Información Personal</span>
                     <span className="sm:hidden">Info</span>
                   </TabsTrigger>
-                  <TabsTrigger value="preferences" className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4">
+                  <TabsTrigger 
+                    value="preferences" 
+                    className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+                  >
                     <Settings className="h-3 w-3 md:h-4 md:w-4" />
                     <span className="hidden sm:inline">Preferencias</span>
                     <span className="sm:hidden">Pref</span>
                   </TabsTrigger>
-                  <TabsTrigger value="security" className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4">
+                  <TabsTrigger 
+                    value="security" 
+                    className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+                  >
                     <Shield className="h-3 w-3 md:h-4 md:w-4" />
                     <span className="hidden sm:inline">Seguridad</span>
                     <span className="sm:hidden">Seguridad</span>
