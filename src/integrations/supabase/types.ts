@@ -2591,6 +2591,10 @@ export type Database = {
         Args: { driver_user_id_param: string; target_date?: string }
         Returns: string
       }
+      get_current_user_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -2624,6 +2628,12 @@ export type Database = {
           company_id: string
         }[]
       }
+      get_user_companies: {
+        Args: { user_id_param: string }
+        Returns: {
+          company_id: string
+        }[]
+      }
       get_user_company_roles: {
         Args: { user_id_param: string }
         Returns: {
@@ -2650,12 +2660,24 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: boolean
       }
+      is_current_user_anonymous: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_period_locked: {
         Args: { period_id: string }
         Returns: boolean
       }
       is_superadmin: {
         Args: { user_id_param?: string }
+        Returns: boolean
+      }
+      is_user_company_owner: {
+        Args: { user_id_param: string; company_id_param: string }
+        Returns: boolean
+      }
+      is_user_superadmin: {
+        Args: { user_id_param: string }
         Returns: boolean
       }
       lock_payment_period: {
