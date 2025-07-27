@@ -235,7 +235,7 @@ export function PDFAnalyzer() {
       // Obtener gastos de combustible existentes para verificar duplicados
       const { data: existingFuelExpenses } = await supabase
         .from('fuel_expenses')
-        .select('transaction_date, invoice_number, card_last_four, total_amount, station_name')
+        .select('transaction_date, invoice_number, card_last_five, total_amount, station_name')
         .in('driver_user_id', driverIds);
 
       // Procesar cada transacción de manera secuencial para manejar async
@@ -267,8 +267,8 @@ export function PDFAnalyzer() {
           const existingDate = formatDateInUserTimeZone(new Date(existing.transaction_date));
           const sameDate = existingDate === txnDateStr;
           const sameInvoice = existing.invoice_number === transaction.invoice;
-          const sameCard = existing.card_last_four?.includes(transaction.card.slice(-4)) || 
-                          existing.card_last_four === transaction.card.slice(-4);
+          const sameCard = existing.card_last_five?.includes(transaction.card.slice(-5)) || 
+                          existing.card_last_five === transaction.card.slice(-5);
           const sameAmount = Math.abs(parseFloat(existing.total_amount.toString()) - parseFloat(transaction.total_amt.toString())) < 0.01;
           const sameStation = existing.station_name === transaction.location_name;
           
@@ -458,7 +458,7 @@ export function PDFAnalyzer() {
         total_amount: Number(transaction.total_amt),
         station_name: transaction.location_name,
         station_state: transaction.state,
-        card_last_four: transaction.card.slice(-4),
+        card_last_five: transaction.card.slice(-5),
         invoice_number: transaction.invoice,
         vehicle_id: transaction.vehicle_id,
         status: 'pending',

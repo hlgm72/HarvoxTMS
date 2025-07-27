@@ -25,7 +25,7 @@ export interface CreateFuelExpenseData {
   total_amount: number;
   station_name?: string;
   station_state?: string;
-  card_last_four?: string;
+  card_last_five?: string;
   vehicle_id?: string;
   receipt_url?: string;
   notes?: string;
@@ -118,7 +118,7 @@ export function useCreateFuelExpense() {
       // Buscar transacciones existentes para detectar duplicados
       const { data: existingExpenses, error: searchError } = await supabase
         .from('fuel_expenses')
-        .select('transaction_date, invoice_number, card_last_four, total_amount, station_name')
+        .select('transaction_date, invoice_number, card_last_five, total_amount, station_name')
         .eq('driver_user_id', data.driver_user_id);
 
       if (searchError) {
@@ -132,7 +132,7 @@ export function useCreateFuelExpense() {
         const existingDate = formatDateInUserTimeZone(new Date(existing.transaction_date));
         const sameDate = existingDate === txnDateStr;
         const sameInvoice = existing.invoice_number === data.invoice_number && data.invoice_number;
-        const sameCard = existing.card_last_four === data.card_last_four && data.card_last_four;
+        const sameCard = existing.card_last_five === data.card_last_five && data.card_last_five;
         const sameAmount = Math.abs(parseFloat(existing.total_amount.toString()) - data.total_amount) < 0.01;
         const sameStation = existing.station_name === data.station_name && data.station_name;
         

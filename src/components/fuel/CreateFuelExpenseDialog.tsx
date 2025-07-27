@@ -44,7 +44,7 @@ const formSchema = z.object({
   
   // Información de pago/tarjeta
   driver_card_id: z.string().optional(),
-  card_last_four: z.string().optional(),
+  card_last_five: z.string().optional(),
   invoice_number: z.string().optional(),
   
   // Desglose de costos (opcional)
@@ -86,7 +86,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       station_name: '',
       station_state: '',
       driver_card_id: '',
-      card_last_four: '',
+      card_last_five: '',
       invoice_number: '',
       gross_amount: 0,
       discount_amount: 0,
@@ -158,7 +158,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       station_state: data.station_state,
       
       // Información de pago/tarjeta
-      card_last_four: data.card_last_four,
+      card_last_five: data.card_last_five,
       invoice_number: data.invoice_number,
       
       // Desglose de costos
@@ -516,9 +516,8 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                            // Extraer y asignar los últimos 4 dígitos de la tarjeta seleccionada
                            const selectedCard = driverCards.find(card => card.id === value);
                            if (selectedCard) {
-                             // Extraer solo los últimos 4 dígitos del card_number_last_five
-                             const lastFour = selectedCard.card_number_last_five.slice(-4);
-                             form.setValue('card_last_four', lastFour);
+                             // Asignar los 5 dígitos completos del card_number_last_five
+                             form.setValue('card_last_five', selectedCard.card_number_last_five);
                            }
                          }} 
                          value={field.value}
