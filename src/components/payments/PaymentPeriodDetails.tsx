@@ -149,20 +149,12 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
           </div>
         </div>
         
-        {/* Botón de procesar período - DESACTIVADO temporalmente
         {period.status === 'open' && (
-          <Button onClick={handleProcessPeriod} disabled={isProcessing}>
-            {isProcessing ? (
-              "Procesando..."
-            ) : (
-              <>
-                <Calculator className="h-4 w-4 mr-2" />
-                Procesar Período
-              </>
-            )}
+          <Button onClick={handleProcessPeriod} disabled={true}>
+            <Calculator className="h-4 w-4 mr-2" />
+            Procesar Período
           </Button>
         )}
-        */}
       </div>
 
       {/* Alertas */}
