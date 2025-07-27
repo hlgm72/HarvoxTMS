@@ -2519,6 +2519,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      fix_fuel_expenses_separation_v2: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       force_assign_payment_period: {
         Args: { load_id_param: string; period_id_param: string }
         Returns: boolean

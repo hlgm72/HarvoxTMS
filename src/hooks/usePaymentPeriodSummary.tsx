@@ -44,8 +44,7 @@ export function usePaymentPeriodSummary(periodId?: string) {
         acc.gross_earnings += calc.gross_earnings || 0;
         acc.other_income += calc.other_income || 0;
         acc.fuel_expenses += calc.fuel_expenses || 0;
-        // Las deducciones son el total menos combustible para evitar duplicación
-        acc.deductions += (calc.total_deductions || 0) - (calc.fuel_expenses || 0);
+        acc.deductions += calc.total_deductions || 0;
         acc.net_payment += calc.net_payment || 0;
         
         if (calc.has_negative_balance) {
@@ -121,8 +120,7 @@ export function useAllPaymentPeriodsSummary(companyId?: string) {
           summary.gross_earnings += calc.gross_earnings || 0;
           summary.other_income += calc.other_income || 0;
           summary.fuel_expenses += calc.fuel_expenses || 0;
-          // Las deducciones son el total menos combustible para evitar duplicación
-          summary.deductions += (calc.total_deductions || 0) - (calc.fuel_expenses || 0);
+          summary.deductions += calc.total_deductions || 0;
           summary.net_payment += calc.net_payment || 0;
           summary.driver_count++;
           

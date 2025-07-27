@@ -115,8 +115,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
   const totalGrossEarnings = driverCalculations.reduce((sum, d) => sum + (d.gross_earnings || 0), 0);
   const totalOtherIncome = driverCalculations.reduce((sum, d) => sum + (d.other_income || 0), 0);
   const totalFuelExpenses = driverCalculations.reduce((sum, d) => sum + (d.fuel_expenses || 0), 0);
-  // Las deducciones son el total menos combustible para evitar duplicación
-  const totalDeductions = driverCalculations.reduce((sum, d) => sum + ((d.total_deductions || 0) - (d.fuel_expenses || 0)), 0);
+  const totalDeductions = driverCalculations.reduce((sum, d) => sum + (d.total_deductions || 0), 0);
   const totalNetPayment = driverCalculations.reduce((sum, d) => sum + (d.net_payment || 0), 0);
 
   const getStatusBadgeVariant = (status: string) => {
@@ -297,7 +296,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                   <div>
                     <p className="text-muted-foreground">Deducciones</p>
                     <p className="font-semibold text-destructive">
-                      -${((calc.total_deductions || 0) - (calc.fuel_expenses || 0)).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                      -${(calc.total_deductions || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                   <div>
