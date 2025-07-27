@@ -25,7 +25,7 @@ export interface CreateFuelExpenseData {
   total_amount: number;
   station_name?: string;
   station_state?: string;
-  card_last_four?: string;
+  card_last_five?: string;
   vehicle_id?: string;
   receipt_url?: string;
   notes?: string;
