@@ -13,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { cn } from '@/lib/utils';
 import { useCreateFuelExpense } from '@/hooks/useFuelExpenses';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
@@ -103,7 +104,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
     // Si no hay período seleccionado, generar uno antes de guardar
     if (!data.payment_period_id && userCompany?.company_id) {
       try {
-        const transactionDateStr = data.transaction_date.toISOString().split('T')[0];
+        const transactionDateStr = formatDateInUserTimeZone(data.transaction_date);
         
         // Generar el período específico para esta fecha
         const { data: generatedData, error } = await supabase.rpc('generate_company_payment_periods', {
@@ -123,8 +124,8 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
           
           // Buscar el período que coincida con la fecha
           const newMatchingPeriod = updatedPeriods.data?.find(period => {
-            const startDate = new Date(period.period_start_date).toISOString().split('T')[0];
-            const endDate = new Date(period.period_end_date).toISOString().split('T')[0];
+            const startDate = period.period_start_date;
+            const endDate = period.period_end_date;
             return transactionDateStr >= startDate && transactionDateStr <= endDate;
           });
           
@@ -208,12 +209,12 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
   React.useEffect(() => {
     if (!transactionDate || !paymentPeriods.length) return;
     
-    const transactionDateStr = transactionDate.toISOString().split('T')[0];
+    const transactionDateStr = formatDateInUserTimeZone(transactionDate);
     
     // Solo buscar período existente, no crear automáticamente
     const matchingPeriod = paymentPeriods.find(period => {
-      const startDate = new Date(period.period_start_date).toISOString().split('T')[0];
-      const endDate = new Date(period.period_end_date).toISOString().split('T')[0];
+      const startDate = period.period_start_date;
+      const endDate = period.period_end_date;
       return transactionDateStr >= startDate && transactionDateStr <= endDate;
     });
 
@@ -255,8 +256,8 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
     periodEnd.setDate(periodStart.getDate() + frequencyDays - 1);
     
     return {
-      start: periodStart.toISOString().split('T')[0],
-      end: periodEnd.toISOString().split('T')[0]
+      start: formatDateInUserTimeZone(periodStart),
+      end: formatDateInUserTimeZone(periodEnd)
     };
   };
 
