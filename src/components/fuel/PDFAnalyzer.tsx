@@ -319,7 +319,7 @@ export function PDFAnalyzer() {
         } else {
           // Prioridad 2: Validar el UNIT del PDF contra equipos de la empresa
           const matchingEquipment = companyEquipment?.find(equipment => 
-            equipment.equipment_number === equipmentNumber
+            equipment.equipment_number === String(equipmentNumber)
           );
           
           if (matchingEquipment) {
