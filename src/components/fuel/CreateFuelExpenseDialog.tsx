@@ -44,7 +44,7 @@ const formSchema = z.object({
   
   // Información de pago/tarjeta
   driver_card_id: z.string().optional(),
-  fuel_card_number: z.string().optional(),
+  card_last_four: z.string().optional(),
   invoice_number: z.string().optional(),
   
   // Desglose de costos (opcional)
@@ -86,7 +86,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       station_name: '',
       station_state: '',
       driver_card_id: '',
-      fuel_card_number: '',
+      card_last_four: '',
       invoice_number: '',
       gross_amount: 0,
       discount_amount: 0,
@@ -158,7 +158,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       station_state: data.station_state,
       
       // Información de pago/tarjeta
-      fuel_card_number: data.fuel_card_number,
+      card_last_four: data.card_last_four,
       invoice_number: data.invoice_number,
       
       // Desglose de costos
