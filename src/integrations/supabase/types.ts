@@ -2876,6 +2876,10 @@ export type Database = {
         }
         Returns: Json
       }
+      require_authenticated_user: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       restore_company_document: {
         Args: { document_id: string }
         Returns: Json
