@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
+import { useCompanyCache } from "@/hooks/useCompanyCache";
 
 export interface Equipment {
   id: string;
@@ -57,22 +58,12 @@ export function useEquipment() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { userCompany } = useCompanyCache();
 
   const equipmentQuery = useQuery({
-    queryKey: ["equipment", user?.id],
+    queryKey: ["equipment", userCompany?.company_id],
     queryFn: async () => {
-      if (!user?.id) {
-        throw new Error("Usuario no autenticado");
-      }
-
-      // First get user's company_id
-      const { data: userRoles, error: roleError } = await supabase
-        .from("user_company_roles")
-        .select("company_id")
-        .eq("user_id", user.id)
-        .eq("is_active", true);
-
-      if (roleError || !userRoles || userRoles.length === 0) {
+      if (!userCompany?.company_id) {
         throw new Error("No se pudo obtener información de la compañía");
       }
 
@@ -80,7 +71,7 @@ export function useEquipment() {
       const { data, error } = await supabase
         .from("company_equipment")
         .select("*")
-        .eq("company_id", userRoles[0].company_id)
+        .eq("company_id", userCompany.company_id)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -89,29 +80,21 @@ export function useEquipment() {
 
       return data as Equipment[];
     },
-    enabled: !!user?.id,
+    enabled: !!userCompany?.company_id,
+    staleTime: 30000, // 30 seconds
+    gcTime: 300000, // 5 minutes
   });
 
   const createEquipmentMutation = useMutation({
     mutationFn: async (newEquipment: CreateEquipmentData) => {
-      // Get user's company_id from user_company_roles
-      const { data: userRoles, error: roleError } = await supabase
-        .from("user_company_roles")
-        .select("company_id")
-        .eq("user_id", (await supabase.auth.getUser()).data.user?.id)
-        .eq("is_active", true);
-
-      if (roleError || !userRoles || userRoles.length === 0) {
+      if (!userCompany?.company_id) {
         throw new Error("No se pudo obtener información de la compañía");
       }
-
-      // Use the first company_id (or you could add logic to select the preferred company)
-      const userRole = userRoles[0];
 
       // Clean up data - convert empty strings to null for optional fields
       const cleanedData = {
         ...newEquipment,
-        company_id: userRole.company_id,
+        company_id: userCompany.company_id,
         status: newEquipment.status || "active",
         fuel_type: newEquipment.fuel_type || "diesel",
         equipment_type: newEquipment.equipment_type || "truck",
@@ -147,7 +130,7 @@ export function useEquipment() {
     onSuccess: (data) => {
       console.log('🔧 Equipment created successfully:', data);
       // Update cache immediately by adding the new equipment to the list
-      queryClient.setQueryData(["equipment", user?.id], (oldData: Equipment[] | undefined) => {
+      queryClient.setQueryData(["equipment", userCompany?.company_id], (oldData: Equipment[] | undefined) => {
         return oldData ? [data, ...oldData] : [data];
       });
       // Also invalidate for consistency
@@ -216,7 +199,7 @@ export function useEquipment() {
     onSuccess: (deletedId) => {
       console.log('🔧 Equipment deleted successfully');
       // Update cache immediately by removing the equipment from the list
-      queryClient.setQueryData(["equipment", user?.id], (oldData: Equipment[] | undefined) => {
+      queryClient.setQueryData(["equipment", userCompany?.company_id], (oldData: Equipment[] | undefined) => {
         return oldData ? oldData.filter(equipment => equipment.id !== deletedId) : [];
       });
       // Also invalidate for consistency
