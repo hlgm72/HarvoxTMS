@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { createTextHandlers } from '@/lib/textUtils';
+import { AddressForm } from '@/components/ui/AddressForm';
 
 const profileSchema = z.object({
   first_name: z.string().min(1, 'El nombre es requerido'),
@@ -30,6 +31,10 @@ const profileSchema = z.object({
   phone: z.string().optional(),
   preferred_language: z.string().optional(),
   timezone: z.string().optional(),
+  street_address: z.string().optional(),
+  state_id: z.string().optional(),
+  city_id: z.string().optional(),
+  zip_code: z.string().optional(),
 });
 
 const passwordSchema = z.object({
@@ -76,6 +81,10 @@ export default function Profile() {
       phone: '',
       preferred_language: 'en',
       timezone: 'America/New_York',
+      street_address: '',
+      state_id: '',
+      city_id: '',
+      zip_code: '',
     },
   });
 
@@ -96,6 +105,10 @@ export default function Profile() {
         phone: profile.phone || '',
         preferred_language: profile.preferred_language || 'en',
         timezone: profile.timezone || 'America/New_York',
+        street_address: profile.street_address || '',
+        state_id: profile.state_id || '',
+        city_id: profile.city_id || '',
+        zip_code: profile.zip_code || '',
       });
     }
   }, [profile, profileForm]);
@@ -113,6 +126,10 @@ export default function Profile() {
           phone: data.phone || null,
           preferred_language: data.preferred_language || 'en',
           timezone: data.timezone || 'America/New_York',
+          street_address: data.street_address || null,
+          state_id: data.state_id || null,
+          city_id: data.city_id || null,
+          zip_code: data.zip_code || null,
           updated_at: new Date().toISOString(),
         })
         .eq('user_id', user.id);
@@ -162,6 +179,10 @@ export default function Profile() {
           phone: profile.phone || '',
           preferred_language: profile.preferred_language || 'en',
           timezone: profile.timezone || 'America/New_York',
+          street_address: profile.street_address || '',
+          state_id: profile.state_id || '',
+          city_id: profile.city_id || '',
+          zip_code: profile.zip_code || '',
         });
       }
     } else if (pendingCancelAction === 'password') {
@@ -290,6 +311,21 @@ export default function Profile() {
                 <span className="text-muted-foreground font-medium">Zona horaria:</span>
                 <span className="text-foreground">{profile?.timezone || 'America/New_York'}</span>
               </div>
+              {(profile?.street_address || profile?.zip_code) && (
+                <div className="pt-2 border-t">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-muted-foreground font-medium">Dirección:</span>
+                    <div className="text-foreground text-xs leading-relaxed">
+                      {profile?.street_address && (
+                        <div>{profile.street_address}</div>
+                      )}
+                      {profile?.zip_code && (
+                        <div>{profile.zip_code}</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -372,7 +408,37 @@ export default function Profile() {
                           <FormMessage />
                         </FormItem>
                       )}
+                     />
+
+                    <Separator className="my-6" />
+                    
+                    <div className="mb-4">
+                      <h4 className="text-sm font-medium mb-2">Dirección</h4>
+                      <p className="text-xs text-muted-foreground">
+                        Información de tu dirección personal (opcional)
+                      </p>
+                    </div>
+
+                    <AddressForm
+                      streetAddress={profileForm.watch('street_address') || ''}
+                      onStreetAddressChange={(value) => profileForm.setValue('street_address', value)}
+                      stateId={profileForm.watch('state_id') || undefined}
+                      onStateChange={(value) => profileForm.setValue('state_id', value || '')}
+                      cityId={profileForm.watch('city_id') || undefined}
+                      onCityChange={(value) => profileForm.setValue('city_id', value || '')}
+                      zipCode={profileForm.watch('zip_code') || ''}
+                      onZipCodeChange={(value) => profileForm.setValue('zip_code', value)}
+                      required={false}
                     />
+
+                    <Separator className="my-6" />
+                    
+                    <div className="mb-4">
+                      <h4 className="text-sm font-medium mb-2">Preferencias</h4>
+                      <p className="text-xs text-muted-foreground">
+                        Configuración de idioma y zona horaria
+                      </p>
+                    </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField

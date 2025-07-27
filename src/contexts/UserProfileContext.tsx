@@ -11,6 +11,10 @@ interface UserProfile {
   avatar_url: string | null;
   preferred_language: string | null;
   timezone: string | null;
+  street_address: string | null;
+  state_id: string | null;
+  city_id: string | null;
+  zip_code: string | null;
 }
 
 interface UserProfileContextType {
