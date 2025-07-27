@@ -95,7 +95,7 @@ export function PaymentReportDialog({
       
       const { data, error } = await supabase
         .from('companies')
-        .select('id, name, street_address, phone, email, logo_url')
+        .select('id, name, street_address, zip_code, state_id, phone, email, logo_url')
         .eq('id', calculation.company_payment_periods.company_id)
         .single();
 
@@ -169,7 +169,10 @@ export function PaymentReportDialog({
       },
       company: {
         name: company.name || 'Tu Empresa',
-        address: company.street_address,
+        address: [
+          company.street_address,
+          [company.state_id, company.zip_code].filter(Boolean).join(' ')
+        ].filter(Boolean).join(', '),
         phone: company.phone,
         email: company.email,
         logo_url: company.logo_url
