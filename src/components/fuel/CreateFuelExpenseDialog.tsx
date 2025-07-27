@@ -638,7 +638,21 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-foreground border-b pb-2">Información de la Estación</h4>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
+                  name="invoice_number"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Número de Factura</FormLabel>
+                      <FormControl>
+                        <Input placeholder="INV-123456" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="station_name"
@@ -670,28 +684,6 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                     </FormItem>
                   )}
                 />
-              </div>
-            </div>
-
-            {/* SECCIÓN 4: Información de Pago y Tarjeta */}
-            <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-foreground border-b pb-2">Información de Pago</h4>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="invoice_number"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Número de Factura</FormLabel>
-                      <FormControl>
-                        <Input placeholder="INV-123456" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
               </div>
             </div>
 
