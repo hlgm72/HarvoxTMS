@@ -273,7 +273,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // === COLUMNA 2: INFORMACIÓN DEL PERIODO ===
   const weekInfo = formatWeekInfo();
   addText('Driver Pay Report', col2X + colWidth/2, currentY, {
-    fontSize: 16,
+    fontSize: 14,
     fontStyle: 'bold',
     color: colors.darkGray,
     align: 'center'
@@ -293,7 +293,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   });
   
   addText(weekInfo.paymentDate, col2X + colWidth/2, currentY + 16, {
-    fontSize: 9,
+    fontSize: 10,
     color: colors.text,
     align: 'center'
   });
