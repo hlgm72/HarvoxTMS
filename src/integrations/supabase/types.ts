@@ -2595,6 +2595,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_current_user_id_optimized: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -2657,6 +2661,10 @@ export type Database = {
         Returns: boolean
       }
       is_authenticated_non_anonymous: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_authenticated_optimized: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
