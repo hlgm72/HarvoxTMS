@@ -2512,10 +2512,6 @@ export type Database = {
           approved_amount: number
         }[]
       }
-      can_access_company_equipment: {
-        Args: { equipment_company_id: string }
-        Returns: boolean
-      }
       can_access_load: {
         Args: { load_id_param: string }
         Returns: boolean
