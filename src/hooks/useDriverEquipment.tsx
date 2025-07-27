@@ -18,13 +18,16 @@ export function useDriverEquipment(driverUserId?: string) {
     queryFn: async () => {
       if (!driverUserId) return [];
       
+      console.log('🚛 Fetching equipment for driver:', driverUserId);
+      
       const { data, error } = await supabase
         .from('equipment_assignments')
         .select(`
           id,
           assigned_date,
           is_active,
-          equipment:company_equipment!inner(
+          equipment_id,
+          company_equipment!inner(
             id,
             equipment_number,
             equipment_type,
@@ -37,20 +40,30 @@ export function useDriverEquipment(driverUserId?: string) {
         .eq('is_active', true)
         .order('assigned_date', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('🚛 Error fetching driver equipment:', error);
+        throw error;
+      }
+      
+      console.log('🚛 Driver equipment data:', data);
       
       // Transform the data to match our interface
-      return (data || []).map(assignment => ({
-        id: assignment.equipment.id,
-        equipment_number: assignment.equipment.equipment_number,
-        equipment_type: assignment.equipment.equipment_type,
-        make: assignment.equipment.make,
-        model: assignment.equipment.model,
-        year: assignment.equipment.year,
+      const result = (data || []).map(assignment => ({
+        id: assignment.company_equipment.id,
+        equipment_number: assignment.company_equipment.equipment_number,
+        equipment_type: assignment.company_equipment.equipment_type,
+        make: assignment.company_equipment.make,
+        model: assignment.company_equipment.model,
+        year: assignment.company_equipment.year,
         assigned_date: assignment.assigned_date,
         is_active: assignment.is_active,
       })) as DriverEquipment[];
+      
+      console.log('🚛 Transformed equipment result:', result);
+      return result;
     },
     enabled: !!driverUserId,
+    staleTime: 30000, // 30 seconds
+    gcTime: 300000, // 5 minutes
   });
 }
