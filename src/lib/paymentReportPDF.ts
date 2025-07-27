@@ -584,8 +584,19 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   if (isPreview) {
     // Abrir PDF en nueva pestaña para vista previa
-    const pdfDataUri = doc.output('datauristring');
-    window.open(pdfDataUri, '_blank');
+    const pdfBlob = doc.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    const newWindow = window.open(pdfUrl, '_blank');
+    
+    // Limpiar URL después de un tiempo para liberar memoria
+    setTimeout(() => {
+      URL.revokeObjectURL(pdfUrl);
+    }, 10000);
+    
+    if (!newWindow) {
+      console.warn('Popup bloqueado. Intentando download fallback.');
+      doc.save(fileName);
+    }
   } else {
     // Descargar PDF
     doc.save(fileName);
