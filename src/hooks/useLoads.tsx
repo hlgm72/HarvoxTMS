@@ -180,6 +180,16 @@ export const useLoads = (filters?: LoadsFilters) => {
     return ['loads', user?.id, filters?.periodFilter?.type, filters?.periodFilter?.periodId, filters?.periodFilter?.startDate, filters?.periodFilter?.endDate];
   }, [user?.id, filters?.periodFilter?.type, filters?.periodFilter?.periodId, filters?.periodFilter?.startDate, filters?.periodFilter?.endDate]);
 
+  console.log('🎯 useLoads hook - Estado antes del query:', {
+    user: !!user,
+    userId: user?.id,
+    cacheLoading,
+    userCompany,
+    cacheError: cacheError?.message,
+    companyUsersLength: companyUsers.length,
+    enabled: !!user && !cacheLoading && !!userCompany && !cacheError && companyUsers.length > 0
+  });
+
   return useQuery({
     queryKey,
     enabled: !!user && !cacheLoading && !!userCompany && !cacheError && companyUsers.length > 0, // Solo ejecutar cuando el cache esté listo
@@ -193,7 +203,17 @@ export const useLoads = (filters?: LoadsFilters) => {
     // Deduplicar queries - crucial para ERR_INSUFFICIENT_RESOURCES
     networkMode: 'online',
     queryFn: async (): Promise<Load[]> => {
+      console.log('🎯 useLoads queryFn - INICIANDO con estado:', {
+        user: !!user,
+        userId: user?.id,
+        userCompany,
+        companyUsersCount: companyUsers.length,
+        cacheError: cacheError?.message,
+        filters
+      });
+
       if (!user) {
+        console.error('❌ useLoads - Usuario no autenticado');
         throw new Error('User not authenticated');
       }
 

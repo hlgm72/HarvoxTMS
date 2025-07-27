@@ -231,6 +231,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!mounted) return;
       
       console.log('🔄 Auth state changed:', event, session?.user?.email);
+      console.log('🔍 AuthContext debug - full state:', {
+        event,
+        sessionExists: !!session,
+        userExists: !!session?.user,
+        userEmail: session?.user?.email,
+        currentUser: !!user,
+        currentSession: !!session,
+        loading
+      });
       
       // Handle auth errors by cleaning up state
       if (event === 'TOKEN_REFRESHED' && !session) {
