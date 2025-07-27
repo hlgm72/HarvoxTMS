@@ -25,7 +25,7 @@ export interface CreateFuelExpenseData {
   total_amount: number;
   station_name?: string;
   station_state?: string;
-  card_last_five?: string;
+  card_last_four?: string;
   vehicle_id?: string;
   receipt_url?: string;
   notes?: string;
@@ -112,6 +112,41 @@ export function useCreateFuelExpense() {
 
   return useMutation({
     mutationFn: async (data: CreateFuelExpenseData) => {
+      // Validar duplicados antes de crear
+      console.log('🔍 Validating for duplicate fuel expense...');
+      
+      // Buscar transacciones existentes para detectar duplicados
+      const { data: existingExpenses, error: searchError } = await supabase
+        .from('fuel_expenses')
+        .select('transaction_date, invoice_number, card_last_four, total_amount, station_name')
+        .eq('driver_user_id', data.driver_user_id);
+
+      if (searchError) {
+        console.error('Error searching for existing expenses:', searchError);
+        throw new Error('Error al validar duplicados');
+      }
+
+      // Verificar si ya existe una transacción similar
+      const txnDateStr = formatDateInUserTimeZone(new Date(data.transaction_date));
+      const existingTransaction = existingExpenses?.find(existing => {
+        const existingDate = formatDateInUserTimeZone(new Date(existing.transaction_date));
+        const sameDate = existingDate === txnDateStr;
+        const sameInvoice = existing.invoice_number === data.invoice_number && data.invoice_number;
+        const sameCard = existing.card_last_four === data.card_last_four && data.card_last_four;
+        const sameAmount = Math.abs(parseFloat(existing.total_amount.toString()) - data.total_amount) < 0.01;
+        const sameStation = existing.station_name === data.station_name && data.station_name;
+        
+        // Considerar duplicado si coinciden al menos 3 de estos criterios
+        const matches = [sameDate, sameInvoice, sameCard, sameAmount, sameStation].filter(Boolean).length;
+        console.log('🔍 Duplicate check:', { sameDate, sameInvoice, sameCard, sameAmount, sameStation, matches });
+        return matches >= 3;
+      });
+
+      if (existingTransaction) {
+        console.log('🚨 Duplicate transaction detected:', existingTransaction);
+        throw new Error('Esta transacción parece estar duplicada. Ya existe un gasto similar con la misma fecha, monto o número de factura.');
+      }
+
       // Si no hay payment_period_id, intentar generar uno automáticamente
       let finalData = { ...data };
       
@@ -160,7 +195,7 @@ export function useCreateFuelExpense() {
     },
     onError: (error) => {
       console.error('Error creating fuel expense:', error);
-      showError('No se pudo crear el gasto de combustible');
+      showError(error.message || 'No se pudo crear el gasto de combustible');
     },
   });
 }

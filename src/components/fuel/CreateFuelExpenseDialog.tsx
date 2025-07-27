@@ -44,7 +44,7 @@ const formSchema = z.object({
   
   // Información de pago/tarjeta
   driver_card_id: z.string().optional(),
-  card_last_five: z.string().optional(),
+  card_last_four: z.string().optional(),
   invoice_number: z.string().optional(),
   
   // Desglose de costos (opcional)
@@ -86,7 +86,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       station_name: '',
       station_state: '',
       driver_card_id: '',
-      card_last_five: '',
+      card_last_four: '',
       invoice_number: '',
       gross_amount: 0,
       discount_amount: 0,
@@ -158,7 +158,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       station_state: data.station_state,
       
       // Información de pago/tarjeta
-      card_last_five: data.card_last_five,
+      card_last_four: data.card_last_four,
       invoice_number: data.invoice_number,
       
       // Desglose de costos
@@ -510,7 +510,17 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                   render={({ field }) => (
                     <FormItem className="col-span-2">
                       <FormLabel>Tarjeta de Combustible</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                       <Select 
+                         onValueChange={(value) => {
+                           field.onChange(value);
+                           // Extraer y asignar los últimos 4 dígitos de la tarjeta seleccionada
+                           const selectedCard = driverCards.find(card => card.id === value);
+                           if (selectedCard) {
+                             form.setValue('card_last_four', selectedCard.card_number_last_five);
+                           }
+                         }} 
+                         value={field.value}
+                       >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Seleccionar tarjeta" />
