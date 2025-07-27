@@ -203,7 +203,8 @@ export const useLoads = (filters?: LoadsFilters) => {
         throw new Error(`Error cargando cargas: ${cacheError.message || 'Error de base de datos'}`);
       }
 
-      console.log('🚛 Cargando loads para compañía:', userCompany.company_id);
+      console.log('🚛 Cargando loads para compañía:', userCompany?.company_id);
+      console.log('🚛 Usuarios de la compañía:', companyUsers);
 
       // Obtener IDs de usuarios de la compañía (conductores)
       if (companyUsers.length === 0) {
