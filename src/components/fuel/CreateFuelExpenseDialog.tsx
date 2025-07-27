@@ -26,7 +26,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 const formSchema = z.object({
   driver_user_id: z.string().min(1, 'Selecciona un conductor'),
-  payment_period_id: z.string().min(1, 'Selecciona un período de pago'),
+  payment_period_id: z.string().optional(), // Ahora es opcional, se genera automáticamente si es necesario
   transaction_date: z.date({
     required_error: 'La fecha es requerida',
   }),
@@ -81,7 +81,49 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
   const selectedDriverId = form.watch('driver_user_id');
   const { data: driverCards = [] } = useDriverCards(selectedDriverId);
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
+    // Si no hay período seleccionado, generar uno antes de guardar
+    if (!data.payment_period_id && userCompany?.company_id) {
+      try {
+        const transactionDateStr = data.transaction_date.toISOString().split('T')[0];
+        
+        // Generar el período específico para esta fecha
+        const { data: generatedData, error } = await supabase.rpc('generate_company_payment_periods', {
+          company_id_param: userCompany.company_id,
+          from_date: transactionDateStr,
+          to_date: transactionDateStr
+        });
+
+        if (error) {
+          console.error('Error generating payment period:', error);
+          return;
+        }
+
+        if (generatedData && typeof generatedData === 'object' && 'success' in generatedData && generatedData.success) {
+          // Refetch para obtener el nuevo período
+          const updatedPeriods = await refetchPaymentPeriods();
+          
+          // Buscar el período que coincida con la fecha
+          const newMatchingPeriod = updatedPeriods.data?.find(period => {
+            const startDate = new Date(period.period_start_date).toISOString().split('T')[0];
+            const endDate = new Date(period.period_end_date).toISOString().split('T')[0];
+            return transactionDateStr >= startDate && transactionDateStr <= endDate;
+          });
+          
+          if (newMatchingPeriod) {
+            data.payment_period_id = newMatchingPeriod.id;
+          } else {
+            console.error('No se pudo crear el período de pago para la fecha');
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Error generating payment period:', error);
+        return;
+      }
+    }
+
+    // Ahora guardar la transacción con el período asignado
     createMutation.mutate({
       driver_user_id: data.driver_user_id,
       payment_period_id: data.payment_period_id,
@@ -140,61 +182,26 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
     }
   }, [grossAmount, discountAmount, fees, form]);
 
-  // Auto-select payment period based on transaction date
+  // Auto-select payment period based on transaction date (solo buscar, no crear)
   React.useEffect(() => {
-    const handleDateChange = async () => {
-      if (!transactionDate || !userCompany?.company_id) return;
-      
-      const transactionDateStr = transactionDate.toISOString().split('T')[0];
-      
-      // First, check if we already have a matching period
-      const matchingPeriod = paymentPeriods.find(period => {
-        const startDate = new Date(period.period_start_date).toISOString().split('T')[0];
-        const endDate = new Date(period.period_end_date).toISOString().split('T')[0];
-        return transactionDateStr >= startDate && transactionDateStr <= endDate;
-      });
+    if (!transactionDate || !paymentPeriods.length) return;
+    
+    const transactionDateStr = transactionDate.toISOString().split('T')[0];
+    
+    // Solo buscar período existente, no crear automáticamente
+    const matchingPeriod = paymentPeriods.find(period => {
+      const startDate = new Date(period.period_start_date).toISOString().split('T')[0];
+      const endDate = new Date(period.period_end_date).toISOString().split('T')[0];
+      return transactionDateStr >= startDate && transactionDateStr <= endDate;
+    });
 
-      if (matchingPeriod) {
-        form.setValue('payment_period_id', matchingPeriod.id);
-        return;
-      }
-
-      // If no matching period found, try to generate periods for the date
-      try {
-        const { data, error } = await supabase.rpc('generate_company_payment_periods', {
-          company_id_param: userCompany.company_id,
-          from_date: new Date(transactionDate.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7 days before
-          to_date: new Date(transactionDate.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]  // 30 days after
-        });
-
-        if (error) {
-          console.error('Error generating payment periods:', error);
-          return;
-        }
-
-        if (data && typeof data === 'object' && 'success' in data && data.success) {
-          // Refetch payment periods to get the newly created ones
-          await refetchPaymentPeriods();
-          
-          // Try to find and select the matching period again
-          const updatedPeriods = await refetchPaymentPeriods();
-          const newMatchingPeriod = updatedPeriods.data?.find(period => {
-            const startDate = new Date(period.period_start_date).toISOString().split('T')[0];
-            const endDate = new Date(period.period_end_date).toISOString().split('T')[0];
-            return transactionDateStr >= startDate && transactionDateStr <= endDate;
-          });
-          
-          if (newMatchingPeriod) {
-            form.setValue('payment_period_id', newMatchingPeriod.id);
-          }
-        }
-      } catch (error) {
-        console.error('Error generating payment periods:', error);
-      }
-    };
-
-    handleDateChange();
-  }, [transactionDate, paymentPeriods, form, userCompany]);
+    if (matchingPeriod) {
+      form.setValue('payment_period_id', matchingPeriod.id);
+    } else {
+      // Si no hay período, limpiar la selección para que el usuario vea que no existe
+      form.setValue('payment_period_id', '');
+    }
+  }, [transactionDate, paymentPeriods, form]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
