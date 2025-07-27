@@ -466,45 +466,47 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-foreground border-b pb-2">Información de Pago</h4>
               
-              <FormField
-                control={form.control}
-                name="driver_card_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tarjeta de Combustible</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="invoice_number"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Número de Factura</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar tarjeta" />
-                        </SelectTrigger>
+                        <Input placeholder="INV-123456" {...field} />
                       </FormControl>
-                      <SelectContent>
-                        {driverCards.map((card) => (
-                          <SelectItem key={card.id} value={card.id}>
-                            {card.card_provider.toUpperCase()} ****{card.card_number_last_four}
-                            {card.card_identifier ? ` (${card.card_identifier})` : ''}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-               <FormField
-                control={form.control}
-                name="invoice_number"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Número de Factura</FormLabel>
-                    <FormControl>
-                      <Input placeholder="INV-123456" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="driver_card_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tarjeta de Combustible</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Seleccionar tarjeta" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {driverCards.map((card) => (
+                            <SelectItem key={card.id} value={card.id}>
+                              {card.card_provider.toUpperCase()} ****{card.card_number_last_four}
+                              {card.card_identifier ? ` (${card.card_identifier})` : ''}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
 
