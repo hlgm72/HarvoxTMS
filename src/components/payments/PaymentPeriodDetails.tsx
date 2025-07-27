@@ -19,6 +19,7 @@ interface DriverCalculation {
   id: string;
   driver_user_id: string;
   gross_earnings: number;
+  fuel_expenses: number;
   total_deductions: number;
   other_income: number;
   total_income: number;
@@ -112,6 +113,8 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
   const totalDrivers = driverCalculations.length;
   const driversWithNegativeBalance = driverCalculations.filter(d => d.has_negative_balance).length;
   const totalGrossEarnings = driverCalculations.reduce((sum, d) => sum + (d.gross_earnings || 0), 0);
+  const totalOtherIncome = driverCalculations.reduce((sum, d) => sum + (d.other_income || 0), 0);
+  const totalFuelExpenses = driverCalculations.reduce((sum, d) => sum + (d.fuel_expenses || 0), 0);
   const totalDeductions = driverCalculations.reduce((sum, d) => sum + (d.total_deductions || 0), 0);
   const totalNetPayment = driverCalculations.reduce((sum, d) => sum + (d.net_payment || 0), 0);
 
@@ -166,7 +169,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
       )}
 
       {/* Resumen financiero */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ingresos Brutos</CardTitle>
@@ -181,7 +184,19 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Deducciones</CardTitle>
+            <CardTitle className="text-sm font-medium">Otros Ingresos</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-success">
+              ${totalOtherIncome.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Deducciones</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -193,23 +208,28 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pago Neto Total</CardTitle>
+            <CardTitle className="text-sm font-medium">Combustible</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              ${totalNetPayment.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+            <div className="text-2xl font-bold text-warning">
+              -${totalFuelExpenses.toLocaleString('es-US', { minimumFractionDigits: 2 })}
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Conductores</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Pago Neto</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalDrivers}</div>
+            <div className="text-2xl font-bold">
+              ${totalNetPayment.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {totalDrivers} conductores
+            </div>
             {driversWithNegativeBalance > 0 && (
               <p className="text-xs text-destructive mt-1">
                 {driversWithNegativeBalance} con balance negativo
@@ -248,11 +268,17 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                 )}
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
                   <div>
                     <p className="text-muted-foreground">Ingresos Brutos</p>
                     <p className="font-semibold">
                       ${(calc.gross_earnings || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Otros Ingresos</p>
+                    <p className="font-semibold text-success">
+                      ${(calc.other_income || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                   <div>
@@ -262,9 +288,9 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                     </p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Otros Ingresos</p>
-                    <p className="font-semibold">
-                      ${(calc.other_income || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                    <p className="text-muted-foreground">Combustible</p>
+                    <p className="font-semibold text-warning">
+                      -${(calc.fuel_expenses || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                   <div>

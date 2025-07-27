@@ -43,6 +43,7 @@ export function usePaymentPeriodSummary(periodId?: string) {
       const summary = driverCalculations.reduce((acc, calc) => {
         acc.gross_earnings += calc.gross_earnings || 0;
         acc.other_income += calc.other_income || 0;
+        acc.fuel_expenses += calc.fuel_expenses || 0;
         acc.deductions += calc.total_deductions || 0;
         acc.net_payment += calc.net_payment || 0;
         
@@ -54,7 +55,7 @@ export function usePaymentPeriodSummary(periodId?: string) {
       }, {
         gross_earnings: 0,
         other_income: 0,
-        fuel_expenses: 0, // Se incluye en deductions
+        fuel_expenses: 0,
         deductions: 0,
         net_payment: 0,
         drivers_with_negative_balance: 0,
@@ -118,6 +119,7 @@ export function useAllPaymentPeriodsSummary(companyId?: string) {
         if (summary) {
           summary.gross_earnings += calc.gross_earnings || 0;
           summary.other_income += calc.other_income || 0;
+          summary.fuel_expenses += calc.fuel_expenses || 0;
           summary.deductions += calc.total_deductions || 0;
           summary.net_payment += calc.net_payment || 0;
           summary.driver_count++;

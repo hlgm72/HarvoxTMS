@@ -508,6 +508,7 @@ export type Database = {
           company_payment_period_id: string
           created_at: string
           driver_user_id: string
+          fuel_expenses: number
           gross_earnings: number
           has_negative_balance: boolean
           id: string
@@ -524,6 +525,7 @@ export type Database = {
           company_payment_period_id: string
           created_at?: string
           driver_user_id: string
+          fuel_expenses?: number
           gross_earnings?: number
           has_negative_balance?: boolean
           id?: string
@@ -540,6 +542,7 @@ export type Database = {
           company_payment_period_id?: string
           created_at?: string
           driver_user_id?: string
+          fuel_expenses?: number
           gross_earnings?: number
           has_negative_balance?: boolean
           id?: string
