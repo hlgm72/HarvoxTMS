@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatDateSafe } from '@/lib/dateFormatting';
 import { cn } from '@/lib/utils';
 import { useCreateFuelExpense } from '@/hooks/useFuelExpenses';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
@@ -395,13 +395,13 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                           <SelectTrigger className={cn(
                             predictedPeriod && "border-blue-300 bg-blue-50"
                           )}>
-                            <SelectValue 
-                              placeholder={
-                                predictedPeriod 
-                                  ? `Se creará: ${format(new Date(predictedPeriod.start), 'dd/MM/yyyy')} - ${format(new Date(predictedPeriod.end), 'dd/MM/yyyy')}`
-                                  : "Se seleccionará automáticamente"
-                              } 
-                            />
+                             <SelectValue 
+                               placeholder={
+                                 predictedPeriod 
+                                   ? `Se creará: ${formatDateSafe(predictedPeriod.start, 'dd/MM/yyyy')} - ${formatDateSafe(predictedPeriod.end, 'dd/MM/yyyy')}`
+                                   : "Se seleccionará automáticamente"
+                               } 
+                             />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
