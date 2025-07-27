@@ -302,12 +302,6 @@ export default function PaymentReports() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {/* DEBUG: Mostrar información de estado */}
-                        <div className="text-xs bg-muted/50 p-1 rounded">
-                          Status: {calculation.payment_status || 'undefined'} | 
-                          Calculated: {calculation.calculated_at ? 'Yes' : 'No'}
-                        </div>
-                        
                         {calculation.payment_status !== 'paid' && calculation.calculated_at && (
                           <Button
                             variant="default"
@@ -318,20 +312,6 @@ export default function PaymentReports() {
                           >
                             <DollarSign className="h-4 w-4 mr-2" />
                             Marcar Pagado
-                          </Button>
-                        )}
-                        
-                        {/* Botón para calcular si no está calculado */}
-                        {!calculation.calculated_at && (
-                          <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => handleCalculatePeriod(calculation)}
-                            disabled={paymentLoading}
-                            className="bg-blue-600 hover:bg-blue-700"
-                          >
-                            <Calculator className="h-4 w-4 mr-2" />
-                            {paymentLoading ? "Calculando..." : "Calcular Período"}
                           </Button>
                         )}
                         <Button
