@@ -273,20 +273,20 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     align: 'center'
   });
   
-  addText(weekInfo.week, col2X + colWidth/2, currentY + 8, {
+  addText(weekInfo.week, col2X + colWidth/2, currentY + 6, {
     fontSize: 12,
     fontStyle: 'bold',
     color: colors.text,
     align: 'center'
   });
   
-  addText(weekInfo.dateRange, col2X + colWidth/2, currentY + 14, {
+  addText(weekInfo.dateRange, col2X + colWidth/2, currentY + 11, {
     fontSize: 10,
     color: colors.text,
     align: 'center'
   });
   
-  addText(weekInfo.paymentDate, col2X + colWidth/2, currentY + 20, {
+  addText(weekInfo.paymentDate, col2X + colWidth/2, currentY + 16, {
     fontSize: 9,
     color: colors.text,
     align: 'center'
