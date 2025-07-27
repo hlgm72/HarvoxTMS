@@ -65,6 +65,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
   const { data: paymentPeriods = [] } = useCompanyPaymentPeriods(userCompany?.company_id);
   const { equipment } = useEquipment();
   const createMutation = useCreateFuelExpense();
+  const [isDatePickerOpen, setIsDatePickerOpen] = React.useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -176,7 +177,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel>Fecha de Transacción *</FormLabel>
-                      <Popover>
+                      <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
@@ -254,7 +255,10 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                             <Calendar
                               mode="single"
                               selected={field.value}
-                              onSelect={field.onChange}
+                              onSelect={(date) => {
+                                field.onChange(date);
+                                setIsDatePickerOpen(false);
+                              }}
                               month={field.value}
                               onMonthChange={field.onChange}
                               className="p-0 pointer-events-auto"
