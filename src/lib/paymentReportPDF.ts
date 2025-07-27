@@ -167,7 +167,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   };
 
   // === HEADER LIMPIO COMO LA IMAGEN ===
-  currentY = 30;
+  currentY = 20;
   
   // Logo/Nombre de la empresa (izquierda)
   addText('HG', margin, currentY, {
@@ -274,7 +274,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     });
   }
 
-  currentY += 55;
+  currentY += 45;
 
   // === CAJAS DE RESUMEN SUPERIOR ===
   const boxWidth = (pageWidth - margin*2 - 15) / 4; // 4 cajas con espacios
@@ -296,14 +296,14 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   addColoredBox(margin + (boxWidth + 5) * 3, currentY, boxWidth, boxHeight, colors.lightOrange, colors.darkGray,
     'Fuel Expenses', formatCurrency(-data.period.fuel_expenses));
 
-  currentY += boxHeight + 10;
+  currentY += boxHeight + 8;
 
   // Net Pay (Caja grande azul)
   const netPayWidth = pageWidth - margin*2;
   addColoredBox(margin, currentY, netPayWidth, 15, colors.lightBlue, colors.primary,
     'Net Pay', formatCurrency(data.period.net_payment));
 
-  currentY += 25;
+  currentY += 20;
 
   // === LOADS COMPLETED ===
   addText('Loads completed', margin, currentY, {
