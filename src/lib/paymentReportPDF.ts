@@ -67,7 +67,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const doc = new jsPDF('p', 'mm', 'a4');
   const pageWidth = doc.internal.pageSize.width;
   const pageHeight = doc.internal.pageSize.height;
-  const margin = 15;
+  const margin = 20;
   let currentY = margin;
 
   // Función para convertir RGB a array para jsPDF
@@ -80,24 +80,27 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     ] : [0, 0, 0];
   };
 
-  // Colores del diseño
+  // Colores del diseño mejorados
   const colors = {
-    green: '#22c55e',
-    blue: '#3b82f6', 
-    red: '#ef4444',
-    orange: '#f97316',
-    lightBlue: '#dbeafe',
-    lightGreen: '#dcfce7',
-    lightRed: '#fecaca',
-    lightOrange: '#fed7aa',
-    gray: '#6b7280',
-    darkGray: '#374151',
-    lightGray: '#f3f4f6'
+    primary: '#1e40af',     // Azul principal
+    success: '#16a34a',     // Verde
+    warning: '#ea580c',     // Naranja
+    danger: '#dc2626',      // Rojo
+    lightBlue: '#dbeafe',   
+    lightGreen: '#dcfce7',  
+    lightOrange: '#fed7aa', 
+    lightRed: '#fecaca',    
+    gray: '#6b7280',        
+    darkGray: '#1f2937',    
+    lightGray: '#f9fafb',   
+    border: '#e5e7eb',      
+    text: '#374151',        
+    textLight: '#9ca3af'    
   };
 
-  // Helper functions
+  // Helper functions mejoradas
   const addText = (text: string, x: number, y: number, options: any = {}) => {
-    const { fontSize = 10, fontStyle = 'normal', color = '#000000', align = 'left' } = options;
+    const { fontSize = 10, fontStyle = 'normal', color = colors.text, align = 'left' } = options;
     
     doc.setFontSize(fontSize);
     doc.setFont('helvetica', fontStyle);
@@ -106,15 +109,25 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     doc.text(text, x, y, { align: align as any });
   };
 
+  const addBorder = (x: number, y: number, width: number, height: number, color: string = colors.border) => {
+    const borderRgb = hexToRgb(color);
+    doc.setDrawColor(borderRgb[0], borderRgb[1], borderRgb[2]);
+    doc.setLineWidth(0.5);
+    doc.rect(x, y, width, height);
+  };
+
   const addColoredBox = (x: number, y: number, width: number, height: number, bgColor: string, textColor: string, title: string, value: string) => {
     // Fondo de color
     const bgRgb = hexToRgb(bgColor);
     doc.setFillColor(bgRgb[0], bgRgb[1], bgRgb[2]);
     doc.rect(x, y, width, height, 'F');
     
+    // Borde sutil
+    addBorder(x, y, width, height, colors.border);
+    
     // Título
     addText(title, x + width/2, y + height/3, {
-      fontSize: 9,
+      fontSize: 10,
       fontStyle: 'normal',
       color: textColor,
       align: 'center'
@@ -122,7 +135,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     
     // Valor
     addText(value, x + width/2, y + height*0.7, {
-      fontSize: 14,
+      fontSize: 16,
       fontStyle: 'bold',
       color: textColor,
       align: 'center'
@@ -153,90 +166,103 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     };
   };
 
-  // === HEADER ===
-  currentY = 20;
+  // === HEADER MEJORADO ===
+  currentY = 25;
   
-  // Logo de la empresa (izquierda)
+  // Línea superior decorativa
+  const headerBgRgb = hexToRgb(colors.lightBlue);
+  doc.setFillColor(headerBgRgb[0], headerBgRgb[1], headerBgRgb[2]);
+  doc.rect(0, 0, pageWidth, 8, 'F');
+  
+  // Logo de la empresa (izquierda) - Mejorado
   addText(data.company.name || 'HG Transport LLC', margin, currentY, {
-    fontSize: 16,
+    fontSize: 18,
     fontStyle: 'bold',
-    color: colors.darkGray
+    color: colors.primary
   });
   
   if (data.company.address) {
-    addText(data.company.address, margin, currentY + 6, {
-      fontSize: 8,
-      color: colors.gray
+    addText(data.company.address, margin, currentY + 8, {
+      fontSize: 9,
+      color: colors.textLight
     });
   }
   
   if (data.company.phone) {
-    addText(data.company.phone, margin, currentY + 12, {
-      fontSize: 8,
-      color: colors.gray
+    addText(`Tel: ${data.company.phone}`, margin, currentY + 15, {
+      fontSize: 9,
+      color: colors.textLight
     });
   }
   
   if (data.company.email) {
-    addText(data.company.email, margin, currentY + 18, {
-      fontSize: 8,
-      color: colors.gray
+    addText(`Email: ${data.company.email}`, margin, currentY + 22, {
+      fontSize: 9,
+      color: colors.textLight
     });
   }
 
-  // Título central
+  // Título central mejorado
   const weekInfo = formatWeekInfo();
-  addText('Driver Pay Report', pageWidth/2, currentY, {
-    fontSize: 16,
+  addText('DRIVER PAY REPORT', pageWidth/2, currentY, {
+    fontSize: 20,
     fontStyle: 'bold',
     color: colors.darkGray,
     align: 'center'
   });
   
-  addText(weekInfo.week, pageWidth/2, currentY + 8, {
-    fontSize: 12,
-    color: colors.darkGray,
+  addText(weekInfo.week, pageWidth/2, currentY + 10, {
+    fontSize: 14,
+    fontStyle: 'bold',
+    color: colors.primary,
     align: 'center'
   });
   
-  addText(weekInfo.dateRange, pageWidth/2, currentY + 16, {
-    fontSize: 10,
-    color: colors.gray,
+  addText(weekInfo.dateRange, pageWidth/2, currentY + 20, {
+    fontSize: 11,
+    color: colors.text,
     align: 'center'
   });
   
-  addText(weekInfo.paymentDate, pageWidth/2, currentY + 24, {
+  addText(weekInfo.paymentDate, pageWidth/2, currentY + 30, {
     fontSize: 10,
-    color: colors.gray,
+    color: colors.textLight,
     align: 'center'
   });
 
-  // Información del conductor (derecha)
-  const rightX = pageWidth - margin - 60;
-  addText(data.driver.name, rightX, currentY, {
-    fontSize: 12,
+  // Información del conductor (derecha) - Mejorada
+  const rightX = pageWidth - margin - 70;
+  addText('DRIVER INFO', rightX, currentY - 5, {
+    fontSize: 10,
+    fontStyle: 'bold',
+    color: colors.textLight
+  });
+  
+  addText(data.driver.name, rightX, currentY + 5, {
+    fontSize: 14,
     fontStyle: 'bold',
     color: colors.darkGray
   });
   
   if (data.driver.license) {
-    addText(`Driver License: ${data.driver.license}`, rightX, currentY + 6, {
-      fontSize: 8,
-      color: colors.gray
+    addText(`License: ${data.driver.license}`, rightX, currentY + 15, {
+      fontSize: 9,
+      color: colors.text
     });
   }
   
   if (data.driver.address) {
-    addText(data.driver.address, rightX, currentY + 12, {
+    addText(data.driver.address, rightX, currentY + 22, {
       fontSize: 8,
-      color: colors.gray
+      color: colors.textLight
     });
   }
   
   if (data.driver.phone || data.driver.email) {
-    addText(`${data.driver.phone || ''} | ${data.driver.email || ''}`, rightX, currentY + 18, {
+    const contactInfo = [data.driver.phone, data.driver.email].filter(Boolean).join(' | ');
+    addText(contactInfo, rightX, currentY + 29, {
       fontSize: 8,
-      color: colors.gray
+      color: colors.textLight
     });
   }
 
@@ -266,7 +292,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   // Net Pay (Caja grande azul)
   const netPayWidth = pageWidth - margin*2;
-  addColoredBox(margin, currentY, netPayWidth, 15, colors.lightBlue, colors.blue,
+  addColoredBox(margin, currentY, netPayWidth, 15, colors.lightBlue, colors.primary,
     'Net Pay', formatCurrency(data.period.net_payment));
 
   currentY += 25;
@@ -392,7 +418,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       addText(formatCurrency(-deduction.amount), col1X + colWidth - 2, currentY, {
         fontSize: 9,
-        color: colors.red,
+        color: colors.danger,
         align: 'right'
       });
       
@@ -426,7 +452,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       addText(formatCurrency(-expense.amount), col2X + colWidth - 2, col2Y, {
         fontSize: 9,
-        color: colors.red,
+        color: colors.danger,
         align: 'right'
       });
       
@@ -475,7 +501,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       addText(formatCurrency(-fuel.total_amount), pageWidth - margin - 2, currentY, {
         fontSize: 9,
-        color: colors.red,
+        color: colors.danger,
         align: 'right'
       });
       
@@ -523,13 +549,13 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   addText('Net Pay', margin + 2, currentY + 6, {
     fontSize: 11,
     fontStyle: 'bold',
-    color: colors.blue
+    color: colors.primary
   });
   
   addText(formatCurrency(data.period.net_payment), margin + 78, currentY + 6, {
     fontSize: 11,
     fontStyle: 'bold',
-    color: colors.blue,
+    color: colors.primary,
     align: 'right'
   });
 
