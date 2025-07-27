@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertTriangle, Calculator, DollarSign, Lock, Play, Users } from "lucide-react";
+import { AlertTriangle, Calculator, DollarSign, Lock, Play, Users, Fuel, TrendingUp, Receipt, CreditCard } from "lucide-react";
 import { formatPaymentPeriod } from '@/lib/dateFormatting';
 import { useFleetNotifications } from "@/components/notifications";
 import { PaymentPeriodAlerts } from "./PaymentPeriodAlerts";
@@ -169,72 +169,84 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
       )}
 
       {/* Resumen financiero */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ingresos Brutos</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ${totalGrossEarnings.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <DollarSign className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Ingresos Brutos</p>
+                <p className="text-lg font-semibold">${totalGrossEarnings.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Otros Ingresos</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-success">
-              ${totalOtherIncome.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-success/10 rounded-lg">
+                <TrendingUp className="h-4 w-4 text-success" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Otros Ingresos</p>
+                <p className="text-lg font-semibold text-success">${totalOtherIncome.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Deducciones</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-destructive">
-              -${totalDeductions.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-destructive/10 rounded-lg">
+                <Receipt className="h-4 w-4 text-destructive" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Deducciones</p>
+                <p className="text-lg font-semibold text-destructive">-${totalDeductions.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Combustible</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-warning">
-              -${totalFuelExpenses.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-warning/10 rounded-lg">
+                <Fuel className="h-4 w-4 text-warning" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Combustible</p>
+                <p className="text-lg font-semibold text-warning">-${totalFuelExpenses.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pago Neto</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ${totalNetPayment.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <CreditCard className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Pago Neto</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-lg font-semibold">${totalNetPayment.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {totalDrivers} conductores
+                </div>
+                {driversWithNegativeBalance > 0 && (
+                  <p className="text-xs text-destructive mt-1">
+                    {driversWithNegativeBalance} con balance negativo
+                  </p>
+                )}
+              </div>
             </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              {totalDrivers} conductores
-            </div>
-            {driversWithNegativeBalance > 0 && (
-              <p className="text-xs text-destructive mt-1">
-                {driversWithNegativeBalance} con balance negativo
-              </p>
-            )}
           </CardContent>
         </Card>
       </div>
