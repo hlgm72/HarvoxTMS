@@ -516,7 +516,9 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                            // Extraer y asignar los últimos 4 dígitos de la tarjeta seleccionada
                            const selectedCard = driverCards.find(card => card.id === value);
                            if (selectedCard) {
-                             form.setValue('card_last_four', selectedCard.card_number_last_five);
+                             // Extraer solo los últimos 4 dígitos del card_number_last_five
+                             const lastFour = selectedCard.card_number_last_five.slice(-4);
+                             form.setValue('card_last_four', lastFour);
                            }
                          }} 
                          value={field.value}

@@ -268,7 +268,7 @@ export function PDFAnalyzer() {
           const sameDate = existingDate === txnDateStr;
           const sameInvoice = existing.invoice_number === transaction.invoice;
           const sameCard = existing.card_last_four?.includes(transaction.card.slice(-4)) || 
-                          existing.card_last_four === transaction.card;
+                          existing.card_last_four === transaction.card.slice(-4);
           const sameAmount = Math.abs(parseFloat(existing.total_amount.toString()) - parseFloat(transaction.total_amt.toString())) < 0.01;
           const sameStation = existing.station_name === transaction.location_name;
           
@@ -458,7 +458,7 @@ export function PDFAnalyzer() {
         total_amount: Number(transaction.total_amt),
         station_name: transaction.location_name,
         station_state: transaction.state,
-        card_last_four: transaction.card,
+        card_last_four: transaction.card.slice(-4),
         invoice_number: transaction.invoice,
         vehicle_id: transaction.vehicle_id,
         status: 'pending',
