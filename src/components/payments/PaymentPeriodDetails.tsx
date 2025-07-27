@@ -55,17 +55,20 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
   const { data: driverCalculations = [], refetch: refetchCalculations } = useQuery({
     queryKey: ['driver-period-calculations', periodId],
     queryFn: async () => {
+      if (!periodId) return [];
+      
       const { data, error } = await supabase
         .from('driver_period_calculations')
         .select(`
           *,
-          profiles:user_profiles!driver_user_id(first_name, last_name)
+          profiles!driver_user_id(first_name, last_name)
         `)
         .eq('company_payment_period_id', periodId);
 
       if (error) throw error;
       return data as any[];
-    }
+    },
+    enabled: !!periodId
   });
 
   const handleProcessPeriod = async () => {

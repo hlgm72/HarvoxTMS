@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Calendar, DollarSign, Users, Plus, TrendingUp, Fuel, Receipt } from "lucide-react";
 import { formatPaymentPeriod } from '@/lib/dateFormatting';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CreateSpecialPeriodDialog } from "./CreateSpecialPeriodDialog";
 import { PaymentPeriodDetails } from "./PaymentPeriodDetails";
 
@@ -87,6 +87,9 @@ export function PaymentPeriodsManager() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Crear Período Especial</DialogTitle>
+              <DialogDescription>
+                Crea un período de pago especial para manejar bonos, deducciones extraordinarias o ajustes específicos.
+              </DialogDescription>
             </DialogHeader>
             <CreateSpecialPeriodDialog 
               onClose={() => setShowCreateDialog(false)}
@@ -261,6 +264,9 @@ export function PaymentPeriodsManager() {
           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Detalles del Período de Pago</DialogTitle>
+              <DialogDescription>
+                Información detallada de ingresos, deducciones y cálculos del período de pago seleccionado.
+              </DialogDescription>
             </DialogHeader>
             <PaymentPeriodDetails 
               periodId={selectedPeriod} 
