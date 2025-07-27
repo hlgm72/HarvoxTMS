@@ -21,6 +21,8 @@ import { useEquipment } from '@/hooks/useEquipment';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useDriverCards } from '@/hooks/useDriverCards';
 import { StateCombobox } from '@/components/ui/StateCombobox';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 
 const formSchema = z.object({
   driver_user_id: z.string().min(1, 'Selecciona un conductor'),
@@ -62,10 +64,11 @@ interface CreateFuelExpenseDialogProps {
 export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpenseDialogProps) {
   const { userCompany } = useCompanyCache();
   const { drivers } = useCompanyDrivers();
-  const { data: paymentPeriods = [] } = useCompanyPaymentPeriods(userCompany?.company_id);
+  const { data: paymentPeriods = [], refetch: refetchPaymentPeriods } = useCompanyPaymentPeriods(userCompany?.company_id);
   const { equipment } = useEquipment();
   const createMutation = useCreateFuelExpense();
   const [isDatePickerOpen, setIsDatePickerOpen] = React.useState(false);
+  const queryClient = useQueryClient();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -139,20 +142,59 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
 
   // Auto-select payment period based on transaction date
   React.useEffect(() => {
-    if (transactionDate && paymentPeriods.length > 0) {
+    const handleDateChange = async () => {
+      if (!transactionDate || !userCompany?.company_id) return;
+      
       const transactionDateStr = transactionDate.toISOString().split('T')[0];
       
+      // First, check if we already have a matching period
       const matchingPeriod = paymentPeriods.find(period => {
         const startDate = new Date(period.period_start_date).toISOString().split('T')[0];
         const endDate = new Date(period.period_end_date).toISOString().split('T')[0];
         return transactionDateStr >= startDate && transactionDateStr <= endDate;
       });
 
-      if (matchingPeriod && !form.getValues('payment_period_id')) {
+      if (matchingPeriod) {
         form.setValue('payment_period_id', matchingPeriod.id);
+        return;
       }
-    }
-  }, [transactionDate, paymentPeriods, form]);
+
+      // If no matching period found, try to generate periods for the date
+      try {
+        const { data, error } = await supabase.rpc('generate_company_payment_periods', {
+          company_id_param: userCompany.company_id,
+          from_date: new Date(transactionDate.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7 days before
+          to_date: new Date(transactionDate.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]  // 30 days after
+        });
+
+        if (error) {
+          console.error('Error generating payment periods:', error);
+          return;
+        }
+
+        if (data && typeof data === 'object' && 'success' in data && data.success) {
+          // Refetch payment periods to get the newly created ones
+          await refetchPaymentPeriods();
+          
+          // Try to find and select the matching period again
+          const updatedPeriods = await refetchPaymentPeriods();
+          const newMatchingPeriod = updatedPeriods.data?.find(period => {
+            const startDate = new Date(period.period_start_date).toISOString().split('T')[0];
+            const endDate = new Date(period.period_end_date).toISOString().split('T')[0];
+            return transactionDateStr >= startDate && transactionDateStr <= endDate;
+          });
+          
+          if (newMatchingPeriod) {
+            form.setValue('payment_period_id', newMatchingPeriod.id);
+          }
+        }
+      } catch (error) {
+        console.error('Error generating payment periods:', error);
+      }
+    };
+
+    handleDateChange();
+  }, [transactionDate, paymentPeriods, form, userCompany]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
