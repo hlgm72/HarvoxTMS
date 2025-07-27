@@ -634,9 +634,9 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
               </div>
             </div>
 
-            {/* SECCIÓN 3: Información de la Estación */}
+            {/* SECCIÓN 3: Información Adicional */}
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-foreground border-b pb-2">Información de la Estación</h4>
+              <h4 className="text-sm font-semibold text-foreground border-b pb-2">Información Adicional</h4>
               
               <div className="grid grid-cols-3 gap-4">
                 <FormField
