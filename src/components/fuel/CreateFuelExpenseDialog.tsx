@@ -18,6 +18,7 @@ import { useCreateFuelExpense } from '@/hooks/useFuelExpenses';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { useCompanyPaymentPeriods } from '@/hooks/useCompanyPaymentPeriods';
 import { useEquipment } from '@/hooks/useEquipment';
+import { useDriverEquipment } from '@/hooks/useDriverEquipment';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useDriverCards } from '@/hooks/useDriverCards';
 import { StateCombobox } from '@/components/ui/StateCombobox';
@@ -80,13 +81,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
 
   const selectedDriverId = form.watch('driver_user_id');
   const { data: driverCards = [] } = useDriverCards(selectedDriverId);
-  
-  // Filtrar vehículos por conductor seleccionado
-  const filteredEquipment = React.useMemo(() => {
-    if (!selectedDriverId) return equipment;
-    // Aquí podrías filtrar por asignaciones activas si tienes esa relación
-    return equipment;
-  }, [selectedDriverId, equipment]);
+  const { data: driverEquipment = [] } = useDriverEquipment(selectedDriverId);
 
   const onSubmit = async (data: FormData) => {
     // Si no hay período seleccionado, generar uno antes de guardar
@@ -442,7 +437,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {filteredEquipment.filter(eq => eq.equipment_type === 'truck').map((eq) => (
+                          {driverEquipment.filter(eq => eq.equipment_type === 'truck').map((eq) => (
                             <SelectItem key={eq.id} value={eq.id}>
                               🚛 #{eq.equipment_number} - {eq.make} {eq.model}
                             </SelectItem>
