@@ -558,12 +558,16 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                     <FormItem>
                       <FormLabel>Precio/Galón *</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          step="0.001"
-                          placeholder="0.000"
-                          {...field}
-                        />
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
+                          <Input
+                            type="number"
+                            step="0.001"
+                            placeholder="0.000"
+                            className="pl-8"
+                            {...field}
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -577,14 +581,17 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                     <FormItem>
                       <FormLabel>Monto Bruto</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          placeholder="0.00"
-                          {...field}
-                          readOnly
-                          className="bg-muted"
-                        />
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            className="pl-8 bg-muted"
+                            {...field}
+                            readOnly
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -600,12 +607,16 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                     <FormItem>
                       <FormLabel>Descuentos</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          placeholder="0.00"
-                          {...field}
-                        />
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            className="pl-8"
+                            {...field}
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -619,12 +630,16 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                     <FormItem>
                       <FormLabel>Comisiones</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          placeholder="0.00"
-                          {...field}
-                        />
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            className="pl-8"
+                            {...field}
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -638,14 +653,17 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                     <FormItem>
                       <FormLabel>Total *</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          placeholder="0.00"
-                          {...field}
-                          readOnly
-                          className="bg-muted"
-                        />
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            className="pl-8 bg-muted"
+                            {...field}
+                            readOnly
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
