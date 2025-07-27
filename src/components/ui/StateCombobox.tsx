@@ -73,7 +73,6 @@ export function StateCombobox({
           disabled={disabled || loading}
         >
           <div className="flex items-center">
-            <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
             {selectedState ? selectedState.name : placeholder}
           </div>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
