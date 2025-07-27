@@ -2300,6 +2300,104 @@ export type Database = {
         }
         Relationships: []
       }
+      us_cities: {
+        Row: {
+          county_id: string | null
+          created_at: string
+          id: string
+          name: string
+          state_id: string
+          updated_at: string
+        }
+        Insert: {
+          county_id?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          state_id: string
+          updated_at?: string
+        }
+        Update: {
+          county_id?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          state_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "us_cities_county_id_fkey"
+            columns: ["county_id"]
+            isOneToOne: false
+            referencedRelation: "us_counties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "us_cities_state_id_fkey"
+            columns: ["state_id"]
+            isOneToOne: false
+            referencedRelation: "us_states"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      us_counties: {
+        Row: {
+          created_at: string
+          fips_code: string | null
+          id: string
+          name: string
+          state_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          fips_code?: string | null
+          id?: string
+          name: string
+          state_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          fips_code?: string | null
+          id?: string
+          name?: string
+          state_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "us_counties_state_id_fkey"
+            columns: ["state_id"]
+            isOneToOne: false
+            referencedRelation: "us_states"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      us_states: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_company_roles: {
         Row: {
           company_id: string
@@ -2396,6 +2494,80 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      zip_city_links: {
+        Row: {
+          city_id: string
+          created_at: string
+          is_preferred: boolean | null
+          zip: string
+        }
+        Insert: {
+          city_id: string
+          created_at?: string
+          is_preferred?: boolean | null
+          zip: string
+        }
+        Update: {
+          city_id?: string
+          created_at?: string
+          is_preferred?: boolean | null
+          zip?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zip_city_links_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "us_cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "zip_city_links_zip_fkey"
+            columns: ["zip"]
+            isOneToOne: false
+            referencedRelation: "zip_codes"
+            referencedColumns: ["zip"]
+          },
+        ]
+      }
+      zip_codes: {
+        Row: {
+          created_at: string
+          latitude: number | null
+          longitude: number | null
+          preferred_city_id: string | null
+          updated_at: string
+          zip: string
+          zip_type: string | null
+        }
+        Insert: {
+          created_at?: string
+          latitude?: number | null
+          longitude?: number | null
+          preferred_city_id?: string | null
+          updated_at?: string
+          zip: string
+          zip_type?: string | null
+        }
+        Update: {
+          created_at?: string
+          latitude?: number | null
+          longitude?: number | null
+          preferred_city_id?: string | null
+          updated_at?: string
+          zip?: string
+          zip_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zip_codes_preferred_city_id_fkey"
+            columns: ["preferred_city_id"]
+            isOneToOne: false
+            referencedRelation: "us_cities"
             referencedColumns: ["id"]
           },
         ]
