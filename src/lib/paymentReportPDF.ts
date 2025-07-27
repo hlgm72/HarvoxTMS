@@ -166,107 +166,115 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     };
   };
 
-  // === HEADER MEJORADO ===
-  currentY = 25;
+  // === HEADER LIMPIO COMO LA IMAGEN ===
+  currentY = 30;
   
-  // Línea superior decorativa
-  const headerBgRgb = hexToRgb(colors.lightBlue);
-  doc.setFillColor(headerBgRgb[0], headerBgRgb[1], headerBgRgb[2]);
-  doc.rect(0, 0, pageWidth, 8, 'F');
-  
-  // Logo de la empresa (izquierda) - Mejorado
-  addText(data.company.name || 'HG Transport LLC', margin, currentY, {
-    fontSize: 18,
+  // Logo/Nombre de la empresa (izquierda)
+  addText('HG', margin, currentY, {
+    fontSize: 28,
     fontStyle: 'bold',
     color: colors.primary
   });
   
-  if (data.company.address) {
-    addText(data.company.address, margin, currentY + 8, {
-      fontSize: 9,
-      color: colors.textLight
-    });
-  }
+  addText(data.company.name || 'HG Transport LLC', margin + 20, currentY, {
+    fontSize: 16,
+    fontStyle: 'bold',
+    color: colors.darkGray
+  });
   
-  if (data.company.phone) {
-    addText(`Tel: ${data.company.phone}`, margin, currentY + 15, {
-      fontSize: 9,
-      color: colors.textLight
-    });
-  }
+  // Información de la empresa
+  addText(data.company.address || '10402 Sun River Falls Dr', margin, currentY + 10, {
+    fontSize: 9,
+    color: colors.text
+  });
   
-  if (data.company.email) {
-    addText(`Email: ${data.company.email}`, margin, currentY + 22, {
-      fontSize: 9,
-      color: colors.textLight
-    });
-  }
+  addText('Humble, TX, 77396', margin, currentY + 18, {
+    fontSize: 9,
+    color: colors.text
+  });
+  
+  addText(data.company.phone || '(281) 713-3044', margin, currentY + 26, {
+    fontSize: 9,
+    color: colors.text
+  });
+  
+  addText(data.company.email || 'hgtransport16@gmail.com', margin, currentY + 34, {
+    fontSize: 9,
+    color: colors.text
+  });
 
-  // Título central mejorado
+  // Título central exacto como la imagen
   const weekInfo = formatWeekInfo();
-  addText('DRIVER PAY REPORT', pageWidth/2, currentY, {
-    fontSize: 20,
+  addText('Driver Pay Report', pageWidth/2, currentY, {
+    fontSize: 18,
     fontStyle: 'bold',
     color: colors.darkGray,
     align: 'center'
   });
   
-  addText(weekInfo.week, pageWidth/2, currentY + 10, {
-    fontSize: 14,
+  addText(weekInfo.week, pageWidth/2, currentY + 12, {
+    fontSize: 12,
     fontStyle: 'bold',
-    color: colors.primary,
+    color: colors.text,
     align: 'center'
   });
   
-  addText(weekInfo.dateRange, pageWidth/2, currentY + 20, {
+  addText(weekInfo.dateRange, pageWidth/2, currentY + 22, {
     fontSize: 11,
     color: colors.text,
     align: 'center'
   });
   
-  addText(weekInfo.paymentDate, pageWidth/2, currentY + 30, {
+  addText(weekInfo.paymentDate, pageWidth/2, currentY + 32, {
     fontSize: 10,
-    color: colors.textLight,
+    color: colors.text,
     align: 'center'
   });
 
-  // Información del conductor (derecha) - Mejorada
-  const rightX = pageWidth - margin - 70;
-  addText('DRIVER INFO', rightX, currentY - 5, {
-    fontSize: 10,
-    fontStyle: 'bold',
-    color: colors.textLight
-  });
-  
-  addText(data.driver.name, rightX, currentY + 5, {
+  // Información del conductor (derecha) exacta como la imagen
+  const rightX = pageWidth - margin - 80;
+  addText(data.driver.name, rightX, currentY, {
     fontSize: 14,
     fontStyle: 'bold',
     color: colors.darkGray
   });
   
   if (data.driver.license) {
-    addText(`License: ${data.driver.license}`, rightX, currentY + 15, {
+    addText(`Driver License: ${data.driver.license}`, rightX, currentY + 10, {
       fontSize: 9,
       color: colors.text
     });
   }
   
   if (data.driver.address) {
-    addText(data.driver.address, rightX, currentY + 22, {
-      fontSize: 8,
-      color: colors.textLight
+    // Dividir la dirección en líneas si es muy larga
+    const addressParts = data.driver.address.split(',');
+    addText(addressParts[0] || data.driver.address, rightX, currentY + 18, {
+      fontSize: 9,
+      color: colors.text
     });
+    
+    if (addressParts.length > 1) {
+      addText(addressParts.slice(1).join(',').trim(), rightX, currentY + 26, {
+        fontSize: 9,
+        color: colors.text
+      });
+    }
   }
   
-  if (data.driver.phone || data.driver.email) {
-    const contactInfo = [data.driver.phone, data.driver.email].filter(Boolean).join(' | ');
-    addText(contactInfo, rightX, currentY + 29, {
+  if (data.driver.phone && data.driver.email) {
+    addText(`${data.driver.phone} | ${data.driver.email}`, rightX, currentY + 34, {
       fontSize: 8,
-      color: colors.textLight
+      color: colors.text
+    });
+  } else if (data.driver.phone || data.driver.email) {
+    addText(data.driver.phone || data.driver.email, rightX, currentY + 34, {
+      fontSize: 8,
+      color: colors.text
     });
   }
 
-  currentY += 40;
+  currentY += 55;
 
   // === CAJAS DE RESUMEN SUPERIOR ===
   const boxWidth = (pageWidth - margin*2 - 15) / 4; // 4 cajas con espacios
