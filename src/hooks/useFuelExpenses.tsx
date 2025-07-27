@@ -32,7 +32,6 @@ export interface CreateFuelExpenseData {
   gross_amount?: number;
   discount_amount?: number;
   fees?: number;
-  card_last_four?: string;
   invoice_number?: string;
 }
 

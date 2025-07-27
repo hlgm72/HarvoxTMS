@@ -40,7 +40,6 @@ const formSchema = z.object({
   // Información de pago/tarjeta
   driver_card_id: z.string().optional(),
   fuel_card_number: z.string().optional(),
-  card_last_four: z.string().max(4).optional(),
   invoice_number: z.string().optional(),
   
   // Desglose de costos (opcional)
@@ -94,7 +93,6 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       
       // Información de pago/tarjeta
       fuel_card_number: data.fuel_card_number,
-      card_last_four: data.card_last_four,
       invoice_number: data.invoice_number,
       
       // Desglose de costos
@@ -157,45 +155,72 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-foreground border-b pb-2">Información Básica</h4>
               
-              <FormField
-                control={form.control}
-                name="transaction_date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Fecha de Transacción *</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="transaction_date"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Fecha de Transacción *</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Seleccionar fecha</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                            className="p-3 pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="payment_period_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Período de Pago</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Seleccionar fecha</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Se seleccionará automáticamente" />
+                          </SelectTrigger>
                         </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
-                          className="p-3 pointer-events-auto"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                        <SelectContent>
+                          {paymentPeriods.map((period) => (
+                            <SelectItem key={period.id} value={period.id}>
+                              {format(new Date(period.period_start_date), 'dd/MM/yyyy')} - {format(new Date(period.period_end_date), 'dd/MM/yyyy')}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <FormField
@@ -248,31 +273,6 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                   )}
                 />
               </div>
-
-              <FormField
-                control={form.control}
-                name="payment_period_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Período de Pago</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Se seleccionará automáticamente" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {paymentPeriods.map((period) => (
-                          <SelectItem key={period.id} value={period.id}>
-                            {format(new Date(period.period_start_date), 'dd/MM/yyyy')} - {format(new Date(period.period_end_date), 'dd/MM/yyyy')}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
 
             {/* SECCIÓN 2: Detalles del Combustible */}
@@ -433,39 +433,19 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="invoice_number"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Número de Factura</FormLabel>
-                      <FormControl>
-                        <Input placeholder="INV-123456" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="card_last_four"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Últimos 4 dígitos</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="1234" 
-                          maxLength={4}
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+               <FormField
+                control={form.control}
+                name="invoice_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Número de Factura</FormLabel>
+                    <FormControl>
+                      <Input placeholder="INV-123456" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             {/* SECCIÓN 5: Desglose de Costos (Opcional) */}
