@@ -18,6 +18,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Layout } from '@/components/layout/Layout';
 import { useFleetNotifications } from '@/components/notifications';
+import { getTodayInUserTimeZone } from '@/lib/dateFormatting';
 // import { useFleetNotifications } from '@/components/notifications'; // Temporarily disabled due to provider context issue
 import { createTextHandlers, handlePhoneInput } from '@/lib/textUtils';
 import { useTranslation } from 'react-i18next';
@@ -166,7 +167,7 @@ export default function SuperAdminDashboard() {
           state_id: 'TX',
           zip_code: '',
           status: 'active',
-          contract_start_date: new Date().toISOString().split('T')[0],
+          contract_start_date: getTodayInUserTimeZone(),
         }])
         .select()
         .single();

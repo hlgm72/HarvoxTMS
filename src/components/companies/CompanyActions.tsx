@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { MoreHorizontal, Download, CheckSquare, XSquare, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from 'react-i18next';
+import { getTodayInUserTimeZone } from '@/lib/dateFormatting';
 
 interface Company {
   id: string;
@@ -80,7 +81,7 @@ export function CompanyActions({
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
-      link.setAttribute('download', `companies_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', `companies_${getTodayInUserTimeZone()}.csv`);
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
