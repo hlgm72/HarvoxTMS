@@ -28,7 +28,7 @@ import { useFuelCardProviders } from '@/hooks/useFuelCardProviders';
 interface DriverCard {
   id: string;
   driver_user_id: string;
-  card_number_last_four: string;
+  card_number_last_five: string;
   card_provider: string;
   card_identifier?: string;
   is_active: boolean;
@@ -129,7 +129,7 @@ export function DriverCardsManager() {
   const saveCardMutation = useMutation({
     mutationFn: async () => {
       if (!selectedDriver || !selectedProvider || !cardLastFour) {
-        throw new Error('Conductor, proveedor y últimos 4 dígitos son requeridos');
+        throw new Error('Conductor, proveedor y últimos 5 dígitos son requeridos');
       }
 
       if (editingCard) {
@@ -138,7 +138,7 @@ export function DriverCardsManager() {
           .from('driver_cards')
           .update({
             driver_user_id: selectedDriver,
-            card_number_last_four: cardLastFour,
+            card_number_last_five: cardLastFour,
             card_provider: selectedProvider,
             card_identifier: cardIdentifier || null
           })
@@ -171,7 +171,7 @@ export function DriverCardsManager() {
         const cardData = {
           driver_user_id: selectedDriver,
           company_id: userRoles.company_id,
-          card_number_last_four: cardLastFour,
+          card_number_last_five: cardLastFour,
           card_provider: selectedProvider,
           ...(cardIdentifier && { card_identifier: cardIdentifier })
         };
@@ -235,7 +235,7 @@ export function DriverCardsManager() {
     setEditingCard(card);
     setSelectedDriver(card.driver_user_id);
     setSelectedProvider(card.card_provider);
-    setCardLastFour(card.card_number_last_four);
+    setCardLastFour(card.card_number_last_five);
     setCardIdentifier(card.card_identifier || '');
     setIsCardDialogOpen(true);
   };
@@ -316,13 +316,13 @@ export function DriverCardsManager() {
               </div>
               
               <div>
-                <Label htmlFor="cardLastFour">Últimos 4 dígitos de la tarjeta</Label>
+                <Label htmlFor="cardLastFour">Últimos 5 dígitos de la tarjeta</Label>
                 <Input
                   id="cardLastFour"
                   value={cardLastFour}
                   onChange={(e) => setCardLastFour(e.target.value)}
-                  placeholder="1234"
-                  maxLength={4}
+                  placeholder="12345"
+                  maxLength={5}
                 />
               </div>
               
@@ -381,7 +381,7 @@ export function DriverCardsManager() {
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg flex items-center">
                   <CreditCard className="h-5 w-5 mr-2" />
-                  **** {card.card_number_last_four}
+                  **** {card.card_number_last_five}
                 </CardTitle>
                 <Badge variant="secondary">{card.card_provider.toUpperCase()}</Badge>
               </div>

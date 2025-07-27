@@ -494,7 +494,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                         <SelectContent>
                           {driverCards.map((card) => (
                             <SelectItem key={card.id} value={card.id}>
-                              {card.card_provider.toUpperCase()} ****{card.card_number_last_four}
+                              {card.card_provider.toUpperCase()} ****{card.card_number_last_five}
                               {card.card_identifier ? ` (${card.card_identifier})` : ''}
                             </SelectItem>
                           ))}

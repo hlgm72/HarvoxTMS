@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface DriverCard {
   id: string;
-  card_number_last_four: string;
+  card_number_last_five: string;
   card_provider: string;
   card_identifier?: string;
   is_active: boolean;

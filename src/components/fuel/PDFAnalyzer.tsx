@@ -172,7 +172,7 @@ export function PDFAnalyzer() {
       const { data: driverCards } = await supabase
         .from('driver_cards')
         .select(`
-          card_number_last_four,
+          card_number_last_five,
           card_identifier,
           driver_user_id
         `)
@@ -255,13 +255,14 @@ export function PDFAnalyzer() {
         // Mapear conductor por tarjeta (flexible con 4 o 5 dígitos)
         const cardNumber = transaction.card;
         const matchingCards = driverCards?.filter(card => {
-          // Comparar los últimos 4 dígitos de ambos números
-          const cardLast4 = card.card_number_last_four;
+          // Comparar los últimos 5 dígitos almacenados con los últimos 4 o 5 de la transacción
+          const cardLast5 = card.card_number_last_five;
           const transactionLast4 = cardNumber.slice(-4);
           const transactionLast5 = cardNumber.slice(-5);
           
-          return cardLast4 === transactionLast4 || 
-                 card.card_identifier === cardNumber ||
+          // Permitir coincidencias flexibles: 5 dígitos completos o últimos 4 de los 5 guardados
+          return cardLast5 === transactionLast5 || 
+                 cardLast5.slice(-4) === transactionLast4 ||
                  card.card_identifier === transactionLast4 ||
                  card.card_identifier === transactionLast5;
         }) || [];
@@ -277,7 +278,7 @@ export function PDFAnalyzer() {
             enrichedTransaction.driver_name = `${firstName} ${lastName}`.trim();
           } else {
             // Si no hay perfil, usar un nombre basado en tarjeta o ID genérico
-            enrichedTransaction.driver_name = `Conductor Tarjeta ${card.card_number_last_four}`;
+            enrichedTransaction.driver_name = `Conductor Tarjeta ${card.card_number_last_five}`;
           }
           
           enrichedTransaction.card_mapping_status = 'found';

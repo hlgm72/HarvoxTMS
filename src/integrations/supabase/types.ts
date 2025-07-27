@@ -459,7 +459,7 @@ export type Database = {
         Row: {
           assigned_date: string
           card_identifier: string | null
-          card_number_last_four: string
+          card_number_last_five: string
           card_provider: string
           company_id: string
           created_at: string
@@ -473,7 +473,7 @@ export type Database = {
         Insert: {
           assigned_date?: string
           card_identifier?: string | null
-          card_number_last_four: string
+          card_number_last_five: string
           card_provider?: string
           company_id: string
           created_at?: string
@@ -487,7 +487,7 @@ export type Database = {
         Update: {
           assigned_date?: string
           card_identifier?: string | null
-          card_number_last_four?: string
+          card_number_last_five?: string
           card_provider?: string
           company_id?: string
           created_at?: string
