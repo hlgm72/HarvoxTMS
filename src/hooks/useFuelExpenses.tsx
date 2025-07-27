@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useFleetNotifications } from '@/components/notifications';
 import { useUserCompanies } from '@/hooks/useUserCompanies';
+import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
 
 export interface FuelExpenseFilters {
   driverId?: string;
@@ -106,13 +107,35 @@ export function useCreateFuelExpense() {
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
   const { showSuccess, showError } = useFleetNotifications();
+  const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
 
   return useMutation({
     mutationFn: async (data: CreateFuelExpenseData) => {
+      // Si no hay payment_period_id, intentar generar uno automáticamente
+      let finalData = { ...data };
+      
+      if (!data.payment_period_id && selectedCompany?.id && data.driver_user_id && data.transaction_date) {
+        console.log('🔍 Auto-generating payment period for fuel expense');
+        
+        const targetDate = new Date(data.transaction_date).toISOString().split('T')[0];
+        const generatedPeriodId = await ensurePaymentPeriodExists({
+          companyId: selectedCompany.id,
+          userId: data.driver_user_id,
+          targetDate
+        });
+        
+        if (generatedPeriodId) {
+          finalData.payment_period_id = generatedPeriodId;
+          console.log('✅ Auto-assigned payment period:', generatedPeriodId);
+        } else {
+          throw new Error('No se pudo encontrar o generar un período de pago para esta fecha');
+        }
+      }
+
       const { data: result, error } = await supabase
         .from('fuel_expenses')
         .insert({
-          ...data,
+          ...finalData,
           created_by: user?.id,
         })
         .select()
