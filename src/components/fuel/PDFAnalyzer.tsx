@@ -486,12 +486,18 @@ export function PDFAnalyzer() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
                 <div className="text-center p-3 border rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">
-                    {enrichedTransactions.filter(t => t.card_mapping_status === 'found').length}
+                  <div className="text-2xl font-bold text-blue-600">
+                    {enrichedTransactions.length}
                   </div>
-                  <div className="text-sm text-muted-foreground">Conductores identificados</div>
+                  <div className="text-sm text-muted-foreground">Total encontradas</div>
+                </div>
+                <div className="text-center p-3 border rounded-lg">
+                  <div className="text-2xl font-bold text-orange-600">
+                    {enrichedTransactions.filter(t => t.import_status === 'already_imported').length}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Ya importadas</div>
                 </div>
                 <div className="text-center p-3 border rounded-lg">
                   <div className="text-2xl font-bold text-green-600">
@@ -504,15 +510,18 @@ export function PDFAnalyzer() {
                   <div className="text-sm text-muted-foreground">Listas para importar</div>
                 </div>
                 <div className="text-center p-3 border rounded-lg">
-                  <div className="text-2xl font-bold text-orange-600">
-                    {enrichedTransactions.filter(t => t.import_status === 'already_imported').length}
+                  <div className="text-2xl font-bold text-yellow-600">
+                    {enrichedTransactions.filter(t => 
+                      t.card_mapping_status === 'not_found' && 
+                      t.import_status === 'not_imported'
+                    ).length}
                   </div>
-                  <div className="text-sm text-muted-foreground">Ya importadas</div>
+                  <div className="text-sm text-muted-foreground">Sin conductor identificado</div>
                 </div>
                 <div className="text-center p-3 border rounded-lg">
                   <div className="text-2xl font-bold text-red-600">
                     {enrichedTransactions.filter(t => 
-                      (t.card_mapping_status === 'not_found' || t.period_mapping_status === 'not_found') &&
+                      (t.period_mapping_status === 'not_found' || t.needs_attention) &&
                       t.import_status === 'not_imported'
                     ).length}
                   </div>
