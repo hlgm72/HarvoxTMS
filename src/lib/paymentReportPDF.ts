@@ -517,6 +517,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     });
   }
 
+  // Verificar si necesitamos una nueva página antes del Summary
+  if (currentY > pageHeight - 80) {
+    doc.addPage();
+    currentY = margin;
+  }
+
   currentY += 20;
 
   // === SUMMARY ===
