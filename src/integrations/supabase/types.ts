@@ -2692,10 +2692,6 @@ export type Database = {
         Args: { user_id_param: string }
         Returns: boolean
       }
-      is_user_superadmin_check: {
-        Args: { user_id_param: string }
-        Returns: boolean
-      }
       lock_payment_period: {
         Args: {
           period_id: string
