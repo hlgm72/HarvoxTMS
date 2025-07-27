@@ -58,14 +58,23 @@ export function useEquipment() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const { userCompany } = useCompanyCache();
+  const { userCompany, isLoading: companyLoading } = useCompanyCache();
+
+  console.log('🔧 useEquipment debug:', { 
+    user: user?.id, 
+    userCompany: userCompany?.company_id,
+    companyLoading 
+  });
 
   const equipmentQuery = useQuery({
     queryKey: ["equipment", userCompany?.company_id],
     queryFn: async () => {
       if (!userCompany?.company_id) {
+        console.log('🔧 No company_id available');
         throw new Error("No se pudo obtener información de la compañía");
       }
+
+      console.log('🔧 Fetching equipment for company:', userCompany.company_id);
 
       // Get equipment for user's company
       const { data, error } = await supabase
@@ -75,12 +84,14 @@ export function useEquipment() {
         .order("created_at", { ascending: false });
 
       if (error) {
+        console.error('🔧 Equipment fetch error:', error);
         throw error;
       }
 
+      console.log('🔧 Equipment fetched successfully:', data);
       return data as Equipment[];
     },
-    enabled: !!userCompany?.company_id,
+    enabled: !!userCompany?.company_id && !companyLoading,
     staleTime: 30000, // 30 seconds
     gcTime: 300000, // 5 minutes
   });
