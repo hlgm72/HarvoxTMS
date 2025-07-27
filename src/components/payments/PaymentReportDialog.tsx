@@ -87,6 +87,24 @@ export function PaymentReportDialog({
     enabled: !!calculation?.driver_user_id
   });
 
+  // Obtener información de la compañía
+  const { data: company } = useQuery({
+    queryKey: ['company-info', calculation?.company_payment_periods?.company_id],
+    queryFn: async () => {
+      if (!calculation?.company_payment_periods?.company_id) return null;
+      
+      const { data, error } = await supabase
+        .from('companies')
+        .select('id, name, street_address, phone, email, logo_url')
+        .eq('id', calculation.company_payment_periods.company_id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!calculation?.company_payment_periods?.company_id
+  });
+
   // Obtener cargas del período
   const { data: loads = [] } = useQuery({
     queryKey: ['period-loads', calculation?.company_payment_period_id, calculation?.driver_user_id],
@@ -133,7 +151,7 @@ export function PaymentReportDialog({
   });
 
   const getReportData = () => {
-    if (!calculation || !driver) return null;
+    if (!calculation || !driver || !company) return null;
     
     return {
       driver: {
@@ -150,7 +168,10 @@ export function PaymentReportDialog({
         net_payment: calculation.net_payment
       },
       company: {
-        name: 'Tu Empresa'
+        name: company.name || 'Tu Empresa',
+        address: company.street_address,
+        phone: company.phone,
+        email: company.email
       },
       loads: loads.map(load => ({
         load_number: load.load_number,
