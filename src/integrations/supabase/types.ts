@@ -514,6 +514,12 @@ export type Database = {
           id: string
           net_payment: number
           other_income: number
+          paid_at: string | null
+          paid_by: string | null
+          payment_method: string | null
+          payment_notes: string | null
+          payment_reference: string | null
+          payment_status: string | null
           total_deductions: number
           total_income: number
           updated_at: string
@@ -531,6 +537,12 @@ export type Database = {
           id?: string
           net_payment?: number
           other_income?: number
+          paid_at?: string | null
+          paid_by?: string | null
+          payment_method?: string | null
+          payment_notes?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
           total_deductions?: number
           total_income?: number
           updated_at?: string
@@ -548,6 +560,12 @@ export type Database = {
           id?: string
           net_payment?: number
           other_income?: number
+          paid_at?: string | null
+          paid_by?: string | null
+          payment_method?: string | null
+          payment_notes?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
           total_deductions?: number
           total_income?: number
           updated_at?: string
@@ -2486,6 +2504,10 @@ export type Database = {
         Args: { load_id_param: string }
         Returns: boolean
       }
+      can_close_payment_period: {
+        Args: { period_id: string }
+        Returns: Json
+      }
       can_delete_test_company: {
         Args: { company_id_param: string }
         Returns: Json
@@ -2493,6 +2515,10 @@ export type Database = {
       cleanup_expired_reset_tokens: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      close_payment_period_when_complete: {
+        Args: { period_id: string }
+        Returns: Json
       }
       company_has_owner: {
         Args: { company_id_param: string }
@@ -2617,6 +2643,15 @@ export type Database = {
       maintenance_cleanup: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      mark_driver_as_paid: {
+        Args: {
+          calculation_id: string
+          payment_method_used?: string
+          payment_ref?: string
+          notes?: string
+        }
+        Returns: Json
       }
       needs_initial_setup: {
         Args: Record<PropertyKey, never>
