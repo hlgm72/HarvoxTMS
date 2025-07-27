@@ -31,6 +31,7 @@ import FuelManagement from "./pages/FuelManagement";
 import Loads from "./pages/Loads";
 import EagleDemo from "./pages/EagleDemo";
 import DriverMobile from "./pages/DriverMobile";
+import PaymentReports from "./pages/PaymentReports";
 import Preview from "./pages/Preview";
 
 import IconsPreview from "./pages/IconsPreview";
@@ -285,6 +286,17 @@ function AppContent() {
         />
         
         <Route 
+          path="/payment-reports" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <PaymentReports />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route
           path="/users" 
           element={
             <ProtectedRoute requiredRole="company_owner">
