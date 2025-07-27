@@ -151,21 +151,89 @@ export function useCreateFuelExpense() {
       let finalData = { ...data };
       
       if (!data.payment_period_id && selectedCompany?.id && data.driver_user_id && data.transaction_date) {
-        console.log('🔍 Auto-generating payment period for fuel expense');
+        console.log('🔍 Auto-generating company payment period for fuel expense');
         
         const targetDate = formatDateInUserTimeZone(new Date(data.transaction_date));
-        const generatedPeriodId = await ensurePaymentPeriodExists({
-          companyId: selectedCompany.id,
-          userId: data.driver_user_id,
-          targetDate
-        });
         
-        if (generatedPeriodId) {
-          finalData.payment_period_id = generatedPeriodId;
-          console.log('✅ Auto-assigned payment period:', generatedPeriodId);
-        } else {
-          throw new Error('No se pudo encontrar o generar un período de pago para esta fecha');
+        // Buscar período de empresa existente
+        const { data: existingCompanyPeriod, error: periodError } = await supabase
+          .from('company_payment_periods')
+          .select('id')
+          .eq('company_id', selectedCompany.id)
+          .lte('period_start_date', targetDate)
+          .gte('period_end_date', targetDate)
+          .in('status', ['open', 'processing'])
+          .limit(1)
+          .maybeSingle();
+
+        if (periodError) {
+          console.error('Error finding company payment period:', periodError);
+          throw new Error('Error al buscar período de pago de la empresa');
         }
+
+        let companyPeriodId = existingCompanyPeriod?.id;
+
+        // Si no existe, generar período de empresa
+        if (!companyPeriodId) {
+          console.log('🔍 Generating company payment period');
+          
+          const generatedPeriodId = await ensurePaymentPeriodExists({
+            companyId: selectedCompany.id,
+            userId: data.driver_user_id,
+            targetDate
+          });
+          
+          if (!generatedPeriodId) {
+            throw new Error('No se pudo generar un período de pago para esta fecha');
+          }
+          
+          companyPeriodId = generatedPeriodId;
+        }
+
+        // Buscar o crear driver_period_calculation para este período de empresa
+        const { data: existingDriverCalc, error: calcError } = await supabase
+          .from('driver_period_calculations')
+          .select('id')
+          .eq('company_payment_period_id', companyPeriodId)
+          .eq('driver_user_id', data.driver_user_id)
+          .maybeSingle();
+
+        if (calcError) {
+          console.error('Error finding driver calculation:', calcError);
+          throw new Error('Error al buscar cálculo del conductor');
+        }
+
+        let driverCalculationId = existingDriverCalc?.id;
+
+        // Si no existe, crear driver_period_calculation
+        if (!driverCalculationId) {
+          console.log('🔍 Creating driver period calculation');
+          
+          const { data: newDriverCalc, error: createCalcError } = await supabase
+            .from('driver_period_calculations')
+            .insert({
+              company_payment_period_id: companyPeriodId,
+              driver_user_id: data.driver_user_id,
+              gross_earnings: 0,
+              total_deductions: 0,
+              other_income: 0,
+              total_income: 0,
+              net_payment: 0,
+              has_negative_balance: false
+            })
+            .select('id')
+            .single();
+
+          if (createCalcError) {
+            console.error('Error creating driver calculation:', createCalcError);
+            throw new Error('Error al crear cálculo del conductor');
+          }
+
+          driverCalculationId = newDriverCalc.id;
+        }
+
+        finalData.payment_period_id = driverCalculationId;
+        console.log('✅ Auto-assigned driver calculation period:', driverCalculationId);
       }
 
       const { data: result, error } = await supabase
