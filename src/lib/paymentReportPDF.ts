@@ -585,15 +585,16 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   if (isPreview) {
     // Abrir PDF en nueva pestaña para vista previa
     const pdfBlob = doc.output('blob');
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    const newWindow = window.open(pdfUrl, '_blank');
+    const pdfUrl = URL.createObjectURL(new Blob([pdfBlob], { type: 'application/pdf' }));
+    const newWindow = window.open('', '_blank');
     
-    // Limpiar URL después de un tiempo para liberar memoria
-    setTimeout(() => {
-      URL.revokeObjectURL(pdfUrl);
-    }, 10000);
-    
-    if (!newWindow) {
+    if (newWindow) {
+      newWindow.location.href = pdfUrl;
+      // Limpiar URL después de un tiempo para liberar memoria
+      setTimeout(() => {
+        URL.revokeObjectURL(pdfUrl);
+      }, 10000);
+    } else {
       console.warn('Popup bloqueado. Intentando download fallback.');
       doc.save(fileName);
     }
