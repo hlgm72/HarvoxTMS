@@ -194,10 +194,10 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
   // Auto-calculate total amount (gross - discounts + fees)
   React.useEffect(() => {
     if (grossAmount !== undefined && !isNaN(grossAmount)) {
-      const discount = discountAmount || 0;
-      const fee = fees || 0;
-      const total = grossAmount - discount + fee;
-      if (!isNaN(total)) {
+      const discount = Number(discountAmount) || 0;
+      const fee = Number(fees) || 0;
+      const total = Number(grossAmount) - discount + fee;
+      if (!isNaN(total) && typeof total === 'number') {
         form.setValue('total_amount', Number(total.toFixed(2)));
       }
     }
