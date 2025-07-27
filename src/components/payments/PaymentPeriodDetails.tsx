@@ -169,79 +169,87 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
       )}
 
       {/* Resumen financiero */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <DollarSign className="h-4 w-4 text-primary" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
+        <Card className="min-w-0">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-start gap-2 sm:gap-3">
+              <div className="p-1.5 sm:p-2 bg-primary/10 rounded-lg flex-shrink-0">
+                <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Ingresos Brutos</p>
-                <p className="text-lg font-semibold">${totalGrossEarnings.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-success/10 rounded-lg">
-                <TrendingUp className="h-4 w-4 text-success" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Otros Ingresos</p>
-                <p className="text-lg font-semibold text-success">${totalOtherIncome.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm text-muted-foreground mb-1 truncate">Ingresos Brutos</p>
+                <p className="text-sm sm:text-lg font-semibold break-all leading-tight">
+                  ${totalGrossEarnings.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-destructive/10 rounded-lg">
-                <Receipt className="h-4 w-4 text-destructive" />
+        <Card className="min-w-0">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-start gap-2 sm:gap-3">
+              <div className="p-1.5 sm:p-2 bg-success/10 rounded-lg flex-shrink-0">
+                <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-success" />
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Deducciones</p>
-                <p className="text-lg font-semibold text-destructive">-${totalDeductions.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-warning/10 rounded-lg">
-                <Fuel className="h-4 w-4 text-warning" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Combustible</p>
-                <p className="text-lg font-semibold text-warning">-${totalFuelExpenses.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm text-muted-foreground mb-1 truncate">Otros Ingresos</p>
+                <p className="text-sm sm:text-lg font-semibold text-success break-all leading-tight">
+                  ${totalOtherIncome.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <CreditCard className="h-4 w-4 text-primary" />
+        <Card className="min-w-0">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-start gap-2 sm:gap-3">
+              <div className="p-1.5 sm:p-2 bg-destructive/10 rounded-lg flex-shrink-0">
+                <Receipt className="h-3 w-3 sm:h-4 sm:w-4 text-destructive" />
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Pago Neto</p>
-                <div className="flex items-center gap-2">
-                  <p className="text-lg font-semibold">${totalNetPayment.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  {totalDrivers} conductores
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm text-muted-foreground mb-1 truncate">Deducciones</p>
+                <p className="text-sm sm:text-lg font-semibold text-destructive break-all leading-tight">
+                  -${totalDeductions.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="min-w-0">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-start gap-2 sm:gap-3">
+              <div className="p-1.5 sm:p-2 bg-warning/10 rounded-lg flex-shrink-0">
+                <Fuel className="h-3 w-3 sm:h-4 sm:w-4 text-warning" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm text-muted-foreground mb-1 truncate">Combustible</p>
+                <p className="text-sm sm:text-lg font-semibold text-warning break-all leading-tight">
+                  -${totalFuelExpenses.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="min-w-0 sm:col-span-2 lg:col-span-1">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-start gap-2 sm:gap-3">
+              <div className="p-1.5 sm:p-2 bg-primary/10 rounded-lg flex-shrink-0">
+                <CreditCard className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm text-muted-foreground mb-1 truncate">Pago Neto</p>
+                <p className="text-sm sm:text-lg font-semibold break-all leading-tight">
+                  ${totalNetPayment.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                </p>
+                <div className="text-xs text-muted-foreground mt-1 truncate">
+                  {totalDrivers} conductor{totalDrivers !== 1 ? 'es' : ''}
                 </div>
                 {driversWithNegativeBalance > 0 && (
-                  <p className="text-xs text-destructive mt-1">
+                  <p className="text-xs text-destructive mt-1 truncate">
                     {driversWithNegativeBalance} con balance negativo
                   </p>
                 )}
