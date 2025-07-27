@@ -246,8 +246,14 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
     }
     
     // Encontrar el lunes de la semana de la fecha seleccionada
-    const dayOfWeek = date.getDay();
-    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Si es domingo (0), retroceder 6 días
+    const dayOfWeek = date.getDay(); // 0 = domingo, 1 = lunes, etc.
+    let daysToMonday;
+    
+    if (dayOfWeek === 0) { // Domingo
+      daysToMonday = 6; // Retroceder 6 días para llegar al lunes anterior
+    } else {
+      daysToMonday = dayOfWeek - 1; // Retroceder los días necesarios para llegar al lunes
+    }
     
     const periodStart = new Date(date);
     periodStart.setDate(date.getDate() - daysToMonday);
