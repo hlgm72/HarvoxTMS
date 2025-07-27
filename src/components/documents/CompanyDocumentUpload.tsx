@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -253,7 +254,7 @@ export function CompanyDocumentUpload({
         file,
         documentType,
         customDocumentName,
-        expiryDate: expiryDate ? expiryDate.toISOString().split('T')[0] : undefined,
+        expiryDate: expiryDate ? formatDateInUserTimeZone(expiryDate) : undefined,
         notes
       });
     } catch (error) {
@@ -273,7 +274,7 @@ export function CompanyDocumentUpload({
       file: file!,
       documentType,
       customDocumentName,
-      expiryDate: expiryDate ? expiryDate.toISOString().split('T')[0] : undefined,
+      expiryDate: expiryDate ? formatDateInUserTimeZone(expiryDate) : undefined,
       notes,
       action: duplicateAction
     });

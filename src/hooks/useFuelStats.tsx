@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserCompanies } from '@/hooks/useUserCompanies';
+import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 
 export interface FuelStatsFilters {
   periodId?: string;
@@ -89,9 +90,8 @@ export function useFuelStats(filters: FuelStatsFilters = {}) {
       
       for (let i = 5; i >= 0; i--) {
         const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const monthStart = date.toISOString().split('T')[0];
-        const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0)
-          .toISOString().split('T')[0];
+        const monthStart = formatDateInUserTimeZone(date);
+        const monthEnd = formatDateInUserTimeZone(new Date(date.getFullYear(), date.getMonth() + 1, 0));
         
         const monthExpenses = companyData.filter(item => {
           const transactionDate = item.transaction_date;

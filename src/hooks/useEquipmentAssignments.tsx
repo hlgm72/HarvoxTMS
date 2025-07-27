@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import { getTodayInUserTimeZone } from '@/lib/dateFormatting';
 
 export interface EquipmentAssignment {
   id: string;
@@ -104,7 +105,7 @@ export function useEquipmentAssignments() {
         .insert({
           ...assignmentData,
           assigned_by: user.id,
-          assigned_date: new Date().toISOString().split('T')[0],
+          assigned_date: getTodayInUserTimeZone(),
         })
         .select()
         .single();
@@ -134,7 +135,7 @@ export function useEquipmentAssignments() {
         .from('equipment_assignments')
         .update({
           is_active: false,
-          unassigned_date: new Date().toISOString().split('T')[0],
+          unassigned_date: getTodayInUserTimeZone(),
           updated_at: new Date().toISOString(),
         })
         .eq('id', assignmentId)
@@ -173,7 +174,7 @@ export function useEquipmentAssignments() {
         .from('equipment_assignments')
         .update({
           is_active: false,
-          unassigned_date: new Date().toISOString().split('T')[0],
+          unassigned_date: getTodayInUserTimeZone(),
         })
         .eq('id', assignmentId);
 
@@ -189,7 +190,7 @@ export function useEquipmentAssignments() {
           driver_user_id: newDriverUserId,
           assignment_type: currentAssignment.assignment_type,
           assigned_by: user.id,
-          assigned_date: new Date().toISOString().split('T')[0],
+          assigned_date: getTodayInUserTimeZone(),
           notes: notes || `Transferido desde ${currentAssignment.profiles?.first_name || 'conductor anterior'}`,
         })
         .select()

@@ -12,6 +12,7 @@ import { CreateFuelExpenseDialog } from '@/components/fuel/CreateFuelExpenseDial
 import { EditFuelExpenseDialog } from '@/components/fuel/EditFuelExpenseDialog';
 import { ViewFuelExpenseDialog } from '@/components/fuel/ViewFuelExpenseDialog';
 import { DriverCardsManager } from '@/components/fuel/DriverCardsManager';
+import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { PDFAnalyzer } from '@/components/fuel/PDFAnalyzer';
 
 export default function FuelManagement() {
@@ -38,8 +39,8 @@ export default function FuelManagement() {
     driverId: filters.driverId !== 'all' ? filters.driverId : undefined,
     status: filters.status !== 'all' ? filters.status : undefined,
     vehicleId: filters.vehicleId !== 'all' ? filters.vehicleId : undefined,
-    startDate: filters.dateRange.from ? filters.dateRange.from.toISOString().split('T')[0] : undefined,
-    endDate: filters.dateRange.to ? filters.dateRange.to.toISOString().split('T')[0] : undefined,
+    startDate: filters.dateRange.from ? formatDateInUserTimeZone(filters.dateRange.from) : undefined,
+    endDate: filters.dateRange.to ? formatDateInUserTimeZone(filters.dateRange.to) : undefined,
   };
 
   const handleEdit = (expenseId: string) => {

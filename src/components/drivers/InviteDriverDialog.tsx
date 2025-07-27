@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from 'date-fns/locale';
+import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -65,7 +66,7 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
-          hireDate: formData.hireDate.toISOString().split('T')[0]
+          hireDate: formatDateInUserTimeZone(formData.hireDate)
         }
       });
 
