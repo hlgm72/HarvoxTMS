@@ -2628,6 +2628,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      recalculate_payment_period_totals: {
+        Args: { period_id: string }
+        Returns: undefined
+      }
       report_payment_and_lock: {
         Args: {
           period_id: string
