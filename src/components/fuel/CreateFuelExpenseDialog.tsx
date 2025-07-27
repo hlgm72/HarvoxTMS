@@ -80,6 +80,13 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
 
   const selectedDriverId = form.watch('driver_user_id');
   const { data: driverCards = [] } = useDriverCards(selectedDriverId);
+  
+  // Filtrar vehículos por conductor seleccionado
+  const filteredEquipment = React.useMemo(() => {
+    if (!selectedDriverId) return equipment;
+    // Aquí podrías filtrar por asignaciones activas si tienes esa relación
+    return equipment;
+  }, [selectedDriverId, equipment]);
 
   const onSubmit = async (data: FormData) => {
     // Si no hay período seleccionado, generar uno antes de guardar
@@ -435,7 +442,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {equipment.filter(eq => eq.equipment_type === 'truck').map((eq) => (
+                          {filteredEquipment.filter(eq => eq.equipment_type === 'truck').map((eq) => (
                             <SelectItem key={eq.id} value={eq.id}>
                               🚛 #{eq.equipment_number} - {eq.make} {eq.model}
                             </SelectItem>
@@ -453,28 +460,56 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-foreground border-b pb-2">Detalles del Combustible</h4>
               
-              <FormField
-                control={form.control}
-                name="fuel_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo de Combustible *</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar tipo" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="diesel">Diesel</SelectItem>
-                        <SelectItem value="gasoline">Gasolina</SelectItem>
-                        <SelectItem value="def">DEF</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="fuel_type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo de Combustible *</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Seleccionar tipo" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="diesel">Diesel</SelectItem>
+                          <SelectItem value="gasoline">Gasolina</SelectItem>
+                          <SelectItem value="def">DEF</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="driver_card_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tarjeta de Combustible</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Seleccionar tarjeta" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {driverCards.map((card) => (
+                            <SelectItem key={card.id} value={card.id}>
+                              {card.card_provider.toUpperCase()} ****{card.card_number_last_four}
+                              {card.card_identifier ? ` (${card.card_identifier})` : ''}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <FormField
@@ -657,31 +692,6 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="driver_card_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tarjeta de Combustible</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Seleccionar tarjeta" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {driverCards.map((card) => (
-                            <SelectItem key={card.id} value={card.id}>
-                              {card.card_provider.toUpperCase()} ****{card.card_number_last_four}
-                              {card.card_identifier ? ` (${card.card_identifier})` : ''}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
             </div>
 
