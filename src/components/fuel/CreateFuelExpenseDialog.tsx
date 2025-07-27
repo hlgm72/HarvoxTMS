@@ -183,6 +183,8 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
   }, [grossAmount, discountAmount, fees, form]);
 
   // Auto-select payment period based on transaction date (solo buscar, no crear)
+  const [predictedPeriod, setPredictedPeriod] = React.useState<{start: string, end: string} | null>(null);
+  
   React.useEffect(() => {
     if (!transactionDate || !paymentPeriods.length) return;
     
@@ -197,11 +199,46 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
 
     if (matchingPeriod) {
       form.setValue('payment_period_id', matchingPeriod.id);
+      setPredictedPeriod(null);
     } else {
-      // Si no hay período, limpiar la selección para que el usuario vea que no existe
+      // Si no hay período, limpiar la selección y calcular el período que se crearía
       form.setValue('payment_period_id', '');
+      
+      // Calcular las fechas del período que se generaría
+      if (userCompany?.company_id) {
+        const periodDates = calculatePeriodDates(transactionDate, userCompany);
+        setPredictedPeriod(periodDates);
+      }
     }
-  }, [transactionDate, paymentPeriods, form]);
+  }, [transactionDate, paymentPeriods, form, userCompany]);
+
+  // Función para calcular las fechas del período que se crearía
+  const calculatePeriodDates = (date: Date, company: any) => {
+    const frequency = company.default_payment_frequency || 'weekly';
+    const startDay = company.payment_cycle_start_day || 1; // 1 = Monday
+    
+    let frequencyDays = 7;
+    switch (frequency) {
+      case 'weekly': frequencyDays = 7; break;
+      case 'biweekly': frequencyDays = 14; break;
+      case 'monthly': frequencyDays = 30; break;
+    }
+    
+    // Encontrar el lunes de la semana de la fecha seleccionada
+    const dayOfWeek = date.getDay();
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Si es domingo (0), retroceder 6 días
+    
+    const periodStart = new Date(date);
+    periodStart.setDate(date.getDate() - daysToMonday);
+    
+    const periodEnd = new Date(periodStart);
+    periodEnd.setDate(periodStart.getDate() + frequencyDays - 1);
+    
+    return {
+      start: periodStart.toISOString().split('T')[0],
+      end: periodEnd.toISOString().split('T')[0]
+    };
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -328,8 +365,16 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                       <FormLabel>Período de Pago</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Se seleccionará automáticamente" />
+                          <SelectTrigger className={cn(
+                            predictedPeriod && "border-blue-300 bg-blue-50"
+                          )}>
+                            <SelectValue 
+                              placeholder={
+                                predictedPeriod 
+                                  ? `Se creará: ${format(new Date(predictedPeriod.start), 'dd/MM/yyyy')} - ${format(new Date(predictedPeriod.end), 'dd/MM/yyyy')}`
+                                  : "Se seleccionará automáticamente"
+                              } 
+                            />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -340,6 +385,11 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                           ))}
                         </SelectContent>
                       </Select>
+                      {predictedPeriod && (
+                        <p className="text-xs text-blue-600 mt-1">
+                          💡 Se creará automáticamente el período del {format(new Date(predictedPeriod.start), 'dd/MM/yyyy')} al {format(new Date(predictedPeriod.end), 'dd/MM/yyyy')} al guardar
+                        </p>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}
