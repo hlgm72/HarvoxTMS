@@ -2515,6 +2515,10 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: Json
       }
+      fix_fuel_expenses_separation: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       force_assign_payment_period: {
         Args: { load_id_param: string; period_id_param: string }
         Returns: boolean
