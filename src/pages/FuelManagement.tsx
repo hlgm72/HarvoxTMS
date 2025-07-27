@@ -69,7 +69,7 @@ export default function FuelManagement() {
             </Button>
             <Button onClick={() => setCreateDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Registrar Gasto
+              Registrar Combustible
             </Button>
           </div>
         }
