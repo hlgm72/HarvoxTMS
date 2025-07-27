@@ -37,11 +37,6 @@ export function EmptyLoadsState({ onCreateLoad }: EmptyLoadsStateProps) {
               alt="Modern truck illustration"
               className="w-64 h-48 mx-auto object-contain animate-fade-in bg-transparent"
             />
-            <div className="absolute -top-2 -right-2">
-              <Badge variant="secondary" className="animate-pulse">
-                Nuevo
-              </Badge>
-            </div>
           </div>
           
           <div className="space-y-3">
