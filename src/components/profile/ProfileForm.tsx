@@ -191,8 +191,6 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
             )}
           />
 
-          <Separator className="my-6" />
-
           <AddressForm
             streetAddress={profileForm.watch('street_address') || ''}
             onStreetAddressChange={(value) => profileForm.setValue('street_address', value)}
