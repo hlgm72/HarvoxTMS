@@ -14,6 +14,8 @@ import { useFleetNotifications } from "@/components/notifications";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
 import { PaymentReportDialog } from "@/components/payments/PaymentReportDialog";
+import { MarkDriverPaidDialog } from "@/components/payments/MarkDriverPaidDialog";
+import { useDriverPaymentActions } from "@/hooks/useDriverPaymentActions";
 
 export default function PaymentReports() {
   const { user } = useAuth();
@@ -24,9 +26,13 @@ export default function PaymentReports() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedCalculationId, setSelectedCalculationId] = useState<string | null>(null);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [selectedForPayment, setSelectedForPayment] = useState<any>(null);
+  
+  const { markDriverAsPaid, checkPeriodClosureStatus, isLoading: paymentLoading } = useDriverPaymentActions();
 
   // Obtener reportes existentes (simulando con datos de cálculos)
-  const { data: paymentCalculations = [], isLoading } = useQuery({
+  const { data: paymentCalculations = [], isLoading, refetch } = useQuery({
     queryKey: ['payment-calculations-reports'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -122,10 +128,25 @@ export default function PaymentReports() {
     if (!calculation.calculated_at) {
       return <Badge variant="outline">Pendiente</Badge>;
     }
+    if (calculation.payment_status === 'paid') {
+      return <Badge variant="default" className="bg-green-100 text-green-800">Pagado</Badge>;
+    }
+    if (calculation.payment_status === 'failed') {
+      return <Badge variant="destructive">Pago Fallido</Badge>;
+    }
     if (calculation.has_negative_balance) {
       return <Badge variant="destructive">Balance Negativo</Badge>;
     }
-    return <Badge variant="default">Listo</Badge>;
+    return <Badge variant="secondary">Listo para Pago</Badge>;
+  };
+
+  const handleMarkAsPaid = (calculation: any) => {
+    setSelectedForPayment(calculation);
+    setPaymentDialogOpen(true);
+  };
+
+  const handlePaymentSuccess = () => {
+    refetch();
   };
 
   return (
@@ -274,6 +295,18 @@ export default function PaymentReports() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
+                        {calculation.payment_status !== 'paid' && calculation.calculated_at && (
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => handleMarkAsPaid(calculation)}
+                            disabled={paymentLoading}
+                            className="bg-green-600 hover:bg-green-700"
+                          >
+                            <DollarSign className="h-4 w-4 mr-2" />
+                            Marcar Pagado
+                          </Button>
+                        )}
                         <Button
                           variant="outline"
                           size="sm"
@@ -305,6 +338,19 @@ export default function PaymentReports() {
         open={reportDialogOpen}
         onOpenChange={setReportDialogOpen}
         calculationId={selectedCalculationId}
+      />
+
+      <MarkDriverPaidDialog
+        open={paymentDialogOpen}
+        onOpenChange={setPaymentDialogOpen}
+        calculationId={selectedForPayment?.id || ""}
+        driverName={(() => {
+          if (!selectedForPayment) return "";
+          const driver = drivers.find(d => d.user_id === selectedForPayment.driver_user_id);
+          return `${driver?.first_name || ''} ${driver?.last_name || ''}`;
+        })()}
+        netPayment={selectedForPayment?.net_payment || 0}
+        onSuccess={handlePaymentSuccess}
       />
     </>
   );
