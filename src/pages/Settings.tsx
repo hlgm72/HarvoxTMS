@@ -16,7 +16,6 @@ import { Company } from '@/types/company';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { ProfileForm } from '@/components/profile/ProfileForm';
-import { PreferencesForm } from '@/components/profile/PreferencesForm';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -44,7 +43,7 @@ export default function Settings() {
   const [loading, setLoading] = useState(true);
   const [companyInfo, setCompanyInfo] = useState<Company | null>(null);
   const [changingPassword, setChangingPassword] = useState(false);
-  const [profileSubTab, setProfileSubTab] = useState('info');
+  
 
   // Form para contraseña
   const passwordForm = useForm<PasswordFormData>({
@@ -236,126 +235,11 @@ export default function Settings() {
                 </CardContent>
               </Card>
 
-              {/* Profile Forms */}
+              {/* Profile Form */}
               <Card className="md:col-span-2">
-                <Tabs value={profileSubTab} onValueChange={setProfileSubTab} className="w-full">
-                  <CardHeader>
-                    <TabsList className="grid w-full grid-cols-3">
-                      <TabsTrigger 
-                        value="info" 
-                        className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
-                      >
-                        <User className="h-4 w-4" />
-                        Información Personal
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="preferences" 
-                        className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
-                      >
-                        <SettingsIcon className="h-4 w-4" />
-                        Preferencias
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="security" 
-                        className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
-                      >
-                        <Shield className="h-4 w-4" />
-                        Seguridad
-                      </TabsTrigger>
-                    </TabsList>
-                  </CardHeader>
-
-                  <CardContent>
-                    {/* Información Personal */}
-                    <TabsContent value="info" className="space-y-4">
-                      <ProfileForm showCancelButton={false} />
-                    </TabsContent>
-
-                    {/* Preferencias */}
-                    <TabsContent value="preferences" className="space-y-4">
-                      <PreferencesForm showCancelButton={false} />
-                    </TabsContent>
-
-                    {/* Seguridad */}
-                    <TabsContent value="security" className="space-y-4">
-                      <div className="mb-4">
-                        <h3 className="text-lg font-medium">Seguridad de la Cuenta</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Actualiza tu contraseña para mantener tu cuenta segura
-                        </p>
-                      </div>
-
-                      <Form {...passwordForm}>
-                        <form onSubmit={passwordForm.handleSubmit(onSubmitPassword)} className="space-y-4 max-w-md">
-                          <FormField
-                            control={passwordForm.control}
-                            name="currentPassword"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Contraseña Actual</FormLabel>
-                                <FormControl>
-                                  <Input type="password" placeholder="Tu contraseña actual" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={passwordForm.control}
-                            name="newPassword"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Nueva Contraseña</FormLabel>
-                                <FormControl>
-                                  <Input type="password" placeholder="Nueva contraseña" {...field} />
-                                </FormControl>
-                                <FormDescription>
-                                  Debe tener al menos 6 caracteres
-                                </FormDescription>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={passwordForm.control}
-                            name="confirmPassword"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Confirmar Nueva Contraseña</FormLabel>
-                                <FormControl>
-                                  <Input type="password" placeholder="Confirma la nueva contraseña" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <div className="flex justify-start gap-2">
-                            <Button type="button" variant="outline" onClick={() => passwordForm.reset()}>
-                              <RotateCcw className="mr-2 h-4 w-4" />
-                              Limpiar
-                            </Button>
-                            <Button type="submit" disabled={changingPassword} variant="secondary">
-                              {changingPassword ? (
-                                <>
-                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                                  Cambiando...
-                                </>
-                              ) : (
-                                <>
-                                  <KeyRound className="mr-2 h-4 w-4" />
-                                  Cambiar Contraseña
-                                </>
-                              )}
-                            </Button>
-                          </div>
-                        </form>
-                      </Form>
-                    </TabsContent>
-                  </CardContent>
-                </Tabs>
+                <CardContent className="p-6">
+                  <ProfileForm showCancelButton={false} />
+                </CardContent>
               </Card>
               </div>
             </div>
