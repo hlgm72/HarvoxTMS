@@ -18,6 +18,7 @@ import {
   Receipt
 } from "lucide-react";
 import { OtherIncomeSection } from "@/components/payments/OtherIncomeSection";
+import { PaymentPeriodsManager } from "@/components/payments/PaymentPeriodsManager";
 
 export default function Payments() {
   const { user, isDriver, isOperationsManager, isCompanyOwner } = useAuth();
@@ -191,17 +192,7 @@ export default function Payments() {
         </TabsContent>
 
         <TabsContent value="periods" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                Períodos de Pago
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Sección en desarrollo...</p>
-            </CardContent>
-          </Card>
+          <PaymentPeriodsManager />
         </TabsContent>
       </Tabs>
     </div>
