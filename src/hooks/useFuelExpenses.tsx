@@ -22,7 +22,6 @@ export interface CreateFuelExpenseData {
   price_per_gallon: number;
   total_amount: number;
   station_name?: string;
-  station_address?: string;
   station_state?: string;
   fuel_card_number?: string;
   vehicle_id?: string;

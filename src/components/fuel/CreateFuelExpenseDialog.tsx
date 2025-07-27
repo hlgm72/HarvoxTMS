@@ -19,6 +19,7 @@ import { useCompanyPaymentPeriods } from '@/hooks/useCompanyPaymentPeriods';
 import { useEquipment } from '@/hooks/useEquipment';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useDriverCards } from '@/hooks/useDriverCards';
+import { StateCombobox } from '@/components/ui/StateCombobox';
 
 const formSchema = z.object({
   driver_user_id: z.string().min(1, 'Selecciona un conductor'),
@@ -34,7 +35,6 @@ const formSchema = z.object({
   
   // Información de la estación
   station_name: z.string().optional(),
-  station_address: z.string().optional(),
   station_state: z.string().optional(),
   
   // Información de pago/tarjeta
@@ -90,7 +90,6 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       
       // Información de la estación
       station_name: data.station_name,
-      station_address: data.station_address,
       station_state: data.station_state,
       
       // Información de pago/tarjeta
@@ -369,29 +368,15 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-foreground border-b pb-2">Información de la Estación</h4>
               
-              <FormField
-                control={form.control}
-                name="station_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nombre de la Estación</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Shell, Pilot, Loves..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="station_address"
+                  name="station_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Dirección</FormLabel>
+                      <FormLabel>Nombre de la Estación</FormLabel>
                       <FormControl>
-                        <Input placeholder="Dirección completa" {...field} />
+                        <Input placeholder="Shell, Pilot, Loves..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -405,7 +390,11 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                     <FormItem>
                       <FormLabel>Estado</FormLabel>
                       <FormControl>
-                        <Input placeholder="TX, CA, FL..." maxLength={2} {...field} />
+                        <StateCombobox
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder="Selecciona estado..."
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
