@@ -1,4 +1,5 @@
 import jsPDF from "jspdf";
+import { formatDateSafe, createDateInUserTimeZone } from './dateFormatting';
 
 interface PaymentReportData {
   driver: {
@@ -167,20 +168,25 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   };
 
   const formatWeekInfo = () => {
-    const startDate = new Date(data.period.start_date);
-    const endDate = new Date(data.period.end_date);
+    // Parsear fechas de manera segura para evitar problemas de zona horaria
+    const startDate = new Date(data.period.start_date + 'T12:00:00');
+    const endDate = new Date(data.period.end_date + 'T12:00:00');
     const year = startDate.getFullYear();
     
-    // Calcular semana del año
+    // Calcular semana del año usando fechas correctas
     const onejan = new Date(year, 0, 1);
     const week = Math.ceil((((startDate.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
     
+    // Formatear fechas usando las funciones seguras
+    const startFormatted = formatDateSafe(data.period.start_date, 'MMM d');
+    const endFormatted = formatDateSafe(data.period.end_date, 'MMM d');
+    
     return {
       week: `Week ${week} / ${year}`,
-      dateRange: `${startDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})} - ${endDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}`,
+      dateRange: `${startFormatted} - ${endFormatted}`,
       paymentDate: data.period.payment_date ? 
-        `Payment Date: ${new Date(data.period.payment_date).toLocaleDateString('en-US', {month: '2-digit', day: '2-digit', year: 'numeric'})}` :
-        `Payment Date: ${new Date().toLocaleDateString('en-US', {month: '2-digit', day: '2-digit', year: 'numeric'})}`
+        `Payment Date: ${formatDateSafe(data.period.payment_date, 'MM/dd/yyyy')}` :
+        `Payment Date: ${formatDateSafe(new Date().toISOString(), 'MM/dd/yyyy')}`
     };
   };
 
