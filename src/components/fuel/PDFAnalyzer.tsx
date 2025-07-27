@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
 import { useAuth } from '@/hooks/useAuth';
 import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
+import { formatDateInUserTimeZone, formatDateSafe } from '@/lib/dateFormatting';
 
 interface AnalysisResult {
   columnsFound: string[];
@@ -128,8 +129,14 @@ export function PDFAnalyzer() {
     const frequencyDays = 7;
     
     // Encontrar el lunes de la semana de la fecha seleccionada
-    const dayOfWeek = date.getDay();
-    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Si es domingo (0), retroceder 6 días
+    const dayOfWeek = date.getDay(); // 0 = domingo, 1 = lunes, etc.
+    let daysToMonday;
+    
+    if (dayOfWeek === 0) { // Domingo
+      daysToMonday = 6; // Retroceder 6 días para llegar al lunes anterior
+    } else {
+      daysToMonday = dayOfWeek - 1; // Retroceder los días necesarios para llegar al lunes
+    }
     
     const periodStart = new Date(date);
     periodStart.setDate(date.getDate() - daysToMonday);
@@ -138,8 +145,8 @@ export function PDFAnalyzer() {
     periodEnd.setDate(periodStart.getDate() + frequencyDays - 1);
     
     return {
-      start: periodStart.toISOString().split('T')[0],
-      end: periodEnd.toISOString().split('T')[0]
+      start: formatDateInUserTimeZone(periodStart),
+      end: formatDateInUserTimeZone(periodEnd)
     };
   };
 
@@ -255,9 +262,9 @@ export function PDFAnalyzer() {
         };
 
         // Verificar si la transacción ya existe en la base de datos
-        const txnDateStr = new Date(transaction.date).toISOString().split('T')[0];
+        const txnDateStr = formatDateInUserTimeZone(new Date(transaction.date));
         const existingTransaction = existingFuelExpenses?.find(existing => {
-          const existingDate = new Date(existing.transaction_date).toISOString().split('T')[0];
+          const existingDate = formatDateInUserTimeZone(new Date(existing.transaction_date));
           const sameDate = existingDate === txnDateStr;
           const sameInvoice = existing.invoice_number === transaction.invoice;
           const sameCard = existing.card_last_four?.includes(transaction.card.slice(-4)) || 
@@ -413,7 +420,7 @@ export function PDFAnalyzer() {
       // Crear períodos automáticamente para transacciones que los necesiten
       for (const transaction of validTransactions) {
         if (transaction.period_mapping_status === 'will_create' && transaction.driver_user_id) {
-          const targetDate = new Date(transaction.date).toISOString().split('T')[0];
+          const targetDate = formatDateInUserTimeZone(new Date(transaction.date));
           
           // Obtener companyId del usuario
           const { data: userCompanies } = await supabase
