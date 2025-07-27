@@ -234,19 +234,19 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   });
   
   // Posicionar toda la información debajo del nombre de la compañía
-  let companyInfoY = currentY + 8;
+  let companyInfoY = currentY + 6;
   
   if (data.company.address) {
     const addressLines = data.company.address.split('\n');
     
     addressLines.forEach((line, index) => {
-      addText(line.trim(), col1X + logoWidth, companyInfoY + (index * 6), {
+      addText(line.trim(), col1X + logoWidth, companyInfoY + (index * 4), {
         fontSize: 9,
         color: colors.text
       });
     });
     
-    companyInfoY += (addressLines.length * 6) + 1;
+    companyInfoY += (addressLines.length * 4);
   }
   
   if (data.company.phone) {
@@ -254,7 +254,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       fontSize: 9,
       color: colors.text
     });
-    companyInfoY += 6;
+    companyInfoY += 4;
   }
   
   if (data.company.email) {
@@ -273,20 +273,20 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     align: 'center'
   });
   
-  addText(weekInfo.week, col2X + colWidth/2, currentY + 10, {
+  addText(weekInfo.week, col2X + colWidth/2, currentY + 8, {
     fontSize: 12,
     fontStyle: 'bold',
     color: colors.text,
     align: 'center'
   });
   
-  addText(weekInfo.dateRange, col2X + colWidth/2, currentY + 18, {
+  addText(weekInfo.dateRange, col2X + colWidth/2, currentY + 14, {
     fontSize: 10,
     color: colors.text,
     align: 'center'
   });
   
-  addText(weekInfo.paymentDate, col2X + colWidth/2, currentY + 26, {
+  addText(weekInfo.paymentDate, col2X + colWidth/2, currentY + 20, {
     fontSize: 9,
     color: colors.text,
     align: 'center'
