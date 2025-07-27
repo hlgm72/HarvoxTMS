@@ -75,14 +75,27 @@ export function PaymentReportDialog({
     queryFn: async () => {
       if (!calculation?.driver_user_id) return null;
       
-      const { data, error } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('user_id, first_name, last_name')
+        .select('user_id, first_name, last_name, phone')
         .eq('user_id', calculation.driver_user_id)
         .single();
 
-      if (error) throw error;
-      return data;
+      if (profileError) throw profileError;
+
+      // Obtener información adicional del conductor
+      const { data: driverData, error: driverError } = await supabase
+        .from('driver_profiles')
+        .select('license_number, license_state')
+        .eq('user_id', calculation.driver_user_id)
+        .single();
+
+      // Combinar los datos (driver_profiles es opcional)
+      return {
+        ...profileData,
+        license_number: driverData?.license_number || null,
+        license_state: driverData?.license_state || null
+      };
     },
     enabled: !!calculation?.driver_user_id
   });
@@ -159,7 +172,13 @@ export function PaymentReportDialog({
     return {
       driver: {
         name: `${driver.first_name} ${driver.last_name}`,
-        user_id: calculation.driver_user_id
+        user_id: calculation.driver_user_id,
+        license: driver.license_number,
+        license_state: driver.license_state,
+        phone: driver.phone,
+        // TODO: Agregar dirección y email cuando estén disponibles en la base de datos
+        address: null,
+        email: null
       },
       period: {
         start_date: calculation.company_payment_periods.period_start_date,

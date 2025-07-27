@@ -6,6 +6,7 @@ interface PaymentReportData {
     name: string;
     user_id: string;
     license?: string;
+    license_state?: string;
     address?: string;
     phone?: string;
     email?: string;
@@ -307,7 +308,11 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   });
   
   if (data.driver.license) {
-    addText(`Driver License: ${data.driver.license}`, col3X + colWidth - 5, currentY + 12, {
+    const licenseText = data.driver.license_state 
+      ? `Driver License: ${data.driver.license} (${data.driver.license_state})`
+      : `Driver License: ${data.driver.license}`;
+    
+    addText(licenseText, col3X + colWidth - 5, currentY + 12, {
       fontSize: 9,
       color: colors.text,
       align: 'right'
