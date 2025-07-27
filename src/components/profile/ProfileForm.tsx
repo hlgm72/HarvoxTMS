@@ -186,22 +186,12 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
                     {...phoneHandlers}
                   />
                 </FormControl>
-                <FormDescription className="text-xs">
-                  Número de teléfono para contacto (opcional)
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
           <Separator className="my-6" />
-          
-          <div className="mb-4">
-            <h4 className="text-sm font-medium mb-2">Dirección</h4>
-            <p className="text-xs text-muted-foreground">
-              Información de tu dirección personal (opcional)
-            </p>
-          </div>
 
           <AddressForm
             streetAddress={profileForm.watch('street_address') || ''}
