@@ -76,7 +76,7 @@ export function StateCombobox({
             <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
             {selectedState ? selectedState.name : placeholder}
           </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
