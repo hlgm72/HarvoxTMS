@@ -166,111 +166,121 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     };
   };
 
-  // === HEADER LIMPIO COMO LA IMAGEN ===
+  // === HEADER EN TRES COLUMNAS ===
   currentY = 20;
   
-  // Logo/Nombre de la empresa (izquierda)
-  addText('HG', margin, currentY, {
+  // Definir columnas
+  const colWidth = (pageWidth - margin*2) / 3;
+  const col1X = margin;
+  const col2X = margin + colWidth;
+  const col3X = margin + colWidth * 2;
+  
+  // === COLUMNA 1: INFORMACIÓN DE LA COMPAÑÍA ===
+  addText('HG', col1X, currentY, {
     fontSize: 28,
     fontStyle: 'bold',
     color: colors.primary
   });
   
-  addText(data.company.name || 'HG Transport LLC', margin + 20, currentY, {
-    fontSize: 16,
+  addText(data.company.name || 'Transport LLC', col1X + 20, currentY, {
+    fontSize: 14,
     fontStyle: 'bold',
     color: colors.darkGray
   });
   
-  // Información de la empresa
-  addText(data.company.address || '10402 Sun River Falls Dr', margin, currentY + 10, {
+  addText(data.company.address || '10402 Sun River Falls Dr', col1X, currentY + 12, {
     fontSize: 9,
     color: colors.text
   });
   
-  addText('Humble, TX, 77396', margin, currentY + 18, {
+  addText('Humble, TX, 77396', col1X, currentY + 20, {
     fontSize: 9,
     color: colors.text
   });
   
-  addText(data.company.phone || '(281) 713-3044', margin, currentY + 26, {
+  addText(data.company.phone || '(281) 713-3044', col1X, currentY + 28, {
     fontSize: 9,
     color: colors.text
   });
   
-  addText(data.company.email || 'hgtransport16@gmail.com', margin, currentY + 34, {
+  addText(data.company.email || 'hgtransport16@gmail.com', col1X, currentY + 36, {
     fontSize: 9,
     color: colors.text
   });
 
-  // Título central exacto como la imagen
+  // === COLUMNA 2: INFORMACIÓN DEL PERIODO ===
   const weekInfo = formatWeekInfo();
-  addText('Driver Pay Report', pageWidth/2, currentY, {
-    fontSize: 18,
+  addText('Driver Pay Report', col2X + colWidth/2, currentY, {
+    fontSize: 16,
     fontStyle: 'bold',
     color: colors.darkGray,
     align: 'center'
   });
   
-  addText(weekInfo.week, pageWidth/2, currentY + 12, {
+  addText(weekInfo.week, col2X + colWidth/2, currentY + 12, {
     fontSize: 12,
     fontStyle: 'bold',
     color: colors.text,
     align: 'center'
   });
   
-  addText(weekInfo.dateRange, pageWidth/2, currentY + 22, {
-    fontSize: 11,
-    color: colors.text,
-    align: 'center'
-  });
-  
-  addText(weekInfo.paymentDate, pageWidth/2, currentY + 32, {
+  addText(weekInfo.dateRange, col2X + colWidth/2, currentY + 22, {
     fontSize: 10,
     color: colors.text,
     align: 'center'
   });
+  
+  addText(weekInfo.paymentDate, col2X + colWidth/2, currentY + 32, {
+    fontSize: 9,
+    color: colors.text,
+    align: 'center'
+  });
 
-  // Información del conductor (derecha) exacta como la imagen
-  const rightX = pageWidth - margin - 80;
-  addText(data.driver.name, rightX, currentY, {
+  // === COLUMNA 3: INFORMACIÓN DEL CONDUCTOR ===
+  addText(data.driver.name, col3X + colWidth - 5, currentY, {
     fontSize: 14,
     fontStyle: 'bold',
-    color: colors.darkGray
+    color: colors.darkGray,
+    align: 'right'
   });
   
   if (data.driver.license) {
-    addText(`Driver License: ${data.driver.license}`, rightX, currentY + 10, {
+    addText(`Driver License: ${data.driver.license}`, col3X + colWidth - 5, currentY + 12, {
       fontSize: 9,
-      color: colors.text
+      color: colors.text,
+      align: 'right'
     });
   }
   
   if (data.driver.address) {
     // Dividir la dirección en líneas si es muy larga
     const addressParts = data.driver.address.split(',');
-    addText(addressParts[0] || data.driver.address, rightX, currentY + 18, {
+    addText(addressParts[0] || data.driver.address, col3X + colWidth - 5, currentY + 20, {
       fontSize: 9,
-      color: colors.text
+      color: colors.text,
+      align: 'right'
     });
     
     if (addressParts.length > 1) {
-      addText(addressParts.slice(1).join(',').trim(), rightX, currentY + 26, {
+      addText(addressParts.slice(1).join(',').trim(), col3X + colWidth - 5, currentY + 28, {
         fontSize: 9,
-        color: colors.text
+        color: colors.text,
+        align: 'right'
       });
     }
   }
   
   if (data.driver.phone && data.driver.email) {
-    addText(`${data.driver.phone} | ${data.driver.email}`, rightX, currentY + 34, {
+    addText(`${data.driver.phone} | ${data.driver.email}`, col3X + colWidth - 5, currentY + 36, {
       fontSize: 8,
-      color: colors.text
+      color: colors.text,
+      align: 'right'
     });
   } else if (data.driver.phone || data.driver.email) {
-    addText(data.driver.phone || data.driver.email, rightX, currentY + 34, {
+    addText(data.driver.phone || data.driver.email, col3X + colWidth - 5, currentY + 36, {
       fontSize: 8,
-      color: colors.text
+      color: colors.text,
+      align: 'right'
     });
   }
 
@@ -398,18 +408,18 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   currentY += 15;
 
   // Dos columnas de gastos
-  const colWidth = (pageWidth - margin*2 - 10) / 2;
+  const expenseColWidth = (pageWidth - margin*2 - 10) / 2;
   
   // Columna 1: Deductions
-  const col1X = margin;
-  const col1Y = currentY;
+  const expense1X = margin;
+  const expense1Y = currentY;
   
   const redRgb = hexToRgb(colors.lightRed);
   doc.setFillColor(redRgb[0], redRgb[1], redRgb[2]);
-  doc.rect(col1X, col1Y - 5, colWidth, 8, 'F');
+  doc.rect(expense1X, expense1Y - 5, expenseColWidth, 8, 'F');
   
   const totalDeductions = data.deductions?.reduce((sum, d) => sum + d.amount, 0) || 0;
-  addText(`Deductions ($${totalDeductions.toFixed(2)})`, col1X + 2, col1Y, {
+  addText(`Deductions ($${totalDeductions.toFixed(2)})`, expense1X + 2, expense1Y, {
     fontSize: 10,
     fontStyle: 'bold',
     color: colors.darkGray
@@ -419,12 +429,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   if (data.deductions && data.deductions.length > 0) {
     data.deductions.forEach(deduction => {
-      addText(deduction.description, col1X + 2, currentY, {
+      addText(deduction.description, expense1X + 2, currentY, {
         fontSize: 9,
         color: colors.gray
       });
       
-      addText(formatCurrency(-deduction.amount), col1X + colWidth - 2, currentY, {
+      addText(formatCurrency(-deduction.amount), expense1X + expenseColWidth - 2, currentY, {
         fontSize: 9,
         color: colors.danger,
         align: 'right'
@@ -435,40 +445,40 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   }
 
   // Columna 2: Weekly Expenses
-  const col2X = margin + colWidth + 10;
-  let col2Y = col1Y;
+  const expense2X = margin + expenseColWidth + 10;
+  let expense2Y = expense1Y;
   
   const redRgb2 = hexToRgb(colors.lightRed);
   doc.setFillColor(redRgb2[0], redRgb2[1], redRgb2[2]);
-  doc.rect(col2X, col2Y - 5, colWidth, 8, 'F');
+  doc.rect(expense2X, expense2Y - 5, expenseColWidth, 8, 'F');
   
   const totalWeekly = data.weeklyExpenses?.reduce((sum, w) => sum + w.amount, 0) || 0;
-  addText(`Weekly Expenses ($${totalWeekly.toFixed(2)})`, col2X + 2, col2Y, {
+  addText(`Weekly Expenses ($${totalWeekly.toFixed(2)})`, expense2X + 2, expense2Y, {
     fontSize: 10,
     fontStyle: 'bold',
     color: colors.darkGray
   });
   
-  col2Y += 10;
+  expense2Y += 10;
   
   if (data.weeklyExpenses && data.weeklyExpenses.length > 0) {
     data.weeklyExpenses.forEach(expense => {
-      addText(expense.description, col2X + 2, col2Y, {
+      addText(expense.description, expense2X + 2, expense2Y, {
         fontSize: 9,
         color: colors.gray
       });
       
-      addText(formatCurrency(-expense.amount), col2X + colWidth - 2, col2Y, {
+      addText(formatCurrency(-expense.amount), expense2X + expenseColWidth - 2, expense2Y, {
         fontSize: 9,
         color: colors.danger,
         align: 'right'
       });
       
-      col2Y += 6;
+      expense2Y += 6;
     });
   }
 
-  currentY = Math.max(currentY, col2Y) + 15;
+  currentY = Math.max(currentY, expense2Y) + 15;
 
   // === FUEL PURCHASES ===
   const grayRgb = hexToRgb(colors.lightGray);
