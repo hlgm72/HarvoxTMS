@@ -59,11 +59,28 @@ export function useEquipment() {
   const { user } = useAuth();
 
   const equipmentQuery = useQuery({
-    queryKey: ["equipment"],
+    queryKey: ["equipment", user?.id],
     queryFn: async () => {
+      if (!user?.id) {
+        throw new Error("Usuario no autenticado");
+      }
+
+      // First get user's company_id
+      const { data: userRoles, error: roleError } = await supabase
+        .from("user_company_roles")
+        .select("company_id")
+        .eq("user_id", user.id)
+        .eq("is_active", true);
+
+      if (roleError || !userRoles || userRoles.length === 0) {
+        throw new Error("No se pudo obtener información de la compañía");
+      }
+
+      // Get equipment for user's company
       const { data, error } = await supabase
         .from("company_equipment")
         .select("*")
+        .eq("company_id", userRoles[0].company_id)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -72,6 +89,7 @@ export function useEquipment() {
 
       return data as Equipment[];
     },
+    enabled: !!user?.id,
   });
 
   const createEquipmentMutation = useMutation({
@@ -129,7 +147,7 @@ export function useEquipment() {
     onSuccess: (data) => {
       console.log('🔧 Equipment created successfully:', data);
       // Update cache immediately by adding the new equipment to the list
-      queryClient.setQueryData(["equipment"], (oldData: Equipment[] | undefined) => {
+      queryClient.setQueryData(["equipment", user?.id], (oldData: Equipment[] | undefined) => {
         return oldData ? [data, ...oldData] : [data];
       });
       // Also invalidate for consistency
@@ -198,7 +216,7 @@ export function useEquipment() {
     onSuccess: (deletedId) => {
       console.log('🔧 Equipment deleted successfully');
       // Update cache immediately by removing the equipment from the list
-      queryClient.setQueryData(["equipment"], (oldData: Equipment[] | undefined) => {
+      queryClient.setQueryData(["equipment", user?.id], (oldData: Equipment[] | undefined) => {
         return oldData ? oldData.filter(equipment => equipment.id !== deletedId) : [];
       });
       // Also invalidate for consistency
