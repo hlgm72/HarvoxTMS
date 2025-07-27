@@ -65,22 +65,40 @@ export function AddressForm({
 
   return (
     <div className="grid grid-cols-1 gap-4">
-      <div className="space-y-2">
-        <Label htmlFor="street-address">
-          {streetAddressLabel}
-          {required && " *"}
-        </Label>
-        <Input
-          id="street-address"
-          value={streetAddress}
-          onChange={streetAddressHandlers.onChange}
-          onBlur={streetAddressHandlers.onBlur}
-          placeholder="123 Calle Principal"
-          disabled={disabled}
-        />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="street-address">
+            {streetAddressLabel}
+            {required && " *"}
+          </Label>
+          <Input
+            id="street-address"
+            value={streetAddress}
+            onChange={streetAddressHandlers.onChange}
+            onBlur={streetAddressHandlers.onBlur}
+            placeholder="123 Calle Principal"
+            disabled={disabled}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="zip-code">
+            {zipCodeLabel}
+            {required && " *"}
+          </Label>
+          <Input
+            id="zip-code"
+            value={zipCode}
+            onChange={zipCodeHandlers.onChange}
+            onKeyPress={zipCodeHandlers.onKeyPress}
+            placeholder="12345"
+            disabled={disabled}
+            maxLength={5}
+          />
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>
             {stateLabel}
@@ -104,22 +122,6 @@ export function AddressForm({
             stateId={stateId}
             disabled={disabled}
             placeholder="Buscar ciudad (opcional)..."
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="zip-code">
-            {zipCodeLabel}
-            {required && " *"}
-          </Label>
-          <Input
-            id="zip-code"
-            value={zipCode}
-            onChange={zipCodeHandlers.onChange}
-            onKeyPress={zipCodeHandlers.onKeyPress}
-            placeholder="12345"
-            disabled={disabled}
-            maxLength={5}
           />
         </div>
       </div>
