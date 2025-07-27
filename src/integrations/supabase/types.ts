@@ -455,7 +455,7 @@ export type Database = {
         }
         Relationships: []
       }
-      driver_cards: {
+      driver_fuel_cards: {
         Row: {
           assigned_date: string
           card_identifier: string | null

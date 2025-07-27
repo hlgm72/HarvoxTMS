@@ -17,7 +17,7 @@ export function useDriverCards(driverUserId?: string) {
       if (!driverUserId) return [];
       
       const { data, error } = await supabase
-        .from('driver_cards')
+        .from('driver_fuel_cards')
         .select('*')
         .eq('driver_user_id', driverUserId)
         .eq('is_active', true)

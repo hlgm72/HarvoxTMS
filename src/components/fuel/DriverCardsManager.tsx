@@ -66,7 +66,7 @@ export function DriverCardsManager() {
     queryKey: ['driver-cards'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('driver_cards')
+        .from('driver_fuel_cards')
         .select('*')
         .eq('is_active', true)
         .order('assigned_date', { ascending: false });
@@ -135,7 +135,7 @@ export function DriverCardsManager() {
       if (editingCard) {
         // Update existing card
         const { data, error } = await supabase
-          .from('driver_cards')
+          .from('driver_fuel_cards')
           .update({
             driver_user_id: selectedDriver,
             card_number_last_five: cardLastFour,
@@ -177,7 +177,7 @@ export function DriverCardsManager() {
         };
 
         const { data, error } = await supabase
-          .from('driver_cards')
+          .from('driver_fuel_cards')
           .insert(cardData)
           .select()
           .maybeSingle();
@@ -200,7 +200,7 @@ export function DriverCardsManager() {
   const removeCardMutation = useMutation({
     mutationFn: async (cardId: string) => {
       const { error } = await supabase
-        .from('driver_cards')
+        .from('driver_fuel_cards')
         .update({ 
           is_active: false,
           deactivated_date: new Date().toISOString()

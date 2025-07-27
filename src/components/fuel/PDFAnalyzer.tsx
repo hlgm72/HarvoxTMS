@@ -192,7 +192,7 @@ export function PDFAnalyzer() {
 
       // Obtener tarjetas de conductores
       const { data: driverCards } = await supabase
-        .from('driver_cards')
+        .from('driver_fuel_cards')
         .select(`
           card_number_last_five,
           card_identifier,
