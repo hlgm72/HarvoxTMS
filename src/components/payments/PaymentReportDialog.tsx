@@ -22,7 +22,8 @@ import {
   TrendingUp,
   AlertTriangle,
   Package,
-  FileText
+  FileText,
+  Eye
 } from "lucide-react";
 import { formatPaymentPeriod } from "@/lib/dateFormatting";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
@@ -131,48 +132,69 @@ export function PaymentReportDialog({
     enabled: !!calculation
   });
 
+  const getReportData = () => {
+    if (!calculation || !driver) return null;
+    
+    return {
+      driver: {
+        name: `${driver.first_name} ${driver.last_name}`,
+        user_id: calculation.driver_user_id
+      },
+      period: {
+        start_date: calculation.company_payment_periods.period_start_date,
+        end_date: calculation.company_payment_periods.period_end_date,
+        gross_earnings: calculation.gross_earnings,
+        fuel_expenses: calculation.fuel_expenses,
+        total_deductions: calculation.total_deductions,
+        other_income: calculation.other_income,
+        net_payment: calculation.net_payment
+      },
+      company: {
+        name: 'Tu Empresa'
+      },
+      loads: loads.map(load => ({
+        load_number: load.load_number,
+        pickup_date: load.pickup_date,
+        delivery_date: load.delivery_date,
+        client_name: 'Cliente',
+        total_amount: load.total_amount
+      })),
+      fuelExpenses: fuelExpenses.map(expense => ({
+        transaction_date: expense.transaction_date,
+        station_name: expense.station_name || 'Estación',
+        gallons_purchased: expense.gallons_purchased,
+        total_amount: expense.total_amount
+      }))
+    };
+  };
+
   const handleGeneratePDF = async () => {
-    if (!calculation || !driver) return;
+    const reportData = getReportData();
+    if (!reportData) return;
     
     setIsGeneratingPDF(true);
     try {
-      const reportData = {
-        driver: {
-          name: `${driver.first_name} ${driver.last_name}`,
-          user_id: calculation.driver_user_id
-        },
-        period: {
-          start_date: calculation.company_payment_periods.period_start_date,
-          end_date: calculation.company_payment_periods.period_end_date,
-          gross_earnings: calculation.gross_earnings,
-          fuel_expenses: calculation.fuel_expenses,
-          total_deductions: calculation.total_deductions,
-          other_income: calculation.other_income,
-          net_payment: calculation.net_payment
-        },
-        company: {
-          name: 'Tu Empresa'
-        },
-        loads: loads.map(load => ({
-          load_number: load.load_number,
-          pickup_date: load.pickup_date,
-          delivery_date: load.delivery_date,
-          client_name: 'Cliente',
-          total_amount: load.total_amount
-        })),
-        fuelExpenses: fuelExpenses.map(expense => ({
-          transaction_date: expense.transaction_date,
-          station_name: expense.station_name || 'Estación',
-          gallons_purchased: expense.gallons_purchased,
-          total_amount: expense.total_amount
-        }))
-      };
-
       await generatePaymentReportPDF(reportData);
       showSuccess("PDF Generado", "El reporte se ha descargado exitosamente");
     } catch (error: any) {
       console.error('Error generating PDF:', error);
       showError("Error", "No se pudo generar el PDF");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
+  const handlePreviewPDF = async () => {
+    const reportData = getReportData();
+    if (!reportData) return;
+    
+    setIsGeneratingPDF(true);
+    try {
+      await generatePaymentReportPDF(reportData, true); // true for preview mode
+      showSuccess("PDF Abierto", "El reporte se ha abierto en una nueva pestaña");
+    } catch (error: any) {
+      console.error('Error previewing PDF:', error);
+      showError("Error", "No se pudo abrir la vista previa");
     } finally {
       setIsGeneratingPDF(false);
     }
@@ -359,14 +381,23 @@ export function PaymentReportDialog({
           )}
 
           {/* Acciones */}
-          <div className="flex items-center gap-4 pt-4">
+          <div className="flex items-center gap-3 pt-4">
+            <Button 
+              onClick={handlePreviewPDF}
+              disabled={isGeneratingPDF}
+              variant="outline"
+              className="flex-1"
+            >
+              <Eye className="h-4 w-4 mr-2" />
+              {isGeneratingPDF ? 'Generando...' : 'Ver PDF'}
+            </Button>
             <Button 
               onClick={handleGeneratePDF}
               disabled={isGeneratingPDF}
               className="flex-1"
             >
               <Download className="h-4 w-4 mr-2" />
-              {isGeneratingPDF ? 'Generando PDF...' : 'Descargar PDF'}
+              {isGeneratingPDF ? 'Generando...' : 'Descargar PDF'}
             </Button>
             <Button 
               variant="outline"

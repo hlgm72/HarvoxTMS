@@ -63,7 +63,7 @@ interface PaymentReportData {
   }>;
 }
 
-export async function generatePaymentReportPDF(data: PaymentReportData) {
+export async function generatePaymentReportPDF(data: PaymentReportData, isPreview: boolean = false) {
   const doc = new jsPDF('p', 'mm', 'a4');
   const pageWidth = doc.internal.pageSize.width;
   const pageHeight = doc.internal.pageSize.height;
@@ -579,7 +579,15 @@ export async function generatePaymentReportPDF(data: PaymentReportData) {
     color: colors.gray
   });
 
-  // Descargar el PDF
+  // Descargar o ver el PDF
   const fileName = `Driver_Pay_Report_${data.driver.name.replace(/\s+/g, '_')}_${weekInfo.week.replace(/\s+/g, '_')}.pdf`;
-  doc.save(fileName);
+  
+  if (isPreview) {
+    // Abrir PDF en nueva pestaña para vista previa
+    const pdfDataUri = doc.output('datauristring');
+    window.open(pdfDataUri, '_blank');
+  } else {
+    // Descargar PDF
+    doc.save(fileName);
+  }
 }
