@@ -220,7 +220,7 @@ export function useEquipment() {
 
   // Set up real-time subscription to automatically refresh equipment list
   useEffect(() => {
-    if (!user?.id) return;
+    if (!userCompany?.company_id) return;
 
     const channel = supabase
       .channel('equipment-changes')
@@ -239,10 +239,13 @@ export function useEquipment() {
       )
       .subscribe();
 
+    // Force initial refresh
+    queryClient.invalidateQueries({ queryKey: ["equipment"] });
+
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, queryClient]);
+  }, [userCompany?.company_id, queryClient]);
 
   return {
     equipment: equipmentQuery.data,
