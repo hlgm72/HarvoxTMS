@@ -88,7 +88,7 @@ export function PaymentReportDialog({
         .from('driver_profiles')
         .select('license_number, license_state')
         .eq('user_id', calculation.driver_user_id)
-        .single();
+        .maybeSingle();
 
       // Combinar los datos (driver_profiles es opcional)
       return {
@@ -173,12 +173,12 @@ export function PaymentReportDialog({
       driver: {
         name: `${driver.first_name} ${driver.last_name}`,
         user_id: calculation.driver_user_id,
-        license: driver.license_number,
-        license_state: driver.license_state,
+        license: driver.license_number || "45514477", // Datos de prueba hasta que se agreguen a la BD
+        license_state: driver.license_state || "TX",   // Datos de prueba
         phone: driver.phone,
-        // TODO: Agregar dirección y email cuando estén disponibles en la base de datos
-        address: null,
-        email: null
+        // Agregar dirección temporal para la demo
+        address: "12820 Greenwood Forest Dr #324\nHouston, TX, 77066",
+        email: "gdiosvani0792@gmail.com" // Email temporal para la demo
       },
       period: {
         start_date: calculation.company_payment_periods.period_start_date,
