@@ -430,7 +430,7 @@ export function PDFAnalyzer() {
             Analizador de PDF
           </CardTitle>
           <CardDescription>
-            Sube un PDF de gastos de combustible para verificar si contiene la columna "authorization_code"
+            Sube un PDF de gastos de combustible para extraer automáticamente las transacciones de los conductores y sus vehículos
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
