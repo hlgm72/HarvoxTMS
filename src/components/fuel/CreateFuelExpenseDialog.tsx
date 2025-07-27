@@ -387,7 +387,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                       </Select>
                       {predictedPeriod && (
                         <p className="text-xs text-blue-600 mt-1">
-                          💡 Se creará automáticamente el período del {format(new Date(predictedPeriod.start), 'dd/MM/yyyy')} al {format(new Date(predictedPeriod.end), 'dd/MM/yyyy')} al guardar
+                          💡 Este período se creará automáticamente al guardar
                         </p>
                       )}
                       <FormMessage />
