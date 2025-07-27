@@ -275,7 +275,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                   control={form.control}
                   name="payment_period_id"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-col">
                       <FormLabel>Período de Pago</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
