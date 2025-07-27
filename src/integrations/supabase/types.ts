@@ -2473,6 +2473,42 @@ export type Database = {
           },
         ]
       }
+      secure_cron_jobs: {
+        Row: {
+          active: boolean | null
+          command: string | null
+          database: string | null
+          jobid: number | null
+          jobname: string | null
+          nodename: string | null
+          nodeport: number | null
+          schedule: string | null
+          username: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          command?: string | null
+          database?: string | null
+          jobid?: number | null
+          jobname?: string | null
+          nodename?: string | null
+          nodeport?: number | null
+          schedule?: string | null
+          username?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          command?: string | null
+          database?: string | null
+          jobid?: number | null
+          jobname?: string | null
+          nodename?: string | null
+          nodeport?: number | null
+          schedule?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       archive_company_document: {
@@ -2684,6 +2720,10 @@ export type Database = {
         Args: { period_id: string }
         Returns: boolean
       }
+      is_secure_user: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_superadmin: {
         Args: { user_id_param?: string }
         Returns: boolean
@@ -2759,6 +2799,14 @@ export type Database = {
       restore_company_document: {
         Args: { document_id: string }
         Returns: Json
+      }
+      secure_cron_schedule: {
+        Args: { job_name: string; schedule: string; command: string }
+        Returns: number
+      }
+      secure_cron_unschedule: {
+        Args: { job_name: string }
+        Returns: boolean
       }
       use_reset_token: {
         Args: { token_param: string }
