@@ -1,0 +1,306 @@
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AddressForm } from '@/components/ui/AddressForm';
+import { useFleetNotifications } from '@/components/notifications';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { supabase } from '@/integrations/supabase/client';
+import { Save, RotateCcw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { createTextHandlers } from '@/lib/textUtils';
+
+const profileSchema = z.object({
+  first_name: z.string().min(1, 'El nombre es requerido'),
+  last_name: z.string().min(1, 'El apellido es requerido'),
+  phone: z.string().optional(),
+  preferred_language: z.string().optional(),
+  timezone: z.string().optional(),
+  street_address: z.string().optional(),
+  state_id: z.string().optional(),
+  city_id: z.string().optional(),
+  zip_code: z.string().optional(),
+});
+
+type ProfileFormData = z.infer<typeof profileSchema>;
+
+interface ProfileFormProps {
+  onCancel?: () => void;
+  showCancelButton?: boolean;
+  className?: string;
+}
+
+export function ProfileForm({ onCancel, showCancelButton = true, className }: ProfileFormProps) {
+  const { t, i18n } = useTranslation(['common']);
+  const { showSuccess, showError } = useFleetNotifications();
+  const { profile, user, refreshProfile } = useUserProfile();
+  const [updating, setUpdating] = useState(false);
+
+  // Create handlers for text inputs
+  const nameHandlers = createTextHandlers((value) => 
+    profileForm.setValue('first_name', value)
+  );
+  
+  const lastNameHandlers = createTextHandlers((value) => 
+    profileForm.setValue('last_name', value)
+  );
+  
+  const phoneHandlers = createTextHandlers((value) => 
+    profileForm.setValue('phone', value), 'phone'
+  );
+
+  const profileForm = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      first_name: '',
+      last_name: '',
+      phone: '',
+      preferred_language: 'en',
+      timezone: 'America/New_York',
+      street_address: '',
+      state_id: '',
+      city_id: '',
+      zip_code: '',
+    },
+  });
+
+  useEffect(() => {
+    if (profile) {
+      profileForm.reset({
+        first_name: profile.first_name || '',
+        last_name: profile.last_name || '',
+        phone: profile.phone || '',
+        preferred_language: profile.preferred_language || 'en',
+        timezone: profile.timezone || 'America/New_York',
+        street_address: profile.street_address || '',
+        state_id: profile.state_id || '',
+        city_id: profile.city_id || '',
+        zip_code: profile.zip_code || '',
+      });
+    }
+  }, [profile, profileForm]);
+
+  const onSubmitProfile = async (data: ProfileFormData) => {
+    if (!user) return;
+
+    setUpdating(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          first_name: data.first_name,
+          last_name: data.last_name,
+          phone: data.phone || null,
+          preferred_language: data.preferred_language || 'en',
+          timezone: data.timezone || 'America/New_York',
+          street_address: data.street_address || null,
+          state_id: data.state_id || null,
+          city_id: data.city_id || null,
+          zip_code: data.zip_code || null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // Update i18n language if changed
+      if (data.preferred_language && data.preferred_language !== i18n.language) {
+        i18n.changeLanguage(data.preferred_language);
+      }
+
+      // Refresh profile data to update the UI
+      await refreshProfile();
+
+      showSuccess(
+        "Perfil actualizado exitosamente",
+        "Su información personal ha sido guardada correctamente."
+      );
+    } catch (error: any) {
+      showError(
+        "Error en la actualización",
+        error.message || "No se ha podido completar la actualización del perfil. Por favor, inténtelo nuevamente."
+      );
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (profile) {
+      profileForm.reset({
+        first_name: profile.first_name || '',
+        last_name: profile.last_name || '',
+        phone: profile.phone || '',
+        preferred_language: profile.preferred_language || 'en',
+        timezone: profile.timezone || 'America/New_York',
+        street_address: profile.street_address || '',
+        state_id: profile.state_id || '',
+        city_id: profile.city_id || '',
+        zip_code: profile.zip_code || '',
+      });
+    }
+    onCancel?.();
+  };
+
+  return (
+    <div className={className}>
+      <div className="mb-4">
+        <h3 className="text-base md:text-lg font-medium">Información Personal</h3>
+        <p className="text-xs md:text-sm text-muted-foreground">
+          Actualiza tu información personal y preferencias
+        </p>
+      </div>
+      
+      <Form {...profileForm}>
+        <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={profileForm.control}
+              name="first_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Nombre</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Tu nombre" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={profileForm.control}
+              name="last_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Apellido</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Tu apellido" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <FormField
+            control={profileForm.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">Teléfono</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="(555) 123-4567" 
+                    value={field.value || ''} 
+                    {...phoneHandlers}
+                  />
+                </FormControl>
+                <FormDescription className="text-xs">
+                  Número de teléfono para contacto (opcional)
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Separator className="my-6" />
+          
+          <div className="mb-4">
+            <h4 className="text-sm font-medium mb-2">Dirección</h4>
+            <p className="text-xs text-muted-foreground">
+              Información de tu dirección personal (opcional)
+            </p>
+          </div>
+
+          <AddressForm
+            streetAddress={profileForm.watch('street_address') || ''}
+            onStreetAddressChange={(value) => profileForm.setValue('street_address', value)}
+            stateId={profileForm.watch('state_id') || undefined}
+            onStateChange={(value) => profileForm.setValue('state_id', value || '')}
+            cityId={profileForm.watch('city_id') || undefined}
+            onCityChange={(value) => profileForm.setValue('city_id', value || '')}
+            zipCode={profileForm.watch('zip_code') || ''}
+            onZipCodeChange={(value) => profileForm.setValue('zip_code', value)}
+            required={false}
+          />
+
+          <Separator className="my-6" />
+          
+          <div className="mb-4">
+            <h4 className="text-sm font-medium mb-2">Preferencias</h4>
+            <p className="text-xs text-muted-foreground">
+              Configuración de idioma y zona horaria
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={profileForm.control}
+              name="preferred_language"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Idioma Preferido</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un idioma" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="es">Español</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={profileForm.control}
+              name="timezone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Zona Horaria</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona zona horaria" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="America/New_York">Este (Nueva York)</SelectItem>
+                      <SelectItem value="America/Chicago">Central (Chicago)</SelectItem>
+                      <SelectItem value="America/Denver">Montaña (Denver)</SelectItem>
+                      <SelectItem value="America/Los_Angeles">Pacífico (Los Ángeles)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
+            {showCancelButton && (
+              <Button type="button" variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Cancelar
+              </Button>
+            )}
+            <Button type="submit" disabled={updating} className="w-full sm:w-auto">
+              <Save className="mr-2 h-4 w-4" />
+              {updating ? 'Guardando...' : 'Guardar Cambios'}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
+  );
+}

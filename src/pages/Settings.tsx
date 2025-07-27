@@ -15,22 +15,13 @@ import { PageToolbar } from '@/components/layout/PageToolbar';
 import { Company } from '@/types/company';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
+import { ProfileForm } from '@/components/profile/ProfileForm';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { createTextHandlers, createPhoneHandlers } from '@/lib/textUtils';
-
-// Schema para perfil
-const profileSchema = z.object({
-  first_name: z.string().min(1, 'El nombre es requerido'),
-  last_name: z.string().min(1, 'El apellido es requerido'),
-  phone: z.string().optional(),
-  preferred_language: z.string().optional(),
-  timezone: z.string().optional(),
-});
 
 // Schema para contraseña
 const passwordSchema = z.object({
@@ -42,7 +33,6 @@ const passwordSchema = z.object({
   path: ["confirmPassword"],
 });
 
-type ProfileFormData = z.infer<typeof profileSchema>;
 type PasswordFormData = z.infer<typeof passwordSchema>;
 
 export default function Settings() {
@@ -52,21 +42,8 @@ export default function Settings() {
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(true);
   const [companyInfo, setCompanyInfo] = useState<Company | null>(null);
-  const [updatingProfile, setUpdatingProfile] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [profileSubTab, setProfileSubTab] = useState('info');
-
-  // Form para perfil
-  const profileForm = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      first_name: '',
-      last_name: '',
-      phone: '',
-      preferred_language: 'en',
-      timezone: 'America/New_York',
-    },
-  });
 
   // Form para contraseña
   const passwordForm = useForm<PasswordFormData>({
@@ -78,42 +55,11 @@ export default function Settings() {
     },
   });
 
-  // Helper functions to integrate textUtils with react-hook-form
-  const createFormTextHandler = (fieldOnChange: (value: string) => void, type: 'text' | 'email' | 'phone' = 'text') => {
-    const handlers = type === 'phone' 
-      ? createPhoneHandlers(fieldOnChange)
-      : createTextHandlers(fieldOnChange, type);
-    
-    return {
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-        handlers.onChange(e);
-      },
-      onBlur: (e: React.FocusEvent<HTMLInputElement>) => {
-        if ('onBlur' in handlers) {
-          handlers.onBlur(e);
-        }
-      },
-      onKeyPress: 'onKeyPress' in handlers ? handlers.onKeyPress : undefined
-    };
-  };
-
   useEffect(() => {
     if (user && userRole?.company_id) {
       fetchCompanyData();
     }
   }, [user, userRole]);
-
-  useEffect(() => {
-    if (profile) {
-      profileForm.reset({
-        first_name: profile.first_name || '',
-        last_name: profile.last_name || '',
-        phone: profile.phone || '',
-        preferred_language: profile.preferred_language || 'en',
-        timezone: profile.timezone || 'America/New_York',
-      });
-    }
-  }, [profile, profileForm]);
 
   const fetchCompanyData = async () => {
     if (!userRole?.company_id) return;
@@ -135,41 +81,6 @@ export default function Settings() {
       );
     } finally {
       setLoading(false);
-    }
-  };
-
-  const onSubmitProfile = async (data: ProfileFormData) => {
-    if (!user) return;
-
-    setUpdatingProfile(true);
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          first_name: data.first_name,
-          last_name: data.last_name,
-          phone: data.phone || null,
-          preferred_language: data.preferred_language || 'en',
-          timezone: data.timezone || 'America/New_York',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      await refreshProfile();
-
-      showSuccess(
-        "Perfil actualizado",
-        "Su información personal ha sido guardada correctamente."
-      );
-    } catch (error: any) {
-      showError(
-        "Error",
-        error.message || "No se pudo actualizar el perfil."
-      );
-    } finally {
-      setUpdatingProfile(false);
     }
   };
 
@@ -305,6 +216,21 @@ export default function Settings() {
                       <span className="text-muted-foreground">Zona horaria:</span>
                       <span>{profile?.timezone || 'America/New_York'}</span>
                     </div>
+                    {(profile?.street_address || profile?.zip_code) && (
+                      <div className="pt-2 border-t">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-muted-foreground font-medium">Dirección:</span>
+                          <div className="text-foreground text-xs leading-relaxed">
+                            {profile?.street_address && (
+                              <div>{profile.street_address}</div>
+                            )}
+                            {profile?.zip_code && (
+                              <div>{profile.zip_code}</div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -334,159 +260,7 @@ export default function Settings() {
                   <CardContent>
                     {/* Información Personal */}
                     <TabsContent value="info" className="space-y-4">
-                      <div className="mb-4">
-                        <h3 className="text-lg font-medium">Información Personal</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Actualiza tu información personal y preferencias
-                        </p>
-                      </div>
-                      
-                      <Form {...profileForm}>
-                        <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={profileForm.control}
-                              name="first_name"
-                              render={({ field }) => {
-                                const textHandlers = createFormTextHandler(field.onChange);
-                                return (
-                                  <FormItem>
-                                    <FormLabel>Nombre</FormLabel>
-                                    <FormControl>
-                                      <Input 
-                                        placeholder="Tu nombre" 
-                                        value={field.value}
-                                        onChange={textHandlers.onChange}
-                                        onBlur={textHandlers.onBlur}
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                );
-                              }}
-                            />
-
-                            <FormField
-                              control={profileForm.control}
-                              name="last_name"
-                              render={({ field }) => {
-                                const textHandlers = createFormTextHandler(field.onChange);
-                                return (
-                                  <FormItem>
-                                    <FormLabel>Apellido</FormLabel>
-                                    <FormControl>
-                                      <Input 
-                                        placeholder="Tu apellido" 
-                                        value={field.value}
-                                        onChange={textHandlers.onChange}
-                                        onBlur={textHandlers.onBlur}
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                );
-                              }}
-                            />
-                          </div>
-
-                          <FormField
-                            control={profileForm.control}
-                            name="phone"
-                            render={({ field }) => {
-                              const phoneHandlers = createFormTextHandler(field.onChange, 'phone');
-                              return (
-                                <FormItem>
-                                  <FormLabel>Teléfono</FormLabel>
-                                  <FormControl>
-                                    <Input 
-                                      placeholder="(555) 123-4567" 
-                                      value={field.value || ''} 
-                                      onChange={phoneHandlers.onChange}
-                                      onKeyPress={phoneHandlers.onKeyPress}
-                                    />
-                                  </FormControl>
-                                  <FormDescription>
-                                    Número de teléfono para contacto (opcional)
-                                  </FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              );
-                            }}
-                          />
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={profileForm.control}
-                              name="preferred_language"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Idioma Preferido</FormLabel>
-                                  <Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Selecciona un idioma" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="en">English</SelectItem>
-                                      <SelectItem value="es">Español</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            <FormField
-                              control={profileForm.control}
-                              name="timezone"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Zona Horaria</FormLabel>
-                                  <Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Selecciona zona horaria" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="America/New_York">Este (Nueva York)</SelectItem>
-                                      <SelectItem value="America/Chicago">Central (Chicago)</SelectItem>
-                                      <SelectItem value="America/Denver">Montaña (Denver)</SelectItem>
-                                      <SelectItem value="America/Los_Angeles">Pacífico (Los Ángeles)</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <div className="flex justify-end gap-2">
-                            <Button type="button" variant="outline" onClick={() => profileForm.reset()}>
-                              <RotateCcw className="mr-2 h-4 w-4" />
-                              Resetear
-                            </Button>
-                            <Button 
-                              type="submit" 
-                              disabled={updatingProfile}
-                              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-colors"
-                            >
-                              {updatingProfile ? (
-                                <>
-                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                                  Actualizando...
-                                </>
-                              ) : (
-                                <>
-                                  <Save className="mr-2 h-4 w-4" />
-                                  Guardar Cambios
-                                </>
-                              )}
-                            </Button>
-                          </div>
-                        </form>
-                      </Form>
+                      <ProfileForm showCancelButton={false} />
                     </TabsContent>
 
                     {/* Seguridad */}

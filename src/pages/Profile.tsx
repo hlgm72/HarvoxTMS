@@ -16,26 +16,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useFleetNotifications } from '@/components/notifications';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
+import { ProfileForm } from '@/components/profile/ProfileForm';
 import { PageToolbar } from '@/components/layout/PageToolbar';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Settings, Save, KeyRound, CheckCircle, AlertCircle, RotateCcw, Trash2, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { createTextHandlers } from '@/lib/textUtils';
-import { AddressForm } from '@/components/ui/AddressForm';
-
-const profileSchema = z.object({
-  first_name: z.string().min(1, 'El nombre es requerido'),
-  last_name: z.string().min(1, 'El apellido es requerido'),
-  phone: z.string().optional(),
-  preferred_language: z.string().optional(),
-  timezone: z.string().optional(),
-  street_address: z.string().optional(),
-  state_id: z.string().optional(),
-  city_id: z.string().optional(),
-  zip_code: z.string().optional(),
-});
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(1, 'La contraseña actual es requerida'),
@@ -46,47 +33,17 @@ const passwordSchema = z.object({
   path: ["confirmPassword"],
 });
 
-type ProfileFormData = z.infer<typeof profileSchema>;
 type PasswordFormData = z.infer<typeof passwordSchema>;
 
 export default function Profile() {
-  const { t, i18n } = useTranslation(['common']);
+  const { t } = useTranslation(['common']);
   const navigate = useNavigate();
   const { isSuperAdmin, isCompanyOwner, isOperationsManager, isDispatcher, isDriver } = useAuth();
-  const { showSuccess, showError, showInfo } = useFleetNotifications();
-  const { profile, loading, user, getUserInitials, refreshProfile } = useUserProfile();
-  const [updating, setUpdating] = useState(false);
+  const { showSuccess, showError } = useFleetNotifications();
+  const { profile, loading, user, refreshProfile } = useUserProfile();
   const [changingPassword, setChangingPassword] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [pendingCancelAction, setPendingCancelAction] = useState<'profile' | 'password' | null>(null);
-
-  // Create handlers for text inputs
-  const nameHandlers = createTextHandlers((value) => 
-    profileForm.setValue('first_name', value)
-  );
-  
-  const lastNameHandlers = createTextHandlers((value) => 
-    profileForm.setValue('last_name', value)
-  );
-  
-  const phoneHandlers = createTextHandlers((value) => 
-    profileForm.setValue('phone', value), 'phone'
-  );
-
-  const profileForm = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      first_name: '',
-      last_name: '',
-      phone: '',
-      preferred_language: 'en',
-      timezone: 'America/New_York',
-      street_address: '',
-      state_id: '',
-      city_id: '',
-      zip_code: '',
-    },
-  });
 
   const passwordForm = useForm<PasswordFormData>({
     resolver: zodResolver(passwordSchema),
@@ -96,67 +53,6 @@ export default function Profile() {
       confirmPassword: '',
     },
   });
-
-  useEffect(() => {
-    if (profile) {
-      profileForm.reset({
-        first_name: profile.first_name || '',
-        last_name: profile.last_name || '',
-        phone: profile.phone || '',
-        preferred_language: profile.preferred_language || 'en',
-        timezone: profile.timezone || 'America/New_York',
-        street_address: profile.street_address || '',
-        state_id: profile.state_id || '',
-        city_id: profile.city_id || '',
-        zip_code: profile.zip_code || '',
-      });
-    }
-  }, [profile, profileForm]);
-
-  const onSubmitProfile = async (data: ProfileFormData) => {
-    if (!user) return;
-
-    setUpdating(true);
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          first_name: data.first_name,
-          last_name: data.last_name,
-          phone: data.phone || null,
-          preferred_language: data.preferred_language || 'en',
-          timezone: data.timezone || 'America/New_York',
-          street_address: data.street_address || null,
-          state_id: data.state_id || null,
-          city_id: data.city_id || null,
-          zip_code: data.zip_code || null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      // Update i18n language if changed
-      if (data.preferred_language && data.preferred_language !== i18n.language) {
-        i18n.changeLanguage(data.preferred_language);
-      }
-
-      // Refresh profile data to update the UI
-      await refreshProfile();
-
-      showSuccess(
-        "Perfil actualizado exitosamente",
-        "Su información personal ha sido guardada correctamente."
-      );
-    } catch (error: any) {
-      showError(
-        "Error en la actualización",
-        error.message || "No se ha podido completar la actualización del perfil. Por favor, inténtelo nuevamente."
-      );
-    } finally {
-      setUpdating(false);
-    }
-  };
 
   // Función para obtener la ruta del dashboard según el rol del usuario
   const getDashboardRoute = () => {
@@ -170,22 +66,7 @@ export default function Profile() {
 
   // Función para manejar la confirmación de cancelar
   const handleCancelConfirmation = () => {
-    if (pendingCancelAction === 'profile') {
-      // Resetear formulario de perfil
-      if (profile) {
-        profileForm.reset({
-          first_name: profile.first_name || '',
-          last_name: profile.last_name || '',
-          phone: profile.phone || '',
-          preferred_language: profile.preferred_language || 'en',
-          timezone: profile.timezone || 'America/New_York',
-          street_address: profile.street_address || '',
-          state_id: profile.state_id || '',
-          city_id: profile.city_id || '',
-          zip_code: profile.zip_code || '',
-        });
-      }
-    } else if (pendingCancelAction === 'password') {
+    if (pendingCancelAction === 'password') {
       // Resetear formulario de contraseña
       passwordForm.reset({
         currentPassword: '',
@@ -203,14 +84,7 @@ export default function Profile() {
   };
 
   const onCancelProfile = () => {
-    // Solo mostrar modal de confirmación si hay cambios sin guardar
-    if (profileForm.formState.isDirty) {
-      setPendingCancelAction('profile');
-      setShowCancelModal(true);
-    } else {
-      // Si no hay cambios, ir directamente al dashboard
-      navigate(getDashboardRoute());
-    }
+    navigate(getDashboardRoute());
   };
 
   const onCancelPassword = () => {
@@ -281,343 +155,177 @@ export default function Profile() {
         subtitle="Gestiona tu información personal y configuración de cuenta"
       />
       <div className="container mx-auto p-3 md:p-6 max-w-6xl">
-
-      <div className="grid gap-4 md:gap-6 lg:grid-cols-3">
-        {/* Profile Summary Card */}
-        <Card className="lg:col-span-1 order-2 lg:order-1">
-          <CardHeader className="text-center p-4 md:p-6">
-            <AvatarUpload 
-              currentAvatarUrl={profile?.avatar_url}
-              userName={`${profile?.first_name || ''} ${profile?.last_name || ''}`.trim()}
-              onAvatarUpdate={async (avatarUrl) => {
-                // Refresh profile to get updated data
-                await refreshProfile();
-              }}
-            />
-            <CardTitle className="text-lg md:text-xl mt-4">{profile?.first_name} {profile?.last_name}</CardTitle>
-            <CardDescription className="text-sm">{user?.email}</CardDescription>
-          </CardHeader>
-          <CardContent className="p-4 md:p-6">
-            <div className="space-y-3 text-sm">
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
-                <span className="text-muted-foreground font-medium">Teléfono:</span>
-                <span className="text-foreground">{profile?.phone || 'No especificado'}</span>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
-                <span className="text-muted-foreground font-medium">Idioma:</span>
-                <span className="text-foreground">{profile?.preferred_language === 'es' ? 'Español' : 'English'}</span>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
-                <span className="text-muted-foreground font-medium">Zona horaria:</span>
-                <span className="text-foreground">{profile?.timezone || 'America/New_York'}</span>
-              </div>
-              {(profile?.street_address || profile?.zip_code) && (
-                <div className="pt-2 border-t">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-muted-foreground font-medium">Dirección:</span>
-                    <div className="text-foreground text-xs leading-relaxed">
-                      {profile?.street_address && (
-                        <div>{profile.street_address}</div>
-                      )}
-                      {profile?.zip_code && (
-                        <div>{profile.zip_code}</div>
-                      )}
+        <div className="grid gap-4 md:gap-6 lg:grid-cols-3">
+          {/* Profile Summary Card */}
+          <Card className="lg:col-span-1 order-2 lg:order-1">
+            <CardHeader className="text-center p-4 md:p-6">
+              <AvatarUpload 
+                currentAvatarUrl={profile?.avatar_url}
+                userName={`${profile?.first_name || ''} ${profile?.last_name || ''}`.trim()}
+                onAvatarUpdate={async (avatarUrl) => {
+                  // Refresh profile to get updated data
+                  await refreshProfile();
+                }}
+              />
+              <CardTitle className="text-lg md:text-xl mt-4">{profile?.first_name} {profile?.last_name}</CardTitle>
+              <CardDescription className="text-sm">{user?.email}</CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 md:p-6">
+              <div className="space-y-3 text-sm">
+                <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+                  <span className="text-muted-foreground font-medium">Teléfono:</span>
+                  <span className="text-foreground">{profile?.phone || 'No especificado'}</span>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+                  <span className="text-muted-foreground font-medium">Idioma:</span>
+                  <span className="text-foreground">{profile?.preferred_language === 'es' ? 'Español' : 'English'}</span>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+                  <span className="text-muted-foreground font-medium">Zona horaria:</span>
+                  <span className="text-foreground">{profile?.timezone || 'America/New_York'}</span>
+                </div>
+                {(profile?.street_address || profile?.zip_code) && (
+                  <div className="pt-2 border-t">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-muted-foreground font-medium">Dirección:</span>
+                      <div className="text-foreground text-xs leading-relaxed">
+                        {profile?.street_address && (
+                          <div>{profile.street_address}</div>
+                        )}
+                        {profile?.zip_code && (
+                          <div>{profile.zip_code}</div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Tabs for Profile Information and Security */}
-        <Card className="lg:col-span-2 order-1 lg:order-2">
-          <Tabs defaultValue="profile" className="w-full">
-            <CardHeader className="p-4 md:p-6">
-              <TabsList className="grid w-full grid-cols-2 h-auto">
-                <TabsTrigger value="profile" className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4">
-                  <User className="h-3 w-3 md:h-4 md:w-4" />
-                  <span className="hidden sm:inline">Información Personal</span>
-                  <span className="sm:hidden">Info</span>
-                </TabsTrigger>
-                <TabsTrigger value="security" className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4">
-                  <Shield className="h-3 w-3 md:h-4 md:w-4" />
-                  <span className="hidden sm:inline">Seguridad</span>
-                  <span className="sm:hidden">Seguridad</span>
-                </TabsTrigger>
-              </TabsList>
-            </CardHeader>
-
-            <CardContent className="p-4 md:p-6">
-              <TabsContent value="profile" className="space-y-4 mt-0">
-                <div className="mb-4">
-                  <h3 className="text-base md:text-lg font-medium">Información Personal</h3>
-                  <p className="text-xs md:text-sm text-muted-foreground">
-                    Actualiza tu información personal y preferencias
-                  </p>
-                </div>
-                
-                <Form {...profileForm}>
-                  <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <FormField
-                        control={profileForm.control}
-                        name="first_name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-sm font-medium">Nombre</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Tu nombre" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={profileForm.control}
-                        name="last_name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-sm font-medium">Apellido</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Tu apellido" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <FormField
-                      control={profileForm.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium">Teléfono</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="(555) 123-4567" 
-                              value={field.value || ''} 
-                              {...phoneHandlers}
-                            />
-                          </FormControl>
-                          <FormDescription className="text-xs">
-                            Número de teléfono para contacto (opcional)
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                     />
-
-                    <Separator className="my-6" />
-                    
-                    <div className="mb-4">
-                      <h4 className="text-sm font-medium mb-2">Dirección</h4>
-                      <p className="text-xs text-muted-foreground">
-                        Información de tu dirección personal (opcional)
-                      </p>
-                    </div>
-
-                    <AddressForm
-                      streetAddress={profileForm.watch('street_address') || ''}
-                      onStreetAddressChange={(value) => profileForm.setValue('street_address', value)}
-                      stateId={profileForm.watch('state_id') || undefined}
-                      onStateChange={(value) => profileForm.setValue('state_id', value || '')}
-                      cityId={profileForm.watch('city_id') || undefined}
-                      onCityChange={(value) => profileForm.setValue('city_id', value || '')}
-                      zipCode={profileForm.watch('zip_code') || ''}
-                      onZipCodeChange={(value) => profileForm.setValue('zip_code', value)}
-                      required={false}
-                    />
-
-                    <Separator className="my-6" />
-                    
-                    <div className="mb-4">
-                      <h4 className="text-sm font-medium mb-2">Preferencias</h4>
-                      <p className="text-xs text-muted-foreground">
-                        Configuración de idioma y zona horaria
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <FormField
-                        control={profileForm.control}
-                        name="preferred_language"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-sm font-medium">Idioma Preferido</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Selecciona un idioma" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="en">English</SelectItem>
-                                <SelectItem value="es">Español</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={profileForm.control}
-                        name="timezone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-sm font-medium">Zona Horaria</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Selecciona zona horaria" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="America/New_York">Este (Nueva York)</SelectItem>
-                                <SelectItem value="America/Chicago">Central (Chicago)</SelectItem>
-                                <SelectItem value="America/Denver">Montaña (Denver)</SelectItem>
-                                <SelectItem value="America/Los_Angeles">Pacífico (Los Ángeles)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row justify-end gap-2">
-                      <Button type="button" variant="outline" onClick={onCancelProfile} className="w-full sm:w-auto">
-                        <RotateCcw className="mr-2 h-4 w-4" />
-                        Cancelar
-                      </Button>
-                      <Button 
-                        type="submit" 
-                        disabled={updating}
-                        className="bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-colors w-full sm:w-auto"
-                      >
-                        {updating ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                            Actualizando...
-                          </>
-                        ) : (
-                          <>
-                            <Save className="mr-2 h-4 w-4" />
-                            Guardar Cambios
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
-              </TabsContent>
-
-              <TabsContent value="security" className="space-y-4 mt-0">
-                <div className="mb-4">
-                  <h3 className="text-base md:text-lg font-medium">Seguridad de la Cuenta</h3>
-                  <p className="text-xs md:text-sm text-muted-foreground">
-                    Actualiza tu contraseña para mantener tu cuenta segura
-                  </p>
-                </div>
-
-                <Form {...passwordForm}>
-                  <form onSubmit={passwordForm.handleSubmit(onSubmitPassword)} className="space-y-4 max-w-md">
-                    <FormField
-                      control={passwordForm.control}
-                      name="currentPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium">Contraseña Actual</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="Tu contraseña actual" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={passwordForm.control}
-                      name="newPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium">Nueva Contraseña</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="Nueva contraseña" {...field} />
-                          </FormControl>
-                          <FormDescription className="text-xs">
-                            Debe tener al menos 6 caracteres
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={passwordForm.control}
-                      name="confirmPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium">Confirmar Nueva Contraseña</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="Confirma la nueva contraseña" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="flex flex-col sm:flex-row justify-start gap-2">
-                      <Button type="button" variant="outline" onClick={onCancelPassword} className="w-full sm:w-auto">
-                        <RotateCcw className="mr-2 h-4 w-4" />
-                        Cancelar
-                      </Button>
-                      <Button type="submit" disabled={changingPassword} variant="secondary" className="w-full sm:w-auto">
-                        {changingPassword ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                            Cambiando...
-                          </>
-                        ) : (
-                          <>
-                            <KeyRound className="mr-2 h-4 w-4" />
-                            Cambiar Contraseña
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
-              </TabsContent>
+                )}
+              </div>
             </CardContent>
-          </Tabs>
-        </Card>
-      </div>
+          </Card>
 
-      {/* Modal de confirmación para cancelar */}
-      <AlertDialog open={showCancelModal} onOpenChange={setShowCancelModal}>
-        <AlertDialogContent className="mx-4 max-w-md">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-base">¿Descartar cambios?</AlertDialogTitle>
-            <AlertDialogDescription className="text-sm">
-              {pendingCancelAction === 'profile' 
-                ? "Se perderán todos los cambios no guardados en tu información personal y serás redirigido a tu dashboard."
-                : "Se limpiarán todos los campos de contraseña y serás redirigido a tu dashboard."
-              }
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-            <AlertDialogCancel onClick={() => setShowCancelModal(false)} className="w-full sm:w-auto">
-              Continuar editando
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleCancelConfirmation} className="bg-destructive hover:bg-destructive/90 w-full sm:w-auto">
-              Sí, descartar y salir
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
+          {/* Tabs for Profile Information and Security */}
+          <Card className="lg:col-span-2 order-1 lg:order-2">
+            <Tabs defaultValue="profile" className="w-full">
+              <CardHeader className="p-4 md:p-6">
+                <TabsList className="grid w-full grid-cols-2 h-auto">
+                  <TabsTrigger value="profile" className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4">
+                    <User className="h-3 w-3 md:h-4 md:w-4" />
+                    <span className="hidden sm:inline">Información Personal</span>
+                    <span className="sm:hidden">Info</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="security" className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4">
+                    <Shield className="h-3 w-3 md:h-4 md:w-4" />
+                    <span className="hidden sm:inline">Seguridad</span>
+                    <span className="sm:hidden">Seguridad</span>
+                  </TabsTrigger>
+                </TabsList>
+              </CardHeader>
+
+              <CardContent className="p-4 md:p-6">
+                <TabsContent value="profile" className="space-y-4 mt-0">
+                  <ProfileForm onCancel={onCancelProfile} />
+                </TabsContent>
+
+                <TabsContent value="security" className="space-y-4 mt-0">
+                  <div className="mb-4">
+                    <h3 className="text-base md:text-lg font-medium">Seguridad de la Cuenta</h3>
+                    <p className="text-xs md:text-sm text-muted-foreground">
+                      Actualiza tu contraseña para mantener tu cuenta segura
+                    </p>
+                  </div>
+
+                  <Form {...passwordForm}>
+                    <form onSubmit={passwordForm.handleSubmit(onSubmitPassword)} className="space-y-4 max-w-md">
+                      <FormField
+                        control={passwordForm.control}
+                        name="currentPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium">Contraseña Actual</FormLabel>
+                            <FormControl>
+                              <Input type="password" placeholder="Tu contraseña actual" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={passwordForm.control}
+                        name="newPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium">Nueva Contraseña</FormLabel>
+                            <FormControl>
+                              <Input type="password" placeholder="Nueva contraseña" {...field} />
+                            </FormControl>
+                            <FormDescription className="text-xs">
+                              Debe tener al menos 6 caracteres
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={passwordForm.control}
+                        name="confirmPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium">Confirmar Nueva Contraseña</FormLabel>
+                            <FormControl>
+                              <Input type="password" placeholder="Confirma la nueva contraseña" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div className="flex flex-col sm:flex-row justify-start gap-2">
+                        <Button type="button" variant="outline" onClick={onCancelPassword} className="w-full sm:w-auto">
+                          <RotateCcw className="mr-2 h-4 w-4" />
+                          Cancelar
+                        </Button>
+                        <Button type="submit" disabled={changingPassword} variant="secondary" className="w-full sm:w-auto">
+                          {changingPassword ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                              Cambiando...
+                            </>
+                          ) : (
+                            <>
+                              <KeyRound className="mr-2 h-4 w-4" />
+                              Cambiar Contraseña
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </TabsContent>
+              </CardContent>
+            </Tabs>
+          </Card>
+        </div>
+
+        {/* Modal de confirmación para cancelar */}
+        <AlertDialog open={showCancelModal} onOpenChange={setShowCancelModal}>
+          <AlertDialogContent className="mx-4 max-w-md">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-base">¿Descartar cambios?</AlertDialogTitle>
+              <AlertDialogDescription className="text-sm">
+                Se limpiarán todos los campos de contraseña y serás redirigido a tu dashboard.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+              <AlertDialogCancel onClick={() => setShowCancelModal(false)} className="w-full sm:w-auto">
+                Continuar editando
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={handleCancelConfirmation} className="bg-destructive hover:bg-destructive/90 w-full sm:w-auto">
+                Sí, descartar y salir
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
         </AlertDialog>
       </div>
     </>
