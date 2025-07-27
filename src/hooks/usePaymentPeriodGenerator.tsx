@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 
 export interface PaymentPeriodGeneratorParams {
   companyId: string;
@@ -75,10 +76,8 @@ export const usePaymentPeriodGenerator = () => {
       console.log(`📅 Using range of ±${rangeDays} days for ${companyData.default_payment_frequency} frequency`);
 
       // Generar períodos en el rango
-      const fromDate = new Date(Date.parse(targetDate) - rangeDays * 24 * 60 * 60 * 1000)
-        .toISOString().split('T')[0];
-      const toDate = new Date(Date.parse(targetDate) + rangeDays * 24 * 60 * 60 * 1000)
-        .toISOString().split('T')[0];
+      const fromDate = formatDateInUserTimeZone(new Date(Date.parse(targetDate) - rangeDays * 24 * 60 * 60 * 1000));
+      const toDate = formatDateInUserTimeZone(new Date(Date.parse(targetDate) + rangeDays * 24 * 60 * 60 * 1000));
 
       const { data: generateResult, error: generateError } = await supabase.rpc(
         'generate_company_payment_periods',

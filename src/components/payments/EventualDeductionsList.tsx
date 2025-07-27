@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { formatPaymentPeriod, formatDeductionDate } from "@/lib/dateFormatting";
+import { formatPaymentPeriod, formatDeductionDate, formatDateInUserTimeZone } from "@/lib/dateFormatting";
 import { Trash2, AlertTriangle, Calendar, DollarSign, User, FileText } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 
@@ -64,10 +64,10 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
         // Aplicar filtros de fecha si existen
         if (filters?.dateRange?.from) {
-          query = query.gte('expense_date', filters.dateRange.from.toISOString().split('T')[0]);
+          query = query.gte('expense_date', formatDateInUserTimeZone(filters.dateRange.from));
         }
         if (filters?.dateRange?.to) {
-          query = query.lte('expense_date', filters.dateRange.to.toISOString().split('T')[0]);
+          query = query.lte('expense_date', formatDateInUserTimeZone(filters.dateRange.to));
         }
 
         // Aplicar ordenación según viewConfig

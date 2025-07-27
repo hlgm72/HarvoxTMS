@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useFleetNotifications } from '@/components/notifications';
 import { useUserCompanies } from '@/hooks/useUserCompanies';
 import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
+import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 
 export interface CreateOtherIncomeData {
   driver_user_id: string;
@@ -78,7 +79,7 @@ export function useCreateOtherIncome() {
       if (!data.payment_period_id && selectedCompany?.id && data.driver_user_id && data.income_date) {
         console.log('🔍 Auto-generating payment period for other income');
         
-        const targetDate = new Date(data.income_date).toISOString().split('T')[0];
+        const targetDate = formatDateInUserTimeZone(new Date(data.income_date));
         const generatedPeriodId = await ensurePaymentPeriodExists({
           companyId: selectedCompany.id,
           userId: data.driver_user_id,

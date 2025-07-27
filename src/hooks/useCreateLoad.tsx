@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useFleetNotifications } from '@/components/notifications';
+import { formatDateInUserTimeZone, getTodayInUserTimeZone } from '@/lib/dateFormatting';
 
 export interface CreateLoadData {
   id?: string;
@@ -179,7 +180,7 @@ const assignPaymentPeriodToLoad = async (loadId: string): Promise<void> => {
     console.log('🏢 assignPaymentPeriodToLoad - Company ID:', userRole.company_id);
 
     // Determine target date (prefer pickup_date, fallback to delivery_date, then current date)
-    const targetDate = loadData.pickup_date || loadData.delivery_date || new Date().toISOString().split('T')[0];
+    const targetDate = loadData.pickup_date || loadData.delivery_date || getTodayInUserTimeZone();
     
     console.log('📅 assignPaymentPeriodToLoad - Target date:', targetDate);
 
@@ -239,8 +240,8 @@ const assignPaymentPeriodToLoad = async (loadId: string): Promise<void> => {
         'generate_payment_periods',
         {
           company_id_param: userRole.company_id,
-          from_date: new Date(Date.parse(targetDate) - rangeDays * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          to_date: new Date(Date.parse(targetDate) + rangeDays * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+          from_date: formatDateInUserTimeZone(new Date(Date.parse(targetDate) - rangeDays * 24 * 60 * 60 * 1000)),
+          to_date: formatDateInUserTimeZone(new Date(Date.parse(targetDate) + rangeDays * 24 * 60 * 60 * 1000))
         }
       );
 
@@ -403,11 +404,11 @@ export const useCreateLoad = () => {
               special_instructions: stop.special_instructions,
               scheduled_date: stop.scheduled_date ? 
                 (stop.scheduled_date instanceof Date ? 
-                  stop.scheduled_date.toISOString().split('T')[0] : 
+                  formatDateInUserTimeZone(stop.scheduled_date) : 
                   stop.scheduled_date) : null,
               actual_date: stop.actual_date ? 
                 (stop.actual_date instanceof Date ? 
-                  stop.actual_date.toISOString().split('T')[0] : 
+                  formatDateInUserTimeZone(stop.actual_date) : 
                   stop.actual_date) : null,
             };
           });
@@ -496,11 +497,11 @@ export const useCreateLoad = () => {
               special_instructions: stop.special_instructions,
               scheduled_date: stop.scheduled_date ? 
                 (stop.scheduled_date instanceof Date ? 
-                  stop.scheduled_date.toISOString().split('T')[0] : 
+                  formatDateInUserTimeZone(stop.scheduled_date) : 
                   stop.scheduled_date) : null,
               actual_date: stop.actual_date ? 
                 (stop.actual_date instanceof Date ? 
-                  stop.actual_date.toISOString().split('T')[0] : 
+                  formatDateInUserTimeZone(stop.actual_date) : 
                   stop.actual_date) : null,
             };
             console.log('📍 useCreateLoad - Processing stop:', JSON.stringify(stop, null, 2));

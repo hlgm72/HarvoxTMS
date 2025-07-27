@@ -12,6 +12,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { useFleetNotifications } from '@/components/notifications';
 
 interface CreateSpecialPeriodDialogProps {
@@ -54,8 +55,8 @@ export function CreateSpecialPeriodDialog({ onClose, onSuccess }: CreateSpecialP
         .from('company_payment_periods')
         .insert({
           company_id: user.user_metadata.company_id,
-          period_start_date: startDate.toISOString().split('T')[0],
-          period_end_date: endDate.toISOString().split('T')[0],
+          period_start_date: formatDateInUserTimeZone(startDate),
+          period_end_date: formatDateInUserTimeZone(endDate),
           period_frequency: formData.period_frequency,
           period_type: formData.period_type,
           status: 'open'
