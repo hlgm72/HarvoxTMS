@@ -37,12 +37,23 @@ export const useClients = () => {
   return useQuery({
     queryKey: ["clients"],
     queryFn: async () => {
+      // Get current user's company from user metadata
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.user_metadata?.company_id) {
+        console.warn("⚠️ No company_id found in user metadata");
+        return [];
+      }
+
       const { data, error } = await supabase
         .from("company_clients")
         .select("id, name, alias, company_id, is_active, email_domain, address, notes, logo_url, mc_number, dot_number, created_at, updated_at")
+        .eq("company_id", user.user_metadata.company_id)
         .order("name");
 
-      if (error) throw error;
+      if (error) {
+        console.error("❌ Error fetching clients:", error);
+        throw error;
+      }
       console.log("🔍 Datos de clientes recibidos:", data);
       return data as Client[];
     },
