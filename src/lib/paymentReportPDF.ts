@@ -4,6 +4,10 @@ interface PaymentReportData {
   driver: {
     name: string;
     user_id: string;
+    license?: string;
+    address?: string;
+    phone?: string;
+    email?: string;
   };
   period: {
     start_date: string;
@@ -13,24 +17,41 @@ interface PaymentReportData {
     total_deductions: number;
     other_income: number;
     net_payment: number;
+    week_number?: number;
+    payment_date?: string;
   };
   company: {
     name: string;
+    address?: string;
+    phone?: string;
+    email?: string;
   };
   loads?: Array<{
     load_number: string;
     pickup_date: string;
     delivery_date: string;
-    client_name: string;
+    pickup_location?: string;
+    delivery_location?: string;
+    client_name?: string;
     total_amount: number;
+    factoring_percentage?: number;
+    dispatching_percentage?: number;
+    leasing_percentage?: number;
+    stops?: number;
   }>;
   fuelExpenses?: Array<{
     transaction_date: string;
     station_name: string;
     gallons_purchased: number;
+    price_per_gallon?: number;
     total_amount: number;
   }>;
   deductions?: Array<{
+    description: string;
+    amount: number;
+    expense_date: string;
+  }>;
+  weeklyExpenses?: Array<{
     description: string;
     amount: number;
     expense_date: string;
@@ -43,266 +64,522 @@ interface PaymentReportData {
 }
 
 export async function generatePaymentReportPDF(data: PaymentReportData) {
-  const doc = new jsPDF();
+  const doc = new jsPDF('p', 'mm', 'a4');
   const pageWidth = doc.internal.pageSize.width;
   const pageHeight = doc.internal.pageSize.height;
-  const margin = 20;
+  const margin = 15;
   let currentY = margin;
 
-  // Colores del tema
-  const primaryColor = '#1f2937'; // gray-800
-  const secondaryColor = '#6b7280'; // gray-500
-  const accentColor = '#3b82f6'; // blue-500
-  const successColor = '#10b981'; // emerald-500
-  const warningColor = '#f59e0b'; // amber-500
-  const dangerColor = '#ef4444'; // red-500
+  // Función para convertir RGB a array para jsPDF
+  const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? [
+      parseInt(result[1], 16),
+      parseInt(result[2], 16),
+      parseInt(result[3], 16)
+    ] : [0, 0, 0];
+  };
 
-  // Helper function para agregar texto
+  // Colores del diseño
+  const colors = {
+    green: '#22c55e',
+    blue: '#3b82f6', 
+    red: '#ef4444',
+    orange: '#f97316',
+    lightBlue: '#dbeafe',
+    lightGreen: '#dcfce7',
+    lightRed: '#fecaca',
+    lightOrange: '#fed7aa',
+    gray: '#6b7280',
+    darkGray: '#374151',
+    lightGray: '#f3f4f6'
+  };
+
+  // Helper functions
   const addText = (text: string, x: number, y: number, options: any = {}) => {
-    const {
-      fontSize = 12,
-      fontStyle = 'normal',
-      color = primaryColor,
-      align = 'left',
-      maxWidth
-    } = options;
-
+    const { fontSize = 10, fontStyle = 'normal', color = '#000000', align = 'left' } = options;
+    
     doc.setFontSize(fontSize);
     doc.setFont('helvetica', fontStyle);
-    doc.setTextColor(color);
-
-    if (maxWidth) {
-      const lines = doc.splitTextToSize(text, maxWidth);
-      doc.text(lines, x, y, { align });
-      return y + (lines.length * fontSize * 0.3);
-    } else {
-      doc.text(text, x, y, { align });
-      return y + fontSize * 0.3;
-    }
+    const rgbColor = hexToRgb(color);
+    doc.setTextColor(rgbColor[0], rgbColor[1], rgbColor[2]);
+    doc.text(text, x, y, { align: align as any });
   };
 
-  // Helper function para agregar línea
-  const addLine = (x1: number, y1: number, x2: number, y2: number, color = secondaryColor) => {
-    doc.setDrawColor(color);
-    doc.line(x1, y1, x2, y2);
+  const addColoredBox = (x: number, y: number, width: number, height: number, bgColor: string, textColor: string, title: string, value: string) => {
+    // Fondo de color
+    const bgRgb = hexToRgb(bgColor);
+    doc.setFillColor(bgRgb[0], bgRgb[1], bgRgb[2]);
+    doc.rect(x, y, width, height, 'F');
+    
+    // Título
+    addText(title, x + width/2, y + height/3, {
+      fontSize: 9,
+      fontStyle: 'normal',
+      color: textColor,
+      align: 'center'
+    });
+    
+    // Valor
+    addText(value, x + width/2, y + height*0.7, {
+      fontSize: 14,
+      fontStyle: 'bold',
+      color: textColor,
+      align: 'center'
+    });
   };
 
-  // Helper function para agregar rectángulo
-  const addRect = (x: number, y: number, width: number, height: number, fillColor?: string) => {
-    if (fillColor) {
-      doc.setFillColor(fillColor);
-      doc.rect(x, y, width, height, 'F');
-    } else {
-      doc.setDrawColor(secondaryColor);
-      doc.rect(x, y, width, height);
-    }
+  const formatCurrency = (amount: number) => {
+    return amount >= 0 ? 
+      `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}` :
+      `-$${Math.abs(amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
   };
 
-  // Header con logo y título
-  addRect(margin, currentY, pageWidth - (margin * 2), 30, '#f8fafc');
-  currentY += 10;
+  const formatWeekInfo = () => {
+    const startDate = new Date(data.period.start_date);
+    const endDate = new Date(data.period.end_date);
+    const year = startDate.getFullYear();
+    
+    // Calcular semana del año
+    const onejan = new Date(year, 0, 1);
+    const week = Math.ceil((((startDate.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
+    
+    return {
+      week: `Week ${week} / ${year}`,
+      dateRange: `${startDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})} - ${endDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}`,
+      paymentDate: data.period.payment_date ? 
+        `Payment Date: ${new Date(data.period.payment_date).toLocaleDateString('en-US', {month: '2-digit', day: '2-digit', year: 'numeric'})}` :
+        `Payment Date: ${new Date().toLocaleDateString('en-US', {month: '2-digit', day: '2-digit', year: 'numeric'})}`
+    };
+  };
 
-  // Título principal
-  addText('REPORTE DE PAGO', pageWidth / 2, currentY, {
-    fontSize: 24,
+  // === HEADER ===
+  currentY = 20;
+  
+  // Logo de la empresa (izquierda)
+  addText(data.company.name || 'HG Transport LLC', margin, currentY, {
+    fontSize: 16,
     fontStyle: 'bold',
-    color: primaryColor,
-    align: 'center'
+    color: colors.darkGray
   });
-  currentY += 20;
+  
+  if (data.company.address) {
+    addText(data.company.address, margin, currentY + 6, {
+      fontSize: 8,
+      color: colors.gray
+    });
+  }
+  
+  if (data.company.phone) {
+    addText(data.company.phone, margin, currentY + 12, {
+      fontSize: 8,
+      color: colors.gray
+    });
+  }
+  
+  if (data.company.email) {
+    addText(data.company.email, margin, currentY + 18, {
+      fontSize: 8,
+      color: colors.gray
+    });
+  }
 
-  // Información de la empresa
-  addText(data.company.name, pageWidth / 2, currentY, {
-    fontSize: 14,
-    color: secondaryColor,
+  // Título central
+  const weekInfo = formatWeekInfo();
+  addText('Driver Pay Report', pageWidth/2, currentY, {
+    fontSize: 16,
+    fontStyle: 'bold',
+    color: colors.darkGray,
     align: 'center'
   });
+  
+  addText(weekInfo.week, pageWidth/2, currentY + 8, {
+    fontSize: 12,
+    color: colors.darkGray,
+    align: 'center'
+  });
+  
+  addText(weekInfo.dateRange, pageWidth/2, currentY + 16, {
+    fontSize: 10,
+    color: colors.gray,
+    align: 'center'
+  });
+  
+  addText(weekInfo.paymentDate, pageWidth/2, currentY + 24, {
+    fontSize: 10,
+    color: colors.gray,
+    align: 'center'
+  });
+
+  // Información del conductor (derecha)
+  const rightX = pageWidth - margin - 60;
+  addText(data.driver.name, rightX, currentY, {
+    fontSize: 12,
+    fontStyle: 'bold',
+    color: colors.darkGray
+  });
+  
+  if (data.driver.license) {
+    addText(`Driver License: ${data.driver.license}`, rightX, currentY + 6, {
+      fontSize: 8,
+      color: colors.gray
+    });
+  }
+  
+  if (data.driver.address) {
+    addText(data.driver.address, rightX, currentY + 12, {
+      fontSize: 8,
+      color: colors.gray
+    });
+  }
+  
+  if (data.driver.phone || data.driver.email) {
+    addText(`${data.driver.phone || ''} | ${data.driver.email || ''}`, rightX, currentY + 18, {
+      fontSize: 8,
+      color: colors.gray
+    });
+  }
+
+  currentY += 40;
+
+  // === CAJAS DE RESUMEN SUPERIOR ===
+  const boxWidth = (pageWidth - margin*2 - 15) / 4; // 4 cajas con espacios
+  const boxHeight = 20;
+  
+  // Gross Earnings (Verde)
+  addColoredBox(margin, currentY, boxWidth, boxHeight, colors.lightGreen, colors.darkGray, 
+    'Gross Earnings', formatCurrency(data.period.gross_earnings));
+  
+  // Other Earnings (Azul)
+  addColoredBox(margin + boxWidth + 5, currentY, boxWidth, boxHeight, colors.lightBlue, colors.darkGray,
+    'Other Earnings', formatCurrency(data.period.other_income));
+  
+  // Total Deductions (Rojo)
+  addColoredBox(margin + (boxWidth + 5) * 2, currentY, boxWidth, boxHeight, colors.lightRed, colors.darkGray,
+    'Total Deductions', formatCurrency(-data.period.total_deductions));
+  
+  // Fuel Expenses (Naranja)
+  addColoredBox(margin + (boxWidth + 5) * 3, currentY, boxWidth, boxHeight, colors.lightOrange, colors.darkGray,
+    'Fuel Expenses', formatCurrency(-data.period.fuel_expenses));
+
+  currentY += boxHeight + 10;
+
+  // Net Pay (Caja grande azul)
+  const netPayWidth = pageWidth - margin*2;
+  addColoredBox(margin, currentY, netPayWidth, 15, colors.lightBlue, colors.blue,
+    'Net Pay', formatCurrency(data.period.net_payment));
+
   currentY += 25;
 
-  // Información del período y conductor
-  addRect(margin, currentY, pageWidth - (margin * 2), 40, '#eff6ff');
-  currentY += 10;
-
-  // Conductor
-  addText('CONDUCTOR:', margin + 10, currentY, {
+  // === LOADS COMPLETED ===
+  addText('Loads completed', margin, currentY, {
     fontSize: 12,
     fontStyle: 'bold',
-    color: primaryColor
+    color: colors.darkGray
   });
-  addText(data.driver.name, margin + 80, currentY, {
+  currentY += 10;
+
+  if (data.loads && data.loads.length > 0) {
+    data.loads.forEach((load, index) => {
+      // Load number y stops
+      addText(`Load#: ${load.load_number}`, margin, currentY, {
+        fontSize: 10,
+        fontStyle: 'bold',
+        color: colors.darkGray
+      });
+      
+      addText(`Stops: ${load.stops || 2} Total`, margin, currentY + 6, {
+        fontSize: 9,
+        color: colors.gray
+      });
+
+      // Porcentajes y monto (derecha)
+      const percentages = [];
+      if (load.factoring_percentage) percentages.push(`F.3%: (-$${(load.total_amount * load.factoring_percentage / 100).toFixed(2)})`);
+      if (load.dispatching_percentage) percentages.push(`D.5%: (-$${(load.total_amount * load.dispatching_percentage / 100).toFixed(2)})`);
+      if (load.leasing_percentage) percentages.push(`L.5%: (-$${(load.total_amount * load.leasing_percentage / 100).toFixed(2)})`);
+      
+      const rightText = percentages.join(' ') + ` ${formatCurrency(load.total_amount)}`;
+      addText(rightText, pageWidth - margin, currentY, {
+        fontSize: 9,
+        color: colors.gray,
+        align: 'right'
+      });
+
+      // Pickup y Delivery
+      const pickupText = `PU: ${new Date(load.pickup_date).toLocaleDateString('en-US')} ${load.pickup_location || ''}`;
+      const deliveryText = `DEL: ${new Date(load.delivery_date).toLocaleDateString('en-US')} ${load.delivery_location || ''}`;
+      
+      addText(`${pickupText} | ${deliveryText}`, margin + 50, currentY + 6, {
+        fontSize: 8,
+        color: colors.gray
+      });
+
+      currentY += 20;
+    });
+  }
+
+  currentY += 10;
+
+  // === OTHER EARNINGS ===
+  addText('Other Earnings', margin, currentY, {
     fontSize: 12,
-    color: primaryColor
+    fontStyle: 'bold',
+    color: colors.darkGray
+  });
+  currentY += 10;
+
+  if (data.otherIncome && data.otherIncome.length > 0) {
+    data.otherIncome.forEach(income => {
+      addText(`• ${income.description}`, margin, currentY, {
+        fontSize: 9,
+        color: colors.gray
+      });
+      
+      addText(formatCurrency(income.amount), pageWidth - margin, currentY, {
+        fontSize: 9,
+        color: colors.gray,
+        align: 'right'
+      });
+      
+      currentY += 8;
+    });
+  } else {
+    addText('No other earnings for this period', margin, currentY, {
+      fontSize: 9,
+      fontStyle: 'italic',
+      color: colors.gray
+    });
+    currentY += 8;
+  }
+
+  currentY += 15;
+
+  // === TOTAL EXPENSES ===
+  addText('Total Expenses', margin, currentY, {
+    fontSize: 12,
+    fontStyle: 'bold',
+    color: colors.darkGray
   });
   currentY += 15;
 
-  // Período
-  addText('PERÍODO:', margin + 10, currentY, {
-    fontSize: 12,
+  // Dos columnas de gastos
+  const colWidth = (pageWidth - margin*2 - 10) / 2;
+  
+  // Columna 1: Deductions
+  const col1X = margin;
+  const col1Y = currentY;
+  
+  const redRgb = hexToRgb(colors.lightRed);
+  doc.setFillColor(redRgb[0], redRgb[1], redRgb[2]);
+  doc.rect(col1X, col1Y - 5, colWidth, 8, 'F');
+  
+  const totalDeductions = data.deductions?.reduce((sum, d) => sum + d.amount, 0) || 0;
+  addText(`Deductions ($${totalDeductions.toFixed(2)})`, col1X + 2, col1Y, {
+    fontSize: 10,
     fontStyle: 'bold',
-    color: primaryColor
+    color: colors.darkGray
   });
-  const periodText = `${new Date(data.period.start_date).toLocaleDateString('es-ES')} - ${new Date(data.period.end_date).toLocaleDateString('es-ES')}`;
-  addText(periodText, margin + 80, currentY, {
-    fontSize: 12,
-    color: primaryColor
-  });
-  currentY += 25;
+  
+  currentY += 10;
+  
+  if (data.deductions && data.deductions.length > 0) {
+    data.deductions.forEach(deduction => {
+      addText(deduction.description, col1X + 2, currentY, {
+        fontSize: 9,
+        color: colors.gray
+      });
+      
+      addText(formatCurrency(-deduction.amount), col1X + colWidth - 2, currentY, {
+        fontSize: 9,
+        color: colors.red,
+        align: 'right'
+      });
+      
+      currentY += 6;
+    });
+  }
 
-  // Resumen financiero
-  addText('RESUMEN FINANCIERO', margin, currentY, {
-    fontSize: 16,
+  // Columna 2: Weekly Expenses
+  const col2X = margin + colWidth + 10;
+  let col2Y = col1Y;
+  
+  const redRgb2 = hexToRgb(colors.lightRed);
+  doc.setFillColor(redRgb2[0], redRgb2[1], redRgb2[2]);
+  doc.rect(col2X, col2Y - 5, colWidth, 8, 'F');
+  
+  const totalWeekly = data.weeklyExpenses?.reduce((sum, w) => sum + w.amount, 0) || 0;
+  addText(`Weekly Expenses ($${totalWeekly.toFixed(2)})`, col2X + 2, col2Y, {
+    fontSize: 10,
     fontStyle: 'bold',
-    color: primaryColor
+    color: colors.darkGray
   });
+  
+  col2Y += 10;
+  
+  if (data.weeklyExpenses && data.weeklyExpenses.length > 0) {
+    data.weeklyExpenses.forEach(expense => {
+      addText(expense.description, col2X + 2, col2Y, {
+        fontSize: 9,
+        color: colors.gray
+      });
+      
+      addText(formatCurrency(-expense.amount), col2X + colWidth - 2, col2Y, {
+        fontSize: 9,
+        color: colors.red,
+        align: 'right'
+      });
+      
+      col2Y += 6;
+    });
+  }
+
+  currentY = Math.max(currentY, col2Y) + 15;
+
+  // === FUEL PURCHASES ===
+  const grayRgb = hexToRgb(colors.lightGray);
+  doc.setFillColor(grayRgb[0], grayRgb[1], grayRgb[2]);
+  doc.rect(margin, currentY - 5, pageWidth - margin*2, 8, 'F');
+  
+  addText(`Fuel Purchases ($${data.period.fuel_expenses.toFixed(2)})`, margin + 2, currentY, {
+    fontSize: 10,
+    fontStyle: 'bold',
+    color: colors.darkGray
+  });
+  
+  currentY += 10;
+
+  if (data.fuelExpenses && data.fuelExpenses.length > 0) {
+    data.fuelExpenses.forEach(fuel => {
+      const dateStr = new Date(fuel.transaction_date).toLocaleDateString('en-US');
+      
+      addText(dateStr, margin + 2, currentY, {
+        fontSize: 9,
+        color: colors.gray
+      });
+      
+      addText(fuel.station_name, margin + 30, currentY, {
+        fontSize: 9,
+        color: colors.gray
+      });
+      
+      addText(`${fuel.gallons_purchased.toFixed(2)} gal`, margin + 100, currentY, {
+        fontSize: 9,
+        color: colors.gray
+      });
+      
+      addText(`$${fuel.price_per_gallon.toFixed(3)}`, margin + 140, currentY, {
+        fontSize: 9,
+        color: colors.gray
+      });
+      
+      addText(formatCurrency(-fuel.total_amount), pageWidth - margin - 2, currentY, {
+        fontSize: 9,
+        color: colors.red,
+        align: 'right'
+      });
+      
+      currentY += 8;
+    });
+  }
+
   currentY += 20;
 
-  // Tabla de resumen
+  // === SUMMARY ===
+  addText('Summary', margin, currentY, {
+    fontSize: 12,
+    fontStyle: 'bold',
+    color: colors.darkGray
+  });
+  currentY += 15;
+
   const summaryData = [
-    { label: 'Ingresos Brutos', amount: data.period.gross_earnings, color: primaryColor },
-    { label: 'Otros Ingresos', amount: data.period.other_income, color: successColor },
-    { label: 'Gastos de Combustible', amount: -data.period.fuel_expenses, color: warningColor },
-    { label: 'Otras Deducciones', amount: -data.period.total_deductions, color: dangerColor },
-    { label: 'PAGO NETO', amount: data.period.net_payment, color: primaryColor, isBold: true }
+    { label: 'Gross Earnings', amount: data.period.gross_earnings },
+    { label: 'Other Earnings', amount: data.period.other_income },
+    { label: 'Total Deductions', amount: -data.period.total_deductions },
+    { label: 'Fuel Expenses', amount: -data.period.fuel_expenses }
   ];
 
-  const tableStartY = currentY;
-  const rowHeight = 20;
-  const labelWidth = 120;
-  const amountWidth = 80;
-
-  // Header de tabla
-  addRect(margin, currentY, labelWidth + amountWidth, rowHeight, '#f1f5f9');
-  addText('CONCEPTO', margin + 5, currentY + 12, {
-    fontSize: 10,
-    fontStyle: 'bold',
-    color: primaryColor
-  });
-  addText('IMPORTE', margin + labelWidth + 5, currentY + 12, {
-    fontSize: 10,
-    fontStyle: 'bold',
-    color: primaryColor,
-    align: 'right'
-  });
-  currentY += rowHeight;
-
-  // Filas de datos
-  summaryData.forEach((item, index) => {
-    const isLast = index === summaryData.length - 1;
-    const bgColor = isLast ? '#f0f9ff' : undefined;
-    
-    if (bgColor) {
-      addRect(margin, currentY, labelWidth + amountWidth, rowHeight, bgColor);
-    }
-
-    addText(item.label, margin + 5, currentY + 12, {
-      fontSize: isLast ? 12 : 10,
-      fontStyle: item.isBold ? 'bold' : 'normal',
-      color: item.color
+  summaryData.forEach(item => {
+    addText(item.label, margin, currentY, {
+      fontSize: 10,
+      color: colors.gray
     });
-
-    const amountText = item.amount >= 0 ? 
-      `$${item.amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}` :
-      `-$${Math.abs(item.amount).toLocaleString('es-US', { minimumFractionDigits: 2 })}`;
-
-    addText(amountText, margin + labelWidth + amountWidth - 5, currentY + 12, {
-      fontSize: isLast ? 12 : 10,
-      fontStyle: item.isBold ? 'bold' : 'normal',
-      color: item.color,
+    
+    addText(formatCurrency(item.amount), margin + 80, currentY, {
+      fontSize: 10,
+      color: colors.gray,
       align: 'right'
     });
-
-    // Línea separadora
-    if (!isLast) {
-      addLine(margin, currentY + rowHeight, margin + labelWidth + amountWidth, currentY + rowHeight, '#e2e8f0');
-    }
-
-    currentY += rowHeight;
-  });
-
-  // Línea final más gruesa
-  doc.setLineWidth(2);
-  addLine(margin, currentY, margin + labelWidth + amountWidth, currentY, primaryColor);
-  doc.setLineWidth(0.5);
-  currentY += 30;
-
-  // Verificar si necesitamos nueva página
-  if (currentY > pageHeight - 100) {
-    doc.addPage();
-    currentY = margin;
-  }
-
-  // Sección de detalles (si hay datos)
-  if (data.loads && data.loads.length > 0) {
-    addText('DETALLE DE CARGAS', margin, currentY, {
-      fontSize: 14,
-      fontStyle: 'bold',
-      color: primaryColor
-    });
-    currentY += 20;
-
-    // Header de tabla de cargas
-    const loadTableWidth = pageWidth - (margin * 2);
-    addRect(margin, currentY, loadTableWidth, 15, '#f8fafc');
     
-    addText('LOAD #', margin + 5, currentY + 10, {
-      fontSize: 9,
-      fontStyle: 'bold'
-    });
-    addText('FECHA', margin + 40, currentY + 10, {
-      fontSize: 9,
-      fontStyle: 'bold'
-    });
-    addText('CLIENTE', margin + 75, currentY + 10, {
-      fontSize: 9,
-      fontStyle: 'bold'
-    });
-    addText('IMPORTE', margin + loadTableWidth - 30, currentY + 10, {
-      fontSize: 9,
-      fontStyle: 'bold',
-      align: 'right'
-    });
-    currentY += 15;
+    currentY += 8;
+  });
 
-    // Filas de cargas
-    data.loads.forEach((load) => {
-      addText(load.load_number, margin + 5, currentY + 10, { fontSize: 8 });
-      addText(new Date(load.pickup_date).toLocaleDateString('es-ES'), margin + 40, currentY + 10, { fontSize: 8 });
-      addText(load.client_name, margin + 75, currentY + 10, { fontSize: 8, maxWidth: 60 });
-      addText(`$${load.total_amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}`, 
-        margin + loadTableWidth - 5, currentY + 10, { fontSize: 8, align: 'right' });
-      
-      currentY += 12;
-      
-      if (currentY > pageHeight - 50) {
-        doc.addPage();
-        currentY = margin;
-      }
-    });
-    currentY += 20;
-  }
-
-  // Footer
-  const footerY = pageHeight - 40;
-  addLine(margin, footerY, pageWidth - margin, footerY, secondaryColor);
+  // Net Pay destacado
+  const blueRgb = hexToRgb(colors.lightBlue);
+  doc.setFillColor(blueRgb[0], blueRgb[1], blueRgb[2]);
+  doc.rect(margin, currentY, 85, 10, 'F');
   
-  addText('Reporte generado automáticamente', margin, footerY + 10, {
-    fontSize: 8,
-    color: secondaryColor
+  addText('Net Pay', margin + 2, currentY + 6, {
+    fontSize: 11,
+    fontStyle: 'bold',
+    color: colors.blue
   });
   
-  addText(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, pageWidth - margin, footerY + 10, {
-    fontSize: 8,
-    color: secondaryColor,
+  addText(formatCurrency(data.period.net_payment), margin + 78, currentY + 6, {
+    fontSize: 11,
+    fontStyle: 'bold',
+    color: colors.blue,
     align: 'right'
   });
 
-  addText(`Página 1 de ${doc.getNumberOfPages()}`, pageWidth / 2, footerY + 10, {
+  // === FIRMA DIGITAL ===
+  const signatureX = margin + 100;
+  currentY += 25;
+  
+  addText('✓ Firmado digitalmente y aprobado por el conductor', signatureX, currentY, {
+    fontSize: 10,
+    fontStyle: 'bold',
+    color: colors.darkGray
+  });
+  
+  addText(`Conductor: ${data.driver.name}`, signatureX, currentY + 8, {
+    fontSize: 9,
+    color: colors.gray
+  });
+  
+  const signDate = new Date();
+  addText(`Firmado el: ${signDate.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric', 
+    year: 'numeric'
+  })} at ${signDate.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  })}`, signatureX, currentY + 16, {
+    fontSize: 9,
+    color: colors.gray
+  });
+
+  // Información de contacto final
+  currentY += 35;
+  addText('If you have any questions, please contact us by phone', signatureX, currentY, {
     fontSize: 8,
-    color: secondaryColor,
-    align: 'center'
+    color: colors.gray
+  });
+  
+  addText(`or email at ${data.company.email || 'hgtransport16@gmail.com'}`, signatureX, currentY + 6, {
+    fontSize: 8,
+    color: colors.gray
+  });
+  
+  addText('Thank you for your business - We really appreciate it.', signatureX, currentY + 12, {
+    fontSize: 8,
+    color: colors.gray
   });
 
   // Descargar el PDF
-  const fileName = `Reporte_${data.driver.name.replace(/\s+/g, '_')}_${data.period.start_date}_${data.period.end_date}.pdf`;
+  const fileName = `Driver_Pay_Report_${data.driver.name.replace(/\s+/g, '_')}_${weekInfo.week.replace(/\s+/g, '_')}.pdf`;
   doc.save(fileName);
 }
