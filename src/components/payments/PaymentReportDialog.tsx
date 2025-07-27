@@ -75,6 +75,7 @@ export function PaymentReportDialog({
     queryFn: async () => {
       if (!calculation?.driver_user_id) return null;
       
+      // Obtener datos básicos del perfil
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('user_id, first_name, last_name, phone')
@@ -84,17 +85,26 @@ export function PaymentReportDialog({
       if (profileError) throw profileError;
 
       // Obtener información adicional del conductor
-      const { data: driverData, error: driverError } = await supabase
+      const { data: driverData } = await supabase
         .from('driver_profiles')
         .select('license_number, license_state')
         .eq('user_id', calculation.driver_user_id)
         .maybeSingle();
 
-      // Combinar los datos (driver_profiles es opcional)
+      // Obtener datos de owner_operators si existe
+      const { data: ownerData } = await supabase
+        .from('owner_operators')
+        .select('business_address, business_email')
+        .eq('user_id', calculation.driver_user_id)
+        .maybeSingle();
+
+      // Combinar los datos
       return {
         ...profileData,
         license_number: driverData?.license_number || null,
-        license_state: driverData?.license_state || null
+        license_state: driverData?.license_state || null,
+        business_address: ownerData?.business_address || null,
+        business_email: ownerData?.business_email || null
       };
     },
     enabled: !!calculation?.driver_user_id
@@ -173,12 +183,11 @@ export function PaymentReportDialog({
       driver: {
         name: `${driver.first_name} ${driver.last_name}`,
         user_id: calculation.driver_user_id,
-        license: driver.license_number || "45514477", // Datos de prueba hasta que se agreguen a la BD
-        license_state: driver.license_state || "TX",   // Datos de prueba
+        license: driver.license_number,
+        license_state: driver.license_state,
         phone: driver.phone,
-        // Agregar dirección temporal para la demo
-        address: "12820 Greenwood Forest Dr #324\nHouston, TX, 77066",
-        email: "gdiosvani0792@gmail.com" // Email temporal para la demo
+        address: driver.business_address,
+        email: driver.business_email
       },
       period: {
         start_date: calculation.company_payment_periods.period_start_date,
