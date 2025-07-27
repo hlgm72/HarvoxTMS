@@ -2804,6 +2804,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_authenticated_company_user: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_company_owner_in_company: {
         Args: { company_id_param: string }
         Returns: boolean
