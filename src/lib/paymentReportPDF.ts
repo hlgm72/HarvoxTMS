@@ -176,7 +176,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const col3X = margin + colWidth * 2;
   
   // === COLUMNA 1: INFORMACIÓN DE LA COMPAÑÍA ===
-  addText('HG', col1X, currentY, {
+  // Generar logo a partir del nombre de la compañía (primeras 2-3 letras)
+  const companyLogo = data.company.name ? 
+    data.company.name.split(' ').map(word => word.charAt(0)).join('').substring(0, 3).toUpperCase() :
+    'CO';
+    
+  addText(companyLogo, col1X, currentY, {
     fontSize: 28,
     fontStyle: 'bold',
     color: colors.primary
