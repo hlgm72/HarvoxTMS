@@ -235,6 +235,9 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
 
   // Función para calcular las fechas del período que se crearía
   const calculatePeriodDates = (date: Date, company: any) => {
+    console.log('🔍 calculatePeriodDates - fecha original:', date);
+    console.log('🔍 calculatePeriodDates - día de la semana (0=domingo):', date.getDay());
+    
     const frequency = company.default_payment_frequency || 'weekly';
     const startDay = company.payment_cycle_start_day || 1; // 1 = Monday
     
@@ -255,16 +258,24 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       daysToMonday = dayOfWeek - 1; // Retroceder los días necesarios para llegar al lunes
     }
     
+    console.log('🔍 calculatePeriodDates - días para llegar al lunes:', daysToMonday);
+    
     const periodStart = new Date(date);
     periodStart.setDate(date.getDate() - daysToMonday);
+    console.log('🔍 calculatePeriodDates - inicio calculado:', periodStart);
     
     const periodEnd = new Date(periodStart);
     periodEnd.setDate(periodStart.getDate() + frequencyDays - 1);
+    console.log('🔍 calculatePeriodDates - fin calculado:', periodEnd);
     
-    return {
+    const result = {
       start: formatDateInUserTimeZone(periodStart),
       end: formatDateInUserTimeZone(periodEnd)
     };
+    
+    console.log('🔍 calculatePeriodDates - resultado final:', result);
+    
+    return result;
   };
 
   return (
