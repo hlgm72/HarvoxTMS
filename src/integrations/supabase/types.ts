@@ -2624,6 +2624,10 @@ export type Database = {
         }
         Returns: Json
       }
+      recalculate_all_historical_periods: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       report_payment_and_lock: {
         Args: {
           period_id: string
