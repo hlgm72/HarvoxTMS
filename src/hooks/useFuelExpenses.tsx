@@ -190,50 +190,8 @@ export function useCreateFuelExpense() {
           companyPeriodId = generatedPeriodId;
         }
 
-        // Buscar o crear driver_period_calculation para este período de empresa
-        const { data: existingDriverCalc, error: calcError } = await supabase
-          .from('driver_period_calculations')
-          .select('id')
-          .eq('company_payment_period_id', companyPeriodId)
-          .eq('driver_user_id', data.driver_user_id)
-          .maybeSingle();
-
-        if (calcError) {
-          console.error('Error finding driver calculation:', calcError);
-          throw new Error('Error al buscar cálculo del conductor');
-        }
-
-        let driverCalculationId = existingDriverCalc?.id;
-
-        // Si no existe, crear driver_period_calculation
-        if (!driverCalculationId) {
-          console.log('🔍 Creating driver period calculation');
-          
-          const { data: newDriverCalc, error: createCalcError } = await supabase
-            .from('driver_period_calculations')
-            .insert({
-              company_payment_period_id: companyPeriodId,
-              driver_user_id: data.driver_user_id,
-              gross_earnings: 0,
-              total_deductions: 0,
-              other_income: 0,
-              total_income: 0,
-              net_payment: 0,
-              has_negative_balance: false
-            })
-            .select('id')
-            .single();
-
-          if (createCalcError) {
-            console.error('Error creating driver calculation:', createCalcError);
-            throw new Error('Error al crear cálculo del conductor');
-          }
-
-          driverCalculationId = newDriverCalc.id;
-        }
-
-        finalData.payment_period_id = driverCalculationId;
-        console.log('✅ Auto-assigned driver calculation period:', driverCalculationId);
+        finalData.payment_period_id = companyPeriodId;
+        console.log('✅ Auto-assigned company payment period:', companyPeriodId);
       }
 
       const { data: result, error } = await supabase
