@@ -22,6 +22,7 @@ import {
 import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from "@/integrations/supabase/client";
 import { createPhoneHandlers } from '@/lib/textUtils';
+import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 
 interface DriverData {
   // Driver profile data
@@ -224,7 +225,7 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
         .upsert({
           user_id: userId,
           driver_id: driverData.driver_id,
-          hire_date: driverData.hire_date?.toISOString().split('T')[0] || null,
+          hire_date: driverData.hire_date ? formatDateInUserTimeZone(driverData.hire_date) : null,
         }, {
           onConflict: 'user_id'
         });
