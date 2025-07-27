@@ -19,8 +19,6 @@ const profileSchema = z.object({
   first_name: z.string().min(1, 'El nombre es requerido'),
   last_name: z.string().min(1, 'El apellido es requerido'),
   phone: z.string().optional(),
-  preferred_language: z.string().optional(),
-  timezone: z.string().optional(),
   street_address: z.string().optional(),
   state_id: z.string().optional(),
   city_id: z.string().optional(),
@@ -60,8 +58,6 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
       first_name: '',
       last_name: '',
       phone: '',
-      preferred_language: 'en',
-      timezone: 'America/New_York',
       street_address: '',
       state_id: '',
       city_id: '',
@@ -75,8 +71,6 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
         first_name: profile.first_name || '',
         last_name: profile.last_name || '',
         phone: profile.phone || '',
-        preferred_language: profile.preferred_language || 'en',
-        timezone: profile.timezone || 'America/New_York',
         street_address: profile.street_address || '',
         state_id: profile.state_id || '',
         city_id: profile.city_id || '',
@@ -96,8 +90,6 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
           first_name: data.first_name,
           last_name: data.last_name,
           phone: data.phone || null,
-          preferred_language: data.preferred_language || 'en',
-          timezone: data.timezone || 'America/New_York',
           street_address: data.street_address || null,
           state_id: data.state_id || null,
           city_id: data.city_id || null,
@@ -107,11 +99,6 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
         .eq('user_id', user.id);
 
       if (error) throw error;
-
-      // Update i18n language if changed
-      if (data.preferred_language && data.preferred_language !== i18n.language) {
-        i18n.changeLanguage(data.preferred_language);
-      }
 
       // Refresh profile data to update the UI
       await refreshProfile();
@@ -136,8 +123,6 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
         first_name: profile.first_name || '',
         last_name: profile.last_name || '',
         phone: profile.phone || '',
-        preferred_language: profile.preferred_language || 'en',
-        timezone: profile.timezone || 'America/New_York',
         street_address: profile.street_address || '',
         state_id: profile.state_id || '',
         city_id: profile.city_id || '',
@@ -152,7 +137,7 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
       <div className="mb-4">
         <h3 className="text-base md:text-lg font-medium">Información Personal</h3>
         <p className="text-xs md:text-sm text-muted-foreground">
-          Actualiza tu información personal y preferencias
+          Actualiza tu información personal y dirección
         </p>
       </div>
       
@@ -230,62 +215,6 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
             required={false}
           />
 
-          <Separator className="my-6" />
-          
-          <div className="mb-4">
-            <h4 className="text-sm font-medium mb-2">Preferencias</h4>
-            <p className="text-xs text-muted-foreground">
-              Configuración de idioma y zona horaria
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField
-              control={profileForm.control}
-              name="preferred_language"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">Idioma Preferido</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona un idioma" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="es">Español</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={profileForm.control}
-              name="timezone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">Zona Horaria</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona zona horaria" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="America/New_York">Este (Nueva York)</SelectItem>
-                      <SelectItem value="America/Chicago">Central (Chicago)</SelectItem>
-                      <SelectItem value="America/Denver">Montaña (Denver)</SelectItem>
-                      <SelectItem value="America/Los_Angeles">Pacífico (Los Ángeles)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
 
           <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
             {showCancelButton && (

@@ -17,6 +17,7 @@ import { useFleetNotifications } from '@/components/notifications';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { ProfileForm } from '@/components/profile/ProfileForm';
+import { PreferencesForm } from '@/components/profile/PreferencesForm';
 import { PageToolbar } from '@/components/layout/PageToolbar';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Settings, Save, KeyRound, CheckCircle, AlertCircle, RotateCcw, Trash2, Shield } from 'lucide-react';
@@ -207,11 +208,16 @@ export default function Profile() {
           <Card className="lg:col-span-2 order-1 lg:order-2">
             <Tabs defaultValue="profile" className="w-full">
               <CardHeader className="p-4 md:p-6">
-                <TabsList className="grid w-full grid-cols-2 h-auto">
+                <TabsList className="grid w-full grid-cols-3 h-auto">
                   <TabsTrigger value="profile" className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4">
                     <User className="h-3 w-3 md:h-4 md:w-4" />
                     <span className="hidden sm:inline">Información Personal</span>
                     <span className="sm:hidden">Info</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="preferences" className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4">
+                    <Settings className="h-3 w-3 md:h-4 md:w-4" />
+                    <span className="hidden sm:inline">Preferencias</span>
+                    <span className="sm:hidden">Pref</span>
                   </TabsTrigger>
                   <TabsTrigger value="security" className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4">
                     <Shield className="h-3 w-3 md:h-4 md:w-4" />
@@ -224,6 +230,10 @@ export default function Profile() {
               <CardContent className="p-4 md:p-6">
                 <TabsContent value="profile" className="space-y-4 mt-0">
                   <ProfileForm onCancel={onCancelProfile} />
+                </TabsContent>
+
+                <TabsContent value="preferences" className="space-y-4 mt-0">
+                  <PreferencesForm onCancel={onCancelProfile} />
                 </TabsContent>
 
                 <TabsContent value="security" className="space-y-4 mt-0">
