@@ -171,7 +171,8 @@ export function PaymentReportDialog({
         name: company.name || 'Tu Empresa',
         address: company.street_address,
         phone: company.phone,
-        email: company.email
+        email: company.email,
+        logo_url: company.logo_url
       },
       loads: loads.map(load => ({
         load_number: load.load_number,

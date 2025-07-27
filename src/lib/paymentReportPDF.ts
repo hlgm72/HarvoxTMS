@@ -25,6 +25,7 @@ interface PaymentReportData {
     address?: string;
     phone?: string;
     email?: string;
+    logo_url?: string;
   };
   loads?: Array<{
     load_number: string;
@@ -69,6 +70,23 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const pageHeight = doc.internal.pageSize.height;
   const margin = 12;
   let currentY = margin;
+
+  // Función para cargar imagen desde URL
+  const loadImageFromUrl = async (url: string): Promise<string | null> => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error('Error loading image:', error);
+      return null;
+    }
+  };
 
   // Función para convertir RGB a array para jsPDF
   const hexToRgb = (hex: string) => {
@@ -176,18 +194,40 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const col3X = margin + colWidth * 2;
   
   // === COLUMNA 1: INFORMACIÓN DE LA COMPAÑÍA ===
-  // Generar logo a partir del nombre de la compañía (primeras 2-3 letras)
-  const companyLogo = data.company.name ? 
-    data.company.name.split(' ').map(word => word.charAt(0)).join('').substring(0, 3).toUpperCase() :
-    'CO';
-    
-  addText(companyLogo, col1X, currentY, {
-    fontSize: 28,
-    fontStyle: 'bold',
-    color: colors.primary
-  });
   
-  addText(data.company.name || 'Transport LLC', col1X + 20, currentY, {
+  // Intentar cargar logo de la compañía
+  let logoWidth = 0;
+  if (data.company.logo_url) {
+    try {
+      const logoData = await loadImageFromUrl(data.company.logo_url);
+      if (logoData) {
+        // Agregar imagen del logo
+        const logoSize = 15; // Tamaño del logo en mm
+        doc.addImage(logoData, 'PNG', col1X, currentY - 5, logoSize, logoSize);
+        logoWidth = logoSize + 5; // Espacio para el logo + margen
+      }
+    } catch (error) {
+      console.error('Error loading company logo:', error);
+      // Fallback a iniciales si falla cargar la imagen
+      logoWidth = 0;
+    }
+  }
+  
+  // Si no hay logo o fallo al cargar, usar iniciales como fallback
+  if (logoWidth === 0) {
+    const companyLogo = data.company.name ? 
+      data.company.name.split(' ').map(word => word.charAt(0)).join('').substring(0, 3).toUpperCase() :
+      'CO';
+      
+    addText(companyLogo, col1X, currentY, {
+      fontSize: 28,
+      fontStyle: 'bold',
+      color: colors.primary
+    });
+    logoWidth = 20; // Espacio para las iniciales
+  }
+  
+  addText(data.company.name || 'Transport LLC', col1X + logoWidth, currentY, {
     fontSize: 14,
     fontStyle: 'bold',
     color: colors.darkGray
