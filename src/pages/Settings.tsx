@@ -16,6 +16,7 @@ import { Company } from '@/types/company';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { ProfileForm } from '@/components/profile/ProfileForm';
+import { PreferencesForm } from '@/components/profile/PreferencesForm';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -239,13 +240,20 @@ export default function Settings() {
               <Card className="md:col-span-2">
                 <Tabs value={profileSubTab} onValueChange={setProfileSubTab} className="w-full">
                   <CardHeader>
-                    <TabsList className="grid w-full grid-cols-2">
+                    <TabsList className="grid w-full grid-cols-3">
                       <TabsTrigger 
                         value="info" 
                         className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
                       >
                         <User className="h-4 w-4" />
                         Información Personal
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="preferences" 
+                        className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+                      >
+                        <SettingsIcon className="h-4 w-4" />
+                        Preferencias
                       </TabsTrigger>
                       <TabsTrigger 
                         value="security" 
@@ -261,6 +269,11 @@ export default function Settings() {
                     {/* Información Personal */}
                     <TabsContent value="info" className="space-y-4">
                       <ProfileForm showCancelButton={false} />
+                    </TabsContent>
+
+                    {/* Preferencias */}
+                    <TabsContent value="preferences" className="space-y-4">
+                      <PreferencesForm showCancelButton={false} />
                     </TabsContent>
 
                     {/* Seguridad */}
