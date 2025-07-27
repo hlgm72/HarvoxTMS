@@ -562,10 +562,15 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
                           <Input
                             type="number"
-                            step="0.001"
-                            placeholder="0.000"
+                            step="0.01"
+                            placeholder="0.00"
                             className="pl-8"
                             {...field}
+                            onChange={(e) => {
+                              const value = parseFloat(e.target.value);
+                              field.onChange(isNaN(value) ? "" : value);
+                            }}
+                            value={field.value ? Number(field.value).toFixed(2) : ""}
                           />
                         </div>
                       </FormControl>
@@ -589,6 +594,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                             placeholder="0.00"
                             className="pl-8 bg-muted"
                             {...field}
+                            value={field.value ? Number(field.value).toFixed(2) : ""}
                             readOnly
                           />
                         </div>
@@ -615,6 +621,11 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                             placeholder="0.00"
                             className="pl-8"
                             {...field}
+                            onChange={(e) => {
+                              const value = parseFloat(e.target.value);
+                              field.onChange(isNaN(value) ? "" : value);
+                            }}
+                            value={field.value ? Number(field.value).toFixed(2) : ""}
                           />
                         </div>
                       </FormControl>
@@ -638,6 +649,11 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                             placeholder="0.00"
                             className="pl-8"
                             {...field}
+                            onChange={(e) => {
+                              const value = parseFloat(e.target.value);
+                              field.onChange(isNaN(value) ? "" : value);
+                            }}
+                            value={field.value ? Number(field.value).toFixed(2) : ""}
                           />
                         </div>
                       </FormControl>
@@ -661,6 +677,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                             placeholder="0.00"
                             className="pl-8 bg-muted"
                             {...field}
+                            value={field.value ? Number(field.value).toFixed(2) : ""}
                             readOnly
                           />
                         </div>
