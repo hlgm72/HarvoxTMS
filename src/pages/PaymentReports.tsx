@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PageToolbar } from "@/components/layout/PageToolbar";
-import { Calendar, Download, FileText, Search, Filter, Plus, DollarSign, Clock } from "lucide-react";
+import { Calendar, Download, FileText, Search, Filter, Plus, DollarSign, Clock, Calculator } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { formatPaymentPeriod } from "@/lib/dateFormatting";
 import { useFleetNotifications } from "@/components/notifications";
@@ -29,7 +29,7 @@ export default function PaymentReports() {
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [selectedForPayment, setSelectedForPayment] = useState<any>(null);
   
-  const { markDriverAsPaid, checkPeriodClosureStatus, isLoading: paymentLoading } = useDriverPaymentActions();
+  const { markDriverAsPaid, calculateDriverPeriod, checkPeriodClosureStatus, isLoading: paymentLoading } = useDriverPaymentActions();
 
   // Obtener reportes existentes (simulando con datos de cálculos)
   const { data: paymentCalculations = [], isLoading, refetch } = useQuery({
@@ -143,6 +143,13 @@ export default function PaymentReports() {
   const handleMarkAsPaid = (calculation: any) => {
     setSelectedForPayment(calculation);
     setPaymentDialogOpen(true);
+  };
+
+  const handleCalculatePeriod = async (calculation: any) => {
+    const result = await calculateDriverPeriod(calculation.id);
+    if (result.success) {
+      refetch();
+    }
   };
 
   const handlePaymentSuccess = () => {
@@ -314,15 +321,17 @@ export default function PaymentReports() {
                           </Button>
                         )}
                         
-                        {/* Botón temporal para forzar el cálculo si no existe */}
+                        {/* Botón para calcular si no está calculado */}
                         {!calculation.calculated_at && (
                           <Button
-                            variant="outline"
+                            variant="default"
                             size="sm"
-                            onClick={() => console.log('Necesita cálculo:', calculation)}
-                            className="border-orange-500 text-orange-600"
+                            onClick={() => handleCalculatePeriod(calculation)}
+                            disabled={paymentLoading}
+                            className="bg-blue-600 hover:bg-blue-700"
                           >
-                            Requiere Cálculo
+                            <Calculator className="h-4 w-4 mr-2" />
+                            {paymentLoading ? "Calculando..." : "Calcular Período"}
                           </Button>
                         )}
                         <Button

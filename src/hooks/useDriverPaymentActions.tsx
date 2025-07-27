@@ -51,6 +51,35 @@ export function useDriverPaymentActions() {
     }
   };
 
+  const calculateDriverPeriod = async (calculationId: string) => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.rpc('calculate_driver_payment_period', {
+        driver_calculation_id: calculationId
+      });
+
+      if (error) throw error;
+
+      const result = data as { success?: boolean; message?: string; gross_earnings?: number; net_payment?: number };
+      if (result?.success) {
+        showSuccess(
+          "Cálculo Completado", 
+          `Período calculado exitosamente. Pago neto: $${result.net_payment?.toLocaleString('es-US', { minimumFractionDigits: 2 }) || '0.00'}`
+        );
+        return { success: true, data };
+      } else {
+        showError(result?.message || "No se pudo calcular el período");
+        return { success: false, error: result?.message };
+      }
+    } catch (error: any) {
+      console.error('Error calculating driver period:', error);
+      showError(error.message || "Error al calcular el período");
+      return { success: false, error: error.message };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const markMultipleDriversAsPaid = async (
     calculations: DriverCalculation[],
     paymentMethod: string,
@@ -147,6 +176,7 @@ export function useDriverPaymentActions() {
 
   return {
     markDriverAsPaid,
+    calculateDriverPeriod,
     markMultipleDriversAsPaid,
     checkPeriodClosureStatus,
     closePeriodWhenComplete,
