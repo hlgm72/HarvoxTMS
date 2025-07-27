@@ -117,6 +117,16 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
     onValueChange: (value) => form.setValue('fees', value)
   });
 
+  const grossAmountATM = useATMInput({
+    initialValue: 0,
+    onValueChange: (value) => form.setValue('gross_amount', value)
+  });
+
+  const totalAmountATM = useATMInput({
+    initialValue: 0,
+    onValueChange: (value) => form.setValue('total_amount', value)
+  });
+
   const onSubmit = async (data: FormData) => {
     // Si no hay período seleccionado, generar uno antes de guardar
     if (!data.payment_period_id && userCompany?.company_id) {
@@ -204,9 +214,11 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
   React.useEffect(() => {
     if (gallons && pricePerGallon) {
       const gross = gallons * pricePerGallon;
-      form.setValue('gross_amount', Number(gross.toFixed(2)));
+      const roundedGross = Number(gross.toFixed(2));
+      form.setValue('gross_amount', roundedGross);
+      grossAmountATM.setValue(roundedGross);
     }
-  }, [gallons, pricePerGallon, form]);
+  }, [gallons, pricePerGallon, form, grossAmountATM]);
 
   // Auto-calculate total amount (gross - discounts + fees)
   React.useEffect(() => {
@@ -215,10 +227,12 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       const fee = Number(fees) || 0;
       const total = Number(grossAmount) - discount + fee;
       if (!isNaN(total) && typeof total === 'number') {
-        form.setValue('total_amount', Number(total.toFixed(2)));
+        const roundedTotal = Number(total.toFixed(2));
+        form.setValue('total_amount', roundedTotal);
+        totalAmountATM.setValue(roundedTotal);
       }
     }
-  }, [grossAmount, discountAmount, fees, form]);
+  }, [grossAmount, discountAmount, fees, form, totalAmountATM]);
 
   // Auto-select payment period based on transaction date (solo buscar, no crear)
   const [predictedPeriod, setPredictedPeriod] = React.useState<{start: string, end: string} | null>(null);
@@ -600,25 +614,19 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                   )}
                 />
 
-                <FormField
+               <FormField
                   control={form.control}
                   name="gross_amount"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Monto Bruto</FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            className="pl-8 bg-muted"
-                            {...field}
-                            value={field.value ? Number(field.value).toFixed(2) : ""}
-                            readOnly
-                          />
-                        </div>
+                        <Input
+                          className="text-right pr-3 bg-muted"
+                          value={grossAmountATM.displayValue}
+                          placeholder="$0.00"
+                          readOnly
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -676,18 +684,12 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                     <FormItem>
                       <FormLabel>Total *</FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            className="pl-8 bg-muted"
-                            {...field}
-                            value={field.value ? Number(field.value).toFixed(2) : ""}
-                            readOnly
-                          />
-                        </div>
+                        <Input
+                          className="text-right pr-3 bg-muted"
+                          value={totalAmountATM.displayValue}
+                          placeholder="$0.00"
+                          readOnly
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
