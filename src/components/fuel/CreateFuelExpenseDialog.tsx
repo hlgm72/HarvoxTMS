@@ -101,7 +101,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
   const { data: driverCards = [] } = useDriverCards(selectedDriverId);
   const { data: driverEquipment = [] } = useDriverEquipment(selectedDriverId);
 
-  // ATM Input hooks para campos monetarios
+  // ATM Input hooks para campos monetarios con sincronización manual
   const pricePerGallonATM = useATMInput({
     initialValue: 0,
     onValueChange: (value) => form.setValue('price_per_gallon', value)
@@ -118,13 +118,11 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
   });
 
   const grossAmountATM = useATMInput({
-    initialValue: 0,
-    onValueChange: (value) => form.setValue('gross_amount', value)
+    initialValue: 0
   });
 
   const totalAmountATM = useATMInput({
-    initialValue: 0,
-    onValueChange: (value) => form.setValue('total_amount', value)
+    initialValue: 0
   });
 
   const onSubmit = async (data: FormData) => {
@@ -218,7 +216,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       form.setValue('gross_amount', roundedGross);
       grossAmountATM.setValue(roundedGross);
     }
-  }, [gallons, pricePerGallon, form, grossAmountATM]);
+  }, [gallons, pricePerGallon]); // Solo estas dependencias necesarias
 
   // Auto-calculate total amount (gross - discounts + fees)
   React.useEffect(() => {
@@ -232,7 +230,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
         totalAmountATM.setValue(roundedTotal);
       }
     }
-  }, [grossAmount, discountAmount, fees, form, totalAmountATM]);
+  }, [grossAmount, discountAmount, fees]); // Solo estas dependencias necesarias
 
   // Auto-select payment period based on transaction date (solo buscar, no crear)
   const [predictedPeriod, setPredictedPeriod] = React.useState<{start: string, end: string} | null>(null);
@@ -262,7 +260,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
         setPredictedPeriod(periodDates);
       }
     }
-  }, [transactionDate, paymentPeriods, form, userCompany]);
+  }, [transactionDate, paymentPeriods, userCompany]);
 
   // Función para calcular las fechas del período que se crearía
   const calculatePeriodDates = (date: Date, company: any) => {
@@ -600,14 +598,14 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                     <FormItem>
                       <FormLabel>Precio/Galón *</FormLabel>
                       <FormControl>
-                        <Input
-                          className="text-right pr-3"
-                          value={pricePerGallonATM.displayValue}
-                          onKeyDown={pricePerGallonATM.handleKeyDown}
-                          onPaste={pricePerGallonATM.handlePaste}
-                          placeholder="$0.00"
-                          readOnly
-                        />
+                         <Input
+                           className="text-right pr-3"
+                           value={pricePerGallonATM.displayValue}
+                           onKeyDown={pricePerGallonATM.handleKeyDown}
+                           onPaste={pricePerGallonATM.handlePaste}
+                           placeholder="$0.00"
+                           readOnly
+                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -663,14 +661,14 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                     <FormItem>
                       <FormLabel>Comisiones</FormLabel>
                       <FormControl>
-                        <Input
-                          className="text-right pr-3"
-                          value={feesATM.displayValue}
-                          onKeyDown={feesATM.handleKeyDown}
-                          onPaste={feesATM.handlePaste}
-                          placeholder="$0.00"
-                          readOnly
-                        />
+                         <Input
+                           className="text-right pr-3"
+                           value={feesATM.displayValue}
+                           onKeyDown={feesATM.handleKeyDown}
+                           onPaste={feesATM.handlePaste}
+                           placeholder="$0.00"
+                           readOnly
+                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
