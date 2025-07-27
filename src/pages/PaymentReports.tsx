@@ -1,46 +1,29 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Download, FileText, Mail, Search, Filter, Plus, Users, DollarSign, Clock } from "lucide-react";
+import { PageToolbar } from "@/components/layout/PageToolbar";
+import { Calendar, Download, FileText, Search, Filter, Plus, DollarSign, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { formatPaymentPeriod } from "@/lib/dateFormatting";
 import { useFleetNotifications } from "@/components/notifications";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
+import { PaymentReportDialog } from "@/components/payments/PaymentReportDialog";
 
-interface PaymentReport {
-  id: string;
-  period_id: string;
-  driver_user_id: string;
-  report_type: string;
-  status: string;
-  generated_at: string;
-  generated_by: string;
-  sent_at?: string;
-  driver_name: string;
-  period_info: {
-    period_start_date: string;
-    period_end_date: string;
-    gross_earnings: number;
-    net_payment: number;
-    fuel_expenses: number;
-    total_deductions: number;
-  };
-}
-
-export function PaymentReports() {
+export default function PaymentReports() {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedDriver, setSelectedDriver] = useState("all");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedCalculationId, setSelectedCalculationId] = useState<string | null>(null);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   // Obtener reportes existentes (simulando con datos de cálculos)
   const { data: paymentCalculations = [], isLoading } = useQuery({
@@ -53,11 +36,7 @@ export function PaymentReports() {
           company_payment_periods!inner(
             period_start_date,
             period_end_date,
-            company_id,
-            companies!inner(
-              id,
-              name
-            )
+            company_id
           )
         `)
         .order('created_at', { ascending: false });
@@ -120,7 +99,7 @@ export function PaymentReports() {
           net_payment: calculation.net_payment
         },
         company: {
-          name: calculation.company_payment_periods.companies?.name || 'Company'
+          name: 'Tu Empresa'
         }
       };
 
@@ -134,13 +113,9 @@ export function PaymentReports() {
     }
   };
 
-  const handleSendReport = async (calculationId: string) => {
-    try {
-      // Aquí implementaremos el envío por email
-      showSuccess("Enviado", "Reporte enviado por email exitosamente");
-    } catch (error: any) {
-      showError("Error", "No se pudo enviar el reporte por email");
-    }
+  const handleViewReport = (calculationId: string) => {
+    setSelectedCalculationId(calculationId);
+    setReportDialogOpen(true);
   };
 
   const getStatusBadge = (calculation: any) => {
@@ -154,22 +129,18 @@ export function PaymentReports() {
   };
 
   return (
-    <Layout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Reportes de Pago</h1>
-            <p className="text-muted-foreground">
-              Genera y gestiona reportes de pago para conductores
-            </p>
-          </div>
+    <>
+      <PageToolbar 
+        title="Reportes de Pago"
+        actions={
           <Button>
             <Plus className="h-4 w-4 mr-2" />
             Generar Reporte Masivo
           </Button>
-        </div>
+        }
+      />
 
+      <div className="space-y-6 p-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard
@@ -315,10 +286,10 @@ export function PaymentReports() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleSendReport(calculation.id)}
+                          onClick={() => handleViewReport(calculation.id)}
                         >
-                          <Mail className="h-4 w-4 mr-2" />
-                          Enviar
+                          <FileText className="h-4 w-4 mr-2" />
+                          Ver Detalle
                         </Button>
                       </div>
                     </div>
@@ -329,8 +300,12 @@ export function PaymentReports() {
           </CardContent>
         </Card>
       </div>
-    </Layout>
+
+      <PaymentReportDialog
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+        calculationId={selectedCalculationId}
+      />
+    </>
   );
 }
-
-export default PaymentReports;
