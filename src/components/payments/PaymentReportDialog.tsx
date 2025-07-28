@@ -79,7 +79,7 @@ export function PaymentReportDialog({
       // Obtener datos básicos del perfil
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('user_id, first_name, last_name, phone, street_address, zip_code, state_id')
+        .select('user_id, first_name, last_name, phone, street_address, zip_code, state_id, city_id')
         .eq('user_id', calculation.driver_user_id)
         .single();
 
@@ -100,6 +100,18 @@ export function PaymentReportDialog({
         .eq('is_active', true)
         .maybeSingle();
 
+      // Obtener nombre de la ciudad si hay city_id
+      let cityName = null;
+      if (profileData.city_id) {
+        const { data: cityData } = await supabase
+          .from('state_cities')
+          .select('name')
+          .eq('id', profileData.city_id)
+          .single();
+        
+        cityName = cityData?.name || null;
+      }
+
       // Lógica para determinar qué información usar
       // Si es Owner Operator y tiene datos de negocio, usar esos datos
       // Si no, usar los datos del perfil personal
@@ -109,11 +121,12 @@ export function PaymentReportDialog({
         ...profileData,
         license_number: driverData?.license_number || null,
         license_state: driverData?.license_state || null,
+        city_name: cityName,
         // Usar datos de Owner Operator si existen, sino usar datos del perfil
         display_name: useOwnerOperatorData ? ownerData.business_name : `${profileData.first_name} ${profileData.last_name}`,
         display_address: useOwnerOperatorData ? ownerData.business_address : 
-          profileData.street_address && profileData.state_id && profileData.zip_code
-            ? `${profileData.street_address}\n${profileData.state_id} ${profileData.zip_code}`
+          profileData.street_address && cityName && profileData.state_id && profileData.zip_code
+            ? `${profileData.street_address}\n${cityName}, ${profileData.state_id} ${profileData.zip_code}`
             : profileData.street_address,
         display_email: useOwnerOperatorData ? ownerData.business_email : null, // No hay email en profiles
         display_phone: useOwnerOperatorData ? ownerData.business_phone : profileData.phone,
