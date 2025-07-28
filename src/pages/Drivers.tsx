@@ -257,6 +257,10 @@ export default function Drivers() {
                     <div className="flex items-center gap-2">
                       <span>🕐</span>
                       <span className="text-sm">{formatExperience(driver.hire_date)}</span>
+                      {/* Debug info */}
+                      <span className="text-xs text-muted-foreground ml-2">
+                        (Debug: {driver.hire_date ? `Fecha: ${driver.hire_date}` : 'Sin fecha'})
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span>📋</span>
