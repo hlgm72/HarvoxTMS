@@ -301,7 +301,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   // === COLUMNA 3: INFORMACIÓN DEL CONDUCTOR ===
   addText(data.driver.name, col3X + colWidth - 5, currentY, {
-    fontSize: 14,
+    fontSize: 12,
     fontStyle: 'bold',
     color: colors.darkGray,
     align: 'right'
