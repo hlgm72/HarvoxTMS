@@ -65,13 +65,40 @@ export function DriverCardsManager() {
   const { data: driverCards, isLoading } = useQuery({
     queryKey: ['driver-cards'],
     queryFn: async () => {
+      // First get the user's company ID
+      const { data: userCompany, error: companyError } = await supabase
+        .from('user_company_roles')
+        .select('company_id')
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle();
+
+      if (companyError) {
+        console.error('Error fetching user company:', companyError);
+        throw companyError;
+      }
+
+      if (!userCompany?.company_id) {
+        console.log('No company found for current user');
+        return [];
+      }
+
+      console.log('🔍 DEBUG: Fetching cards for company:', userCompany.company_id);
+
       const { data, error } = await supabase
         .from('driver_fuel_cards')
         .select('*')
+        .eq('company_id', userCompany.company_id)
         .eq('is_active', true)
         .order('assigned_date', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching driver cards:', error);
+        throw error;
+      }
+
+      console.log('🔍 DEBUG: Found driver cards:', data);
 
       // Get driver names separately
       const cardsWithDrivers = await Promise.all(
@@ -97,9 +124,29 @@ export function DriverCardsManager() {
   const { data: drivers } = useQuery({
     queryKey: ['available-drivers'],
     queryFn: async () => {
+      // First get the user's company ID
+      const { data: userCompany, error: companyError } = await supabase
+        .from('user_company_roles')
+        .select('company_id')
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle();
+
+      if (companyError) {
+        console.error('Error fetching user company for drivers:', companyError);
+        throw companyError;
+      }
+
+      if (!userCompany?.company_id) {
+        console.log('No company found for current user when fetching drivers');
+        return [];
+      }
+
       const { data, error } = await supabase
         .from('user_company_roles')
         .select('user_id')
+        .eq('company_id', userCompany.company_id)
         .eq('role', 'driver')
         .eq('is_active', true);
 
