@@ -766,11 +766,6 @@ export function PDFAnalyzer() {
                                   Período OK
                                 </Badge>
                               )}
-                              {transaction.period_mapping_status === 'will_create' && (
-                                <Badge variant="outline" className="border-blue-500 text-blue-600">
-                                  Crear período
-                                </Badge>
-                              )}
                             </>
                           )}
                         </div>
