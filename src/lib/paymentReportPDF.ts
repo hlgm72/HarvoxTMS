@@ -211,7 +211,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   };
 
   // === HEADER EN TRES COLUMNAS ===
-  currentY = 15;
+  currentY = 10;
   
   // Agregar fondo gris claro con esquinas redondeadas y borde para la cabecera
   const headerHeight = 28;
@@ -377,7 +377,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     });
   }
 
-  currentY += 30;
+  currentY += 22;
 
   // === CAJAS DE RESUMEN SUPERIOR ===
   const boxWidth = (pageWidth - margin*2 - 15) / 4; // 4 cajas con espacios
