@@ -208,7 +208,7 @@ serve(async (req) => {
                   gross_earnings: 0,
                   total_deductions: 0,
                   other_income: 0,
-                  total_income: 0,
+                  // total_income eliminado - se calcula dinámicamente
                   net_payment: 0,
                   has_negative_balance: false
                 })

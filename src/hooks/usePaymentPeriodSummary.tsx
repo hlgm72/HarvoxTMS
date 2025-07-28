@@ -114,7 +114,7 @@ export function useAllPaymentPeriodsSummary(companyId?: string) {
         });
       });
 
-      allCalculations?.forEach(calc => {
+    allCalculations?.forEach(calc => {
         const summary = summaryMap.get(calc.company_payment_period_id);
         if (summary) {
           summary.gross_earnings += calc.gross_earnings || 0;

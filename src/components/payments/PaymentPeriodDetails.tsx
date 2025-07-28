@@ -22,7 +22,6 @@ interface DriverCalculation {
   fuel_expenses: number;
   total_deductions: number;
   other_income: number;
-  total_income: number;
   net_payment: number;
   has_negative_balance: boolean;
   balance_alert_message?: string;

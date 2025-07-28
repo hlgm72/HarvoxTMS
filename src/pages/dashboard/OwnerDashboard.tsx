@@ -26,7 +26,7 @@ interface CompanyStats {
   total_drivers: number;
   total_vehicles: number;
   total_loads: number;
-  total_income: number;
+  total_income: number; // Calculado dinámicamente como gross_earnings + other_income
   active_drivers: number;
   pending_payments: number;
 }
