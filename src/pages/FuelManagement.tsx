@@ -11,7 +11,7 @@ import { FuelExpensesList } from '@/components/fuel/FuelExpensesList';
 import { CreateFuelExpenseDialog } from '@/components/fuel/CreateFuelExpenseDialog';
 import { EditFuelExpenseDialog } from '@/components/fuel/EditFuelExpenseDialog';
 import { ViewFuelExpenseDialog } from '@/components/fuel/ViewFuelExpenseDialog';
-import { DriverCardsManager } from '@/components/fuel/DriverCardsManager';
+import { DriverCardsSimple } from '@/components/fuel/DriverCardsSimple';
 import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { PDFAnalyzer } from '@/components/fuel/PDFAnalyzer';
 
@@ -108,7 +108,7 @@ export default function FuelManagement() {
 
           <TabsContent value="cards" className="mt-6">
             {/* Gestión de Tarjetas de Combustible */}
-            <DriverCardsManager />
+            <DriverCardsSimple />
           </TabsContent>
 
           <TabsContent value="analyzer" className="mt-6">
