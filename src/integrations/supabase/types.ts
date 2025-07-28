@@ -592,6 +592,7 @@ export type Database = {
           id: string
           is_active: boolean
           license_expiry_date: string | null
+          license_issue_date: string | null
           license_number: string | null
           license_state: string | null
           updated_at: string
@@ -608,6 +609,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           license_expiry_date?: string | null
+          license_issue_date?: string | null
           license_number?: string | null
           license_state?: string | null
           updated_at?: string
@@ -624,6 +626,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           license_expiry_date?: string | null
+          license_issue_date?: string | null
           license_number?: string | null
           license_state?: string | null
           updated_at?: string

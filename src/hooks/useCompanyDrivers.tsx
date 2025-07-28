@@ -16,6 +16,7 @@ export interface CompanyDriver {
   license_expiry_date: string | null;
   license_state: string | null;
   cdl_class: string | null;
+  license_issue_date: string | null;
   hire_date: string | null;
   is_active: boolean;
   emergency_contact_name: string | null;
@@ -96,6 +97,7 @@ export const useCompanyDrivers = () => {
               license_state,
               cdl_class,
               hire_date,
+              license_issue_date,
               is_active,
               emergency_contact_name,
               emergency_contact_phone
@@ -145,6 +147,7 @@ export const useCompanyDrivers = () => {
             license_expiry_date: driverProfile?.license_expiry_date || null,
             license_state: driverProfile?.license_state || null,
             cdl_class: driverProfile?.cdl_class || null,
+            license_issue_date: driverProfile?.license_issue_date || null,
             hire_date: driverProfile?.hire_date || null,
             is_active: driverProfile?.is_active ?? true,
             emergency_contact_name: driverProfile?.emergency_contact_name || null,

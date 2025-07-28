@@ -38,26 +38,31 @@ const getStatusText = (status: string) => {
   }
 };
 
-const formatExperience = (hireDate: string | null) => {
-  if (!hireDate) return "Experiencia no especificada";
+const formatExperience = (licenseIssueDate: string | null, hireDate: string | null) => {
+  // Priorizar fecha de emisión de licencia (experiencia total como conductor)
+  const experienceDate = licenseIssueDate || hireDate;
   
-  const hire = new Date(hireDate);
+  if (!experienceDate) return "Experiencia no especificada";
+  
+  const startDate = new Date(experienceDate);
   const now = new Date();
-  const years = now.getFullYear() - hire.getFullYear();
-  const months = now.getMonth() - hire.getMonth();
+  const years = now.getFullYear() - startDate.getFullYear();
+  const months = now.getMonth() - startDate.getMonth();
   
   let totalMonths = years * 12 + months;
   if (totalMonths < 0) totalMonths = 0;
   
+  const experienceType = licenseIssueDate ? "experiencia total" : "experiencia en la empresa";
+  
   if (totalMonths < 12) {
-    return `${totalMonths} meses de experiencia`;
+    return `${totalMonths} meses de ${experienceType}`;
   } else {
     const yearCount = Math.floor(totalMonths / 12);
     const monthCount = totalMonths % 12;
     if (monthCount === 0) {
-      return `${yearCount} año${yearCount !== 1 ? 's' : ''} de experiencia`;
+      return `${yearCount} año${yearCount !== 1 ? 's' : ''} de ${experienceType}`;
     }
-    return `${yearCount} año${yearCount !== 1 ? 's' : ''} y ${monthCount} mes${monthCount !== 1 ? 'es' : ''} de experiencia`;
+    return `${yearCount} año${yearCount !== 1 ? 's' : ''} y ${monthCount} mes${monthCount !== 1 ? 'es' : ''} de ${experienceType}`;
   }
 };
 
@@ -256,10 +261,10 @@ export default function Drivers() {
                     
                     <div className="flex items-center gap-2">
                       <span>🕐</span>
-                      <span className="text-sm">{formatExperience(driver.hire_date)}</span>
+                      <span className="text-sm">{formatExperience(driver.license_issue_date, driver.hire_date)}</span>
                       {/* Debug info */}
                       <span className="text-xs text-muted-foreground ml-2">
-                        (Debug: {driver.hire_date ? `Fecha: ${driver.hire_date}` : 'Sin fecha'})
+                        (Debug: Licencia: {driver.license_issue_date || 'Sin fecha'} | Contratación: {driver.hire_date || 'Sin fecha'})
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
