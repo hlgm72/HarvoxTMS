@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserCompanies } from "@/hooks/useUserCompanies";
+import { useOtherIncome, useCreateOtherIncome, useUpdateOtherIncome, useDeleteOtherIncome } from "@/hooks/useOtherIncome";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +21,8 @@ import {
   Eye,
   Edit,
   Trash2,
-  FileText
+  FileText,
+  Loader2
 } from "lucide-react";
 import { formatDateOnly } from '@/lib/dateFormatting';
 
@@ -27,59 +30,26 @@ interface OtherIncomeItem {
   id: string;
   description: string;
   amount: number;
-  incomeType: string;
-  incomeDate: string;
-  status: "pending" | "approved" | "rejected";
-  driverName?: string;
-  referenceNumber?: string;
+  income_type: string;
+  income_date: string;
+  status: string;
+  driver_user_id: string;
+  reference_number?: string;
   notes?: string;
-  createdAt: string;
+  created_at: string;
 }
 
 export function OtherIncomeSection() {
-  const { isDriver, isOperationsManager, isCompanyOwner } = useAuth();
+  const { user, isDriver, isOperationsManager, isCompanyOwner } = useAuth();
+  const { selectedCompany } = useUserCompanies();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<OtherIncomeItem | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
 
-  // Mock data - en implementación real vendría de la API
-  const mockIncomeData: OtherIncomeItem[] = [
-    {
-      id: "1",
-      description: "Bonificación por entrega urgente",
-      amount: 150.00,
-      incomeType: "bonus",
-      incomeDate: "2024-01-15",
-      status: "approved",
-      driverName: "Juan Pérez",
-      referenceNumber: "BON-2024-001",
-      notes: "Entrega realizada en tiempo récord",
-      createdAt: "2024-01-15T10:30:00Z"
-    },
-    {
-      id: "2",
-      description: "Reembolso de casetas",
-      amount: 85.50,
-      incomeType: "reimbursement",
-      incomeDate: "2024-01-14",
-      status: "pending",
-      driverName: "María García",
-      referenceNumber: "REM-2024-002",
-      notes: "Casetas ruta Dallas-Houston",
-      createdAt: "2024-01-14T14:20:00Z"
-    },
-    {
-      id: "3",
-      description: "Compensación por tiempo de espera",
-      amount: 75.00,
-      incomeType: "compensation",
-      incomeDate: "2024-01-13",
-      status: "approved",
-      driverName: "Carlos Rodríguez",
-      referenceNumber: "COMP-2024-003",
-      createdAt: "2024-01-13T16:45:00Z"
-    }
-  ];
+  // Cargar datos reales de otros ingresos
+  const { data: incomeData = [], isLoading } = useOtherIncome({
+    driverId: isDriver ? user?.id : undefined
+  });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -111,13 +81,20 @@ export function OtherIncomeSection() {
     setIsViewDialogOpen(true);
   };
 
-  // Filtrar datos según el rol
-  const displayData = isDriver 
-    ? mockIncomeData.filter(item => item.driverName === "Juan Pérez") // En realidad sería el usuario actual
-    : mockIncomeData;
+  // Los datos ya están filtrados por el hook según el rol
+  const displayData = incomeData;
 
   const totalPending = displayData.filter(item => item.status === "pending").reduce((sum, item) => sum + item.amount, 0);
   const totalApproved = displayData.filter(item => item.status === "approved").reduce((sum, item) => sum + item.amount, 0);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin" />
+        <span className="ml-2">Cargando otros ingresos...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -214,10 +191,10 @@ export function OtherIncomeSection() {
                 displayData.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{item.description}</TableCell>
-                    <TableCell>{getIncomeTypeLabel(item.incomeType)}</TableCell>
+                    <TableCell>{getIncomeTypeLabel(item.income_type)}</TableCell>
                     <TableCell className="font-semibold">${item.amount.toLocaleString()}</TableCell>
-                    <TableCell>{formatDateOnly(item.incomeDate)}</TableCell>
-                    {!isDriver && <TableCell>{item.driverName}</TableCell>}
+                    <TableCell>{formatDateOnly(item.income_date)}</TableCell>
+                    {!isDriver && <TableCell>{item.driver_user_id}</TableCell>}
                     <TableCell>{getStatusBadge(item.status)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
@@ -264,7 +241,7 @@ export function OtherIncomeSection() {
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Tipo</Label>
-                  <p className="text-sm text-muted-foreground">{getIncomeTypeLabel(selectedItem.incomeType)}</p>
+                  <p className="text-sm text-muted-foreground">{getIncomeTypeLabel(selectedItem.income_type)}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Monto</Label>
@@ -273,17 +250,17 @@ export function OtherIncomeSection() {
                 <div>
                   <Label className="text-sm font-medium">Fecha</Label>
                   <p className="text-sm text-muted-foreground">
-                    {formatDateOnly(selectedItem.incomeDate)}
+                    {formatDateOnly(selectedItem.income_date)}
                   </p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Estado</Label>
                   <div>{getStatusBadge(selectedItem.status)}</div>
                 </div>
-                {selectedItem.referenceNumber && (
+                {selectedItem.reference_number && (
                   <div>
                     <Label className="text-sm font-medium">Referencia</Label>
-                    <p className="text-sm text-muted-foreground">{selectedItem.referenceNumber}</p>
+                    <p className="text-sm text-muted-foreground">{selectedItem.reference_number}</p>
                   </div>
                 )}
               </div>
@@ -303,20 +280,40 @@ export function OtherIncomeSection() {
 
 // Componente para crear nuevo ingreso
 function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
+  const { user } = useAuth();
+  const createOtherIncome = useCreateOtherIncome();
   const [formData, setFormData] = useState({
     description: "",
     amount: "",
-    incomeType: "",
-    incomeDate: "",
-    referenceNumber: "",
+    income_type: "",
+    income_date: "",
+    reference_number: "",
     notes: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aquí iría la lógica para guardar en la base de datos
-    console.log("Creating other income:", formData);
-    onClose();
+    
+    if (!user?.id) {
+      console.error("User not found");
+      return;
+    }
+
+    try {
+      await createOtherIncome.mutateAsync({
+        driver_user_id: user.id,
+        description: formData.description,
+        amount: Number(formData.amount),
+        income_type: formData.income_type,
+        income_date: formData.income_date,
+        reference_number: formData.reference_number || undefined,
+        notes: formData.notes || undefined,
+        status: 'pending'
+      });
+      onClose();
+    } catch (error) {
+      console.error("Error creating other income:", error);
+    }
   };
 
   return (
@@ -350,8 +347,8 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
           <Input
             id="incomeDate"
             type="date"
-            value={formData.incomeDate}
-            onChange={(e) => setFormData({ ...formData, incomeDate: e.target.value })}
+            value={formData.income_date}
+            onChange={(e) => setFormData({ ...formData, income_date: e.target.value })}
             required
           />
         </div>
@@ -359,7 +356,7 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
 
       <div>
         <Label htmlFor="incomeType">Tipo de Ingreso *</Label>
-        <Select value={formData.incomeType} onValueChange={(value) => setFormData({ ...formData, incomeType: value })}>
+        <Select value={formData.income_type} onValueChange={(value) => setFormData({ ...formData, income_type: value })}>
           <SelectTrigger>
             <SelectValue placeholder="Seleccionar tipo" />
           </SelectTrigger>
@@ -378,8 +375,8 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
         <Label htmlFor="referenceNumber">Número de Referencia</Label>
         <Input
           id="referenceNumber"
-          value={formData.referenceNumber}
-          onChange={(e) => setFormData({ ...formData, referenceNumber: e.target.value })}
+          value={formData.reference_number}
+          onChange={(e) => setFormData({ ...formData, reference_number: e.target.value })}
           placeholder="Opcional"
         />
       </div>
@@ -396,7 +393,20 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
       </div>
 
       <div className="flex gap-2 pt-4">
-        <Button type="submit" className="flex-1">Crear Ingreso</Button>
+        <Button 
+          type="submit" 
+          className="flex-1"
+          disabled={createOtherIncome.isPending}
+        >
+          {createOtherIncome.isPending ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              Creando...
+            </>
+          ) : (
+            'Crear Ingreso'
+          )}
+        </Button>
         <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
       </div>
     </form>
