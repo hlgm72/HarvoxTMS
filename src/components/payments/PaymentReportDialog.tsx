@@ -124,8 +124,9 @@ export function PaymentReportDialog({
         city_name: cityName,
         // Usar datos de Owner Operator si existen, sino usar datos del perfil
         display_name: useOwnerOperatorData ? ownerData.business_name : `${profileData.first_name} ${profileData.last_name}`,
-        display_address: useOwnerOperatorData ? ownerData.business_address : 
-          profileData.street_address && cityName && profileData.state_id && profileData.zip_code
+        display_address: useOwnerOperatorData 
+          ? ownerData.business_address 
+          : profileData.street_address && cityName && profileData.state_id && profileData.zip_code
             ? `${profileData.street_address}\n${cityName}, ${profileData.state_id} ${profileData.zip_code}`
             : profileData.street_address,
         display_email: useOwnerOperatorData ? ownerData.business_email : null, // No hay email en profiles
