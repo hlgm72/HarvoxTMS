@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
+import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
 import { useOtherIncome, useCreateOtherIncome, useUpdateOtherIncome, useDeleteOtherIncome } from "@/hooks/useOtherIncome";
 import { useATMInput } from "@/hooks/useATMInput";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -287,12 +288,15 @@ export function OtherIncomeSection() {
 // Componente para crear nuevo ingreso
 function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
   const { user } = useAuth();
+  const { selectedCompany } = useUserCompanies();
+  const { data: companyDrivers = [], isLoading: driversLoading } = useCompanyDrivers(selectedCompany?.id);
   const createOtherIncome = useCreateOtherIncome();
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [formData, setFormData] = useState({
     description: "",
     income_type: "",
     income_date: null as Date | null,
+    driver_user_id: "",
     reference_number: "",
     notes: ""
   });
@@ -305,14 +309,14 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!user?.id || !formData.income_date) {
-      console.error("User or date not found");
+    if (!formData.driver_user_id || !formData.income_date) {
+      console.error("Driver or date not selected");
       return;
     }
 
     try {
       await createOtherIncome.mutateAsync({
-        driver_user_id: user.id,
+        driver_user_id: formData.driver_user_id,
         description: formData.description,
         amount: atmInput.numericValue,
         income_type: formData.income_type,
@@ -329,6 +333,31 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="driver">Conductor *</Label>
+        <Select 
+          value={formData.driver_user_id} 
+          onValueChange={(value) => setFormData({ ...formData, driver_user_id: value })}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Seleccionar conductor" />
+          </SelectTrigger>
+          <SelectContent>
+            {driversLoading ? (
+              <SelectItem value="" disabled>Cargando conductores...</SelectItem>
+            ) : companyDrivers.length === 0 ? (
+              <SelectItem value="" disabled>No hay conductores disponibles</SelectItem>
+            ) : (
+              companyDrivers.map((driver) => (
+                <SelectItem key={driver.user_id} value={driver.user_id}>
+                  {driver.first_name} {driver.last_name} - {driver.email}
+                </SelectItem>
+              ))
+            )}
+          </SelectContent>
+        </Select>
+      </div>
+      
       <div>
         <Label htmlFor="description">Descripción *</Label>
         <Input
