@@ -190,7 +190,6 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
             )}
           />
 
-          <Separator className="my-6" />
           <AddressForm
             streetAddress={personalInfoForm.watch('street_address') || ''}
             onStreetAddressChange={(value) => personalInfoForm.setValue('street_address', value)}
