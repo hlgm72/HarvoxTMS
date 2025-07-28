@@ -1079,7 +1079,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fuel_expenses_payment_period_id_fkey"
+            foreignKeyName: "fk_fuel_expenses_payment_period"
             columns: ["payment_period_id"]
             isOneToOne: false
             referencedRelation: "company_payment_periods"
