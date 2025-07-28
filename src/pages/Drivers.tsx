@@ -104,6 +104,11 @@ export default function Drivers() {
   const [showAssignmentDialog, setShowAssignmentDialog] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState<string>('');
 
+  // Force refetch on mount to get latest data
+  useState(() => {
+    refetch();
+  });
+
   if (loading) {
     return (
       <>
