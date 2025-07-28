@@ -50,6 +50,8 @@ export default function Payments() {
   
   const { data: currentPeriodSummary } = usePaymentPeriodSummary(currentPeriod?.id);
   const { data: previousPeriodSummary } = usePaymentPeriodSummary(previousPeriod?.id);
+  
+  console.log('💰 Resumen período anterior:', previousPeriodSummary);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
