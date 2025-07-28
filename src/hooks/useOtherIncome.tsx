@@ -127,6 +127,10 @@ export function useCreateOtherIncome() {
       queryClient.invalidateQueries({ 
         queryKey: ['other-income', user?.id, selectedCompany?.id] 
       });
+      // Invalidar también los cálculos del período del conductor
+      queryClient.invalidateQueries({ 
+        queryKey: ['driver-period-calculations'] 
+      });
     },
     onError: (error) => {
       console.error('Error creating other income:', error);
@@ -162,6 +166,10 @@ export function useUpdateOtherIncome() {
       queryClient.invalidateQueries({ 
         queryKey: ['other-income', user?.id, selectedCompany?.id] 
       });
+      // Invalidar también los cálculos del período del conductor
+      queryClient.invalidateQueries({ 
+        queryKey: ['driver-period-calculations'] 
+      });
     },
     onError: (error) => {
       console.error('Error updating other income:', error);
@@ -192,6 +200,10 @@ export function useDeleteOtherIncome() {
       showSuccess('Ingreso eliminado exitosamente');
       queryClient.invalidateQueries({ 
         queryKey: ['other-income', user?.id, selectedCompany?.id] 
+      });
+      // Invalidar también los cálculos del período del conductor
+      queryClient.invalidateQueries({ 
+        queryKey: ['driver-period-calculations'] 
       });
     },
     onError: (error) => {
