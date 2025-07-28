@@ -37,12 +37,12 @@ export const useCompanyDrivers = () => {
 
   const driversQuery = useQuery({
     queryKey,
-    retry: 1, // Reducir reintentos para evitar ERR_INSUFFICIENT_RESOURCES
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    staleTime: 300000, // Cache agresivo - 5 minutos
-    gcTime: 600000, // 10 minutos en cache
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+    retry: 3, // Aumentar reintentos para problemas de auth
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 3000),
+    staleTime: 0, // Forzar recarga - Sin cache agresivo
+    gcTime: 30000, // Cache mínimo
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
     refetchInterval: false,
     networkMode: 'online',
     queryFn: async (): Promise<CompanyDriver[]> => {
@@ -111,40 +111,12 @@ export const useCompanyDrivers = () => {
             .in('status', ['assigned', 'in_transit', 'pickup', 'delivery'])
         ]);
 
-        console.log('🔍 useCompanyDrivers - Raw query results:', {
-          finalDriverUserIds,
-          profilesResult: profilesResult.status === 'fulfilled' ? { 
-            data: profilesResult.value.data, 
-            error: profilesResult.value.error 
-          } : { 
-            reason: profilesResult.reason 
-          },
-          driverProfilesResult: driverProfilesResult.status === 'fulfilled' ? { 
-            data: driverProfilesResult.value.data, 
-            error: driverProfilesResult.value.error 
-          } : { 
-            reason: driverProfilesResult.reason 
-          },
-          activeLoadsResult: activeLoadsResult.status === 'fulfilled' ? { 
-            data: activeLoadsResult.value.data, 
-            error: activeLoadsResult.value.error 
-          } : { 
-            reason: activeLoadsResult.reason 
-          }
-        });
-
         // PASO 3: Procesar y enriquecer datos
         const [profiles, driverProfiles, activeLoads] = [
           profilesResult.status === 'fulfilled' ? profilesResult.value.data || [] : [],
           driverProfilesResult.status === 'fulfilled' ? driverProfilesResult.value.data || [] : [],
           activeLoadsResult.status === 'fulfilled' ? activeLoadsResult.value.data || [] : []
         ];
-
-        console.log('🔍 useCompanyDrivers - Processed arrays:', {
-          profiles,
-          driverProfiles,
-          activeLoads
-        });
 
         // Combinar toda la información
         const combinedDrivers: CompanyDriver[] = profiles.map(profile => {
@@ -163,14 +135,6 @@ export const useCompanyDrivers = () => {
           } else if (!driverProfile?.is_active) {
             currentStatus = 'off_duty';
           }
-
-          console.log('🔍 useCompanyDrivers - Processing driver:', {
-            user_id: profile.user_id,
-            name: `${profile.first_name} ${profile.last_name}`,
-            driverProfile: driverProfile,
-            license_issue_date: driverProfile?.license_issue_date,
-            hire_date: driverProfile?.hire_date
-          });
 
           return {
             id: profile.user_id,
