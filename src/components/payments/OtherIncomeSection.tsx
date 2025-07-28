@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -52,6 +53,8 @@ export function OtherIncomeSection() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<OtherIncomeItem | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<OtherIncomeItem | null>(null);
   const deleteOtherIncome = useDeleteOtherIncome();
 
   // Cargar datos reales de otros ingresos
@@ -90,9 +93,16 @@ export function OtherIncomeSection() {
   };
 
   const handleDeleteItem = async (item: OtherIncomeItem) => {
-    if (window.confirm(`¿Estás seguro de que deseas eliminar el ingreso "${item.description}"?`)) {
+    setItemToDelete(item);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (itemToDelete) {
       try {
-        await deleteOtherIncome.mutateAsync(item.id);
+        await deleteOtherIncome.mutateAsync(itemToDelete.id);
+        setIsDeleteDialogOpen(false);
+        setItemToDelete(null);
       } catch (error) {
         console.error("Error deleting other income:", error);
       }
@@ -298,6 +308,37 @@ export function OtherIncomeSection() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Alert Dialog para confirmar eliminación */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar ingreso adicional?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción eliminará permanentemente el ingreso "{itemToDelete?.description}" 
+              por ${itemToDelete?.amount.toLocaleString()}. El período del conductor será 
+              recalculado automáticamente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              disabled={deleteOtherIncome.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteOtherIncome.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Eliminando...
+                </>
+              ) : (
+                'Eliminar'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
