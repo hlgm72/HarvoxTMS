@@ -2592,6 +2592,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_current_user_email_for_rls: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_current_user_for_rls: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_current_user_id: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -2658,6 +2666,10 @@ export type Database = {
         Returns: boolean
       }
       is_authenticated_non_anon: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_authenticated_non_anon_for_rls: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
