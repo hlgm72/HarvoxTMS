@@ -63,7 +63,7 @@ export function DriverCardsManager() {
 
   // Fetch driver cards with driver names
   const { data: driverCards, isLoading, refetch } = useQuery({
-    queryKey: ['driver-cards'],
+    queryKey: ['driver-cards', Date.now()], // Force refresh
     queryFn: async () => {
       // First get the user's company ID
       const { data: userCompany, error: companyError } = await supabase
@@ -299,8 +299,12 @@ export function DriverCardsManager() {
   };
 
   if (isLoading) {
+    console.log('🔍 DEBUG: Component is loading...');
     return <div>Cargando tarjetas...</div>;
   }
+
+  console.log('🔍 DEBUG: Component render - Cards found:', driverCards?.length || 0);
+  console.log('🔍 DEBUG: Cards data:', driverCards);
 
   return (
     <div className="space-y-6">
