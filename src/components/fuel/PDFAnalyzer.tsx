@@ -198,7 +198,9 @@ export function PDFAnalyzer() {
         .eq('is_active', true);
 
       // Obtener tarjetas de conductores
-      const { data: driverCards } = await supabase
+      console.log('🔍 DEBUG: Consultando tarjetas de combustible para compañía:', companyId);
+      
+      const { data: driverCards, error: cardsError } = await supabase
         .from('driver_fuel_cards')
         .select(`
           card_number_last_five,
@@ -207,6 +209,12 @@ export function PDFAnalyzer() {
         `)
         .eq('company_id', companyId)
         .eq('is_active', true);
+
+      console.log('🔍 DEBUG: Resultado consulta tarjetas:', {
+        driverCards,
+        cardsError,
+        companyId
+      });
 
       // Intentar obtener nombres de perfiles, si no, usar emails como fallback
       const driverIds = driverCards?.map(card => card.driver_user_id) || [];
