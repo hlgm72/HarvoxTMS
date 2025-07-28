@@ -16,6 +16,7 @@ import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
 import { PaymentReportDialog } from "@/components/payments/PaymentReportDialog";
 import { MarkDriverPaidDialog } from "@/components/payments/MarkDriverPaidDialog";
 import { useDriverPaymentActions } from "@/hooks/useDriverPaymentActions";
+import { calculateNetPayment } from "@/lib/paymentCalculations";
 
 export default function PaymentReports() {
   const { user } = useAuth();
@@ -102,7 +103,7 @@ export default function PaymentReports() {
           fuel_expenses: calculation.fuel_expenses,
           total_deductions: calculation.total_deductions,
           other_income: calculation.other_income,
-          net_payment: calculation.net_payment
+          net_payment: calculateNetPayment(calculation)
         },
         company: {
           name: 'Tu Empresa'
@@ -291,7 +292,7 @@ export default function PaymentReports() {
                           </span>
                           <span className="flex items-center gap-1">
                             <DollarSign className="h-4 w-4" />
-                            Neto: ${calculation.net_payment?.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                            Neto: ${calculateNetPayment(calculation).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                           </span>
                           {calculation.calculated_at && (
                             <span className="flex items-center gap-1">
@@ -356,7 +357,7 @@ export default function PaymentReports() {
           const driver = drivers.find(d => d.user_id === selectedForPayment.driver_user_id);
           return `${driver?.first_name || ''} ${driver?.last_name || ''}`;
         })()}
-        netPayment={selectedForPayment?.net_payment || 0}
+        netPayment={selectedForPayment ? calculateNetPayment(selectedForPayment) : 0}
         onSuccess={handlePaymentSuccess}
       />
     </>

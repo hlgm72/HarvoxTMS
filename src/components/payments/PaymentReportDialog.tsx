@@ -28,6 +28,7 @@ import {
 import { formatPaymentPeriod } from "@/lib/dateFormatting";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
 import { useFleetNotifications } from "@/components/notifications";
+import { calculateNetPayment } from "@/lib/paymentCalculations";
 
 interface PaymentReportDialogProps {
   open: boolean;
@@ -196,7 +197,7 @@ export function PaymentReportDialog({
         fuel_expenses: calculation.fuel_expenses,
         total_deductions: calculation.total_deductions,
         other_income: calculation.other_income,
-        net_payment: calculation.net_payment
+        net_payment: calculateNetPayment(calculation)
       },
       company: {
         name: company.name || 'Tu Empresa',
@@ -374,8 +375,8 @@ export function PaymentReportDialog({
               
               <div className="flex items-center justify-between text-lg font-bold">
                 <span>Pago Neto:</span>
-                <span className={calculation.net_payment >= 0 ? 'text-success' : 'text-destructive'}>
-                  ${calculation.net_payment.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                <span className={calculateNetPayment(calculation) >= 0 ? 'text-success' : 'text-destructive'}>
+                  ${calculateNetPayment(calculation).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                 </span>
               </div>
             </CardContent>

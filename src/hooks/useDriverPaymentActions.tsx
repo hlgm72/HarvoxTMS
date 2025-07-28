@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
+import { calculateNetPayment } from "@/lib/paymentCalculations";
 
 export interface DriverCalculation {
   id: string;
   driver_user_id: string;
-  net_payment: number;
+  gross_earnings: number;
+  fuel_expenses: number;
+  total_deductions: number;
+  other_income: number;
   payment_status: string;
   paid_at?: string;
   payment_method?: string;
@@ -60,11 +64,12 @@ export function useDriverPaymentActions() {
 
       if (error) throw error;
 
-      const result = data as { success?: boolean; message?: string; gross_earnings?: number; net_payment?: number };
+      const result = data as { success?: boolean; message?: string; gross_earnings?: number; other_income?: number; fuel_expenses?: number; total_deductions?: number };
       if (result?.success) {
+        const netPayment = calculateNetPayment(result as any);
         showSuccess(
           "Cálculo Completado", 
-          `Período calculado exitosamente. Pago neto: $${result.net_payment?.toLocaleString('es-US', { minimumFractionDigits: 2 }) || '0.00'}`
+          `Período calculado exitosamente. Pago neto: $${netPayment.toLocaleString('es-US', { minimumFractionDigits: 2 })}`
         );
         return { success: true, data };
       } else {

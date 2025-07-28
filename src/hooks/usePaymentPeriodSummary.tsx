@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { calculateNetPayment } from "@/lib/paymentCalculations";
 
 export interface PaymentPeriodSummary {
   period_id: string;
@@ -45,7 +46,7 @@ export function usePaymentPeriodSummary(periodId?: string) {
         acc.other_income += calc.other_income || 0;
         acc.fuel_expenses += calc.fuel_expenses || 0;
         acc.deductions += calc.total_deductions || 0;
-        acc.net_payment += calc.net_payment || 0;
+        acc.net_payment += calculateNetPayment(calc);
         
         if (calc.has_negative_balance) {
           acc.drivers_with_negative_balance++;
@@ -121,7 +122,7 @@ export function useAllPaymentPeriodsSummary(companyId?: string) {
           summary.other_income += calc.other_income || 0;
           summary.fuel_expenses += calc.fuel_expenses || 0;
           summary.deductions += calc.total_deductions || 0;
-          summary.net_payment += calc.net_payment || 0;
+          summary.net_payment += calculateNetPayment(calc);
           summary.driver_count++;
           
           if (calc.has_negative_balance) {

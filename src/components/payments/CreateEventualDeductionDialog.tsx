@@ -193,7 +193,6 @@ export function CreateEventualDeductionDialog({
                 gross_earnings: 0,
                 total_deductions: 0,
                 other_income: 0,
-                net_payment: 0,
                 has_negative_balance: false
               })
               .select('id')

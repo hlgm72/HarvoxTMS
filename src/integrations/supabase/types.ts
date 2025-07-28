@@ -512,7 +512,6 @@ export type Database = {
           gross_earnings: number
           has_negative_balance: boolean
           id: string
-          net_payment: number
           other_income: number
           paid_at: string | null
           paid_by: string | null
@@ -534,7 +533,6 @@ export type Database = {
           gross_earnings?: number
           has_negative_balance?: boolean
           id?: string
-          net_payment?: number
           other_income?: number
           paid_at?: string | null
           paid_by?: string | null
@@ -556,7 +554,6 @@ export type Database = {
           gross_earnings?: number
           has_negative_balance?: boolean
           id?: string
-          net_payment?: number
           other_income?: number
           paid_at?: string | null
           paid_by?: string | null

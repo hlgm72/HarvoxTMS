@@ -9,6 +9,7 @@ import { AlertTriangle, Calculator, DollarSign, Lock, Play, Users, Fuel, Trendin
 import { formatPaymentPeriod } from '@/lib/dateFormatting';
 import { useFleetNotifications } from "@/components/notifications";
 import { PaymentPeriodAlerts } from "./PaymentPeriodAlerts";
+import { calculateNetPayment } from "@/lib/paymentCalculations";
 
 interface PaymentPeriodDetailsProps {
   periodId: string;
@@ -22,7 +23,6 @@ interface DriverCalculation {
   fuel_expenses: number;
   total_deductions: number;
   other_income: number;
-  net_payment: number;
   has_negative_balance: boolean;
   balance_alert_message?: string;
   calculated_at?: string;
@@ -115,7 +115,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
   const totalOtherIncome = driverCalculations.reduce((sum, d) => sum + (d.other_income || 0), 0);
   const totalFuelExpenses = driverCalculations.reduce((sum, d) => sum + (d.fuel_expenses || 0), 0);
   const totalDeductions = driverCalculations.reduce((sum, d) => sum + (d.total_deductions || 0), 0);
-  const totalNetPayment = driverCalculations.reduce((sum, d) => sum + (d.net_payment || 0), 0);
+  const totalNetPayment = driverCalculations.reduce((sum, d) => sum + calculateNetPayment(d), 0);
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -316,8 +316,8 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                   </div>
                   <div>
                     <p className="text-muted-foreground">Pago Neto</p>
-                    <p className={`font-semibold ${calc.net_payment < 0 ? 'text-destructive' : ''}`}>
-                      ${(calc.net_payment || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                    <p className={`font-semibold ${calculateNetPayment(calc) < 0 ? 'text-destructive' : ''}`}>
+                      ${calculateNetPayment(calc).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                 </div>
