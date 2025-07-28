@@ -149,6 +149,13 @@ export function useCreateOtherIncome() {
       queryClient.invalidateQueries({ 
         queryKey: ['driver-period-calculations'] 
       });
+      // Invalidar los resúmenes de períodos de pago para actualizar contadores
+      queryClient.invalidateQueries({ 
+        queryKey: ['payment-period-summary'] 
+      });
+      queryClient.invalidateQueries({ 
+        queryKey: ['all-payment-periods-summary'] 
+      });
     },
     onError: (error) => {
       console.error('Error creating other income:', error);
@@ -187,6 +194,13 @@ export function useUpdateOtherIncome() {
       // Invalidar también los cálculos del período del conductor
       queryClient.invalidateQueries({ 
         queryKey: ['driver-period-calculations'] 
+      });
+      // Invalidar los resúmenes de períodos de pago para actualizar contadores
+      queryClient.invalidateQueries({ 
+        queryKey: ['payment-period-summary'] 
+      });
+      queryClient.invalidateQueries({ 
+        queryKey: ['all-payment-periods-summary'] 
       });
     },
     onError: (error) => {
@@ -254,6 +268,13 @@ export function useDeleteOtherIncome() {
       // Invalidar también los cálculos del período del conductor
       queryClient.invalidateQueries({ 
         queryKey: ['driver-period-calculations'] 
+      });
+      // Invalidar los resúmenes de períodos de pago para actualizar contadores
+      queryClient.invalidateQueries({ 
+        queryKey: ['payment-period-summary'] 
+      });
+      queryClient.invalidateQueries({ 
+        queryKey: ['all-payment-periods-summary'] 
       });
     },
     onError: (error) => {
