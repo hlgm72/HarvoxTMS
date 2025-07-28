@@ -231,7 +231,7 @@ export function OtherIncomeSection() {
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{item.description}</TableCell>
                     <TableCell>{getIncomeTypeLabel(item.income_type)}</TableCell>
-                    <TableCell className="font-semibold">${item.amount.toLocaleString()}</TableCell>
+                    <TableCell className="font-semibold">${item.amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}</TableCell>
                     <TableCell>{formatDateOnly(item.income_date)}</TableCell>
                     {!isDriver && <TableCell>{getDriverName(item.driver_user_id)}</TableCell>}
                     <TableCell>{getStatusBadge(item.status)}</TableCell>
