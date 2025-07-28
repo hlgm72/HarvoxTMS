@@ -399,7 +399,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   addColoredBox(margin + (boxWidth + 5) * 3, currentY, boxWidth, boxHeight, colors.lightOrange, colors.darkGray,
     'Fuel Expenses', formatCurrency(-data.period.fuel_expenses));
 
-  currentY += boxHeight + 8;
+  currentY += boxHeight + 4;
 
   // Net Pay (Caja grande azul)
   const netPayWidth = pageWidth - margin*2;
