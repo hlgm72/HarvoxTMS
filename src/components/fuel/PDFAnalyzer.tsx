@@ -785,7 +785,7 @@ export function PDFAnalyzer() {
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                         <div>
                           <div className="font-medium">
-                            {transaction.payment_period_dates || 'Período no encontrado'}
+                            {transaction.payment_period_dates || 'Período no generado'}
                           </div>
                           <div className="text-sm text-muted-foreground">
                             Fecha transacción: {transaction.date}
