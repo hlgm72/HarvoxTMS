@@ -147,7 +147,7 @@ export function OtherIncomeSection() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Aprobados</p>
-                <p className="text-xl font-semibold">${totalApproved.toLocaleString()}</p>
+                <p className="text-xl font-semibold">${totalApproved.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
               </div>
             </div>
           </CardContent>
@@ -161,7 +161,7 @@ export function OtherIncomeSection() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Pendientes</p>
-                <p className="text-xl font-semibold">${totalPending.toLocaleString()}</p>
+                <p className="text-xl font-semibold">${totalPending.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
               </div>
             </div>
           </CardContent>
@@ -175,7 +175,7 @@ export function OtherIncomeSection() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total</p>
-                <p className="text-xl font-semibold">${(totalApproved + totalPending).toLocaleString()}</p>
+                <p className="text-xl font-semibold">${(totalApproved + totalPending).toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
               </div>
             </div>
           </CardContent>
