@@ -307,45 +307,48 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     align: 'right'
   });
   
+  // Posicionar toda la información debajo del nombre del conductor
+  let driverInfoY = currentY + 6;
+  
   if (data.driver.license) {
     const licenseText = data.driver.license_state 
       ? `Driver License: ${data.driver.license} (${data.driver.license_state})`
       : `Driver License: ${data.driver.license}`;
     
-    addText(licenseText, col3X + colWidth - 5, currentY + 12, {
+    addText(licenseText, col3X + colWidth - 5, driverInfoY, {
       fontSize: 9,
       color: colors.text,
       align: 'right'
     });
+    driverInfoY += 4;
   }
   
   if (data.driver.address) {
-    // Dividir la dirección en líneas si es muy larga
-    const addressParts = data.driver.address.split(',');
-    addText(addressParts[0] || data.driver.address, col3X + colWidth - 5, currentY + 20, {
-      fontSize: 9,
-      color: colors.text,
-      align: 'right'
-    });
+    const addressLines = data.driver.address.split('\n');
     
-    if (addressParts.length > 1) {
-      addText(addressParts.slice(1).join(',').trim(), col3X + colWidth - 5, currentY + 28, {
+    addressLines.forEach((line, index) => {
+      addText(line.trim(), col3X + colWidth - 5, driverInfoY + (index * 4), {
         fontSize: 9,
         color: colors.text,
         align: 'right'
       });
-    }
+    });
+    
+    driverInfoY += (addressLines.length * 4);
   }
   
-  if (data.driver.phone && data.driver.email) {
-    addText(`${data.driver.phone} | ${data.driver.email}`, col3X + colWidth - 5, currentY + 36, {
-      fontSize: 8,
+  if (data.driver.phone) {
+    addText(data.driver.phone, col3X + colWidth - 5, driverInfoY, {
+      fontSize: 9,
       color: colors.text,
       align: 'right'
     });
-  } else if (data.driver.phone || data.driver.email) {
-    addText(data.driver.phone || data.driver.email, col3X + colWidth - 5, currentY + 36, {
-      fontSize: 8,
+    driverInfoY += 4;
+  }
+  
+  if (data.driver.email) {
+    addText(data.driver.email, col3X + colWidth - 5, driverInfoY, {
+      fontSize: 9,
       color: colors.text,
       align: 'right'
     });
