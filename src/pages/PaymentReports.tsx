@@ -83,7 +83,7 @@ export default function PaymentReports() {
 
   // Estadísticas del dashboard
   const totalReports = filteredCalculations.length;
-  const totalEarnings = filteredCalculations.reduce((sum, calc) => sum + (calc.gross_earnings || 0), 0);
+  const totalEarnings = filteredCalculations.reduce((sum, calc) => sum + calculateNetPayment(calc), 0);
   const totalDrivers = new Set(filteredCalculations.map(calc => calc.driver_user_id)).size;
   const pendingReports = filteredCalculations.filter(calc => !calc.calculated_at).length;
 
@@ -187,7 +187,7 @@ export default function PaymentReports() {
             variant="default"
           />
           <StatsCard
-            title="Ingresos Totales"
+            title="Pago Neto Total"
             value={`$${totalEarnings.toLocaleString('es-US', { minimumFractionDigits: 2 })}`}
             icon="💰"
             variant="success"
