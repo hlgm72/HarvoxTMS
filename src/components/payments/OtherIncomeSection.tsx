@@ -372,14 +372,14 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
                 {/* Selectores de mes y año */}
                 <div className="grid grid-cols-2 gap-2">
                   <Select
-                    value={formData.income_date ? format(formData.income_date, 'MMMM', { locale: es }) : ""}
+                    value={formData.income_date ? format(formData.income_date, 'MMMM', { locale: es }) : format(new Date(), 'MMMM', { locale: es })}
                     onValueChange={(monthName) => {
                       const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
                                         'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
                                         .indexOf(monthName.toLowerCase());
                       if (monthIndex !== -1) {
                         const currentYear = formData.income_date?.getFullYear() || new Date().getFullYear();
-                        const currentDay = formData.income_date?.getDate() || 1;
+                        const currentDay = formData.income_date?.getDate() || new Date().getDate();
                         setFormData({ ...formData, income_date: new Date(currentYear, monthIndex, currentDay) });
                       }
                     }}
@@ -404,10 +404,10 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
                   </Select>
                   
                   <Select
-                    value={formData.income_date?.getFullYear()?.toString() || ""}
+                    value={formData.income_date?.getFullYear()?.toString() || new Date().getFullYear().toString()}
                     onValueChange={(year) => {
-                      const currentMonth = formData.income_date?.getMonth() || 0;
-                      const currentDay = formData.income_date?.getDate() || 1;
+                      const currentMonth = formData.income_date?.getMonth() || new Date().getMonth();
+                      const currentDay = formData.income_date?.getDate() || new Date().getDate();
                       setFormData({ ...formData, income_date: new Date(parseInt(year), currentMonth, currentDay) });
                     }}
                   >
