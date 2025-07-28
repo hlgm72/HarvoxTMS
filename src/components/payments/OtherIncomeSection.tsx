@@ -163,7 +163,7 @@ export function OtherIncomeSection() {
                   Agregar Ingreso
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-md bg-white">
                 <DialogHeader>
                   <DialogTitle>Nuevo Ingreso</DialogTitle>
                 </DialogHeader>
