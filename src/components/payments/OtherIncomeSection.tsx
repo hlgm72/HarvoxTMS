@@ -50,6 +50,7 @@ interface OtherIncomeItem {
 export function OtherIncomeSection() {
   const { user, isDriver, isOperationsManager, isCompanyOwner } = useAuth();
   const { selectedCompany } = useUserCompanies();
+  const { drivers: companyDrivers = [] } = useCompanyDrivers();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<OtherIncomeItem | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
@@ -61,6 +62,16 @@ export function OtherIncomeSection() {
   const { data: incomeData = [], isLoading } = useOtherIncome({
     driverId: isDriver ? user?.id : undefined
   });
+
+  // Helper function para obtener el nombre del conductor
+  const getDriverName = (driverUserId: string) => {
+    const driver = companyDrivers.find(d => d.user_id === driverUserId);
+    if (driver) {
+      const fullName = `${driver.first_name || ''} ${driver.last_name || ''}`.trim();
+      return fullName || 'Sin nombre';
+    }
+    return 'Conductor no encontrado';
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -222,7 +233,7 @@ export function OtherIncomeSection() {
                     <TableCell>{getIncomeTypeLabel(item.income_type)}</TableCell>
                     <TableCell className="font-semibold">${item.amount.toLocaleString()}</TableCell>
                     <TableCell>{formatDateOnly(item.income_date)}</TableCell>
-                    {!isDriver && <TableCell>{item.driver_user_id}</TableCell>}
+                    {!isDriver && <TableCell>{getDriverName(item.driver_user_id)}</TableCell>}
                     <TableCell>{getStatusBadge(item.status)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
