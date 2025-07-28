@@ -372,11 +372,25 @@ export function PDFAnalyzer() {
           return periodTransactionDate >= startDate && periodTransactionDate <= endDate;
         });
 
-        if (matchingPeriod) {
-          // Período existente encontrado
-          enrichedTransaction.payment_period_id = matchingPeriod.id;
-          enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date}`;
-          enrichedTransaction.period_mapping_status = 'found';
+        if (matchingPeriod && enrichedTransaction.driver_user_id) {
+          // Período existente encontrado - buscar el driver_period_calculation correspondiente
+          const { data: driverPeriod } = await supabase
+            .from('driver_period_calculations')
+            .select('id')
+            .eq('driver_user_id', enrichedTransaction.driver_user_id)
+            .eq('company_payment_period_id', matchingPeriod.id)
+            .maybeSingle();
+
+          if (driverPeriod) {
+            enrichedTransaction.payment_period_id = driverPeriod.id;
+            enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date}`;
+            enrichedTransaction.period_mapping_status = 'found';
+          } else {
+            // Si existe el company period pero no el driver period, marcarlo para crear
+            enrichedTransaction.period_mapping_status = 'will_create';
+            const calculatedPeriod = calculatePeriodDates(periodTransactionDate, companyId);
+            enrichedTransaction.payment_period_dates = `${calculatedPeriod.start} - ${calculatedPeriod.end} (crear cálculo conductor)`;
+          }
         } else {
           // Calcular qué período se crearía (sin crearlo)
           if (enrichedTransaction.driver_user_id && companyId) {
@@ -479,15 +493,56 @@ export function PDFAnalyzer() {
             .limit(1);
           
           if (userCompanies?.[0]) {
-            const generatedPeriodId = await ensurePaymentPeriodExists({
+            const generatedCompanyPeriodId = await ensurePaymentPeriodExists({
               companyId: userCompanies[0].company_id,
               userId: transaction.driver_user_id,
               targetDate
             });
             
-            if (generatedPeriodId) {
-              transaction.payment_period_id = generatedPeriodId;
-              console.log('✅ Created period for transaction:', generatedPeriodId);
+            if (generatedCompanyPeriodId) {
+              // Buscar o crear el driver_period_calculation correspondiente
+              const { data: driverPeriod, error: driverPeriodError } = await supabase
+                .from('driver_period_calculations')
+                .select('id')
+                .eq('driver_user_id', transaction.driver_user_id)
+                .eq('company_payment_period_id', generatedCompanyPeriodId)
+                .maybeSingle();
+
+              if (driverPeriodError) {
+                console.error('❌ Error finding driver period calculation:', driverPeriodError);
+                continue;
+              }
+
+              if (driverPeriod) {
+                transaction.payment_period_id = driverPeriod.id;
+                console.log('✅ Found existing driver period for transaction:', driverPeriod.id);
+              } else {
+                // Crear driver_period_calculation si no existe
+                const { data: newDriverPeriod, error: createError } = await supabase
+                  .from('driver_period_calculations')
+                  .insert({
+                    driver_user_id: transaction.driver_user_id,
+                    company_payment_period_id: generatedCompanyPeriodId,
+                    gross_earnings: 0,
+                    fuel_expenses: 0,
+                    total_deductions: 0,
+                    other_income: 0,
+                    total_income: 0,
+                    net_payment: 0,
+                    has_negative_balance: false,
+                    payment_status: 'calculated'
+                  })
+                  .select('id')
+                  .single();
+
+                if (createError) {
+                  console.error('❌ Error creating driver period calculation:', createError);
+                  continue;
+                }
+
+                transaction.payment_period_id = newDriverPeriod.id;
+                console.log('✅ Created driver period for transaction:', newDriverPeriod.id);
+              }
             }
           }
         }
