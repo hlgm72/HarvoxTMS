@@ -11,10 +11,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import { 
   Plus, 
   DollarSign, 
-  Calendar,
+  Calendar as CalendarIcon,
   CheckCircle,
   Clock,
   AlertCircle,
@@ -282,11 +287,12 @@ export function OtherIncomeSection() {
 function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
   const { user } = useAuth();
   const createOtherIncome = useCreateOtherIncome();
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [formData, setFormData] = useState({
     description: "",
     amount: "",
     income_type: "",
-    income_date: "",
+    income_date: null as Date | null,
     reference_number: "",
     notes: ""
   });
@@ -294,8 +300,8 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!user?.id) {
-      console.error("User not found");
+    if (!user?.id || !formData.income_date) {
+      console.error("User or date not found");
       return;
     }
 
@@ -305,7 +311,7 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
         description: formData.description,
         amount: Number(formData.amount),
         income_type: formData.income_type,
-        income_date: formData.income_date,
+        income_date: formData.income_date.toISOString().split('T')[0], // Convert to YYYY-MM-DD
         reference_number: formData.reference_number || undefined,
         notes: formData.notes || undefined,
         status: 'pending'
@@ -343,14 +349,94 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
           />
         </div>
         <div>
-          <Label htmlFor="incomeDate">Fecha *</Label>
-          <Input
-            id="incomeDate"
-            type="date"
-            value={formData.income_date}
-            onChange={(e) => setFormData({ ...formData, income_date: e.target.value })}
-            required
-          />
+          <Label>Fecha *</Label>
+          <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full pl-3 text-left font-normal",
+                  !formData.income_date && "text-muted-foreground"
+                )}
+              >
+                {formData.income_date ? (
+                  format(formData.income_date, "PPP", { locale: es })
+                ) : (
+                  <span>Seleccionar fecha</span>
+                )}
+                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <div className="p-4 space-y-4 bg-white">
+                {/* Selectores de mes y año */}
+                <div className="grid grid-cols-2 gap-2">
+                  <Select
+                    value={formData.income_date ? format(formData.income_date, 'MMMM', { locale: es }) : ""}
+                    onValueChange={(monthName) => {
+                      const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                                        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+                                        .indexOf(monthName.toLowerCase());
+                      if (monthIndex !== -1) {
+                        const currentYear = formData.income_date?.getFullYear() || new Date().getFullYear();
+                        const currentDay = formData.income_date?.getDate() || 1;
+                        setFormData({ ...formData, income_date: new Date(currentYear, monthIndex, currentDay) });
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Mes" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="enero">Enero</SelectItem>
+                      <SelectItem value="febrero">Febrero</SelectItem>
+                      <SelectItem value="marzo">Marzo</SelectItem>
+                      <SelectItem value="abril">Abril</SelectItem>
+                      <SelectItem value="mayo">Mayo</SelectItem>
+                      <SelectItem value="junio">Junio</SelectItem>
+                      <SelectItem value="julio">Julio</SelectItem>
+                      <SelectItem value="agosto">Agosto</SelectItem>
+                      <SelectItem value="septiembre">Septiembre</SelectItem>
+                      <SelectItem value="octubre">Octubre</SelectItem>
+                      <SelectItem value="noviembre">Noviembre</SelectItem>
+                      <SelectItem value="diciembre">Diciembre</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  <Select
+                    value={formData.income_date?.getFullYear()?.toString() || ""}
+                    onValueChange={(year) => {
+                      const currentMonth = formData.income_date?.getMonth() || 0;
+                      const currentDay = formData.income_date?.getDate() || 1;
+                      setFormData({ ...formData, income_date: new Date(parseInt(year), currentMonth, currentDay) });
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Año" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="2024">2024</SelectItem>
+                      <SelectItem value="2025">2025</SelectItem>
+                      <SelectItem value="2026">2026</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* Calendar */}
+                <Calendar
+                  mode="single"
+                  selected={formData.income_date || undefined}
+                  onSelect={(date) => {
+                    setFormData({ ...formData, income_date: date || null });
+                    setIsDatePickerOpen(false);
+                  }}
+                  month={formData.income_date || undefined}
+                  onMonthChange={(date) => setFormData({ ...formData, income_date: date })}
+                  className="p-0 pointer-events-auto"
+                />
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
