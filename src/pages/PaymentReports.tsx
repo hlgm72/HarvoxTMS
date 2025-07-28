@@ -160,7 +160,9 @@ export default function PaymentReports() {
   return (
     <>
       <PageToolbar 
+        icon={FileText}
         title="Reportes de Pago"
+        subtitle="Genera y administra reportes de pagos de conductores"
         actions={
           <Button>
             <Plus className="h-4 w-4 mr-2" />
