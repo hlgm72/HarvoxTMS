@@ -111,6 +111,13 @@ export const useCompanyDrivers = () => {
             .in('status', ['assigned', 'in_transit', 'pickup', 'delivery'])
         ]);
 
+        console.log('🔍 useCompanyDrivers - Raw query results:', {
+          finalDriverUserIds,
+          profilesResult: profilesResult.status === 'fulfilled' ? profilesResult.value : profilesResult.reason,
+          driverProfilesResult: driverProfilesResult.status === 'fulfilled' ? driverProfilesResult.value : driverProfilesResult.reason,
+          activeLoadsResult: activeLoadsResult.status === 'fulfilled' ? activeLoadsResult.value : activeLoadsResult.reason
+        });
+
         // PASO 3: Procesar y enriquecer datos
         const [profiles, driverProfiles, activeLoads] = [
           profilesResult.status === 'fulfilled' ? profilesResult.value.data || [] : [],
