@@ -136,6 +136,14 @@ export const useCompanyDrivers = () => {
             currentStatus = 'off_duty';
           }
 
+          console.log('🔍 useCompanyDrivers - Processing driver:', {
+            user_id: profile.user_id,
+            name: `${profile.first_name} ${profile.last_name}`,
+            driverProfile: driverProfile,
+            license_issue_date: driverProfile?.license_issue_date,
+            hire_date: driverProfile?.hire_date
+          });
+
           return {
             id: profile.user_id,
             user_id: profile.user_id,

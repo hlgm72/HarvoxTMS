@@ -39,6 +39,8 @@ const getStatusText = (status: string) => {
 };
 
 const formatExperience = (licenseIssueDate: string | null, hireDate: string | null) => {
+  console.log('🔍 formatExperience called with:', { licenseIssueDate, hireDate });
+  
   // Priorizar fecha de emisión de licencia (experiencia total como conductor)
   const experienceDate = licenseIssueDate || hireDate;
   
@@ -53,6 +55,8 @@ const formatExperience = (licenseIssueDate: string | null, hireDate: string | nu
   if (totalMonths < 0) totalMonths = 0;
   
   const experienceType = licenseIssueDate ? "experiencia total" : "experiencia en la empresa";
+  
+  console.log('🔍 formatExperience calculated:', { totalMonths, experienceType });
   
   if (totalMonths < 12) {
     return `${totalMonths} meses de ${experienceType}`;
