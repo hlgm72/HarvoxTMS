@@ -32,8 +32,21 @@ export default function Payments() {
   // Obtener datos reales de períodos de pago
   const currentCompanyId = selectedCompany?.id; // Compañía seleccionada
   const { data: paymentPeriods, isLoading: periodsLoading } = useCompanyPaymentPeriods(currentCompanyId);
-  const currentPeriod = paymentPeriods?.[0]; // Período más reciente
-  const previousPeriod = paymentPeriods?.[1]; // Período anterior
+  
+  // Determinar el período actual basado en la fecha actual del usuario (zona horaria local)
+  const todayUserDate = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD en zona local
+  
+  const currentPeriod = paymentPeriods?.find(period => 
+    todayUserDate >= period.period_start_date && todayUserDate <= period.period_end_date
+  ) || paymentPeriods?.[0]; // Fallback al más reciente si no encuentra uno actual
+  
+  const previousPeriod = paymentPeriods?.find(period => 
+    period.id !== currentPeriod?.id && period.period_start_date < (currentPeriod?.period_start_date || '')
+  );
+  
+  console.log('📅 Fecha actual usuario:', todayUserDate);
+  console.log('📅 Período actual encontrado:', currentPeriod?.period_start_date, 'a', currentPeriod?.period_end_date);
+  console.log('📅 Período anterior encontrado:', previousPeriod?.period_start_date, 'a', previousPeriod?.period_end_date);
   
   const { data: currentPeriodSummary } = usePaymentPeriodSummary(currentPeriod?.id);
   const { data: previousPeriodSummary } = usePaymentPeriodSummary(previousPeriod?.id);
