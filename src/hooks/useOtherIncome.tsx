@@ -122,8 +122,26 @@ export function useCreateOtherIncome() {
 
       return result;
     },
-    onSuccess: () => {
+    onSuccess: async (result) => {
       showSuccess('Otro ingreso creado exitosamente');
+      
+      // Ejecutar recálculo manual del período
+      if (result.payment_period_id) {
+        console.log('🔄 Ejecutando recálculo manual del período:', result.payment_period_id);
+        try {
+          const { error: recalcError } = await supabase.rpc('recalculate_payment_period_totals', {
+            period_id: result.payment_period_id
+          });
+          if (recalcError) {
+            console.error('Error en recálculo manual:', recalcError);
+          } else {
+            console.log('✅ Recálculo manual exitoso');
+          }
+        } catch (err) {
+          console.error('Error ejecutando recálculo:', err);
+        }
+      }
+      
       queryClient.invalidateQueries({ 
         queryKey: ['other-income', user?.id, selectedCompany?.id] 
       });
@@ -186,6 +204,18 @@ export function useDeleteOtherIncome() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      // Primero obtener información del ingreso antes de eliminarlo
+      const { data: incomeData, error: getError } = await supabase
+        .from('other_income')
+        .select('payment_period_id')
+        .eq('id', id)
+        .single();
+
+      if (getError) {
+        console.error('Error getting other income data:', getError);
+        throw getError;
+      }
+
       const { error } = await supabase
         .from('other_income')
         .delete()
@@ -195,9 +225,29 @@ export function useDeleteOtherIncome() {
         console.error('Error deleting other income:', error);
         throw error;
       }
+
+      return incomeData;
     },
-    onSuccess: () => {
+    onSuccess: async (incomeData) => {
       showSuccess('Ingreso eliminado exitosamente');
+      
+      // Ejecutar recálculo manual del período
+      if (incomeData?.payment_period_id) {
+        console.log('🔄 Ejecutando recálculo manual tras eliminación:', incomeData.payment_period_id);
+        try {
+          const { error: recalcError } = await supabase.rpc('recalculate_payment_period_totals', {
+            period_id: incomeData.payment_period_id
+          });
+          if (recalcError) {
+            console.error('Error en recálculo manual:', recalcError);
+          } else {
+            console.log('✅ Recálculo manual exitoso tras eliminación');
+          }
+        } catch (err) {
+          console.error('Error ejecutando recálculo:', err);
+        }
+      }
+      
       queryClient.invalidateQueries({ 
         queryKey: ['other-income', user?.id, selectedCompany?.id] 
       });
