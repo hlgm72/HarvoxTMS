@@ -388,13 +388,13 @@ export function PDFAnalyzer() {
           } else {
             // Si existe el company period pero no el driver period, usar las fechas del período existente
             enrichedTransaction.period_mapping_status = 'will_create';
-            enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date} (crear cálculo conductor)`;
+            enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date} (iniciar registro conductor)`;
           }
         } else {
           // Calcular qué período se crearía (sin crearlo)
           if (enrichedTransaction.driver_user_id && companyId) {
             const calculatedPeriod = calculatePeriodDates(periodTransactionDate, companyId);
-            enrichedTransaction.payment_period_dates = `${calculatedPeriod.start} - ${calculatedPeriod.end} (se creará)`;
+            enrichedTransaction.payment_period_dates = `${calculatedPeriod.start} - ${calculatedPeriod.end} (nuevo período)`;
             enrichedTransaction.period_mapping_status = 'will_create';
           } else {
             enrichedTransaction.period_mapping_status = 'not_found';
@@ -768,7 +768,7 @@ export function PDFAnalyzer() {
                               )}
                               {transaction.period_mapping_status === 'will_create' && (
                                 <Badge variant="outline" className="border-blue-500 text-blue-600">
-                                  Se Creará Período
+                                  Registrar Conductor
                                 </Badge>
                               )}
                             </>
