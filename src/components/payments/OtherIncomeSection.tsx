@@ -52,6 +52,7 @@ export function OtherIncomeSection() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<OtherIncomeItem | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const deleteOtherIncome = useDeleteOtherIncome();
 
   // Cargar datos reales de otros ingresos
   const { data: incomeData = [], isLoading } = useOtherIncome({
@@ -86,6 +87,16 @@ export function OtherIncomeSection() {
   const handleViewItem = (item: OtherIncomeItem) => {
     setSelectedItem(item);
     setIsViewDialogOpen(true);
+  };
+
+  const handleDeleteItem = async (item: OtherIncomeItem) => {
+    if (window.confirm(`¿Estás seguro de que deseas eliminar el ingreso "${item.description}"?`)) {
+      try {
+        await deleteOtherIncome.mutateAsync(item.id);
+      } catch (error) {
+        console.error("Error deleting other income:", error);
+      }
+    }
   };
 
   // Los datos ya están filtrados por el hook según el rol
@@ -218,7 +229,13 @@ export function OtherIncomeSection() {
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 w-8 p-0 text-destructive"
+                              onClick={() => handleDeleteItem(item)}
+                              disabled={deleteOtherIncome.isPending}
+                            >
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </>
