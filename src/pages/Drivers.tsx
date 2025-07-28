@@ -52,17 +52,15 @@ const formatExperience = (licenseIssueDate: string | null, hireDate: string | nu
   let totalMonths = years * 12 + months;
   if (totalMonths < 0) totalMonths = 0;
   
-  const experienceType = licenseIssueDate ? "experiencia total" : "experiencia en la empresa";
-  
   if (totalMonths < 12) {
-    return `${totalMonths} meses de ${experienceType}`;
+    return `Experiencia: ${totalMonths} mes${totalMonths !== 1 ? 'es' : ''}`;
   } else {
     const yearCount = Math.floor(totalMonths / 12);
     const monthCount = totalMonths % 12;
     if (monthCount === 0) {
-      return `${yearCount} año${yearCount !== 1 ? 's' : ''} de ${experienceType}`;
+      return `Experiencia: ${yearCount} año${yearCount !== 1 ? 's' : ''}`;
     }
-    return `${yearCount} año${yearCount !== 1 ? 's' : ''} y ${monthCount} mes${monthCount !== 1 ? 'es' : ''} de ${experienceType}`;
+    return `Experiencia: ${yearCount} año${yearCount !== 1 ? 's' : ''} y ${monthCount} mes${monthCount !== 1 ? 'es' : ''}`;
   }
 };
 
