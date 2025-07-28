@@ -180,9 +180,8 @@ export default function Payments() {
             <div className="flex items-center gap-3">
               <Calendar className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="text-sm text-muted-foreground">Período Anterior</p>
-                <p className="text-xs text-muted-foreground mb-1">
-                  {previousPeriod ? `${previousPeriod.period_start_date} - ${previousPeriod.period_end_date}` : 'No disponible'}
+                <p className="text-sm text-muted-foreground">
+                  Período Anterior {previousPeriod ? `(${previousPeriod.period_start_date} - ${previousPeriod.period_end_date})` : '(No disponible)'}
                 </p>
                 <p className="font-medium">
                   ${(previousPeriodSummary?.net_payment || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
