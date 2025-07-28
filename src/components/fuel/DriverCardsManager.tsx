@@ -62,7 +62,7 @@ export function DriverCardsManager() {
   const { data: providers } = useFuelCardProviders();
 
   // Fetch driver cards with driver names
-  const { data: driverCards, isLoading } = useQuery({
+  const { data: driverCards, isLoading, refetch } = useQuery({
     queryKey: ['driver-cards'],
     queryFn: async () => {
       // First get the user's company ID
