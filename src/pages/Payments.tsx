@@ -51,7 +51,11 @@ export default function Payments() {
   const { data: currentPeriodSummary } = usePaymentPeriodSummary(currentPeriod?.id);
   const { data: previousPeriodSummary } = usePaymentPeriodSummary(previousPeriod?.id);
   
-  console.log('💰 Resumen período anterior:', previousPeriodSummary);
+  console.log('💰 Resumen período anterior completo:', {
+    ...previousPeriodSummary,
+    driver_count: previousPeriodSummary?.driver_count || 0,
+    drivers_with_negative_balance: previousPeriodSummary?.drivers_with_negative_balance || 0
+  });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
