@@ -2654,6 +2654,10 @@ export type Database = {
           role: Database["public"]["Enums"]["user_role"]
         }[]
       }
+      get_user_email_by_id: {
+        Args: { user_id_param: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _user_id: string

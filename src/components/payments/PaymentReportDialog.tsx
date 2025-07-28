@@ -85,6 +85,11 @@ export function PaymentReportDialog({
 
       if (profileError) throw profileError;
 
+      // Obtener email del conductor
+      const { data: emailData } = await supabase.rpc('get_user_email_by_id', {
+        user_id_param: calculation.driver_user_id
+      });
+
       // Obtener información adicional del conductor
       const { data: driverData } = await supabase
         .from('driver_profiles')
@@ -129,7 +134,7 @@ export function PaymentReportDialog({
           : profileData.street_address && cityName && profileData.state_id && profileData.zip_code
             ? `${profileData.street_address}\n${cityName}, ${profileData.state_id} ${profileData.zip_code}`
             : profileData.street_address,
-        display_email: useOwnerOperatorData ? ownerData.business_email : null, // No hay email en profiles
+        display_email: useOwnerOperatorData ? ownerData.business_email : emailData, // Email desde auth.users
         display_phone: useOwnerOperatorData ? ownerData.business_phone : profileData.phone,
         tax_id: ownerData?.tax_id || null,
         is_owner_operator: !!useOwnerOperatorData
