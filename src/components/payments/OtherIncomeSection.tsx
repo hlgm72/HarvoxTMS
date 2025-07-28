@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
 import { useOtherIncome, useCreateOtherIncome, useUpdateOtherIncome, useDeleteOtherIncome } from "@/hooks/useOtherIncome";
+import { useATMInput } from "@/hooks/useATMInput";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -290,11 +291,15 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [formData, setFormData] = useState({
     description: "",
-    amount: "",
     income_type: "",
     income_date: null as Date | null,
     reference_number: "",
     notes: ""
+  });
+
+  const atmInput = useATMInput({
+    initialValue: 0,
+    onValueChange: () => {}
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -309,7 +314,7 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
       await createOtherIncome.mutateAsync({
         driver_user_id: user.id,
         description: formData.description,
-        amount: Number(formData.amount),
+        amount: atmInput.numericValue,
         income_type: formData.income_type,
         income_date: formData.income_date.toISOString().split('T')[0], // Convert to YYYY-MM-DD
         reference_number: formData.reference_number || undefined,
@@ -340,11 +345,12 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
           <Label htmlFor="amount">Monto *</Label>
           <Input
             id="amount"
-            type="number"
-            step="0.01"
-            value={formData.amount}
-            onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-            placeholder="0.00"
+            value={atmInput.displayValue}
+            onKeyDown={atmInput.handleKeyDown}
+            onPaste={atmInput.handlePaste}
+            placeholder="$0.00"
+            readOnly
+            className="text-right"
             required
           />
         </div>
