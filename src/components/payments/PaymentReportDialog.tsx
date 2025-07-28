@@ -79,7 +79,7 @@ export function PaymentReportDialog({
       // Obtener datos básicos del perfil
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('user_id, first_name, last_name, phone')
+        .select('user_id, first_name, last_name, phone, street_address, zip_code, state_id')
         .eq('user_id', calculation.driver_user_id)
         .single();
 
@@ -92,20 +92,33 @@ export function PaymentReportDialog({
         .eq('user_id', calculation.driver_user_id)
         .maybeSingle();
 
-      // Obtener datos de owner_operators si existe
+      // Obtener datos completos de owner_operators si existe
       const { data: ownerData } = await supabase
         .from('owner_operators')
-        .select('business_address, business_email')
+        .select('business_name, business_address, business_email, business_phone, tax_id, is_active')
         .eq('user_id', calculation.driver_user_id)
+        .eq('is_active', true)
         .maybeSingle();
 
-      // Combinar los datos
+      // Lógica para determinar qué información usar
+      // Si es Owner Operator y tiene datos de negocio, usar esos datos
+      // Si no, usar los datos del perfil personal
+      const useOwnerOperatorData = ownerData && (ownerData.business_name || ownerData.business_address);
+      
       return {
         ...profileData,
         license_number: driverData?.license_number || null,
         license_state: driverData?.license_state || null,
-        business_address: ownerData?.business_address || null,
-        business_email: ownerData?.business_email || null
+        // Usar datos de Owner Operator si existen, sino usar datos del perfil
+        display_name: useOwnerOperatorData ? ownerData.business_name : `${profileData.first_name} ${profileData.last_name}`,
+        display_address: useOwnerOperatorData ? ownerData.business_address : 
+          profileData.street_address && profileData.state_id && profileData.zip_code
+            ? `${profileData.street_address}\n${profileData.state_id} ${profileData.zip_code}`
+            : profileData.street_address,
+        display_email: useOwnerOperatorData ? ownerData.business_email : null, // No hay email en profiles
+        display_phone: useOwnerOperatorData ? ownerData.business_phone : profileData.phone,
+        tax_id: ownerData?.tax_id || null,
+        is_owner_operator: !!useOwnerOperatorData
       };
     },
     enabled: !!calculation?.driver_user_id
@@ -182,13 +195,13 @@ export function PaymentReportDialog({
     
     return {
       driver: {
-        name: `${driver.first_name} ${driver.last_name}`,
+        name: driver.display_name || `${driver.first_name} ${driver.last_name}`,
         user_id: calculation.driver_user_id,
         license: driver.license_number,
         license_state: driver.license_state,
-        phone: driver.phone,
-        address: driver.business_address,
-        email: driver.business_email
+        phone: driver.display_phone,
+        address: driver.display_address,
+        email: driver.display_email
       },
       period: {
         start_date: calculation.company_payment_periods.period_start_date,
@@ -305,7 +318,7 @@ export function PaymentReportDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Reporte de Pago - {driver.first_name} {driver.last_name}
+            Reporte de Pago - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
           </DialogTitle>
           <DialogDescription>
             Período: {formatPaymentPeriod(
