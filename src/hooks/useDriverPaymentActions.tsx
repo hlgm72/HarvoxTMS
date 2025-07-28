@@ -59,7 +59,7 @@ export function useDriverPaymentActions() {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.rpc('calculate_driver_payment_period', {
-        driver_calculation_id: calculationId
+        period_calculation_id: calculationId
       });
 
       if (error) throw error;

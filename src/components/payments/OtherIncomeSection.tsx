@@ -289,7 +289,7 @@ export function OtherIncomeSection() {
 function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
-  const { data: companyDrivers = [], isLoading: driversLoading } = useCompanyDrivers(selectedCompany?.id);
+  const { drivers: companyDrivers = [], loading: driversLoading } = useCompanyDrivers();
   const createOtherIncome = useCreateOtherIncome();
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -350,7 +350,7 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
             ) : (
               companyDrivers.map((driver) => (
                 <SelectItem key={driver.user_id} value={driver.user_id}>
-                  {driver.first_name} {driver.last_name} - {driver.email}
+                  {`${driver.first_name || ''} ${driver.last_name || ''}`.trim() || driver.user_id}
                 </SelectItem>
               ))
             )}
