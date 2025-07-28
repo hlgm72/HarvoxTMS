@@ -377,7 +377,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     });
   }
 
-  currentY += 22;
+  currentY += 25;
 
   // === CAJAS DE RESUMEN SUPERIOR ===
   const boxWidth = (pageWidth - margin*2 - 15) / 4; // 4 cajas con espacios
@@ -403,7 +403,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   // Net Pay (Caja grande azul)
   const netPayWidth = pageWidth - margin*2;
-  addColoredBox(margin, currentY, netPayWidth, 15, colors.lightBlue, colors.primary,
+  addColoredBox(margin, currentY, netPayWidth, 13, colors.lightBlue, colors.primary,
     'Net Pay', formatCurrency(data.period.net_payment));
 
   currentY += 20;
