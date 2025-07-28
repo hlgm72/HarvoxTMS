@@ -499,47 +499,9 @@ export function PDFAnalyzer() {
             });
             
             if (generatedCompanyPeriodId) {
-              // Buscar el driver_period_calculation que fue creado automáticamente por el trigger
-              const { data: driverPeriod, error: driverPeriodError } = await supabase
-                .from('driver_period_calculations')
-                .select('id')
-                .eq('driver_user_id', transaction.driver_user_id)
-                .eq('company_payment_period_id', generatedCompanyPeriodId)
-                .maybeSingle();
-
-              if (driverPeriodError) {
-                console.error('❌ Error finding driver period calculation:', driverPeriodError);
-                continue;
-              }
-
-              if (driverPeriod) {
-                transaction.payment_period_id = driverPeriod.id;
-                console.log('✅ Found existing driver period for transaction:', driverPeriod.id);
-              } else {
-                // Si el trigger no ha creado aún el registro, intentamos un breve delay y reintentamos
-                console.log('🔄 Driver period not found, waiting for trigger...');
-                await new Promise(resolve => setTimeout(resolve, 100));
-                
-                const { data: retryDriverPeriod, error: retryError } = await supabase
-                  .from('driver_period_calculations')
-                  .select('id')
-                  .eq('driver_user_id', transaction.driver_user_id)
-                  .eq('company_payment_period_id', generatedCompanyPeriodId)
-                  .maybeSingle();
-
-                if (retryError) {
-                  console.error('❌ Error on retry finding driver period calculation:', retryError);
-                  continue;
-                }
-
-                if (retryDriverPeriod) {
-                  transaction.payment_period_id = retryDriverPeriod.id;
-                  console.log('✅ Found driver period on retry:', retryDriverPeriod.id);
-                } else {
-                  console.error('❌ Driver period calculation still not found after retry');
-                  continue;
-                }
-              }
+              // Ahora simplemente usamos el company_payment_period_id directamente
+              transaction.payment_period_id = generatedCompanyPeriodId;
+              console.log('✅ Using company period for transaction:', generatedCompanyPeriodId);
             }
           }
         }
