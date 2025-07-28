@@ -283,18 +283,54 @@ export function PDFAnalyzer() {
 
         // Mapear conductor por tarjeta (flexible con 4 o 5 dígitos)
         const cardNumber = transaction.card;
+        
+        // DEBUG: Log de información de tarjetas y transacción
+        console.log('🔍 DEBUG: Buscando conductor para transacción:', {
+          cardNumber,
+          invoice: transaction.invoice,
+          location: transaction.location_name,
+          totalDriverCards: driverCards?.length || 0,
+          driverCards: driverCards?.map(c => ({
+            last5: c.card_number_last_five,
+            identifier: c.card_identifier,
+            driver_id: c.driver_user_id
+          }))
+        });
+        
         const matchingCards = driverCards?.filter(card => {
           // Comparar los últimos 5 dígitos almacenados con los últimos 4 o 5 de la transacción
           const cardLast5 = card.card_number_last_five;
           const transactionLast4 = cardNumber.slice(-4);
           const transactionLast5 = cardNumber.slice(-5);
           
-          // Permitir coincidencias flexibles: 5 dígitos completos o últimos 4 de los 5 guardados
-          return cardLast5 === transactionLast5 || 
-                 cardLast5.slice(-4) === transactionLast4 ||
-                 card.card_identifier === transactionLast4 ||
-                 card.card_identifier === transactionLast5;
+          const match1 = cardLast5 === transactionLast5;
+          const match2 = cardLast5?.slice(-4) === transactionLast4;
+          const match3 = card.card_identifier === transactionLast4;
+          const match4 = card.card_identifier === transactionLast5;
+          const match5 = card.card_identifier === cardNumber;
+          
+          const isMatch = match1 || match2 || match3 || match4 || match5;
+          
+          // DEBUG: Log detallado de cada comparación
+          if (isMatch) {
+            console.log('✅ Coincidencia encontrada:', {
+              cardLast5,
+              cardIdentifier: card.card_identifier,
+              transactionCard: cardNumber,
+              transactionLast4,
+              transactionLast5,
+              matches: { match1, match2, match3, match4, match5 }
+            });
+          }
+          
+          return isMatch;
         }) || [];
+
+        console.log('🎯 Resultado búsqueda conductor:', {
+          cardNumber,
+          matchingCards: matchingCards.length,
+          cards: matchingCards.map(c => c.card_number_last_five)
+        });
 
         if (matchingCards.length === 1) {
           const card = matchingCards[0];
@@ -311,8 +347,12 @@ export function PDFAnalyzer() {
           }
           
           enrichedTransaction.card_mapping_status = 'found';
+          console.log('✅ Conductor mapeado:', enrichedTransaction.driver_name);
         } else if (matchingCards.length > 1) {
           enrichedTransaction.card_mapping_status = 'multiple';
+          console.log('⚠️ Múltiples tarjetas coinciden para:', cardNumber);
+        } else {
+          console.log('❌ No se encontró conductor para tarjeta:', cardNumber);
         }
 
         // Mapear período de pago por fecha - solo mostrar información, no crear
