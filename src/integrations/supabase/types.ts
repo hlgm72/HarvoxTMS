@@ -2588,6 +2588,10 @@ export type Database = {
         Args: { driver_user_id_param: string; target_date?: string }
         Returns: string
       }
+      get_current_user_email: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_current_user_id: {
         Args: Record<PropertyKey, never>
         Returns: string
