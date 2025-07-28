@@ -63,7 +63,7 @@ export function DriverCardsManager() {
 
   // Fetch driver cards with driver names
   const { data: driverCards, isLoading, refetch } = useQuery({
-    queryKey: ['driver-cards', Date.now()], // Force refresh
+    queryKey: ['driver-cards'],
     queryFn: async () => {
       // First get the user's company ID
       const { data: userCompany, error: companyError } = await supabase
