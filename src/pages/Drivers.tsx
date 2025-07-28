@@ -39,7 +39,7 @@ const getStatusText = (status: string) => {
 };
 
 const formatExperience = (hireDate: string | null) => {
-  if (!hireDate) return "No especificado";
+  if (!hireDate) return "Experiencia no especificada";
   
   const hire = new Date(hireDate);
   const now = new Date();
@@ -50,14 +50,14 @@ const formatExperience = (hireDate: string | null) => {
   if (totalMonths < 0) totalMonths = 0;
   
   if (totalMonths < 12) {
-    return `${totalMonths} meses`;
+    return `${totalMonths} meses de experiencia`;
   } else {
     const yearCount = Math.floor(totalMonths / 12);
     const monthCount = totalMonths % 12;
     if (monthCount === 0) {
-      return `${yearCount} año${yearCount !== 1 ? 's' : ''}`;
+      return `${yearCount} año${yearCount !== 1 ? 's' : ''} de experiencia`;
     }
-    return `${yearCount} año${yearCount !== 1 ? 's' : ''} y ${monthCount} mes${monthCount !== 1 ? 'es' : ''}`;
+    return `${yearCount} año${yearCount !== 1 ? 's' : ''} y ${monthCount} mes${monthCount !== 1 ? 'es' : ''} de experiencia`;
   }
 };
 
@@ -256,7 +256,7 @@ export default function Drivers() {
                     
                     <div className="flex items-center gap-2">
                       <span>🕐</span>
-                      <span className="text-sm">{formatExperience(driver.hire_date)} de experiencia</span>
+                      <span className="text-sm">{formatExperience(driver.hire_date)}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span>📋</span>
