@@ -114,3 +114,28 @@ export const formatExpiryDate = (date: string | null | undefined): string => {
   if (!date) return 'Sin vencimiento';
   return formatDateOnly(date);
 };
+
+/**
+ * Función para obtener información de vencimiento con advertencias
+ */
+export const getExpiryInfo = (date: string | null | undefined): { 
+  text: string; 
+  isExpiring: boolean; 
+  isExpired: boolean; 
+} => {
+  if (!date) return { text: 'Sin vencimiento', isExpiring: false, isExpired: false };
+  
+  const expiryDate = new Date(date);
+  const today = new Date();
+  const diffTime = expiryDate.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  const isExpired = diffDays < 0;
+  const isExpiring = diffDays >= 0 && diffDays <= 90; // Menos de 3 meses (90 días)
+  
+  return {
+    text: formatDateOnly(date),
+    isExpiring,
+    isExpired
+  };
+};

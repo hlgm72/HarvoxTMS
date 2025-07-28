@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
 import { useEquipmentAssignments } from "@/hooks/useEquipmentAssignments";
-import { formatExpiryDate } from '@/lib/dateFormatting';
+import { getExpiryInfo } from '@/lib/dateFormatting';
 import { useState } from "react";
 import { InviteDriverDialog } from "@/components/drivers/InviteDriverDialog";
 import { EquipmentAssignmentDialog } from "@/components/equipment/EquipmentAssignmentDialog";
@@ -266,15 +266,24 @@ export default function Drivers() {
                        <span>🕐</span>
                        <span className="text-sm">{formatExperience(driver.license_issue_date, driver.hire_date)}</span>
                      </div>
-                    <div className="flex items-center gap-2">
-                      <span>📋</span>
-                      <span className="text-sm">
-                        {driver.license_expiry_date 
-                          ? `Vence: ${formatExpiryDate(driver.license_expiry_date)}`
-                          : 'Fecha de vencimiento no especificada'
-                        }
-                      </span>
-                    </div>
+                     <div className="flex items-center gap-2">
+                       <span>📋</span>
+                       <div className="text-sm flex flex-col">
+                         {driver.license_expiry_date ? (
+                           <>
+                             <span>Vence: {getExpiryInfo(driver.license_expiry_date).text}</span>
+                             {getExpiryInfo(driver.license_expiry_date).isExpired && (
+                               <span className="text-red-600 font-semibold text-xs">⚠️ VENCIDA</span>
+                             )}
+                             {getExpiryInfo(driver.license_expiry_date).isExpiring && !getExpiryInfo(driver.license_expiry_date).isExpired && (
+                               <span className="text-orange-600 font-semibold text-xs">⚠️ PRÓXIMO A VENCER</span>
+                             )}
+                           </>
+                         ) : (
+                           'Fecha de vencimiento no especificada'
+                         )}
+                       </div>
+                     </div>
                   </div>
                   
                   <div className="flex gap-2 mt-4">
