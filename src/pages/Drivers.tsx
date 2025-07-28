@@ -191,6 +191,13 @@ export default function Drivers() {
             // Obtener equipos asignados al conductor
             const assignedEquipment = getAssignmentsByDriver(driver.user_id);
 
+            // Debug: log driver data to see what we have
+            console.log('🔍 Driver data debug:', {
+              license_issue_date: driver.license_issue_date,
+              hire_date: driver.hire_date,
+              experience: formatExperience(driver.license_issue_date, driver.hire_date)
+            });
+
             return (
               <Card key={driver.id} className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
                 <CardHeader className="pb-3">
