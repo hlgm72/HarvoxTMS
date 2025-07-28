@@ -386,10 +386,9 @@ export function PDFAnalyzer() {
             enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date}`;
             enrichedTransaction.period_mapping_status = 'found';
           } else {
-            // Si existe el company period pero no el driver period, marcarlo para crear
+            // Si existe el company period pero no el driver period, usar las fechas del período existente
             enrichedTransaction.period_mapping_status = 'will_create';
-            const calculatedPeriod = calculatePeriodDates(periodTransactionDate, companyId);
-            enrichedTransaction.payment_period_dates = `${calculatedPeriod.start} - ${calculatedPeriod.end} (crear cálculo conductor)`;
+            enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date} (crear cálculo conductor)`;
           }
         } else {
           // Calcular qué período se crearía (sin crearlo)
