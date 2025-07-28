@@ -234,7 +234,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         // Agregar imagen del logo
         const logoSize = 15; // Tamaño del logo en mm
         doc.addImage(logoData, 'PNG', col1X, currentY - 5, logoSize, logoSize);
-        logoWidth = logoSize + 5; // Espacio para el logo + margen
+        logoWidth = logoSize + 3; // Espacio para el logo + margen reducido
       }
     } catch (error) {
       console.error('Error loading company logo:', error);
@@ -254,7 +254,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       fontStyle: 'bold',
       color: colors.primary
     });
-    logoWidth = 20; // Espacio para las iniciales
+    logoWidth = 16; // Espacio para las iniciales reducido
   }
   
   addText(data.company.name || 'Transport LLC', col1X + logoWidth, currentY, {
@@ -297,27 +297,27 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // === COLUMNA 2: INFORMACIÓN DEL PERIODO ===
   const weekInfo = formatWeekInfo();
   addText('Driver Pay Report', col2X + colWidth/2, currentY, {
-    fontSize: 14,
+    fontSize: 12,
     fontStyle: 'bold',
     color: colors.darkGray,
     align: 'center'
   });
   
-  addText(weekInfo.week, col2X + colWidth/2, currentY + 6, {
-    fontSize: 12,
+  addText(weekInfo.week, col2X + colWidth/2, currentY + 4, {
+    fontSize: 11,
     fontStyle: 'bold',
     color: colors.text,
     align: 'center'
   });
   
-  addText(weekInfo.dateRange, col2X + colWidth/2, currentY + 11, {
-    fontSize: 10,
+  addText(weekInfo.dateRange, col2X + colWidth/2, currentY + 8, {
+    fontSize: 9,
     color: colors.text,
     align: 'center'
   });
   
-  addText(weekInfo.paymentDate, col2X + colWidth/2, currentY + 16, {
-    fontSize: 10,
+  addText(weekInfo.paymentDate, col2X + colWidth/2, currentY + 12, {
+    fontSize: 9,
     color: colors.text,
     align: 'center'
   });
