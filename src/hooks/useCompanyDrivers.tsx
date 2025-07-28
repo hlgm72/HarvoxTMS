@@ -113,9 +113,24 @@ export const useCompanyDrivers = () => {
 
         console.log('🔍 useCompanyDrivers - Raw query results:', {
           finalDriverUserIds,
-          profilesResult: profilesResult.status === 'fulfilled' ? profilesResult.value : profilesResult.reason,
-          driverProfilesResult: driverProfilesResult.status === 'fulfilled' ? driverProfilesResult.value : driverProfilesResult.reason,
-          activeLoadsResult: activeLoadsResult.status === 'fulfilled' ? activeLoadsResult.value : activeLoadsResult.reason
+          profilesResult: profilesResult.status === 'fulfilled' ? { 
+            data: profilesResult.value.data, 
+            error: profilesResult.value.error 
+          } : { 
+            reason: profilesResult.reason 
+          },
+          driverProfilesResult: driverProfilesResult.status === 'fulfilled' ? { 
+            data: driverProfilesResult.value.data, 
+            error: driverProfilesResult.value.error 
+          } : { 
+            reason: driverProfilesResult.reason 
+          },
+          activeLoadsResult: activeLoadsResult.status === 'fulfilled' ? { 
+            data: activeLoadsResult.value.data, 
+            error: activeLoadsResult.value.error 
+          } : { 
+            reason: activeLoadsResult.reason 
+          }
         });
 
         // PASO 3: Procesar y enriquecer datos
@@ -124,6 +139,12 @@ export const useCompanyDrivers = () => {
           driverProfilesResult.status === 'fulfilled' ? driverProfilesResult.value.data || [] : [],
           activeLoadsResult.status === 'fulfilled' ? activeLoadsResult.value.data || [] : []
         ];
+
+        console.log('🔍 useCompanyDrivers - Processed arrays:', {
+          profiles,
+          driverProfiles,
+          activeLoads
+        });
 
         // Combinar toda la información
         const combinedDrivers: CompanyDriver[] = profiles.map(profile => {
