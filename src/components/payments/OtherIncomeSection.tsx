@@ -402,9 +402,9 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
           </SelectTrigger>
           <SelectContent>
             {driversLoading ? (
-              <SelectItem value="" disabled>Cargando conductores...</SelectItem>
+              <SelectItem value="loading" disabled>Cargando conductores...</SelectItem>
             ) : companyDrivers.length === 0 ? (
-              <SelectItem value="" disabled>No hay conductores disponibles</SelectItem>
+              <SelectItem value="no-drivers" disabled>No hay conductores disponibles</SelectItem>
             ) : (
               companyDrivers.map((driver) => (
                 <SelectItem key={driver.user_id} value={driver.user_id}>
