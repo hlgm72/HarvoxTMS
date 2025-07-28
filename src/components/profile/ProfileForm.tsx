@@ -21,8 +21,9 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
           <TabsTrigger 
             value="profile" 
             className="flex items-center gap-2 text-xs md:text-sm py-2 px-2 md:px-4 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+            style={{ border: '1px solid red' }}
           >
-            <Settings className="h-3 w-3 md:h-4 md:w-4" />
+            <Settings className="h-3 w-3 md:h-4 md:w-4" style={{ border: '1px solid blue', minHeight: '16px', minWidth: '16px' }} />
             <span className="hidden sm:inline">Información Personal</span>
             <span className="sm:hidden">Info</span>
           </TabsTrigger>
