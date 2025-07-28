@@ -214,7 +214,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   currentY = 15;
   
   // Agregar fondo gris claro con esquinas redondeadas y borde para la cabecera
-  const headerHeight = 35;
+  const headerHeight = 28;
   addRoundedBox(margin - 5, currentY - 10, pageWidth - margin*2 + 10, headerHeight, colors.lightGray, 5, colors.border);
   
   // Definir columnas
@@ -381,7 +381,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   // === CAJAS DE RESUMEN SUPERIOR ===
   const boxWidth = (pageWidth - margin*2 - 15) / 4; // 4 cajas con espacios
-  const boxHeight = 16;
+  const boxHeight = 13;
   
   // Gross Earnings (Verde)
   addColoredBox(margin, currentY, boxWidth, boxHeight, colors.lightGreen, colors.darkGray, 
