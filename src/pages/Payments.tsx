@@ -32,20 +32,8 @@ export default function Payments() {
   // Obtener datos reales de períodos de pago
   const currentCompanyId = selectedCompany?.id; // Compañía seleccionada
   const { data: paymentPeriods, isLoading: periodsLoading } = useCompanyPaymentPeriods(currentCompanyId);
-  
-  // Debug: Verificar fechas de períodos
-  console.log('📅 Períodos de pago disponibles:', paymentPeriods?.map(p => ({
-    id: p.id.slice(0, 8),
-    start: p.period_start_date,
-    end: p.period_end_date,
-    status: p.status
-  })));
-  
   const currentPeriod = paymentPeriods?.[0]; // Período más reciente
   const previousPeriod = paymentPeriods?.[1]; // Período anterior
-  
-  console.log('📅 Período actual:', currentPeriod?.period_start_date, 'a', currentPeriod?.period_end_date);
-  console.log('📅 Período anterior:', previousPeriod?.period_start_date, 'a', previousPeriod?.period_end_date);
   
   const { data: currentPeriodSummary } = usePaymentPeriodSummary(currentPeriod?.id);
   const { data: previousPeriodSummary } = usePaymentPeriodSummary(previousPeriod?.id);
@@ -180,12 +168,15 @@ export default function Payments() {
               <Calendar className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Período Anterior</p>
+                <p className="text-xs text-muted-foreground mb-1">
+                  {previousPeriod ? `${previousPeriod.period_start_date} - ${previousPeriod.period_end_date}` : 'No disponible'}
+                </p>
                 <p className="font-medium">
                   ${(previousPeriodSummary?.net_payment || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                 </p>
               </div>
             </div>
-            {getStatusBadge(previousPeriod?.status || 'open')}
+            {previousPeriod && getStatusBadge(previousPeriod.status)}
           </div>
         </CardContent>
       </Card>
