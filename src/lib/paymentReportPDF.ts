@@ -162,6 +162,14 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     });
   };
 
+  const addRoundedBox = (x: number, y: number, width: number, height: number, bgColor: string, radius: number = 3) => {
+    const bgRgb = hexToRgb(bgColor);
+    doc.setFillColor(bgRgb[0], bgRgb[1], bgRgb[2]);
+    
+    // Dibujar rectángulo con esquinas redondeadas usando curvas
+    doc.roundedRect(x, y, width, height, radius, radius, 'F');
+  };
+
   const formatCurrency = (amount: number) => {
     return amount >= 0 ? 
       `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}` :
@@ -193,6 +201,10 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   // === HEADER EN TRES COLUMNAS ===
   currentY = 15;
+  
+  // Agregar fondo gris claro con esquinas redondeadas para la cabecera
+  const headerHeight = 45;
+  addRoundedBox(margin - 5, currentY - 10, pageWidth - margin*2 + 10, headerHeight, colors.lightGray, 5);
   
   // Definir columnas
   const colWidth = (pageWidth - margin*2) / 3;
