@@ -137,25 +137,28 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   };
 
   const addColoredBox = (x: number, y: number, width: number, height: number, bgColor: string, textColor: string, title: string, value: string) => {
-    // Fondo de color
+    // Fondo de color con esquinas redondeadas
     const bgRgb = hexToRgb(bgColor);
     doc.setFillColor(bgRgb[0], bgRgb[1], bgRgb[2]);
-    doc.rect(x, y, width, height, 'F');
+    doc.roundedRect(x, y, width, height, 3, 3, 'F');
     
-    // Borde sutil
-    addBorder(x, y, width, height, colors.border);
+    // Borde sutil con esquinas redondeadas
+    const borderRgb = hexToRgb(colors.border);
+    doc.setDrawColor(borderRgb[0], borderRgb[1], borderRgb[2]);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(x, y, width, height, 3, 3, 'S');
     
     // Título
     addText(title, x + width/2, y + height/3, {
-      fontSize: 10,
+      fontSize: 9,
       fontStyle: 'normal',
       color: textColor,
       align: 'center'
     });
     
     // Valor
-    addText(value, x + width/2, y + height*0.7, {
-      fontSize: 16,
+    addText(value, x + width/2, y + height*0.72, {
+      fontSize: 14,
       fontStyle: 'bold',
       color: textColor,
       align: 'center'
@@ -378,7 +381,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   // === CAJAS DE RESUMEN SUPERIOR ===
   const boxWidth = (pageWidth - margin*2 - 15) / 4; // 4 cajas con espacios
-  const boxHeight = 20;
+  const boxHeight = 16;
   
   // Gross Earnings (Verde)
   addColoredBox(margin, currentY, boxWidth, boxHeight, colors.lightGreen, colors.darkGray, 
