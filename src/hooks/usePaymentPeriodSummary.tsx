@@ -25,14 +25,9 @@ export function usePaymentPeriodSummary(periodId?: string) {
         .select('*')
         .eq('company_payment_period_id', periodId);
 
-      console.log('🔍 usePaymentPeriodSummary query para período:', periodId);
-      console.log('🔍 Datos obtenidos de driver_period_calculations:', driverCalculations);
-      console.log('🔍 Error (si existe):', error);
-
       if (error) throw error;
 
       if (!driverCalculations || driverCalculations.length === 0) {
-        console.log('⚠️ No se encontraron cálculos para el período:', periodId);
         return {
           period_id: periodId,
           gross_earnings: 0,
@@ -44,8 +39,6 @@ export function usePaymentPeriodSummary(periodId?: string) {
           drivers_with_negative_balance: 0,
         };
       }
-
-      console.log('✅ Encontrados', driverCalculations.length, 'cálculos para procesar');
 
       // Calcular totales
       const summary = driverCalculations.reduce((acc, calc) => {
