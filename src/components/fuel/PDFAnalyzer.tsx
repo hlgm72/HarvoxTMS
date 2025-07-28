@@ -388,7 +388,7 @@ export function PDFAnalyzer() {
           } else {
             // Si existe el company period pero no el driver period, usar las fechas del período existente
             enrichedTransaction.period_mapping_status = 'will_create';
-            enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date} (iniciar registro conductor)`;
+            enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date}`;
           }
         } else {
           // Calcular qué período se crearía (sin crearlo)
@@ -768,7 +768,7 @@ export function PDFAnalyzer() {
                               )}
                               {transaction.period_mapping_status === 'will_create' && (
                                 <Badge variant="outline" className="border-blue-500 text-blue-600">
-                                  Registrar Conductor
+                                  Crear período
                                 </Badge>
                               )}
                             </>
