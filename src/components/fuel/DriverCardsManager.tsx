@@ -100,14 +100,18 @@ export function DriverCardsManager() {
 
       console.log('🔍 DEBUG: Found driver cards:', data);
 
-      // Get driver names separately
+      // Get driver names for each card
       const cardsWithDrivers = await Promise.all(
         data.map(async (card) => {
-          const { data: profile } = await supabase
+          const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('first_name, last_name')
             .eq('user_id', card.driver_user_id)
-            .single();
+            .maybeSingle();
+          
+          if (profileError) {
+            console.error('Error fetching profile for driver:', card.driver_user_id, profileError);
+          }
           
           return {
             ...card,
@@ -116,6 +120,7 @@ export function DriverCardsManager() {
         })
       );
 
+      console.log('🔍 DEBUG: Cards with driver names:', cardsWithDrivers);
       return cardsWithDrivers as DriverCard[];
     }
   });
