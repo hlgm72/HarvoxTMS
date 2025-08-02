@@ -17,7 +17,7 @@ import {
 import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-const fleetNestLogo = '/auth-bg-fleet.jpg'; // Usar temporalmente hasta que puedas subir tu logo
+const fleetNestLogo = '/lovable-uploads/b93b0656-3a21-4d5e-b4f1-28e577baa37c.png';
 
 export default function Landing() {
   const { t } = useTranslation(['landing', 'common']);
