@@ -651,7 +651,7 @@ export function AppSidebar() {
           <div className="relative group">
             <div className={`${collapsed ? 'w-14 h-14' : 'w-20 h-20'} bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105`}>
                <img 
-                src="/lovable-uploads/aecd1c28-5b8a-4fe0-935b-306f6ce24670.png" 
+                src="/lovable-uploads/b93b0656-3a21-4d5e-b4f1-28e577baa37c.png" 
                 alt="FleetNest Logo" 
                 className={`${collapsed ? 'w-11 h-11' : 'w-16 h-16'} object-contain transition-all duration-300 group-hover:scale-110`}
                />
