@@ -653,7 +653,7 @@ export function AppSidebar() {
                <img 
                 src="/lovable-uploads/b93b0656-3a21-4d5e-b4f1-28e577baa37c.png" 
                 alt="FleetNest Logo" 
-                className={`${collapsed ? 'w-11 h-11' : 'w-[66px] h-[66px]'} object-contain transition-all duration-300 group-hover:scale-110`}
+                className={`${collapsed ? 'w-11 h-11' : 'w-[68px] h-[68px]'} object-contain transition-all duration-300 group-hover:scale-110`}
                />
             </div>
           </div>
