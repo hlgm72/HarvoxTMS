@@ -12,8 +12,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
 import { createTextHandlers } from '@/lib/textUtils';
-import eagleLogo from "@/assets/high_res_eagle.svg";
-const fleetNestLogo = '/lovable-uploads/f2dc63b4-a93b-49bd-a347-e03a7c567905.png';
+const fleetNestLogo = '/lovable-uploads/b93b0656-3a21-4d5e-b4f1-28e577baa37c.png';
 
 export default function Auth() {
   const { t, i18n } = useTranslation(['auth', 'common']);
@@ -573,7 +572,7 @@ export default function Auth() {
           <div className="flex items-center space-x-4 mb-8">
             <div className="flex items-center space-x-4 p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20">
               <img 
-                src={eagleLogo}
+                src={fleetNestLogo}
                 alt="FleetNest Logo" 
                 className="h-16 w-16 object-contain filter drop-shadow-lg"
               />
@@ -646,7 +645,7 @@ export default function Auth() {
             <div className="flex justify-center mb-6 lg:hidden">
               <div className="flex items-center space-x-3 p-4 rounded-2xl bg-gradient-primary shadow-glow">
                 <img 
-                  src={eagleLogo}
+                  src={fleetNestLogo}
                   alt="FleetNest Logo" 
                   className="h-12 w-12 object-contain filter drop-shadow-lg"
                 />
