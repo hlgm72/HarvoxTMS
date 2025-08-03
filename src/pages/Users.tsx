@@ -48,6 +48,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { EditDriverDialog } from "@/components/drivers/EditDriverDialog";
 import { EditUserDialog } from "@/components/users/EditUserDialog";
+import { getRoleLabel, getRoleConfig } from "@/lib/roleUtils";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { UserFiltersSheet } from "@/components/users/UserFiltersSheet";
 
@@ -526,18 +527,10 @@ export default function Users() {
     );
   };
 
-  // Jerarquía de roles según importancia organizacional (misma que RoleSwitcher)
-  const getRoleLabel = (role: string) => {
-    const roleLabels: Record<string, string> = {
-      'superadmin': '🔧 Super Admin',
-      'company_owner': '👑 Company Owner',
-      'company_admin': '👨‍💼 Company Admin',
-      'dispatcher': '📋 Dispatcher',
-      'driver': '🚛 Driver',
-      'multi_company_dispatcher': '🏢 Multi-Company Dispatcher'
-    };
-    
-    return roleLabels[role] || role;
+  // Función para aplicar ordenamiento a los usuarios
+  const sortUsers = (users: User[], sortBy: string) => {
+    // TODO: Implementar ordenamiento si es necesario
+    return users;
   };
 
   return (
@@ -740,7 +733,7 @@ export default function Users() {
                             </Button>
                             
                             {/* Mostrar botón de editar conductor solo para conductores */}
-                            {user.role.toLowerCase().includes('conductor') && (
+                            {user.role.toLowerCase().includes('driver') && (
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -860,7 +853,7 @@ export default function Users() {
                             </Button>
                             
                             {/* Botón de editar conductor para vista de tarjetas */}
-                            {user.role.toLowerCase().includes('conductor') && (
+                            {user.role.toLowerCase().includes('driver') && (
                               <Button
                                 variant="outline"
                                 size="sm"
