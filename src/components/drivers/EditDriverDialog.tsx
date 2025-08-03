@@ -605,8 +605,8 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                     Información de Licencia CDL
                   </h3>
                   
-                  {/* Primera fila: Número de Licencia y Estado */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Una sola fila con los 4 campos: Número de Licencia, Estado, Fecha de Emisión y Fecha de Vencimiento */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="license_number">Número de Licencia</Label>
                       <Input
@@ -624,10 +624,6 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                         placeholder="Selecciona estado..."
                       />
                     </div>
-                  </div>
-
-                  {/* Segunda fila: Fechas de Emisión y Vencimiento */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="license_issue_date">Fecha de Emisión</Label>
                       <div>
