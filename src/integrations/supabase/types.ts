@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      archive_logs: {
+        Row: {
+          completed_at: string | null
+          details: Json | null
+          error_message: string | null
+          id: string
+          operation_type: string
+          records_affected: number | null
+          started_at: string | null
+          status: string | null
+          table_name: string
+          triggered_by: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          details?: Json | null
+          error_message?: string | null
+          id?: string
+          operation_type: string
+          records_affected?: number | null
+          started_at?: string | null
+          status?: string | null
+          table_name: string
+          triggered_by?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          details?: Json | null
+          error_message?: string | null
+          id?: string
+          operation_type?: string
+          records_affected?: number | null
+          started_at?: string | null
+          status?: string | null
+          table_name?: string
+          triggered_by?: string | null
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           city_id: string | null
@@ -2965,6 +3004,10 @@ export type Database = {
         Returns: {
           moved_records: number
         }[]
+      }
+      move_to_archive_with_logging: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       needs_initial_setup: {
         Args: Record<PropertyKey, never>

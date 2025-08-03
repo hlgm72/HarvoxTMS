@@ -20,44 +20,54 @@ export function useDriverEquipment(driverUserId?: string) {
       
       console.log('🚛 Fetching equipment for driver:', driverUserId);
       
-      const { data, error } = await supabase
+      // Get equipment assignments for driver
+      const { data: assignments, error: assignmentsError } = await supabase
         .from('equipment_assignments')
-        .select(`
-          id,
-          assigned_date,
-          is_active,
-          equipment_id,
-          company_equipment!inner(
-            id,
-            equipment_number,
-            equipment_type,
-            make,
-            model,
-            year
-          )
-        `)
+        .select('id, assigned_date, is_active, equipment_id')
         .eq('driver_user_id', driverUserId)
         .eq('is_active', true)
         .order('assigned_date', { ascending: false });
 
-      if (error) {
-        console.error('🚛 Error fetching driver equipment:', error);
-        throw error;
+      if (assignmentsError) {
+        console.error('🚛 Error fetching equipment assignments:', assignmentsError);
+        throw assignmentsError;
       }
-      
-      console.log('🚛 Driver equipment data:', data);
-      
+
+      if (!assignments || assignments.length === 0) {
+        console.log('🚛 No equipment assignments found for driver');
+        return [];
+      }
+
+      console.log('🚛 Equipment assignments:', assignments);
+
+      // Get equipment details separately to avoid relationship ambiguity
+      const equipmentIds = assignments.map(a => a.equipment_id);
+      const { data: equipment, error: equipmentError } = await supabase
+        .from('company_equipment')
+        .select('id, equipment_number, equipment_type, make, model, year')
+        .in('id', equipmentIds);
+
+      if (equipmentError) {
+        console.error('🚛 Error fetching equipment details:', equipmentError);
+        throw equipmentError;
+      }
+
+      console.log('🚛 Equipment details:', equipment);
+
       // Transform the data to match our interface
-      const result = (data || []).map(assignment => ({
-        id: assignment.company_equipment.id,
-        equipment_number: assignment.company_equipment.equipment_number,
-        equipment_type: assignment.company_equipment.equipment_type,
-        make: assignment.company_equipment.make,
-        model: assignment.company_equipment.model,
-        year: assignment.company_equipment.year,
-        assigned_date: assignment.assigned_date,
-        is_active: assignment.is_active,
-      })) as DriverEquipment[];
+      const result = assignments.map(assignment => {
+        const equipmentDetail = equipment?.find(eq => eq.id === assignment.equipment_id);
+        return {
+          id: equipmentDetail?.id || '',
+          equipment_number: equipmentDetail?.equipment_number || '',
+          equipment_type: equipmentDetail?.equipment_type || 'truck',
+          make: equipmentDetail?.make,
+          model: equipmentDetail?.model,
+          year: equipmentDetail?.year,
+          assigned_date: assignment.assigned_date,
+          is_active: assignment.is_active,
+        };
+      }) as DriverEquipment[];
       
       console.log('🚛 Transformed equipment result:', result);
       return result;
