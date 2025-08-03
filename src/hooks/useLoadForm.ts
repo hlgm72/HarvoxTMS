@@ -36,7 +36,7 @@ export const useLoadForm = (initialData?: LoadData | null, mode?: 'create' | 'ed
       total_amount: 0,
       pu_number: "",
       commodity: "",
-      weight_lbs: 0,
+      weight_lbs: undefined,
       customer_name: "",
       notes: "",
       factoring_percentage: undefined,
@@ -57,7 +57,7 @@ export const useLoadForm = (initialData?: LoadData | null, mode?: 'create' | 'ed
         po_number: mode === 'duplicate' ? "" : (initialData.po_number || ""),     // Clear for duplicate
         total_amount: initialData.total_amount || 0,
         commodity: initialData.commodity || "",
-        weight_lbs: initialData.weight_lbs || 0,
+        weight_lbs: initialData.weight_lbs || undefined,
         customer_name: initialData.customer_name || "",
         notes: initialData.notes || "",
         factoring_percentage: initialData.factoring_percentage,
