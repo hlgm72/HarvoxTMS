@@ -57,7 +57,7 @@ export function useEquipmentAssignments() {
         .from('equipment_assignments')
         .select(`
           *,
-          company_equipment (
+          company_equipment:equipment_id (
             id,
             equipment_number,
             equipment_type,

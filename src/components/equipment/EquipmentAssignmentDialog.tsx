@@ -119,13 +119,6 @@ export function EquipmentAssignmentDialog({
   const driverAssignments = selectedDriverId ? getAssignmentsByDriver(selectedDriverId) : [];
   const selectedDriver = activeDrivers.find(d => d.user_id === selectedDriverId);
   
-  console.log('🔧 Dialog Debug:', {
-    selectedDriverId,
-    driverAssignments,
-    allAssignments: assignments,
-    selectedDriver: selectedDriver?.first_name
-  });
-  
   // Separar equipos por tipo
   const driverTrucks = driverAssignments.filter(a => a.company_equipment?.equipment_type === 'truck');
   const driverTrailers = driverAssignments.filter(a => a.company_equipment?.equipment_type === 'trailer');
