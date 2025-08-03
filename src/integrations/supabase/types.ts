@@ -2863,6 +2863,10 @@ export type Database = {
         Args: { user_id_param?: string }
         Returns: string[]
       }
+      get_user_company_ids_safe: {
+        Args: { user_id_param?: string }
+        Returns: string[]
+      }
       get_user_email_by_id: {
         Args: { user_id_param: string }
         Returns: string
@@ -2921,12 +2925,20 @@ export type Database = {
         Args: { user_id_param?: string }
         Returns: boolean
       }
+      is_user_admin_in_company_safe: {
+        Args: { user_id_param: string; company_id_param: string }
+        Returns: boolean
+      }
       is_user_company_owner: {
         Args: { user_id_param: string; company_id_param: string }
         Returns: boolean
       }
       is_user_superadmin: {
         Args: { user_id_param: string }
+        Returns: boolean
+      }
+      is_user_superadmin_safe: {
+        Args: { user_id_param?: string }
         Returns: boolean
       }
       lock_payment_period: {
