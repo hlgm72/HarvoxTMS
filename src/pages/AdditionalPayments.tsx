@@ -2,9 +2,6 @@ import { useState } from "react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -15,7 +12,6 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdditionalPayments() {
   const { isDriver, isOperationsManager, isCompanyOwner } = useAuth();
-  const [activeTab, setActiveTab] = useState("income");
   const [userType, setUserType] = useState("drivers"); // "drivers" | "dispatchers"
 
   // Subtitle general para la página
@@ -66,58 +62,24 @@ export default function AdditionalPayments() {
       />
 
       <div className="p-2 md:p-4 pr-16 md:pr-20 space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Seleccionar Tipo de Usuario
-          </CardTitle>
-          <CardDescription>
-            Selecciona si deseas gestionar pagos para conductores o despachadores
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center space-x-4">
-            <Label htmlFor="user-type">Tipo de Usuario:</Label>
-            <Select value={userType} onValueChange={setUserType}>
-              <SelectTrigger className="w-[250px]">
-                <SelectValue placeholder="Seleccionar tipo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="drivers">
-                  <div className="flex items-center gap-2">
-                    <UserCheck className="h-4 w-4" />
-                    Conductores
-                  </div>
-                </SelectItem>
-                <SelectItem value="dispatchers">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    Despachadores
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <Badge variant={userType === "drivers" ? "default" : "secondary"}>
-              {userType === "drivers" ? "Conductores" : "Despachadores"}
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Tabs principales para tipo de usuario */}
+        <Tabs value={userType} onValueChange={setUserType} className="space-y-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="drivers" className="flex items-center gap-2">
+              <UserCheck className="h-4 w-4" />
+              Conductores
+            </TabsTrigger>
+            <TabsTrigger value="dispatchers" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Despachadores
+            </TabsTrigger>
+          </TabsList>
 
-      {/* Tabs de contenido */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-1">
-          <TabsTrigger value="income" className="flex items-center gap-2">
-            <Calculator className="h-4 w-4" />
-            Ingresos Adicionales
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="income" className="space-y-4">
-          {userType === "drivers" ? (
+          <TabsContent value="drivers" className="space-y-4">
             <OtherIncomeSection hideAddButton={true} />
-          ) : (
+          </TabsContent>
+
+          <TabsContent value="dispatchers" className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle>Ingresos Adicionales para Despachadores</CardTitle>
@@ -133,9 +95,8 @@ export default function AdditionalPayments() {
                 </div>
               </CardContent>
             </Card>
-          )}
-        </TabsContent>
-      </Tabs>
+          </TabsContent>
+        </Tabs>
 
       {/* Dialog para crear ingreso de conductor desde el toolbar */}
       <Dialog open={isCreateDriverIncomeDialogOpen} onOpenChange={setIsCreateDriverIncomeDialogOpen}>
