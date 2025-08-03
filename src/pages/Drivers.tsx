@@ -46,23 +46,43 @@ const formatExperience = (licenseIssueDate: string | null, hireDate: string | nu
   
   if (!experienceDate) return "Experiencia no especificada";
   
-  const startDate = new Date(experienceDate);
-  const now = new Date();
-  const years = now.getFullYear() - startDate.getFullYear();
-  const months = now.getMonth() - startDate.getMonth();
-  
-  let totalMonths = years * 12 + months;
-  if (totalMonths < 0) totalMonths = 0;
-  
-  if (totalMonths < 12) {
-    return `Experiencia: ${totalMonths} mes${totalMonths !== 1 ? 'es' : ''}`;
-  } else {
-    const yearCount = Math.floor(totalMonths / 12);
-    const monthCount = totalMonths % 12;
-    if (monthCount === 0) {
-      return `Experiencia: ${yearCount} año${yearCount !== 1 ? 's' : ''}`;
+  try {
+    // Usar la función segura para parsear fechas evitando problemas de zona horaria
+    let year: number, month: number, day: number;
+    
+    if (experienceDate.includes('T') || experienceDate.includes('Z')) {
+      // Formato ISO: extraer solo la parte de fecha
+      const datePart = experienceDate.split('T')[0];
+      [year, month, day] = datePart.split('-').map(Number);
+    } else if (experienceDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      // Formato solo fecha: YYYY-MM-DD
+      [year, month, day] = experienceDate.split('-').map(Number);
+    } else {
+      return "Experiencia no especificada";
     }
-    return `Experiencia: ${yearCount} año${yearCount !== 1 ? 's' : ''} y ${monthCount} mes${monthCount !== 1 ? 'es' : ''}`;
+    
+    // Crear fecha local evitando problemas de zona horaria
+    const startDate = new Date(year, month - 1, day);
+    const now = new Date();
+    const years = now.getFullYear() - startDate.getFullYear();
+    const months = now.getMonth() - startDate.getMonth();
+    
+    let totalMonths = years * 12 + months;
+    if (totalMonths < 0) totalMonths = 0;
+    
+    if (totalMonths < 12) {
+      return `Experiencia: ${totalMonths} mes${totalMonths !== 1 ? 'es' : ''}`;
+    } else {
+      const yearCount = Math.floor(totalMonths / 12);
+      const monthCount = totalMonths % 12;
+      if (monthCount === 0) {
+        return `Experiencia: ${yearCount} año${yearCount !== 1 ? 's' : ''}`;
+      }
+      return `Experiencia: ${yearCount} año${yearCount !== 1 ? 's' : ''} y ${monthCount} mes${monthCount !== 1 ? 'es' : ''}`;
+    }
+  } catch (error) {
+    console.error('Error calculating experience:', error);
+    return "Experiencia no especificada";
   }
 };
 

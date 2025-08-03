@@ -125,17 +125,39 @@ export const getExpiryInfo = (date: string | null | undefined): {
 } => {
   if (!date) return { text: 'Sin vencimiento', isExpiring: false, isExpired: false };
   
-  const expiryDate = new Date(date);
-  const today = new Date();
-  const diffTime = expiryDate.getTime() - today.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
-  const isExpired = diffDays < 0;
-  const isExpiring = diffDays >= 0 && diffDays <= 90; // Menos de 3 meses (90 días)
-  
-  return {
-    text: formatDateOnly(date),
-    isExpiring,
-    isExpired
-  };
+  try {
+    // Parsear fecha de forma segura evitando problemas de zona horaria
+    let year: number, month: number, day: number;
+    
+    if (date.includes('T') || date.includes('Z')) {
+      // Formato ISO: extraer solo la parte de fecha
+      const datePart = date.split('T')[0];
+      [year, month, day] = datePart.split('-').map(Number);
+    } else if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      // Formato solo fecha: YYYY-MM-DD
+      [year, month, day] = date.split('-').map(Number);
+    } else {
+      return { text: formatDateOnly(date), isExpiring: false, isExpired: false };
+    }
+    
+    // Crear fechas locales evitando zona horaria UTC
+    const expiryDate = new Date(year, month - 1, day, 12, 0, 0); // Usar mediodía para seguridad
+    const today = new Date();
+    today.setHours(12, 0, 0, 0); // También establecer mediodía para comparación justa
+    
+    const diffTime = expiryDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    const isExpired = diffDays < 0;
+    const isExpiring = diffDays >= 0 && diffDays <= 90; // Menos de 3 meses (90 días)
+    
+    return {
+      text: formatDateOnly(date),
+      isExpiring,
+      isExpired
+    };
+  } catch (error) {
+    console.error('Error processing expiry date:', error);
+    return { text: formatDateOnly(date), isExpiring: false, isExpired: false };
+  }
 };
