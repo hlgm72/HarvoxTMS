@@ -29,6 +29,38 @@ const formatDateForDatabase = (date: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
+// Función segura para parsear fechas desde la base de datos evitando problemas de zona horaria
+const parseDateFromDatabase = (dateString: string | null | undefined): Date | null => {
+  if (!dateString) return null;
+  
+  try {
+    // Extraer año, mes, día directamente para evitar problemas de zona horaria
+    let year: number, month: number, day: number;
+    
+    if (dateString.includes('T') || dateString.includes('Z')) {
+      // Formato ISO: extraer solo la parte de fecha
+      const datePart = dateString.split('T')[0];
+      [year, month, day] = datePart.split('-').map(Number);
+    } else if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      // Formato solo fecha: YYYY-MM-DD
+      [year, month, day] = dateString.split('-').map(Number);
+    } else {
+      return null;
+    }
+    
+    // Validar que los valores sean números válidos
+    if (isNaN(year) || isNaN(month) || isNaN(day)) {
+      return null;
+    }
+    
+    // Crear fecha local evitando zona horaria UTC
+    return new Date(year, month - 1, day);
+  } catch (error) {
+    console.error('Error parsing date from database:', error);
+    return null;
+  }
+};
+
 interface DriverData {
   // Información personal básica
   first_name: string;
@@ -173,18 +205,18 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
         first_name: profile?.first_name || '',
         last_name: profile?.last_name || '',
         phone: profile?.phone || '',
-        date_of_birth: driverProfile?.date_of_birth ? new Date(driverProfile.date_of_birth) : null,
+        date_of_birth: parseDateFromDatabase(driverProfile?.date_of_birth),
         
         // Información de empleo - ahora desde user_company_roles
         driver_id: driverProfile?.driver_id || '',
-        hire_date: roleData?.hire_date ? new Date(roleData.hire_date) : null,
+        hire_date: parseDateFromDatabase(roleData?.hire_date),
         
         // Información de licencia
         license_number: driverProfile?.license_number || '',
         cdl_class: driverProfile?.cdl_class || '',
         license_state: driverProfile?.license_state || '',
-        license_issue_date: driverProfile?.license_issue_date ? new Date(driverProfile.license_issue_date) : null,
-        license_expiry_date: driverProfile?.license_expiry_date ? new Date(driverProfile.license_expiry_date) : null,
+        license_issue_date: parseDateFromDatabase(driverProfile?.license_issue_date),
+        license_expiry_date: parseDateFromDatabase(driverProfile?.license_expiry_date),
         
         // Contacto de emergencia
         emergency_contact_name: driverProfile?.emergency_contact_name || '',
