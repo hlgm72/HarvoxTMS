@@ -26,18 +26,10 @@ export const useUserCompanies = () => {
       }
 
       try {
-        // Get user's company roles with company information
+        // Get user's company roles first
         const { data: userRoles, error: rolesError } = await supabase
           .from('user_company_roles')
-          .select(`
-            role,
-            is_active,
-            companies (
-              id,
-              name,
-              logo_url
-            )
-          `)
+          .select('role, is_active, company_id')
           .eq('user_id', user.id)
           .eq('is_active', true);
 
@@ -49,6 +41,25 @@ export const useUserCompanies = () => {
           setLoading(false);
           return;
         }
+
+        // Get company information for all companies
+        const companyIds = userRoles.map(role => role.company_id);
+        const { data: companiesData, error: companiesError } = await supabase
+          .from('companies')
+          .select('id, name, logo_url')
+          .in('id', companyIds);
+
+        if (companiesError) throw companiesError;
+
+        if (!companiesData || companiesData.length === 0) {
+          setCompanies([]);
+          setSelectedCompany(null);
+          setLoading(false);
+          return;
+        }
+
+        // Create a map of companies for quick lookup
+        const companiesMap = new Map(companiesData.map(company => [company.id, company]));
 
         // Define role hierarchy (higher number = higher priority)
         const roleHierarchy: { [key: string]: number } = {
@@ -63,32 +74,37 @@ export const useUserCompanies = () => {
         };
 
         // Group by company and keep the highest role
-        const companiesMap = new Map<string, any>();
+        const roleCompaniesMap = new Map<string, any>();
         
         userRoles.forEach((userRole: any) => {
-          const companyId = userRole.companies.id;
+          const companyId = userRole.company_id;
           const currentRole = userRole.role;
           const currentRolePriority = roleHierarchy[currentRole] || 0;
           
-          if (!companiesMap.has(companyId) || 
-              currentRolePriority > (roleHierarchy[companiesMap.get(companyId).role] || 0)) {
-            companiesMap.set(companyId, userRole);
+          if (!roleCompaniesMap.has(companyId) || 
+              currentRolePriority > (roleHierarchy[roleCompaniesMap.get(companyId).role] || 0)) {
+            roleCompaniesMap.set(companyId, userRole);
           }
         });
 
         // Transform the data to match our interface
-        const transformedCompanies: UserCompany[] = Array.from(companiesMap.values()).map((userRole: any) => ({
-          id: userRole.companies.id,
-          name: userRole.companies.name,
-          role: userRole.role,
-          avatar: userRole.companies.name
-            .split(' ')
-            .map((word: string) => word.charAt(0))
-            .join('')
-            .substring(0, 2)
-            .toUpperCase(),
-          logo_url: userRole.companies.logo_url
-        }));
+        const transformedCompanies: UserCompany[] = Array.from(roleCompaniesMap.values()).map((userRole: any) => {
+          const company = companiesMap.get(userRole.company_id);
+          if (!company) return null;
+          
+          return {
+            id: company.id,
+            name: company.name,
+            role: userRole.role,
+            avatar: company.name
+              .split(' ')
+              .map((word: string) => word.charAt(0))
+              .join('')
+              .substring(0, 2)
+              .toUpperCase(),
+            logo_url: company.logo_url
+          };
+        }).filter(Boolean) as UserCompany[];
 
         setCompanies(transformedCompanies);
         
