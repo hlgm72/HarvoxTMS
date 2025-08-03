@@ -16,10 +16,9 @@ export default function AdditionalPayments() {
   const [activeTab, setActiveTab] = useState("income");
   const [userType, setUserType] = useState("drivers"); // "drivers" | "dispatchers"
 
-  // Generar subtitle dinámico basado en el tipo de usuario seleccionado
+  // Subtitle general para la página
   const getSubtitle = () => {
-    const userTypeText = userType === "drivers" ? "conductores" : "despachadores";
-    return `Gestión de ingresos adicionales para ${userTypeText}`;
+    return "Gestión de ingresos adicionales para conductores y despachadores";
   };
 
   const handleAddIncomeDriver = () => {
