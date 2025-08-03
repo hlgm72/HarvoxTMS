@@ -354,7 +354,7 @@ export function ExpenseTemplateDialog({
             <UserTypeSelector
               value={selectedRole}
               onChange={setSelectedRole}
-              label="Aplicar Deducción al Rol"
+              label="Aplicar Deducción a"
               disabled={false}
             />
           )}
