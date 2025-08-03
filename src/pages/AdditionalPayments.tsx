@@ -22,7 +22,7 @@ export default function AdditionalPayments() {
   };
 
   return (
-    <div className="space-y-6">
+    <>
       <PageToolbar 
         icon={Calculator}
         title="Pagos Adicionales" 
@@ -37,7 +37,7 @@ export default function AdditionalPayments() {
         }
       />
 
-      {/* Selector de tipo de usuario */}
+      <div className="p-2 md:p-4 pr-16 md:pr-20 space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -108,6 +108,7 @@ export default function AdditionalPayments() {
           )}
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </>
   );
 }
