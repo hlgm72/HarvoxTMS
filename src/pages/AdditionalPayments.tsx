@@ -6,28 +6,29 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { OtherIncomeSection } from "@/components/payments/OtherIncomeSection";
+import { DispatcherOtherIncomeSection } from "@/components/payments/DispatcherOtherIncomeSection";
 import { CreateOtherIncomeForm } from "@/components/payments/CreateOtherIncomeForm";
+import { CreateDispatcherOtherIncomeForm } from "@/components/payments/CreateDispatcherOtherIncomeForm";
 import { Calculator, Users, UserCheck, Plus, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdditionalPayments() {
   const { isDriver, isOperationsManager, isCompanyOwner } = useAuth();
   const [userType, setUserType] = useState("drivers"); // "drivers" | "dispatchers"
+  const [isCreateDriverIncomeDialogOpen, setIsCreateDriverIncomeDialogOpen] = useState(false);
+  const [isCreateDispatcherIncomeDialogOpen, setIsCreateDispatcherIncomeDialogOpen] = useState(false);
 
   // Subtitle general para la página
   const getSubtitle = () => {
     return "Gestión de ingresos adicionales para conductores y despachadores";
   };
 
-  const [isCreateDriverIncomeDialogOpen, setIsCreateDriverIncomeDialogOpen] = useState(false);
-
   const handleAddIncomeDriver = () => {
     setIsCreateDriverIncomeDialogOpen(true);
   };
 
   const handleAddIncomeDispatcher = () => {
-    // TODO: Abrir modal para agregar ingreso a despachador
-    console.log("Agregar ingreso a despachador");
+    setIsCreateDispatcherIncomeDialogOpen(true);
   };
 
   return (
@@ -80,21 +81,7 @@ export default function AdditionalPayments() {
           </TabsContent>
 
           <TabsContent value="dispatchers" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Ingresos Adicionales para Despachadores</CardTitle>
-                <CardDescription>
-                  Gestión de ingresos adicionales para despachadores
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8 text-muted-foreground">
-                  <Calculator className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Funcionalidad para despachadores próximamente</p>
-                  <p className="text-sm">Esta sección estará disponible una vez que se implemente el sistema de períodos de pago para despachadores</p>
-                </div>
-              </CardContent>
-            </Card>
+            <DispatcherOtherIncomeSection />
           </TabsContent>
         </Tabs>
 
@@ -105,6 +92,16 @@ export default function AdditionalPayments() {
             <DialogTitle>Nuevo Ingreso para Conductor</DialogTitle>
           </DialogHeader>
           <CreateOtherIncomeForm onClose={() => setIsCreateDriverIncomeDialogOpen(false)} />
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog para crear ingreso de despachador desde el toolbar */}
+      <Dialog open={isCreateDispatcherIncomeDialogOpen} onOpenChange={setIsCreateDispatcherIncomeDialogOpen}>
+        <DialogContent className="max-w-md bg-white">
+          <DialogHeader>
+            <DialogTitle>Nuevo Ingreso para Despachador</DialogTitle>
+          </DialogHeader>
+          <CreateDispatcherOtherIncomeForm onClose={() => setIsCreateDispatcherIncomeDialogOpen(false)} />
         </DialogContent>
       </Dialog>
       </div>
