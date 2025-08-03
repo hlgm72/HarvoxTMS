@@ -5,7 +5,7 @@ import App from './App.tsx'
 import './index.css'
 import { setupGlobalAuthErrorHandler } from './lib/authErrorHandler'
 
-console.log('🚀 main.tsx: Starting application initialization...');
+// console.log('🚀 main.tsx: Starting application initialization...');
 
 // Setup global auth error handling
 setupGlobalAuthErrorHandler();
@@ -27,17 +27,17 @@ if (!rootElement) {
 }
 
 try {
-  console.log('📦 main.tsx: Creating React root...');
+  // console.log('📦 main.tsx: Creating React root...');
   const root = createRoot(rootElement);
   
-  console.log('🎯 main.tsx: Rendering App component...');
+  // console.log('🎯 main.tsx: Rendering App component...');
   root.render(
     <React.StrictMode>
       <App />
     </React.StrictMode>
   );
   
-  console.log('✅ main.tsx: Application mounted successfully!');
+  // console.log('✅ main.tsx: Application mounted successfully!');
 } catch (error) {
   console.error('❌ main.tsx: Error mounting app:', error);
   

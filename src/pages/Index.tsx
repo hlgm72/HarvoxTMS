@@ -26,13 +26,13 @@ export default function Index() {
     // Prevent multiple redirects during auth state changes
     if (hasProcessedRedirect.current) return;
     
-    console.log('🏠 Index.tsx useEffect triggered:', {
-      loading,
-      user: user?.id,
-      userRole: userRole?.role,
-      userRoles: userRoles?.length,
-      hasProcessed: hasProcessedRedirect.current
-    });
+    // console.log('🏠 Index.tsx useEffect triggered:', {
+    //   loading,
+    //   user: user?.id,
+    //   userRole: userRole?.role,
+    //   userRoles: userRoles?.length,
+    //   hasProcessed: hasProcessedRedirect.current
+    // });
 
     // Check for login success message
     const loginSuccess = localStorage.getItem('loginSuccess');
@@ -82,11 +82,11 @@ export default function Index() {
       }
     } else if (!loading && !user) {
       // Si no hay usuario autenticado, mostrar landing
-      console.log('🏠 No authenticated user, showing landing page');
+      // console.log('🏠 No authenticated user, showing landing page');
       // Reset the redirect flag when showing landing
       hasProcessedRedirect.current = false;
     } else {
-      console.log('🏠 Still loading or no user:', { loading, hasUser: !!user });
+      // console.log('🏠 Still loading or no user:', { loading, hasUser: !!user });
     }
   }, [loading, user, userRole, userRoles, navigate, isSuperAdmin, isCompanyOwner, isOperationsManager, isDispatcher, isDriver]);
 

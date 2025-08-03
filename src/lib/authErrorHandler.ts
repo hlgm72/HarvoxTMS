@@ -82,7 +82,7 @@ export const setupGlobalAuthErrorHandler = () => {
     }
   });
   
-  console.log('🛡️ Global auth error handler setup complete');
+  // console.log('🛡️ Global auth error handler setup complete');
 };
 
 // Recovery function to attempt to restore valid session
