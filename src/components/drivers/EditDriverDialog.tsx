@@ -21,6 +21,14 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { es } from "date-fns/locale";
 import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 
+// Función simple para formatear fechas para la base de datos sin problemas de zona horaria
+const formatDateForDatabase = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 interface DriverData {
   // Información personal básica
   first_name: string;
@@ -314,10 +322,10 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
           license_number: cleanedData.license_number,
           cdl_class: cleanedData.cdl_class,
           license_state: cleanedData.license_state,
-          license_issue_date: driverData.license_issue_date ? formatDateInUserTimeZone(driverData.license_issue_date) : null,
-          license_expiry_date: driverData.license_expiry_date ? formatDateInUserTimeZone(driverData.license_expiry_date) : null,
-          hire_date: driverData.hire_date ? formatDateInUserTimeZone(driverData.hire_date) : null,
-          date_of_birth: driverData.date_of_birth ? formatDateInUserTimeZone(driverData.date_of_birth) : null,
+          license_issue_date: driverData.license_issue_date ? formatDateForDatabase(driverData.license_issue_date) : null,
+          license_expiry_date: driverData.license_expiry_date ? formatDateForDatabase(driverData.license_expiry_date) : null,
+          hire_date: driverData.hire_date ? formatDateForDatabase(driverData.hire_date) : null,
+          date_of_birth: driverData.date_of_birth ? formatDateForDatabase(driverData.date_of_birth) : null,
           emergency_contact_name: cleanedData.emergency_contact_name,
           emergency_contact_phone: cleanedData.emergency_contact_phone,
         }, {
@@ -330,7 +338,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
       const { error: roleError } = await supabase
         .from('user_company_roles')
         .update({
-          hire_date: driverData.hire_date ? formatDateInUserTimeZone(driverData.hire_date) : null,
+          hire_date: driverData.hire_date ? formatDateForDatabase(driverData.hire_date) : null,
         })
         .eq('user_id', driver.user_id)
         .eq('role', 'driver');

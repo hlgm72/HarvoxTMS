@@ -47,9 +47,6 @@ export const formatDateSafe = (
     let dateToFormat: Date;
     
     if (typeof dateInput === 'string') {
-      // Debug: ver qué fecha estamos recibiendo
-      console.log('formatDateSafe input:', dateInput);
-      
       // Extraer año, mes, día directamente para evitar problemas de zona horaria
       let year: number, month: number, day: number;
       
@@ -57,13 +54,10 @@ export const formatDateSafe = (
         // Formato ISO: 2025-07-14T00:00:00.000Z - extraer solo la parte de fecha
         const datePart = dateInput.split('T')[0];
         [year, month, day] = datePart.split('-').map(Number);
-        console.log('ISO format parsed:', { year, month, day });
       } else if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
         // Formato solo fecha: 2025-07-14
         [year, month, day] = dateInput.split('-').map(Number);
-        console.log('Date only format parsed:', { year, month, day });
       } else {
-        console.log('Using parseISO fallback for:', dateInput);
         // Si no es un formato reconocido, usar parseISO como fallback
         dateToFormat = parseISO(dateInput);
         if (!isValid(dateToFormat)) {
@@ -74,13 +68,11 @@ export const formatDateSafe = (
       
       // Validar que los valores sean números válidos
       if (isNaN(year) || isNaN(month) || isNaN(day)) {
-        console.log('Invalid numbers:', { year, month, day });
         return 'Fecha inválida';
       }
       
       // Crear fecha local evitando zona horaria UTC (usar mediodía para mayor seguridad)
       dateToFormat = new Date(year, month - 1, day, 12, 0, 0, 0);
-      console.log('Created date:', dateToFormat);
     } else {
       dateToFormat = dateInput;
     }
@@ -89,9 +81,7 @@ export const formatDateSafe = (
       return 'Fecha inválida';
     }
     
-    const result = format(dateToFormat, formatPattern, options);
-    console.log('formatDateSafe result:', result);
-    return result;
+    return format(dateToFormat, formatPattern, options);
   } catch (error) {
     console.error('Error formatting date:', error, 'Input:', dateInput);
     return 'Error en fecha';
