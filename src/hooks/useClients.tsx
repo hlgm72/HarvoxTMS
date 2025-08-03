@@ -63,7 +63,7 @@ export const useClients = () => {
         return [];
       }
 
-      console.log("🏢 Company ID:", userRole.company_id);
+      // console.log("🏢 Company ID:", userRole.company_id);
 
       // Fetch clients for the user's company
       const { data, error } = await supabase

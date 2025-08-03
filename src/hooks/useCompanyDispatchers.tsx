@@ -23,11 +23,11 @@ export const useCompanyDispatchers = () => {
   return useQuery({
     queryKey,
     queryFn: async () => {
-      console.log('🔍 useCompanyDispatchers - Starting query');
-      console.log('🔍 User:', user?.id);
-      console.log('🔍 UserCompany:', userCompany);
-      console.log('🔍 CacheLoading:', cacheLoading);
-      console.log('🔍 CacheError:', cacheError);
+      // console.log('🔍 useCompanyDispatchers - Starting query');
+      // console.log('🔍 User:', user?.id);
+      // console.log('🔍 UserCompany:', userCompany);
+      // console.log('🔍 CacheLoading:', cacheLoading);
+      // console.log('🔍 CacheError:', cacheError);
 
       if (!user) {
         console.log('❌ No user authenticated');
@@ -44,7 +44,7 @@ export const useCompanyDispatchers = () => {
         throw new Error('Cargando datos de compañía...');
       }
 
-      console.log('🔍 Querying dispatchers for company:', userCompany.company_id);
+      // console.log('🔍 Querying dispatchers for company:', userCompany.company_id);
 
       // PASO 1: Obtener roles de dispatchers de la empresa
       const { data: dispatcherRoles, error: rolesError } = await supabase
@@ -54,7 +54,7 @@ export const useCompanyDispatchers = () => {
         .eq('role', 'dispatcher')
         .eq('is_active', true);
 
-      console.log('🔍 Dispatcher roles result:', { dispatcherRoles, rolesError });
+      // console.log('🔍 Dispatcher roles result:', { dispatcherRoles, rolesError });
 
       if (rolesError) {
         console.error('❌ Roles query error:', rolesError);
@@ -62,12 +62,12 @@ export const useCompanyDispatchers = () => {
       }
 
       if (!dispatcherRoles || dispatcherRoles.length === 0) {
-        console.log('ℹ️ No dispatcher roles found');
+        // console.log('ℹ️ No dispatcher roles found');
         return [];
       }
 
       const dispatcherUserIds = dispatcherRoles.map(role => role.user_id);
-      console.log('🔍 Dispatcher user IDs:', dispatcherUserIds);
+      // console.log('🔍 Dispatcher user IDs:', dispatcherUserIds);
 
       // PASO 2: Obtener profiles de estos usuarios
       const { data: profiles, error: profilesError } = await supabase
@@ -75,7 +75,7 @@ export const useCompanyDispatchers = () => {
         .select('user_id, first_name, last_name, phone')
         .in('user_id', dispatcherUserIds);
 
-      console.log('🔍 Profiles result:', { profiles, profilesError });
+      // console.log('🔍 Profiles result:', { profiles, profilesError });
 
       if (profilesError) {
         console.error('❌ Profiles query error:', profilesError);
@@ -90,7 +90,7 @@ export const useCompanyDispatchers = () => {
         is_active: true, // Ya filtrado por is_active en la primera consulta
       })) as CompanyDispatcher[];
 
-      console.log('✅ Final dispatchers result:', result);
+      // console.log('✅ Final dispatchers result:', result);
       return result;
     },
     enabled: !!user && !cacheLoading && !!userCompany,

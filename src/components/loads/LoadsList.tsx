@@ -154,8 +154,8 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
   const { t } = useTranslation();
   const { refreshTrigger } = useLoadDocuments();
   
-  console.log('📋 LoadsList - periodFilter recibido:', periodFilter);
-  console.log('📋 LoadsList - filters recibido:', filters);
+  // console.log('📋 LoadsList - periodFilter recibido:', periodFilter);
+  // console.log('📋 LoadsList - filters recibido:', filters);
   
   // Convertir el filtro de períodos al formato que espera el hook useLoads
   const loadsFilters = periodFilter ? {
@@ -167,15 +167,15 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
     }
   } : undefined;
   
-  console.log('📋 LoadsList - loadsFilters enviado a useLoads:', loadsFilters);
+  // console.log('📋 LoadsList - loadsFilters enviado a useLoads:', loadsFilters);
   
   const { data: loads = [], isLoading, error } = useLoads(loadsFilters);
   
-  console.log('📋 LoadsList - Resultado useLoads:', { 
-    loadsCount: loads?.length || 0, 
-    isLoading, 
-    error: error?.message || 'No error' 
-  });
+  // console.log('📋 LoadsList - Resultado useLoads:', { 
+  //   loadsCount: loads?.length || 0, 
+  //   isLoading, 
+  //   error: error?.message || 'No error' 
+  // });
   const deleteLoadMutation = useDeleteLoad();
   
   const [reassignmentDialog, setReassignmentDialog] = useState<{

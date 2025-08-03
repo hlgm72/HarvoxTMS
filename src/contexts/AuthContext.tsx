@@ -96,16 +96,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserRoles = useCallback(async (userId: string) => {
     try {
-      console.log('🔍 Fetching roles for user:', userId);
+      // console.log('🔍 Fetching roles for user:', userId);
       const { data: roles, error } = await supabase
         .from('user_company_roles')
         .select('*')
         .eq('user_id', userId)
         .eq('is_active', true);
 
-      console.log('📋 Raw roles data:', { roles, error });
-      console.log('📋 Roles count from DB:', (roles || []).length);
-      console.log('📋 User ID used in query:', userId);
+      // console.log('📋 Raw roles data:', { roles, error });
+      // console.log('📋 Roles count from DB:', (roles || []).length);
+      // console.log('📋 User ID used in query:', userId);
 
       if (error) {
         console.error('❌ Error fetching user roles:', error);
@@ -274,14 +274,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (!mounted) return;
           
           try {
-            console.log('🔍 Fetching roles for user:', session.user.id);
+            // console.log('🔍 Fetching roles for user:', session.user.id);
             const { data: roles, error } = await supabase
               .from('user_company_roles')
               .select('*')
               .eq('user_id', session.user.id)
               .eq('is_active', true);
 
-            console.log('📋 Raw roles data:', { roles, error });
+            // console.log('📋 Raw roles data:', { roles, error });
 
             if (error) {
               console.error('Error fetching user roles:', error);
@@ -292,7 +292,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
 
             const userRoles = roles || [];
-            console.log('📋 Setting user roles:', userRoles);
+            // console.log('📋 Setting user roles:', userRoles);
             setUserRoles(userRoles);
             
             // Determine current role
@@ -327,7 +327,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               }
             }
             
-            console.log('🎯 Final selected role:', selectedRole);
+            // console.log('🎯 Final selected role:', selectedRole);
             setCurrentRole(selectedRole);
             setLoading(false);
           } catch (error) {

@@ -180,15 +180,15 @@ export const useLoads = (filters?: LoadsFilters) => {
     return ['loads', user?.id, filters?.periodFilter?.type, filters?.periodFilter?.periodId, filters?.periodFilter?.startDate, filters?.periodFilter?.endDate];
   }, [user?.id, filters?.periodFilter?.type, filters?.periodFilter?.periodId, filters?.periodFilter?.startDate, filters?.periodFilter?.endDate]);
 
-  console.log('🎯 useLoads hook - Estado antes del query:', {
-    user: !!user,
-    userId: user?.id,
-    cacheLoading,
-    userCompany,
-    cacheError: cacheError?.message,
-    companyUsersLength: companyUsers.length,
-    enabled: !!user && !cacheLoading && !!userCompany && !cacheError && companyUsers.length > 0
-  });
+  // console.log('🎯 useLoads hook - Estado antes del query:', {
+  //   user: !!user,
+  //   userId: user?.id,
+  //   cacheLoading,
+  //   userCompany,
+  //   cacheError: cacheError?.message,
+  //   companyUsersLength: companyUsers.length,
+  //   enabled: !!user && !cacheLoading && !!userCompany && !cacheError && companyUsers.length > 0
+  // });
 
   return useQuery({
     queryKey,
@@ -203,14 +203,14 @@ export const useLoads = (filters?: LoadsFilters) => {
     // Deduplicar queries - crucial para ERR_INSUFFICIENT_RESOURCES
     networkMode: 'online',
     queryFn: async (): Promise<Load[]> => {
-      console.log('🎯 useLoads queryFn - INICIANDO con estado:', {
-        user: !!user,
-        userId: user?.id,
-        userCompany,
-        companyUsersCount: companyUsers.length,
-        cacheError: cacheError?.message,
-        filters
-      });
+      // console.log('🎯 useLoads queryFn - INICIANDO con estado:', {
+      //   user: !!user,
+      //   userId: user?.id,
+      //   userCompany,
+      //   companyUsersCount: companyUsers.length,
+      //   cacheError: cacheError?.message,
+      //   filters
+      // });
 
       if (!user) {
         console.error('❌ useLoads - Usuario no autenticado');
@@ -223,8 +223,8 @@ export const useLoads = (filters?: LoadsFilters) => {
         throw new Error(`Error cargando cargas: ${cacheError.message || 'Error de base de datos'}`);
       }
 
-      console.log('🚛 Cargando loads para compañía:', userCompany?.company_id);
-      console.log('🚛 Usuarios de la compañía:', companyUsers);
+      // console.log('🚛 Cargando loads para compañía:', userCompany?.company_id);
+      // console.log('🚛 Usuarios de la compañía:', companyUsers);
 
       // Obtener IDs de usuarios de la compañía (conductores)
       if (companyUsers.length === 0) {

@@ -30,10 +30,10 @@ export default function Loads() {
     dateRange: { from: undefined, to: undefined }
   });
 
-  console.log('🎯 Loads component - periodFilter state:', periodFilter);
+  // console.log('🎯 Loads component - periodFilter state:', periodFilter);
 
   const getPeriodDescription = () => {
-    console.log('🔍 getPeriodDescription - periodFilter:', periodFilter);
+    // console.log('🔍 getPeriodDescription - periodFilter:', periodFilter);
     if (!periodFilter) return 'Período Actual';
     
     switch (periodFilter.type) {
@@ -67,26 +67,26 @@ export default function Loads() {
   };
 
   const getPeriodDateRange = () => {
-    console.log('📅 getPeriodDateRange - periodFilter:', periodFilter);
+    // console.log('📅 getPeriodDateRange - periodFilter:', periodFilter);
     if (!periodFilter) return '';
     
     if (periodFilter.startDate && periodFilter.endDate) {
-      console.log('📅 Dates found:', periodFilter.startDate, periodFilter.endDate);
+      // console.log('📅 Dates found:', periodFilter.startDate, periodFilter.endDate);
       const startDate = new Date(periodFilter.startDate);
       const endDate = new Date(periodFilter.endDate);
       const formatted = `${format(startDate, 'dd/MM/yy', { locale: es })} - ${format(endDate, 'dd/MM/yy', { locale: es })}`;
-      console.log('📅 Formatted range:', formatted);
+      // console.log('📅 Formatted range:', formatted);
       return formatted;
     }
     
-    console.log('📅 No dates available');
+    // console.log('📅 No dates available');
     return '';
   };
 
   const periodDateRange = getPeriodDateRange();
   const periodDescription = getPeriodDescription();
   
-  console.log('🎯 Final values:', { periodDateRange, periodDescription, periodFilter });
+  // console.log('🎯 Final values:', { periodDateRange, periodDescription, periodFilter });
 
   return (
     <>
