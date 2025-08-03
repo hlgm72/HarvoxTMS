@@ -51,11 +51,13 @@ export function useEquipmentAssignments() {
     queryFn: async () => {
       if (!user) throw new Error('Usuario no autenticado');
 
+      console.log('🔧 Fetching equipment assignments...');
+
       const { data, error } = await supabase
         .from('equipment_assignments')
         .select(`
           *,
-          company_equipment!inner (
+          company_equipment (
             id,
             equipment_number,
             equipment_type,
@@ -69,7 +71,12 @@ export function useEquipmentAssignments() {
         .eq('is_active', true)
         .order('assigned_date', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('🔧 Error fetching equipment assignments:', error);
+        throw error;
+      }
+      
+      console.log('🔧 Equipment assignments fetched:', data);
       return data as any; // Type assertion for complex join query
     },
     enabled: !!user,
