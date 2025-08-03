@@ -114,7 +114,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
       
       setProfileData({
         created_at: data?.created_at,
-        email: 'Información restringida' // El email no está disponible en el cliente
+        email: 'No disponible' // El email no está almacenado en el perfil del usuario
       });
     } catch (error) {
       console.error('Error loading profile data:', error);
