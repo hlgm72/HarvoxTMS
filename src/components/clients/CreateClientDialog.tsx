@@ -178,6 +178,14 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
       extension: '',
       notes: '',
     });
+    
+    // Evitar que cualquier campo tome el foco automáticamente
+    setTimeout(() => {
+      const activeElement = document.activeElement as HTMLElement;
+      if (activeElement && activeElement.blur) {
+        activeElement.blur();
+      }
+    }, 0);
   };
 
   const handleClose = () => {
