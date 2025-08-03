@@ -43,6 +43,7 @@ interface EditUserDialogProps {
 }
 
 const ROLE_OPTIONS = [
+  { value: 'company_owner', label: 'Propietario de la Empresa' },
   { value: 'general_manager', label: 'Gerente General' },
   { value: 'operations_manager', label: 'Gerente de Operaciones' },
   { value: 'safety_manager', label: 'Gerente de Seguridad' },
