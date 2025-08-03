@@ -27,7 +27,7 @@ export function useConsolidatedDispatchers() {
         return [];
       }
 
-      // Get dispatchers from user_company_roles only
+      // Get dispatchers from user_company_roles
       const { data: dispatcherRoles, error: rolesError } = await supabase
         .from('user_company_roles')
         .select(`
@@ -50,16 +50,29 @@ export function useConsolidatedDispatchers() {
         return [];
       }
 
-      // Create consolidated dispatchers from available data
+      // Get user profiles for all dispatchers
+      const userIds = dispatcherRoles.map(role => role.user_id);
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.error('Error fetching dispatcher profiles:', profilesError);
+        // Continue without profiles instead of throwing error
+      }
+
+      // Create consolidated dispatchers with profile data
       const consolidatedDispatchers: ConsolidatedDispatcher[] = dispatcherRoles.map(role => {
+        const profile = profiles?.find(p => p.id === role.user_id);
         return {
           id: role.user_id,
           user_id: role.user_id,
-          first_name: '', // No profile data available
-          last_name: '',
-          email: '', // No profile data available
+          first_name: profile?.first_name || '',
+          last_name: profile?.last_name || '',
+          email: '',
           phone: '',
-          hire_date: undefined, // hire_date now comes from profiles table
+          hire_date: undefined,
           status: role.employment_status || 'active',
           created_at: role.created_at,
           updated_at: role.updated_at
