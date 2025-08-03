@@ -47,7 +47,7 @@ interface OtherIncomeItem {
   created_at: string;
 }
 
-export function OtherIncomeSection() {
+export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: boolean }) {
   const { user, isDriver, isOperationsManager, isCompanyOwner } = useAuth();
   const { selectedCompany } = useUserCompanies();
   const { drivers: companyDrivers = [] } = useCompanyDrivers();
@@ -190,20 +190,22 @@ export function OtherIncomeSection() {
               <DollarSign className="h-5 w-5" />
               Otros Ingresos
             </CardTitle>
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Agregar Ingreso
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-md bg-white">
-                <DialogHeader>
-                  <DialogTitle>Nuevo Ingreso</DialogTitle>
-                </DialogHeader>
-                <CreateOtherIncomeForm onClose={() => setIsCreateDialogOpen(false)} />
-              </DialogContent>
-            </Dialog>
+            {!hideAddButton && (
+              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Agregar Ingreso
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md bg-white">
+                  <DialogHeader>
+                    <DialogTitle>Nuevo Ingreso</DialogTitle>
+                  </DialogHeader>
+                  <CreateOtherIncomeForm onClose={() => setIsCreateDialogOpen(false)} />
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
         </CardHeader>
         <CardContent>

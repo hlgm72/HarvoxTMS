@@ -7,7 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { OtherIncomeSection } from "@/components/payments/OtherIncomeSection";
+import { CreateOtherIncomeForm } from "@/components/payments/CreateOtherIncomeForm";
 import { Calculator, Users, UserCheck, Plus, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -21,9 +23,10 @@ export default function AdditionalPayments() {
     return "Gestión de ingresos adicionales para conductores y despachadores";
   };
 
+  const [isCreateDriverIncomeDialogOpen, setIsCreateDriverIncomeDialogOpen] = useState(false);
+
   const handleAddIncomeDriver = () => {
-    // TODO: Abrir modal para agregar ingreso a conductor
-    console.log("Agregar ingreso a conductor");
+    setIsCreateDriverIncomeDialogOpen(true);
   };
 
   const handleAddIncomeDispatcher = () => {
@@ -113,7 +116,7 @@ export default function AdditionalPayments() {
 
         <TabsContent value="income" className="space-y-4">
           {userType === "drivers" ? (
-            <OtherIncomeSection />
+            <OtherIncomeSection hideAddButton={true} />
           ) : (
             <Card>
               <CardHeader>
@@ -133,6 +136,16 @@ export default function AdditionalPayments() {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Dialog para crear ingreso de conductor desde el toolbar */}
+      <Dialog open={isCreateDriverIncomeDialogOpen} onOpenChange={setIsCreateDriverIncomeDialogOpen}>
+        <DialogContent className="max-w-md bg-white">
+          <DialogHeader>
+            <DialogTitle>Nuevo Ingreso para Conductor</DialogTitle>
+          </DialogHeader>
+          <CreateOtherIncomeForm onClose={() => setIsCreateDriverIncomeDialogOpen(false)} />
+        </DialogContent>
+      </Dialog>
       </div>
     </>
   );
