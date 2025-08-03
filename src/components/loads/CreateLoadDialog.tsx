@@ -861,7 +861,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                            <FormControl>
                               <Input 
                                 type="number"
-                                placeholder="25000"
+                                placeholder="Ej: 25000"
                                 value={field.value ?? ''}
                                 onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
                               />
