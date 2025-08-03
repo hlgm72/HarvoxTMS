@@ -12,27 +12,23 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-// Jerarquía de roles según importancia organizacional
+// Role mappings using our new 6-role system
 const roleLabels = {
   superadmin: 'Super Admin',
-  company_owner: 'Propietario',
-  general_manager: 'Gerente General', 
-  operations_manager: 'Gerente de Operaciones',
-  safety_manager: 'Gerente de Seguridad',
-  senior_dispatcher: 'Despachador Senior',
-  dispatcher: 'Despachador',
-  driver: 'Conductor',
+  company_owner: 'Company Owner', 
+  company_admin: 'Company Admin',
+  dispatcher: 'Dispatcher',
+  driver: 'Driver',
+  multi_company_dispatcher: 'Multi-Company Dispatcher'
 };
 
 const roleColors = {
-  superadmin: 'bg-rose-500 text-white hover:bg-rose-600',
-  company_owner: 'bg-blue-500 text-white hover:bg-blue-600',
-  general_manager: 'bg-indigo-500 text-white hover:bg-indigo-600',
-  operations_manager: 'bg-purple-500 text-white hover:bg-purple-600',
-  safety_manager: 'bg-red-500 text-white hover:bg-red-600',
-  senior_dispatcher: 'bg-amber-600 text-white hover:bg-amber-700',
-  dispatcher: 'bg-orange-500 text-white hover:bg-orange-600',
-  driver: 'bg-green-500 text-white hover:bg-green-600',
+  superadmin: 'bg-purple-500 text-white hover:bg-purple-600',
+  company_owner: 'bg-amber-500 text-white hover:bg-amber-600',
+  company_admin: 'bg-blue-500 text-white hover:bg-blue-600',
+  dispatcher: 'bg-emerald-500 text-white hover:bg-emerald-600',
+  driver: 'bg-orange-500 text-white hover:bg-orange-600',
+  multi_company_dispatcher: 'bg-cyan-500 text-white hover:bg-cyan-600',
 };
 
 export const RoleSwitcher = () => {
@@ -44,10 +40,10 @@ export const RoleSwitcher = () => {
     switch (role) {
       case 'company_owner':
         return '/dashboard/owner';
-      case 'operations_manager':
+      case 'company_admin':
         return '/dashboard/operations';
       case 'dispatcher':
-      case 'senior_dispatcher':
+      case 'multi_company_dispatcher':
         return '/dashboard/dispatch';
       case 'driver':
         return '/dashboard/driver';
@@ -132,15 +128,13 @@ export const RoleSwitcher = () => {
         
         {availableRoles
           .sort((a, b) => {
-            // Ordenar por jerarquía de roles
+            // Ordenar por jerarquía de roles (solo 6 roles)
             const roleHierarchy = [
               'superadmin',
               'company_owner', 
-              'general_manager',
-              'operations_manager',
-              'safety_manager',
-              'senior_dispatcher',
+              'company_admin',
               'dispatcher',
+              'multi_company_dispatcher',
               'driver'
             ];
             const aIndex = roleHierarchy.indexOf(a.role);
