@@ -170,7 +170,7 @@ export function EquipmentAssignmentDialog({
           )}
 
           {/* Equipos Actuales del Conductor */}
-          {selectedDriver && driverAssignments.length > 0 && (
+          {selectedDriver && (
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium">
@@ -178,82 +178,98 @@ export function EquipmentAssignmentDialog({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Camiones */}
-                {driverTrucks.length > 0 && (
-                  <div>
-                    <Label className="text-xs text-muted-foreground mb-2 block">Camiones</Label>
-                    <div className="space-y-2">
-                      {driverTrucks.map((assignment) => (
-                        <div
-                          key={assignment.id}
-                          className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800"
-                        >
-                          <div className="flex items-center gap-2">
-                            <Truck className="h-4 w-4 text-blue-600" />
-                            <span className="font-medium">
-                              {assignment.company_equipment?.equipment_number}
-                            </span>
-                            <span className="text-sm text-muted-foreground">
-                              {assignment.company_equipment?.make} {assignment.company_equipment?.model}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-xs border-blue-200">
-                              {assignment.assignment_type === 'permanent' ? 'Permanente' : 'Temporal'}
-                            </Badge>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => unassignEquipment(assignment.id)}
-                              disabled={isUnassigning}
-                              className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                {driverAssignments.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Truck className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p className="font-medium">Sin equipos asignados</p>
+                    <p className="text-sm">Este conductor no tiene equipos asignados actualmente</p>
                   </div>
-                )}
+                ) : (
+                  <>
+                    {/* Camiones */}
+                    {driverTrucks.length > 0 && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground mb-2 block">Camiones</Label>
+                        <div className="space-y-2">
+                          {driverTrucks.map((assignment) => (
+                            <div
+                              key={assignment.id}
+                              className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800"
+                            >
+                              <div className="flex items-center gap-3">
+                                <Truck className="h-5 w-5 text-blue-600" />
+                                <div>
+                                  <div className="font-medium">
+                                    {assignment.company_equipment?.equipment_number}
+                                  </div>
+                                  <div className="text-sm text-muted-foreground">
+                                    {assignment.company_equipment?.make} {assignment.company_equipment?.model}
+                                    {assignment.company_equipment?.year && ` (${assignment.company_equipment.year})`}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline" className="text-xs border-blue-200">
+                                  {assignment.assignment_type === 'permanent' ? 'Permanente' : 'Temporal'}
+                                </Badge>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => unassignEquipment(assignment.id)}
+                                  disabled={isUnassigning}
+                                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-                {/* Trailers */}
-                {driverTrailers.length > 0 && (
-                  <div>
-                    <Label className="text-xs text-muted-foreground mb-2 block">Trailers</Label>
-                    <div className="space-y-2">
-                      {driverTrailers.map((assignment) => (
-                        <div
-                          key={assignment.id}
-                          className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800"
-                        >
-                          <div className="flex items-center gap-2">
-                            <Truck className="h-4 w-4 text-green-600" />
-                            <span className="font-medium">
-                              {assignment.company_equipment?.equipment_number}
-                            </span>
-                            <span className="text-sm text-muted-foreground">
-                              {assignment.company_equipment?.make} {assignment.company_equipment?.model}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-xs border-green-200">
-                              {assignment.assignment_type === 'permanent' ? 'Permanente' : 'Temporal'}
-                            </Badge>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => unassignEquipment(assignment.id)}
-                              disabled={isUnassigning}
-                              className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                    {/* Trailers */}
+                    {driverTrailers.length > 0 && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground mb-2 block">Trailers</Label>
+                        <div className="space-y-2">
+                          {driverTrailers.map((assignment) => (
+                            <div
+                              key={assignment.id}
+                              className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800"
                             >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
+                              <div className="flex items-center gap-3">
+                                <Truck className="h-5 w-5 text-green-600" />
+                                <div>
+                                  <div className="font-medium">
+                                    {assignment.company_equipment?.equipment_number}
+                                  </div>
+                                  <div className="text-sm text-muted-foreground">
+                                    {assignment.company_equipment?.make} {assignment.company_equipment?.model}
+                                    {assignment.company_equipment?.year && ` (${assignment.company_equipment.year})`}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline" className="text-xs border-green-200">
+                                  {assignment.assignment_type === 'permanent' ? 'Permanente' : 'Temporal'}
+                                </Badge>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => unassignEquipment(assignment.id)}
+                                  disabled={isUnassigning}
+                                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  </div>
+                      </div>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
