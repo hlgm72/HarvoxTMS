@@ -170,7 +170,6 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
   };
 
   const addDispatcher = () => {
-    console.log('🔍 addDispatcher called, fields.length before:', fields.length);
     append({
       name: '',
       email: '',
@@ -178,8 +177,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
       phone_mobile: '',
       extension: '',
       notes: '',
-    });
-    console.log('🔍 addDispatcher completed');
+    }, { shouldFocus: false });
   };
 
   const handleClose = () => {
@@ -643,24 +641,18 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                           <FormField
                             control={form.control}
                             name={`dispatchers.${index}.extension`}
-                            render={({ field }) => {
-                              console.log('🔍 Extension field rendered for index:', index);
-                              return (
-                                <FormItem>
-                                  <FormLabel>Extensión</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="123"
-                                      autoFocus={false}
-                                      onFocus={() => console.log('🔍 Extension field FOCUSED - index:', index)}
-                                      onBlur={() => console.log('🔍 Extension field BLURRED - index:', index)}
-                                      {...field}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              );
-                            }}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Extensión</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="123"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
                           />
 
                           <FormField
@@ -673,7 +665,6 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                   <Textarea
                                     placeholder="Información adicional..."
                                     className="min-h-[60px]"
-                                    autoFocus={false}
                                     {...field}
                                   />
                                 </FormControl>
