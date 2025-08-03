@@ -1681,6 +1681,84 @@ export type Database = {
           },
         ]
       }
+      loads_archive: {
+        Row: {
+          client_contact_id: string | null
+          client_id: string | null
+          commodity: string | null
+          created_at: string
+          created_by: string | null
+          currency: string
+          customer_name: string | null
+          delivery_date: string | null
+          dispatching_percentage: number | null
+          driver_user_id: string | null
+          factoring_percentage: number | null
+          id: string
+          internal_dispatcher_id: string | null
+          leasing_percentage: number | null
+          load_number: string
+          notes: string | null
+          payment_period_id: string | null
+          pickup_date: string | null
+          po_number: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+          weight_lbs: number | null
+        }
+        Insert: {
+          client_contact_id?: string | null
+          client_id?: string | null
+          commodity?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          customer_name?: string | null
+          delivery_date?: string | null
+          dispatching_percentage?: number | null
+          driver_user_id?: string | null
+          factoring_percentage?: number | null
+          id?: string
+          internal_dispatcher_id?: string | null
+          leasing_percentage?: number | null
+          load_number: string
+          notes?: string | null
+          payment_period_id?: string | null
+          pickup_date?: string | null
+          po_number?: string | null
+          status?: string
+          total_amount: number
+          updated_at?: string
+          weight_lbs?: number | null
+        }
+        Update: {
+          client_contact_id?: string | null
+          client_id?: string | null
+          commodity?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          customer_name?: string | null
+          delivery_date?: string | null
+          dispatching_percentage?: number | null
+          driver_user_id?: string | null
+          factoring_percentage?: number | null
+          id?: string
+          internal_dispatcher_id?: string | null
+          leasing_percentage?: number | null
+          load_number?: string
+          notes?: string | null
+          payment_period_id?: string | null
+          pickup_date?: string | null
+          po_number?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          weight_lbs?: number | null
+        }
+        Relationships: []
+      }
       maintenance_records: {
         Row: {
           created_at: string
@@ -2581,6 +2659,35 @@ export type Database = {
           },
         ]
       }
+      loads_complete: {
+        Row: {
+          client_contact_id: string | null
+          client_id: string | null
+          commodity: string | null
+          created_at: string | null
+          created_by: string | null
+          currency: string | null
+          customer_name: string | null
+          data_source: string | null
+          delivery_date: string | null
+          dispatching_percentage: number | null
+          driver_user_id: string | null
+          factoring_percentage: number | null
+          id: string | null
+          internal_dispatcher_id: string | null
+          leasing_percentage: number | null
+          load_number: string | null
+          notes: string | null
+          payment_period_id: string | null
+          pickup_date: string | null
+          po_number: string | null
+          status: string | null
+          total_amount: number | null
+          updated_at: string | null
+          weight_lbs: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       archive_company_document: {
@@ -2852,6 +2959,12 @@ export type Database = {
           notes?: string
         }
         Returns: Json
+      }
+      move_to_archive: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          moved_records: number
+        }[]
       }
       needs_initial_setup: {
         Args: Record<PropertyKey, never>
