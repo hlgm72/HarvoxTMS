@@ -223,7 +223,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         console.warn('⚠️ CreateLoadDialog - No stops found in load data:', activeLoadData);
       }
     }
-  }, [mode, activeLoadData, isFormReady, clients, drivers, dispatchers]);
+  }, [mode, activeLoadData, isFormReady, clients.length, drivers.length, dispatchers.length]);
 
   // Show loading state for edit or duplicate modes
   if ((mode === 'edit' && loadDataLoading) || (mode === 'duplicate' && duplicateLoading)) {
