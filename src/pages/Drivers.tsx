@@ -297,7 +297,7 @@ export default function Drivers() {
                        <div className="text-sm flex flex-col">
                          {driver.license_expiry_date ? (
                            <>
-                             <span>Vence: {getExpiryInfo(driver.license_expiry_date).text}</span>
+                             <span>Vencimiento de Licencia: {getExpiryInfo(driver.license_expiry_date).text}</span>
                              {getExpiryInfo(driver.license_expiry_date).isExpired && (
                                <span className="text-red-600 font-semibold text-xs">⚠️ VENCIDA</span>
                              )}
