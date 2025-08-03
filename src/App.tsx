@@ -27,6 +27,7 @@ import Clients from "./pages/Clients";
 import Documents from "./pages/Documents";
 import Payments from "./pages/Payments";
 import Deductions from "./pages/Deductions";
+import OtherPayments from "./pages/OtherPayments";
 import FuelManagement from "./pages/FuelManagement";
 import Loads from "./pages/Loads";
 import EagleDemo from "./pages/EagleDemo";
@@ -238,6 +239,18 @@ function AppContent() {
             <ProtectedRoute requiredRole="company_owner">
               <Layout>
                 <Deductions />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Other Payments Management */}
+        <Route 
+          path="/other-payments" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <OtherPayments />
               </Layout>
             </ProtectedRoute>
           } 
