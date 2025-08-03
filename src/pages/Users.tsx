@@ -149,6 +149,9 @@ export default function Users() {
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
+      console.log('Expected Oscar user_id: fa4d936d-4cd0-48ae-a571-3a15c67dfc4d');
+      console.log('Actual query results:', companyUsers);
+
       if (error) throw error;
 
       if (!companyUsers || companyUsers.length === 0) {
