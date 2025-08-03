@@ -170,6 +170,12 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
   };
 
   const addDispatcher = () => {
+    // Desenfocar cualquier elemento activo antes de agregar el nuevo contacto
+    const activeElement = document.activeElement as HTMLElement;
+    if (activeElement && activeElement.blur) {
+      activeElement.blur();
+    }
+    
     append({
       name: '',
       email: '',
@@ -178,14 +184,6 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
       extension: '',
       notes: '',
     });
-    
-    // Evitar que cualquier campo tome el foco automáticamente
-    setTimeout(() => {
-      const activeElement = document.activeElement as HTMLElement;
-      if (activeElement && activeElement.blur) {
-        activeElement.blur();
-      }
-    }, 0);
   };
 
   const handleClose = () => {
