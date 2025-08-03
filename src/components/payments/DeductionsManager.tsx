@@ -70,11 +70,8 @@ export function DeductionsManager({
       // Obtener todos los usuarios de la empresa según el rol especificado
       let roleFilter: ('driver' | 'dispatcher')[] = ['driver', 'dispatcher'];
       
-      console.log('DeductionsManager filters.userRole:', filters?.userRole); // Debug log
-      
       if (filters?.userRole) {
         roleFilter = [filters.userRole as 'driver' | 'dispatcher'];
-        console.log('Applied roleFilter:', roleFilter); // Debug log
       }
       
       const { data: companyUsers } = await supabase
@@ -129,7 +126,7 @@ export function DeductionsManager({
       
       if (!templatesData || templatesData.length === 0) return [];
 
-      // Obtener perfiles de conductores
+      // Obtener perfiles de conductores y sus roles
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('user_id, first_name, last_name')
@@ -137,13 +134,24 @@ export function DeductionsManager({
 
       if (profilesError) throw profilesError;
 
+      // Obtener roles de los usuarios
+      const { data: rolesData, error: rolesError } = await supabase
+        .from('user_company_roles')
+        .select('user_id, role')
+        .in('user_id', templatesData.map(t => t.user_id))
+        .eq('is_active', true);
+
+      if (rolesError) throw rolesError;
+
       // Combinar datos
       const templatesWithProfiles = templatesData.map(template => {
         const profile = profilesData?.find(p => p.user_id === template.user_id);
+        const userRoles = rolesData?.filter(r => r.user_id === template.user_id).map(r => r.role) || [];
         return {
           ...template,
           driver_profile: profile,
-          user_profile: profile // Alias para mantener compatibilidad
+          user_profile: profile, // Alias para mantener compatibilidad
+          user_roles: userRoles
         };
       });
 
@@ -179,11 +187,8 @@ export function DeductionsManager({
       // Obtener todos los usuarios de la empresa según el rol especificado  
       let roleFilter: ('driver' | 'dispatcher')[] = ['driver', 'dispatcher'];
       
-      console.log('DeductionsManager inactive filters.userRole:', filters?.userRole); // Debug log
-      
       if (filters?.userRole) {
         roleFilter = [filters.userRole as 'driver' | 'dispatcher'];
-        console.log('Applied inactive roleFilter:', roleFilter); // Debug log
       }
       
       const { data: companyUsers } = await supabase
@@ -379,9 +384,16 @@ export function DeductionsManager({
                           <h3 className="font-semibold">
                             {template.driver_profile?.first_name} {template.driver_profile?.last_name}
                           </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {template.expense_types?.name}
-                          </p>
+                          <div className="flex gap-1 flex-wrap">
+                            <p className="text-sm text-muted-foreground">
+                              {template.expense_types?.name}
+                            </p>
+                            {template.user_roles && template.user_roles.length > 1 && (
+                              <span className="text-xs bg-muted px-1 rounded">
+                                Roles: {template.user_roles.join(', ')}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       
