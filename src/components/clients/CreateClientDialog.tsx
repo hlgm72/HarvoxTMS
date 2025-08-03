@@ -339,16 +339,35 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                        control={form.control}
                        name="email_domain"
                        render={({ field }) => {
-                         const handlers = createTextHandlers((value) => field.onChange(value.toLowerCase()), 'email');
+                         const handleEmailDomainChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                           let value = e.target.value;
+                           // Asegurar que siempre comience con @
+                           if (!value.startsWith('@')) {
+                             value = '@' + value.replace('@', '');
+                           }
+                           // Limpiar espacios y convertir a minúsculas
+                           value = value.replace(/\s/g, '').toLowerCase();
+                           field.onChange(value);
+                         };
+
+                         const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+                           // Prevenir borrar el @ si el cursor está al principio
+                           if ((e.key === 'Backspace' || e.key === 'Delete') && 
+                               e.currentTarget.selectionStart === 1 && 
+                               field.value.startsWith('@')) {
+                             e.preventDefault();
+                           }
+                         };
+
                          return (
                            <FormItem>
                              <FormLabel>Dominio de Email</FormLabel>
                              <FormControl>
                                <Input 
-                                 placeholder="abclogistics.com" 
+                                 placeholder="@abclogistics.com" 
                                  value={field.value}
-                                 onChange={handlers.onChange}
-                                 onBlur={handlers.onBlur}
+                                 onChange={handleEmailDomainChange}
+                                 onKeyDown={handleKeyDown}
                                />
                              </FormControl>
                              <FormMessage />
