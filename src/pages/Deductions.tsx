@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { DollarSign, Repeat, Clock } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DollarSign, Repeat, Clock, Users, Navigation } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { DeductionsManager } from "@/components/payments/DeductionsManager";
 import { ExpenseTemplateDialog } from "@/components/payments/ExpenseTemplateDialog";
@@ -11,17 +12,20 @@ import { DeductionsFloatingActions } from "@/components/payments/DeductionsFloat
 import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 import { useExpenseTypes } from "@/hooks/useExpenseTypes";
 import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
+import { useConsolidatedDispatchers } from "@/hooks/useConsolidatedDispatchers";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Deductions() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState("drivers");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEventualDialogOpen, setIsEventualDialogOpen] = useState(false);
   const { data: stats, isLoading: statsLoading } = useDeductionsStats();
   const { data: expenseTypes = [] } = useExpenseTypes();
   const { drivers = [] } = useCompanyDrivers();
+  const { data: dispatchers = [] } = useConsolidatedDispatchers();
 
   // Estado de filtros
   const [filters, setFilters] = useState({
@@ -90,10 +94,38 @@ export default function Deductions() {
       />
 
       <div className="p-2 md:p-4 pr-16 md:pr-20 space-y-6">
-        <DeductionsManager 
-          filters={filters}
-          viewConfig={viewConfig}
-        />
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="drivers" className="gap-2">
+              <Users className="h-4 w-4" />
+              Conductores
+            </TabsTrigger>
+            <TabsTrigger value="dispatchers" className="gap-2">
+              <Navigation className="h-4 w-4" />
+              Dispatchers
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="drivers" className="space-y-4">
+            <DeductionsManager 
+              filters={filters}
+              viewConfig={viewConfig}
+            />
+          </TabsContent>
+
+          <TabsContent value="dispatchers" className="space-y-4">
+            <div className="text-center py-8">
+              <Navigation className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Deducciones para Dispatchers</h3>
+              <p className="text-muted-foreground mb-4">
+                Funcionalidad en desarrollo - Próximamente podrás gestionar deducciones para dispatchers
+              </p>
+              <Button variant="outline" disabled>
+                Crear Deducción para Dispatcher
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       <ExpenseTemplateDialog 
