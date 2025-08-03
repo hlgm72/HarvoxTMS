@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { User, Truck, Phone, MapPin, Calendar, Shield, Clock, FileText, CreditCard } from "lucide-react";
+import { User, Truck, Phone, MapPin, Calendar, Shield, Clock, FileText, CreditCard, Edit } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,11 +21,13 @@ import { useOwnerOperator } from "@/hooks/useOwnerOperator";
 import { getExpiryInfo } from '@/lib/dateFormatting';
 import { capitalizeWords } from '@/lib/textUtils';
 import type { ConsolidatedDriver } from "@/hooks/useConsolidatedDrivers";
+import { EditDriverDialog } from "./EditDriverDialog";
 
 interface DriverDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   driver: ConsolidatedDriver;
+  onDriverUpdated?: () => void;
 }
 
 interface ProfileData {
@@ -83,9 +86,10 @@ const formatExperience = (licenseIssueDate: string | null, hireDate: string | nu
   }
 };
 
-export function DriverDetailsModal({ isOpen, onClose, driver }: DriverDetailsModalProps) {
+export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }: DriverDetailsModalProps) {
   const [profileData, setProfileData] = useState<ProfileData>({});
   const [loading, setLoading] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   
   const { data: assignedEquipment = [], isLoading: equipmentLoading } = useDriverEquipment(driver.user_id);
   const { data: driverCards = [], isLoading: cardsLoading } = useDriverCards(driver.user_id);
@@ -130,29 +134,40 @@ export function DriverDetailsModal({ isOpen, onClose, driver }: DriverDetailsMod
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-3">
-            <Avatar className="h-12 w-12">
-              {driver.avatar_url && (
-                <AvatarImage src={driver.avatar_url} alt={fullName} />
-              )}
-              <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                {initials || '??'}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h2 className="text-xl font-semibold">{fullName || 'Sin nombre'}</h2>
-              <div className="flex items-center gap-2">
-                <Badge variant={getStatusColor(driver.current_status) as any}>
-                  {getStatusText(driver.current_status)}
-                </Badge>
-                {ownerOperator && (
-                  <Badge variant="outline" className="text-xs">
-                    Owner-Operator
-                  </Badge>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-3">
+              <Avatar className="h-12 w-12">
+                {driver.avatar_url && (
+                  <AvatarImage src={driver.avatar_url} alt={fullName} />
                 )}
+                <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                  {initials || '??'}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h2 className="text-xl font-semibold">{fullName || 'Sin nombre'}</h2>
+                <div className="flex items-center gap-2">
+                  <Badge variant={getStatusColor(driver.current_status) as any}>
+                    {getStatusText(driver.current_status)}
+                  </Badge>
+                  {ownerOperator && (
+                    <Badge variant="outline" className="text-xs">
+                      Owner-Operator
+                    </Badge>
+                  )}
+                </div>
               </div>
-            </div>
-          </DialogTitle>
+            </DialogTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowEditDialog(true)}
+              className="flex items-center gap-2"
+            >
+              <Edit className="h-4 w-4" />
+              Editar
+            </Button>
+          </div>
         </DialogHeader>
 
         <Tabs defaultValue="personal" className="w-full">
@@ -475,6 +490,17 @@ export function DriverDetailsModal({ isOpen, onClose, driver }: DriverDetailsMod
             )}
           </TabsContent>
         </Tabs>
+
+        {/* Dialog de edición */}
+        <EditDriverDialog
+          isOpen={showEditDialog}
+          onClose={() => setShowEditDialog(false)}
+          driver={driver}
+          onSuccess={() => {
+            setShowEditDialog(false);
+            onDriverUpdated?.();
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

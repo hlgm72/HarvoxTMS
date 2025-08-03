@@ -364,6 +364,9 @@ export default function Drivers() {
             setSelectedDriver(null);
           }}
           driver={selectedDriver}
+          onDriverUpdated={() => {
+            refetch();
+          }}
         />
       )}
 
