@@ -6,8 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { OtherIncomeSection } from "@/components/payments/OtherIncomeSection";
-import { Calculator, Users, UserCheck, Plus } from "lucide-react";
+import { Calculator, Users, UserCheck, Plus, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdditionalPayments() {
@@ -21,6 +22,16 @@ export default function AdditionalPayments() {
     return `Gestión de ingresos adicionales para ${userTypeText}`;
   };
 
+  const handleAddIncomeDriver = () => {
+    // TODO: Abrir modal para agregar ingreso a conductor
+    console.log("Agregar ingreso a conductor");
+  };
+
+  const handleAddIncomeDispatcher = () => {
+    // TODO: Abrir modal para agregar ingreso a despachador
+    console.log("Agregar ingreso a despachador");
+  };
+
   return (
     <>
       <PageToolbar 
@@ -29,10 +40,25 @@ export default function AdditionalPayments() {
         subtitle={getSubtitle()}
         actions={
           <div className="flex gap-2">
-            <Button className="gap-2">
-              <Plus className="h-4 w-4" />
-              Nuevo Ingreso
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Agregar Ingreso a...
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleAddIncomeDriver}>
+                  <UserCheck className="mr-2 h-4 w-4" />
+                  Conductor
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleAddIncomeDispatcher}>
+                  <Users className="mr-2 h-4 w-4" />
+                  Despachador
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         }
       />
