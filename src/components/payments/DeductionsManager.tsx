@@ -69,8 +69,12 @@ export function DeductionsManager({
       
       // Obtener todos los usuarios de la empresa según el rol especificado
       let roleFilter: ('driver' | 'dispatcher')[] = ['driver', 'dispatcher'];
+      
+      console.log('DeductionsManager filters.userRole:', filters?.userRole); // Debug log
+      
       if (filters?.userRole) {
         roleFilter = [filters.userRole as 'driver' | 'dispatcher'];
+        console.log('Applied roleFilter:', roleFilter); // Debug log
       }
       
       const { data: companyUsers } = await supabase
@@ -174,8 +178,12 @@ export function DeductionsManager({
       
       // Obtener todos los usuarios de la empresa según el rol especificado  
       let roleFilter: ('driver' | 'dispatcher')[] = ['driver', 'dispatcher'];
+      
+      console.log('DeductionsManager inactive filters.userRole:', filters?.userRole); // Debug log
+      
       if (filters?.userRole) {
         roleFilter = [filters.userRole as 'driver' | 'dispatcher'];
+        console.log('Applied inactive roleFilter:', roleFilter); // Debug log
       }
       
       const { data: companyUsers } = await supabase
