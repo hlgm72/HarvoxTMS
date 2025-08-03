@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StateCombobox } from "@/components/ui/StateCombobox";
 import { User, Truck, IdCard, Phone, Calendar, Shield } from "lucide-react";
@@ -612,42 +612,25 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                     </div>
                     <div className="space-y-2">
                       <Label>Clase de CDL</Label>
-                      <div className="flex gap-4">
-                        {['A', 'B', 'C'].map((classType) => {
-                          const isChecked = driverData.cdl_class.includes(classType);
-                          return (
-                            <div key={classType} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`cdl_class_${classType}`}
-                                checked={isChecked}
-                                onCheckedChange={(checked) => {
-                                  const currentClasses = driverData.cdl_class.split('').filter(c => ['A', 'B', 'C'].includes(c));
-                                  let newClasses;
-                                  
-                                  if (checked) {
-                                    // Agregar la clase si no existe
-                                    if (!currentClasses.includes(classType)) {
-                                      newClasses = [...currentClasses, classType].sort();
-                                    } else {
-                                      newClasses = currentClasses;
-                                    }
-                                  } else {
-                                    // Remover la clase
-                                    newClasses = currentClasses.filter(c => c !== classType);
-                                  }
-                                  
-                                  updateDriverData('cdl_class', newClasses.join(''));
-                                }}
-                              />
-                              <Label htmlFor={`cdl_class_${classType}`} className="text-sm font-normal">
-                                Clase {classType}
-                              </Label>
-                            </div>
-                          );
-                        })}
-                      </div>
+                      <RadioGroup
+                        value={driverData.cdl_class}
+                        onValueChange={(value) => updateDriverData('cdl_class', value)}
+                        className="flex gap-6"
+                      >
+                        {['A', 'B', 'C'].map((classType) => (
+                          <div key={classType} className="flex items-center space-x-2">
+                            <RadioGroupItem
+                              value={classType}
+                              id={`cdl_class_${classType}`}
+                            />
+                            <Label htmlFor={`cdl_class_${classType}`} className="text-sm font-normal">
+                              Clase {classType}
+                            </Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
                       <p className="text-xs text-muted-foreground">
-                        Selecciona todas las clases de CDL que posee el conductor
+                        Selecciona la clase de CDL del conductor
                       </p>
                     </div>
                   </div>
