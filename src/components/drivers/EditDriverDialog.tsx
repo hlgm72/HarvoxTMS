@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { StateCombobox } from "@/components/ui/StateCombobox";
 import { User, Truck, IdCard, Phone, Calendar, Shield } from "lucide-react";
 import {
   Dialog,
@@ -617,17 +618,20 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                         placeholder="A, B, C"
                       />
                     </div>
+                  </div>
+                  
+                  {/* Fila para Estado, F de Emisión y F de Vencimiento */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="license_state">Estado de Emisión</Label>
-                      <Input
-                        id="license_state"
+                      <StateCombobox
                         value={driverData.license_state}
-                        onChange={(e) => updateDriverData('license_state', e.target.value)}
-                        placeholder="TX, CA, FL, etc."
+                        onValueChange={(value) => updateDriverData('license_state', value || '')}
+                        placeholder="Selecciona estado..."
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="license_issue_date">Fecha de Emisión</Label>
+                      <Label htmlFor="license_issue_date">F. de Emisión</Label>
                       <div>
                         <DatePicker
                           id="license_issue_date"
@@ -645,8 +649,8 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                         />
                       </div>
                     </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="license_expiry_date">Fecha de Vencimiento</Label>
+                    <div className="space-y-2">
+                      <Label htmlFor="license_expiry_date">F. de Vencimiento</Label>
                       <div>
                         <DatePicker
                           id="license_expiry_date"
