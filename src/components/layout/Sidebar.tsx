@@ -130,15 +130,15 @@ const getCompanyOwnerNavigationItems = (driversCount: number, equipmentCount: nu
     description: "Gestión de pagos",
     section: "financial"
   },
+  
+  // Reportes y Análisis
   { 
     title: "Reportes de Pago", 
     url: "/payment-reports", 
     icon: FileBarChart,
     description: "Reportes de pago en PDF",
-    section: "financial"
+    section: "reports"
   },
-  
-  // Reportes y Análisis
   { 
     title: "Reportes Financieros", 
     url: "/reports/financial", 
