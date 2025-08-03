@@ -155,7 +155,7 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
         .gte('period_end_date', currentDate)
         .eq('status', 'open')
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
         throw error;
@@ -205,7 +205,7 @@ export const usePreviousPaymentPeriod = (companyId?: string) => {
         .lt('period_end_date', currentDate)
         .order('period_end_date', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
         throw error;
@@ -255,7 +255,7 @@ export const useNextPaymentPeriod = (companyId?: string) => {
         .gt('period_start_date', currentDate)
         .order('period_start_date', { ascending: true })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
         throw error;
