@@ -46,7 +46,7 @@ import { handleTextBlur, createTextHandlers } from "@/lib/textUtils";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
-import { EditDriverModal } from "@/components/EditDriverModal";
+import { EditDriverDialog } from "@/components/drivers/EditDriverDialog";
 import { EditUserDialog } from "@/components/users/EditUserDialog";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { UserFiltersSheet } from "@/components/users/UserFiltersSheet";
@@ -959,14 +959,16 @@ export default function Users() {
       />
 
       {/* Modal de edición de conductor */}
-      <EditDriverModal
+      <EditDriverDialog
         isOpen={editDriverModalOpen}
         onClose={() => {
           setEditDriverModalOpen(false);
           fetchUsers(); // Recargar la lista
         }}
-        userId={selectedDriverId}
-        userName={selectedDriverName}
+        driver={{ user_id: selectedDriverId, first_name: '', last_name: '' }}
+        onSuccess={() => {
+          fetchUsers(); // Recargar la lista
+        }}
       />
     </div>
   );

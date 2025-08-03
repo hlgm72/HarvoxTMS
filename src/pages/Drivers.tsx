@@ -12,7 +12,7 @@ import { useState } from "react";
 import { InviteDriverDialog } from "@/components/drivers/InviteDriverDialog";
 import { EquipmentAssignmentDialog } from "@/components/equipment/EquipmentAssignmentDialog";
 import { DriverDetailsModal } from "@/components/drivers/DriverDetailsModal";
-import { EditDriverBasicDialog } from "@/components/drivers/EditDriverBasicDialog";
+import { EditDriverDialog } from "@/components/drivers/EditDriverDialog";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -368,7 +368,7 @@ export default function Drivers() {
       )}
 
       {selectedDriver && (
-        <EditDriverBasicDialog
+        <EditDriverDialog
           isOpen={showEditDialog}
           onClose={() => {
             setShowEditDialog(false);
