@@ -424,7 +424,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
         <DialogHeader>
           <DialogTitle>Editar Conductor: {fullName}</DialogTitle>
           <DialogDescription>
-            Gestiona toda la información del conductor, incluyendo datos personales, laborales y de owner-operator.
+            Gestiona toda la información del conductor, incluyendo datos personales, laborales y de dueño operador.
           </DialogDescription>
         </DialogHeader>
 
@@ -757,7 +757,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                 <div className="space-y-2">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     <Truck className="h-5 w-5" />
-                    Owner-Operator
+                    Dueño Operador
                   </h3>
                   <div className="flex items-center space-x-2">
                     <Switch
@@ -766,7 +766,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                       onCheckedChange={(checked) => updateDriverData('is_owner_operator', checked)}
                     />
                     <Label htmlFor="is_owner_operator" className="text-sm">
-                      {driverData.is_owner_operator ? 'Sí, es Owner Operator' : 'No es Owner Operator'}
+                      {driverData.is_owner_operator ? 'Sí, es Dueño Operador' : 'No es Dueño Operador'}
                     </Label>
                   </div>
                   <p className="text-sm text-muted-foreground">
