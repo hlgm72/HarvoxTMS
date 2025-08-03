@@ -170,12 +170,6 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
   };
 
   const addDispatcher = () => {
-    // Desenfocar cualquier elemento activo antes de agregar el nuevo contacto
-    const activeElement = document.activeElement as HTMLElement;
-    if (activeElement && activeElement.blur) {
-      activeElement.blur();
-    }
-    
     append({
       name: '',
       email: '',
@@ -551,12 +545,40 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                 <FormItem>
                                   <FormLabel>Nombre *</FormLabel>
                                   <FormControl>
-                                    <Input
-                                      placeholder="Juan Pérez"
-                                      value={field.value}
-                                      onChange={handlers.onChange}
-                                      onBlur={handlers.onBlur}
-                                    />
+                                     <Input
+                                       placeholder="Juan Pérez"
+                                       value={field.value}
+                                       onChange={handlers.onChange}
+                                       onBlur={handlers.onBlur}
+                                       autoFocus={false}
+                                     />
+                                   </FormControl>
+                                   <FormMessage />
+                                 </FormItem>
+                               );
+                             }}
+                           />
+
+                           <FormField
+                             control={form.control}
+                             name={`dispatchers.${index}.email`}
+                             render={({ field }) => {
+                               const handlers = createTextHandlers(field.onChange, 'email');
+                               return (
+                                 <FormItem>
+                                   <FormLabel>Email</FormLabel>
+                                   <FormControl>
+                                     <div className="flex">
+                                       <Mail className="mr-2 h-4 w-4 self-center text-muted-foreground" />
+                                       <Input
+                                         type="email"
+                                         placeholder="juan@empresa.com"
+                                         value={field.value}
+                                        onChange={handlers.onChange}
+                                        onBlur={handlers.onBlur}
+                                        autoFocus={false}
+                                      />
+                                    </div>
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
@@ -566,115 +588,93 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
 
                           <FormField
                             control={form.control}
-                            name={`dispatchers.${index}.email`}
+                            name={`dispatchers.${index}.phone_office`}
                             render={({ field }) => {
-                              const handlers = createTextHandlers(field.onChange, 'email');
+                              const handlers = createPhoneHandlers(field.onChange);
                               return (
                                 <FormItem>
-                                  <FormLabel>Email</FormLabel>
+                                  <FormLabel>Teléfono Oficina</FormLabel>
                                   <FormControl>
                                     <div className="flex">
-                                      <Mail className="mr-2 h-4 w-4 self-center text-muted-foreground" />
+                                      <Phone className="mr-2 h-4 w-4 self-center text-muted-foreground" />
                                       <Input
-                                        type="email"
-                                        placeholder="juan@empresa.com"
+                                        placeholder="(555) 123-4567"
                                         value={field.value}
-                                       onChange={handlers.onChange}
-                                       onBlur={handlers.onBlur}
-                                     />
-                                   </div>
-                                 </FormControl>
-                                 <FormMessage />
-                               </FormItem>
-                             );
-                           }}
-                         />
+                                        onChange={handlers.onChange}
+                                        onKeyPress={handlers.onKeyPress}
+                                        autoFocus={false}
+                                      />
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              );
+                            }}
+                          />
 
-                         <FormField
-                           control={form.control}
-                           name={`dispatchers.${index}.phone_office`}
-                           render={({ field }) => {
-                             const handlers = createPhoneHandlers(field.onChange);
-                             return (
-                               <FormItem>
-                                 <FormLabel>Teléfono Oficina</FormLabel>
-                                 <FormControl>
-                                   <div className="flex">
-                                     <Phone className="mr-2 h-4 w-4 self-center text-muted-foreground" />
-                                     <Input
-                                       placeholder="(555) 123-4567"
-                                       value={field.value}
-                                       onChange={handlers.onChange}
-                                       onKeyPress={handlers.onKeyPress}
-                                     />
-                                   </div>
-                                 </FormControl>
-                                 <FormMessage />
-                               </FormItem>
-                             );
-                           }}
-                         />
+                          <FormField
+                            control={form.control}
+                            name={`dispatchers.${index}.phone_mobile`}
+                            render={({ field }) => {
+                              const handlers = createPhoneHandlers(field.onChange);
+                              return (
+                                <FormItem>
+                                  <FormLabel>Teléfono Móvil</FormLabel>
+                                  <FormControl>
+                                    <div className="flex">
+                                      <Phone className="mr-2 h-4 w-4 self-center text-muted-foreground" />
+                                      <Input
+                                        placeholder="(555) 987-6543"
+                                        value={field.value}
+                                        onChange={handlers.onChange}
+                                        onKeyPress={handlers.onKeyPress}
+                                        autoFocus={false}
+                                      />
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              );
+                            }}
+                          />
 
-                         <FormField
-                           control={form.control}
-                           name={`dispatchers.${index}.phone_mobile`}
-                           render={({ field }) => {
-                             const handlers = createPhoneHandlers(field.onChange);
-                             return (
-                               <FormItem>
-                                 <FormLabel>Teléfono Móvil</FormLabel>
-                                 <FormControl>
-                                   <div className="flex">
-                                     <Phone className="mr-2 h-4 w-4 self-center text-muted-foreground" />
-                                     <Input
-                                       placeholder="(555) 987-6543"
-                                       value={field.value}
-                                       onChange={handlers.onChange}
-                                       onKeyPress={handlers.onKeyPress}
-                                     />
-                                   </div>
-                                 </FormControl>
-                                 <FormMessage />
-                               </FormItem>
-                             );
-                           }}
-                         />
+                          <FormField
+                            control={form.control}
+                            name={`dispatchers.${index}.extension`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Extensión</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="123"
+                                    autoFocus={false}
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                         <FormField
-                           control={form.control}
-                           name={`dispatchers.${index}.extension`}
-                           render={({ field }) => (
-                             <FormItem>
-                               <FormLabel>Extensión</FormLabel>
-                               <FormControl>
-                                 <Input
-                                   placeholder="123"
-                                   {...field}
-                                 />
-                               </FormControl>
-                               <FormMessage />
-                             </FormItem>
-                           )}
-                         />
-
-                         <FormField
-                           control={form.control}
-                           name={`dispatchers.${index}.notes`}
-                           render={({ field }) => (
-                             <FormItem className="md:col-span-2">
-                               <FormLabel>Notas</FormLabel>
-                               <FormControl>
-                                 <Textarea
-                                   placeholder="Información adicional..."
-                                   className="min-h-[60px]"
-                                   {...field}
-                                 />
-                               </FormControl>
-                               <FormMessage />
-                             </FormItem>
-                           )}
-                         />
-                       </div>
+                          <FormField
+                            control={form.control}
+                            name={`dispatchers.${index}.notes`}
+                            render={({ field }) => (
+                              <FormItem className="md:col-span-2">
+                                <FormLabel>Notas</FormLabel>
+                                <FormControl>
+                                  <Textarea
+                                    placeholder="Información adicional..."
+                                    className="min-h-[60px]"
+                                    autoFocus={false}
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
                       </Card>
                     ))
                   )}
