@@ -67,12 +67,8 @@ export function DeductionsManager({
       
       const companyId = userRoles[0].company_id;
       
-      // Obtener todos los usuarios de la empresa según el rol especificado
+      // Obtener todos los usuarios de la empresa (conductores y despachadores)
       let roleFilter: ('driver' | 'dispatcher')[] = ['driver', 'dispatcher'];
-      
-      if (filters?.userRole) {
-        roleFilter = [filters.userRole as 'driver' | 'dispatcher'];
-      }
       
       const { data: companyUsers } = await supabase
         .from('user_company_roles')
@@ -95,10 +91,7 @@ export function DeductionsManager({
         .in('user_id', userIds)
         .eq('is_active', true);
 
-      // Aplicar filtro por rol aplicado
-      if (filters?.userRole) {
-        query = query.eq('applied_to_role', filters.userRole as 'driver' | 'dispatcher');
-      }
+      // No aplicar filtro por rol aplicado - queremos ver todos
 
       // Aplicar otros filtros
       if (filters?.driver && filters.driver !== 'all') {
@@ -189,12 +182,8 @@ export function DeductionsManager({
       
       const companyId = userRoles[0].company_id;
       
-      // Obtener todos los usuarios de la empresa según el rol especificado  
+      // Obtener todos los usuarios de la empresa (conductores y despachadores)  
       let roleFilter: ('driver' | 'dispatcher')[] = ['driver', 'dispatcher'];
-      
-      if (filters?.userRole) {
-        roleFilter = [filters.userRole as 'driver' | 'dispatcher'];
-      }
       
       const { data: companyUsers } = await supabase
         .from('user_company_roles')
@@ -217,10 +206,7 @@ export function DeductionsManager({
         .in('user_id', userIds)
         .eq('is_active', false);
 
-      // Aplicar filtro por rol aplicado
-      if (filters?.userRole) {
-        query = query.eq('applied_to_role', filters.userRole as 'driver' | 'dispatcher');
-      }
+      // No aplicar filtro por rol aplicado - queremos ver todos
 
       // Aplicar otros filtros
       if (filters?.driver && filters.driver !== 'all') {
@@ -356,6 +342,128 @@ export function DeductionsManager({
     }
   };
 
+  // Función para agrupar plantillas por rol aplicado
+  const groupTemplatesByRole = (templates: any[]) => {
+    const drivers = templates.filter(t => t.applied_to_role === 'driver');
+    const dispatchers = templates.filter(t => t.applied_to_role === 'dispatcher');
+    return { drivers, dispatchers };
+  };
+
+  // Agrupar plantillas activas e inactivas
+  const groupedActiveTemplates = groupTemplatesByRole(templates);
+  const groupedInactiveTemplates = groupTemplatesByRole(inactiveTemplates);
+
+  // Componente para renderizar un grupo de plantillas
+  const TemplateGroup = ({ 
+    title, 
+    templates, 
+    isInactive = false 
+  }: { 
+    title: string; 
+    templates: any[]; 
+    isInactive?: boolean; 
+  }) => {
+    if (templates.length === 0) return null;
+
+    return (
+      <div className="space-y-3">
+        <h3 className="text-lg font-semibold text-muted-foreground border-b pb-2">
+          {title}
+        </h3>
+        <div className="grid gap-4">
+          {templates.map((template) => (
+            <Card key={template.id} className={`hover:shadow-md transition-shadow ${isInactive ? 'border-muted' : ''}`}>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className={`p-2 rounded-lg ${isInactive ? 'bg-muted' : 'bg-blue-100'}`}>
+                      <DollarSign className={`h-5 w-5 ${isInactive ? 'text-muted-foreground' : 'text-blue-600'}`} />
+                    </div>
+                    <div>
+                      <h3 className={`font-semibold ${isInactive ? 'text-muted-foreground' : ''}`}>
+                        {template.driver_profile?.first_name} {template.driver_profile?.last_name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {template.expense_types?.name}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <p className={`font-semibold text-lg ${isInactive ? 'text-muted-foreground' : ''}`}>
+                        ${template.amount}
+                      </p>
+                      <Badge variant={isInactive ? "secondary" : "outline"}>
+                        {isInactive && 'Inactiva • '}
+                        {template.frequency === 'weekly' ? 'Semanal' : 
+                         template.frequency === 'biweekly' ? 'Quincenal' : 'Mensual'}
+                      </Badge>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      {isInactive ? (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleReactivateTemplate(template.id)}
+                          disabled={reactivateTemplateMutation.isPending}
+                          className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                        >
+                          <RotateCcw className="h-4 w-4 mr-1" />
+                          Reactivar
+                        </Button>
+                      ) : (
+                        <>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => setEditingTemplate(template)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleDeleteTemplate(template)}
+                            disabled={deleteTemplateMutation.isPending}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                {!isInactive && (
+                  <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Vigente desde:</span>
+                      <p>{formatDateOnly(template.start_date)}</p>
+                    </div>
+                    {template.end_date && (
+                      <div>
+                        <span className="text-muted-foreground">Vigente hasta:</span>
+                        <p>{formatDateOnly(template.end_date)}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {template.notes && (
+                  <div className="mt-2 text-sm text-muted-foreground">
+                    <strong>Notas:</strong> {template.notes}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       <Tabs defaultValue="active" className="w-full">
@@ -381,75 +489,17 @@ export function DeductionsManager({
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-4">
-              {templates.map((template) => (
-                <Card key={template.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="p-2 bg-blue-100 rounded-lg">
-                          <DollarSign className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">
-                            {template.driver_profile?.first_name} {template.driver_profile?.last_name}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {template.expense_types?.name}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <p className="font-semibold text-lg">${template.amount}</p>
-                          <Badge variant="outline">
-                            {template.frequency === 'weekly' ? 'Semanal' : 
-                             template.frequency === 'biweekly' ? 'Quincenal' : 'Mensual'}
-                          </Badge>
-                        </div>
-                        
-                        <div className="flex gap-2">
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => setEditingTemplate(template)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => handleDeleteTemplate(template)}
-                            disabled={deleteTemplateMutation.isPending}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">Vigente desde:</span>
-                        <p>{formatDateOnly(template.start_date)}</p>
-                      </div>
-                      {template.end_date && (
-                        <div>
-                          <span className="text-muted-foreground">Vigente hasta:</span>
-                          <p>{formatDateOnly(template.end_date)}</p>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {template.notes && (
-                      <div className="mt-2 text-sm text-muted-foreground">
-                        <strong>Notas:</strong> {template.notes}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="space-y-6">
+              <TemplateGroup 
+                title="Conductores" 
+                templates={groupedActiveTemplates.drivers} 
+                isInactive={false} 
+              />
+              <TemplateGroup 
+                title="Despachadores" 
+                templates={groupedActiveTemplates.dispatchers} 
+                isInactive={false} 
+              />
             </div>
           )}
         </TabsContent>
@@ -463,51 +513,17 @@ export function DeductionsManager({
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-4">
-              {inactiveTemplates.map((template) => (
-                <Card key={template.id} className="hover:shadow-md transition-shadow border-muted">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="p-2 bg-muted rounded-lg">
-                          <DollarSign className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-muted-foreground">
-                            {template.driver_profile?.first_name} {template.driver_profile?.last_name}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {template.expense_types?.name}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <p className="font-semibold text-lg text-muted-foreground">${template.amount}</p>
-                          <Badge variant="secondary">
-                            Inactiva • {template.frequency === 'weekly' ? 'Semanal' : 
-                             template.frequency === 'biweekly' ? 'Quincenal' : 'Mensual'}
-                          </Badge>
-                        </div>
-                        
-                        <div className="flex gap-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleReactivateTemplate(template.id)}
-                            disabled={reactivateTemplateMutation.isPending}
-                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                          >
-                            <RotateCcw className="h-4 w-4 mr-1" />
-                            Reactivar
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="space-y-6">
+              <TemplateGroup 
+                title="Conductores" 
+                templates={groupedInactiveTemplates.drivers} 
+                isInactive={true} 
+              />
+              <TemplateGroup 
+                title="Despachadores" 
+                templates={groupedInactiveTemplates.dispatchers} 
+                isInactive={true} 
+              />
             </div>
           )}
         </TabsContent>
