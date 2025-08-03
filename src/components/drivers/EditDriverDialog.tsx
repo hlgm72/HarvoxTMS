@@ -465,7 +465,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
             </TabsList>
 
             {/* Tab Información Personal */}
-            <TabsContent value="personal" className="space-y-6">
+            <TabsContent value="personal" className="space-y-6 min-h-[400px]">
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                   <User className="h-5 w-5" />
@@ -571,7 +571,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
             </TabsContent>
 
             {/* Tab Información de Empleo */}
-            <TabsContent value="employment" className="space-y-6 pt-8">
+            <TabsContent value="employment" className="space-y-6 min-h-[400px]">
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                   <IdCard className="h-5 w-5" />
@@ -612,7 +612,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
             </TabsContent>
 
             {/* Tab Información de Licencia */}
-            <TabsContent value="license" className="space-y-6">
+            <TabsContent value="license" className="space-y-6 min-h-[400px]">
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                   <Shield className="h-5 w-5" />
