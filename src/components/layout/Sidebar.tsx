@@ -110,8 +110,8 @@ const getCompanyOwnerNavigationItems = (driversCount: number, equipmentCount: nu
     section: "financial"
   },
   { 
-    title: "Otros Pagos", 
-    url: "/other-payments", 
+    title: "Pagos Adicionales", 
+    url: "/additional-payments", 
     icon: Calculator,
     description: "Ingresos adicionales para conductores y despachadores",
     section: "financial"

@@ -8,14 +8,14 @@ import { Label } from "@/components/ui/label";
 import { OtherIncomeSection } from "@/components/payments/OtherIncomeSection";
 import { Calculator, Users, UserCheck } from "lucide-react";
 
-export default function OtherPayments() {
+export default function AdditionalPayments() {
   const [activeTab, setActiveTab] = useState("income");
   const [userType, setUserType] = useState("drivers"); // "drivers" | "dispatchers"
 
   return (
     <div className="flex-1 space-y-4 p-8">
       <PageToolbar 
-        title="Otros Pagos" 
+        title="Pagos Adicionales" 
         subtitle="Gestión de ingresos adicionales para conductores y despachadores"
         icon={Calculator}
       />

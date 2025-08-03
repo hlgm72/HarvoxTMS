@@ -27,7 +27,7 @@ import Clients from "./pages/Clients";
 import Documents from "./pages/Documents";
 import Payments from "./pages/Payments";
 import Deductions from "./pages/Deductions";
-import OtherPayments from "./pages/OtherPayments";
+import AdditionalPayments from "./pages/AdditionalPayments";
 import FuelManagement from "./pages/FuelManagement";
 import Loads from "./pages/Loads";
 import EagleDemo from "./pages/EagleDemo";
@@ -244,13 +244,13 @@ function AppContent() {
           } 
         />
         
-        {/* Other Payments Management */}
+        {/* Additional Payments Management */}
         <Route 
-          path="/other-payments" 
+          path="/additional-payments" 
           element={
             <ProtectedRoute>
               <Layout>
-                <OtherPayments />
+                <AdditionalPayments />
               </Layout>
             </ProtectedRoute>
           } 
