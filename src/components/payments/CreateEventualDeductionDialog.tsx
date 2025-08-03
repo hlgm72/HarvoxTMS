@@ -341,7 +341,7 @@ export function CreateEventualDeductionDialog({
               setSelectedRole(role);
               setFormData(prev => ({ ...prev, user_id: '' }));
             }}
-            label="Tipo de Usuario"
+            label="Aplicar Deduccion a"
           />
 
           <div className="space-y-2">
