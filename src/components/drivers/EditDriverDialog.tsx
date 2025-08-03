@@ -605,73 +605,70 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                     Información de Licencia CDL
                   </h3>
                   
-                  {/* Primera fila: Número de Licencia y Estado | Fechas de Emisión y Vencimiento */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Primera columna: Número de Licencia y Estado */}
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="license_number">Número de Licencia</Label>
-                        <Input
-                          id="license_number"
-                          value={driverData.license_number}
-                          onChange={(e) => updateDriverData('license_number', e.target.value)}
-                          placeholder="Número de licencia CDL"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="license_state">Estado de Emisión</Label>
-                        <StateCombobox
-                          value={driverData.license_state}
-                          onValueChange={(value) => updateDriverData('license_state', value || '')}
-                          placeholder="Selecciona estado..."
+                  {/* Primera fila: Número de Licencia y Estado */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="license_number">Número de Licencia</Label>
+                      <Input
+                        id="license_number"
+                        value={driverData.license_number}
+                        onChange={(e) => updateDriverData('license_number', e.target.value)}
+                        placeholder="Número de licencia CDL"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="license_state">Estado de Emisión</Label>
+                      <StateCombobox
+                        value={driverData.license_state}
+                        onValueChange={(value) => updateDriverData('license_state', value || '')}
+                        placeholder="Selecciona estado..."
+                      />
+                    </div>
+                  </div>
+
+                  {/* Segunda fila: Fechas de Emisión y Vencimiento */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="license_issue_date">Fecha de Emisión</Label>
+                      <div>
+                        <DatePicker
+                          id="license_issue_date"
+                          selected={driverData.license_issue_date}
+                          onChange={(date: Date | null) => updateDriverData('license_issue_date', date)}
+                          dateFormat="dd/MM/yyyy"
+                          placeholderText="Seleccionar fecha"
+                          showYearDropdown
+                          showMonthDropdown
+                          dropdownMode="select"
+                          yearDropdownItemNumber={50}
+                          scrollableYearDropdown
+                          locale={es}
+                          className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
                         />
                       </div>
                     </div>
-
-                    {/* Segunda columna: Fechas de Emisión y Vencimiento */}
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="license_issue_date">Fecha de Emisión</Label>
-                        <div>
-                          <DatePicker
-                            id="license_issue_date"
-                            selected={driverData.license_issue_date}
-                            onChange={(date: Date | null) => updateDriverData('license_issue_date', date)}
-                            dateFormat="dd/MM/yyyy"
-                            placeholderText="Seleccionar fecha"
-                            showYearDropdown
-                            showMonthDropdown
-                            dropdownMode="select"
-                            yearDropdownItemNumber={50}
-                            scrollableYearDropdown
-                            locale={es}
-                            className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="license_expiry_date">Fecha de Vencimiento</Label>
-                        <div>
-                          <DatePicker
-                            id="license_expiry_date"
-                            selected={driverData.license_expiry_date}
-                            onChange={(date: Date | null) => updateDriverData('license_expiry_date', date)}
-                            dateFormat="dd/MM/yyyy"
-                            placeholderText="Seleccionar fecha"
-                            showYearDropdown
-                            showMonthDropdown
-                            dropdownMode="select"
-                            yearDropdownItemNumber={50}
-                            scrollableYearDropdown
-                            locale={es}
-                            className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
-                          />
-                        </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="license_expiry_date">Fecha de Vencimiento</Label>
+                      <div>
+                        <DatePicker
+                          id="license_expiry_date"
+                          selected={driverData.license_expiry_date}
+                          onChange={(date: Date | null) => updateDriverData('license_expiry_date', date)}
+                          dateFormat="dd/MM/yyyy"
+                          placeholderText="Seleccionar fecha"
+                          showYearDropdown
+                          showMonthDropdown
+                          dropdownMode="select"
+                          yearDropdownItemNumber={50}
+                          scrollableYearDropdown
+                          locale={es}
+                          className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
+                        />
                       </div>
                     </div>
                   </div>
 
-                  {/* Clase de CDL debajo del Número de Licencia */}
+                  {/* Clase de CDL debajo */}
                   <div className="space-y-2">
                     <Label>Clase de CDL</Label>
                     <RadioGroup
