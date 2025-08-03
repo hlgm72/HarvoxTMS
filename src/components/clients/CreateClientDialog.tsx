@@ -551,7 +551,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                       onChange={handlers.onChange}
                                       onBlur={handlers.onBlur}
                                       tabIndex={1 + (index * 6)}
-                                      autoFocus={index === fields.length - 1}
+                                      autoFocus={false}
                                     />
                                   </FormControl>
                                   <FormMessage />
