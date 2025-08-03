@@ -857,21 +857,15 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                        name="weight_lbs"
                        render={({ field }) => (
                          <FormItem>
-                            <FormLabel>Peso</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <Input 
-                                  type="number"
-                                  placeholder="25000"
-                                  {...field}
-                                  onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
-                                  className="pr-12"
-                                />
-                                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                  <span className="text-sm text-muted-foreground">lbs</span>
-                                </div>
-                              </div>
-                            </FormControl>
+                           <FormLabel>Peso (lbs)</FormLabel>
+                           <FormControl>
+                             <Input 
+                               type="number"
+                               placeholder="25000"
+                               {...field}
+                               onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
+                             />
+                           </FormControl>
                            <FormMessage />
                          </FormItem>
                        )}
