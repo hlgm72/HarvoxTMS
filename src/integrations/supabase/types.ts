@@ -2927,6 +2927,13 @@ export type Database = {
         Args: { user_id_param: string }
         Returns: string
       }
+      get_user_emails_for_company: {
+        Args: { company_id_param: string }
+        Returns: {
+          user_id: string
+          email: string
+        }[]
+      }
       has_role: {
         Args: {
           _user_id: string

@@ -203,39 +203,24 @@ export default function Users() {
       ].includes(userRole.role);
 
       if (hasAdminPrivileges) {
-        // Los administradores pueden ver emails de invitaciones aceptadas
+        // Usar la función segura para obtener emails de usuarios
         try {
-          const { data: invitations, error: invError } = await supabase
-            .from('user_invitations')
-            .select('email, accepted_at')
-            .eq('company_id', userRole.company_id)
-            .not('accepted_at', 'is', null);
+          const { data: userEmails, error: emailError } = await supabase
+            .rpc('get_user_emails_for_company', { 
+              company_id_param: userRole.company_id 
+            });
 
-          if (!invError && invitations) {
-            // Mapear emails a usuarios basándose en invitaciones
-            Array.from(usersMap.values()).forEach(mappedUser => {
-              if (mappedUser.id === user?.id) {
-                // Usuario actual siempre muestra su email
-                mappedUser.email = user.email || 'N/A';
-              } else {
-                // Para otros usuarios, intentar encontrar el email en invitaciones
-                const matchingInvitation = invitations.find(inv => 
-                  mappedUser.first_name && mappedUser.last_name && inv.email && (
-                    inv.email.toLowerCase().includes(mappedUser.first_name.toLowerCase()) ||
-                    inv.email.toLowerCase().includes(mappedUser.last_name.toLowerCase())
-                  )
-                );
-                
-                if (matchingInvitation) {
-                  mappedUser.email = matchingInvitation.email;
-                } else {
-                  mappedUser.email = 'Email privado';
-                }
+          if (!emailError && userEmails) {
+            // Mapear emails a usuarios
+            userEmails.forEach(({ user_id, email }) => {
+              if (usersMap.has(user_id)) {
+                const mappedUser = usersMap.get(user_id)!;
+                mappedUser.email = email || 'N/A';
               }
             });
           }
         } catch (error) {
-          console.warn('No se pudieron obtener emails, usando método básico');
+          console.warn('Error obteniendo emails:', error);
           // Fallback: solo mostrar email del usuario actual
           if (user?.id && usersMap.has(user.id)) {
             const currentUser = usersMap.get(user.id)!;
