@@ -27,6 +27,7 @@ import { CreateClientDialog } from "@/components/clients/CreateClientDialog";
 import { CreateDispatcherDialog } from "@/components/clients/CreateDispatcherDialog";
 import { LoadStopsManager } from "./LoadStopsManager";
 import { LoadDocumentsSection } from "./LoadDocumentsSection";
+import { LoadDocumentsProvider } from "@/contexts/LoadDocumentsContext";
 import { LoadAssignmentSection } from "./LoadAssignmentSection";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -932,24 +933,26 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
             {/* Phase 4: Documents */}
             {currentPhase === 4 && (
-              <LoadDocumentsSection
-                loadId={mode === 'edit' ? activeLoadData?.id : null}
-                loadData={{
-                  load_number: form.getValues("load_number") || '',
-                  total_amount: form.getValues("total_amount") || 0,
-                  commodity: form.getValues("commodity") || '',
-                  weight_lbs: form.getValues("weight_lbs"),
-                  client_name: selectedClient?.name,
-                  driver_name: selectedDriver ? `${selectedDriver.first_name} ${selectedDriver.last_name}` : undefined,
-                  loadStops: loadStops,
-                  company_name: companyData?.name,
-                  company_phone: companyData?.phone,
-                  company_email: companyData?.email
-                }}
-                onDocumentsChange={setLoadDocuments}
-                temporaryDocuments={loadDocuments}
-                onTemporaryDocumentsChange={setLoadDocuments}
-              />
+              <LoadDocumentsProvider>
+                <LoadDocumentsSection
+                  loadId={mode === 'edit' ? activeLoadData?.id : null}
+                  loadData={{
+                    load_number: form.getValues("load_number") || '',
+                    total_amount: form.getValues("total_amount") || 0,
+                    commodity: form.getValues("commodity") || '',
+                    weight_lbs: form.getValues("weight_lbs"),
+                    client_name: selectedClient?.name,
+                    driver_name: selectedDriver ? `${selectedDriver.first_name} ${selectedDriver.last_name}` : undefined,
+                    loadStops: loadStops,
+                    company_name: companyData?.name,
+                    company_phone: companyData?.phone,
+                    company_email: companyData?.email
+                  }}
+                  onDocumentsChange={setLoadDocuments}
+                  temporaryDocuments={loadDocuments}
+                  onTemporaryDocumentsChange={setLoadDocuments}
+                />
+              </LoadDocumentsProvider>
             )}
 
             {/* Action Buttons */}
