@@ -76,7 +76,7 @@ export const useClients = () => {
         console.error("❌ Error fetching clients:", error);
         throw error;
       }
-      console.log("🔍 Datos de clientes recibidos:", data);
+      // console.log("🔍 Datos de clientes recibidos:", data);
       return data as Client[];
     },
   });
