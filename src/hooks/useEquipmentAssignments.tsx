@@ -51,33 +51,46 @@ export function useEquipmentAssignments() {
     queryFn: async () => {
       if (!user) throw new Error('Usuario no autenticado');
 
-      console.log('🔧 Fetching equipment assignments...');
-
-      const { data, error } = await supabase
+      // Primero obtener las asignaciones básicas
+      const { data: assignments, error: assignmentsError } = await supabase
         .from('equipment_assignments')
-        .select(`
-          *,
-          company_equipment:equipment_id (
-            id,
-            equipment_number,
-            equipment_type,
-            make,
-            model,
-            year,
-            license_plate,
-            status
-          )
-        `)
+        .select('*')
         .eq('is_active', true)
         .order('assigned_date', { ascending: false });
 
-      if (error) {
-        console.error('🔧 Error fetching equipment assignments:', error);
-        throw error;
+      if (assignmentsError) throw assignmentsError;
+
+      if (!assignments || assignments.length === 0) {
+        return [];
       }
-      
-      console.log('🔧 Equipment assignments fetched:', data);
-      return data as any; // Type assertion for complex join query
+
+      // Obtener los IDs únicos de equipos
+      const equipmentIds = [...new Set(assignments.map(a => a.equipment_id))];
+
+      // Obtener la información de los equipos por separado
+      const { data: equipment, error: equipmentError } = await supabase
+        .from('company_equipment')
+        .select(`
+          id,
+          equipment_number,
+          equipment_type,
+          make,
+          model,
+          year,
+          license_plate,
+          status
+        `)
+        .in('id', equipmentIds);
+
+      if (equipmentError) throw equipmentError;
+
+      // Combinar los datos
+      const result = assignments.map(assignment => ({
+        ...assignment,
+        company_equipment: equipment?.find(eq => eq.id === assignment.equipment_id)
+      }));
+
+      return result as EquipmentAssignment[];
     },
     enabled: !!user,
   });
