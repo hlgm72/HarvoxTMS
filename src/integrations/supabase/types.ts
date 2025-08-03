@@ -2443,36 +2443,6 @@ export type Database = {
       }
     }
     Views: {
-      company_drivers_view: {
-        Row: {
-          created_at: string | null
-          id: string | null
-          is_active: boolean | null
-          termination_date: string | null
-          termination_reason: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: never
-          is_active?: boolean | null
-          termination_date?: string | null
-          termination_reason?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: never
-          is_active?: boolean | null
-          termination_date?: string | null
-          termination_reason?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       equipment_status_summary: {
         Row: {
           annual_inspection_expiry_date: string | null
