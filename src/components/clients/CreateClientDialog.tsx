@@ -283,6 +283,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                  value={field.value}
                                  onChange={handlers.onChange}
                                  onBlur={handlers.onBlur}
+                                 tabIndex={1}
                                />
                              </FormControl>
                              <FormMessage />
@@ -305,6 +306,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                  value={field.value}
                                  onChange={handlers.onChange}
                                  onBlur={handlers.onBlur}
+                                 tabIndex={2}
                                />
                              </FormControl>
                              <FormMessage />
@@ -327,6 +329,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                  value={field.value}
                                  onChange={handlers.onChange}
                                  onKeyPress={handlers.onKeyPress}
+                                 tabIndex={3}
                                />
                              </FormControl>
                              <FormMessage />
@@ -368,6 +371,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                  value={field.value}
                                  onChange={handleEmailDomainChange}
                                  onKeyDown={handleKeyDown}
+                                 tabIndex={4}
                                />
                              </FormControl>
                              <FormMessage />
@@ -390,6 +394,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                  value={field.value}
                                  onChange={handlers.onChange}
                                  onKeyPress={handlers.onKeyPress}
+                                 tabIndex={5}
                                />
                              </FormControl>
                              <FormMessage />
@@ -412,6 +417,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                  value={field.value}
                                  onChange={handlers.onChange}
                                  onKeyPress={handlers.onKeyPress}
+                                 tabIndex={6}
                                />
                              </FormControl>
                              <FormMessage />
@@ -435,6 +441,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                value={field.value}
                                onChange={handlers.onChange}
                                onBlur={handlers.onBlur}
+                               tabIndex={7}
                              />
                            </FormControl>
                            <FormMessage />
@@ -453,6 +460,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                           <Textarea 
                             placeholder="Información adicional sobre el cliente..."
                             className="min-h-[80px]"
+                            tabIndex={8}
                             {...field} 
                           />
                         </FormControl>
@@ -542,6 +550,8 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                       value={field.value}
                                       onChange={handlers.onChange}
                                       onBlur={handlers.onBlur}
+                                      tabIndex={1 + (index * 6)}
+                                      autoFocus={index === fields.length - 1}
                                     />
                                   </FormControl>
                                   <FormMessage />
@@ -567,6 +577,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                         value={field.value}
                                         onChange={handlers.onChange}
                                         onBlur={handlers.onBlur}
+                                        tabIndex={2 + (index * 6)}
                                       />
                                     </div>
                                   </FormControl>
@@ -592,6 +603,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                         value={field.value}
                                         onChange={handlers.onChange}
                                         onKeyPress={handlers.onKeyPress}
+                                        tabIndex={3 + (index * 6)}
                                       />
                                     </div>
                                   </FormControl>
@@ -617,6 +629,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                         value={field.value}
                                         onChange={handlers.onChange}
                                         onKeyPress={handlers.onKeyPress}
+                                        tabIndex={4 + (index * 6)}
                                       />
                                     </div>
                                   </FormControl>
@@ -635,6 +648,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                 <FormControl>
                                   <Input
                                     placeholder="123"
+                                    tabIndex={5 + (index * 6)}
                                     {...field}
                                   />
                                 </FormControl>
@@ -653,6 +667,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                   <Textarea
                                     placeholder="Información adicional..."
                                     className="min-h-[60px]"
+                                    tabIndex={6 + (index * 6)}
                                     {...field}
                                   />
                                 </FormControl>
