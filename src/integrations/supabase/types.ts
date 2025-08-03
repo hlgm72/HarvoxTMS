@@ -2330,7 +2330,6 @@ export type Database = {
           amount: number
           created_at: string
           created_by: string | null
-          driver_user_id: string
           end_date: string | null
           expense_type_id: string
           frequency: string
@@ -2340,12 +2339,12 @@ export type Database = {
           notes: string | null
           start_date: string
           updated_at: string
+          user_id: string
         }
         Insert: {
           amount: number
           created_at?: string
           created_by?: string | null
-          driver_user_id: string
           end_date?: string | null
           expense_type_id: string
           frequency: string
@@ -2355,12 +2354,12 @@ export type Database = {
           notes?: string | null
           start_date: string
           updated_at?: string
+          user_id: string
         }
         Update: {
           amount?: number
           created_at?: string
           created_by?: string | null
-          driver_user_id?: string
           end_date?: string | null
           expense_type_id?: string
           frequency?: string
@@ -2370,6 +2369,7 @@ export type Database = {
           notes?: string | null
           start_date?: string
           updated_at?: string
+          user_id?: string
         }
         Relationships: [
           {

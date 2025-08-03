@@ -85,12 +85,12 @@ export function DeductionsManager({
           *,
           expense_types (name, category)
         `)
-        .in('driver_user_id', driverIds)
+        .in('user_id', driverIds)
         .eq('is_active', true);
 
       // Aplicar filtros
       if (filters?.driver && filters.driver !== 'all') {
-        query = query.eq('driver_user_id', filters.driver);
+        query = query.eq('user_id', filters.driver);
       }
 
       if (filters?.expenseType && filters.expenseType !== 'all') {
@@ -123,16 +123,17 @@ export function DeductionsManager({
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('user_id, first_name, last_name')
-        .in('user_id', templatesData.map(t => t.driver_user_id));
+        .in('user_id', templatesData.map(t => t.user_id));
 
       if (profilesError) throw profilesError;
 
       // Combinar datos
       const templatesWithProfiles = templatesData.map(template => {
-        const profile = profilesData?.find(p => p.user_id === template.driver_user_id);
+        const profile = profilesData?.find(p => p.user_id === template.user_id);
         return {
           ...template,
-          driver_profile: profile
+          driver_profile: profile,
+          user_profile: profile // Alias para mantener compatibilidad
         };
       });
 
@@ -184,12 +185,12 @@ export function DeductionsManager({
           *,
           expense_types (name, category)
         `)
-        .in('driver_user_id', driverIds)
+        .in('user_id', driverIds)
         .eq('is_active', false);
 
       // Aplicar filtros
       if (filters?.driver && filters.driver !== 'all') {
-        query = query.eq('driver_user_id', filters.driver);
+        query = query.eq('user_id', filters.driver);
       }
 
       if (filters?.expenseType && filters.expenseType !== 'all') {
@@ -222,13 +223,13 @@ export function DeductionsManager({
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('user_id, first_name, last_name')
-        .in('user_id', templatesData.map(t => t.driver_user_id));
+        .in('user_id', templatesData.map(t => t.user_id));
 
       if (profilesError) throw profilesError;
 
       // Combinar datos
       const templatesWithProfiles = templatesData.map(template => {
-        const profile = profilesData?.find(p => p.user_id === template.driver_user_id);
+        const profile = profilesData?.find(p => p.user_id === template.user_id);
         return {
           ...template,
           driver_profile: profile

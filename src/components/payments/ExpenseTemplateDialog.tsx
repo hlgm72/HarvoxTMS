@@ -44,7 +44,7 @@ export function ExpenseTemplateDialog({
   const [isUntilDatePickerOpen, setIsUntilDatePickerOpen] = useState(false);
   
   const [formData, setFormData] = useState({
-    driver_user_id: mode === 'edit' ? template?.driver_user_id : '',
+    driver_user_id: mode === 'edit' ? template?.user_id : '',
     expenseTypeId: mode === 'edit' ? template?.expense_type_id : '',
     amount: mode === 'edit' ? template?.amount.toString() : '',
     frequency: mode === 'edit' ? template?.frequency : 'weekly',
@@ -79,7 +79,7 @@ export function ExpenseTemplateDialog({
       setInactiveTemplate(null);
     } else if (mode === 'edit' && template) {
       setFormData({
-        driver_user_id: template.driver_user_id,
+        driver_user_id: template.user_id,
         expenseTypeId: template.expense_type_id,
         amount: template.amount.toString(),
         frequency: template.frequency,
@@ -187,7 +187,7 @@ export function ExpenseTemplateDialog({
           expense_types(name),
           driver_profile:profiles(first_name, last_name)
         `)
-        .eq('driver_user_id', formData.driver_user_id)
+        .eq('user_id', formData.driver_user_id)
         .eq('expense_type_id', formData.expenseTypeId)
         .eq('is_active', false)
         .order('created_at', { ascending: false })
@@ -233,7 +233,7 @@ export function ExpenseTemplateDialog({
 
     try {
       const templateData = {
-        driver_user_id: formData.driver_user_id,
+        user_id: formData.driver_user_id,
         expense_type_id: formData.expenseTypeId,
         amount: parseFloat(formData.amount),
         frequency: formData.frequency,
@@ -317,7 +317,7 @@ export function ExpenseTemplateDialog({
             <div className="space-y-2">
               <Label>Conductor</Label>
               <Input
-                value={`${template?.driver_profile?.first_name || ''} ${template?.driver_profile?.last_name || ''}`}
+                value={`${template?.user_profile?.first_name || template?.driver_profile?.first_name || ''} ${template?.user_profile?.last_name || template?.driver_profile?.last_name || ''}`}
                 disabled
                 className="bg-muted"
               />

@@ -47,8 +47,8 @@ export function useDeductionsStats() {
       // Obtener plantillas activas para estos conductores
       const { data: templates, error } = await supabase
         .from('recurring_expense_templates')
-        .select('driver_user_id, amount, frequency')
-        .in('driver_user_id', driverIds)
+        .select('user_id, amount, frequency')
+        .in('user_id', driverIds)
         .eq('is_active', true);
 
       if (error) throw error;
@@ -82,7 +82,7 @@ export function useDeductionsStats() {
       }, 0);
 
       // Contar conductores únicos afectados
-      const affectedDrivers = new Set(templates.map(t => t.driver_user_id)).size;
+      const affectedDrivers = new Set(templates.map(t => t.user_id)).size;
 
       return {
         activeTemplates,
