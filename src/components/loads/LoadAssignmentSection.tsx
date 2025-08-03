@@ -49,13 +49,13 @@ export function LoadAssignmentSection({
   useEffect(() => {
     if (isOwnerOperator && ownerOperator && onLeasingPercentageChange && onFactoringPercentageChange && onDispatchingPercentageChange) {
       // Only auto-populate if current values are undefined/null (avoid overwriting user changes)
-      if (leasingPercentage === undefined && ownerOperator.leasing_percentage) {
+      if (leasingPercentage === undefined && ownerOperator.leasing_percentage !== undefined && ownerOperator.leasing_percentage !== null) {
         onLeasingPercentageChange(ownerOperator.leasing_percentage);
       }
-      if (factoringPercentage === undefined && ownerOperator.factoring_percentage) {
+      if (factoringPercentage === undefined && ownerOperator.factoring_percentage !== undefined && ownerOperator.factoring_percentage !== null) {
         onFactoringPercentageChange(ownerOperator.factoring_percentage);
       }
-      if (dispatchingPercentage === undefined && ownerOperator.dispatching_percentage) {
+      if (dispatchingPercentage === undefined && ownerOperator.dispatching_percentage !== undefined && ownerOperator.dispatching_percentage !== null) {
         onDispatchingPercentageChange(ownerOperator.dispatching_percentage);
       }
     }
