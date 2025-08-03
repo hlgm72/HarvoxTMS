@@ -925,6 +925,7 @@ export type Database = {
           amount: number
           applied_at: string | null
           applied_by: string | null
+          applied_to_role: Database["public"]["Enums"]["user_role"] | null
           created_at: string
           created_by: string | null
           description: string | null
@@ -944,6 +945,7 @@ export type Database = {
           amount: number
           applied_at?: string | null
           applied_by?: string | null
+          applied_to_role?: Database["public"]["Enums"]["user_role"] | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -963,6 +965,7 @@ export type Database = {
           amount?: number
           applied_at?: string | null
           applied_by?: string | null
+          applied_to_role?: Database["public"]["Enums"]["user_role"] | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -2222,6 +2225,7 @@ export type Database = {
         Row: {
           amount: number
           applied_to_period_id: string | null
+          applied_to_role: Database["public"]["Enums"]["user_role"] | null
           created_at: string
           driver_user_id: string
           expense_instance_id: string
@@ -2236,6 +2240,7 @@ export type Database = {
         Insert: {
           amount: number
           applied_to_period_id?: string | null
+          applied_to_role?: Database["public"]["Enums"]["user_role"] | null
           created_at?: string
           driver_user_id: string
           expense_instance_id: string
@@ -2250,6 +2255,7 @@ export type Database = {
         Update: {
           amount?: number
           applied_to_period_id?: string | null
+          applied_to_role?: Database["public"]["Enums"]["user_role"] | null
           created_at?: string
           driver_user_id?: string
           expense_instance_id?: string
@@ -2328,6 +2334,7 @@ export type Database = {
       recurring_expense_templates: {
         Row: {
           amount: number
+          applied_to_role: Database["public"]["Enums"]["user_role"] | null
           created_at: string
           created_by: string | null
           end_date: string | null
@@ -2343,6 +2350,7 @@ export type Database = {
         }
         Insert: {
           amount: number
+          applied_to_role?: Database["public"]["Enums"]["user_role"] | null
           created_at?: string
           created_by?: string | null
           end_date?: string | null
@@ -2358,6 +2366,7 @@ export type Database = {
         }
         Update: {
           amount?: number
+          applied_to_role?: Database["public"]["Enums"]["user_role"] | null
           created_at?: string
           created_by?: string | null
           end_date?: string | null

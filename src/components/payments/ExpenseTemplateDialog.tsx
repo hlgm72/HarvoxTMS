@@ -18,6 +18,7 @@ import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useFleetNotifications } from "@/components/notifications";
 import { useATMInput } from "@/hooks/useATMInput";
+import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
 
 interface ExpenseTemplateDialogProps {
   isOpen: boolean;
@@ -43,6 +44,10 @@ export function ExpenseTemplateDialog({
   const [isFromDatePickerOpen, setIsFromDatePickerOpen] = useState(false);
   const [isUntilDatePickerOpen, setIsUntilDatePickerOpen] = useState(false);
   
+  const [selectedRole, setSelectedRole] = useState<"driver" | "dispatcher">(
+    mode === 'edit' ? (template?.applied_to_role || 'driver') : 'driver'
+  );
+  
   const [formData, setFormData] = useState({
     driver_user_id: mode === 'edit' ? template?.user_id : '',
     expenseTypeId: mode === 'edit' ? template?.expense_type_id : '',
@@ -66,6 +71,7 @@ export function ExpenseTemplateDialog({
   // Reset form when mode or template changes
   useEffect(() => {
     if (mode === 'create') {
+      setSelectedRole('driver');
       setFormData({
         driver_user_id: '',
         expenseTypeId: '',
@@ -78,6 +84,7 @@ export function ExpenseTemplateDialog({
       setEffectiveUntil(undefined);
       setInactiveTemplate(null);
     } else if (mode === 'edit' && template) {
+      setSelectedRole(template.applied_to_role || 'driver');
       setFormData({
         driver_user_id: template.user_id,
         expenseTypeId: template.expense_type_id,
@@ -91,6 +98,13 @@ export function ExpenseTemplateDialog({
       setInactiveTemplate(null);
     }
   }, [mode, template]);
+
+  // Reset selected user when role changes in create mode
+  useEffect(() => {
+    if (mode === 'create') {
+      setFormData(prev => ({ ...prev, driver_user_id: '' }));
+    }
+  }, [selectedRole, mode]);
 
   // ATM Input para el monto
   const atmInput = useATMInput({
@@ -107,30 +121,30 @@ export function ExpenseTemplateDialog({
     }
   }, [template?.amount, mode]);
 
-  // Obtener conductores de la compañía
-  const { data: drivers = [] } = useQuery({
-    queryKey: ['company-drivers'],
+  // Obtener usuarios de la compañía según el rol seleccionado
+  const { data: users = [] } = useQuery({
+    queryKey: ['company-users', selectedRole],
     queryFn: async () => {
       try {
-        // Obtenemos directamente de user_company_roles consolidado
-        const { data: companyDrivers, error: driversError } = await supabase
+        // Obtenemos usuarios de user_company_roles según el rol seleccionado
+        const { data: companyUsers, error: usersError } = await supabase
           .from('user_company_roles')
           .select('user_id')
-          .eq('role', 'driver')
+          .eq('role', selectedRole)
           .eq('is_active', true);
 
-        if (driversError) {
-          console.error('Error fetching company drivers:', driversError);
+        if (usersError) {
+          console.error('Error fetching company users:', usersError);
           return [];
         }
 
-        if (!companyDrivers || companyDrivers.length === 0) return [];
+        if (!companyUsers || companyUsers.length === 0) return [];
 
         // Luego obtenemos los perfiles
         const { data: profiles, error: profilesError } = await supabase
           .from('profiles')
           .select('user_id, first_name, last_name')
-          .in('user_id', companyDrivers.map(d => d.user_id));
+          .in('user_id', companyUsers.map(d => d.user_id));
 
         if (profilesError) {
           console.error('Error fetching profiles:', profilesError);
@@ -139,22 +153,22 @@ export function ExpenseTemplateDialog({
 
         return profiles || [];
       } catch (error) {
-        console.error('Error in drivers query:', error);
+        console.error('Error in users query:', error);
         return [];
       }
     },
-    enabled: !!user?.id
+    enabled: !!user?.id && isOpen
   });
 
-  // Filtrar conductores para búsqueda
-  const filteredDrivers = useMemo(() => {
-    if (!driverSearchValue) return drivers;
+  // Filtrar usuarios para búsqueda
+  const filteredUsers = useMemo(() => {
+    if (!driverSearchValue) return users;
     
-    return drivers.filter(driver => {
-      const fullName = `${driver.first_name} ${driver.last_name}`.toLowerCase();
+    return users.filter(user => {
+      const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
       return fullName.includes(driverSearchValue.toLowerCase());
     });
-  }, [drivers, driverSearchValue]);
+  }, [users, driverSearchValue]);
 
   // Obtener tipos de gastos
   const { data: expenseTypes = [] } = useQuery({
@@ -241,6 +255,7 @@ export function ExpenseTemplateDialog({
         start_date: effectiveFrom ? `${effectiveFrom.getFullYear()}-${String(effectiveFrom.getMonth() + 1).padStart(2, '0')}-${String(effectiveFrom.getDate()).padStart(2, '0')}` : null,
         end_date: effectiveUntil ? `${effectiveUntil.getFullYear()}-${String(effectiveUntil.getMonth() + 1).padStart(2, '0')}-${String(effectiveUntil.getDate()).padStart(2, '0')}` : null,
         notes: formData.notes || null,
+        applied_to_role: selectedRole,
         updated_at: new Date().toISOString()
       };
 
@@ -313,20 +328,39 @@ export function ExpenseTemplateDialog({
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {mode === 'create' && (
+            <UserTypeSelector
+              value={selectedRole}
+              onChange={setSelectedRole}
+              label="Aplicar Deducción al Rol"
+              disabled={false}
+            />
+          )}
+
           {mode === 'edit' && (
-            <div className="space-y-2">
-              <Label>Conductor</Label>
-              <Input
-                value={`${template?.user_profile?.first_name || template?.driver_profile?.first_name || ''} ${template?.user_profile?.last_name || template?.driver_profile?.last_name || ''}`}
-                disabled
-                className="bg-muted"
-              />
-            </div>
+            <>
+              <div className="space-y-2">
+                <Label>Rol Aplicado</Label>
+                <Input
+                  value={template?.applied_to_role === 'driver' ? 'Conductor' : template?.applied_to_role === 'dispatcher' ? 'Despachador' : 'No especificado'}
+                  disabled
+                  className="bg-muted"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Usuario</Label>
+                <Input
+                  value={`${template?.user_profile?.first_name || template?.driver_profile?.first_name || ''} ${template?.user_profile?.last_name || template?.driver_profile?.last_name || ''}`}
+                  disabled
+                  className="bg-muted"
+                />
+              </div>
+            </>
           )}
 
           {mode === 'create' && (
             <div className="space-y-2">
-              <Label htmlFor="driver">Conductor</Label>
+              <Label htmlFor="user">{selectedRole === 'driver' ? 'Conductor' : 'Despachador'}</Label>
               <Popover open={driverSearchOpen} onOpenChange={setDriverSearchOpen}>
                 <PopoverTrigger asChild>
                   <Button
@@ -335,41 +369,41 @@ export function ExpenseTemplateDialog({
                     aria-expanded={driverSearchOpen}
                     className="w-full justify-between"
                   >
-                    {formData.driver_user_id 
-                      ? drivers.find(driver => driver.user_id === formData.driver_user_id)?.first_name + ' ' + 
-                        drivers.find(driver => driver.user_id === formData.driver_user_id)?.last_name
-                      : "Seleccionar conductor..."}
+                     {formData.driver_user_id 
+                       ? users.find(user => user.user_id === formData.driver_user_id)?.first_name + ' ' + 
+                         users.find(user => user.user_id === formData.driver_user_id)?.last_name
+                       : `Seleccionar ${selectedRole === 'driver' ? 'conductor' : 'despachador'}...`}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0" align="start">
-                  <Command>
-                    <CommandInput 
-                      placeholder="Buscar conductor..." 
-                      value={driverSearchValue}
-                      onValueChange={setDriverSearchValue}
-                    />
-                    <CommandList>
-                      <CommandEmpty>No se encontraron conductores.</CommandEmpty>
+                   <Command>
+                     <CommandInput 
+                       placeholder={`Buscar ${selectedRole === 'driver' ? 'conductor' : 'despachador'}...`}
+                       value={driverSearchValue}
+                       onValueChange={setDriverSearchValue}
+                     />
+                     <CommandList>
+                       <CommandEmpty>No se encontraron {selectedRole === 'driver' ? 'conductores' : 'despachadores'}.</CommandEmpty>
                       <CommandGroup>
-                        {filteredDrivers.map((driver) => (
-                          <CommandItem
-                            key={driver.user_id}
-                            value={`${driver.first_name} ${driver.last_name}`}
-                            onSelect={() => {
-                              setFormData(prev => ({ ...prev, driver_user_id: driver.user_id }));
-                              setDriverSearchOpen(false);
-                              setDriverSearchValue("");
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                formData.driver_user_id === driver.user_id ? "opacity-100" : "opacity-0"
-                              )}
-                            />
-                            {driver.first_name} {driver.last_name}
-                          </CommandItem>
+                        {filteredUsers.map((user) => (
+                           <CommandItem
+                             key={user.user_id}
+                             value={`${user.first_name} ${user.last_name}`}
+                             onSelect={() => {
+                               setFormData(prev => ({ ...prev, driver_user_id: user.user_id }));
+                               setDriverSearchOpen(false);
+                               setDriverSearchValue("");
+                             }}
+                           >
+                             <Check
+                               className={cn(
+                                 "mr-2 h-4 w-4",
+                                 formData.driver_user_id === user.user_id ? "opacity-100" : "opacity-0"
+                               )}
+                             />
+                             {user.first_name} {user.last_name}
+                           </CommandItem>
                         ))}
                       </CommandGroup>
                     </CommandList>

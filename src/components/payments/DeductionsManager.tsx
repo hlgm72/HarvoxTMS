@@ -95,7 +95,12 @@ export function DeductionsManager({
         .in('user_id', userIds)
         .eq('is_active', true);
 
-      // Aplicar filtros
+      // Aplicar filtro por rol aplicado
+      if (filters?.userRole) {
+        query = query.eq('applied_to_role', filters.userRole as 'driver' | 'dispatcher');
+      }
+
+      // Aplicar otros filtros
       if (filters?.driver && filters.driver !== 'all') {
         query = query.eq('user_id', filters.driver);
       }
@@ -212,7 +217,12 @@ export function DeductionsManager({
         .in('user_id', userIds)
         .eq('is_active', false);
 
-      // Aplicar filtros
+      // Aplicar filtro por rol aplicado
+      if (filters?.userRole) {
+        query = query.eq('applied_to_role', filters.userRole as 'driver' | 'dispatcher');
+      }
+
+      // Aplicar otros filtros
       if (filters?.driver && filters.driver !== 'all') {
         query = query.eq('user_id', filters.driver);
       }

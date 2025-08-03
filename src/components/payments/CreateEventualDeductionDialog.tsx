@@ -19,6 +19,7 @@ import { formatDateOnly, formatDateInUserTimeZone } from "@/utils/dateUtils";
 import { useATMInput } from "@/hooks/useATMInput";
 import { cn } from "@/lib/utils";
 import { useFleetNotifications } from '@/components/notifications';
+import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
 
 interface CreateEventualDeductionDialogProps {
   isOpen: boolean;
