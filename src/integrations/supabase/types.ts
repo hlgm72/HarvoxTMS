@@ -2277,6 +2277,7 @@ export type Database = {
           city_id: string | null
           created_at: string
           first_name: string | null
+          hire_date: string | null
           id: string
           last_name: string | null
           phone: string | null
@@ -2293,6 +2294,7 @@ export type Database = {
           city_id?: string | null
           created_at?: string
           first_name?: string | null
+          hire_date?: string | null
           id?: string
           last_name?: string | null
           phone?: string | null
@@ -2309,6 +2311,7 @@ export type Database = {
           city_id?: string | null
           created_at?: string
           first_name?: string | null
+          hire_date?: string | null
           id?: string
           last_name?: string | null
           phone?: string | null

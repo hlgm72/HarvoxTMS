@@ -160,10 +160,10 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
 
     setLoading(true);
     try {
-      // Cargar perfil básico
+      // Cargar perfil básico (incluyendo hire_date)
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('first_name, last_name, phone')
+        .select('first_name, last_name, phone, hire_date')
         .eq('user_id', driver.user_id)
         .maybeSingle();
 
@@ -200,9 +200,9 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
         phone: profile?.phone || '',
         date_of_birth: parseDateFromDatabase(driverProfile?.date_of_birth),
         
-        // Información de empleo - ahora desde driver_profiles
+        // Información de empleo - ahora desde profiles
         driver_id: driverProfile?.driver_id || '',
-        hire_date: parseDateFromDatabase(driverProfile?.hire_date),
+        hire_date: parseDateFromDatabase(profile?.hire_date),
         
         // Información de licencia
         license_number: driverProfile?.license_number || '',
@@ -324,7 +324,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
         emergency_contact_phone: handleTextBlur(driverData.emergency_contact_phone),
       };
 
-      // Actualizar perfil básico
+      // Actualizar perfil básico (incluyendo hire_date)
       const { error: profileError } = await supabase
         .from('profiles')
         .upsert({
@@ -332,6 +332,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
           first_name: cleanedData.first_name,
           last_name: cleanedData.last_name,
           phone: cleanedData.phone,
+          hire_date: driverData.hire_date ? formatDateForDatabase(driverData.hire_date) : null,
         }, {
           onConflict: 'user_id'
         });
@@ -349,7 +350,6 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
           license_state: cleanedData.license_state,
           license_issue_date: driverData.license_issue_date ? formatDateForDatabase(driverData.license_issue_date) : null,
           license_expiry_date: driverData.license_expiry_date ? formatDateForDatabase(driverData.license_expiry_date) : null,
-          hire_date: driverData.hire_date ? formatDateForDatabase(driverData.hire_date) : null,
           date_of_birth: driverData.date_of_birth ? formatDateForDatabase(driverData.date_of_birth) : null,
           emergency_contact_name: cleanedData.emergency_contact_name,
           emergency_contact_phone: cleanedData.emergency_contact_phone,
@@ -359,16 +359,6 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
 
       if (driverError) throw driverError;
 
-      // Actualizar fecha de contratación en user_company_roles
-      const { error: roleError } = await supabase
-        .from('user_company_roles')
-        .update({
-          hire_date: driverData.hire_date ? formatDateForDatabase(driverData.hire_date) : null,
-        })
-        .eq('user_id', driver.user_id)
-        .eq('role', 'driver');
-
-      if (roleError) throw roleError;
 
       // Gestionar datos de owner operator basándose en el switch
       if (driverData.is_owner_operator) {
