@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StateCombobox } from "@/components/ui/StateCombobox";
@@ -77,6 +78,7 @@ interface DriverData {
   // Información de licencia
   license_number: string;
   cdl_class: string;
+  cdl_endorsements: string;
   license_state: string;
   license_issue_date: Date | null;
   license_expiry_date: Date | null;
@@ -129,6 +131,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
     // Información de licencia
     license_number: '',
     cdl_class: '',
+    cdl_endorsements: '',
     license_state: '',
     license_issue_date: null,
     license_expiry_date: null,
@@ -209,6 +212,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
         // Información de licencia
         license_number: driverProfile?.license_number || '',
         cdl_class: driverProfile?.cdl_class || '',
+        cdl_endorsements: driverProfile?.cdl_endorsements || '',
         license_state: driverProfile?.license_state || '',
         license_issue_date: parseDateFromDatabase(driverProfile?.license_issue_date),
         license_expiry_date: parseDateFromDatabase(driverProfile?.license_expiry_date),
@@ -349,6 +353,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
           driver_id: cleanedData.driver_id,
           license_number: cleanedData.license_number,
           cdl_class: cleanedData.cdl_class,
+          cdl_endorsements: driverData.cdl_endorsements,
           license_state: cleanedData.license_state,
           license_issue_date: driverData.license_issue_date ? formatDateForDatabase(driverData.license_issue_date) : null,
           license_expiry_date: driverData.license_expiry_date ? formatDateForDatabase(driverData.license_expiry_date) : null,
@@ -633,6 +638,64 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                         Selecciona la clase de CDL del conductor
                       </p>
                     </div>
+                  </div>
+
+                  {/* Sección de Endosos Adicionales */}
+                  <div className="space-y-4">
+                    <h4 className="text-md font-semibold flex items-center gap-2">
+                      <Shield className="h-4 w-4" />
+                      Endosos Adicionales
+                    </h4>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {[
+                        { code: 'T', description: 'Doble/triple remolque' },
+                        { code: 'P', description: 'Transporte de pasajeros' },
+                        { code: 'S', description: 'Autobuses escolares' },
+                        { code: 'N', description: 'Vehículos cisterna (tank)' },
+                        { code: 'H', description: 'Materiales peligrosos' },
+                        { code: 'X', description: 'Hazmat + cisterna combinados' }
+                      ].map((endorsement) => {
+                        const isChecked = driverData.cdl_endorsements.includes(endorsement.code);
+                        return (
+                          <div key={endorsement.code} className="flex items-start space-x-2">
+                            <Checkbox
+                              id={`endorsement_${endorsement.code}`}
+                              checked={isChecked}
+                              onCheckedChange={(checked) => {
+                                const currentEndorsements = driverData.cdl_endorsements.split('').filter(e => e.trim() !== '');
+                                let newEndorsements;
+                                
+                                if (checked) {
+                                  // Agregar el endoso si no existe
+                                  if (!currentEndorsements.includes(endorsement.code)) {
+                                    newEndorsements = [...currentEndorsements, endorsement.code].sort();
+                                  } else {
+                                    newEndorsements = currentEndorsements;
+                                  }
+                                } else {
+                                  // Remover el endoso
+                                  newEndorsements = currentEndorsements.filter(e => e !== endorsement.code);
+                                }
+                                
+                                updateDriverData('cdl_endorsements', newEndorsements.join(''));
+                              }}
+                            />
+                            <div className="flex flex-col">
+                              <Label htmlFor={`endorsement_${endorsement.code}`} className="text-sm font-medium">
+                                Endoso {endorsement.code}
+                              </Label>
+                              <span className="text-xs text-muted-foreground">
+                                {endorsement.description}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Selecciona todos los endosos adicionales que posee el conductor
+                    </p>
                   </div>
                   
                   {/* Fila para Estado, F de Emisión y F de Vencimiento */}

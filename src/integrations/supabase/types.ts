@@ -670,6 +670,7 @@ export type Database = {
       driver_profiles: {
         Row: {
           cdl_class: string | null
+          cdl_endorsements: string | null
           created_at: string
           date_of_birth: string | null
           driver_id: string | null
@@ -686,6 +687,7 @@ export type Database = {
         }
         Insert: {
           cdl_class?: string | null
+          cdl_endorsements?: string | null
           created_at?: string
           date_of_birth?: string | null
           driver_id?: string | null
@@ -702,6 +704,7 @@ export type Database = {
         }
         Update: {
           cdl_class?: string | null
+          cdl_endorsements?: string | null
           created_at?: string
           date_of_birth?: string | null
           driver_id?: string | null
