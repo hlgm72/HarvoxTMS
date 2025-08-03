@@ -859,12 +859,12 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                          <FormItem>
                            <FormLabel>Peso (lbs)</FormLabel>
                            <FormControl>
-                             <Input 
-                               type="number"
-                               placeholder="25000"
-                               {...field}
-                               onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
-                             />
+                              <Input 
+                                type="number"
+                                placeholder="25000"
+                                value={field.value ?? ''}
+                                onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
+                              />
                            </FormControl>
                            <FormMessage />
                          </FormItem>
