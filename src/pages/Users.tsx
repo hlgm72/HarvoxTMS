@@ -136,6 +136,8 @@ export default function Users() {
     
     setLoading(true);
     try {
+      console.log('Fetching users for company_id:', userRole.company_id);
+      
       // Obtener usuarios de la empresa con sus roles
       const { data: companyUsers, error } = await supabase
         .from('user_company_roles')
@@ -148,6 +150,8 @@ export default function Users() {
         .eq('company_id', userRole.company_id)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
+
+      console.log('Company users found:', companyUsers);
 
       if (error) throw error;
 
