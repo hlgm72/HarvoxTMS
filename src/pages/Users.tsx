@@ -152,13 +152,18 @@ export default function Users() {
       if (error) throw error;
 
       if (!companyUsers || companyUsers.length === 0) {
+        console.log('No company users found');
         setUsers([]);
         setLoading(false);
         return;
       }
 
+      console.log('All company users found:', companyUsers.map(u => ({ user_id: u.user_id, role: u.role })));
+
       // Obtener perfiles de usuarios
       const userIds = [...new Set(companyUsers.map(u => u.user_id))];
+      console.log('Unique user IDs:', userIds);
+      
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('user_id, first_name, last_name, avatar_url, phone')
