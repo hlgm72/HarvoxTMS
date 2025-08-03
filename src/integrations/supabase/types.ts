@@ -42,7 +42,7 @@ export type Database = {
           phone: string | null
           plan_type: string | null
           state_id: string
-          status: string | null
+          status: string
           street_address: string
           updated_at: string
           zip_code: string
@@ -74,7 +74,7 @@ export type Database = {
           phone?: string | null
           plan_type?: string | null
           state_id: string
-          status?: string | null
+          status?: string
           street_address: string
           updated_at?: string
           zip_code: string
@@ -106,7 +106,7 @@ export type Database = {
           phone?: string | null
           plan_type?: string | null
           state_id?: string
-          status?: string | null
+          status?: string
           street_address?: string
           updated_at?: string
           zip_code?: string
@@ -378,7 +378,15 @@ export type Database = {
           vin_number?: string | null
           year?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_company_equipment_company"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       company_payment_periods: {
         Row: {
@@ -804,6 +812,7 @@ export type Database = {
           reported_at: string
           reported_by: string | null
           state: string | null
+          updated_at: string | null
           zip_code: string | null
         }
         Insert: {
@@ -821,6 +830,7 @@ export type Database = {
           reported_at?: string
           reported_by?: string | null
           state?: string | null
+          updated_at?: string | null
           zip_code?: string | null
         }
         Update: {
@@ -838,6 +848,7 @@ export type Database = {
           reported_at?: string
           reported_by?: string | null
           state?: string | null
+          updated_at?: string | null
           zip_code?: string | null
         }
         Relationships: []
@@ -1420,6 +1431,7 @@ export type Database = {
           file_url: string
           id: string
           load_id: string
+          updated_at: string | null
           uploaded_by: string | null
         }
         Insert: {
@@ -1433,6 +1445,7 @@ export type Database = {
           file_url: string
           id?: string
           load_id: string
+          updated_at?: string | null
           uploaded_by?: string | null
         }
         Update: {
@@ -1446,6 +1459,7 @@ export type Database = {
           file_url?: string
           id?: string
           load_id?: string
+          updated_at?: string | null
           uploaded_by?: string | null
         }
         Relationships: [
@@ -2072,6 +2086,7 @@ export type Database = {
           resolved_at: string | null
           resolved_by: string | null
           status: string
+          updated_at: string | null
         }
         Insert: {
           amount: number
@@ -2085,6 +2100,7 @@ export type Database = {
           resolved_at?: string | null
           resolved_by?: string | null
           status?: string
+          updated_at?: string | null
         }
         Update: {
           amount?: number
@@ -2098,6 +2114,7 @@ export type Database = {
           resolved_at?: string | null
           resolved_by?: string | null
           status?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -2380,6 +2397,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_user_company_roles_company"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "user_company_roles_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -2477,7 +2501,15 @@ export type Database = {
           vin_number: string | null
           year: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_company_equipment_company"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       load_details_with_dates: {
         Row: {
