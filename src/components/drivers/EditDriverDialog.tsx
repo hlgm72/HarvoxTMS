@@ -276,7 +276,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
         driver_id: handleTextBlur(driverData.driver_id),
         license_number: handleTextBlur(driverData.license_number),
         cdl_class: handleTextBlur(driverData.cdl_class),
-        license_state: handleTextBlur(driverData.license_state),
+        license_state: handleTextBlur(driverData.license_state) || null, // Convert empty string to null for foreign key
         emergency_contact_name: handleTextBlur(driverData.emergency_contact_name),
         emergency_contact_phone: handleTextBlur(driverData.emergency_contact_phone),
       };
