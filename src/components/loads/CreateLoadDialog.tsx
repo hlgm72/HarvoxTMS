@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useCompanyDrivers, CompanyDriver } from "@/hooks/useCompanyDrivers";
 import { useCompanyDispatchers } from "@/hooks/useCompanyDispatchers";
-import { useClients, Client } from "@/hooks/useClients";
+import { useClients, Client, useClientContacts } from "@/hooks/useClients";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
 import { useCreateLoad } from "@/hooks/useCreateLoad";
 import { useLoadNumberValidation } from "@/hooks/useLoadNumberValidation";
@@ -81,6 +81,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const { drivers } = useCompanyDrivers();
   const { data: dispatchers = [] } = useCompanyDispatchers();
   const { data: clients = [], isLoading: clientsLoading, refetch: refetchClients } = useClients();
+  const { refetch: refetchContacts } = useClientContacts(selectedClient?.id || "");
   const { selectedCompany } = useUserCompanies();
   const createLoadMutation = useCreateLoad();
   const { showSuccess, showError } = useFleetNotifications();
@@ -1021,14 +1022,16 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
          <CreateClientDialog
            isOpen={showCreateClient}
            onClose={() => setShowCreateClient(false)}
-           onSuccess={(clientId) => {
-             // Refresh clients list and select the new client
-             refetchClients().then(() => {
-               form.setValue("client_id", clientId);
-               const newClient = clients.find(c => c.id === clientId);
-               setSelectedClient(newClient || null);
-             });
-           }}
+            onSuccess={(clientId) => {
+              // Refresh clients list and select the new client
+              refetchClients().then(() => {
+                form.setValue("client_id", clientId);
+                const newClient = clients.find(c => c.id === clientId);
+                setSelectedClient(newClient || null);
+                // Also refresh contacts for the new client
+                refetchContacts();
+              });
+            }}
          />
 
          {/* Create Contact Dialog */}
