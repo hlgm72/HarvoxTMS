@@ -104,6 +104,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
   const loadProfileData = async () => {
     setLoading(true);
     try {
+      // Obtener datos básicos del perfil
       const { data, error } = await supabase
         .from('profiles')
         .select('created_at')
@@ -112,9 +113,29 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
 
       if (error) throw error;
       
+      // Intentar obtener el email del usuario autenticado
+      let email = 'No disponible';
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user && user.id === driver.user_id) {
+          // Si el usuario autenticado es el mismo conductor, mostrar su email
+          email = user.email || 'No especificado';
+        } else {
+          // Si es un administrador, intentar obtener el email de otra manera
+          const { data: userData, error: userError } = await supabase
+            .rpc('get_user_email_by_id', { user_id_param: driver.user_id });
+          
+          if (!userError && userData) {
+            email = userData;
+          }
+        }
+      } catch (emailError) {
+        console.log('No se pudo obtener el email:', emailError);
+      }
+      
       setProfileData({
         created_at: data?.created_at,
-        email: 'No disponible' // El email no está almacenado en el perfil del usuario
+        email: email
       });
     } catch (error) {
       console.error('Error loading profile data:', error);
