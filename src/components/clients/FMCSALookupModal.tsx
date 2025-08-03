@@ -78,7 +78,7 @@ interface FMCSALookupModalProps {
 
 export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupModalProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchType, setSearchType] = useState<"DOT" | "MC" | "NAME">("DOT");
+  const [searchType, setSearchType] = useState<"DOT" | "MC" | "NAME">("MC");
   const [loading, setLoading] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
   const [data, setData] = useState<FMCSAData | null>(null);
