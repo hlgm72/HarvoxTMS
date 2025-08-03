@@ -27,10 +27,10 @@ export const usePONumberValidation = (
   const [debouncedPONumber] = useDebounce(poNumber, 500);
   const { userCompany, companyUsers } = useCompanyCache();
 
-  console.log('🔍 usePONumberValidation CALLED - poNumber:', poNumber, 'skipValidation:', skipValidation, 'excludeLoadId:', excludeLoadId);
+  // console.log('🔍 usePONumberValidation CALLED - poNumber:', poNumber, 'skipValidation:', skipValidation, 'excludeLoadId:', excludeLoadId);
 
   useEffect(() => {
-    console.log('🔍 usePONumberValidation - debouncedPONumber:', debouncedPONumber, 'original:', poNumber);
+    // console.log('🔍 usePONumberValidation - debouncedPONumber:', debouncedPONumber, 'original:', poNumber);
 
     const validatePONumber = async () => {
       // Reset state
@@ -42,7 +42,7 @@ export const usePONumberValidation = (
 
       // Skip validation if conditions are met
       if (skipValidation || !debouncedPONumber || !debouncedPONumber.trim() || !userCompany || !companyUsers.length) {
-        console.log('⏭️ usePONumberValidation - Skipping validation');
+        // console.log('⏭️ usePONumberValidation - Skipping validation');
         return;
       }
 

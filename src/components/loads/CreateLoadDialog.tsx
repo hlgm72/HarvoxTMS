@@ -169,25 +169,25 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   // Initialize form and states when load data is available
   useEffect(() => {
     if ((mode === 'edit' || mode === 'duplicate') && activeLoadData && isFormReady) {
-      console.log(`🔄 CreateLoadDialog - Initializing ${mode} mode with data:`, activeLoadData);
-      console.log('🔄 CreateLoadDialog - Available clients:', clients.length);
-      console.log('🔄 CreateLoadDialog - Available drivers:', drivers.length);
+      // console.log(`🔄 CreateLoadDialog - Initializing ${mode} mode with data:`, activeLoadData);
+      // console.log('🔄 CreateLoadDialog - Available clients:', clients.length);
+      // console.log('🔄 CreateLoadDialog - Available drivers:', drivers.length);
 
       // Update ATM input
       atmInput.setValue(activeLoadData.total_amount || 0);
 
       // Find and set client
       if (activeLoadData.client_id && clients.length > 0) {
-        console.log('🔍 CreateLoadDialog - Looking for client:', activeLoadData.client_id);
+        // console.log('🔍 CreateLoadDialog - Looking for client:', activeLoadData.client_id);
         const client = clients.find(c => c.id === activeLoadData.client_id);
         if (client) {
-          console.log('✅ CreateLoadDialog - Client found:', client.name);
+          // console.log('✅ CreateLoadDialog - Client found:', client.name);
           setSelectedClient(client);
           form.setValue("client_id", client.id);
           
           // Find and set client contact if available
           if (activeLoadData.client_contact_id) {
-            console.log('🔍 CreateLoadDialog - Looking for contact:', activeLoadData.client_contact_id);
+            // console.log('🔍 CreateLoadDialog - Looking for contact:', activeLoadData.client_contact_id);
             form.setValue("contact_id", activeLoadData.client_contact_id);
           }
         } else {
@@ -903,7 +903,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
             {currentPhase === 2 && (
               <LoadStopsManager 
                 onStopsChange={(newStops) => {
-                  console.log('📍 CreateLoadDialog - Stops changed:', newStops);
+                  // console.log('📍 CreateLoadDialog - Stops changed:', newStops);
                   setLoadStops(newStops);
                 }} 
                 showValidation={true}

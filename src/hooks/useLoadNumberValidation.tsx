@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useDebounce } from '@/hooks/useDebounce';
 
 export const useLoadNumberValidation = (loadNumber: string, skipValidation = false, excludeLoadId?: string) => {
-  console.log('🔍 useLoadNumberValidation CALLED - loadNumber:', loadNumber, 'skipValidation:', skipValidation, 'excludeLoadId:', excludeLoadId);
+  // console.log('🔍 useLoadNumberValidation CALLED - loadNumber:', loadNumber, 'skipValidation:', skipValidation, 'excludeLoadId:', excludeLoadId);
   
   const [isValidating, setIsValidating] = useState(false);
   const [isDuplicate, setIsDuplicate] = useState(false);
@@ -12,11 +12,11 @@ export const useLoadNumberValidation = (loadNumber: string, skipValidation = fal
   
   const debouncedLoadNumber = useDebounce(loadNumber, 500);
   
-  console.log('🔍 useLoadNumberValidation - debouncedLoadNumber:', debouncedLoadNumber, 'original:', loadNumber);
+  // console.log('🔍 useLoadNumberValidation - debouncedLoadNumber:', debouncedLoadNumber, 'original:', loadNumber);
 
   useEffect(() => {
     const validateLoadNumber = async () => {
-      console.log('🔍 Validating load number:', debouncedLoadNumber, 'skipValidation:', skipValidation);
+      // console.log('🔍 Validating load number:', debouncedLoadNumber, 'skipValidation:', skipValidation);
       
       // Reset states first
       setIsDuplicate(false);
@@ -25,7 +25,7 @@ export const useLoadNumberValidation = (loadNumber: string, skipValidation = fal
       
       // No validar si está vacío, muy corto o si se debe omitir
       if (!debouncedLoadNumber || debouncedLoadNumber.length < 2 || skipValidation) {
-        console.log('🔍 Skipping validation:', { debouncedLoadNumber, length: debouncedLoadNumber?.length, skipValidation });
+        // console.log('🔍 Skipping validation:', { debouncedLoadNumber, length: debouncedLoadNumber?.length, skipValidation });
         return;
       }
 
