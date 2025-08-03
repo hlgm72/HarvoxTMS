@@ -30,7 +30,8 @@ import { Badge } from '@/components/ui/badge';
 import { Database } from '@/integrations/supabase/types';
 import { getRoleConfig, getRoleLabel as getRoleUtilLabel } from '@/lib/roleUtils';
 
-type UserRole = Database['public']['Enums']['user_role'];
+// Usar string literal temporalmente hasta que se regeneren los tipos de Supabase
+type UserRole = string; // Database['public']['Enums']['user_role'];
 
 const availableRoles: { value: UserRole; label: string; description: string }[] = [
   {
@@ -75,7 +76,7 @@ export const SelfRoleManager = () => {
   const handleAssignRole = async () => {
     if (!selectedRole) return;
 
-    const result = await assignSelfRole(selectedRole);
+    const result = await assignSelfRole(selectedRole as any);
     
     if (result.success) {
       showSuccess(
@@ -90,7 +91,7 @@ export const SelfRoleManager = () => {
   };
 
   const handleRemoveRole = async (role: UserRole) => {
-    const result = await removeSelfRole(role);
+    const result = await removeSelfRole(role as any);
     
     if (result.success) {
       showSuccess(
