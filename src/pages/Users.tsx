@@ -73,12 +73,10 @@ interface InviteUserForm {
 }
 
 const ROLE_OPTIONS = [
-  { value: 'general_manager', label: 'Gerente General' },
-  { value: 'operations_manager', label: 'Gerente de Operaciones' },
-  { value: 'safety_manager', label: 'Gerente de Seguridad' },
-  { value: 'senior_dispatcher', label: 'Despachador Senior' },
-  { value: 'dispatcher', label: 'Despachador' },
-  { value: 'driver', label: 'Conductor' },
+  { value: 'company_admin', label: '👨‍💼 Company Admin' },
+  { value: 'dispatcher', label: '📋 Dispatcher' },
+  { value: 'driver', label: '🚛 Driver' },
+  { value: 'multi_company_dispatcher', label: '🏢 Multi-Company Dispatcher' },
 ];
 
 export default function Users() {
@@ -198,8 +196,7 @@ export default function Users() {
       const hasAdminPrivileges = userRole?.role && [
         'superadmin', 
         'company_owner', 
-        'general_manager', 
-        'operations_manager'
+        'company_admin'
       ].includes(userRole.role);
 
       if (hasAdminPrivileges) {
@@ -274,14 +271,12 @@ export default function Users() {
         // Convertir roles del usuario a sus valores originales
         const userRoles = user.role.split(', ').map((roleLabel) => {
           return Object.entries({
-            'superadmin': 'Super Admin',
-            'company_owner': 'Propietario',
-            'general_manager': 'Gerente General', 
-            'operations_manager': 'Gerente de Operaciones',
-            'safety_manager': 'Gerente de Seguridad',
-            'senior_dispatcher': 'Despachador Senior',
-            'dispatcher': 'Despachador',
-            'driver': 'Conductor',
+            'superadmin': '🔧 Super Admin',
+            'company_owner': '👑 Company Owner',
+            'company_admin': '👨‍💼 Company Admin',
+            'dispatcher': '📋 Dispatcher',
+            'driver': '🚛 Driver',
+            'multi_company_dispatcher': '🏢 Multi-Company Dispatcher'
           }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
         });
         return userRoles.includes(roleFilter);
@@ -319,14 +314,12 @@ export default function Users() {
         userRoles.forEach(roleLabel => {
           // Obtener el rol original desde el label
           const originalRole = Object.entries({
-            'superadmin': 'Super Admin',
-            'company_owner': 'Propietario',
-            'general_manager': 'Gerente General', 
-            'operations_manager': 'Gerente de Operaciones',
-            'safety_manager': 'Gerente de Seguridad',
-            'senior_dispatcher': 'Despachador Senior',
-            'dispatcher': 'Despachador',
-            'driver': 'Conductor',
+            'superadmin': '🔧 Super Admin',
+            'company_owner': '👑 Company Owner',
+            'company_admin': '👨‍💼 Company Admin',
+            'dispatcher': '📋 Dispatcher',
+            'driver': '🚛 Driver',
+            'multi_company_dispatcher': '🏢 Multi-Company Dispatcher'
           }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
           
           usersByRole[originalRole] = (usersByRole[originalRole] || 0) + 1;
@@ -469,44 +462,34 @@ export default function Users() {
   const getRoleBadge = (role: string) => {
     const roleConfig: Record<string, { label: string; variant: string; className: string }> = {
       'superadmin': { 
-        label: 'Super Admin', 
+        label: '🔧 Super Admin', 
         variant: 'default',
         className: 'bg-purple-100 text-purple-800 border-purple-200'
       },
       'company_owner': { 
-        label: 'Propietario', 
+        label: '👑 Company Owner', 
         variant: 'default',
         className: 'bg-blue-100 text-blue-800 border-blue-200'
       },
-      'general_manager': { 
-        label: 'Gerente General', 
+      'company_admin': { 
+        label: '👨‍💼 Company Admin', 
         variant: 'default',
         className: 'bg-indigo-100 text-indigo-800 border-indigo-200'
       },
-      'operations_manager': { 
-        label: 'Gerente de Operaciones', 
-        variant: 'default',
-        className: 'bg-green-100 text-green-800 border-green-200'
-      },
-      'safety_manager': { 
-        label: 'Gerente de Seguridad', 
-        variant: 'default',
-        className: 'bg-yellow-100 text-yellow-800 border-yellow-200'
-      },
-      'senior_dispatcher': { 
-        label: 'Despachador Senior', 
-        variant: 'default',
-        className: 'bg-orange-100 text-orange-800 border-orange-200'
-      },
       'dispatcher': { 
-        label: 'Despachador', 
+        label: '📋 Dispatcher', 
         variant: 'default',
         className: 'bg-cyan-100 text-cyan-800 border-cyan-200'
       },
       'driver': { 
-        label: 'Conductor', 
+        label: '🚛 Driver', 
         variant: 'default',
         className: 'bg-gray-100 text-gray-800 border-gray-200'
+      },
+      'multi_company_dispatcher': { 
+        label: '🏢 Multi-Company Dispatcher', 
+        variant: 'default',
+        className: 'bg-orange-100 text-orange-800 border-orange-200'
       },
     };
 
@@ -526,16 +509,13 @@ export default function Users() {
   // Jerarquía de roles según importancia organizacional (misma que RoleSwitcher)
   const getRoleLabel = (role: string) => {
     const roleLabels: Record<string, string> = {
-      'superadmin': 'Super Admin',
-      'company_owner': 'Propietario',
-      'general_manager': 'Gerente General', 
-      'operations_manager': 'Gerente de Operaciones',
-      'safety_manager': 'Gerente de Seguridad',
-      'senior_dispatcher': 'Despachador Senior',
-      'dispatcher': 'Despachador',
-      'driver': 'Conductor',
+      'superadmin': '🔧 Super Admin',
+      'company_owner': '👑 Company Owner',
+      'company_admin': '👨‍💼 Company Admin',
+      'dispatcher': '📋 Dispatcher',
+      'driver': '🚛 Driver',
+      'multi_company_dispatcher': '🏢 Multi-Company Dispatcher'
     };
-    
     
     return roleLabels[role] || role;
   };
@@ -704,17 +684,15 @@ export default function Users() {
                         <TableCell>{user.phone || 'No especificado'}</TableCell>
                          <TableCell>
                            {user.role.split(', ').map((roleLabel, index) => {
-                             // Convertir el label de vuelta al rol original para obtener el badge correcto
-                             const originalRole = Object.entries({
-                               'superadmin': 'Super Admin',
-                               'company_owner': 'Propietario',
-                               'general_manager': 'Gerente General', 
-                               'operations_manager': 'Gerente de Operaciones',
-                               'safety_manager': 'Gerente de Seguridad',
-                               'senior_dispatcher': 'Despachador Senior',
-                               'dispatcher': 'Despachador',
-                               'driver': 'Conductor',
-                             }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+                              // Convertir el label de vuelta al rol original para obtener el badge correcto
+                              const originalRole = Object.entries({
+                                'superadmin': '🔧 Super Admin',
+                                'company_owner': '👑 Company Owner',
+                                'company_admin': '👨‍💼 Company Admin',
+                                'dispatcher': '📋 Dispatcher',
+                                'driver': '🚛 Driver',
+                                'multi_company_dispatcher': '🏢 Multi-Company Dispatcher'
+                              }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
                              
                              return (
                                <span key={index} className="inline-flex items-center mr-1">
@@ -824,21 +802,19 @@ export default function Users() {
                             <div className="flex justify-between items-center">
                               <span className="text-sm text-muted-foreground">Rol:</span>
                               <div className="flex flex-wrap gap-1">
-                                {user.role.split(', ').map((roleLabel, index) => {
-                                  // Convertir el label de vuelta al rol original para obtener el badge correcto
-                                  const originalRole = Object.entries({
-                                    'superadmin': 'Super Admin',
-                                    'company_owner': 'Propietario',
-                                    'general_manager': 'Gerente General', 
-                                    'operations_manager': 'Gerente de Operaciones',
-                                    'safety_manager': 'Gerente de Seguridad',
-                                    'senior_dispatcher': 'Despachador Senior',
-                                    'dispatcher': 'Despachador',
-                                    'driver': 'Conductor',
-                                  }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
-                                  
-                                  return getRoleBadge(originalRole);
-                                })}
+                                 {user.role.split(', ').map((roleLabel, index) => {
+                                   // Convertir el label de vuelta al rol original para obtener el badge correcto
+                                   const originalRole = Object.entries({
+                                     'superadmin': '🔧 Super Admin',
+                                     'company_owner': '👑 Company Owner',
+                                     'company_admin': '👨‍💼 Company Admin',
+                                     'dispatcher': '📋 Dispatcher',
+                                     'driver': '🚛 Driver',
+                                     'multi_company_dispatcher': '🏢 Multi-Company Dispatcher'
+                                   }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+                                   
+                                   return getRoleBadge(originalRole);
+                                 })}
                               </div>
                             </div>
                             <div className="flex justify-between items-center">
