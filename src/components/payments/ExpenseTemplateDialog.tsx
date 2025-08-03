@@ -385,8 +385,8 @@ export function ExpenseTemplateDialog({
                      />
                      <CommandList>
                        <CommandEmpty>No se encontraron {selectedRole === 'driver' ? 'conductores' : 'despachadores'}.</CommandEmpty>
-                      <CommandGroup>
-                        {filteredUsers.map((user) => (
+                       <CommandGroup>
+                         {filteredUsers && filteredUsers.map((user) => (
                            <CommandItem
                              key={user.user_id}
                              value={`${user.first_name} ${user.last_name}`}
