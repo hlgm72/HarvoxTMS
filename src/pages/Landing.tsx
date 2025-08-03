@@ -106,7 +106,7 @@ export default function Landing() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center max-w-4xl mx-auto">
-            <Badge variant="secondary" className="mb-6">
+            <Badge variant="secondary" className="mb-6 bg-[#ff5d1d] text-white hover:bg-[#e54a16]">
               {t('landing:hero.badge')}
             </Badge>
             
