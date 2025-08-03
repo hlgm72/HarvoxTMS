@@ -130,7 +130,7 @@ export function useCreateOtherIncome() {
         console.log('🔄 Ejecutando recálculo manual del período:', result.payment_period_id);
         try {
           const { error: recalcError } = await supabase.rpc('recalculate_payment_period_totals', {
-            period_id: result.payment_period_id
+            target_period_id: result.payment_period_id
           });
           if (recalcError) {
             console.error('Error en recálculo manual:', recalcError);
@@ -250,7 +250,7 @@ export function useDeleteOtherIncome() {
         console.log('🔄 Ejecutando recálculo manual tras eliminación:', incomeData.payment_period_id);
         try {
           const { error: recalcError } = await supabase.rpc('recalculate_payment_period_totals', {
-            period_id: incomeData.payment_period_id
+            target_period_id: incomeData.payment_period_id
           });
           if (recalcError) {
             console.error('Error en recálculo manual:', recalcError);
