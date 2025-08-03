@@ -64,11 +64,13 @@ export default function Landing() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center space-x-3">
-              <img 
-                src={fleetNestLogo} 
-                alt="FleetNest Logo" 
-                className="h-10 w-10 object-contain"
-              />
+              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                <img 
+                  src={fleetNestLogo} 
+                  alt="FleetNest Logo" 
+                  className="w-8 h-8 object-contain"
+                />
+              </div>
               <span className="text-2xl font-bold text-primary">{t('common:app.name')}</span>
             </div>
             
@@ -252,11 +254,13 @@ export default function Landing() {
           <div className="grid md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
               <div className="flex items-center space-x-3 mb-4">
-                <img 
-                  src={fleetNestLogo} 
-                  alt="FleetNest Logo" 
-                  className="h-10 w-10 object-contain"
-                />
+                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                  <img 
+                    src={fleetNestLogo} 
+                    alt="FleetNest Logo" 
+                    className="w-8 h-8 object-contain"
+                  />
+                </div>
                 <span className="text-2xl font-bold text-primary">{t('common:app.name')}</span>
               </div>
               <p className="text-muted-foreground mb-4">
