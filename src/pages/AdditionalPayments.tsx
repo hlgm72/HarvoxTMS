@@ -5,19 +5,36 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { OtherIncomeSection } from "@/components/payments/OtherIncomeSection";
-import { Calculator, Users, UserCheck } from "lucide-react";
+import { Calculator, Users, UserCheck, Plus } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdditionalPayments() {
+  const { isDriver, isOperationsManager, isCompanyOwner } = useAuth();
   const [activeTab, setActiveTab] = useState("income");
   const [userType, setUserType] = useState("drivers"); // "drivers" | "dispatchers"
 
+  // Generar subtitle dinámico basado en el tipo de usuario seleccionado
+  const getSubtitle = () => {
+    const userTypeText = userType === "drivers" ? "conductores" : "despachadores";
+    return `Gestión de ingresos adicionales para ${userTypeText}`;
+  };
+
   return (
-    <div className="flex-1 space-y-4 p-8">
+    <div className="space-y-6">
       <PageToolbar 
-        title="Pagos Adicionales" 
-        subtitle="Gestión de ingresos adicionales para conductores y despachadores"
         icon={Calculator}
+        title="Pagos Adicionales" 
+        subtitle={getSubtitle()}
+        actions={
+          <div className="flex gap-2">
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              Nuevo Ingreso
+            </Button>
+          </div>
+        }
       />
 
       {/* Selector de tipo de usuario */}
