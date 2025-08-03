@@ -2566,6 +2566,10 @@ export type Database = {
         Args: { company_id_param: string; from_date: string; to_date: string }
         Returns: Json
       }
+      generate_load_percentage_deductions: {
+        Args: { load_id_param: string; period_calculation_id: string }
+        Returns: undefined
+      }
       generate_payment_periods: {
         Args:
           | { company_id_param: string; from_date: string; to_date: string }
