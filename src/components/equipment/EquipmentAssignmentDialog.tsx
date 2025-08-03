@@ -72,12 +72,6 @@ export function EquipmentAssignmentDialog({
   }, [driverUserId, selectedDriverId]);
 
 
-  // Debug logs
-  console.log('🚛 Available equipment:', equipment?.length || 0);
-  console.log('👨‍💼 Available drivers:', drivers?.length || 0);
-  console.log('🔧 Selected truck ID:', selectedTruckId);
-  console.log('👤 Selected driver ID:', selectedDriverId);
-
   // Filtrar equipos por tipo
   const availableTrucks = equipment?.filter(eq => {
     const assignment = getAssignmentByEquipment(eq.id);
@@ -88,9 +82,6 @@ export function EquipmentAssignmentDialog({
     const assignment = getAssignmentByEquipment(eq.id);
     return !assignment && eq.status === 'active' && eq.equipment_type === 'trailer';
   }) || [];
-
-  console.log('🚛 Available trucks:', availableTrucks.length);
-  console.log('🚚 Available trailers:', availableTrailers.length);
 
   // Filtrar conductores activos
   const activeDrivers = drivers?.filter(driver => driver.is_active) || [];

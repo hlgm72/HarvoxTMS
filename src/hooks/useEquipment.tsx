@@ -60,21 +60,12 @@ export function useEquipment() {
   const { user } = useAuth();
   const { userCompany, isLoading: companyLoading } = useCompanyCache();
 
-  console.log('🔧 useEquipment debug:', { 
-    user: user?.id, 
-    userCompany: userCompany?.company_id,
-    companyLoading 
-  });
-
   const equipmentQuery = useQuery({
     queryKey: ["equipment", userCompany?.company_id],
     queryFn: async () => {
       if (!userCompany?.company_id) {
-        console.log('🔧 No company_id available');
         throw new Error("No se pudo obtener información de la compañía");
       }
-
-      console.log('🔧 Fetching equipment for company:', userCompany.company_id);
 
       // Get equipment for user's company
       const { data, error } = await supabase
@@ -88,7 +79,6 @@ export function useEquipment() {
         throw error;
       }
 
-      console.log('🔧 Equipment fetched successfully:', data);
       return data as Equipment[];
     },
     enabled: !!userCompany?.company_id && !companyLoading,
@@ -139,7 +129,6 @@ export function useEquipment() {
       return data;
     },
     onSuccess: (data) => {
-      console.log('🔧 Equipment created successfully:', data);
       // Update cache immediately by adding the new equipment to the list
       queryClient.setQueryData(["equipment", userCompany?.company_id], (oldData: Equipment[] | undefined) => {
         return oldData ? [data, ...oldData] : [data];
@@ -176,7 +165,6 @@ export function useEquipment() {
       return data;
     },
     onSuccess: (data) => {
-      console.log('🔧 Equipment updated successfully:', data);
       // Force immediate refresh of equipment list
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
       queryClient.invalidateQueries({ queryKey: ["equipment-with-geotab"] });
@@ -208,7 +196,6 @@ export function useEquipment() {
       return id; // Return the deleted id
     },
     onSuccess: (deletedId) => {
-      console.log('🔧 Equipment deleted successfully');
       // Update cache immediately by removing the equipment from the list
       queryClient.setQueryData(["equipment", userCompany?.company_id], (oldData: Equipment[] | undefined) => {
         return oldData ? oldData.filter(equipment => equipment.id !== deletedId) : [];

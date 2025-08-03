@@ -18,9 +18,7 @@ export function useDriverEquipment(driverUserId?: string) {
     queryFn: async () => {
       if (!driverUserId) return [];
       
-      console.log('🚛 Fetching equipment for driver:', driverUserId);
-      
-      // Get equipment assignments for driver
+      if (!driverUserId) return [];
       const { data: assignments, error: assignmentsError } = await supabase
         .from('equipment_assignments')
         .select('id, assigned_date, is_active, equipment_id')
@@ -34,11 +32,8 @@ export function useDriverEquipment(driverUserId?: string) {
       }
 
       if (!assignments || assignments.length === 0) {
-        console.log('🚛 No equipment assignments found for driver');
         return [];
       }
-
-      console.log('🚛 Equipment assignments:', assignments);
 
       // Get equipment details separately to avoid relationship ambiguity
       const equipmentIds = assignments.map(a => a.equipment_id);
@@ -51,8 +46,6 @@ export function useDriverEquipment(driverUserId?: string) {
         console.error('🚛 Error fetching equipment details:', equipmentError);
         throw equipmentError;
       }
-
-      console.log('🚛 Equipment details:', equipment);
 
       // Transform the data to match our interface
       const result = assignments.map(assignment => {
@@ -69,7 +62,6 @@ export function useDriverEquipment(driverUserId?: string) {
         };
       }) as DriverEquipment[];
       
-      console.log('🚛 Transformed equipment result:', result);
       return result;
     },
     enabled: !!driverUserId,
