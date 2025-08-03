@@ -61,7 +61,10 @@ self.addEventListener('activate', (event) => {
           clients.forEach(client => {
             try {
               console.log('🔄 SW: Sending reload message to client');
-              client.postMessage({ type: 'CACHE_UPDATED' });
+              // Use postMessage without expecting a response to avoid the error
+              if (client.postMessage) {
+                client.postMessage({ type: 'CACHE_UPDATED' });
+              }
             } catch (error) {
               console.log('⚠️ SW: Could not send message to client:', error);
             }
