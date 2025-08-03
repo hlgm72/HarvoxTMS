@@ -446,7 +446,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
               </TabsTrigger>
               <TabsTrigger value="owner" className="flex items-center gap-2">
                 <Truck className="h-4 w-4" />
-                Owner-Operator
+                Dueño Operador
               </TabsTrigger>
             </TabsList>
 
