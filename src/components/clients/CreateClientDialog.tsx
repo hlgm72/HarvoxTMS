@@ -68,7 +68,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
       dot_number: '',
       mc_number: '',
       address: '',
-      email_domain: '',
+      email_domain: '@',
       logo_url: '',
       notes: '',
       dispatchers: [],
