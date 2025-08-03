@@ -36,6 +36,8 @@ export function CreateEventualDeductionDialog({
   const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
   
+  const [selectedRole, setSelectedRole] = useState<"driver" | "dispatcher">("driver");
+  
   const [formData, setFormData] = useState({
     driver_user_id: '',
     payment_period_id: '',
@@ -51,6 +53,7 @@ export function CreateEventualDeductionDialog({
   // Reset form when dialog opens
   useEffect(() => {
     if (isOpen) {
+      setSelectedRole("driver");
       setFormData({
         driver_user_id: '',
         payment_period_id: '',
@@ -78,29 +81,29 @@ export function CreateEventualDeductionDialog({
     }
   }, [isOpen]);
 
-  // Obtener conductores de la compañía
-  const { data: drivers = [] } = useQuery({
-    queryKey: ['company-drivers-eventual'],
+  // Obtener usuarios por rol seleccionado
+  const { data: users = [] } = useQuery({
+    queryKey: ['company-users-eventual', selectedRole],
     queryFn: async () => {
       try {
-        const { data: companyDrivers, error: driversError } = await supabase
+        const { data: companyUsers, error: usersError } = await supabase
           .from('user_company_roles')
           .select('user_id')
-          .eq('role', 'driver')
+          .eq('role', selectedRole)
           .eq('is_active', true);
 
-        if (driversError) throw driversError;
-        if (!companyDrivers || companyDrivers.length === 0) return [];
+        if (usersError) throw usersError;
+        if (!companyUsers || companyUsers.length === 0) return [];
 
         const { data: profiles, error: profilesError } = await supabase
           .from('profiles')
           .select('user_id, first_name, last_name')
-          .in('user_id', companyDrivers.map(d => d.user_id));
+          .in('user_id', companyUsers.map(d => d.user_id));
 
         if (profilesError) throw profilesError;
         return profiles || [];
       } catch (error) {
-        console.error('Error fetching drivers:', error);
+        console.error('Error fetching users:', error);
         return [];
       }
     },
@@ -249,7 +252,12 @@ export function CreateEventualDeductionDialog({
       const { error } = await supabase
         .from('expense_instances')
         .insert({
-          payment_period_id: companyPeriod.id,
+          payment_period_id: paymentPeriods.find(p => {
+            const today = new Date();
+            const startDate = parseISO(p.company_payment_periods.period_start_date);
+            const endDate = parseISO(p.company_payment_periods.period_end_date);
+            return isWithinInterval(today, { start: startDate, end: endDate });
+          })?.id,
           driver_user_id: formData.driver_user_id, // Nuevo campo agregado
           expense_type_id: formData.expense_type_id,
           amount: parseFloat(formData.amount),
@@ -258,6 +266,7 @@ export function CreateEventualDeductionDialog({
           status: 'planned',
           is_critical: false,
           priority: 5,
+          applied_to_role: selectedRole,
           created_by: user?.id
         });
 
@@ -326,8 +335,17 @@ export function CreateEventualDeductionDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <UserTypeSelector
+            value={selectedRole}
+            onChange={(role) => {
+              setSelectedRole(role);
+              setFormData(prev => ({ ...prev, driver_user_id: '' }));
+            }}
+            label="Tipo de Usuario"
+          />
+
           <div className="space-y-2">
-            <Label htmlFor="driver">Conductor</Label>
+            <Label htmlFor="user">{selectedRole === "driver" ? "Conductor" : "Despachador"}</Label>
             <Popover open={driverComboboxOpen} onOpenChange={setDriverComboboxOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -337,25 +355,25 @@ export function CreateEventualDeductionDialog({
                   className="w-full justify-between"
                 >
                   {formData.driver_user_id
-                    ? drivers.find((driver) => driver.user_id === formData.driver_user_id)?.first_name + " " + drivers.find((driver) => driver.user_id === formData.driver_user_id)?.last_name
-                    : "Seleccionar conductor..."}
+                    ? users.find((user) => user.user_id === formData.driver_user_id)?.first_name + " " + users.find((user) => user.user_id === formData.driver_user_id)?.last_name
+                    : `Seleccionar ${selectedRole === "driver" ? "conductor" : "despachador"}...`}
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-full p-0" align="start">
                 <Command>
-                  <CommandInput placeholder="Buscar conductor..." />
-                  <CommandEmpty>No se encontró conductor.</CommandEmpty>
+                  <CommandInput placeholder={`Buscar ${selectedRole === "driver" ? "conductor" : "despachador"}...`} />
+                  <CommandEmpty>No se encontró {selectedRole === "driver" ? "conductor" : "despachador"}.</CommandEmpty>
                   <CommandList>
                     <CommandGroup>
-                      {drivers.map((driver) => (
+                      {users.map((user) => (
                         <CommandItem
-                          key={driver.user_id}
-                          value={`${driver.first_name} ${driver.last_name}`}
+                          key={user.user_id}
+                          value={`${user.first_name} ${user.last_name}`}
                           onSelect={() => {
                             setFormData(prev => ({
                               ...prev,
-                              driver_user_id: driver.user_id,
+                              driver_user_id: user.user_id,
                               payment_period_id: '' // No longer needed with global periods
                             }));
                             setDriverComboboxOpen(false);
@@ -364,10 +382,10 @@ export function CreateEventualDeductionDialog({
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              formData.driver_user_id === driver.user_id ? "opacity-100" : "opacity-0"
+                              formData.driver_user_id === user.user_id ? "opacity-100" : "opacity-0"
                             )}
                           />
-                          {driver.first_name} {driver.last_name}
+                          {user.first_name} {user.last_name}
                         </CommandItem>
                       ))}
                     </CommandGroup>
@@ -396,7 +414,7 @@ export function CreateEventualDeductionDialog({
                 <div className="space-y-2">
                   <div className="p-3 border border-orange-200 bg-orange-50 rounded-md">
                     <p className="text-sm text-orange-800">
-                      No hay períodos de pago disponibles para este conductor.
+                      No hay períodos de pago disponibles para este {selectedRole === "driver" ? "conductor" : "despachador"}.
                     </p>
                     <p className="text-xs text-orange-600 mt-1">
                       Los períodos de pago deben estar en estado "abierto" o "procesando" para crear deducciones eventuales.
