@@ -2557,59 +2557,6 @@ export type Database = {
           },
         ]
       }
-      user_invitations: {
-        Row: {
-          accepted_at: string | null
-          company_id: string
-          created_at: string
-          email: string
-          expires_at: string
-          first_name: string | null
-          id: string
-          invitation_token: string
-          invited_by: string | null
-          last_name: string | null
-          role: Database["public"]["Enums"]["user_role"]
-          updated_at: string
-        }
-        Insert: {
-          accepted_at?: string | null
-          company_id: string
-          created_at?: string
-          email: string
-          expires_at?: string
-          first_name?: string | null
-          id?: string
-          invitation_token: string
-          invited_by?: string | null
-          last_name?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
-          updated_at?: string
-        }
-        Update: {
-          accepted_at?: string | null
-          company_id?: string
-          created_at?: string
-          email?: string
-          expires_at?: string
-          first_name?: string | null
-          id?: string
-          invitation_token?: string
-          invited_by?: string | null
-          last_name?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_invitations_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
       equipment_status_summary: {
@@ -2916,13 +2863,6 @@ export type Database = {
         Args: { user_id_param?: string }
         Returns: string[]
       }
-      get_user_company_roles: {
-        Args: { user_id_param: string }
-        Returns: {
-          company_id: string
-          role: Database["public"]["Enums"]["user_role"]
-        }[]
-      }
       get_user_email_by_id: {
         Args: { user_id_param: string }
         Returns: string
@@ -3083,19 +3023,6 @@ export type Database = {
         Args: { user_id_param: string; company_id_param: string }
         Returns: boolean
       }
-      validate_invitation_token: {
-        Args: { token_param: string }
-        Returns: {
-          invitation_id: string
-          company_id: string
-          email: string
-          role: Database["public"]["Enums"]["user_role"]
-          is_valid: boolean
-          company_name: string
-          first_name: string
-          last_name: string
-        }[]
-      }
       validate_reset_token: {
         Args: { token_param: string }
         Returns: {
@@ -3108,14 +3035,12 @@ export type Database = {
     }
     Enums: {
       user_role:
+        | "superadmin"
         | "company_owner"
+        | "operations_manager"
         | "senior_dispatcher"
         | "dispatcher"
         | "driver"
-        | "safety_manager"
-        | "superadmin"
-        | "general_manager"
-        | "operations_manager"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3244,14 +3169,12 @@ export const Constants = {
   public: {
     Enums: {
       user_role: [
+        "superadmin",
         "company_owner",
+        "operations_manager",
         "senior_dispatcher",
         "dispatcher",
         "driver",
-        "safety_manager",
-        "superadmin",
-        "general_manager",
-        "operations_manager",
       ],
     },
   },
