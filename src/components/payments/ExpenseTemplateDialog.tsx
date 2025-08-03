@@ -194,12 +194,12 @@ export function ExpenseTemplateDialog({
 
   const checkInactiveTemplate = async () => {
     try {
-      const { data, error } = await supabase
+      // Primero obtener la plantilla inactiva
+      const { data: templates, error } = await supabase
         .from('recurring_expense_templates')
         .select(`
           *,
-          expense_types(name),
-          driver_profile:profiles(first_name, last_name)
+          expense_types(name)
         `)
         .eq('user_id', formData.driver_user_id)
         .eq('expense_type_id', formData.expenseTypeId)
@@ -208,7 +208,29 @@ export function ExpenseTemplateDialog({
         .limit(1);
 
       if (error) throw error;
-      setInactiveTemplate(data?.[0] || null);
+
+      if (templates && templates.length > 0) {
+        // Obtener el perfil del usuario por separado
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('user_id', formData.driver_user_id)
+          .single();
+
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+        }
+
+        // Combinar los datos
+        const templateWithProfile = {
+          ...templates[0],
+          driver_profile: profile
+        };
+
+        setInactiveTemplate(templateWithProfile);
+      } else {
+        setInactiveTemplate(null);
+      }
     } catch (error) {
       console.error('Error checking inactive templates:', error);
     }
