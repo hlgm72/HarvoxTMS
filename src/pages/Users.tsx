@@ -47,6 +47,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { EditDriverModal } from "@/components/EditDriverModal";
+import { EditUserDialog } from "@/components/users/EditUserDialog";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { UserFiltersSheet } from "@/components/users/UserFiltersSheet";
 
@@ -943,6 +944,19 @@ export default function Users() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Dialog de edición general de usuario */}
+      <EditUserDialog
+        isOpen={editDialogOpen}
+        onClose={() => {
+          setEditDialogOpen(false);
+          setSelectedUser(null);
+        }}
+        user={selectedUser}
+        onSuccess={() => {
+          fetchUsers(); // Recargar la lista
+        }}
+      />
 
       {/* Modal de edición de conductor */}
       <EditDriverModal
