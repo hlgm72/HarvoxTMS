@@ -160,19 +160,12 @@ export default function Users() {
       // Obtener perfiles de usuarios
       const userIds = [...new Set(companyUsers.map(u => u.user_id))];
       
-      console.log('👥 User IDs to fetch profiles for:', userIds);
-      
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('user_id, first_name, last_name, avatar_url, phone')
         .in('user_id', userIds);
 
-      console.log('📋 Profiles fetched:', profiles);
-      console.log('📋 Profiles details:', profiles?.map(p => ({ user_id: p.user_id, first_name: p.first_name, last_name: p.last_name })));
-      if (profilesError) {
-        console.error('❌ Error fetching profiles:', profilesError);
-        throw profilesError;
-      }
+      if (profilesError) throw profilesError;
 
       // Agrupar por usuario para manejar múltiples roles
       const usersMap = new Map<string, User>();
