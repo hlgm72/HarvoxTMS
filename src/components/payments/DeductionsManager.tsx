@@ -394,16 +394,9 @@ export function DeductionsManager({
                           <h3 className="font-semibold">
                             {template.driver_profile?.first_name} {template.driver_profile?.last_name}
                           </h3>
-                          <div className="flex gap-1 flex-wrap">
-                            <p className="text-sm text-muted-foreground">
-                              {template.expense_types?.name}
-                            </p>
-                            {template.user_roles && template.user_roles.length > 1 && (
-                              <span className="text-xs bg-muted px-1 rounded">
-                                Roles: {template.user_roles.join(', ')}
-                              </span>
-                            )}
-                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {template.expense_types?.name}
+                          </p>
                         </div>
                       </div>
                       
