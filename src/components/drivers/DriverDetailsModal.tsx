@@ -91,9 +91,9 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
   const [loading, setLoading] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   
-  const { data: assignedEquipment = [], isLoading: equipmentLoading } = useDriverEquipment(driver.user_id);
-  const { data: driverCards = [], isLoading: cardsLoading } = useDriverCards(driver.user_id);
-  const { ownerOperator, isLoading: ownerOperatorLoading } = useOwnerOperator(driver.user_id);
+  const { data: assignedEquipment = [], isLoading: equipmentLoading, refetch: refetchEquipment } = useDriverEquipment(driver.user_id);
+  const { data: driverCards = [], isLoading: cardsLoading, refetch: refetchCards } = useDriverCards(driver.user_id);
+  const { ownerOperator, isLoading: ownerOperatorLoading, refetch: refetchOwnerOperator } = useOwnerOperator(driver.user_id);
 
   useEffect(() => {
     if (isOpen && driver.user_id) {
@@ -121,6 +121,16 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDriverUpdated = () => {
+    // Recargar todos los datos del modal de detalles
+    loadProfileData();
+    refetchEquipment();
+    refetchCards();
+    refetchOwnerOperator();
+    // Notificar a la página padre para que también actualice
+    onDriverUpdated?.();
   };
 
   const fullName = `${driver.first_name} ${driver.last_name}`.trim();
@@ -498,7 +508,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
           driver={driver}
           onSuccess={() => {
             setShowEditDialog(false);
-            onDriverUpdated?.();
+            handleDriverUpdated();
           }}
         />
       </DialogContent>

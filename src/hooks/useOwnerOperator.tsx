@@ -47,5 +47,6 @@ export const useOwnerOperator = (driverUserId?: string) => {
     isLoading: query.isLoading,
     error: query.error,
     isOwnerOperator: !!query.data,
+    refetch: query.refetch,
   };
 };
