@@ -11,6 +11,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import { useGeotabVehicles } from "@/hooks/useGeotabVehicles";
+import { capitalizeWords } from '@/lib/textUtils';
 
 export function EquipmentLocationMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -164,7 +165,7 @@ export function EquipmentLocationMap() {
                     <div className="text-sm text-muted-foreground space-y-1">
                       <p className="flex items-center gap-1">
                         <span>🚛</span>
-                        {equipment.geotab_vehicle?.name || equipment.make + ' ' + equipment.model}
+                        {equipment.geotab_vehicle?.name || capitalizeWords(equipment.make) + ' ' + capitalizeWords(equipment.model)}
                       </p>
                       {position && (
                         <>
@@ -229,7 +230,7 @@ export function EquipmentLocationMap() {
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground space-y-1">
-                    <p>{equipment.make} {equipment.model}</p>
+                    <p>{capitalizeWords(equipment.make)} {capitalizeWords(equipment.model)}</p>
                     <p className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {equipment.geotab_vehicle_id 

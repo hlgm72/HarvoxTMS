@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Truck, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { capitalizeWords } from '@/lib/textUtils';
 
 interface EquipmentItem {
   id: string;
@@ -84,7 +85,7 @@ export function EquipmentOverviewCard({
                 <div>
                   <div className="text-xs font-medium">{item.equipmentNumber}</div>
                   <div className="text-xs text-muted-foreground">
-                    {item.make} {item.model}
+                    {capitalizeWords(item.make)} {capitalizeWords(item.model)}
                   </div>
                 </div>
               </div>

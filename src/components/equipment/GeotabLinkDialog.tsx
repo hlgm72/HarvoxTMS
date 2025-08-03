@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Link, Unlink, MapPin, Truck } from "lucide-react";
 import { useGeotabVehicles } from "@/hooks/useGeotabVehicles";
+import { capitalizeWords } from '@/lib/textUtils';
 import { Equipment } from "@/hooks/useEquipment";
 
 interface GeotabLinkDialogProps {
@@ -69,7 +70,7 @@ export function GeotabLinkDialog({ open, onOpenChange, equipment }: GeotabLinkDi
               <Badge variant="outline">{equipment.equipment_type}</Badge>
             </div>
             <div className="text-sm text-muted-foreground">
-              {equipment.make && equipment.model ? `${equipment.make} ${equipment.model}` : 'Sin especificar'}
+              {equipment.make && equipment.model ? `${capitalizeWords(equipment.make)} ${capitalizeWords(equipment.model)}` : 'Sin especificar'}
               {equipment.year && ` (${equipment.year})`}
             </div>
           </div>
@@ -122,7 +123,7 @@ export function GeotabLinkDialog({ open, onOpenChange, equipment }: GeotabLinkDi
                       <div className="flex flex-col">
                         <span className="font-medium">{vehicle.name}</span>
                         <span className="text-xs text-muted-foreground">
-                          {vehicle.make && vehicle.model ? `${vehicle.make} ${vehicle.model}` : vehicle.geotab_id}
+                          {vehicle.make && vehicle.model ? `${capitalizeWords(vehicle.make)} ${capitalizeWords(vehicle.model)}` : vehicle.geotab_id}
                           {vehicle.license_plate && ` • ${vehicle.license_plate}`}
                         </span>
                       </div>

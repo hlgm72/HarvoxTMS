@@ -10,6 +10,7 @@ import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import type { Equipment } from "@/hooks/useEquipment";
 import { useEquipment } from "@/hooks/useEquipment";
+import { capitalizeWords } from "@/lib/textUtils";
 
 interface EquipmentGridProps {
   equipment: Equipment[];
@@ -104,7 +105,7 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
                     {item.equipment_number}
                   </h3>
                   <p className="text-sm text-muted-foreground truncate">
-                    {item.make} {item.model} {item.year}
+                    {capitalizeWords(item.make)} {capitalizeWords(item.model)} {item.year}
                   </p>
                 </div>
                 

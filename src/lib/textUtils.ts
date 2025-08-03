@@ -241,3 +241,16 @@ export const createDOTHandlers = (setValue: (value: string) => void) => {
     }
   };
 };
+
+/**
+ * Capitalizes the first letter of each word
+ * Used for displaying names, brands, etc.
+ */
+export const capitalizeWords = (text: string | undefined | null): string => {
+  if (!text) return '';
+  return text
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};

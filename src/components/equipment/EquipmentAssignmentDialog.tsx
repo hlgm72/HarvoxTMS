@@ -23,6 +23,7 @@ import { Separator } from '@/components/ui/separator';
 import { useEquipment } from '@/hooks/useEquipment';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { useEquipmentAssignments } from '@/hooks/useEquipmentAssignments';
+import { capitalizeWords } from '@/lib/textUtils';
 
 interface EquipmentAssignmentDialogProps {
   isOpen: boolean;
@@ -202,8 +203,8 @@ export function EquipmentAssignmentDialog({
                                   <div className="font-medium">
                                     {assignment.company_equipment?.equipment_number}
                                   </div>
-                                  <div className="text-sm text-muted-foreground">
-                                    {assignment.company_equipment?.make} {assignment.company_equipment?.model}
+                                   <div className="text-sm text-muted-foreground">
+                                     {capitalizeWords(assignment.company_equipment?.make)} {capitalizeWords(assignment.company_equipment?.model)}
                                     {assignment.company_equipment?.year && ` (${assignment.company_equipment.year})`}
                                   </div>
                                 </div>
@@ -244,8 +245,8 @@ export function EquipmentAssignmentDialog({
                                   <div className="font-medium">
                                     {assignment.company_equipment?.equipment_number}
                                   </div>
-                                  <div className="text-sm text-muted-foreground">
-                                    {assignment.company_equipment?.make} {assignment.company_equipment?.model}
+                                   <div className="text-sm text-muted-foreground">
+                                     {capitalizeWords(assignment.company_equipment?.make)} {capitalizeWords(assignment.company_equipment?.model)}
                                     {assignment.company_equipment?.year && ` (${assignment.company_equipment.year})`}
                                   </div>
                                 </div>
@@ -300,8 +301,8 @@ export function EquipmentAssignmentDialog({
                       <div className="flex items-center gap-2">
                         <Truck className="h-4 w-4 text-blue-600" />
                         <span className="font-medium">{truck.equipment_number}</span>
-                        <span className="text-muted-foreground">
-                          {truck.make} {truck.model}
+                         <span className="text-muted-foreground">
+                           {capitalizeWords(truck.make)} {capitalizeWords(truck.model)}
                           {truck.year && ` (${truck.year})`}
                         </span>
                         {truck.license_plate && (
@@ -339,8 +340,8 @@ export function EquipmentAssignmentDialog({
                     <div className="flex items-center gap-2">
                       <Truck className="h-4 w-4 text-green-600" />
                       <span className="font-medium">{trailer.equipment_number}</span>
-                      <span className="text-muted-foreground">
-                        {trailer.make} {trailer.model}
+                       <span className="text-muted-foreground">
+                         {capitalizeWords(trailer.make)} {capitalizeWords(trailer.model)}
                         {trailer.year && ` (${trailer.year})`}
                       </span>
                       {trailer.license_plate && (
