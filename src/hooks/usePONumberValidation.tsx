@@ -108,7 +108,7 @@ export const usePONumberValidation = (
     };
 
     validatePONumber();
-  }, [debouncedPONumber, skipValidation, excludeLoadId, userCompany?.company_id, companyUsers]);
+  }, [debouncedPONumber, skipValidation, excludeLoadId, userCompany?.company_id, companyUsers.length]);
 
   return validationResult;
 };
