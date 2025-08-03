@@ -27,7 +27,7 @@ export function useConsolidatedDispatchers() {
         return [];
       }
 
-      // Obtener dispatchers desde user_company_roles y profiles
+      // Get dispatchers from user_company_roles only
       const { data: dispatcherRoles, error: rolesError } = await supabase
         .from('user_company_roles')
         .select(`
@@ -51,36 +51,15 @@ export function useConsolidatedDispatchers() {
         return [];
       }
 
-      const dispatcherUserIds = dispatcherRoles.map(role => role.user_id);
-
-      // Obtener perfiles y datos adicionales de company_dispatchers
-      const [profilesResult, dispatchersResult] = await Promise.allSettled([
-        supabase
-          .from('profiles')
-          .select('user_id, first_name, last_name, phone')
-          .in('user_id', dispatcherUserIds),
-        
-        supabase
-          .from('company_dispatchers')
-          .select('user_id, email, first_name, last_name, phone')
-          .in('user_id', dispatcherUserIds)
-      ]);
-
-      const profiles = profilesResult.status === 'fulfilled' ? profilesResult.value.data || [] : [];
-      const dispatchers = dispatchersResult.status === 'fulfilled' ? dispatchersResult.value.data || [] : [];
-
-      // Combinar datos priorizando profiles sobre company_dispatchers
+      // Create consolidated dispatchers from available data
       const consolidatedDispatchers: ConsolidatedDispatcher[] = dispatcherRoles.map(role => {
-        const profile = profiles.find(p => p.user_id === role.user_id);
-        const dispatcher = dispatchers.find(d => d.user_id === role.user_id);
-
         return {
           id: role.user_id,
           user_id: role.user_id,
-          first_name: profile?.first_name || dispatcher?.first_name || '',
-          last_name: profile?.last_name || dispatcher?.last_name || '',
-          email: dispatcher?.email || '', // Solo está en company_dispatchers
-          phone: profile?.phone || dispatcher?.phone || '',
+          first_name: '', // No profile data available
+          last_name: '',
+          email: '', // No profile data available
+          phone: '',
           hire_date: role.hire_date,
           status: role.employment_status || 'active',
           created_at: role.created_at,
