@@ -929,7 +929,6 @@ export type Database = {
           created_at: string
           created_by: string | null
           description: string | null
-          driver_user_id: string
           expense_date: string | null
           expense_type_id: string
           id: string
@@ -940,6 +939,7 @@ export type Database = {
           recurring_template_id: string | null
           status: string
           updated_at: string
+          user_id: string
         }
         Insert: {
           amount: number
@@ -949,7 +949,6 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
-          driver_user_id: string
           expense_date?: string | null
           expense_type_id: string
           id?: string
@@ -960,6 +959,7 @@ export type Database = {
           recurring_template_id?: string | null
           status?: string
           updated_at?: string
+          user_id: string
         }
         Update: {
           amount?: number
@@ -969,7 +969,6 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
-          driver_user_id?: string
           expense_date?: string | null
           expense_type_id?: string
           id?: string
@@ -980,6 +979,7 @@ export type Database = {
           recurring_template_id?: string | null
           status?: string
           updated_at?: string
+          user_id?: string
         }
         Relationships: [
           {

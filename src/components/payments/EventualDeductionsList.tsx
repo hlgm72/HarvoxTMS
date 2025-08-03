@@ -107,7 +107,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
             const { data: profile } = await supabase
               .from('profiles')
               .select('first_name, last_name')
-              .eq('user_id', expense.driver_user_id)
+              .eq('user_id', expense.user_id)
               .single();
 
             return {
@@ -121,7 +121,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         // Aplicar filtro de conductor si está especificado
         if (filters?.driver && filters.driver !== 'all') {
           return enrichedData.filter(expense => 
-            expense.driver_user_id === filters.driver
+            expense.user_id === filters.driver
           );
         }
 

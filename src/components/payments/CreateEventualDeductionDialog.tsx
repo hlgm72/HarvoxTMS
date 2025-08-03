@@ -39,7 +39,7 @@ export function CreateEventualDeductionDialog({
   const [selectedRole, setSelectedRole] = useState<"driver" | "dispatcher">("driver");
   
   const [formData, setFormData] = useState({
-    driver_user_id: '',
+    user_id: '',
     payment_period_id: '',
     expense_type_id: '',
     amount: '',
@@ -55,7 +55,7 @@ export function CreateEventualDeductionDialog({
     if (isOpen) {
       setSelectedRole("driver");
       setFormData({
-        driver_user_id: '',
+        user_id: '',
         payment_period_id: '',
         expense_type_id: '',
         amount: '',
@@ -112,14 +112,14 @@ export function CreateEventualDeductionDialog({
 
   // Obtener períodos de pago de la empresa para el conductor seleccionado
   const { data: paymentPeriods = [], isLoading: isLoadingPeriods } = useQuery({
-    queryKey: ['company-payment-periods-for-driver', formData.driver_user_id],
+    queryKey: ['company-payment-periods-for-driver', formData.user_id],
     queryFn: async () => {
-      if (!formData.driver_user_id) {
+      if (!formData.user_id) {
         console.log('No driver selected');
         return [];
       }
 
-      console.log('Fetching periods for driver:', formData.driver_user_id);
+      console.log('Fetching periods for driver:', formData.user_id);
 
       try {
         // Primero obtenemos la empresa del conductor
@@ -127,7 +127,7 @@ export function CreateEventualDeductionDialog({
         const { data: userCompanyRoles, error: companyError } = await supabase
           .from('user_company_roles')
           .select('company_id')
-          .eq('user_id', formData.driver_user_id)
+          .eq('user_id', formData.user_id)
           .eq('is_active', true)
           .limit(1);
 
@@ -177,7 +177,7 @@ export function CreateEventualDeductionDialog({
             .from('driver_period_calculations')
             .select('id')
             .eq('company_payment_period_id', companyPeriod.id)
-            .eq('driver_user_id', formData.driver_user_id)
+            .eq('driver_user_id', formData.user_id)
             .maybeSingle();
 
           if (calcError && calcError.code !== 'PGRST116') {
@@ -194,7 +194,7 @@ export function CreateEventualDeductionDialog({
               .from('driver_period_calculations')
               .insert({
                 company_payment_period_id: companyPeriod.id,
-                driver_user_id: formData.driver_user_id,
+                driver_user_id: formData.user_id,
                 gross_earnings: 0,
                 total_deductions: 0,
                 other_income: 0,
@@ -225,7 +225,7 @@ export function CreateEventualDeductionDialog({
         return [];
       }
     },
-    enabled: !!formData.driver_user_id && isOpen
+    enabled: !!formData.user_id && isOpen
   });
 
   // Obtener tipos de gastos
@@ -258,7 +258,7 @@ export function CreateEventualDeductionDialog({
             const endDate = parseISO(p.company_payment_periods.period_end_date);
             return isWithinInterval(today, { start: startDate, end: endDate });
           })?.id,
-          driver_user_id: formData.driver_user_id, // Nuevo campo agregado
+          user_id: formData.user_id, // Campo actualizado
           expense_type_id: formData.expense_type_id,
           amount: parseFloat(formData.amount),
           description: formData.description,
@@ -317,7 +317,7 @@ export function CreateEventualDeductionDialog({
   })?.company_payment_periods;
 
   const isFormValid = 
-    formData.driver_user_id && 
+    formData.user_id &&
     companyPeriod &&
     formData.expense_type_id && 
     formData.amount && 
@@ -339,7 +339,7 @@ export function CreateEventualDeductionDialog({
             value={selectedRole}
             onChange={(role) => {
               setSelectedRole(role);
-              setFormData(prev => ({ ...prev, driver_user_id: '' }));
+              setFormData(prev => ({ ...prev, user_id: '' }));
             }}
             label="Tipo de Usuario"
           />
@@ -354,8 +354,8 @@ export function CreateEventualDeductionDialog({
                   aria-expanded={driverComboboxOpen}
                   className="w-full justify-between"
                 >
-                  {formData.driver_user_id
-                    ? users.find((user) => user.user_id === formData.driver_user_id)?.first_name + " " + users.find((user) => user.user_id === formData.driver_user_id)?.last_name
+                  {formData.user_id
+                    ? users.find((user) => user.user_id === formData.user_id)?.first_name + " " + users.find((user) => user.user_id === formData.user_id)?.last_name
                     : `Seleccionar ${selectedRole === "driver" ? "conductor" : "despachador"}...`}
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -373,7 +373,7 @@ export function CreateEventualDeductionDialog({
                           onSelect={() => {
                             setFormData(prev => ({
                               ...prev,
-                              driver_user_id: user.user_id,
+                              user_id: user.user_id,
                               payment_period_id: '' // No longer needed with global periods
                             }));
                             setDriverComboboxOpen(false);
@@ -382,7 +382,7 @@ export function CreateEventualDeductionDialog({
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              formData.driver_user_id === user.user_id ? "opacity-100" : "opacity-0"
+                              formData.user_id === user.user_id ? "opacity-100" : "opacity-0"
                             )}
                           />
                           {user.first_name} {user.last_name}
@@ -395,16 +395,16 @@ export function CreateEventualDeductionDialog({
             </Popover>
           </div>
 
-          {formData.driver_user_id && (
+          {formData.user_id && (
             <div className="space-y-2">
               <Label htmlFor="payment-period">Período de Pago</Label>
-              {formData.driver_user_id && isLoadingPeriods ? (
+              {formData.user_id && isLoadingPeriods ? (
                 <div className="p-3 border border-blue-200 bg-blue-50 rounded-md">
                   <p className="text-sm text-blue-800">
                     Cargando períodos de pago...
                   </p>
                 </div>
-              ) : !formData.driver_user_id ? (
+              ) : !formData.user_id ? (
                 <div className="p-3 border border-gray-200 bg-gray-50 rounded-md">
                   <p className="text-sm text-gray-600">
                     Selecciona un conductor para ver los períodos de pago disponibles.
