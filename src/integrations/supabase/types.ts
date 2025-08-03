@@ -2415,10 +2415,14 @@ export type Database = {
           created_at: string
           delegated_at: string | null
           delegated_by: string | null
+          employment_status: string | null
+          hire_date: string | null
           id: string
           is_active: boolean
           permissions: Json | null
           role: Database["public"]["Enums"]["user_role"]
+          termination_date: string | null
+          termination_reason: string | null
           updated_at: string
           user_id: string
         }
@@ -2427,10 +2431,14 @@ export type Database = {
           created_at?: string
           delegated_at?: string | null
           delegated_by?: string | null
+          employment_status?: string | null
+          hire_date?: string | null
           id?: string
           is_active?: boolean
           permissions?: Json | null
           role: Database["public"]["Enums"]["user_role"]
+          termination_date?: string | null
+          termination_reason?: string | null
           updated_at?: string
           user_id: string
         }
@@ -2439,10 +2447,14 @@ export type Database = {
           created_at?: string
           delegated_at?: string | null
           delegated_by?: string | null
+          employment_status?: string | null
+          hire_date?: string | null
           id?: string
           is_active?: boolean
           permissions?: Json | null
           role?: Database["public"]["Enums"]["user_role"]
+          termination_date?: string | null
+          termination_reason?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -2511,6 +2523,60 @@ export type Database = {
       }
     }
     Views: {
+      company_dispatchers_view: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          email: string | null
+          first_name: string | null
+          hire_date: string | null
+          id: string | null
+          last_name: string | null
+          phone: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_company_roles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_drivers_view: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          is_active: boolean | null
+          termination_date: string | null
+          termination_reason: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: never
+          is_active?: boolean | null
+          termination_date?: string | null
+          termination_reason?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: never
+          is_active?: boolean | null
+          termination_date?: string | null
+          termination_reason?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       equipment_status_summary: {
         Row: {
           annual_inspection_expiry_date: string | null

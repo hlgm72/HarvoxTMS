@@ -84,11 +84,12 @@ export function EditDriverModal({ isOpen, onClose, userId, userName }: EditDrive
   const loadDriverData = async () => {
     setLoading(true);
     try {
-      // Cargar datos del empleado
+      // Cargar datos del empleado desde user_company_roles consolidado
       const { data: companyDriver, error: companyDriverError } = await supabase
-        .from('company_drivers')
-        .select('*')
+        .from('user_company_roles')
+        .select('termination_date, termination_reason, is_active, hire_date')
         .eq('user_id', userId)
+        .eq('role', 'driver')
         .maybeSingle();
 
       if (companyDriverError) throw companyDriverError;

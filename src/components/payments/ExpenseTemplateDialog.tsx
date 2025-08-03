@@ -112,10 +112,11 @@ export function ExpenseTemplateDialog({
     queryKey: ['company-drivers'],
     queryFn: async () => {
       try {
-        // Obtenemos directamente de company_drivers
+        // Obtenemos directamente de user_company_roles consolidado
         const { data: companyDrivers, error: driversError } = await supabase
-          .from('company_drivers')
+          .from('user_company_roles')
           .select('user_id')
+          .eq('role', 'driver')
           .eq('is_active', true);
 
         if (driversError) {

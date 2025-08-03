@@ -137,10 +137,12 @@ export default function OwnerDashboard() {
         .eq('role', 'driver')
         .eq('is_active', true);
 
-      // Get active drivers count  
+      // Get active drivers count from consolidated structure
       const { count: activeDriversCount } = await supabase
-        .from('company_drivers')
+        .from('user_company_roles')
         .select('*', { count: 'exact', head: true })
+        .eq('company_id', userRole.company_id)
+        .eq('role', 'driver')
         .eq('is_active', true);
 
       // Get loads count for company drivers
@@ -229,11 +231,12 @@ export default function OwnerDashboard() {
 
       if (driverProfilesError) throw driverProfilesError;
 
-      // Get company drivers data
+      // Get company drivers data from consolidated structure
       const { data: companyDriversData, error: companyDriversError } = await supabase
-        .from('company_drivers')
-        .select('user_id, is_active, created_at')
-        .in('user_id', driverUserIds);
+        .from('user_company_roles')
+        .select('user_id, is_active, created_at, hire_date, termination_date')
+        .in('user_id', driverUserIds)
+        .eq('role', 'driver');
 
       if (companyDriversError) throw companyDriversError;
 
