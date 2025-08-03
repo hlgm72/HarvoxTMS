@@ -18,7 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDriverEquipment } from "@/hooks/useDriverEquipment";
 import { useDriverCards } from "@/hooks/useDriverCards";
 import { useOwnerOperator } from "@/hooks/useOwnerOperator";
-import { getExpiryInfo } from '@/lib/dateFormatting';
+import { getExpiryInfo, formatDateOnly } from '@/lib/dateFormatting';
 import { capitalizeWords } from '@/lib/textUtils';
 import type { ConsolidatedDriver } from "@/hooks/useConsolidatedDrivers";
 import { EditDriverDialog } from "./EditDriverDialog";
@@ -66,23 +66,43 @@ const formatExperience = (licenseIssueDate: string | null, hireDate: string | nu
   
   if (!experienceDate) return "No especificada";
   
-  const startDate = new Date(experienceDate);
-  const now = new Date();
-  const years = now.getFullYear() - startDate.getFullYear();
-  const months = now.getMonth() - startDate.getMonth();
-  
-  let totalMonths = years * 12 + months;
-  if (totalMonths < 0) totalMonths = 0;
-  
-  if (totalMonths < 12) {
-    return `${totalMonths} mes${totalMonths !== 1 ? 'es' : ''}`;
-  } else {
-    const yearCount = Math.floor(totalMonths / 12);
-    const monthCount = totalMonths % 12;
-    if (monthCount === 0) {
-      return `${yearCount} año${yearCount !== 1 ? 's' : ''}`;
+  try {
+    // Usar la función segura para parsear fechas
+    let year: number, month: number, day: number;
+    
+    if (experienceDate.includes('T') || experienceDate.includes('Z')) {
+      // Formato ISO: extraer solo la parte de fecha
+      const datePart = experienceDate.split('T')[0];
+      [year, month, day] = datePart.split('-').map(Number);
+    } else if (experienceDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      // Formato solo fecha: YYYY-MM-DD
+      [year, month, day] = experienceDate.split('-').map(Number);
+    } else {
+      return "No especificada";
     }
-    return `${yearCount} año${yearCount !== 1 ? 's' : ''} y ${monthCount} mes${monthCount !== 1 ? 'es' : ''}`;
+    
+    // Crear fecha local evitando problemas de zona horaria
+    const startDate = new Date(year, month - 1, day);
+    const now = new Date();
+    const years = now.getFullYear() - startDate.getFullYear();
+    const months = now.getMonth() - startDate.getMonth();
+    
+    let totalMonths = years * 12 + months;
+    if (totalMonths < 0) totalMonths = 0;
+    
+    if (totalMonths < 12) {
+      return `${totalMonths} mes${totalMonths !== 1 ? 'es' : ''}`;
+    } else {
+      const yearCount = Math.floor(totalMonths / 12);
+      const monthCount = totalMonths % 12;
+      if (monthCount === 0) {
+        return `${yearCount} año${yearCount !== 1 ? 's' : ''}`;
+      }
+      return `${yearCount} año${yearCount !== 1 ? 's' : ''} y ${monthCount} mes${monthCount !== 1 ? 'es' : ''}`;
+    }
+  } catch (error) {
+    console.error('Error calculating experience:', error);
+    return "No especificada";
   }
 };
 
@@ -241,7 +261,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
                       <p className="text-sm font-medium">Fecha de Contratación</p>
                       <p className="text-sm text-muted-foreground">
                         {driver.hire_date 
-                          ? format(new Date(driver.hire_date), 'dd/MM/yyyy', { locale: es })
+                          ? formatDateOnly(driver.hire_date)
                           : 'No especificada'
                         }
                       </p>
@@ -318,7 +338,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
                       <p className="text-sm font-medium">Fecha de Emisión</p>
                       <p className="text-sm text-muted-foreground">
                         {driver.license_issue_date 
-                          ? format(new Date(driver.license_issue_date), 'dd/MM/yyyy', { locale: es })
+                          ? formatDateOnly(driver.license_issue_date)
                           : 'No especificada'
                         }
                       </p>
@@ -329,14 +349,14 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Fecha de Vencimiento</p>
-                      <div className="flex flex-col">
-                        <p className="text-sm text-muted-foreground">
-                          {driver.license_expiry_date 
-                            ? format(new Date(driver.license_expiry_date), 'dd/MM/yyyy', { locale: es })
-                            : 'No especificada'
-                          }
-                        </p>
-                        {driver.license_expiry_date && (
+                       <div className="flex flex-col">
+                         <p className="text-sm text-muted-foreground">
+                           {driver.license_expiry_date 
+                             ? formatDateOnly(driver.license_expiry_date)
+                             : 'No especificada'
+                           }
+                         </p>
+                         {driver.license_expiry_date && (
                           <>
                             {getExpiryInfo(driver.license_expiry_date).isExpired && (
                               <span className="text-red-600 font-semibold text-xs">⚠️ VENCIDA</span>
@@ -384,7 +404,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
                             {capitalizeWords(equipment.make)} {capitalizeWords(equipment.model)} {equipment.year}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Asignado: {format(new Date(equipment.assigned_date), 'dd/MM/yyyy', { locale: es })}
+                            Asignado: {formatDateOnly(equipment.assigned_date)}
                           </p>
                         </div>
                         <Badge variant={equipment.is_active ? "default" : "secondary"}>
@@ -426,7 +446,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
                             **** **** **** {card.card_number_last_five}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Asignada: {format(new Date(card.assigned_date), 'dd/MM/yyyy', { locale: es })}
+                            Asignada: {formatDateOnly(card.assigned_date)}
                           </p>
                         </div>
                         <Badge variant={card.is_active ? "default" : "secondary"}>
