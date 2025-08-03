@@ -69,7 +69,7 @@ export function DeductionsManager({
       
       // Obtener todos los usuarios de la empresa (conductores y dispatchers)
       let roleFilter: ('driver' | 'dispatcher')[] = ['driver', 'dispatcher'];
-      if (filters?.userRole) {
+      if (filters?.userRole && filters.userRole !== 'all') {
         roleFilter = [filters.userRole as 'driver' | 'dispatcher'];
       }
       
@@ -174,7 +174,7 @@ export function DeductionsManager({
       
       // Obtener todos los usuarios de la empresa (conductores y dispatchers)
       let roleFilter: ('driver' | 'dispatcher')[] = ['driver', 'dispatcher'];
-      if (filters?.userRole) {
+      if (filters?.userRole && filters.userRole !== 'all') {
         roleFilter = [filters.userRole as 'driver' | 'dispatcher'];
       }
       
