@@ -138,6 +138,16 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
 
       if (driverError) throw driverError;
 
+      // Cargar fecha de contratación desde user_company_roles
+      const { data: roleData, error: roleError } = await supabase
+        .from('user_company_roles')
+        .select('hire_date')
+        .eq('user_id', driver.user_id)
+        .eq('role', 'driver')
+        .maybeSingle();
+
+      if (roleError) throw roleError;
+
       // Cargar datos de owner operator
       const { data: ownerOperator, error: ownerOperatorError } = await supabase
         .from('owner_operators')
@@ -157,9 +167,9 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
         phone: profile?.phone || '',
         date_of_birth: driverProfile?.date_of_birth ? new Date(driverProfile.date_of_birth) : null,
         
-        // Información de empleo
+        // Información de empleo - ahora desde user_company_roles
         driver_id: driverProfile?.driver_id || '',
-        hire_date: driverProfile?.hire_date ? new Date(driverProfile.hire_date) : null,
+        hire_date: roleData?.hire_date ? new Date(roleData.hire_date) : null,
         
         // Información de licencia
         license_number: driverProfile?.license_number || '',
@@ -315,6 +325,17 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
         });
 
       if (driverError) throw driverError;
+
+      // Actualizar fecha de contratación en user_company_roles
+      const { error: roleError } = await supabase
+        .from('user_company_roles')
+        .update({
+          hire_date: driverData.hire_date ? formatDateInUserTimeZone(driverData.hire_date) : null,
+        })
+        .eq('user_id', driver.user_id)
+        .eq('role', 'driver');
+
+      if (roleError) throw roleError;
 
       // Gestionar datos de owner operator basándose en el switch
       if (driverData.is_owner_operator) {
