@@ -465,6 +465,64 @@ export default function Users() {
     }
   };
 
+  // Función para obtener badge de rol con colores
+  const getRoleBadge = (role: string) => {
+    const roleConfig: Record<string, { label: string; variant: string; className: string }> = {
+      'superadmin': { 
+        label: 'Super Admin', 
+        variant: 'default',
+        className: 'bg-purple-100 text-purple-800 border-purple-200'
+      },
+      'company_owner': { 
+        label: 'Propietario', 
+        variant: 'default',
+        className: 'bg-blue-100 text-blue-800 border-blue-200'
+      },
+      'general_manager': { 
+        label: 'Gerente General', 
+        variant: 'default',
+        className: 'bg-indigo-100 text-indigo-800 border-indigo-200'
+      },
+      'operations_manager': { 
+        label: 'Gerente de Operaciones', 
+        variant: 'default',
+        className: 'bg-green-100 text-green-800 border-green-200'
+      },
+      'safety_manager': { 
+        label: 'Gerente de Seguridad', 
+        variant: 'default',
+        className: 'bg-yellow-100 text-yellow-800 border-yellow-200'
+      },
+      'senior_dispatcher': { 
+        label: 'Despachador Senior', 
+        variant: 'default',
+        className: 'bg-orange-100 text-orange-800 border-orange-200'
+      },
+      'dispatcher': { 
+        label: 'Despachador', 
+        variant: 'default',
+        className: 'bg-cyan-100 text-cyan-800 border-cyan-200'
+      },
+      'driver': { 
+        label: 'Conductor', 
+        variant: 'default',
+        className: 'bg-gray-100 text-gray-800 border-gray-200'
+      },
+    };
+
+    const config = roleConfig[role] || { 
+      label: role, 
+      variant: 'outline',
+      className: 'bg-gray-50 text-gray-600 border-gray-300'
+    };
+
+    return (
+      <Badge variant={config.variant as any} className={config.className}>
+        {config.label}
+      </Badge>
+    );
+  };
+
   // Jerarquía de roles según importancia organizacional (misma que RoleSwitcher)
   const getRoleLabel = (role: string) => {
     const roleLabels: Record<string, string> = {
@@ -477,6 +535,7 @@ export default function Users() {
       'dispatcher': 'Despachador',
       'driver': 'Conductor',
     };
+    
     
     return roleLabels[role] || role;
   };
@@ -643,9 +702,28 @@ export default function Users() {
                         </TableCell>
                         <TableCell>{user.email}</TableCell>
                         <TableCell>{user.phone || 'No especificado'}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{user.role}</Badge>
-                        </TableCell>
+                         <TableCell>
+                           {user.role.split(', ').map((roleLabel, index) => {
+                             // Convertir el label de vuelta al rol original para obtener el badge correcto
+                             const originalRole = Object.entries({
+                               'superadmin': 'Super Admin',
+                               'company_owner': 'Propietario',
+                               'general_manager': 'Gerente General', 
+                               'operations_manager': 'Gerente de Operaciones',
+                               'safety_manager': 'Gerente de Seguridad',
+                               'senior_dispatcher': 'Despachador Senior',
+                               'dispatcher': 'Despachador',
+                               'driver': 'Conductor',
+                             }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+                             
+                             return (
+                               <span key={index} className="inline-flex items-center mr-1">
+                                 {getRoleBadge(originalRole)}
+                                 {index < user.role.split(', ').length - 1 && <span className="mx-1">•</span>}
+                               </span>
+                             );
+                           })}
+                         </TableCell>
                         <TableCell>{getStatusBadge(user.status)}</TableCell>
                         <TableCell>
                           {new Date(user.created_at).toLocaleDateString()}
@@ -745,7 +823,23 @@ export default function Users() {
                             </div>
                             <div className="flex justify-between items-center">
                               <span className="text-sm text-muted-foreground">Rol:</span>
-                              <Badge variant="outline">{user.role}</Badge>
+                              <div className="flex flex-wrap gap-1">
+                                {user.role.split(', ').map((roleLabel, index) => {
+                                  // Convertir el label de vuelta al rol original para obtener el badge correcto
+                                  const originalRole = Object.entries({
+                                    'superadmin': 'Super Admin',
+                                    'company_owner': 'Propietario',
+                                    'general_manager': 'Gerente General', 
+                                    'operations_manager': 'Gerente de Operaciones',
+                                    'safety_manager': 'Gerente de Seguridad',
+                                    'senior_dispatcher': 'Despachador Senior',
+                                    'dispatcher': 'Despachador',
+                                    'driver': 'Conductor',
+                                  }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+                                  
+                                  return getRoleBadge(originalRole);
+                                })}
+                              </div>
                             </div>
                             <div className="flex justify-between items-center">
                               <span className="text-sm text-muted-foreground">Estado:</span>
