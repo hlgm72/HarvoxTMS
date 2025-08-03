@@ -234,7 +234,7 @@ export default function OwnerDashboard() {
       // Get company drivers data from consolidated structure
       const { data: companyDriversData, error: companyDriversError } = await supabase
         .from('user_company_roles')
-        .select('user_id, is_active, created_at, hire_date, termination_date')
+        .select('user_id, is_active, created_at, termination_date')
         .in('user_id', driverUserIds)
         .eq('role', 'driver');
 

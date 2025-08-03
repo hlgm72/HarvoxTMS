@@ -66,7 +66,6 @@ export const useConsolidatedDrivers = () => {
           .from('user_company_roles')
           .select(`
             user_id,
-            hire_date,
             termination_date,
             termination_reason,
             is_active
@@ -90,7 +89,7 @@ export const useConsolidatedDrivers = () => {
         const [profilesResult, driverProfilesResult, activeLoadsResult] = await Promise.allSettled([
           supabase
             .from('profiles')
-            .select('user_id, first_name, last_name, phone, avatar_url')
+            .select('user_id, first_name, last_name, phone, avatar_url, hire_date')
             .in('user_id', finalDriverUserIds),
           
           supabase
@@ -153,7 +152,7 @@ export const useConsolidatedDrivers = () => {
             license_state: driverProfile?.license_state || null,
             cdl_class: driverProfile?.cdl_class || null,
             license_issue_date: driverProfile?.license_issue_date || null,
-            hire_date: driverRole?.hire_date || null,
+            hire_date: profile.hire_date || null,
             termination_date: driverRole?.termination_date || null,
             termination_reason: driverRole?.termination_reason || null,
             is_active: driverRole?.is_active ?? true,

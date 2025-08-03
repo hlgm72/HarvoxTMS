@@ -32,7 +32,6 @@ export function useConsolidatedDispatchers() {
         .from('user_company_roles')
         .select(`
           user_id,
-          hire_date,
           employment_status,
           created_at,
           updated_at
@@ -60,7 +59,7 @@ export function useConsolidatedDispatchers() {
           last_name: '',
           email: '', // No profile data available
           phone: '',
-          hire_date: role.hire_date,
+          hire_date: undefined, // hire_date now comes from profiles table
           status: role.employment_status || 'active',
           created_at: role.created_at,
           updated_at: role.updated_at
