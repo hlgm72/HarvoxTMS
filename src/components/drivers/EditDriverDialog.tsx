@@ -458,12 +458,17 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                         showYearDropdown
                         showMonthDropdown
                         dropdownMode="select"
-                        yearDropdownItemNumber={100}
+                        yearDropdownItemNumber={53}
                         scrollableYearDropdown
                         locale={es}
+                        minDate={new Date(new Date().getFullYear() - 70, 0, 1)}
+                        maxDate={new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate())}
                         className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
                       />
                     </div>
+                    <p className="text-xs text-muted-foreground">
+                      Edad permitida: entre 18 y 70 años
+                    </p>
                   </div>
                 </div>
 
