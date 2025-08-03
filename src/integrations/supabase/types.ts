@@ -2912,6 +2912,10 @@ export type Database = {
           company_id: string
         }[]
       }
+      get_user_company_ids: {
+        Args: { user_id_param?: string }
+        Returns: string[]
+      }
       get_user_company_roles: {
         Args: { user_id_param: string }
         Returns: {
