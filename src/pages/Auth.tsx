@@ -12,7 +12,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
 import { createTextHandlers } from '@/lib/textUtils';
-const fleetNestLogo = '/lovable-uploads/b93b0656-3a21-4d5e-b4f1-28e577baa37c.png';
+const fleetNestLogo = '/lovable-uploads/5c7a45cc-cbab-4c8e-81d7-37f823323ba9.png';
 
 export default function Auth() {
   const { t, i18n } = useTranslation(['auth', 'common']);
@@ -574,7 +574,7 @@ export default function Auth() {
               <img 
                 src={fleetNestLogo}
                 alt="FleetNest Logo" 
-                className="h-16 w-16 object-contain filter drop-shadow-lg"
+                className="h-16 w-16 object-contain"
               />
               <span className="text-3xl font-heading font-bold text-white drop-shadow-lg">{t('common:app.name')}</span>
             </div>
@@ -647,7 +647,7 @@ export default function Auth() {
                 <img 
                   src={fleetNestLogo}
                   alt="FleetNest Logo" 
-                  className="h-12 w-12 object-contain filter drop-shadow-lg"
+                  className="h-12 w-12 object-contain"
                 />
                 <span className="text-xl font-heading font-bold text-white drop-shadow-lg">{t('common:app.name')}</span>
               </div>

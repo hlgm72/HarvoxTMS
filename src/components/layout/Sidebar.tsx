@@ -649,13 +649,11 @@ export function AppSidebar() {
         <div className={`flex items-center transition-all duration-300 ${collapsed ? 'justify-center' : 'gap-4'}`}>
           {/* Logo Container with Professional Styling */}
           <div className="relative group">
-            <div className={`${collapsed ? 'w-14 h-14' : 'w-20 h-20'} bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105`}>
                <img 
-                src="/lovable-uploads/b93b0656-3a21-4d5e-b4f1-28e577baa37c.png" 
-                alt="FleetNest Logo" 
-                className={`${collapsed ? 'w-11 h-11' : 'w-[68px] h-[68px]'} object-contain transition-all duration-300 group-hover:scale-110`}
-               />
-            </div>
+                 src="/lovable-uploads/5c7a45cc-cbab-4c8e-81d7-37f823323ba9.png" 
+                 alt="FleetNest Logo" 
+                 className={`${collapsed ? 'w-11 h-11' : 'w-[68px] h-[68px]'} object-contain transition-all duration-300 group-hover:scale-110`}
+                />
           </div>
           
           {!collapsed && (

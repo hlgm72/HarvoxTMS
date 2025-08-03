@@ -17,7 +17,7 @@ import {
 import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-const fleetNestLogo = '/lovable-uploads/b93b0656-3a21-4d5e-b4f1-28e577baa37c.png';
+const fleetNestLogo = '/lovable-uploads/5c7a45cc-cbab-4c8e-81d7-37f823323ba9.png';
 
 export default function Landing() {
   const { t } = useTranslation(['landing', 'common']);
