@@ -11,6 +11,7 @@ import { getExpiryInfo } from '@/lib/dateFormatting';
 import { useState } from "react";
 import { InviteDriverDialog } from "@/components/drivers/InviteDriverDialog";
 import { EquipmentAssignmentDialog } from "@/components/equipment/EquipmentAssignmentDialog";
+import { DriverDetailsModal } from "@/components/drivers/DriverDetailsModal";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -99,7 +100,9 @@ export default function Drivers() {
   const { drivers, loading, refetch } = useCompanyDrivers();
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showAssignmentDialog, setShowAssignmentDialog] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState<string>('');
+  const [selectedDriver, setSelectedDriver] = useState<any>(null);
 
   // Force cache invalidation and refetch on mount to get latest data
   useState(() => {
@@ -288,7 +291,15 @@ export default function Drivers() {
                   </div>
                   
                   <div className="flex gap-2 mt-4">
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => {
+                        setSelectedDriver(driver);
+                        setShowDetailsModal(true);
+                      }}
+                    >
                       Ver Detalles
                     </Button>
                     <Button 
@@ -330,6 +341,17 @@ export default function Drivers() {
         }}
         driverUserId={selectedDriverId}
       />
+
+      {selectedDriver && (
+        <DriverDetailsModal
+          isOpen={showDetailsModal}
+          onClose={() => {
+            setShowDetailsModal(false);
+            setSelectedDriver(null);
+          }}
+          driver={selectedDriver}
+        />
+      )}
     </>
   );
 }
