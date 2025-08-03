@@ -2397,13 +2397,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_user_company_roles_company"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "user_company_roles_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
