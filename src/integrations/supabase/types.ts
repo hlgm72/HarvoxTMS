@@ -235,6 +235,13 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_company_clients_company_id"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
         ]
       }
       company_documents: {
@@ -381,6 +388,13 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "fk_company_equipment_company"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_company_equipment_company_id"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
@@ -731,6 +745,20 @@ export type Database = {
             referencedRelation: "equipment_status_summary"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_equipment_assignments_equipment_id"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "company_equipment"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_equipment_assignments_equipment_id"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment_status_summary"
+            referencedColumns: ["id"]
+          },
         ]
       }
       equipment_documents: {
@@ -861,7 +889,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           description: string | null
-          driver_user_id: string | null
+          driver_user_id: string
           expense_date: string | null
           expense_type_id: string
           id: string
@@ -880,7 +908,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
-          driver_user_id?: string | null
+          driver_user_id: string
           expense_date?: string | null
           expense_type_id: string
           id?: string
@@ -899,7 +927,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
-          driver_user_id?: string | null
+          driver_user_id?: string
           expense_date?: string | null
           expense_type_id?: string
           id?: string
@@ -2397,6 +2425,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_user_company_roles_company_id"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "user_company_roles_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -2497,6 +2532,13 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "fk_company_equipment_company"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_company_equipment_company_id"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
