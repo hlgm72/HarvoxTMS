@@ -28,24 +28,15 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Database } from '@/integrations/supabase/types';
+import { getRoleConfig, getRoleLabel as getRoleUtilLabel } from '@/lib/roleUtils';
 
 type UserRole = Database['public']['Enums']['user_role'];
 
 const availableRoles: { value: UserRole; label: string; description: string }[] = [
   {
-    value: 'general_manager',
-    label: 'Gerente General',
-    description: 'Gestión completa de operaciones y estrategia'
-  },
-  {
-    value: 'operations_manager',
-    label: 'Gerente de Operaciones',
-    description: 'Supervisión de operaciones diarias'
-  },
-  {
-    value: 'senior_dispatcher',
-    label: 'Dispatcher Senior',
-    description: 'Gestión avanzada de despacho y coordinación'
+    value: 'company_admin',
+    label: 'Administrador de Compañía',
+    description: 'Gestión administrativa y operacional'
   },
   {
     value: 'dispatcher',
@@ -53,26 +44,17 @@ const availableRoles: { value: UserRole; label: string; description: string }[] 
     description: 'Coordinación de cargas y conductores'
   },
   {
+    value: 'multi_company_dispatcher',
+    label: 'Dispatcher Multi-Compañía',
+    description: 'Gestión de despacho para múltiples compañías'
+  },
+  {
     value: 'driver',
     label: 'Conductor',
     description: 'Operación directa de vehículos'
   },
-  {
-    value: 'safety_manager',
-    label: 'Gerente de Seguridad',
-    description: 'Gestión de seguridad y cumplimiento'
-  },
 ];
 
-const roleColors = {
-  company_owner: 'bg-blue-100 text-blue-800',
-  general_manager: 'bg-green-100 text-green-800',
-  operations_manager: 'bg-orange-100 text-orange-800',
-  senior_dispatcher: 'bg-indigo-100 text-indigo-800',
-  dispatcher: 'bg-cyan-100 text-cyan-800',
-  driver: 'bg-emerald-100 text-emerald-800',
-  safety_manager: 'bg-red-100 text-red-800',
-};
 
 export const SelfRoleManager = () => {
   const [selectedRole, setSelectedRole] = useState<UserRole | ''>('');
@@ -122,7 +104,7 @@ export const SelfRoleManager = () => {
 
   const getRoleLabel = (role: UserRole) => {
     if (role === 'company_owner') return 'Propietario';
-    return availableRoles.find(r => r.value === role)?.label || role;
+    return availableRoles.find(r => r.value === role)?.label || getRoleUtilLabel(role, false);
   };
 
   return (
@@ -144,7 +126,7 @@ export const SelfRoleManager = () => {
               <div key={userRole.id} className="flex items-center gap-2">
                 <Badge 
                   variant="secondary"
-                  className={roleColors[userRole.role as keyof typeof roleColors] || ''}
+                  className={getRoleConfig(userRole.role).className}
                 >
                   <User className="h-3 w-3 mr-1" />
                   {getRoleLabel(userRole.role as UserRole)}

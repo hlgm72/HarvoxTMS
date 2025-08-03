@@ -22,26 +22,6 @@ export const ROLE_CONFIGS: Record<string, RoleConfig> = {
     emoji: '👨‍💼',
     className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
   },
-  'operations_manager': {
-    label: 'Operations Manager',
-    emoji: '👨‍💼',
-    className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
-  },
-  'general_manager': {
-    label: 'General Manager',
-    emoji: '👨‍💼',
-    className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
-  },
-  'safety_manager': {
-    label: 'Safety Manager',
-    emoji: '⚠️',
-    className: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-700'
-  },
-  'senior_dispatcher': {
-    label: 'Senior Dispatcher',
-    emoji: '📋',
-    className: 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-700'
-  },
   'dispatcher': {
     label: 'Dispatcher',
     emoji: '📋',
