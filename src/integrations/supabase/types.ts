@@ -675,7 +675,6 @@ export type Database = {
           driver_id: string | null
           emergency_contact_name: string | null
           emergency_contact_phone: string | null
-          hire_date: string | null
           id: string
           is_active: boolean
           license_expiry_date: string | null
@@ -692,7 +691,6 @@ export type Database = {
           driver_id?: string | null
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
-          hire_date?: string | null
           id?: string
           is_active?: boolean
           license_expiry_date?: string | null
@@ -709,7 +707,6 @@ export type Database = {
           driver_id?: string | null
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
-          hire_date?: string | null
           id?: string
           is_active?: boolean
           license_expiry_date?: string | null
@@ -2501,7 +2498,6 @@ export type Database = {
           delegated_at: string | null
           delegated_by: string | null
           employment_status: string | null
-          hire_date: string | null
           id: string
           is_active: boolean
           permissions: Json | null
@@ -2517,7 +2513,6 @@ export type Database = {
           delegated_at?: string | null
           delegated_by?: string | null
           employment_status?: string | null
-          hire_date?: string | null
           id?: string
           is_active?: boolean
           permissions?: Json | null
@@ -2533,7 +2528,6 @@ export type Database = {
           delegated_at?: string | null
           delegated_by?: string | null
           employment_status?: string | null
-          hire_date?: string | null
           id?: string
           is_active?: boolean
           permissions?: Json | null
