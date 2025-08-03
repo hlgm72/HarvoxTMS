@@ -2587,6 +2587,10 @@ export type Database = {
         Args: { document_id: string }
         Returns: Json
       }
+      archive_old_loads: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       assign_first_superadmin: {
         Args: { target_user_id: string }
         Returns: Json
