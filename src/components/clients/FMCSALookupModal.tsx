@@ -177,19 +177,19 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
             <div className="flex gap-2">
               <Button
                 type="button"
-                variant={searchType === "DOT" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSearchType("DOT")}
-              >
-                DOT
-              </Button>
-              <Button
-                type="button"
                 variant={searchType === "MC" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSearchType("MC")}
               >
-                MC
+                MC #
+              </Button>
+              <Button
+                type="button"
+                variant={searchType === "DOT" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSearchType("DOT")}
+              >
+                DOT #
               </Button>
               <Button
                 type="button"
