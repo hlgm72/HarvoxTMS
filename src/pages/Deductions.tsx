@@ -108,22 +108,24 @@ export default function Deductions() {
 
           <TabsContent value="drivers" className="space-y-4">
             <DeductionsManager 
-              filters={filters}
+              filters={{
+                ...filters,
+                // Filtrar solo conductores en este tab
+                userRole: 'driver'
+              }}
               viewConfig={viewConfig}
             />
           </TabsContent>
 
           <TabsContent value="dispatchers" className="space-y-4">
-            <div className="text-center py-8">
-              <Navigation className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Deducciones para Dispatchers</h3>
-              <p className="text-muted-foreground mb-4">
-                Funcionalidad en desarrollo - Próximamente podrás gestionar deducciones para dispatchers
-              </p>
-              <Button variant="outline" disabled>
-                Crear Deducción para Dispatcher
-              </Button>
-            </div>
+            <DeductionsManager 
+              filters={{
+                ...filters,
+                // Filtrar solo dispatchers en este tab
+                userRole: 'dispatcher'
+              }}
+              viewConfig={viewConfig}
+            />
           </TabsContent>
         </Tabs>
       </div>

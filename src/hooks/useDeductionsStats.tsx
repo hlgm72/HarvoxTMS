@@ -30,25 +30,25 @@ export function useDeductionsStats() {
       // Tomar la primera empresa (en caso de múltiples roles)
       const companyId = userRoles[0].company_id;
 
-      // Obtener conductores de la empresa
-      const { data: driverRoles } = await supabase
+      // Obtener todos los usuarios de la empresa (conductores y dispatchers)
+      const { data: companyUsers } = await supabase
         .from('user_company_roles')
         .select('user_id')
         .eq('company_id', companyId)
-        .eq('role', 'driver')
+        .in('role', ['driver', 'dispatcher'])
         .eq('is_active', true);
 
-      if (!driverRoles || driverRoles.length === 0) {
+      if (!companyUsers || companyUsers.length === 0) {
         return { activeTemplates: 0, totalMonthlyAmount: 0, affectedDrivers: 0 };
       }
 
-      const driverIds = driverRoles.map(role => role.user_id);
+      const userIds = companyUsers.map(role => role.user_id);
 
       // Obtener plantillas activas para estos conductores
       const { data: templates, error } = await supabase
         .from('recurring_expense_templates')
         .select('user_id, amount, frequency')
-        .in('user_id', driverIds)
+        .in('user_id', userIds)
         .eq('is_active', true);
 
       if (error) throw error;

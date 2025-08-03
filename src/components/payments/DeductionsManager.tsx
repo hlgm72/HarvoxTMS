@@ -21,6 +21,7 @@ interface DeductionsManagerProps {
     status: string;
     driver: string;
     expenseType: string;
+    userRole?: string; // Nuevo campo para filtrar por tipo de usuario
     dateRange: { from: Date | undefined; to: Date | undefined };
   };
   viewConfig?: {
@@ -66,17 +67,22 @@ export function DeductionsManager({
       
       const companyId = userRoles[0].company_id;
       
-      // Obtener conductores de la empresa
-      const { data: driverRoles } = await supabase
+      // Obtener todos los usuarios de la empresa (conductores y dispatchers)
+      let roleFilter: ('driver' | 'dispatcher')[] = ['driver', 'dispatcher'];
+      if (filters?.userRole) {
+        roleFilter = [filters.userRole as 'driver' | 'dispatcher'];
+      }
+      
+      const { data: companyUsers } = await supabase
         .from('user_company_roles')
         .select('user_id')
         .eq('company_id', companyId)
-        .eq('role', 'driver')
+        .in('role', roleFilter)
         .eq('is_active', true);
 
-      const driverIds = driverRoles?.map(role => role.user_id) || [];
+      const userIds = companyUsers?.map(role => role.user_id) || [];
       
-      if (driverIds.length === 0) return [];
+      if (userIds.length === 0) return [];
 
       // Construir la consulta base
       let query = supabase
@@ -85,7 +91,7 @@ export function DeductionsManager({
           *,
           expense_types (name, category)
         `)
-        .in('user_id', driverIds)
+        .in('user_id', userIds)
         .eq('is_active', true);
 
       // Aplicar filtros
@@ -166,17 +172,22 @@ export function DeductionsManager({
       
       const companyId = userRoles[0].company_id;
       
-      // Obtener conductores de la empresa
-      const { data: driverRoles } = await supabase
+      // Obtener todos los usuarios de la empresa (conductores y dispatchers)
+      let roleFilter: ('driver' | 'dispatcher')[] = ['driver', 'dispatcher'];
+      if (filters?.userRole) {
+        roleFilter = [filters.userRole as 'driver' | 'dispatcher'];
+      }
+      
+      const { data: companyUsers } = await supabase
         .from('user_company_roles')
         .select('user_id')
         .eq('company_id', companyId)
-        .eq('role', 'driver')
+        .in('role', roleFilter)
         .eq('is_active', true);
 
-      const driverIds = driverRoles?.map(role => role.user_id) || [];
+      const userIds = companyUsers?.map(role => role.user_id) || [];
 
-      if (driverIds.length === 0) return [];
+      if (userIds.length === 0) return [];
 
       // Construir la consulta base para plantillas inactivas
       let query = supabase
@@ -185,7 +196,7 @@ export function DeductionsManager({
           *,
           expense_types (name, category)
         `)
-        .in('user_id', driverIds)
+        .in('user_id', userIds)
         .eq('is_active', false);
 
       // Aplicar filtros
