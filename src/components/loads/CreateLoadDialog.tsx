@@ -921,6 +921,12 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                 dispatchers={dispatchers}
                 selectedDispatcher={selectedDispatcher}
                 onDispatcherSelect={setSelectedDispatcher}
+                leasingPercentage={form.watch("leasing_percentage")}
+                factoringPercentage={form.watch("factoring_percentage")}
+                dispatchingPercentage={form.watch("dispatching_percentage")}
+                onLeasingPercentageChange={(value) => form.setValue("leasing_percentage", value)}
+                onFactoringPercentageChange={(value) => form.setValue("factoring_percentage", value)}
+                onDispatchingPercentageChange={(value) => form.setValue("dispatching_percentage", value)}
               />
             )}
 

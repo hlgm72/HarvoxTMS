@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Users, CheckCircle, Settings } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { User, Users, CheckCircle, Settings, DollarSign } from "lucide-react";
 import { CompanyDriver } from "@/hooks/useCompanyDrivers";
 import { CompanyDispatcher } from "@/hooks/useCompanyDispatchers";
+import { useOwnerOperator } from "@/hooks/useOwnerOperator";
 
 interface LoadAssignmentSectionProps {
   drivers: CompanyDriver[];
@@ -14,6 +17,13 @@ interface LoadAssignmentSectionProps {
   dispatchers: CompanyDispatcher[];
   selectedDispatcher: CompanyDispatcher | null;
   onDispatcherSelect: (dispatcher: CompanyDispatcher | null) => void;
+  // Owner Operator percentages
+  leasingPercentage?: number;
+  factoringPercentage?: number;
+  dispatchingPercentage?: number;
+  onLeasingPercentageChange?: (value: number) => void;
+  onFactoringPercentageChange?: (value: number) => void;
+  onDispatchingPercentageChange?: (value: number) => void;
 }
 
 export function LoadAssignmentSection({ 
@@ -22,9 +32,34 @@ export function LoadAssignmentSection({
   onDriverSelect,
   dispatchers,
   selectedDispatcher,
-  onDispatcherSelect
+  onDispatcherSelect,
+  leasingPercentage,
+  factoringPercentage,
+  dispatchingPercentage,
+  onLeasingPercentageChange,
+  onFactoringPercentageChange,
+  onDispatchingPercentageChange
 }: LoadAssignmentSectionProps) {
   const activeDrivers = drivers.filter(driver => driver.is_active);
+  
+  // Get owner operator data for selected driver
+  const { ownerOperator, isOwnerOperator, isLoading: ownerOperatorLoading } = useOwnerOperator(selectedDriver?.user_id);
+
+  // Auto-populate percentages when owner operator is selected
+  useEffect(() => {
+    if (isOwnerOperator && ownerOperator && onLeasingPercentageChange && onFactoringPercentageChange && onDispatchingPercentageChange) {
+      // Only auto-populate if current values are undefined/null (avoid overwriting user changes)
+      if (leasingPercentage === undefined && ownerOperator.leasing_percentage) {
+        onLeasingPercentageChange(ownerOperator.leasing_percentage);
+      }
+      if (factoringPercentage === undefined && ownerOperator.factoring_percentage) {
+        onFactoringPercentageChange(ownerOperator.factoring_percentage);
+      }
+      if (dispatchingPercentage === undefined && ownerOperator.dispatching_percentage) {
+        onDispatchingPercentageChange(ownerOperator.dispatching_percentage);
+      }
+    }
+  }, [isOwnerOperator, ownerOperator, leasingPercentage, factoringPercentage, dispatchingPercentage, onLeasingPercentageChange, onFactoringPercentageChange, onDispatchingPercentageChange]);
 
   return (
     <Card>
@@ -96,18 +131,97 @@ export function LoadAssignmentSection({
               </Select>
 
               {selectedDriver && (
-                <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">
-                      Conductor: {selectedDriver.first_name} {selectedDriver.last_name}
-                    </span>
-                    {selectedDriver.phone && (
-                      <span className="text-sm text-muted-foreground">
-                        📞 {selectedDriver.phone}
+                <div className="space-y-3">
+                  <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-medium">
+                        Conductor: {selectedDriver.first_name} {selectedDriver.last_name}
                       </span>
-                    )}
+                      {selectedDriver.phone && (
+                        <span className="text-sm text-muted-foreground">
+                          📞 {selectedDriver.phone}
+                        </span>
+                      )}
+                      {isOwnerOperator && (
+                        <Badge variant="secondary" className="ml-2">
+                          Owner Operator
+                        </Badge>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Owner Operator Percentages */}
+                  {isOwnerOperator && (
+                    <Card className="border-amber-200 bg-amber-50/50">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="flex items-center gap-2 text-sm">
+                          <DollarSign className="h-4 w-4 text-amber-600" />
+                          Porcentajes del Owner Operator
+                        </CardTitle>
+                        <CardDescription className="text-xs">
+                          Estos porcentajes se aplicarán específicamente a esta carga. Puedes modificarlos según sea necesario.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="grid grid-cols-3 gap-3">
+                          <div>
+                            <Label htmlFor="leasing-percentage" className="text-xs font-medium">
+                              Leasing (%)
+                            </Label>
+                            <Input
+                              id="leasing-percentage"
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.1"
+                              value={leasingPercentage || ''}
+                              onChange={(e) => onLeasingPercentageChange?.(parseFloat(e.target.value) || 0)}
+                              placeholder="5.0"
+                              className="text-xs h-8"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="factoring-percentage" className="text-xs font-medium">
+                              Factoring (%)
+                            </Label>
+                            <Input
+                              id="factoring-percentage"
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.1"
+                              value={factoringPercentage || ''}
+                              onChange={(e) => onFactoringPercentageChange?.(parseFloat(e.target.value) || 0)}
+                              placeholder="3.0"
+                              className="text-xs h-8"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="dispatching-percentage" className="text-xs font-medium">
+                              Dispatching (%)
+                            </Label>
+                            <Input
+                              id="dispatching-percentage"
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.1"
+                              value={dispatchingPercentage || ''}
+                              onChange={(e) => onDispatchingPercentageChange?.(parseFloat(e.target.value) || 0)}
+                              placeholder="5.0"
+                              className="text-xs h-8"
+                            />
+                          </div>
+                        </div>
+                        {ownerOperatorLoading && (
+                          <div className="text-xs text-muted-foreground">
+                            Cargando datos del Owner Operator...
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  )}
                 </div>
               )}
             </div>
