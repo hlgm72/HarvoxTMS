@@ -169,10 +169,10 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
               </div>
             </DialogTitle>
             <Button
-              variant="outline"
+              variant="default"
               size="sm"
               onClick={() => setShowEditDialog(true)}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 bg-primary hover:bg-primary/90"
             >
               <Edit className="h-4 w-4" />
               Editar
