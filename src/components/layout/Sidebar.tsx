@@ -103,17 +103,17 @@ const getCompanyOwnerNavigationItems = (driversCount: number, equipmentCount: nu
   
   // Gestión Financiera
   { 
-    title: "Deducciones", 
-    url: "/deductions", 
-    icon: Minus,
-    description: "Gastos recurrentes",
-    section: "financial"
-  },
-  { 
     title: "Pagos Adicionales", 
     url: "/additional-payments", 
     icon: Calculator,
     description: "Ingresos adicionales para conductores y despachadores",
+    section: "financial"
+  },
+  { 
+    title: "Deducciones", 
+    url: "/deductions", 
+    icon: Minus,
+    description: "Gastos recurrentes",
     section: "financial"
   },
   { 
