@@ -215,10 +215,10 @@ export default function OwnerDashboard() {
 
       const driverUserIds = driverRoles.map(role => role.user_id);
 
-      // Get profiles for these users
+      // Get profiles for these users (including hire_date which is now here)
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('user_id, first_name, last_name, phone')
+        .select('user_id, first_name, last_name, phone, hire_date')
         .in('user_id', driverUserIds);
 
       if (profilesError) throw profilesError;
