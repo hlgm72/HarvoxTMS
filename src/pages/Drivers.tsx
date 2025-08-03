@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
-import { useEquipmentAssignments } from "@/hooks/useEquipmentAssignments";
+import { useDriverEquipment } from "@/hooks/useDriverEquipment";
 import { getExpiryInfo } from '@/lib/dateFormatting';
 import { useState } from "react";
 import { InviteDriverDialog } from "@/components/drivers/InviteDriverDialog";
@@ -97,7 +97,6 @@ const DriverSkeleton = () => (
 
 export default function Drivers() {
   const { drivers, loading, refetch } = useCompanyDrivers();
-  const { getAssignmentsByDriver } = useEquipmentAssignments();
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showAssignmentDialog, setShowAssignmentDialog] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState<string>('');
@@ -179,17 +178,17 @@ export default function Drivers() {
         <div className="p-2 md:p-4 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {drivers.map((driver) => {
-            const fullName = `${driver.first_name} ${driver.last_name}`.trim();
-            const initials = [driver.first_name, driver.last_name]
-              .filter(Boolean)
-              .map(name => name.charAt(0))
-              .join('')
-              .toUpperCase();
+            const DriverCard = () => {
+              const { data: assignedEquipment = [], isLoading: equipmentLoading } = useDriverEquipment(driver.user_id);
+              
+              const fullName = `${driver.first_name} ${driver.last_name}`.trim();
+              const initials = [driver.first_name, driver.last_name]
+                .filter(Boolean)
+                .map(name => name.charAt(0))
+                .join('')
+                .toUpperCase();
 
-            // Obtener equipos asignados al conductor
-            const assignedEquipment = getAssignmentsByDriver(driver.user_id);
-
-            return (
+              return (
               <Card key={driver.id} className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
@@ -240,23 +239,25 @@ export default function Drivers() {
                     <div className="flex items-center gap-2">
                       <span>🔧</span>
                       <span className="text-sm">
-                        {assignedEquipment.length > 0 
-                          ? `${assignedEquipment.length} equipo${assignedEquipment.length !== 1 ? 's' : ''} asignado${assignedEquipment.length !== 1 ? 's' : ''}`
-                          : 'Sin equipos asignados'
+                        {equipmentLoading 
+                          ? 'Cargando equipos...'
+                          : assignedEquipment.length > 0 
+                            ? `${assignedEquipment.length} equipo${assignedEquipment.length !== 1 ? 's' : ''} asignado${assignedEquipment.length !== 1 ? 's' : ''}`
+                            : 'Sin equipos asignados'
                         }
                       </span>
                     </div>
                     
                     {/* Lista de equipos asignados */}
-                    {assignedEquipment.length > 0 && (
+                    {!equipmentLoading && assignedEquipment.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
-                        {assignedEquipment.map((assignment) => (
+                        {assignedEquipment.map((equipment) => (
                           <Badge
-                            key={assignment.id}
+                            key={equipment.id}
                             variant="outline"
                             className="text-xs"
                           >
-                            {assignment.company_equipment?.equipment_type === 'truck' ? '🚛' : '🚚'} {assignment.company_equipment?.equipment_type} #{assignment.company_equipment?.equipment_number}
+                            {equipment.equipment_type === 'truck' ? '🚛' : '🚚'} {equipment.equipment_type} #{equipment.equipment_number}
                           </Badge>
                         ))}
                       </div>
@@ -305,7 +306,10 @@ export default function Drivers() {
                   </div>
                 </CardContent>
               </Card>
-            );
+              );
+            };
+            
+            return <DriverCard key={driver.id} />;
           })}
         </div>
       </div>
