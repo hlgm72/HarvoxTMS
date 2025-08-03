@@ -168,6 +168,7 @@ export default function Users() {
         .in('user_id', userIds);
 
       console.log('📋 Profiles fetched:', profiles);
+      console.log('📋 Profiles details:', profiles?.map(p => ({ user_id: p.user_id, first_name: p.first_name, last_name: p.last_name })));
       if (profilesError) {
         console.error('❌ Error fetching profiles:', profilesError);
         throw profilesError;
