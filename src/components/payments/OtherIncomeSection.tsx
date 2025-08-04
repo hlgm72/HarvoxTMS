@@ -33,6 +33,7 @@ import {
   Loader2
 } from "lucide-react";
 import { formatDateOnly } from '@/lib/dateFormatting';
+import { UnifiedOtherIncomeForm } from './UnifiedOtherIncomeForm';
 
 interface OtherIncomeItem {
   id: string;
@@ -53,10 +54,12 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
   const { selectedCompany } = useUserCompanies();
   const { drivers: companyDrivers = [] } = useCompanyDrivers();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<OtherIncomeItem | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<OtherIncomeItem | null>(null);
+  const [itemToEdit, setItemToEdit] = useState<OtherIncomeItem | null>(null);
   const deleteOtherIncome = useDeleteOtherIncome();
 
   // Cargar datos reales de otros ingresos
@@ -102,6 +105,11 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
   const handleViewItem = (item: OtherIncomeItem) => {
     setSelectedItem(item);
     setIsViewDialogOpen(true);
+  };
+
+  const handleEditItem = (item: OtherIncomeItem) => {
+    setItemToEdit(item);
+    setIsEditDialogOpen(true);
   };
 
   const handleDeleteItem = async (item: OtherIncomeItem) => {
@@ -250,7 +258,12 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                         </Button>
                         {(item.status === "pending" && (isOperationsManager || isCompanyOwner)) && (
                           <>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleEditItem(item)}
+                            >
                               <Edit className="h-4 w-4" />
                             </Button>
                             <Button 
@@ -319,6 +332,33 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                 </div>
               )}
             </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog para editar ingreso */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-md bg-white">
+          <DialogHeader>
+            <DialogTitle>Editar Ingreso Adicional</DialogTitle>
+          </DialogHeader>
+          {itemToEdit && (
+            <UnifiedOtherIncomeForm 
+              onClose={() => {
+                setIsEditDialogOpen(false);
+                setItemToEdit(null);
+              }}
+              editData={{
+                id: itemToEdit.id,
+                description: itemToEdit.description,
+                amount: itemToEdit.amount,
+                income_type: itemToEdit.income_type,
+                income_date: itemToEdit.income_date,
+                user_id: itemToEdit.user_id,
+                applied_to_role: itemToEdit.applied_to_role as "driver" | "dispatcher",
+                reference_number: itemToEdit.reference_number
+              }}
+            />
           )}
         </DialogContent>
       </Dialog>

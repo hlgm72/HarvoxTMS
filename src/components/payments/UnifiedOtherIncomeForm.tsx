@@ -9,7 +9,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useCreateOtherIncome } from "@/hooks/useOtherIncome";
+import { useCreateOtherIncome, useUpdateOtherIncome } from "@/hooks/useOtherIncome";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
 import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
@@ -20,15 +20,27 @@ import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
 interface UnifiedOtherIncomeFormProps {
   onClose: () => void;
   defaultUserType?: "driver" | "dispatcher";
+  editData?: {
+    id: string;
+    description: string;
+    amount: number;
+    income_type: string;
+    income_date: string;
+    user_id: string;
+    applied_to_role: "driver" | "dispatcher";
+    reference_number?: string;
+  };
 }
 
-export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver" }: UnifiedOtherIncomeFormProps) {
-  const [description, setDescription] = useState("");
-  const [incomeType, setIncomeType] = useState("");
-  const [date, setDate] = useState<Date>();
-  const [userType, setUserType] = useState<"driver" | "dispatcher">(defaultUserType);
-  const [selectedUser, setSelectedUser] = useState("");
-  const [referenceNumber, setReferenceNumber] = useState("");
+export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", editData }: UnifiedOtherIncomeFormProps) {
+  const isEditing = !!editData;
+  
+  const [description, setDescription] = useState(editData?.description || "");
+  const [incomeType, setIncomeType] = useState(editData?.income_type || "");
+  const [date, setDate] = useState<Date | undefined>(editData ? new Date(editData.income_date) : undefined);
+  const [userType, setUserType] = useState<"driver" | "dispatcher">(editData?.applied_to_role || defaultUserType);
+  const [selectedUser, setSelectedUser] = useState(editData?.user_id || "");
+  const [referenceNumber, setReferenceNumber] = useState(editData?.reference_number || "");
 
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
@@ -38,7 +50,10 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver" }: 
   console.log('Drivers data:', { drivers, driversLoading, driversError });
   const { data: dispatchers = [] } = useConsolidatedDispatchers();
   const createOtherIncome = useCreateOtherIncome();
-  const atmInput = useATMInput();
+  const updateOtherIncome = useUpdateOtherIncome();
+  const atmInput = useATMInput({
+    initialValue: editData?.amount || 0
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,19 +64,32 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver" }: 
     }
 
     try {
-      await createOtherIncome.mutateAsync({
-        user_id: selectedUser,
-        description,
-        amount: atmInput.numericValue,
-        income_type: incomeType,
-        income_date: date.toISOString().split('T')[0],
-        reference_number: referenceNumber || undefined,
-        applied_to_role: userType,
-        status: 'pending'
-      });
+      if (isEditing && editData) {
+        await updateOtherIncome.mutateAsync({
+          id: editData.id,
+          user_id: selectedUser,
+          description,
+          amount: atmInput.numericValue,
+          income_type: incomeType,
+          income_date: date.toISOString().split('T')[0],
+          reference_number: referenceNumber || undefined,
+          applied_to_role: userType
+        });
+      } else {
+        await createOtherIncome.mutateAsync({
+          user_id: selectedUser,
+          description,
+          amount: atmInput.numericValue,
+          income_type: incomeType,
+          income_date: date.toISOString().split('T')[0],
+          reference_number: referenceNumber || undefined,
+          applied_to_role: userType,
+          status: 'pending'
+        });
+      }
       onClose();
     } catch (error) {
-      console.error('Error creating other income:', error);
+      console.error(`Error ${isEditing ? 'updating' : 'creating'} other income:`, error);
     }
   };
 
@@ -189,9 +217,12 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver" }: 
         </Button>
         <Button 
           type="submit" 
-          disabled={createOtherIncome.isPending || !selectedUser || !description || atmInput.numericValue <= 0 || !date}
+          disabled={(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) || 
+                   !selectedUser || !description || atmInput.numericValue <= 0 || !date}
         >
-          {createOtherIncome.isPending ? "Creando..." : "Crear Ingreso"}
+          {(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) ? 
+           (isEditing ? "Actualizando..." : "Creando...") : 
+           (isEditing ? "Actualizar Ingreso" : "Crear Ingreso")}
         </Button>
       </div>
     </form>
