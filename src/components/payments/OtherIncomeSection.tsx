@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
 import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
+import { useConsolidatedDispatchers } from "@/hooks/useConsolidatedDispatchers";
 import { useOtherIncome, useCreateOtherIncome, useUpdateOtherIncome, useDeleteOtherIncome } from "@/hooks/useOtherIncome";
 import { useATMInput } from "@/hooks/useATMInput";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,6 +54,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
   const { user, isDriver, isOperationsManager, isCompanyOwner } = useAuth();
   const { selectedCompany } = useUserCompanies();
   const { drivers: companyDrivers = [] } = useCompanyDrivers();
+  const { data: dispatchers = [] } = useConsolidatedDispatchers();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<OtherIncomeItem | null>(null);
@@ -67,14 +69,24 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
     driverId: isDriver ? user?.id : undefined
   });
 
-  // Helper function para obtener el nombre del conductor
-  const getDriverName = (driverUserId: string) => {
-    const driver = companyDrivers.find(d => d.user_id === driverUserId);
-    if (driver) {
-      const fullName = `${driver.first_name || ''} ${driver.last_name || ''}`.trim();
-      return fullName || 'Sin nombre';
+  // Helper function para obtener el nombre del usuario según su rol
+  const getUserName = (userId: string, role: string) => {
+    if (role === 'driver') {
+      const driver = companyDrivers.find(d => d.user_id === userId);
+      if (driver) {
+        const fullName = `${driver.first_name || ''} ${driver.last_name || ''}`.trim();
+        return fullName || 'Sin nombre';
+      }
+      return 'Conductor no encontrado';
+    } else if (role === 'dispatcher') {
+      const dispatcher = dispatchers.find(d => d.id === userId);
+      if (dispatcher) {
+        const fullName = `${dispatcher.first_name || ''} ${dispatcher.last_name || ''}`.trim();
+        return fullName || 'Sin nombre';
+      }
+      return 'Despachador no encontrado';
     }
-    return 'Conductor no encontrado';
+    return 'Usuario no encontrado';
   };
 
   const getStatusBadge = (status: string) => {
@@ -278,7 +290,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                         <TableCell>{getIncomeTypeLabel(item.income_type)}</TableCell>
                         <TableCell className="font-semibold">${item.amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}</TableCell>
                         <TableCell>{formatDateOnly(item.income_date)}</TableCell>
-                        {!isDriver && <TableCell>{getDriverName(item.user_id)}</TableCell>}
+                        {!isDriver && <TableCell>{getUserName(item.user_id, item.applied_to_role)}</TableCell>}
                         <TableCell>{getStatusBadge(item.status)}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
