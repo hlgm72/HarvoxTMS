@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -12,13 +11,12 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdditionalPayments() {
   const { isDriver, isOperationsManager, isCompanyOwner } = useAuth();
-  const [userType, setUserType] = useState("drivers"); // "drivers" | "dispatchers"
   const [isCreateDriverIncomeDialogOpen, setIsCreateDriverIncomeDialogOpen] = useState(false);
   const [isCreateDispatcherIncomeDialogOpen, setIsCreateDispatcherIncomeDialogOpen] = useState(false);
 
   // Subtitle general para la página
   const getSubtitle = () => {
-    return "Gestión de ingresos adicionales para conductores y despachadores";
+    return "Gestión unificada de ingresos adicionales para todo el personal";
   };
 
   const handleAddIncomeDriver = () => {
@@ -61,27 +59,9 @@ export default function AdditionalPayments() {
       />
 
       <div className="p-2 md:p-4 pr-16 md:pr-20 space-y-6">
-        {/* Tabs principales para tipo de usuario */}
-        <Tabs value={userType} onValueChange={setUserType} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="drivers" className="flex items-center gap-2">
-              <UserCheck className="h-4 w-4" />
-              Conductores
-            </TabsTrigger>
-            <TabsTrigger value="dispatchers" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Despachadores
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="drivers" className="space-y-4">
-            <OtherIncomeSection hideAddButton={true} />
-          </TabsContent>
-
-          <TabsContent value="dispatchers" className="space-y-4">
-            <OtherIncomeSection hideAddButton={true} />
-          </TabsContent>
-        </Tabs>
+        {/* Sección unificada de ingresos adicionales */}
+        <OtherIncomeSection hideAddButton={true} />
+      </div>
 
       {/* Dialog para crear ingreso de conductor desde el toolbar */}
       <Dialog open={isCreateDriverIncomeDialogOpen} onOpenChange={setIsCreateDriverIncomeDialogOpen}>
@@ -108,7 +88,6 @@ export default function AdditionalPayments() {
           />
         </DialogContent>
       </Dialog>
-      </div>
     </>
   );
 }
