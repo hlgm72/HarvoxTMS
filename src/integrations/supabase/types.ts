@@ -551,6 +551,7 @@ export type Database = {
           payment_reference: string | null
           payment_status: string | null
           total_deductions: number
+          total_income: number
           updated_at: string
         }
         Insert: {
@@ -572,6 +573,7 @@ export type Database = {
           payment_reference?: string | null
           payment_status?: string | null
           total_deductions?: number
+          total_income?: number
           updated_at?: string
         }
         Update: {
@@ -593,6 +595,7 @@ export type Database = {
           payment_reference?: string | null
           payment_status?: string | null
           total_deductions?: number
+          total_income?: number
           updated_at?: string
         }
         Relationships: [
