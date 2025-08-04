@@ -25,7 +25,7 @@ function Calendar({
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
-        caption: "flex justify-center pt-1 relative items-center gap-1 px-12 min-w-[320px]",
+        caption: "flex justify-center pt-1 relative items-center gap-1 px-12 min-w-[280px]",
         caption_label: "hidden",
         caption_dropdowns: "flex items-center gap-1",
         dropdown_month: "text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[90px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium [&>*:first-child]:hidden",
