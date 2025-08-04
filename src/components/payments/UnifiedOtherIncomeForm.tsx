@@ -65,16 +65,19 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
     try {
       if (isEditing && editData) {
-        await updateOtherIncome.mutateAsync({
+        // Para la edición, solo enviamos los campos que pueden ser actualizados
+        const updateData = {
           id: editData.id,
-          user_id: selectedUser,
           description,
           amount: atmInput.numericValue,
           income_type: incomeType,
           income_date: date.toISOString().split('T')[0],
-          reference_number: referenceNumber || undefined,
-          applied_to_role: userType
-        });
+          reference_number: referenceNumber || null, // Usar null en lugar de undefined
+          // No incluir user_id ni applied_to_role en la actualización ya que pueden causar conflictos RLS
+        };
+        
+        console.log('Updating other income with data:', updateData);
+        await updateOtherIncome.mutateAsync(updateData);
       } else {
         await createOtherIncome.mutateAsync({
           user_id: selectedUser,
@@ -108,17 +111,19 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <UserTypeSelector
-        value={userType}
-        onChange={setUserType}
-        label="Aplicar Ingreso a"
-      />
+      {!isEditing && (
+        <UserTypeSelector
+          value={userType}
+          onChange={setUserType}
+          label="Aplicar Ingreso a"
+        />
+      )}
 
       <div className="space-y-2">
         <Label htmlFor="user">
           {userType === "driver" ? "Conductor" : "Despachador"}
         </Label>
-        <Select value={selectedUser} onValueChange={setSelectedUser}>
+        <Select value={selectedUser} onValueChange={setSelectedUser} disabled={isEditing}>
           <SelectTrigger>
             <SelectValue placeholder={`Seleccionar ${userType === "driver" ? "conductor" : "despachador"}`} />
           </SelectTrigger>
