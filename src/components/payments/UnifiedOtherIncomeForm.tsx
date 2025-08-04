@@ -178,7 +178,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
               onSelect={setDate}
               initialFocus
               showOutsideDays={true}
-              className="pointer-events-auto p-3 [&_td]:px-1 [&_button]:mx-0.5"
+              className="pointer-events-auto p-3 [&_td]:px-1 [&_button]:mx-0.5 [&_.rdp-nav_button]:mx-2 [&_.rdp-caption_dropdowns]:mx-2"
               captionLayout="dropdown-buttons"
               fromYear={2020}
               toYear={2030}
