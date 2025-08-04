@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useFleetNotifications } from '@/components/notifications';
-import { getTodayInUserTimeZone } from '@/utils/dateUtils';
+import { getTodayInUserTimeZone, formatDateInUserTimeZone } from '@/utils/dateUtils';
 import { usePaymentPeriodGenerator } from './usePaymentPeriodGenerator';
 
 export interface PaymentPeriod {
@@ -288,10 +288,11 @@ export const useNextPaymentPeriod = (companyId?: string) => {
 
       // Si no existe período siguiente, intentar generar períodos futuros
       if (!period) {
-        // Calcular fecha del próximo período (una semana después)
-        const nextPeriodDate = new Date(currentDate);
+        // Calcular fecha del próximo período (una semana después) manteniendo zona horaria
+        const [year, month, day] = currentDate.split('-').map(Number);
+        const nextPeriodDate = new Date(year, month - 1, day); // Crear fecha local
         nextPeriodDate.setDate(nextPeriodDate.getDate() + 7);
-        const nextDateString = nextPeriodDate.toISOString().split('T')[0];
+        const nextDateString = formatDateInUserTimeZone(nextPeriodDate);
 
         const generatedPeriodId = await ensurePaymentPeriodExists({
           companyId: targetCompanyId,
