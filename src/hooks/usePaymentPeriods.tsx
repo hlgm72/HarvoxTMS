@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useFleetNotifications } from '@/components/notifications';
 import { getTodayInUserTimeZone } from '@/utils/dateUtils';
+import { usePaymentPeriodGenerator } from './usePaymentPeriodGenerator';
 
 export interface PaymentPeriod {
   id: string;
@@ -116,9 +117,10 @@ export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFi
   };
 };
 
-// Hook para obtener el período actual de empresa
+// Hook para obtener el período actual de empresa con auto-generación
 export const useCurrentPaymentPeriod = (companyId?: string) => {
   const { user } = useAuth();
+  const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
 
   return useQuery({
     queryKey: ['current-company-payment-period', user?.id, companyId],
@@ -147,7 +149,7 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
       }
 
       // Buscar período actual abierto de la empresa
-      const { data: period, error } = await supabase
+      let { data: period, error } = await supabase
         .from('company_payment_periods')
         .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
         .eq('company_id', targetCompanyId)
@@ -159,6 +161,28 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
 
       if (error && error.code !== 'PGRST116') {
         throw error;
+      }
+
+      // Si no existe período para la fecha actual, intentar generar uno
+      if (!period) {
+        const generatedPeriodId = await ensurePaymentPeriodExists({
+          companyId: targetCompanyId,
+          userId: user.id,
+          targetDate: currentDate
+        });
+
+        // Si se generó exitosamente, buscar el período nuevamente
+        if (generatedPeriodId) {
+          const { data: newPeriod, error: newError } = await supabase
+            .from('company_payment_periods')
+            .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
+            .eq('id', generatedPeriodId)
+            .single();
+
+          if (!newError) {
+            period = newPeriod;
+          }
+        }
       }
 
       return period || null;
@@ -217,9 +241,10 @@ export const usePreviousPaymentPeriod = (companyId?: string) => {
   });
 };
 
-// Hook para obtener el siguiente período de pago
+// Hook para obtener el siguiente período de pago con auto-generación
 export const useNextPaymentPeriod = (companyId?: string) => {
   const { user } = useAuth();
+  const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
 
   return useQuery({
     queryKey: ['next-company-payment-period', user?.id, companyId],
@@ -248,7 +273,7 @@ export const useNextPaymentPeriod = (companyId?: string) => {
       }
 
       // Buscar el siguiente período (el período que comienza después de la fecha actual)
-      const { data: period, error } = await supabase
+      let { data: period, error } = await supabase
         .from('company_payment_periods')
         .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
         .eq('company_id', targetCompanyId)
@@ -259,6 +284,36 @@ export const useNextPaymentPeriod = (companyId?: string) => {
 
       if (error && error.code !== 'PGRST116') {
         throw error;
+      }
+
+      // Si no existe período siguiente, intentar generar períodos futuros
+      if (!period) {
+        // Calcular fecha del próximo período (una semana después)
+        const nextPeriodDate = new Date(currentDate);
+        nextPeriodDate.setDate(nextPeriodDate.getDate() + 7);
+        const nextDateString = nextPeriodDate.toISOString().split('T')[0];
+
+        const generatedPeriodId = await ensurePaymentPeriodExists({
+          companyId: targetCompanyId,
+          userId: user.id,
+          targetDate: nextDateString
+        });
+
+        // Si se generó exitosamente, buscar el siguiente período nuevamente
+        if (generatedPeriodId) {
+          const { data: newPeriod, error: newError } = await supabase
+            .from('company_payment_periods')
+            .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
+            .eq('company_id', targetCompanyId)
+            .gt('period_start_date', currentDate)
+            .order('period_start_date', { ascending: true })
+            .limit(1)
+            .maybeSingle();
+
+          if (!newError) {
+            period = newPeriod;
+          }
+        }
       }
 
       return period || null;
