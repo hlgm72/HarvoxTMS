@@ -129,11 +129,25 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
     }
   };
 
-  // Los datos ya están filtrados por el hook según el rol
-  const displayData = incomeData;
+  // Agrupar datos por rol
+  const groupedData = incomeData.reduce((acc, item) => {
+    const role = item.applied_to_role || 'driver'; // Default to driver if no role specified
+    if (!acc[role]) {
+      acc[role] = [];
+    }
+    acc[role].push(item);
+    return acc;
+  }, {} as Record<string, typeof incomeData>);
 
-  const totalPending = displayData.filter(item => item.status === "pending").reduce((sum, item) => sum + item.amount, 0);
-  const totalApproved = displayData.filter(item => item.status === "approved").reduce((sum, item) => sum + item.amount, 0);
+  // Calcular totales por rol
+  const getRoleStats = (roleData: typeof incomeData) => {
+    const pending = roleData.filter(item => item.status === "pending").reduce((sum, item) => sum + item.amount, 0);
+    const approved = roleData.filter(item => item.status === "approved").reduce((sum, item) => sum + item.amount, 0);
+    return { pending, approved, total: pending + approved };
+  };
+
+  const totalPending = incomeData.filter(item => item.status === "pending").reduce((sum, item) => sum + item.amount, 0);
+  const totalApproved = incomeData.filter(item => item.status === "approved").reduce((sum, item) => sum + item.amount, 0);
 
   if (isLoading) {
     return (
@@ -191,101 +205,123 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
         </Card>
       </div>
 
-      {/* Lista de otros ingresos */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5" />
-              Otros Ingresos
-            </CardTitle>
-            {!hideAddButton && (
-              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Agregar Ingreso
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md bg-white">
-                  <DialogHeader>
-                    <DialogTitle>Nuevo Ingreso</DialogTitle>
-                  </DialogHeader>
-                  <CreateOtherIncomeForm onClose={() => setIsCreateDialogOpen(false)} />
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Descripción</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Monto</TableHead>
-                <TableHead>Fecha</TableHead>
-                {!isDriver && <TableHead>Conductor</TableHead>}
-                <TableHead>Estado</TableHead>
-                <TableHead className="w-[100px]">Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {displayData.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={isDriver ? 6 : 7} className="text-center text-muted-foreground py-8">
-                    No hay registros de otros ingresos
-                  </TableCell>
-                </TableRow>
-              ) : (
-                displayData.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.description}</TableCell>
-                    <TableCell>{getIncomeTypeLabel(item.income_type)}</TableCell>
-                    <TableCell className="font-semibold">${item.amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}</TableCell>
-                    <TableCell>{formatDateOnly(item.income_date)}</TableCell>
-                    {!isDriver && <TableCell>{getDriverName(item.user_id)}</TableCell>}
-                    <TableCell>{getStatusBadge(item.status)}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleViewItem(item)}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        {(item.status === "pending" && (isOperationsManager || isCompanyOwner)) && (
-                          <>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
+      {/* Botón global de agregar */}
+      {!hideAddButton && (
+        <div className="flex justify-end">
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="gap-2">
+                <Plus className="h-4 w-4" />
+                Agregar Ingreso
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md bg-white">
+              <DialogHeader>
+                <DialogTitle>Nuevo Ingreso</DialogTitle>
+              </DialogHeader>
+              <UnifiedOtherIncomeForm onClose={() => setIsCreateDialogOpen(false)} />
+            </DialogContent>
+          </Dialog>
+        </div>
+      )}
+
+      {/* Secciones separadas por rol */}
+      {Object.keys(groupedData).length === 0 ? (
+        <Card>
+          <CardContent className="p-8">
+            <div className="text-center text-muted-foreground">
+              <DollarSign className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p className="text-lg font-medium">No hay registros de otros ingresos</p>
+              <p className="text-sm">Los ingresos adicionales aparecerán aquí una vez creados</p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        Object.entries(groupedData).map(([role, roleData]) => {
+          const roleStats = getRoleStats(roleData);
+          const roleName = role === 'driver' ? 'Conductores' : role === 'dispatcher' ? 'Despachadores' : 'Otros';
+          
+          return (
+            <Card key={role}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <CardTitle className="flex items-center gap-2">
+                      <DollarSign className="h-5 w-5" />
+                      Otros Ingresos - {roleName}
+                    </CardTitle>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <span>Aprobados: ${roleStats.approved.toLocaleString('es-US', { minimumFractionDigits: 2 })}</span>
+                      <span>Pendientes: ${roleStats.pending.toLocaleString('es-US', { minimumFractionDigits: 2 })}</span>
+                      <span className="font-medium">Total: ${roleStats.total.toLocaleString('es-US', { minimumFractionDigits: 2 })}</span>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Descripción</TableHead>
+                      <TableHead>Tipo</TableHead>
+                      <TableHead>Monto</TableHead>
+                      <TableHead>Fecha</TableHead>
+                      {!isDriver && <TableHead>{role === 'driver' ? 'Conductor' : 'Despachador'}</TableHead>}
+                      <TableHead>Estado</TableHead>
+                      <TableHead className="w-[100px]">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {roleData.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="font-medium">{item.description}</TableCell>
+                        <TableCell>{getIncomeTypeLabel(item.income_type)}</TableCell>
+                        <TableCell className="font-semibold">${item.amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}</TableCell>
+                        <TableCell>{formatDateOnly(item.income_date)}</TableCell>
+                        {!isDriver && <TableCell>{getDriverName(item.user_id)}</TableCell>}
+                        <TableCell>{getStatusBadge(item.status)}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleViewItem(item)}
                               className="h-8 w-8 p-0"
-                              onClick={() => handleEditItem(item)}
                             >
-                              <Edit className="h-4 w-4" />
+                              <Eye className="h-4 w-4" />
                             </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-8 w-8 p-0 text-destructive"
-                              onClick={() => handleDeleteItem(item)}
-                              disabled={deleteOtherIncome.isPending}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                            {(item.status === "pending" && (isOperationsManager || isCompanyOwner)) && (
+                              <>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 w-8 p-0"
+                                  onClick={() => handleEditItem(item)}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 w-8 p-0 text-destructive"
+                                  onClick={() => handleDeleteItem(item)}
+                                  disabled={deleteOtherIncome.isPending}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          );
+        })
+      )}
 
       {/* Dialog para ver detalles */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
