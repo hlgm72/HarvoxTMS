@@ -178,15 +178,18 @@ export function useUpdateOtherIncome() {
         .from('other_income')
         .update(data)
         .eq('id', id)
-        .select()
-        .single();
+        .select();
 
       if (error) {
         console.error('Error updating other income:', error);
         throw error;
       }
 
-      return result;
+      if (!result || result.length === 0) {
+        throw new Error('No se encontró el registro para actualizar o no tienes permisos para modificarlo');
+      }
+
+      return result[0];
     },
     onSuccess: () => {
       showSuccess('Ingreso actualizado exitosamente');
