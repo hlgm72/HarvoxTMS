@@ -234,7 +234,7 @@ export default function Landing() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/auth">
-              <Button size="lg" variant="secondary" className="text-lg px-8 py-4 bg-[#ff5d1d] text-white hover:bg-[#e54a16]">
+              <Button size="lg" variant="secondary" className="text-lg px-8 py-4 bg-[#FF6C1A] text-white hover:bg-[#e55a0f]">
                 {t('common:actions.start_now')}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
