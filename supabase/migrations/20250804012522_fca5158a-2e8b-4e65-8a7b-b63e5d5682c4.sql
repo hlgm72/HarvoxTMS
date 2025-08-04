@@ -1,0 +1,275 @@
+-- Fix security policies by dropping specific function signatures and recreating with proper auth checks
+
+-- Drop policies first
+DROP POLICY IF EXISTS "Equipment documents access policy" ON public.equipment_documents;
+DROP POLICY IF EXISTS "Equipment locations company access" ON public.equipment_locations;
+DROP POLICY IF EXISTS "expense_recurring_templates_select_final" ON public.expense_recurring_templates;
+DROP POLICY IF EXISTS "expense_recurring_templates_insert_final" ON public.expense_recurring_templates;
+DROP POLICY IF EXISTS "expense_recurring_templates_update_final" ON public.expense_recurring_templates;
+DROP POLICY IF EXISTS "expense_recurring_templates_delete_final" ON public.expense_recurring_templates;
+DROP POLICY IF EXISTS "other_income_select" ON public.other_income;
+DROP POLICY IF EXISTS "other_income_insert" ON public.other_income;
+DROP POLICY IF EXISTS "other_income_update" ON public.other_income;
+DROP POLICY IF EXISTS "other_income_delete" ON public.other_income;
+
+-- Drop functions with specific signatures
+DROP FUNCTION IF EXISTS public.is_user_superadmin_safe(uuid);
+DROP FUNCTION IF EXISTS public.is_user_admin_in_company_safe(uuid, uuid);
+DROP FUNCTION IF EXISTS public.get_user_company_ids_safe(uuid);
+
+-- Recreate equipment policies with strict inline auth checks (no functions)
+CREATE POLICY "Equipment documents access policy" ON public.equipment_documents
+FOR ALL TO authenticated USING (
+  auth.role() = 'authenticated' AND
+  auth.uid() IS NOT NULL AND 
+  COALESCE((auth.jwt()->>'is_anonymous')::boolean, false) = false AND
+  equipment_id IN (
+    SELECT ce.id
+    FROM company_equipment ce
+    WHERE ce.company_id IN (
+      SELECT ucr.company_id
+      FROM user_company_roles ucr
+      WHERE ucr.user_id = auth.uid() AND ucr.is_active = true
+    )
+  )
+) WITH CHECK (
+  auth.role() = 'authenticated' AND
+  auth.uid() IS NOT NULL AND 
+  COALESCE((auth.jwt()->>'is_anonymous')::boolean, false) = false AND
+  equipment_id IN (
+    SELECT ce.id
+    FROM company_equipment ce
+    WHERE ce.company_id IN (
+      SELECT ucr.company_id
+      FROM user_company_roles ucr
+      WHERE ucr.user_id = auth.uid() AND ucr.is_active = true
+    )
+  )
+);
+
+CREATE POLICY "Equipment locations company access" ON public.equipment_locations
+FOR ALL TO authenticated USING (
+  auth.role() = 'authenticated' AND
+  auth.uid() IS NOT NULL AND 
+  COALESCE((auth.jwt()->>'is_anonymous')::boolean, false) = false AND
+  equipment_id IN (
+    SELECT ce.id
+    FROM company_equipment ce
+    WHERE ce.company_id IN (
+      SELECT ucr.company_id
+      FROM user_company_roles ucr
+      WHERE ucr.user_id = auth.uid() AND ucr.is_active = true
+    )
+  )
+) WITH CHECK (
+  auth.role() = 'authenticated' AND
+  auth.uid() IS NOT NULL AND 
+  COALESCE((auth.jwt()->>'is_anonymous')::boolean, false) = false AND
+  equipment_id IN (
+    SELECT ce.id
+    FROM company_equipment ce
+    WHERE ce.company_id IN (
+      SELECT ucr.company_id
+      FROM user_company_roles ucr
+      WHERE ucr.user_id = auth.uid() AND ucr.is_active = true
+    )
+  )
+);
+
+-- Recreate expense_recurring_templates policies with strict inline auth checks
+CREATE POLICY "expense_recurring_templates_select_final" ON public.expense_recurring_templates
+FOR SELECT TO authenticated USING (
+  auth.role() = 'authenticated' AND
+  auth.uid() IS NOT NULL AND 
+  COALESCE((auth.jwt()->>'is_anonymous')::boolean, false) = false AND (
+    user_id = auth.uid() 
+    OR user_id IN (
+      SELECT ucr.user_id
+      FROM user_company_roles ucr
+      WHERE ucr.company_id IN (
+        SELECT ucr2.company_id
+        FROM user_company_roles ucr2
+        WHERE ucr2.user_id = auth.uid() AND ucr2.is_active = true
+      ) AND ucr.is_active = true
+    )
+  )
+);
+
+CREATE POLICY "expense_recurring_templates_insert_final" ON public.expense_recurring_templates
+FOR INSERT TO authenticated WITH CHECK (
+  auth.role() = 'authenticated' AND
+  auth.uid() IS NOT NULL AND 
+  COALESCE((auth.jwt()->>'is_anonymous')::boolean, false) = false AND (
+    user_id IN (
+      SELECT ucr.user_id
+      FROM user_company_roles ucr
+      WHERE ucr.company_id IN (
+        SELECT ucr2.company_id
+        FROM user_company_roles ucr2
+        WHERE ucr2.user_id = auth.uid() 
+        AND ucr2.is_active = true 
+        AND ucr2.role = ANY(ARRAY['company_owner'::user_role, 'operations_manager'::user_role, 'superadmin'::user_role])
+      ) AND ucr.is_active = true
+    ) 
+    OR EXISTS (
+      SELECT 1 FROM user_company_roles 
+      WHERE user_id = auth.uid() 
+      AND role = 'superadmin' 
+      AND is_active = true
+    )
+  )
+);
+
+CREATE POLICY "expense_recurring_templates_update_final" ON public.expense_recurring_templates
+FOR UPDATE TO authenticated USING (
+  auth.role() = 'authenticated' AND
+  auth.uid() IS NOT NULL AND 
+  COALESCE((auth.jwt()->>'is_anonymous')::boolean, false) = false AND (
+    user_id IN (
+      SELECT ucr.user_id
+      FROM user_company_roles ucr
+      WHERE ucr.company_id IN (
+        SELECT ucr2.company_id
+        FROM user_company_roles ucr2
+        WHERE ucr2.user_id = auth.uid() 
+        AND ucr2.is_active = true 
+        AND ucr2.role = ANY(ARRAY['company_owner'::user_role, 'operations_manager'::user_role, 'superadmin'::user_role])
+      ) AND ucr.is_active = true
+    ) 
+    OR EXISTS (
+      SELECT 1 FROM user_company_roles 
+      WHERE user_id = auth.uid() 
+      AND role = 'superadmin' 
+      AND is_active = true
+    )
+  )
+) WITH CHECK (
+  auth.role() = 'authenticated' AND
+  auth.uid() IS NOT NULL AND 
+  COALESCE((auth.jwt()->>'is_anonymous')::boolean, false) = false AND (
+    user_id IN (
+      SELECT ucr.user_id
+      FROM user_company_roles ucr
+      WHERE ucr.company_id IN (
+        SELECT ucr2.company_id
+        FROM user_company_roles ucr2
+        WHERE ucr2.user_id = auth.uid() 
+        AND ucr2.is_active = true 
+        AND ucr2.role = ANY(ARRAY['company_owner'::user_role, 'operations_manager'::user_role, 'superadmin'::user_role])
+      ) AND ucr.is_active = true
+    ) 
+    OR EXISTS (
+      SELECT 1 FROM user_company_roles 
+      WHERE user_id = auth.uid() 
+      AND role = 'superadmin' 
+      AND is_active = true
+    )
+  )
+);
+
+CREATE POLICY "expense_recurring_templates_delete_final" ON public.expense_recurring_templates
+FOR DELETE TO authenticated USING (
+  auth.role() = 'authenticated' AND
+  auth.uid() IS NOT NULL AND 
+  COALESCE((auth.jwt()->>'is_anonymous')::boolean, false) = false AND (
+    user_id IN (
+      SELECT ucr.user_id
+      FROM user_company_roles ucr
+      WHERE ucr.company_id IN (
+        SELECT ucr2.company_id
+        FROM user_company_roles ucr2
+        WHERE ucr2.user_id = auth.uid() 
+        AND ucr2.is_active = true 
+        AND ucr2.role = ANY(ARRAY['company_owner'::user_role, 'operations_manager'::user_role, 'superadmin'::user_role])
+      ) AND ucr.is_active = true
+    ) 
+    OR EXISTS (
+      SELECT 1 FROM user_company_roles 
+      WHERE user_id = auth.uid() 
+      AND role = 'superadmin' 
+      AND is_active = true
+    )
+  )
+);
+
+-- Recreate other_income policies with strict inline auth checks
+CREATE POLICY "other_income_select" ON public.other_income
+FOR SELECT TO authenticated USING (
+  auth.role() = 'authenticated' AND
+  auth.uid() IS NOT NULL AND 
+  COALESCE((auth.jwt()->>'is_anonymous')::boolean, false) = false AND (
+    user_id = auth.uid() 
+    OR payment_period_id IN (
+      SELECT dpc.id
+      FROM driver_period_calculations dpc
+      JOIN company_payment_periods cpp ON dpc.company_payment_period_id = cpp.id
+      JOIN user_company_roles ucr ON cpp.company_id = ucr.company_id
+      WHERE ucr.user_id = auth.uid() AND ucr.is_active = true
+    )
+  )
+);
+
+CREATE POLICY "other_income_insert" ON public.other_income
+FOR INSERT TO authenticated WITH CHECK (
+  auth.role() = 'authenticated' AND
+  auth.uid() IS NOT NULL AND 
+  COALESCE((auth.jwt()->>'is_anonymous')::boolean, false) = false AND (
+    user_id IN (
+      SELECT ucr.user_id
+      FROM user_company_roles ucr
+      WHERE ucr.company_id IN (
+        SELECT ucr2.company_id
+        FROM user_company_roles ucr2
+        WHERE ucr2.user_id = auth.uid() AND ucr2.is_active = true
+      ) AND ucr.is_active = true
+    )
+  )
+);
+
+CREATE POLICY "other_income_update" ON public.other_income
+FOR UPDATE TO authenticated USING (
+  auth.role() = 'authenticated' AND
+  auth.uid() IS NOT NULL AND 
+  COALESCE((auth.jwt()->>'is_anonymous')::boolean, false) = false AND (
+    payment_period_id IN (
+      SELECT dpc.id
+      FROM driver_period_calculations dpc
+      JOIN company_payment_periods cpp ON dpc.company_payment_period_id = cpp.id
+      JOIN user_company_roles ucr ON cpp.company_id = ucr.company_id
+      WHERE ucr.user_id = auth.uid() 
+      AND ucr.is_active = true 
+      AND NOT cpp.is_locked
+    )
+  )
+) WITH CHECK (
+  auth.role() = 'authenticated' AND
+  auth.uid() IS NOT NULL AND 
+  COALESCE((auth.jwt()->>'is_anonymous')::boolean, false) = false AND (
+    user_id IN (
+      SELECT ucr.user_id
+      FROM user_company_roles ucr
+      WHERE ucr.company_id IN (
+        SELECT ucr2.company_id
+        FROM user_company_roles ucr2
+        WHERE ucr2.user_id = auth.uid() AND ucr2.is_active = true
+      ) AND ucr.is_active = true
+    )
+  )
+);
+
+CREATE POLICY "other_income_delete" ON public.other_income
+FOR DELETE TO authenticated USING (
+  auth.role() = 'authenticated' AND
+  auth.uid() IS NOT NULL AND 
+  COALESCE((auth.jwt()->>'is_anonymous')::boolean, false) = false AND (
+    payment_period_id IN (
+      SELECT dpc.id
+      FROM driver_period_calculations dpc
+      JOIN company_payment_periods cpp ON dpc.company_payment_period_id = cpp.id
+      JOIN user_company_roles ucr ON cpp.company_id = ucr.company_id
+      WHERE ucr.user_id = auth.uid() 
+      AND ucr.is_active = true 
+      AND NOT cpp.is_locked
+    )
+  )
+);
