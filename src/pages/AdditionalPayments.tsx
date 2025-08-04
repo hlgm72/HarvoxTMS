@@ -2,29 +2,23 @@ import { useState } from "react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { OtherIncomeSection } from "@/components/payments/OtherIncomeSection";
 import { UnifiedOtherIncomeForm } from "@/components/payments/UnifiedOtherIncomeForm";
-import { Calculator, Users, UserCheck, Plus, ChevronDown } from "lucide-react";
+import { Calculator, Plus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdditionalPayments() {
   const { isDriver, isOperationsManager, isCompanyOwner } = useAuth();
-  const [isCreateDriverIncomeDialogOpen, setIsCreateDriverIncomeDialogOpen] = useState(false);
-  const [isCreateDispatcherIncomeDialogOpen, setIsCreateDispatcherIncomeDialogOpen] = useState(false);
+  const [isCreateIncomeDialogOpen, setIsCreateIncomeDialogOpen] = useState(false);
 
   // Subtitle general para la página
   const getSubtitle = () => {
     return "Gestión unificada de ingresos adicionales para todo el personal";
   };
 
-  const handleAddIncomeDriver = () => {
-    setIsCreateDriverIncomeDialogOpen(true);
-  };
-
-  const handleAddIncomeDispatcher = () => {
-    setIsCreateDispatcherIncomeDialogOpen(true);
+  const handleAddIncome = () => {
+    setIsCreateIncomeDialogOpen(true);
   };
 
   return (
@@ -35,25 +29,10 @@ export default function AdditionalPayments() {
         subtitle={getSubtitle()}
         actions={
           <div className="flex gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Agregar Ingreso a...
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleAddIncomeDriver}>
-                  <UserCheck className="mr-2 h-4 w-4" />
-                  Conductor
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleAddIncomeDispatcher}>
-                  <Users className="mr-2 h-4 w-4" />
-                  Despachador
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button onClick={handleAddIncome} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Agregar Ingreso
+            </Button>
           </div>
         }
       />
@@ -62,32 +41,18 @@ export default function AdditionalPayments() {
         {/* Sección unificada de ingresos adicionales */}
         <OtherIncomeSection hideAddButton={true} />
       </div>
-
-      {/* Dialog para crear ingreso de conductor desde el toolbar */}
-      <Dialog open={isCreateDriverIncomeDialogOpen} onOpenChange={setIsCreateDriverIncomeDialogOpen}>
+      {/* Dialog para crear ingreso */}
+      <Dialog open={isCreateIncomeDialogOpen} onOpenChange={setIsCreateIncomeDialogOpen}>
         <DialogContent className="max-w-md bg-white">
           <DialogHeader>
-            <DialogTitle>Nuevo Ingreso para Conductor</DialogTitle>
+            <DialogTitle>Nuevo Ingreso Adicional</DialogTitle>
           </DialogHeader>
           <UnifiedOtherIncomeForm 
-            onClose={() => setIsCreateDriverIncomeDialogOpen(false)} 
-            defaultUserType="driver"
+            onClose={() => setIsCreateIncomeDialogOpen(false)} 
           />
         </DialogContent>
       </Dialog>
-
-      {/* Dialog para crear ingreso de despachador desde el toolbar */}
-      <Dialog open={isCreateDispatcherIncomeDialogOpen} onOpenChange={setIsCreateDispatcherIncomeDialogOpen}>
-        <DialogContent className="max-w-md bg-white">
-          <DialogHeader>
-            <DialogTitle>Nuevo Ingreso para Despachador</DialogTitle>
-          </DialogHeader>
-          <UnifiedOtherIncomeForm 
-            onClose={() => setIsCreateDispatcherIncomeDialogOpen(false)}
-            defaultUserType="dispatcher"
-          />
-        </DialogContent>
-      </Dialog>
+    
     </>
   );
 }
