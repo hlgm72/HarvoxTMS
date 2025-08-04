@@ -41,7 +41,8 @@ interface OtherIncomeItem {
   income_type: string;
   income_date: string;
   status: string;
-  driver_user_id: string;
+  user_id: string;
+  applied_to_role: string;
   reference_number?: string;
   notes?: string;
   created_at: string;
@@ -235,7 +236,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                     <TableCell>{getIncomeTypeLabel(item.income_type)}</TableCell>
                     <TableCell className="font-semibold">${item.amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}</TableCell>
                     <TableCell>{formatDateOnly(item.income_date)}</TableCell>
-                    {!isDriver && <TableCell>{getDriverName(item.driver_user_id)}</TableCell>}
+                    {!isDriver && <TableCell>{getDriverName(item.user_id)}</TableCell>}
                     <TableCell>{getStatusBadge(item.status)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
@@ -387,14 +388,15 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
 
     try {
       await createOtherIncome.mutateAsync({
-        driver_user_id: formData.driver_user_id,
+        user_id: formData.driver_user_id,
         description: formData.description,
         amount: atmInput.numericValue,
         income_type: formData.income_type,
         income_date: formData.income_date.toISOString().split('T')[0], // Convert to YYYY-MM-DD
         reference_number: formData.reference_number || undefined,
         notes: formData.notes || undefined,
-        status: 'pending'
+        status: 'pending',
+        applied_to_role: 'driver'
       });
       onClose();
     } catch (error) {

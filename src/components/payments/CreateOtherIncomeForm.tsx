@@ -46,13 +46,14 @@ export function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
 
     try {
       await createOtherIncome.mutateAsync({
-        driver_user_id: formData.driver_user_id,
+        user_id: formData.driver_user_id,
         description: formData.description,
         amount: atmInput.numericValue,
         income_type: formData.income_type,
         income_date: formData.income_date.toISOString().split('T')[0], // Convert to YYYY-MM-DD
         reference_number: formData.reference_number || undefined,
         notes: formData.notes || undefined,
+        applied_to_role: 'driver',
         status: 'pending'
       });
       onClose();

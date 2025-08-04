@@ -7,7 +7,7 @@ import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
 import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 
 export interface CreateOtherIncomeData {
-  driver_user_id: string;
+  user_id: string;
   payment_period_id?: string;
   description: string;
   amount: number;
@@ -16,6 +16,7 @@ export interface CreateOtherIncomeData {
   reference_number?: string;
   notes?: string;
   status?: 'pending' | 'approved' | 'rejected';
+  applied_to_role: 'driver' | 'dispatcher' | 'operations_manager' | 'company_owner';
 }
 
 export interface UpdateOtherIncomeData extends Partial<CreateOtherIncomeData> {
@@ -40,7 +41,7 @@ export function useOtherIncome(filters: { driverId?: string; periodId?: string; 
 
       // Aplicar filtros
       if (filters.driverId && filters.driverId !== 'all') {
-        query = query.eq('driver_user_id', filters.driverId);
+        query = query.eq('user_id', filters.driverId);
       }
 
       if (filters.periodId && filters.periodId !== 'all') {
@@ -76,13 +77,13 @@ export function useCreateOtherIncome() {
       // Si no hay payment_period_id, intentar generar uno automáticamente
       let finalData = { ...data };
       
-      if (!data.payment_period_id && selectedCompany?.id && data.driver_user_id && data.income_date) {
+      if (!data.payment_period_id && selectedCompany?.id && data.user_id && data.income_date) {
         console.log('🔍 Auto-generating payment period for other income');
         
         const targetDate = formatDateInUserTimeZone(new Date(data.income_date));
         const generatedPeriodId = await ensurePaymentPeriodExists({
           companyId: selectedCompany.id,
-          userId: data.driver_user_id,
+          userId: data.user_id,
           targetDate
         });
         
@@ -102,7 +103,7 @@ export function useCreateOtherIncome() {
       const { data: result, error } = await supabase
         .from('other_income')
         .insert({
-          driver_user_id: finalData.driver_user_id,
+          user_id: finalData.user_id,
           payment_period_id: finalData.payment_period_id,
           description: finalData.description,
           amount: finalData.amount,
@@ -110,6 +111,7 @@ export function useCreateOtherIncome() {
           income_date: finalData.income_date,
           reference_number: finalData.reference_number,
           notes: finalData.notes,
+          applied_to_role: finalData.applied_to_role,
           created_by: user?.id,
         })
         .select()

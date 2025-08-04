@@ -6,9 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { OtherIncomeSection } from "@/components/payments/OtherIncomeSection";
-import { DispatcherOtherIncomeSection } from "@/components/payments/DispatcherOtherIncomeSection";
-import { CreateOtherIncomeForm } from "@/components/payments/CreateOtherIncomeForm";
-import { CreateDispatcherOtherIncomeForm } from "@/components/payments/CreateDispatcherOtherIncomeForm";
+import { UnifiedOtherIncomeForm } from "@/components/payments/UnifiedOtherIncomeForm";
 import { Calculator, Users, UserCheck, Plus, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -81,7 +79,7 @@ export default function AdditionalPayments() {
           </TabsContent>
 
           <TabsContent value="dispatchers" className="space-y-4">
-            <DispatcherOtherIncomeSection />
+            <OtherIncomeSection hideAddButton={true} />
           </TabsContent>
         </Tabs>
 
@@ -91,7 +89,10 @@ export default function AdditionalPayments() {
           <DialogHeader>
             <DialogTitle>Nuevo Ingreso para Conductor</DialogTitle>
           </DialogHeader>
-          <CreateOtherIncomeForm onClose={() => setIsCreateDriverIncomeDialogOpen(false)} />
+          <UnifiedOtherIncomeForm 
+            onClose={() => setIsCreateDriverIncomeDialogOpen(false)} 
+            defaultUserType="driver"
+          />
         </DialogContent>
       </Dialog>
 
@@ -101,7 +102,10 @@ export default function AdditionalPayments() {
           <DialogHeader>
             <DialogTitle>Nuevo Ingreso para Despachador</DialogTitle>
           </DialogHeader>
-          <CreateDispatcherOtherIncomeForm onClose={() => setIsCreateDispatcherIncomeDialogOpen(false)} />
+          <UnifiedOtherIncomeForm 
+            onClose={() => setIsCreateDispatcherIncomeDialogOpen(false)}
+            defaultUserType="dispatcher"
+          />
         </DialogContent>
       </Dialog>
       </div>

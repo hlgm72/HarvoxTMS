@@ -486,68 +486,6 @@ export type Database = {
         }
         Relationships: []
       }
-      dispatcher_other_income: {
-        Row: {
-          amount: number
-          approved_at: string | null
-          approved_by: string | null
-          company_id: string
-          created_at: string
-          created_by: string | null
-          description: string
-          dispatcher_user_id: string
-          id: string
-          income_date: string
-          income_type: string
-          notes: string | null
-          reference_number: string | null
-          status: string
-          updated_at: string
-        }
-        Insert: {
-          amount: number
-          approved_at?: string | null
-          approved_by?: string | null
-          company_id: string
-          created_at?: string
-          created_by?: string | null
-          description: string
-          dispatcher_user_id: string
-          id?: string
-          income_date: string
-          income_type: string
-          notes?: string | null
-          reference_number?: string | null
-          status?: string
-          updated_at?: string
-        }
-        Update: {
-          amount?: number
-          approved_at?: string | null
-          approved_by?: string | null
-          company_id?: string
-          created_at?: string
-          created_by?: string | null
-          description?: string
-          dispatcher_user_id?: string
-          id?: string
-          income_date?: string
-          income_type?: string
-          notes?: string | null
-          reference_number?: string | null
-          status?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "dispatcher_other_income_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       driver_fuel_cards: {
         Row: {
           assigned_date: string
@@ -2025,12 +1963,12 @@ export type Database = {
       other_income: {
         Row: {
           amount: number
+          applied_to_role: Database["public"]["Enums"]["user_role"]
           approved_at: string | null
           approved_by: string | null
           created_at: string
           created_by: string | null
           description: string
-          driver_user_id: string
           id: string
           income_date: string
           income_type: string
@@ -2040,15 +1978,16 @@ export type Database = {
           reference_number: string | null
           status: string
           updated_at: string
+          user_id: string
         }
         Insert: {
           amount: number
+          applied_to_role: Database["public"]["Enums"]["user_role"]
           approved_at?: string | null
           approved_by?: string | null
           created_at?: string
           created_by?: string | null
           description: string
-          driver_user_id: string
           id?: string
           income_date: string
           income_type: string
@@ -2058,15 +1997,16 @@ export type Database = {
           reference_number?: string | null
           status?: string
           updated_at?: string
+          user_id: string
         }
         Update: {
           amount?: number
+          applied_to_role?: Database["public"]["Enums"]["user_role"]
           approved_at?: string | null
           approved_by?: string | null
           created_at?: string
           created_by?: string | null
           description?: string
-          driver_user_id?: string
           id?: string
           income_date?: string
           income_type?: string
@@ -2076,6 +2016,7 @@ export type Database = {
           reference_number?: string | null
           status?: string
           updated_at?: string
+          user_id?: string
         }
         Relationships: [
           {
