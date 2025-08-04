@@ -213,7 +213,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <Clock className="h-4 w-4 mr-2" />
                 Período Anterior
                 {previousPeriod && (
-                  <Badge variant="secondary" className="ml-auto text-xs">
+                  <Badge variant="secondary" className="ml-auto text-[10px]">
                     {formatPaymentPeriodBadge(previousPeriod.period_start_date, previousPeriod.period_end_date)}
                   </Badge>
                 )}
@@ -238,7 +238,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <Clock className="h-4 w-4 mr-2" />
                 Período Actual
                 {currentPeriod && (
-                  <Badge variant="secondary" className="ml-auto text-xs">
+                  <Badge variant="secondary" className="ml-auto text-[10px]">
                     {formatPaymentPeriodBadge(currentPeriod.period_start_date, currentPeriod.period_end_date)}
                   </Badge>
                 )}
@@ -262,7 +262,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <Clock className="h-4 w-4 mr-2" />
                 Período Siguiente
                 {nextPeriod && (
-                  <Badge variant="secondary" className="ml-auto text-xs">
+                  <Badge variant="secondary" className="ml-auto text-[10px]">
                     {formatPaymentPeriodBadge(nextPeriod.period_start_date, nextPeriod.period_end_date)}
                   </Badge>
                 )}
