@@ -17,7 +17,7 @@ import {
 import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-const fleetNestLogo = '/lovable-uploads/45f8eaed-03a2-459e-9bf1-4f9844e08105.png';
+const fleetNestLogo = '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png';
 
 export default function Landing() {
   const { t } = useTranslation(['landing', 'common']);
@@ -67,11 +67,7 @@ export default function Landing() {
               <img 
                 src={fleetNestLogo} 
                 alt="FleetNest Logo" 
-                className="h-10 w-10 object-contain bg-transparent"
-                style={{ 
-                  mixBlendMode: 'multiply',
-                  filter: 'brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)'
-                }}
+                className="h-10 w-10 object-contain"
               />
               <span className="text-2xl font-bold text-primary">{t('common:app.name')}</span>
             </div>
@@ -259,11 +255,7 @@ export default function Landing() {
                 <img 
                   src={fleetNestLogo} 
                   alt="FleetNest Logo" 
-                  className="h-10 w-10 object-contain bg-transparent"
-                  style={{ 
-                    mixBlendMode: 'multiply',
-                    filter: 'brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)'
-                  }}
+                  className="h-10 w-10 object-contain"
                 />
                 <span className="text-2xl font-bold text-primary">{t('common:app.name')}</span>
               </div>
