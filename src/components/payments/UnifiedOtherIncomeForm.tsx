@@ -39,6 +39,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
   const [incomeType, setIncomeType] = useState(editData?.income_type || "");
   const [date, setDate] = useState<Date | undefined>(editData ? new Date(editData.income_date) : undefined);
   const [userType, setUserType] = useState<"driver" | "dispatcher">(editData?.applied_to_role || defaultUserType);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(editData?.user_id || "");
   const [referenceNumber, setReferenceNumber] = useState(editData?.reference_number || "");
 
@@ -158,7 +159,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
       <div className="space-y-2">
         <Label htmlFor="date">Fecha del Ingreso</Label>
-        <Popover>
+        <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
@@ -175,7 +176,10 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
             <Calendar
               mode="single"
               selected={date}
-              onSelect={setDate}
+              onSelect={(date) => {
+                setDate(date);
+                setIsDatePickerOpen(false);
+              }}
               initialFocus
               showOutsideDays={true}
               className="pointer-events-auto p-3 [&_td]:px-1 [&_button]:mx-0.5"
