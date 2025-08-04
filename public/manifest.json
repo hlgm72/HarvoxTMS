@@ -2,7 +2,7 @@
   "name": "FleetNest - Sistema TMS",
   "short_name": "FleetNest",
   "description": "Sistema TMS profesional para compañías de transporte",
-  "start_url": "/preview",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#003366",
