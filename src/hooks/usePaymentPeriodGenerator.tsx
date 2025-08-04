@@ -57,25 +57,25 @@ export const usePaymentPeriodGenerator = () => {
         throw companyError;
       }
 
-      // Determinar rango basado en frecuencia de pago
+      // Determinar rango basado en frecuencia de pago - incluir período anterior, actual y siguiente
       let rangeDays = 7; // default para weekly
       switch (companyData.default_payment_frequency) {
         case 'weekly':
-          rangeDays = 14; // ±2 semanas
+          rangeDays = 21; // ±3 semanas (anterior, actual, siguiente)
           break;
         case 'biweekly':
-          rangeDays = 28; // ±4 semanas
+          rangeDays = 42; // ±6 semanas (anterior, actual, siguiente)
           break;
         case 'monthly':
-          rangeDays = 45; // ±6-7 semanas
+          rangeDays = 90; // ±3 meses (anterior, actual, siguiente)
           break;
         default:
-          rangeDays = 14;
+          rangeDays = 21;
       }
 
-      console.log(`📅 Using range of ±${rangeDays} days for ${companyData.default_payment_frequency} frequency`);
+      console.log(`📅 Using range of ±${rangeDays} days for ${companyData.default_payment_frequency} frequency to include previous, current, and next periods`);
 
-      // Generar períodos en el rango
+      // Generar períodos en el rango ampliado para incluir período anterior
       const fromDate = formatDateInUserTimeZone(new Date(Date.parse(targetDate) - rangeDays * 24 * 60 * 60 * 1000));
       const toDate = formatDateInUserTimeZone(new Date(Date.parse(targetDate) + rangeDays * 24 * 60 * 60 * 1000));
 
