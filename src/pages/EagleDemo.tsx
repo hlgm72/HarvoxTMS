@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { EagleLogo } from '@/components/ui/EagleLogo';
+import { AppLogo } from '@/components/ui/AppLogo';
 
 const EagleDemo = () => {
   return (
@@ -10,11 +10,11 @@ const EagleDemo = () => {
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center gap-4">
-            <EagleLogo width={80} height={80} className="text-primary" />
+            <AppLogo width={80} height={80} className="text-primary" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Eagle SVG Demo
             </h1>
-            <EagleLogo width={80} height={80} className="text-accent" />
+            <AppLogo width={80} height={80} className="text-accent" />
           </div>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Explora las capacidades del SVG del águila: escalabilidad, personalización de colores, efectos CSS y más.
@@ -25,7 +25,7 @@ const EagleDemo = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <EagleLogo width={32} height={32} className="text-primary" />
+              <AppLogo width={32} height={32} className="text-primary" />
               Variaciones de Tamaño
             </CardTitle>
             <CardDescription>
@@ -35,23 +35,23 @@ const EagleDemo = () => {
           <CardContent>
             <div className="flex items-end justify-center gap-8 p-8">
               <div className="text-center space-y-2">
-                <EagleLogo width={24} height={24} className="text-primary mx-auto" />
+                <AppLogo width={24} height={24} className="text-primary mx-auto" />
                 <Badge variant="outline">24px</Badge>
               </div>
               <div className="text-center space-y-2">
-                <EagleLogo width={48} height={48} className="text-primary mx-auto" />
+                <AppLogo width={48} height={48} className="text-primary mx-auto" />
                 <Badge variant="outline">48px</Badge>
               </div>
               <div className="text-center space-y-2">
-                <EagleLogo width={80} height={80} className="text-primary mx-auto" />
+                <AppLogo width={80} height={80} className="text-primary mx-auto" />
                 <Badge variant="outline">80px</Badge>
               </div>
               <div className="text-center space-y-2">
-                <EagleLogo width={120} height={120} className="text-primary mx-auto" />
+                <AppLogo width={120} height={120} className="text-primary mx-auto" />
                 <Badge variant="outline">120px</Badge>
               </div>
               <div className="text-center space-y-2">
-                <EagleLogo width={160} height={160} className="text-primary mx-auto" />
+                <AppLogo width={160} height={160} className="text-primary mx-auto" />
                 <Badge variant="outline">160px</Badge>
               </div>
             </div>
@@ -69,19 +69,19 @@ const EagleDemo = () => {
           <CardContent>
             <div className="grid grid-cols-4 gap-8 p-8">
               <div className="text-center space-y-3">
-                <EagleLogo width={80} height={80} className="text-primary mx-auto" />
+                <AppLogo width={80} height={80} className="text-primary mx-auto" />
                 <Badge className="bg-primary text-primary-foreground">Primary</Badge>
               </div>
               <div className="text-center space-y-3">
-                <EagleLogo width={80} height={80} className="text-secondary-foreground mx-auto" />
+                <AppLogo width={80} height={80} className="text-secondary-foreground mx-auto" />
                 <Badge variant="secondary">Secondary</Badge>
               </div>
               <div className="text-center space-y-3">
-                <EagleLogo width={80} height={80} className="text-accent mx-auto" />
+                <AppLogo width={80} height={80} className="text-accent mx-auto" />
                 <Badge className="bg-accent text-accent-foreground">Accent</Badge>
               </div>
               <div className="text-center space-y-3">
-                <EagleLogo width={80} height={80} className="text-destructive mx-auto" />
+                <AppLogo width={80} height={80} className="text-destructive mx-auto" />
                 <Badge variant="destructive">Destructive</Badge>
               </div>
             </div>
@@ -99,7 +99,7 @@ const EagleDemo = () => {
           <CardContent>
             <div className="grid grid-cols-3 gap-8 p-8">
               <div className="text-center space-y-3">
-                <EagleLogo 
+                <AppLogo 
                   width={80} 
                   height={80} 
                   className="text-primary mx-auto transition-transform duration-300 hover:scale-110 cursor-pointer" 
@@ -107,7 +107,7 @@ const EagleDemo = () => {
                 <Badge variant="outline">Hover Scale</Badge>
               </div>
               <div className="text-center space-y-3">
-                <EagleLogo 
+                <AppLogo 
                   width={80} 
                   height={80} 
                   className="text-accent mx-auto transition-all duration-500 hover:rotate-12 cursor-pointer" 
@@ -115,7 +115,7 @@ const EagleDemo = () => {
                 <Badge variant="outline">Hover Rotate</Badge>
               </div>
               <div className="text-center space-y-3">
-                <EagleLogo 
+                <AppLogo 
                   width={80} 
                   height={80} 
                   className="text-primary mx-auto animate-pulse" 
@@ -145,12 +145,12 @@ const EagleDemo = () => {
                     padding: '8px'
                   }}
                 >
-                  <EagleLogo width={60} height={60} className="text-white" />
+                  <AppLogo width={60} height={60} className="text-white" />
                 </div>
                 <Badge variant="outline">Circular Background</Badge>
               </div>
               <div className="text-center space-y-3">
-                <EagleLogo 
+                <AppLogo 
                   width={80} 
                   height={80} 
                   className="mx-auto drop-shadow-2xl"
@@ -161,7 +161,7 @@ const EagleDemo = () => {
                 <Badge variant="outline">Drop Shadow</Badge>
               </div>
               <div className="text-center space-y-3">
-                <EagleLogo 
+                <AppLogo 
                   width={80} 
                   height={80} 
                   className="text-primary mx-auto opacity-60 transition-opacity hover:opacity-100 cursor-pointer" 
@@ -186,7 +186,7 @@ const EagleDemo = () => {
               <h4 className="font-semibold mb-3">Header de navegación</h4>
               <div className="flex items-center justify-between bg-card p-4 rounded border">
                 <div className="flex items-center gap-3">
-                  <EagleLogo width={32} height={32} className="text-primary" />
+                  <AppLogo width={32} height={32} className="text-primary" />
                   <span className="font-bold">FleetNest</span>
                 </div>
                 <div className="flex items-center gap-4">
@@ -204,7 +204,7 @@ const EagleDemo = () => {
                 <Card>
                   <CardHeader className="pb-3">
                     <div className="flex items-center gap-3">
-                      <EagleLogo width={24} height={24} className="text-primary" />
+                      <AppLogo width={24} height={24} className="text-primary" />
                       <CardTitle className="text-lg">Fleet Status</CardTitle>
                     </div>
                   </CardHeader>
@@ -215,7 +215,7 @@ const EagleDemo = () => {
                 <Card>
                   <CardHeader className="pb-3">
                     <div className="flex items-center gap-3">
-                      <EagleLogo width={24} height={24} className="text-accent" />
+                      <AppLogo width={24} height={24} className="text-accent" />
                       <CardTitle className="text-lg">Performance</CardTitle>
                     </div>
                   </CardHeader>
@@ -231,7 +231,7 @@ const EagleDemo = () => {
               <h4 className="font-semibold mb-3">Estado de carga</h4>
               <div className="flex items-center justify-center p-8 bg-muted/30 rounded">
                 <div className="text-center space-y-3">
-                  <EagleLogo 
+                  <AppLogo 
                     width={60} 
                     height={60} 
                     className="text-primary mx-auto animate-spin" 

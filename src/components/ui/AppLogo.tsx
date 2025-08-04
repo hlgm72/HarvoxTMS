@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface EagleLogoProps {
+interface AppLogoProps {
   className?: string;
   width?: number;
   height?: number;
@@ -8,7 +8,7 @@ interface EagleLogoProps {
   style?: React.CSSProperties;
 }
 
-export const EagleLogo: React.FC<EagleLogoProps> = ({
+export const AppLogo: React.FC<AppLogoProps> = ({
   className = '',
   width = 120,
   height = 120,
@@ -27,4 +27,4 @@ export const EagleLogo: React.FC<EagleLogoProps> = ({
   );
 };
 
-export default EagleLogo;
+export default AppLogo;
