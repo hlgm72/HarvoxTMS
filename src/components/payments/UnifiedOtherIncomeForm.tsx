@@ -82,7 +82,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver" }: 
       <UserTypeSelector
         value={userType}
         onChange={setUserType}
-        label="Tipo de Usuario"
+        label="Aplicar Ingreso a"
       />
 
       <div className="space-y-2">
