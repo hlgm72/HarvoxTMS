@@ -172,8 +172,8 @@ self.addEventListener('push', (event) => {
   
   const options = {
     body: event.data ? event.data.text() : 'Nueva notificación de FleetNest',
-    icon: '/lovable-uploads/45f8eaed-03a2-459e-9bf1-4f9844e08105.png',
-    badge: '/lovable-uploads/45f8eaed-03a2-459e-9bf1-4f9844e08105.png',
+    icon: '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png',
+    badge: '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -183,12 +183,12 @@ self.addEventListener('push', (event) => {
       {
         action: 'explore',
         title: 'Ver detalles',
-        icon: '/lovable-uploads/45f8eaed-03a2-459e-9bf1-4f9844e08105.png'
+        icon: '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png'
       },
       {
         action: 'close',
         title: 'Cerrar',
-        icon: '/lovable-uploads/45f8eaed-03a2-459e-9bf1-4f9844e08105.png'
+        icon: '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png'
       }
     ]
   };

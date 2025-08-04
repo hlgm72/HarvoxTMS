@@ -17,7 +17,7 @@ export const AppLogo: React.FC<AppLogoProps> = ({
 }) => {
   return (
     <img 
-      src="/lovable-uploads/45f8eaed-03a2-459e-9bf1-4f9844e08105.png"
+      src="/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png"
       alt="FleetNest Logo"
       width={width}
       height={height}
