@@ -177,6 +177,11 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
               selected={date}
               onSelect={setDate}
               initialFocus
+              showOutsideDays={true}
+              className="pointer-events-auto"
+              captionLayout="dropdown-buttons"
+              fromYear={2020}
+              toYear={2030}
             />
           </PopoverContent>
         </Popover>
