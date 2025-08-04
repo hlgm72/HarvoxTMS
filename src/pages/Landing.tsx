@@ -67,7 +67,11 @@ export default function Landing() {
               <img 
                 src={fleetNestLogo} 
                 alt="FleetNest Logo" 
-                className="h-10 w-10 object-contain"
+                className="h-10 w-10 object-contain bg-transparent"
+                style={{ 
+                  mixBlendMode: 'multiply',
+                  filter: 'brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)'
+                }}
               />
               <span className="text-2xl font-bold text-primary">{t('common:app.name')}</span>
             </div>
@@ -255,7 +259,11 @@ export default function Landing() {
                 <img 
                   src={fleetNestLogo} 
                   alt="FleetNest Logo" 
-                  className="h-10 w-10 object-contain"
+                  className="h-10 w-10 object-contain bg-transparent"
+                  style={{ 
+                    mixBlendMode: 'multiply',
+                    filter: 'brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)'
+                  }}
                 />
                 <span className="text-2xl font-bold text-primary">{t('common:app.name')}</span>
               </div>
