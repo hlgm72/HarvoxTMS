@@ -8,8 +8,7 @@ import { LoadDocumentsProvider } from "@/contexts/LoadDocumentsContext";
 import { LoadsFloatingActions } from "@/components/loads/LoadsFloatingActions";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatPaymentPeriodCompact } from "@/lib/dateFormatting";
 
 export default function Loads() {
   const { t } = useTranslation();
@@ -72,9 +71,7 @@ export default function Loads() {
     
     if (periodFilter.startDate && periodFilter.endDate) {
       // console.log('📅 Dates found:', periodFilter.startDate, periodFilter.endDate);
-      const startDate = new Date(periodFilter.startDate);
-      const endDate = new Date(periodFilter.endDate);
-      const formatted = `${format(startDate, 'dd/MM/yy', { locale: es })} - ${format(endDate, 'dd/MM/yy', { locale: es })}`;
+      const formatted = formatPaymentPeriodCompact(periodFilter.startDate, periodFilter.endDate);
       // console.log('📅 Formatted range:', formatted);
       return formatted;
     }
