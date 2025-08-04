@@ -172,13 +172,25 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
+            <style>{`
+              .calendar-spacing .rdp-caption {
+                padding: 0 3rem !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                gap: 2rem !important;
+              }
+              .calendar-spacing .rdp-nav_button {
+                margin: 0 0.5rem !important;
+              }
+            `}</style>
             <Calendar
               mode="single"
               selected={date}
               onSelect={setDate}
               initialFocus
               showOutsideDays={true}
-              className="pointer-events-auto p-3 [&_td]:px-1 [&_button]:mx-0.5 [&_.rdp-caption]:px-10"
+              className="pointer-events-auto p-3 calendar-spacing [&_td]:px-1 [&_button]:mx-0.5"
               captionLayout="dropdown-buttons"
               fromYear={2020}
               toYear={2030}
