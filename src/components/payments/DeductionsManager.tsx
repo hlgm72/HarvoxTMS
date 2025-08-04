@@ -392,7 +392,7 @@ export function DeductionsManager({
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <p className={`font-semibold text-lg ${isInactive ? 'text-muted-foreground' : ''}`}>
-                        ${template.amount}
+                        ${parseFloat(template.amount || 0).toLocaleString('es-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </p>
                       <Badge variant={isInactive ? "secondary" : "outline"}>
                         {isInactive && 'Inactiva • '}
