@@ -32,7 +32,10 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver" }: 
 
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
-  const { drivers } = useCompanyDrivers();
+  const { drivers, loading: driversLoading, error: driversError } = useCompanyDrivers();
+  
+  // Debug log para ver el estado de los drivers
+  console.log('Drivers data:', { drivers, driversLoading, driversError });
   const { data: dispatchers = [] } = useConsolidatedDispatchers();
   const createOtherIncome = useCreateOtherIncome();
   const atmInput = useATMInput();
@@ -94,7 +97,10 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver" }: 
           <SelectContent>
             {currentUsers.map((user) => (
               <SelectItem key={user.id} value={user.id}>
-                {user.full_name}
+                {userType === "driver" 
+                  ? `${user.first_name} ${user.last_name}`.trim()
+                  : user.full_name || `${user.first_name} ${user.last_name}`.trim()
+                }
               </SelectItem>
             ))}
           </SelectContent>
