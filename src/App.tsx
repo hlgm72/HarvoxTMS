@@ -30,7 +30,7 @@ import Deductions from "./pages/Deductions";
 import AdditionalPayments from "./pages/AdditionalPayments";
 import FuelManagement from "./pages/FuelManagement";
 import Loads from "./pages/Loads";
-import EagleDemo from "./pages/EagleDemo";
+
 import DriverMobile from "./pages/DriverMobile";
 import PaymentReports from "./pages/PaymentReports";
 import Preview from "./pages/Preview";
@@ -61,7 +61,7 @@ function AppContent() {
         <Route path="/no-access" element={<NoAccess />} />
         <Route path="/invitation/:token" element={<Invitation />} />
         <Route path="/invitation/callback" element={<InvitationCallback />} />
-        <Route path="/demo" element={<EagleDemo />} />
+        
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
         
