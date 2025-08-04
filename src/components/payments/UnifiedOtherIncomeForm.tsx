@@ -118,30 +118,6 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver" }: 
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Descripción</Label>
-        <Input
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Descripción del ingreso adicional"
-          required
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="amount">Monto</Label>
-        <Input
-          id="amount"
-          value={atmInput.displayValue}
-          onChange={(e) => atmInput.setValue(parseFloat(e.target.value) || 0)}
-          onKeyDown={atmInput.handleKeyDown}
-          onPaste={atmInput.handlePaste}
-          placeholder="$0.00"
-          required
-        />
-      </div>
-
-      <div className="space-y-2">
         <Label htmlFor="date">Fecha del Ingreso</Label>
         <Popover>
           <PopoverTrigger asChild>
@@ -168,12 +144,36 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver" }: 
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor="amount">Monto</Label>
+        <Input
+          id="amount"
+          value={atmInput.displayValue}
+          onChange={(e) => atmInput.setValue(parseFloat(e.target.value) || 0)}
+          onKeyDown={atmInput.handleKeyDown}
+          onPaste={atmInput.handlePaste}
+          placeholder="$0.00"
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
         <Label htmlFor="reference-number">Número de Referencia (Opcional)</Label>
         <Input
           id="reference-number"
           value={referenceNumber}
           onChange={(e) => setReferenceNumber(e.target.value)}
           placeholder="Ej: REF-001"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="description">Descripción</Label>
+        <Input
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Descripción del ingreso adicional"
+          required
         />
       </div>
 
