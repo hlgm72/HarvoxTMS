@@ -196,7 +196,7 @@ export function ExpenseTemplateDialog({
     try {
       // Primero obtener la plantilla inactiva
       const { data: templates, error } = await supabase
-        .from('recurring_expense_templates')
+        .from('expense_recurring_templates')
         .select(`
           *,
           expense_types(name)
@@ -242,7 +242,7 @@ export function ExpenseTemplateDialog({
     setIsLoading(true);
     try {
       const { error } = await supabase
-        .from('recurring_expense_templates')
+        .from('expense_recurring_templates')
         .update({
           is_active: true,
           updated_at: new Date().toISOString()
@@ -283,7 +283,7 @@ export function ExpenseTemplateDialog({
 
       if (mode === 'create') {
         const { error } = await supabase
-          .from('recurring_expense_templates')
+          .from('expense_recurring_templates')
           .insert(templateData);
 
         if (error) throw error;
@@ -291,7 +291,7 @@ export function ExpenseTemplateDialog({
         showSuccess("Éxito", "Plantilla de deducción creada exitosamente");
       } else {
         const { error } = await supabase
-          .from('recurring_expense_templates')
+          .from('expense_recurring_templates')
           .update(templateData)
           .eq('id', template.id);
 

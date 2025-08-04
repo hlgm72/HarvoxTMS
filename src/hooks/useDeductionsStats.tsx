@@ -46,7 +46,7 @@ export function useDeductionsStats() {
 
       // Obtener plantillas activas para estos conductores
       const { data: templates, error } = await supabase
-        .from('recurring_expense_templates')
+        .from('expense_recurring_templates')
         .select('user_id, amount, frequency')
         .in('user_id', userIds)
         .eq('is_active', true);

@@ -83,7 +83,7 @@ export function DeductionsManager({
 
       // Construir la consulta base
       let query = supabase
-        .from('recurring_expense_templates')
+        .from('expense_recurring_templates')
         .select(`
           *,
           expense_types (name, category)
@@ -198,7 +198,7 @@ export function DeductionsManager({
 
       // Construir la consulta base para plantillas inactivas
       let query = supabase
-        .from('recurring_expense_templates')
+        .from('expense_recurring_templates')
         .select(`
           *,
           expense_types (name, category)
@@ -288,7 +288,7 @@ export function DeductionsManager({
   const deleteTemplateMutation = useMutation({
     mutationFn: async (templateId: string) => {
       const { error } = await supabase
-        .from('recurring_expense_templates')
+        .from('expense_recurring_templates')
         .update({ is_active: false })
         .eq('id', templateId);
       
@@ -307,7 +307,7 @@ export function DeductionsManager({
   const reactivateTemplateMutation = useMutation({
     mutationFn: async (templateId: string) => {
       const { error } = await supabase
-        .from('recurring_expense_templates')
+        .from('expense_recurring_templates')
         .update({ 
           is_active: true,
           updated_at: new Date().toISOString()

@@ -993,7 +993,66 @@ export type Database = {
             foreignKeyName: "expense_instances_recurring_template_id_fkey"
             columns: ["recurring_template_id"]
             isOneToOne: false
-            referencedRelation: "recurring_expense_templates"
+            referencedRelation: "expense_recurring_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expense_recurring_templates: {
+        Row: {
+          amount: number
+          applied_to_role: Database["public"]["Enums"]["user_role"] | null
+          created_at: string
+          created_by: string | null
+          end_date: string | null
+          expense_type_id: string
+          frequency: string
+          id: string
+          is_active: boolean
+          month_week: number | null
+          notes: string | null
+          start_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          applied_to_role?: Database["public"]["Enums"]["user_role"] | null
+          created_at?: string
+          created_by?: string | null
+          end_date?: string | null
+          expense_type_id: string
+          frequency: string
+          id?: string
+          is_active?: boolean
+          month_week?: number | null
+          notes?: string | null
+          start_date: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          applied_to_role?: Database["public"]["Enums"]["user_role"] | null
+          created_at?: string
+          created_by?: string | null
+          end_date?: string | null
+          expense_type_id?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          month_week?: number | null
+          notes?: string | null
+          start_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_expense_templates_expense_type_id_fkey"
+            columns: ["expense_type_id"]
+            isOneToOne: false
+            referencedRelation: "expense_types"
             referencedColumns: ["id"]
           },
         ]
@@ -1034,7 +1093,7 @@ export type Database = {
             foreignKeyName: "expense_template_history_template_id_fkey"
             columns: ["template_id"]
             isOneToOne: false
-            referencedRelation: "recurring_expense_templates"
+            referencedRelation: "expense_recurring_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -2330,65 +2389,6 @@ export type Database = {
           zip_code?: string | null
         }
         Relationships: []
-      }
-      recurring_expense_templates: {
-        Row: {
-          amount: number
-          applied_to_role: Database["public"]["Enums"]["user_role"] | null
-          created_at: string
-          created_by: string | null
-          end_date: string | null
-          expense_type_id: string
-          frequency: string
-          id: string
-          is_active: boolean
-          month_week: number | null
-          notes: string | null
-          start_date: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          amount: number
-          applied_to_role?: Database["public"]["Enums"]["user_role"] | null
-          created_at?: string
-          created_by?: string | null
-          end_date?: string | null
-          expense_type_id: string
-          frequency: string
-          id?: string
-          is_active?: boolean
-          month_week?: number | null
-          notes?: string | null
-          start_date: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          amount?: number
-          applied_to_role?: Database["public"]["Enums"]["user_role"] | null
-          created_at?: string
-          created_by?: string | null
-          end_date?: string | null
-          expense_type_id?: string
-          frequency?: string
-          id?: string
-          is_active?: boolean
-          month_week?: number | null
-          notes?: string | null
-          start_date?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "recurring_expense_templates_expense_type_id_fkey"
-            columns: ["expense_type_id"]
-            isOneToOne: false
-            referencedRelation: "expense_types"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       security_audit_log: {
         Row: {
