@@ -102,6 +102,22 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver" }: 
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor="income-type">Tipo de Ingreso</Label>
+        <Select value={incomeType} onValueChange={setIncomeType}>
+          <SelectTrigger>
+            <SelectValue placeholder="Seleccionar tipo de ingreso" />
+          </SelectTrigger>
+          <SelectContent>
+            {incomeTypes.map((type) => (
+              <SelectItem key={type} value={type}>
+                {type}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
         <Label htmlFor="description">Descripción</Label>
         <Input
           id="description"
@@ -149,22 +165,6 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver" }: 
             />
           </PopoverContent>
         </Popover>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="income-type">Tipo de Ingreso</Label>
-        <Select value={incomeType} onValueChange={setIncomeType}>
-          <SelectTrigger>
-            <SelectValue placeholder="Seleccionar tipo de ingreso" />
-          </SelectTrigger>
-          <SelectContent>
-            {incomeTypes.map((type) => (
-              <SelectItem key={type} value={type}>
-                {type}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
 
       <div className="space-y-2">
