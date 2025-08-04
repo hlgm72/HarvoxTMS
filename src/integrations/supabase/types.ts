@@ -2018,15 +2018,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "other_income_payment_period_id_fkey"
-            columns: ["payment_period_id"]
-            isOneToOne: false
-            referencedRelation: "company_payment_periods"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       owner_operators: {
         Row: {
