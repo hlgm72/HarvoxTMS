@@ -2,17 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Calendar spacing fix */
-.rdp-caption {
-  padding-left: 3rem !important;
-  padding-right: 3rem !important;
-}
-
-.rdp-nav_button {
-  margin-left: 0.5rem !important;
-  margin-right: 0.5rem !important;
-}
-
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */
