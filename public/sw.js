@@ -8,9 +8,6 @@ const STATIC_ASSETS = [
   '/',
   '/auth',
   '/manifest.json',
-  '/pwa-icon-192.png',
-  '/pwa-icon-512.png',
-  '/eagle-favicon.png',
 ];
 
 // Install event - cache static assets
@@ -175,8 +172,8 @@ self.addEventListener('push', (event) => {
   
   const options = {
     body: event.data ? event.data.text() : 'Nueva notificación de FleetNest',
-    icon: '/pwa-icon-192.png',
-    badge: '/pwa-icon-192.png',
+    icon: '/lovable-uploads/45f8eaed-03a2-459e-9bf1-4f9844e08105.png',
+    badge: '/lovable-uploads/45f8eaed-03a2-459e-9bf1-4f9844e08105.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -186,12 +183,12 @@ self.addEventListener('push', (event) => {
       {
         action: 'explore',
         title: 'Ver detalles',
-        icon: '/pwa-icon-192.png'
+        icon: '/lovable-uploads/45f8eaed-03a2-459e-9bf1-4f9844e08105.png'
       },
       {
         action: 'close',
         title: 'Cerrar',
-        icon: '/pwa-icon-192.png'
+        icon: '/lovable-uploads/45f8eaed-03a2-459e-9bf1-4f9844e08105.png'
       }
     ]
   };
