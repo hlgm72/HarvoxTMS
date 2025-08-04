@@ -29,7 +29,6 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver" }: 
   const [userType, setUserType] = useState<"driver" | "dispatcher">(defaultUserType);
   const [selectedUser, setSelectedUser] = useState("");
   const [referenceNumber, setReferenceNumber] = useState("");
-  const [notes, setNotes] = useState("");
 
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
@@ -54,7 +53,6 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver" }: 
         income_type: incomeType,
         income_date: date.toISOString().split('T')[0],
         reference_number: referenceNumber || undefined,
-        notes: notes || undefined,
         applied_to_role: userType,
         status: 'pending'
       });
@@ -176,16 +174,6 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver" }: 
           value={referenceNumber}
           onChange={(e) => setReferenceNumber(e.target.value)}
           placeholder="Ej: REF-001"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="notes">Notas (Opcional)</Label>
-        <Textarea
-          id="notes"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Notas adicionales sobre este ingreso"
         />
       </div>
 
