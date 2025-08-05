@@ -116,8 +116,7 @@ export function ExpandableFloatingActions({
             'bg-primary hover:bg-primary/90 text-primary-foreground',
             'flex items-center justify-center',
             'focus:outline-none active:outline-none',
-            'border-0 outline-0',
-            isExpanded ? 'rotate-180' : 'rotate-0'
+            'border-0 outline-0'
           )}
           onClick={handleMainClick}
           aria-label={mainLabel}
