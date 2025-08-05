@@ -78,8 +78,7 @@ export function ExpandableFloatingActions({
           <div
             key={index}
             className={cn(
-              'animate-scale-in flex items-center gap-3',
-              position.includes('right') ? 'flex-row-reverse' : 'flex-row'
+              'animate-scale-in flex items-center gap-3'
             )}
             style={{ 
               animationDelay: `${index * 50}ms`,
