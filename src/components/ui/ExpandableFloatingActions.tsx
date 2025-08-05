@@ -114,10 +114,10 @@ export function ExpandableFloatingActions({
       <Button
         size="lg"
         className={cn(
-          'h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300',
+          'h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-transform duration-300',
           'bg-primary hover:bg-primary/90 text-primary-foreground',
-          'focus-visible:ring-0 focus-visible:ring-offset-0 active:scale-95 active:shadow-md',
-          'hover:scale-100 active:transition-none',
+          'focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none',
+          'active:outline-none active:ring-0',
           isExpanded ? 'rotate-45' : 'rotate-0'
         )}
         onClick={handleMainClick}
