@@ -111,13 +111,13 @@ export function ExpandableFloatingActions({
       </div>
 
       {/* Botón principal */}
-      <Button
-        size="lg"
+      <button
         className={cn(
           'h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-transform duration-300',
           'bg-primary hover:bg-primary/90 text-primary-foreground',
-          'focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none',
-          'active:outline-none active:ring-0',
+          'flex items-center justify-center',
+          'focus:outline-none active:outline-none',
+          'border-0 outline-0',
           isExpanded ? 'rotate-45' : 'rotate-0'
         )}
         onClick={handleMainClick}
@@ -128,7 +128,7 @@ export function ExpandableFloatingActions({
         ) : (
           <MainIcon className="h-6 w-6" />
         )}
-      </Button>
+      </button>
     </div>
   );
 }
