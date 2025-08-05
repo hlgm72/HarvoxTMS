@@ -68,7 +68,7 @@ export function ExpandableFloatingActions({
 
       {/* Botones de acción */}
       <div className={cn(
-        'flex gap-3 transition-all duration-300 ease-out',
+        'flex gap-3 transition-all duration-300 ease-out items-end',
         animationClasses[position],
         isExpanded 
           ? 'opacity-100 scale-100 translate-y-0' 
@@ -78,7 +78,7 @@ export function ExpandableFloatingActions({
           <div
             key={index}
             className={cn(
-              'animate-scale-in flex items-center gap-3'
+              'animate-scale-in flex items-center gap-3 justify-end w-full'
             )}
             style={{ 
               animationDelay: `${index * 50}ms`,
