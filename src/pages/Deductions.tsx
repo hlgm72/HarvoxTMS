@@ -77,13 +77,15 @@ export default function Deductions() {
         subtitle={getSubtitle()}
         actions={
           <div className="flex gap-2">
-            <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
+            <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2 text-xs md:text-sm px-2 md:px-4">
               <Repeat className="h-4 w-4" />
-              Deducción Recurrente
+              <span className="hidden sm:inline">Deducción Recurrente</span>
+              <span className="sm:hidden">Recurrente</span>
             </Button>
-            <Button variant="outline" onClick={() => setIsEventualDialogOpen(true)} className="gap-2">
+            <Button variant="outline" onClick={() => setIsEventualDialogOpen(true)} className="gap-2 text-xs md:text-sm px-2 md:px-4">
               <Clock className="h-4 w-4" />
-              Deducción Eventual
+              <span className="hidden sm:inline">Deducción Eventual</span>
+              <span className="sm:hidden">Eventual</span>
             </Button>
           </div>
         }
