@@ -74,7 +74,7 @@ export function Header() {
               </DropdownMenuLabel>
               
               {/* Controles de idioma/rol en móvil */}
-              <div className="block sm:hidden p-2 border-b border-border">
+              <div className="sm:hidden p-2 border-b border-border">
                 <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
                   <RoleSwitcher />
                   <div className="w-px h-4 bg-border/30"></div>
