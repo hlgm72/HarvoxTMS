@@ -467,11 +467,19 @@ export function DeductionsManager({
   return (
     <div className="space-y-6">
       <Tabs defaultValue="active" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="active">Plantillas Activas</TabsTrigger>
-          <TabsTrigger value="inactive">Plantillas Inactivas</TabsTrigger>
-          <TabsTrigger value="eventual">Deducciones Eventuales</TabsTrigger>
-          <TabsTrigger value="history">Historial</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-1">
+          <TabsTrigger value="active" className="text-xs md:text-sm px-2 md:px-3">
+            <span className="hidden sm:inline">Plantillas </span>Activas
+          </TabsTrigger>
+          <TabsTrigger value="inactive" className="text-xs md:text-sm px-2 md:px-3">
+            <span className="hidden sm:inline">Plantillas </span>Inactivas
+          </TabsTrigger>
+          <TabsTrigger value="eventual" className="text-xs md:text-sm px-2 md:px-3">
+            <span className="hidden sm:inline">Deducciones </span>Eventuales
+          </TabsTrigger>
+          <TabsTrigger value="history" className="text-xs md:text-sm px-2 md:px-3">
+            Historial
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="active" className="space-y-4">
