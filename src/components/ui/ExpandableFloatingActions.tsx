@@ -123,7 +123,7 @@ export function ExpandableFloatingActions({
         >
           <ArrowLeft className={cn(
             "h-6 w-6 transition-transform duration-300",
-            isExpanded ? "rotate-180 -translate-x-2" : "-translate-x-3"
+            isExpanded ? "rotate-180 -translate-x-2" : "-translate-x-2"
           )} />
         </button>
       </div>
