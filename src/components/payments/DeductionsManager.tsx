@@ -367,7 +367,7 @@ export function DeductionsManager({
 
     return (
       <div className="space-y-3">
-        <h3 className="text-base md:text-lg font-semibold text-muted-foreground border-b pb-2 mb-3 mt-6">
+        <h3 className="text-base md:text-lg font-semibold text-muted-foreground border-b pb-2 mb-3 mt-10">
           {title}
         </h3>
         <div className="grid gap-4">
@@ -499,12 +499,12 @@ export function DeductionsManager({
           ) : (
             <div className="space-y-6">
               <TemplateGroup 
-                title="Conductores" 
+                title="Descuentos a conductores" 
                 templates={groupedActiveTemplates.drivers} 
                 isInactive={false} 
               />
               <TemplateGroup 
-                title="Despachadores" 
+                title="Descuentos a despachadores" 
                 templates={groupedActiveTemplates.dispatchers} 
                 isInactive={false} 
               />
@@ -523,12 +523,12 @@ export function DeductionsManager({
           ) : (
             <div className="space-y-6">
               <TemplateGroup 
-                title="Conductores" 
+                title="Descuentos a conductores" 
                 templates={groupedInactiveTemplates.drivers} 
                 isInactive={true} 
               />
               <TemplateGroup 
-                title="Despachadores" 
+                title="Descuentos a despachadores" 
                 templates={groupedInactiveTemplates.dispatchers} 
                 isInactive={true} 
               />
