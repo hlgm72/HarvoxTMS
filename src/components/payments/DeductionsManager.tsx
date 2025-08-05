@@ -499,12 +499,12 @@ export function DeductionsManager({
           ) : (
             <div className="space-y-6">
               <TemplateGroup 
-                title="Descuentos a conductores" 
+                title="Descuentos a Conductores" 
                 templates={groupedActiveTemplates.drivers} 
                 isInactive={false} 
               />
               <TemplateGroup 
-                title="Descuentos a despachadores" 
+                title="Descuentos a Despachadores" 
                 templates={groupedActiveTemplates.dispatchers} 
                 isInactive={false} 
               />
@@ -523,12 +523,12 @@ export function DeductionsManager({
           ) : (
             <div className="space-y-6">
               <TemplateGroup 
-                title="Descuentos a conductores" 
+                title="Descuentos a Conductores" 
                 templates={groupedInactiveTemplates.drivers} 
                 isInactive={true} 
               />
               <TemplateGroup 
-                title="Descuentos a despachadores" 
+                title="Descuentos a Despachadores" 
                 templates={groupedInactiveTemplates.dispatchers} 
                 isInactive={true} 
               />
