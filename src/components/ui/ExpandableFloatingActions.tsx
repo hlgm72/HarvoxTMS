@@ -68,37 +68,23 @@ export function ExpandableFloatingActions({
             : 'opacity-0 scale-95 translate-x-4 pointer-events-none'
         )}>
           {actions.map((action, index) => (
-            <div
+            <Button
               key={index}
+              size="default"
+              variant={action.variant || 'default'}
               className={cn(
-                'animate-scale-in flex items-center gap-3'
+                'animate-scale-in h-11 px-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2 whitespace-nowrap',
+                action.className
               )}
               style={{ 
                 animationDelay: `${index * 50}ms`,
                 animationFillMode: 'both'
               }}
+              onClick={() => handleActionClick(action)}
             >
-              {/* Label */}
-              <div className={cn(
-                'bg-card/95 backdrop-blur-sm text-foreground px-3 py-2 rounded-lg text-sm font-medium shadow-lg border border-border/20 whitespace-nowrap',
-                'transition-all duration-200 hover:bg-card'
-              )}>
-                {action.label}
-              </div>
-              
-              {/* Button */}
-              <Button
-                size="default"
-                variant={action.variant || 'default'}
-                className={cn(
-                  'h-12 w-12 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105',
-                  action.className
-                )}
-                onClick={() => handleActionClick(action)}
-              >
-                <action.icon className="h-5 w-5" />
-              </Button>
-            </div>
+              <action.icon className="h-4 w-4" />
+              <span className="text-sm font-medium">{action.label}</span>
+            </Button>
           ))}
         </div>
 
