@@ -53,8 +53,7 @@ export function ExpandableFloatingActions({
 
   return (
     <div className={cn(
-      'fixed z-50 flex items-end gap-3',
-      animationClasses[position],
+      'fixed z-50',
       positionClasses[position],
       className
     )}>
@@ -66,22 +65,17 @@ export function ExpandableFloatingActions({
         />
       )}
 
-      {/* Botones de acción en semicírculo */}
-      <div className={cn(
-        'absolute',
-        isExpanded 
-          ? 'opacity-100 scale-100' 
-          : 'opacity-0 scale-95 pointer-events-none',
-        'transition-all duration-300 ease-out'
-      )}>
-        {actions.map((action, index) => {
+      {/* Contenedor para el semicírculo */}
+      <div className="relative">
+        {/* Botones de acción en semicírculo */}
+        {isExpanded && actions.map((action, index) => {
           // Calcular posición en semicírculo
           const radius = 80; // Radio del semicírculo
           const totalActions = actions.length;
-          const startAngle = Math.PI; // Comenzar desde la izquierda (180°)
-          const endAngle = 0; // Terminar en la derecha (0°)
-          const angleStep = (startAngle - endAngle) / (totalActions - 1);
-          const angle = startAngle - (angleStep * index);
+          const angleStart = -Math.PI / 2; // -90 grados (arriba)
+          const angleEnd = -Math.PI; // -180 grados (izquierda)
+          const angleStep = (angleEnd - angleStart) / Math.max(totalActions - 1, 1);
+          const angle = angleStart + (angleStep * index);
           
           const x = Math.cos(angle) * radius;
           const y = Math.sin(angle) * radius;
@@ -90,20 +84,19 @@ export function ExpandableFloatingActions({
             <div
               key={index}
               className={cn(
-                'absolute flex items-center gap-3',
+                'absolute flex items-center gap-3 z-10',
                 'animate-scale-in'
               )}
               style={{ 
-                transform: `translate(${x}px, ${y}px)`,
-                animationDelay: `${index * 50}ms`,
+                transform: `translate(${x - 24}px, ${y - 24}px)`,
+                animationDelay: `${index * 100}ms`,
                 animationFillMode: 'both'
               }}
             >
               {/* Label a la izquierda */}
               <div className={cn(
                 'bg-card/95 backdrop-blur-sm text-foreground px-3 py-2 rounded-lg text-sm font-medium shadow-lg border border-border/20 whitespace-nowrap',
-                'transition-all duration-200 hover:bg-card',
-                'mr-2'
+                'transition-all duration-200 hover:bg-card'
               )}>
                 {action.label}
               </div>
@@ -123,27 +116,27 @@ export function ExpandableFloatingActions({
             </div>
           );
         })}
-      </div>
 
-      {/* Botón principal */}
-      <button
-        className={cn(
-          'h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-transform duration-300',
-          'bg-primary hover:bg-primary/90 text-primary-foreground',
-          'flex items-center justify-center',
-          'focus:outline-none active:outline-none',
-          'border-0 outline-0',
-          isExpanded ? 'rotate-45' : 'rotate-0'
-        )}
-        onClick={handleMainClick}
-        aria-label={mainLabel}
-      >
-        {isExpanded ? (
-          <X className="h-6 w-6" />
-        ) : (
-          <MainIcon className="h-6 w-6" />
-        )}
-      </button>
+        {/* Botón principal */}
+        <button
+          className={cn(
+            'h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-transform duration-300',
+            'bg-primary hover:bg-primary/90 text-primary-foreground',
+            'flex items-center justify-center',
+            'focus:outline-none active:outline-none',
+            'border-0 outline-0',
+            isExpanded ? 'rotate-45' : 'rotate-0'
+          )}
+          onClick={handleMainClick}
+          aria-label={mainLabel}
+        >
+          {isExpanded ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <MainIcon className="h-6 w-6" />
+          )}
+        </button>
+      </div>
     </div>
   );
 }
