@@ -57,13 +57,6 @@ export function ExpandableFloatingActions({
       positionClasses[position],
       className
     )}>
-      {/* Backdrop para cerrar al hacer click fuera */}
-      {isExpanded && (
-        <div 
-          className="fixed inset-0 bg-black/10 backdrop-blur-[1px] -z-10"
-          onClick={() => setIsExpanded(false)}
-        />
-      )}
 
       {/* Contenedor relativo para posicionar elementos */}
       <div className="relative flex items-center">
