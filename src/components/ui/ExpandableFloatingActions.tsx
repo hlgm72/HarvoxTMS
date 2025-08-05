@@ -116,6 +116,7 @@ export function ExpandableFloatingActions({
         className={cn(
           'h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300',
           'bg-primary hover:bg-primary/90 text-primary-foreground',
+          'focus-visible:ring-0 focus-visible:ring-offset-0 active:scale-100',
           isExpanded ? 'rotate-45 scale-110' : 'rotate-0 scale-100'
         )}
         onClick={handleMainClick}
