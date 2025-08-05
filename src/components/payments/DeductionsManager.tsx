@@ -482,7 +482,7 @@ export function DeductionsManager({
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="active" className="space-y-4">
+        <TabsContent value="active" className="space-y-4 mt-6 md:mt-8">
           {templates.length === 0 ? (
             <Card>
               <CardContent className="p-6 text-center">
@@ -512,7 +512,7 @@ export function DeductionsManager({
           )}
         </TabsContent>
 
-        <TabsContent value="inactive" className="space-y-4">
+        <TabsContent value="inactive" className="space-y-4 mt-6 md:mt-8">
           {inactiveTemplates.length === 0 ? (
             <Card>
               <CardContent className="p-6 text-center">
@@ -536,7 +536,7 @@ export function DeductionsManager({
           )}
         </TabsContent>
 
-        <TabsContent value="eventual" className="space-y-4">
+        <TabsContent value="eventual" className="space-y-4 mt-6 md:mt-8">
           <EventualDeductionsList 
             onRefresh={() => setRefreshTrigger(prev => prev + 1)}
             filters={filters}
@@ -544,7 +544,7 @@ export function DeductionsManager({
           />
         </TabsContent>
 
-        <TabsContent value="history" className="space-y-4">
+        <TabsContent value="history" className="space-y-4 mt-6 md:mt-8">
           <div className="text-center py-8 text-muted-foreground">
             <h3 className="text-lg font-medium mb-2">Historial de Cambios</h3>
             <p className="text-sm">
