@@ -366,8 +366,8 @@ export function DeductionsManager({
     if (templates.length === 0) return null;
 
     return (
-      <div className="space-y-4 md:space-y-6">
-        <h3 className="text-base md:text-lg font-semibold text-muted-foreground border-b pb-3 mb-4 md:mb-6">
+      <div className="space-y-3">
+        <h3 className="text-base md:text-lg font-semibold text-muted-foreground border-b pb-2 mb-3 mt-6">
           {title}
         </h3>
         <div className="grid gap-4">
