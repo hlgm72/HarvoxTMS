@@ -29,10 +29,10 @@ export function ExpandableFloatingActions({
   const [isExpanded, setIsExpanded] = useState(false);
 
   const positionClasses = {
-    'bottom-right': 'top-1/2 -translate-y-1/2 -right-7',
-    'bottom-left': 'top-1/2 -translate-y-1/2 -left-7', 
-    'top-right': 'top-1/2 -translate-y-1/2 -right-7',
-    'top-left': 'top-1/2 -translate-y-1/2 -left-7'
+    'bottom-right': 'top-1/2 -translate-y-1/2 right-0',
+    'bottom-left': 'top-1/2 -translate-y-1/2 left-0', 
+    'top-right': 'top-1/2 -translate-y-1/2 right-0',
+    'top-left': 'top-1/2 -translate-y-1/2 left-0'
   };
 
   const animationClasses = {
@@ -110,27 +110,24 @@ export function ExpandableFloatingActions({
         </div>
 
         {/* Botón principal como semicírculo */}
-        <div className="relative overflow-hidden w-7 h-14">
-          <button
-            className={cn(
-              'absolute w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-transform duration-300',
-              'bg-primary hover:bg-primary/90 text-primary-foreground',
-              'flex items-center justify-center',
-              'focus:outline-none active:outline-none',
-              'border-0 outline-0',
-              '-right-7 top-0',
-              isExpanded ? 'rotate-45' : 'rotate-0'
-            )}
-            onClick={handleMainClick}
-            aria-label={mainLabel}
-          >
-            {isExpanded ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <MainIcon className="h-6 w-6" />
-            )}
-          </button>
-        </div>
+        <button
+          className={cn(
+            'w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-transform duration-300',
+            'bg-primary hover:bg-primary/90 text-primary-foreground',
+            'flex items-center justify-center',
+            'focus:outline-none active:outline-none',
+            'border-0 outline-0',
+            isExpanded ? 'rotate-45' : 'rotate-0'
+          )}
+          onClick={handleMainClick}
+          aria-label={mainLabel}
+        >
+          {isExpanded ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <MainIcon className="h-6 w-6" />
+          )}
+        </button>
       </div>
     </div>
   );
