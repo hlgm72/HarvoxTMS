@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ExpandableFloatingActions } from "@/components/ui/ExpandableFloatingActions";
 import { 
   Filter, 
   FilterX, 
@@ -18,7 +18,8 @@ import {
   BarChart3,
   FileText,
   FileSpreadsheet,
-  History
+  History,
+  Plus
 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -109,78 +110,44 @@ export function DeductionsFloatingActions({
     setIsOpen(true);
   };
 
-  const actionButtons = [
+  // Definir las acciones para el componente expandible
+  const floatingActions = [
     {
-      id: 'filters',
       icon: Filter,
-      label: 'Filtros',
-      color: 'text-blue-600 hover:text-blue-700',
-      bgColor: 'hover:bg-blue-50',
-      hasIndicator: hasActiveFilters
+      label: hasActiveFilters ? 'Filtros (activos)' : 'Filtros',
+      onClick: () => openSheet('filters'),
+      variant: (hasActiveFilters ? 'default' : 'secondary') as 'default' | 'secondary' | 'outline' | 'destructive',
+      className: hasActiveFilters ? 'bg-blue-600 hover:bg-blue-700' : ''
     },
     {
-      id: 'export',
       icon: Download,
       label: 'Exportar',
-      color: 'text-green-600 hover:text-green-700',
-      bgColor: 'hover:bg-green-50',
-      hasIndicator: false
+      onClick: () => openSheet('export'),
+      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     },
     {
-      id: 'view',
       icon: Settings,
       label: 'Vista',
-      color: 'text-purple-600 hover:text-purple-700',
-      bgColor: 'hover:bg-purple-50',
-      hasIndicator: false
+      onClick: () => openSheet('view'),
+      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     },
     {
-      id: 'history',
       icon: History,
       label: 'Historial',
-      color: 'text-orange-600 hover:text-orange-700',
-      bgColor: 'hover:bg-orange-50',
-      hasIndicator: false
+      onClick: () => openSheet('history'),
+      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     }
   ];
 
   return (
     <>
-      {/* Floating Action Buttons */}
-      <div className="fixed right-2 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2">
-        <TooltipProvider>
-          {actionButtons.map((action) => {
-            const IconComponent = action.icon;
-            return (
-              <Tooltip key={action.id}>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "h-12 w-10 rounded-l-xl rounded-r-none border-r-0 shadow-lg transition-all duration-300",
-                      "bg-background/95 backdrop-blur-sm",
-                      "hover:w-14 hover:shadow-xl hover:-translate-x-1",
-                      action.color,
-                      action.bgColor,
-                      "relative flex flex-col items-center justify-center gap-0.5 px-1"
-                    )}
-                    onClick={() => openSheet(action.id as any)}
-                  >
-                    <IconComponent className="h-3.5 w-3.5" />
-                    <span className="text-[7px] font-medium leading-none">{action.label}</span>
-                    {action.hasIndicator && (
-                      <div className="absolute -top-1 left-1 h-2 w-2 bg-red-500 rounded-full animate-pulse" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left" className="mr-2">
-                  <p>{action.label}</p>
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
-        </TooltipProvider>
-      </div>
+      {/* Botones Flotantes Expandibles */}
+      <ExpandableFloatingActions
+        actions={floatingActions}
+        mainIcon={Plus}
+        mainLabel="Acciones de Deducciones"
+        position="bottom-right"
+      />
 
       {/* Sheet Modal */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>

@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Filter, X, Download, Settings, BarChart3, RefreshCw } from 'lucide-react';
+import { ExpandableFloatingActions } from '@/components/ui/ExpandableFloatingActions';
+import { Filter, X, Download, Settings, BarChart3, RefreshCw, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FuelFilters, FuelFiltersType } from './FuelFilters';
 import { useFleetNotifications } from '@/components/notifications';
@@ -84,86 +84,50 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
     }
   };
 
-  const actionButtons = [
+  // Definir las acciones para el componente expandible
+  const floatingActions = [
     {
-      id: 'filters',
       icon: Filter,
-      label: 'Filtros',
-      color: 'text-blue-600 hover:text-blue-700',
-      bgColor: 'hover:bg-blue-50',
-      hasIndicator: hasActiveFilters
+      label: hasActiveFilters ? 'Filtros (activos)' : 'Filtros',
+      onClick: () => openSheet('filters'),
+      variant: (hasActiveFilters ? 'default' : 'secondary') as 'default' | 'secondary' | 'outline' | 'destructive',
+      className: hasActiveFilters ? 'bg-blue-600 hover:bg-blue-700' : ''
     },
     {
-      id: 'sync',
       icon: RefreshCw,
       label: 'FleetOne',
-      color: 'text-cyan-600 hover:text-cyan-700',
-      bgColor: 'hover:bg-cyan-50',
-      hasIndicator: false
+      onClick: () => openSheet('sync'),
+      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     },
     {
-      id: 'export',
       icon: Download,
       label: 'Exportar',
-      color: 'text-green-600 hover:text-green-700',
-      bgColor: 'hover:bg-green-50',
-      hasIndicator: false
+      onClick: () => openSheet('export'),
+      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     },
     {
-      id: 'view',
       icon: Settings,
       label: 'Vista',
-      color: 'text-purple-600 hover:text-purple-700',
-      bgColor: 'hover:bg-purple-50',
-      hasIndicator: false
+      onClick: () => openSheet('view'),
+      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     },
     {
-      id: 'stats',
       icon: BarChart3,
       label: 'Estadísticas',
-      color: 'text-orange-600 hover:text-orange-700',
-      bgColor: 'hover:bg-orange-50',
-      hasIndicator: false
+      onClick: () => openSheet('stats'),
+      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     }
   ];
 
   return (
     <>
-      {/* Floating Action Buttons */}
-      <div className="fixed right-0 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2">
-        <TooltipProvider>
-          {actionButtons.map((action) => {
-            const IconComponent = action.icon;
-            return (
-              <Tooltip key={action.id}>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "h-14 w-12 rounded-l-xl rounded-r-none border-r-0 shadow-lg transition-all duration-300",
-                      "bg-background/95 backdrop-blur-sm",
-                      "hover:w-16 hover:shadow-xl hover:-translate-x-1",
-                      action.color,
-                      action.bgColor,
-                      "relative flex flex-col items-center justify-center gap-1 px-2"
-                    )}
-                    onClick={() => openSheet(action.id as any)}
-                  >
-                    <IconComponent className="h-4 w-4" />
-                    <span className="text-[8px] font-medium leading-none">{action.label}</span>
-                    {action.hasIndicator && (
-                      <div className="absolute -top-1 left-1 h-2 w-2 bg-red-500 rounded-full animate-pulse" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left" className="mr-2">
-                  <p>{action.label}</p>
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
-        </TooltipProvider>
-      </div>
+      {/* Botones Flotantes Expandibles */}
+      <ExpandableFloatingActions
+        actions={floatingActions}
+        mainIcon={Plus}
+        mainLabel="Acciones de Combustible"
+        position="bottom-right"
+      />
 
       {/* Sheet Modal */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
