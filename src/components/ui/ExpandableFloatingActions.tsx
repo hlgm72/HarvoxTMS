@@ -122,7 +122,7 @@ export function ExpandableFloatingActions({
           onClick={handleMainClick}
           aria-label={mainLabel}
         >
-          <ArrowLeft className="h-6 w-6 -translate-x-1" />
+          <ArrowLeft className="h-6 w-6 -translate-x-2" />
         </button>
       </div>
     </div>
