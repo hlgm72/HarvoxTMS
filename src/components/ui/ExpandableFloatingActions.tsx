@@ -29,10 +29,10 @@ export function ExpandableFloatingActions({
   const [isExpanded, setIsExpanded] = useState(false);
 
   const positionClasses = {
-    'bottom-right': 'bottom-6 right-6',
-    'bottom-left': 'bottom-6 left-6', 
-    'top-right': 'top-6 right-6',
-    'top-left': 'top-6 left-6'
+    'bottom-right': 'bottom-6 -right-7',
+    'bottom-left': 'bottom-6 -left-7', 
+    'top-right': 'top-6 -right-7',
+    'top-left': 'top-6 -left-7'
   };
 
   const animationClasses = {
@@ -53,8 +53,7 @@ export function ExpandableFloatingActions({
 
   return (
     <div className={cn(
-      'fixed z-50 flex items-end gap-3',
-      animationClasses[position],
+      'fixed z-50',
       positionClasses[position],
       className
     )}>
@@ -66,68 +65,73 @@ export function ExpandableFloatingActions({
         />
       )}
 
-      {/* Botones de acción */}
-      <div className={cn(
-        'flex gap-3 transition-all duration-300 ease-out items-end',
-        animationClasses[position],
-        isExpanded 
-          ? 'opacity-100 scale-100 translate-y-0' 
-          : 'opacity-0 scale-95 translate-y-2 pointer-events-none'
-      )}>
-        {actions.map((action, index) => (
-          <div
-            key={index}
-            className={cn(
-              'animate-scale-in flex items-center gap-3 justify-end w-full'
-            )}
-            style={{ 
-              animationDelay: `${index * 50}ms`,
-              animationFillMode: 'both'
-            }}
-          >
-            {/* Label */}
-            <div className={cn(
-              'bg-card/95 backdrop-blur-sm text-foreground px-3 py-2 rounded-lg text-sm font-medium shadow-lg border border-border/20 whitespace-nowrap',
-              'transition-all duration-200 hover:bg-card'
-            )}>
-              {action.label}
-            </div>
-            
-            {/* Button */}
-            <Button
-              size="default"
-              variant={action.variant || 'default'}
+      {/* Contenedor relativo para posicionar elementos */}
+      <div className="relative flex items-center">
+        {/* Botones de acción a la izquierda del botón principal */}
+        <div className={cn(
+          'flex flex-col gap-3 transition-all duration-300 ease-out mr-4',
+          isExpanded 
+            ? 'opacity-100 scale-100 translate-x-0' 
+            : 'opacity-0 scale-95 translate-x-4 pointer-events-none'
+        )}>
+          {actions.map((action, index) => (
+            <div
+              key={index}
               className={cn(
-                'h-12 w-12 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105',
-                action.className
+                'animate-scale-in flex items-center gap-3'
               )}
-              onClick={() => handleActionClick(action)}
+              style={{ 
+                animationDelay: `${index * 50}ms`,
+                animationFillMode: 'both'
+              }}
             >
-              <action.icon className="h-5 w-5" />
-            </Button>
-          </div>
-        ))}
-      </div>
+              {/* Label */}
+              <div className={cn(
+                'bg-card/95 backdrop-blur-sm text-foreground px-3 py-2 rounded-lg text-sm font-medium shadow-lg border border-border/20 whitespace-nowrap',
+                'transition-all duration-200 hover:bg-card'
+              )}>
+                {action.label}
+              </div>
+              
+              {/* Button */}
+              <Button
+                size="default"
+                variant={action.variant || 'default'}
+                className={cn(
+                  'h-12 w-12 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105',
+                  action.className
+                )}
+                onClick={() => handleActionClick(action)}
+              >
+                <action.icon className="h-5 w-5" />
+              </Button>
+            </div>
+          ))}
+        </div>
 
-      {/* Botón principal */}
-      <button
-        className={cn(
-          'h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-transform duration-300',
-          'bg-primary hover:bg-primary/90 text-primary-foreground',
-          'flex items-center justify-center',
-          'focus:outline-none active:outline-none',
-          'border-0 outline-0',
-          isExpanded ? 'rotate-45' : 'rotate-0'
-        )}
-        onClick={handleMainClick}
-        aria-label={mainLabel}
-      >
-        {isExpanded ? (
-          <X className="h-6 w-6" />
-        ) : (
-          <MainIcon className="h-6 w-6" />
-        )}
-      </button>
+        {/* Botón principal como semicírculo */}
+        <div className="relative overflow-hidden w-14 h-14">
+          <button
+            className={cn(
+              'absolute w-28 h-14 rounded-full shadow-lg hover:shadow-xl transition-transform duration-300',
+              'bg-primary hover:bg-primary/90 text-primary-foreground',
+              'flex items-center justify-center',
+              'focus:outline-none active:outline-none',
+              'border-0 outline-0',
+              '-right-14',
+              isExpanded ? 'rotate-45' : 'rotate-0'
+            )}
+            onClick={handleMainClick}
+            aria-label={mainLabel}
+          >
+            {isExpanded ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <MainIcon className="h-6 w-6" />
+            )}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
