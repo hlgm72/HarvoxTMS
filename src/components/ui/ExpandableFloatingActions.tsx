@@ -53,10 +53,11 @@ export function ExpandableFloatingActions({
 
   return (
     <div className={cn(
-      'fixed z-50',
+      'fixed z-50 sticky',
       positionClasses[position],
       className
-    )}>
+    )}
+    style={{ position: 'fixed' }}>
 
       {/* Contenedor relativo para posicionar elementos */}
       <div className="relative flex items-center">
