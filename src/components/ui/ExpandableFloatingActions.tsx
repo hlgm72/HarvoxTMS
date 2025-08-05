@@ -69,7 +69,7 @@ export function ExpandableFloatingActions({
       <div className="relative flex items-center">
         {/* Botones de acción a la izquierda del botón principal */}
         <div className={cn(
-          'flex flex-col gap-3 transition-all duration-300 ease-out mr-4',
+          'flex flex-col gap-3 transition-all duration-300 ease-out mr-4 items-end',
           isExpanded 
             ? 'opacity-100 scale-100 translate-x-0' 
             : 'opacity-0 scale-95 translate-x-4 pointer-events-none'
