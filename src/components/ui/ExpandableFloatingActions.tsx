@@ -110,15 +110,15 @@ export function ExpandableFloatingActions({
         </div>
 
         {/* Botón principal como semicírculo */}
-        <div className="relative overflow-hidden w-14 h-14">
+        <div className="relative overflow-hidden w-7 h-14">
           <button
             className={cn(
-              'absolute w-28 h-14 rounded-full shadow-lg hover:shadow-xl transition-transform duration-300',
+              'absolute w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-transform duration-300',
               'bg-primary hover:bg-primary/90 text-primary-foreground',
               'flex items-center justify-center',
               'focus:outline-none active:outline-none',
               'border-0 outline-0',
-              '-right-14',
+              '-right-7',
               isExpanded ? 'rotate-45' : 'rotate-0'
             )}
             onClick={handleMainClick}
