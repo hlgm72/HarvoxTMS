@@ -91,7 +91,7 @@ export default function Deductions() {
         }
       />
 
-      <div className="p-2 md:p-4 pr-16 md:pr-20 space-y-6">
+      <div className="p-2 md:p-4 space-y-6">
         <DeductionsManager 
           filters={filters}
           viewConfig={viewConfig}
