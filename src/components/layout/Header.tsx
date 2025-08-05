@@ -44,12 +44,13 @@ export function Header() {
         <MenuToggle />
 
         <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
-          {/* Controles responsivos - ocultos en móvil muy pequeño */}
-          <div className="hidden sm:flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1.5 bg-white/40 rounded-lg border border-border/10">
+          {/* Role Switcher - oculto en móvil muy pequeño */}
+          <div className="hidden sm:flex items-center px-2 md:px-3 py-1.5 bg-white/40 rounded-lg border border-border/10">
             <RoleSwitcher />
-            <div className="w-px h-4 bg-border/30"></div>
-            <LanguageSwitcher />
           </div>
+          
+          {/* Language Switcher - siempre visible al lado del avatar */}
+          <LanguageSwitcher />
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -73,12 +74,10 @@ export function Header() {
                 </div>
               </DropdownMenuLabel>
               
-              {/* Controles de idioma/rol en móvil */}
+              {/* Control de rol en móvil */}
               <div className="sm:hidden p-2 border-b border-border">
                 <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
                   <RoleSwitcher />
-                  <div className="w-px h-4 bg-border/30"></div>
-                  <LanguageSwitcher />
                 </div>
               </div>
               
