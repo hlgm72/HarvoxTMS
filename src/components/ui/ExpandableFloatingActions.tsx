@@ -118,7 +118,7 @@ export function ExpandableFloatingActions({
               'flex items-center justify-center',
               'focus:outline-none active:outline-none',
               'border-0 outline-0',
-              'right-0 top-0 translate-x-1/2',
+              '-right-7 top-0',
               isExpanded ? 'rotate-45' : 'rotate-0'
             )}
             onClick={handleMainClick}
