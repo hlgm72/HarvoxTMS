@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 interface FloatingAction {
   icon: React.ComponentType<{ className?: string }>;
@@ -21,7 +21,7 @@ interface ExpandableFloatingActionsProps {
 
 export function ExpandableFloatingActions({
   actions,
-  mainIcon: MainIcon = ChevronLeft,
+  mainIcon: MainIcon = ArrowLeft,
   mainLabel = 'Acciones',
   position = 'bottom-right',
   className
@@ -117,16 +117,12 @@ export function ExpandableFloatingActions({
             'flex items-center justify-center',
             'focus:outline-none active:outline-none',
             'border-0 outline-0',
-            isExpanded ? 'rotate-45' : 'rotate-0'
+            isExpanded ? 'rotate-180' : 'rotate-0'
           )}
           onClick={handleMainClick}
           aria-label={mainLabel}
         >
-          {isExpanded ? (
-            <ChevronRight className="h-6 w-6" />
-          ) : (
-            <MainIcon className="h-6 w-6" />
-          )}
+          <ArrowLeft className="h-6 w-6" />
         </button>
       </div>
     </div>
