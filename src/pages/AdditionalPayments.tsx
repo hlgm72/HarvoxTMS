@@ -37,7 +37,7 @@ export default function AdditionalPayments() {
         }
       />
 
-      <div className="p-2 md:p-4 pr-16 md:pr-20 space-y-6">
+      <div className="p-2 md:p-4 space-y-6">
         {/* Sección unificada de ingresos adicionales */}
         <OtherIncomeSection hideAddButton={true} />
       </div>
