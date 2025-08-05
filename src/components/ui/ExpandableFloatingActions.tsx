@@ -67,25 +67,39 @@ export function ExpandableFloatingActions({
             ? 'opacity-100 scale-100 translate-x-0' 
             : 'opacity-0 scale-95 translate-x-4 pointer-events-none'
         )}>
-          {actions.map((action, index) => (
-            <Button
-              key={index}
-              size="default"
-              variant={action.variant || 'default'}
-              className={cn(
-                'animate-scale-in h-16 w-16 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex flex-col items-center justify-center gap-1 p-2',
-                action.className
-              )}
-              style={{ 
-                animationDelay: `${index * 50}ms`,
-                animationFillMode: 'both'
-              }}
-              onClick={() => handleActionClick(action)}
-            >
-              <action.icon className="h-4 w-4" />
-              <span className="text-xs font-medium leading-tight text-center">{action.label}</span>
-            </Button>
-          ))}
+          {actions.map((action, index) => {
+            // Colores pastel diferentes para cada botón
+            const pastelColors = [
+              'bg-blue-100 hover:bg-blue-200 text-blue-700 border-blue-200', // Azul
+              'bg-green-100 hover:bg-green-200 text-green-700 border-green-200', // Verde
+              'bg-purple-100 hover:bg-purple-200 text-purple-700 border-purple-200', // Púrpura
+              'bg-pink-100 hover:bg-pink-200 text-pink-700 border-pink-200', // Rosa
+              'bg-yellow-100 hover:bg-yellow-200 text-yellow-700 border-yellow-200', // Amarillo
+              'bg-indigo-100 hover:bg-indigo-200 text-indigo-700 border-indigo-200' // Índigo
+            ];
+            
+            const colorClass = pastelColors[index % pastelColors.length];
+            
+            return (
+              <Button
+                key={index}
+                size="default"
+                className={cn(
+                  'animate-scale-in h-16 w-16 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex flex-col items-center justify-center gap-1 p-2 border',
+                  colorClass,
+                  action.className
+                )}
+                style={{ 
+                  animationDelay: `${index * 50}ms`,
+                  animationFillMode: 'both'
+                }}
+                onClick={() => handleActionClick(action)}
+              >
+                <action.icon className="h-4 w-4" />
+                <span className="text-xs font-medium leading-tight text-center">{action.label}</span>
+              </Button>
+            );
+          })}
         </div>
 
         {/* Botón principal como semicírculo */}
