@@ -439,13 +439,11 @@ export function DeductionsManager({
                 {!isInactive && (
                   <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-muted-foreground">Vigente desde:</span>
-                      <p>{formatDateOnly(template.start_date)}</p>
+                      <span className="text-muted-foreground">Vigente desde: {formatDateOnly(template.start_date)}</span>
                     </div>
                     {template.end_date && (
                       <div>
-                        <span className="text-muted-foreground">Vigente hasta:</span>
-                        <p>{formatDateOnly(template.end_date)}</p>
+                        <span className="text-muted-foreground">Vigente hasta: {formatDateOnly(template.end_date)}</span>
                       </div>
                     )}
                   </div>
