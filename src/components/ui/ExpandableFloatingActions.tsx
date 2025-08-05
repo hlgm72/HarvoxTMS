@@ -122,7 +122,10 @@ export function ExpandableFloatingActions({
           onClick={handleMainClick}
           aria-label={mainLabel}
         >
-          <ArrowLeft className="h-6 w-6 -translate-x-2" />
+          <ArrowLeft className={cn(
+            "h-6 w-6 transition-transform duration-300",
+            isExpanded ? "rotate-180 translate-x-2" : "-translate-x-2"
+          )} />
         </button>
       </div>
     </div>
