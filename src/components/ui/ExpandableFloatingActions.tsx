@@ -73,7 +73,7 @@ export function ExpandableFloatingActions({
               size="default"
               variant={action.variant || 'default'}
               className={cn(
-                'animate-scale-in h-11 px-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2 whitespace-nowrap',
+                'animate-scale-in h-16 w-16 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex flex-col items-center justify-center gap-1 p-2',
                 action.className
               )}
               style={{ 
@@ -83,7 +83,7 @@ export function ExpandableFloatingActions({
               onClick={() => handleActionClick(action)}
             >
               <action.icon className="h-4 w-4" />
-              <span className="text-sm font-medium">{action.label}</span>
+              <span className="text-xs font-medium leading-tight text-center">{action.label}</span>
             </Button>
           ))}
         </div>
