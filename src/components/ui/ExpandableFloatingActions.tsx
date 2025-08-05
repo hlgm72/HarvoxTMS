@@ -29,10 +29,10 @@ export function ExpandableFloatingActions({
   const [isExpanded, setIsExpanded] = useState(false);
 
   const positionClasses = {
-    'bottom-right': 'bottom-6 -right-7',
-    'bottom-left': 'bottom-6 -left-7', 
-    'top-right': 'top-6 -right-7',
-    'top-left': 'top-6 -left-7'
+    'bottom-right': 'top-1/2 -translate-y-1/2 -right-7',
+    'bottom-left': 'top-1/2 -translate-y-1/2 -left-7', 
+    'top-right': 'top-1/2 -translate-y-1/2 -right-7',
+    'top-left': 'top-1/2 -translate-y-1/2 -left-7'
   };
 
   const animationClasses = {
