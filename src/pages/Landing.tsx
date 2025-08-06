@@ -69,7 +69,7 @@ export default function Landing() {
                 alt="FleetNest Logo" 
                 className="h-10 w-10 object-contain"
               />
-              <span className="text-2xl font-bold text-primary">{t('common:app.name')}</span>
+              <span className="text-lg sm:text-xl md:text-2xl font-bold text-primary">{t('common:app.name')}</span>
             </div>
             
             <nav className="hidden md:flex items-center space-x-8">
