@@ -608,12 +608,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         {/* Mobile compact step indicator */}
         <div className="sm:hidden mb-4 px-2">
           <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2 overflow-hidden">
-              <span className="whitespace-nowrap">Paso {currentPhase} de {phases.length}</span>
-              <span className="text-xs text-muted-foreground truncate">
-                ({phases.find((p) => p.id === currentPhase)?.title} – {phases.find((p) => p.id === currentPhase)?.description})
-              </span>
-            </div>
+            <span>Paso {currentPhase} de {phases.length}</span>
             <div className="flex items-center gap-1">
               {phases.map((p) => (
                 <span
