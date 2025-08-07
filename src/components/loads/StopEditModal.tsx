@@ -13,6 +13,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { StateCombobox } from '@/components/ui/StateCombobox';
 import { CityCombobox } from '@/components/ui/CityCombobox';
+import { AddressForm } from '@/components/ui/AddressForm';
 import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
 import { createTextHandlers, createPhoneHandlers } from '@/lib/textUtils';
@@ -79,11 +80,6 @@ export function StopEditModal({
     'text'
   );
 
-  const addressHandlers = createTextHandlers(
-    (value) => updateField('address', value),
-    'text'
-  );
-
   const contactNameHandlers = createTextHandlers(
     (value) => updateField('contact_name', value),
     'text'
@@ -95,11 +91,6 @@ export function StopEditModal({
 
   const referenceHandlers = createTextHandlers(
     (value) => updateField('reference_number', value.replace(/\s/g, '')),
-    'text'
-  );
-
-  const zipHandlers = createTextHandlers(
-    (value) => updateField('zip_code', value.replace(/\D/g, '')),
     'text'
   );
 
@@ -292,58 +283,24 @@ export function StopEditModal({
               Dirección
             </h3>
             
-            <div className="space-y-2">
-              <Label htmlFor="address">Dirección *</Label>
-              <Input
-                id="address"
-                placeholder="Dirección completa"
-                value={formData.address || ''}
-                onChange={addressHandlers.onChange}
-                onBlur={addressHandlers.onBlur}
-              />
-            </div>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Estado *</Label>
-                  <StateCombobox
-                    value={formData.state || ''}
-                    onValueChange={(value) => {
-                      updateField('state', value);
-                      updateField('city', ''); // Reset city when state changes
-                    }}
-                    placeholder="Selecciona estado..."
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Ciudad *</Label>
-                  <CityCombobox
-                    value={formData.city || ''}
-                    onValueChange={(value) => updateField('city', value)}
-                    stateId={formData.state || ''}
-                    placeholder="Selecciona ciudad..."
-                    disabled={!formData.state}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="zip">ZIP</Label>
-                  <Input
-                    id="zip"
-                    placeholder="12345"
-                    value={formData.zip_code || ''}
-                    onChange={zipHandlers.onChange}
-                    onBlur={zipHandlers.onBlur}
-                    maxLength={5}
-                  />
-                </div>
-                <div></div>
-              </div>
-            </div>
+            <AddressForm
+              streetAddress={formData.address || ''}
+              onStreetAddressChange={(value) => updateField('address', value)}
+              stateId={formData.state || ''}
+              onStateChange={(value) => {
+                updateField('state', value);
+                updateField('city', ''); // Reset city when state changes
+              }}
+              cityId={formData.city || ''}
+              onCityChange={(value) => updateField('city', value)}
+              zipCode={formData.zip_code || ''}
+              onZipCodeChange={(value) => updateField('zip_code', value)}
+              streetAddressLabel="Dirección"
+              stateLabel="Estado"
+              cityLabel="Ciudad"
+              zipCodeLabel="ZIP"
+              required={true}
+            />
           </div>
 
           {/* Contacto */}
