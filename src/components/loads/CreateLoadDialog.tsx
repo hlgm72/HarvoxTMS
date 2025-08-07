@@ -899,16 +899,17 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                          <FormItem>
                            <FormLabel>Monto Total ($) *</FormLabel>
                            <FormControl>
-                             <Input 
-                               type="text"
-                               value={atmInput.displayValue}
-                               onKeyDown={atmInput.handleKeyDown}
-                               onPaste={atmInput.handlePaste}
+                              <Input 
+                                type="text"
+                                inputMode="decimal"
+                                pattern="[0-9]*"
+                                value={atmInput.displayValue}
+                                onKeyDown={atmInput.handleKeyDown}
+                                onPaste={atmInput.handlePaste}
                                 placeholder="$0.00"
                                 className="text-right"
                                 autoComplete="off"
-                               readOnly
-                             />
+                              />
                            </FormControl>
                            <FormMessage />
                          </FormItem>
