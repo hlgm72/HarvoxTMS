@@ -42,7 +42,7 @@ export function Header() {
   const getLeftPosition = () => {
     if (isMobile) return 'left-0';
     if (open) return 'left-0'; // Cuando está abierto, SidebarInset maneja el espacio
-    return 'left-14'; // Cuando está contraído, necesitamos dejar espacio para los iconos
+    return 'left-[58px]'; // Cuando está contraído, necesitamos dejar espacio para los iconos
   };
 
   return (
