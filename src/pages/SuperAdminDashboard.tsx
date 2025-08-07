@@ -24,6 +24,7 @@ import { createTextHandlers, handlePhoneInput } from '@/lib/textUtils';
 import { useTranslation } from 'react-i18next';
 import { useSuperAdminDashboard } from '@/hooks/useSuperAdminDashboard';
 import { refreshAuthSession, forceReauth } from '@/lib/authUtils';
+import { HealthCheckTester } from '@/components/debug/HealthCheckTester';
 
 interface CompanyStats {
   total_companies: number;
@@ -661,18 +662,22 @@ export default function SuperAdminDashboard() {
         <div className="bg-white border-b shadow-sm">
           <div className="p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-4 bg-muted/50 p-1 rounded-xl">
+              <TabsList className="grid w-full grid-cols-5 bg-muted/50 p-1 rounded-xl">
                 <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <BarChart3 className="h-4 w-4" />
                   <span className="hidden sm:inline">{t('admin:common.overview')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="companies" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <Building2 className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('admin:navigation.companies')} {/* DEBUG: companies tab */}</span>
+                  <span className="hidden sm:inline">{t('admin:navigation.companies')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="analytics" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <TrendingUp className="h-4 w-4" />
                   <span className="hidden sm:inline">{t('admin:common.analytics')}</span>
+                </TabsTrigger>
+                <TabsTrigger value="health" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
+                  <Activity className="h-4 w-4" />
+                  <span className="hidden sm:inline">Health Checks</span>
                 </TabsTrigger>
                 <TabsTrigger value="system" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all">
                   <Database className="h-4 w-4" />
@@ -1555,6 +1560,11 @@ export default function SuperAdminDashboard() {
                     </div>
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              {/* Health Checks Tab */}
+              <TabsContent value="health" className="mt-6">
+                <HealthCheckTester />
               </TabsContent>
 
               {/* System Tab */}
