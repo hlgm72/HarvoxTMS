@@ -46,7 +46,7 @@ export function Header() {
   };
 
   return (
-    <header className={`fixed top-0 right-0 z-40 h-14 md:h-16 bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 shadow-sm border-b border-border/60 transition-all duration-300 ${getLeftPosition()}`}>
+    <header className={`fixed top-0 right-0 z-40 h-14 md:h-16 bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 shadow-sm border-b border-border/60 duration-200 transition-[left] ease-linear ${getLeftPosition()}`}>
       <div className="flex h-full items-center justify-between pr-3 md:pr-6">
         {/* Menu Toggle */}
         <MenuToggle />
