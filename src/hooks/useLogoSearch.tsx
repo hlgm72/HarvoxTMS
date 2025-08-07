@@ -8,10 +8,17 @@ interface LogoSearchResult {
   error?: string;
 }
 
+interface DownloadResult {
+  success: boolean;
+  logoUrl?: string;
+  error?: string;
+}
+
 export function useLogoSearch() {
   const [isSearching, setIsSearching] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
-  const searchLogo = async (companyName: string, emailDomain?: string, sourceIndex?: number, clientId?: string, autoStore?: boolean): Promise<LogoSearchResult> => {
+  const searchLogo = async (companyName: string, emailDomain?: string, sourceIndex?: number): Promise<LogoSearchResult> => {
     setIsSearching(true);
     
     try {
@@ -20,8 +27,6 @@ export function useLogoSearch() {
           companyName,
           emailDomain,
           sourceIndex: sourceIndex || 0,
-          clientId,
-          autoStore: autoStore || false,
         },
       });
 
@@ -45,8 +50,42 @@ export function useLogoSearch() {
     }
   };
 
+  const downloadLogo = async (imageUrl: string, clientId: string, companyName: string): Promise<DownloadResult> => {
+    setIsDownloading(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('download-client-logo', {
+        body: {
+          imageUrl,
+          clientId,
+          companyName,
+        },
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        return {
+          success: false,
+          error: 'Failed to download logo',
+        };
+      }
+
+      return data as DownloadResult;
+    } catch (error) {
+      console.error('Logo download error:', error);
+      return {
+        success: false,
+        error: 'Failed to download logo',
+      };
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return {
     searchLogo,
+    downloadLogo,
     isSearching,
+    isDownloading,
   };
 }

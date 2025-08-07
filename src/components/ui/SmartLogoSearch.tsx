@@ -28,7 +28,7 @@ export function SmartLogoSearch({
   const [searchSource, setSearchSource] = useState<string | null>(null);
   const [currentSourceIndex, setCurrentSourceIndex] = useState(0);
   const [isRejected, setIsRejected] = useState(false);
-  const { searchLogo, isSearching } = useLogoSearch();
+  const { searchLogo, downloadLogo, isSearching, isDownloading } = useLogoSearch();
 
   const handleSearch = async () => {
     if (!companyName.trim() && !emailDomain?.trim()) {
@@ -42,7 +42,7 @@ export function SmartLogoSearch({
     setCurrentSourceIndex(0);
     setIsRejected(false);
 
-    const result = await searchLogo(companyName, emailDomain, 0, clientId, true);
+    const result = await searchLogo(companyName, emailDomain);
     
     if (result.success && result.logoUrl) {
       setSearchResults([result.logoUrl]);
@@ -59,7 +59,7 @@ export function SmartLogoSearch({
     setIsRejected(true);
 
     // Buscar en la siguiente fuente disponible
-    const result = await searchLogo(companyName, emailDomain, currentSourceIndex + 1, clientId, true);
+    const result = await searchLogo(companyName, emailDomain, currentSourceIndex + 1);
     
     if (result.success && result.logoUrl) {
       setSearchResults([result.logoUrl]);
@@ -71,8 +71,21 @@ export function SmartLogoSearch({
     }
   };
 
-  const handleSelectLogo = (logoUrl: string) => {
-    onLogoSelect(logoUrl);
+  const handleSelectLogo = async (logoUrl: string) => {
+    if (!clientId || !companyName) {
+      // Si no tenemos clientId, usar la URL directamente (caso de crear cliente)
+      onLogoSelect(logoUrl);
+    } else {
+      // Descargar el logo a nuestro storage antes de usarlo
+      const downloadResult = await downloadLogo(logoUrl, clientId, companyName);
+      if (downloadResult.success && downloadResult.logoUrl) {
+        onLogoSelect(downloadResult.logoUrl);
+      } else {
+        // Si falla la descarga, usar la URL original
+        onLogoSelect(logoUrl);
+      }
+    }
+    
     setSearchResults([]);
     setSearchError(null);
     setIsRejected(false);
@@ -157,10 +170,11 @@ export function SmartLogoSearch({
                       type="button"
                       size="sm"
                       onClick={() => handleSelectLogo(logoUrl)}
+                      disabled={isDownloading}
                       className="flex items-center gap-1"
                     >
                       <Download className="h-3 w-3" />
-                      Usar este logo
+                      {isDownloading ? "Descargando..." : "Usar este logo"}
                     </Button>
                     <Button
                       type="button"
@@ -175,7 +189,7 @@ export function SmartLogoSearch({
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    ¿No es el logo correcto? Haz clic en "Buscar alternativa"
+                    {clientId ? "Al usar este logo se descargará a tu base de datos" : "¿No es el logo correcto? Haz clic en 'Buscar alternativa'"}
                   </p>
                 </div>
               </div>
