@@ -58,27 +58,27 @@ export function useDriverPaymentActions() {
   const calculateDriverPeriod = async (calculationId: string) => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.rpc('calculate_driver_payment_period', {
+      // ✅ USE ACID FUNCTION FOR ATOMIC CALCULATION
+      const { data, error } = await supabase.rpc('calculate_driver_payment_period_with_validation', {
         period_calculation_id: calculationId
       });
 
       if (error) throw error;
 
-      const result = data as { success?: boolean; message?: string; gross_earnings?: number; other_income?: number; fuel_expenses?: number; total_deductions?: number };
+      const result = data as any;
       if (result?.success) {
-        const netPayment = calculateNetPayment(result as any);
         showSuccess(
-          "Cálculo Completado", 
-          `Período calculado exitosamente. Pago neto: $${netPayment.toLocaleString('es-US', { minimumFractionDigits: 2 })}`
+          "Cálculo ACID Completado", 
+          `Período calculado con garantías ACID. Pago neto: $${result.net_payment?.toLocaleString('es-US', { minimumFractionDigits: 2 }) || '0.00'}`
         );
         return { success: true, data };
       } else {
-        showError(result?.message || "No se pudo calcular el período");
+        showError(result?.message || "No se pudo calcular el período con ACID");
         return { success: false, error: result?.message };
       }
     } catch (error: any) {
-      console.error('Error calculating driver period:', error);
-      showError(error.message || "Error al calcular el período");
+      console.error('Error calculating driver period with ACID:', error);
+      showError(error.message || "Error al calcular el período con ACID");
       return { success: false, error: error.message };
     } finally {
       setIsLoading(false);
@@ -92,46 +92,46 @@ export function useDriverPaymentActions() {
     notes?: string
   ) => {
     setIsLoading(true);
-    const results = [];
-    let successCount = 0;
-    let errorCount = 0;
-
     try {
-      for (const calc of calculations) {
-        if (calc.payment_status === 'paid') continue;
+      // Extract calculation IDs for ACID bulk operation
+      const calculationIds = calculations
+        .filter(calc => calc.payment_status !== 'paid')
+        .map(calc => calc.id);
 
-        const result = await markDriverAsPaid(
-          calc.id,
-          paymentMethod,
-          paymentReference,
-          notes
-        );
-
-        results.push({ calculationId: calc.id, ...result });
-        
-        if (result.success) {
-          successCount++;
-        } else {
-          errorCount++;
-        }
+      if (calculationIds.length === 0) {
+        showError("No hay conductores pendientes de pago");
+        return { success: false, error: "No pending drivers" };
       }
 
-      if (successCount > 0) {
+      // ✅ USE ACID FUNCTION FOR ATOMIC BULK PAYMENT
+      const { data, error } = await supabase.rpc('mark_multiple_drivers_as_paid_with_validation', {
+        calculation_ids: calculationIds,
+        payment_method_used: paymentMethod,
+        payment_ref: paymentReference || null,
+        notes: notes || null
+      });
+
+      if (error) throw error;
+
+      const result = data as any;
+      if (result?.success) {
         showSuccess(
-          "Pagos Procesados", 
-          `${successCount} conductor(es) marcado(s) como pagado(s)${errorCount > 0 ? `, ${errorCount} falló(s)` : ''}`
+          "Pagos Masivos ACID Procesados", 
+          result.message || `${result.success_count} conductor(es) marcado(s) como pagado(s)`
         );
+        return { 
+          success: true, 
+          successCount: result.success_count,
+          errorCount: result.error_count,
+          results: result.detailed_results 
+        };
+      } else {
+        showError(result?.message || "Error en pago masivo ACID");
+        return { success: false, error: result?.message };
       }
-
-      return { 
-        success: successCount > 0, 
-        successCount, 
-        errorCount, 
-        results 
-      };
     } catch (error: any) {
-      console.error('Error in bulk payment:', error);
-      showError("Error en pago masivo");
+      console.error('Error in ACID bulk payment:', error);
+      showError("Error en pago masivo ACID");
       return { success: false, error: error.message };
     } finally {
       setIsLoading(false);

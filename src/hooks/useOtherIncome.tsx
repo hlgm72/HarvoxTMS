@@ -74,75 +74,42 @@ export function useCreateOtherIncome() {
 
   return useMutation({
     mutationFn: async (data: CreateOtherIncomeData) => {
-      // Si no hay payment_period_id, intentar generar uno automáticamente
-      let finalData = { ...data };
+      console.log('🔍 Creating other income with ACID guarantees...');
       
-      if (!data.payment_period_id && selectedCompany?.id && data.user_id && data.income_date) {
-        console.log('🔍 Auto-generating payment period for other income');
-        
-        const targetDate = formatDateInUserTimeZone(new Date(data.income_date));
-        const generatedPeriodId = await ensurePaymentPeriodExists({
-          companyId: selectedCompany.id,
-          userId: data.user_id,
-          targetDate
-        });
-        
-        if (generatedPeriodId) {
-          finalData.payment_period_id = generatedPeriodId;
-          console.log('✅ Auto-assigned payment period:', generatedPeriodId);
-        } else {
-          throw new Error('No se pudo encontrar o generar un período de pago para esta fecha');
+      // ✅ USE ACID FUNCTION FOR ATOMIC OPERATION
+      const { data: result, error } = await supabase.rpc(
+        'create_other_income_with_validation',
+        {
+          income_data: {
+            user_id: data.user_id,
+            description: data.description,
+            amount: data.amount,
+            income_type: data.income_type,
+            income_date: data.income_date,
+            reference_number: data.reference_number || '',
+            notes: data.notes || '',
+            applied_to_role: data.applied_to_role,
+            status: data.status || 'approved'
+          }
         }
-      }
-
-      // Validar que tenemos payment_period_id
-      if (!finalData.payment_period_id) {
-        throw new Error('No se pudo asignar un período de pago. Verifique la fecha del ingreso.');
-      }
-
-      const { data: result, error } = await supabase
-        .from('other_income')
-        .insert({
-          user_id: finalData.user_id,
-          payment_period_id: finalData.payment_period_id,
-          description: finalData.description,
-          amount: finalData.amount,
-          income_type: finalData.income_type,
-          income_date: finalData.income_date,
-          reference_number: finalData.reference_number,
-          notes: finalData.notes,
-          applied_to_role: finalData.applied_to_role,
-          created_by: user?.id,
-        })
-        .select()
-        .single();
+      );
 
       if (error) {
-        console.error('Error creating other income:', error);
-        throw error;
+        console.error('Error creating other income with ACID:', error);
+        throw new Error(error.message || 'Error al crear el ingreso con ACID');
       }
 
-      return result;
+      console.log('✅ Other income created with ACID:', result);
+      
+      // Verificar que el resultado es un objeto válido
+      if (result && typeof result === 'object' && 'success' in result) {
+        return (result as any).income;
+      }
+      
+      throw new Error('Respuesta inválida del servidor');
     },
     onSuccess: async (result) => {
-      showSuccess('Otro ingreso creado exitosamente');
-      
-      // Ejecutar recálculo manual del período
-      if (result.payment_period_id) {
-        console.log('🔄 Ejecutando recálculo manual del período:', result.payment_period_id);
-        try {
-          const { error: recalcError } = await supabase.rpc('recalculate_payment_period_totals', {
-            period_id: result.payment_period_id
-          });
-          if (recalcError) {
-            console.error('Error en recálculo manual:', recalcError);
-          } else {
-            console.log('✅ Recálculo manual exitoso');
-          }
-        } catch (err) {
-          console.error('Error ejecutando recálculo:', err);
-        }
-      }
+      showSuccess('Otro ingreso creado exitosamente con ACID');
       
       queryClient.invalidateQueries({ 
         queryKey: ['other-income', user?.id, selectedCompany?.id] 
@@ -174,25 +141,28 @@ export function useUpdateOtherIncome() {
 
   return useMutation({
     mutationFn: async ({ id, ...data }: UpdateOtherIncomeData) => {
-      const { data: result, error } = await supabase
-        .from('other_income')
-        .update(data)
-        .eq('id', id)
-        .select();
+      // ✅ USE ACID FUNCTION FOR ATOMIC UPDATE
+      const { data: result, error } = await supabase.rpc(
+        'update_other_income_with_validation',
+        {
+          income_id: id,
+          income_data: data
+        }
+      );
 
       if (error) {
-        console.error('Error updating other income:', error);
-        throw error;
+        console.error('Error updating other income with ACID:', error);
+        throw new Error(error.message || 'Error al actualizar el ingreso con ACID');
       }
 
-      if (!result || result.length === 0) {
-        throw new Error('No se encontró el registro para actualizar o no tienes permisos para modificarlo');
+      if (!(result as any)?.success) {
+        throw new Error('La actualización ACID no fue exitosa');
       }
 
-      return result[0];
+      return (result as any).income;
     },
     onSuccess: () => {
-      showSuccess('Ingreso actualizado exitosamente');
+      showSuccess('Ingreso actualizado exitosamente con ACID');
       queryClient.invalidateQueries({ 
         queryKey: ['other-income', user?.id, selectedCompany?.id] 
       });
@@ -223,49 +193,27 @@ export function useDeleteOtherIncome() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      // Primero obtener información del ingreso antes de eliminarlo
-      const { data: incomeData, error: getError } = await supabase
-        .from('other_income')
-        .select('payment_period_id')
-        .eq('id', id)
-        .single();
-
-      if (getError) {
-        console.error('Error getting other income data:', getError);
-        throw getError;
-      }
-
-      const { error } = await supabase
-        .from('other_income')
-        .delete()
-        .eq('id', id);
+      // ✅ USE ACID FUNCTION FOR ATOMIC DELETION
+      const { data: result, error } = await supabase.rpc(
+        'delete_other_income_with_validation',
+        {
+          income_id: id
+        }
+      );
 
       if (error) {
-        console.error('Error deleting other income:', error);
-        throw error;
+        console.error('Error deleting other income with ACID:', error);
+        throw new Error(error.message || 'Error al eliminar el ingreso con ACID');
       }
 
-      return incomeData;
-    },
-    onSuccess: async (incomeData) => {
-      showSuccess('Ingreso eliminado exitosamente');
-      
-      // Ejecutar recálculo manual del período
-      if (incomeData?.payment_period_id) {
-        console.log('🔄 Ejecutando recálculo manual tras eliminación:', incomeData.payment_period_id);
-        try {
-          const { error: recalcError } = await supabase.rpc('recalculate_payment_period_totals', {
-            period_id: incomeData.payment_period_id
-          });
-          if (recalcError) {
-            console.error('Error en recálculo manual:', recalcError);
-          } else {
-            console.log('✅ Recálculo manual exitoso tras eliminación');
-          }
-        } catch (err) {
-          console.error('Error ejecutando recálculo:', err);
-        }
+      if (!(result as any)?.success) {
+        throw new Error('La eliminación ACID no fue exitosa');
       }
+
+      return result;
+    },
+    onSuccess: async (result) => {
+      showSuccess('Ingreso eliminado exitosamente con ACID');
       
       queryClient.invalidateQueries({ 
         queryKey: ['other-income', user?.id, selectedCompany?.id] 

@@ -2696,6 +2696,10 @@ export type Database = {
         Args: { period_calculation_id: string }
         Returns: Json
       }
+      calculate_driver_payment_period_with_validation: {
+        Args: { period_calculation_id: string }
+        Returns: Json
+      }
       calculate_driver_period_totals: {
         Args: {
           company_payment_period_id_param: string
@@ -2774,12 +2778,20 @@ export type Database = {
         Args: { load_data: Json; stops_data?: Json; mode?: string }
         Returns: Json
       }
+      create_other_income_with_validation: {
+        Args: { income_data: Json }
+        Returns: Json
+      }
       delete_company_document_permanently: {
         Args: { document_id: string }
         Returns: Json
       }
       delete_load_with_validation: {
         Args: { load_id_param: string }
+        Returns: Json
+      }
+      delete_other_income_with_validation: {
+        Args: { income_id: string }
         Returns: Json
       }
       delete_test_company: {
@@ -2999,6 +3011,15 @@ export type Database = {
         }
         Returns: Json
       }
+      mark_multiple_drivers_as_paid_with_validation: {
+        Args: {
+          calculation_ids: string[]
+          payment_method_used: string
+          payment_ref?: string
+          notes?: string
+        }
+        Returns: Json
+      }
       move_to_archive: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -3058,6 +3079,10 @@ export type Database = {
           client_data: Json
           external_logo_url?: string
         }
+        Returns: Json
+      }
+      update_other_income_with_validation: {
+        Args: { income_id: string; income_data: Json }
         Returns: Json
       }
       use_reset_token: {
