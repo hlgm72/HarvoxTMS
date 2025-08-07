@@ -72,19 +72,9 @@ export function SmartLogoSearch({
   };
 
   const handleSelectLogo = async (logoUrl: string) => {
-    if (!clientId || !companyName) {
-      // Si no tenemos clientId, usar la URL directamente (caso de crear cliente)
-      onLogoSelect(logoUrl);
-    } else {
-      // Descargar el logo a nuestro storage antes de usarlo
-      const downloadResult = await downloadLogo(logoUrl, clientId, companyName);
-      if (downloadResult.success && downloadResult.logoUrl) {
-        onLogoSelect(downloadResult.logoUrl);
-      } else {
-        // Si falla la descarga, usar la URL original
-        onLogoSelect(logoUrl);
-      }
-    }
+    // SIEMPRE usar la URL externa directamente, sin descargar todavía
+    // La descarga se hará solo cuando se guarde exitosamente el cliente
+    onLogoSelect(logoUrl);
     
     setSearchResults([]);
     setSearchError(null);
@@ -189,7 +179,7 @@ export function SmartLogoSearch({
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {clientId ? "Al usar este logo se descargará a tu base de datos" : "¿No es el logo correcto? Haz clic en 'Buscar alternativa'"}
+                    ¿No es el logo correcto? Haz clic en 'Buscar alternativa'
                   </p>
                 </div>
               </div>

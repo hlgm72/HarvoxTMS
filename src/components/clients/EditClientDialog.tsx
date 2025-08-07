@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useUpdateClient, Client } from "@/hooks/useClients";
+import { useLogoSearch } from "@/hooks/useLogoSearch";
 
 interface EditClientDialogProps {
   client: Client;
@@ -35,6 +36,7 @@ type UpdateClientForm = Omit<Client, "created_at" | "updated_at">;
 
 export function EditClientDialog({ client, open, onOpenChange }: EditClientDialogProps) {
   const updateClient = useUpdateClient();
+  const { downloadLogo } = useLogoSearch();
   
   const form = useForm<UpdateClientForm>({
     defaultValues: {
@@ -73,12 +75,33 @@ export function EditClientDialog({ client, open, onOpenChange }: EditClientDialo
 
   const onSubmit = async (data: UpdateClientForm) => {
     try {
-      // Ensure email_domain is lowercase before saving
+      // Si hay un logo externo, descargarlo DESPUÉS de guardar el cliente
+      let finalLogoUrl = data.logo_url;
+      
+      // Primero guardar el cliente con la URL externa o sin logo
       const formattedData = {
         ...data,
         email_domain: data.email_domain?.toLowerCase() || ""
       };
+      
       await updateClient.mutateAsync(formattedData);
+      
+      // Si el logo es una URL externa (no de nuestro storage), descargarlo ahora
+      if (finalLogoUrl && 
+          !finalLogoUrl.includes('supabase.co') && 
+          !finalLogoUrl.includes('client-logos')) {
+        
+        const downloadResult = await downloadLogo(finalLogoUrl, client.id, client.name);
+        
+        if (downloadResult.success && downloadResult.logoUrl) {
+          // Actualizar solo el logo_url en la base de datos
+          await updateClient.mutateAsync({
+            ...formattedData,
+            logo_url: downloadResult.logoUrl
+          });
+        }
+      }
+      
       onOpenChange(false);
     } catch (error) {
       // Error is handled by the mutation
