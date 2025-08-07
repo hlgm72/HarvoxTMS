@@ -61,8 +61,13 @@ serve(async (req) => {
         const imageBuffer = await imageResponse.arrayBuffer()
         const imageBlob = new Blob([imageBuffer])
         
-        // Create organized folder structure: client-id/logo.png
-        const filePath = `${client.id}/logo.png`
+        // Create organized folder structure with company name: client-id/company-name.png
+        const cleanCompanyName = client.name
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, '-') // Replace non-alphanumeric with hyphens
+          .replace(/-+/g, '-') // Replace multiple hyphens with single
+          .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
+        const filePath = `${client.id}/${cleanCompanyName}.png`
 
         // Upload to Supabase Storage
         const { error: uploadError } = await supabaseClient.storage
