@@ -183,7 +183,7 @@ export function LoadDocumentsSection({
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const fileExtension = file.name.split('.').pop();
       const fileName = `${documentType}_${loadData?.load_number || loadId}_${timestamp}.${fileExtension}`;
-      const filePath = `load-documents/${user.id}/${loadId}/${fileName}`;
+      const filePath = `${user.id}/${loadId}/${fileName}`;
 
       console.log('📁 LoadDocumentsSection - Upload path:', filePath);
 
@@ -459,7 +459,7 @@ export function LoadDocumentsSection({
         // Create file path
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         const fileName = `load_order_${loadData?.load_number || loadId}_${timestamp}.pdf`;
-        const filePath = `load-documents/${user.id}/${loadId}/${fileName}`;
+        const filePath = `${user.id}/${loadId}/${fileName}`;
 
         console.log('📁 LoadDocumentsSection - Upload path for Load Order:', filePath);
 
