@@ -20,6 +20,7 @@ import { DriverMobileCard } from '@/components/dashboard/DriverMobileCard';
 import { ReversMobileCard } from '@/components/dashboard/ReversMobileCard';
 import { Company } from '@/types/company';
 import { PaymentPeriodsManager } from "@/components/payments/PaymentPeriodsManager";
+import { RealtimeDriverPayments } from "@/components/payments/RealtimeDriverPayments";
 
 // Types
 interface CompanyStats {
@@ -409,6 +410,9 @@ export default function OwnerDashboard() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Realtime Driver Payments */}
+            <RealtimeDriverPayments />
 
             {/* Advanced Cards Grid - Estilo de la imagen */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
