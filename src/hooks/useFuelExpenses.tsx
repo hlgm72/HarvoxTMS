@@ -178,19 +178,23 @@ export function useUpdateFuelExpense() {
 
   return useMutation({
     mutationFn: async ({ id, ...data }: UpdateFuelExpenseData) => {
-      const { data: result, error } = await supabase
-        .from('fuel_expenses')
-        .update(data)
-        .eq('id', id)
-        .select()
-        .single();
+      const { data: result, error } = await supabase.rpc(
+        'update_fuel_expense_with_validation',
+        { expense_id: id, update_data: data }
+      );
 
       if (error) {
-        console.error('Error updating fuel expense:', error);
+        console.error('Error updating fuel expense (RPC):', error);
         throw error;
       }
 
+      if (result && (result as any).success === false) {
+        const msg = (result as any).message || 'No se pudo actualizar el gasto de combustible';
+        throw new Error(msg);
+      }
+
       return result;
+
     },
     onSuccess: () => {
       showSuccess('Gasto de combustible actualizado exitosamente');
@@ -216,14 +220,19 @@ export function useDeleteFuelExpense() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('fuel_expenses')
-        .delete()
-        .eq('id', id);
+      const { data: result, error } = await supabase.rpc(
+        'delete_fuel_expense_with_validation',
+        { expense_id: id }
+      );
 
       if (error) {
-        console.error('Error deleting fuel expense:', error);
+        console.error('Error deleting fuel expense (RPC):', error);
         throw error;
+      }
+
+      if (result && (result as any).success === false) {
+        const msg = (result as any).message || 'No se pudo eliminar el gasto de combustible';
+        throw new Error(msg);
       }
     },
     onSuccess: () => {
