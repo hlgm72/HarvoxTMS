@@ -42,8 +42,7 @@ export function Header() {
   const getLeftPosition = () => {
     if (isMobile) return 'left-0';
     if (open) return 'left-[280px]';
-    if (state === 'collapsed') return 'left-14';
-    return 'left-0';
+    return 'left-14'; // Sidebar contraído siempre tiene 56px (14 * 4px)
   };
 
   return (
