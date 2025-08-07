@@ -17,6 +17,7 @@ import { LogOut, Settings, User } from "lucide-react";
 import { useFleetNotifications } from '@/components/notifications';
 import { Link, useNavigate } from "react-router-dom";
 import { MenuToggle } from "./MenuToggle";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export function Header() {
   const { t } = useTranslation(['common', 'fleet']);
@@ -24,6 +25,7 @@ export function Header() {
   const { getUserInitials, getFullName, user, profile } = useUserProfile();
   const { showSuccess, showError } = useFleetNotifications();
   const navigate = useNavigate();
+  const { open, isMobile } = useSidebar();
 
   const handleLogout = async () => {
     try {
@@ -38,7 +40,11 @@ export function Header() {
   };
   
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-14 md:h-16 bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 shadow-sm border-b border-border/60">
+    <header 
+      className={`fixed top-0 right-0 z-50 h-14 md:h-16 bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 shadow-sm border-b border-border/60 transition-all duration-300 ${
+        open && !isMobile ? 'left-[280px]' : 'left-0'
+      }`}
+    >
       <div className="flex h-full items-center justify-between pr-3 md:pr-6">
         {/* Menu Toggle */}
         <MenuToggle />
