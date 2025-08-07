@@ -10,11 +10,12 @@ interface ClientLogoUploadProps {
   logoUrl?: string;
   clientName?: string;
   emailDomain?: string;
+  clientId?: string;
   onLogoChange: (url: string | null) => void;
   disabled?: boolean;
 }
 
-export function ClientLogoUpload({ logoUrl, clientName, emailDomain, onLogoChange, disabled }: ClientLogoUploadProps) {
+export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, onLogoChange, disabled }: ClientLogoUploadProps) {
   const [uploading, setUploading] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -156,6 +157,7 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, onLogoChang
             companyName={clientName}
             emailDomain={emailDomain}
             currentLogoUrl={logoUrl}
+            clientId={clientId}
             onLogoSelect={onLogoChange}
           />
         </div>

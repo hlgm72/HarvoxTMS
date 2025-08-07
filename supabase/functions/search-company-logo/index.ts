@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -10,6 +11,62 @@ interface LogoSearchResult {
   logoUrl?: string;
   source?: 'clearbit' | 'google' | 'iconhorse' | 'website' | 'logosearch';
   error?: string;
+}
+
+// Initialize Supabase client
+const supabaseClient = createClient(
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+);
+
+async function downloadAndStoreImage(imageUrl: string, clientId: string, companyName: string): Promise<string | null> {
+  try {
+    console.log(`Downloading image from: ${imageUrl}`);
+    
+    // Download the image
+    const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) {
+      console.error('Failed to download image:', imageResponse.status);
+      return null;
+    }
+    
+    const imageBuffer = await imageResponse.arrayBuffer();
+    const imageBlob = new Blob([imageBuffer]);
+    
+    // Clean company name for filename
+    const cleanCompanyName = companyName
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+    
+    const filePath = `${clientId}/${cleanCompanyName}.png`;
+    
+    // Upload to Supabase Storage
+    const { error: uploadError } = await supabaseClient.storage
+      .from('client-logos')
+      .upload(filePath, imageBlob, {
+        contentType: 'image/png',
+        upsert: true
+      });
+    
+    if (uploadError) {
+      console.error('Storage upload error:', uploadError);
+      return null;
+    }
+    
+    // Get public URL
+    const { data } = supabaseClient.storage
+      .from('client-logos')
+      .getPublicUrl(filePath);
+    
+    console.log(`Image stored successfully: ${data.publicUrl}`);
+    return data.publicUrl;
+    
+  } catch (error) {
+    console.error('Error downloading and storing image:', error);
+    return null;
+  }
 }
 
 async function searchWithClearbit(domain: string): Promise<string | null> {
@@ -184,7 +241,7 @@ serve(async (req) => {
   }
 
   try {
-    const { companyName, emailDomain, sourceIndex } = await req.json();
+    const { companyName, emailDomain, sourceIndex, clientId, autoStore } = await req.json();
     
     if (!companyName && !emailDomain) {
       return new Response(
@@ -242,6 +299,16 @@ serve(async (req) => {
         source = currentSource.name as any;
         console.log(`Found logo with ${currentSource.name}: ${logoUrl}`);
         break;
+      }
+    }
+
+    // If autoStore is enabled and we have a clientId, download and store the image
+    if (logoUrl && autoStore && clientId && companyName) {
+      console.log('Auto-storing logo to Supabase storage...');
+      const storedUrl = await downloadAndStoreImage(logoUrl, clientId, companyName);
+      if (storedUrl) {
+        logoUrl = storedUrl;
+        console.log('Logo stored successfully in Supabase storage');
       }
     }
 

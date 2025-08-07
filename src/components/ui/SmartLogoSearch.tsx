@@ -10,6 +10,7 @@ interface SmartLogoSearchProps {
   companyName: string;
   emailDomain?: string;
   currentLogoUrl?: string;
+  clientId?: string;
   onLogoSelect: (logoUrl: string) => void;
   className?: string;
 }
@@ -18,6 +19,7 @@ export function SmartLogoSearch({
   companyName, 
   emailDomain, 
   currentLogoUrl, 
+  clientId,
   onLogoSelect,
   className = ""
 }: SmartLogoSearchProps) {
@@ -40,7 +42,7 @@ export function SmartLogoSearch({
     setCurrentSourceIndex(0);
     setIsRejected(false);
 
-    const result = await searchLogo(companyName, emailDomain);
+    const result = await searchLogo(companyName, emailDomain, 0, clientId, true);
     
     if (result.success && result.logoUrl) {
       setSearchResults([result.logoUrl]);
@@ -57,7 +59,7 @@ export function SmartLogoSearch({
     setIsRejected(true);
 
     // Buscar en la siguiente fuente disponible
-    const result = await searchLogo(companyName, emailDomain, currentSourceIndex + 1);
+    const result = await searchLogo(companyName, emailDomain, currentSourceIndex + 1, clientId, true);
     
     if (result.success && result.logoUrl) {
       setSearchResults([result.logoUrl]);
