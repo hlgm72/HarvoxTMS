@@ -108,10 +108,10 @@ export function LoadDocumentsSection({
 
   // Update local state when prop documents change
   useEffect(() => {
-    if (propDocuments) {
+    if (propDocuments && propDocuments.length !== documents.length) {
       setDocuments(propDocuments);
     }
-  }, [propDocuments]);
+  }, [propDocuments.length]);
 
   const loadDocuments = async () => {
     if (!loadId || loadId === 'temp') return;
