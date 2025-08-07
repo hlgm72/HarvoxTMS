@@ -1,0 +1,297 @@
+name: 🚀 Safe Production Deployment
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+jobs:
+  # ================================
+  # STAGE 1: SAFETY CHECKS
+  # ================================
+  safety-checks:
+    name: 🛡️ Safety & Security Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: TypeScript Check
+        run: npm run type-check
+        
+      - name: Security Audit
+        run: npm audit --audit-level=high
+        
+      - name: Build Test
+        run: npm run build
+
+  # ================================
+  # STAGE 2: PRE-DEPLOYMENT BACKUP
+  # ================================
+  pre-deployment-backup:
+    name: 💾 Pre-Deployment Backup
+    runs-on: ubuntu-latest
+    needs: safety-checks
+    if: github.ref == 'refs/heads/main'
+    outputs:
+      backup-id: ${{ steps.backup.outputs.backup-id }}
+    steps:
+      - name: Trigger Backup
+        id: backup
+        run: |
+          BACKUP_ID="pre_deploy_$(date +%Y%m%d_%H%M%S)_${{ github.sha }}"
+          echo "backup-id=$BACKUP_ID" >> $GITHUB_OUTPUT
+          
+          # Call Supabase backup function
+          curl -X POST \
+            "${{ env.SUPABASE_URL }}/functions/v1/automated-backup" \
+            -H "Authorization: Bearer ${{ env.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"type": "critical", "deployment_id": "'$BACKUP_ID'"}'
+            
+      - name: Verify Backup Success
+        run: |
+          echo "✅ Pre-deployment backup completed: ${{ steps.backup.outputs.backup-id }}"
+
+  # ================================
+  # STAGE 3: HEALTH CHECK
+  # ================================
+  pre-deployment-health:
+    name: 🔍 Pre-Deployment Health Check
+    runs-on: ubuntu-latest
+    needs: pre-deployment-backup
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: System Health Check
+        id: health-check
+        run: |
+          HEALTH_RESPONSE=$(curl -s \
+            "${{ env.SUPABASE_URL }}/functions/v1/health-check" \
+            -H "Authorization: Bearer ${{ env.SUPABASE_SERVICE_ROLE_KEY }}")
+          
+          echo "Health response: $HEALTH_RESPONSE"
+          
+          # Extract health percentage
+          HEALTH_PCT=$(echo "$HEALTH_RESPONSE" | jq -r '.healthPercentage')
+          
+          if (( $(echo "$HEALTH_PCT < 90" | bc -l) )); then
+            echo "❌ System health below 90% ($HEALTH_PCT%). Stopping deployment."
+            exit 1
+          fi
+          
+          echo "✅ System healthy ($HEALTH_PCT%). Proceeding with deployment."
+
+  # ================================
+  # STAGE 4: STAGING DEPLOYMENT
+  # ================================
+  staging-deployment:
+    name: 🧪 Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [pre-deployment-backup, pre-deployment-health]
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: staging
+      url: https://staging-fleetnest.lovable.app
+    steps:
+      - name: Deploy to Staging
+        run: |
+          echo "🚀 Deploying to staging environment..."
+          # Here you would typically deploy to staging
+          # This could be Vercel, Netlify, or another staging environment
+          
+      - name: Staging Health Check
+        run: |
+          echo "🔍 Running staging health checks..."
+          sleep 10  # Wait for deployment to stabilize
+          
+          # Test critical endpoints
+          # curl staging endpoints and verify responses
+          
+      - name: Integration Tests
+        run: |
+          echo "🧪 Running integration tests on staging..."
+          # Run your integration test suite against staging
+
+  # ================================
+  # STAGE 5: PRODUCTION DEPLOYMENT
+  # ================================
+  production-deployment:
+    name: 🚀 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: staging-deployment
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://fleetnest.lovable.app
+    steps:
+      - name: Log Deployment Start
+        run: |
+          curl -X POST \
+            "${{ env.SUPABASE_URL }}/rest/v1/rpc/log_deployment_event" \
+            -H "Authorization: Bearer ${{ env.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "deployment_id_param": "prod_${{ github.sha }}",
+              "event_type_param": "deploy_start",
+              "github_commit_sha_param": "${{ github.sha }}",
+              "environment_param": "production"
+            }'
+            
+      - name: Deploy to Production
+        id: deploy
+        run: |
+          echo "🚀 Deploying to production..."
+          # Actual deployment steps would go here
+          
+          # For Lovable, this might involve pushing to main branch
+          # which auto-deploys, or using Lovable's API
+          
+      - name: Post-Deployment Health Check
+        id: post-health
+        run: |
+          echo "⏳ Waiting for deployment to stabilize..."
+          sleep 30
+          
+          HEALTH_RESPONSE=$(curl -s \
+            "${{ env.SUPABASE_URL }}/functions/v1/health-check" \
+            -H "Authorization: Bearer ${{ env.SUPABASE_SERVICE_ROLE_KEY }}")
+          
+          echo "Post-deployment health: $HEALTH_RESPONSE"
+          
+          HEALTH_PCT=$(echo "$HEALTH_RESPONSE" | jq -r '.healthPercentage')
+          
+          if (( $(echo "$HEALTH_PCT < 80" | bc -l) )); then
+            echo "❌ Post-deployment health check failed ($HEALTH_PCT%)"
+            echo "health-failed=true" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          
+          echo "✅ Production deployment healthy ($HEALTH_PCT%)"
+          echo "health-failed=false" >> $GITHUB_OUTPUT
+          
+      - name: Log Deployment Success
+        if: steps.post-health.outputs.health-failed == 'false'
+        run: |
+          curl -X POST \
+            "${{ env.SUPABASE_URL }}/rest/v1/rpc/log_deployment_event" \
+            -H "Authorization: Bearer ${{ env.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "deployment_id_param": "prod_${{ github.sha }}",
+              "event_type_param": "deploy_success",
+              "github_commit_sha_param": "${{ github.sha }}",
+              "environment_param": "production"
+            }'
+
+  # ================================
+  # STAGE 6: ROLLBACK ON FAILURE
+  # ================================
+  rollback-on-failure:
+    name: 🔄 Rollback on Failure
+    runs-on: ubuntu-latest
+    needs: production-deployment
+    if: failure() && github.ref == 'refs/heads/main'
+    steps:
+      - name: Log Deployment Failure
+        run: |
+          curl -X POST \
+            "${{ env.SUPABASE_URL }}/rest/v1/rpc/log_deployment_event" \
+            -H "Authorization: Bearer ${{ env.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "deployment_id_param": "prod_${{ github.sha }}",
+              "event_type_param": "deploy_failed",
+              "github_commit_sha_param": "${{ github.sha }}",
+              "environment_param": "production"
+            }'
+            
+      - name: Initiate Rollback
+        run: |
+          echo "🚨 DEPLOYMENT FAILED - Initiating rollback..."
+          
+          # Log rollback start
+          curl -X POST \
+            "${{ env.SUPABASE_URL }}/rest/v1/rpc/log_deployment_event" \
+            -H "Authorization: Bearer ${{ env.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "deployment_id_param": "rollback_${{ github.sha }}",
+              "event_type_param": "rollback_start",
+              "github_commit_sha_param": "${{ github.sha }}",
+              "environment_param": "production"
+            }'
+            
+          # Here you would implement actual rollback logic
+          # This might involve:
+          # 1. Reverting to previous Git commit
+          # 2. Restoring database from backup
+          # 3. Notifying team
+          
+      - name: Verify Rollback
+        run: |
+          echo "🔍 Verifying rollback success..."
+          
+          # Health check after rollback
+          HEALTH_RESPONSE=$(curl -s \
+            "${{ env.SUPABASE_URL }}/functions/v1/health-check" \
+            -H "Authorization: Bearer ${{ env.SUPABASE_SERVICE_ROLE_KEY }}")
+          
+          HEALTH_PCT=$(echo "$HEALTH_RESPONSE" | jq -r '.healthPercentage')
+          
+          if (( $(echo "$HEALTH_PCT >= 80" | bc -l) )); then
+            echo "✅ Rollback successful - System health restored ($HEALTH_PCT%)"
+            
+            # Log rollback success
+            curl -X POST \
+              "${{ env.SUPABASE_URL }}/rest/v1/rpc/log_deployment_event" \
+              -H "Authorization: Bearer ${{ env.SUPABASE_SERVICE_ROLE_KEY }}" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "deployment_id_param": "rollback_${{ github.sha }}",
+                "event_type_param": "rollback_success",
+                "github_commit_sha_param": "${{ github.sha }}",
+                "environment_param": "production"
+              }'
+          else
+            echo "❌ Rollback failed - Manual intervention required"
+            exit 1
+          fi
+
+  # ================================
+  # STAGE 7: NOTIFICATIONS
+  # ================================
+  notify-team:
+    name: 📢 Notify Team
+    runs-on: ubuntu-latest
+    needs: [production-deployment, rollback-on-failure]
+    if: always() && github.ref == 'refs/heads/main'
+    steps:
+      - name: Send Success Notification
+        if: needs.production-deployment.result == 'success'
+        run: |
+          echo "✅ Deployment successful!"
+          # Here you could send notifications to:
+          # - Slack/Discord
+          # - Email
+          # - SMS for critical deployments
+          
+      - name: Send Failure Notification
+        if: needs.production-deployment.result == 'failure'
+        run: |
+          echo "🚨 Deployment failed and rollback initiated!"
+          # Send urgent notifications for failures

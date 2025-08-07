@@ -486,6 +486,54 @@ export type Database = {
         }
         Relationships: []
       }
+      deployment_log: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          deployment_id: string
+          environment: string
+          event_data: Json | null
+          event_type: string
+          github_commit_sha: string | null
+          health_check_results: Json | null
+          id: string
+          initiated_by: string | null
+          status: string | null
+          version_from: string | null
+          version_to: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          deployment_id: string
+          environment?: string
+          event_data?: Json | null
+          event_type: string
+          github_commit_sha?: string | null
+          health_check_results?: Json | null
+          id?: string
+          initiated_by?: string | null
+          status?: string | null
+          version_from?: string | null
+          version_to?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          deployment_id?: string
+          environment?: string
+          event_data?: Json | null
+          event_type?: string
+          github_commit_sha?: string | null
+          health_check_results?: Json | null
+          id?: string
+          initiated_by?: string | null
+          status?: string | null
+          version_from?: string | null
+          version_to?: string | null
+        }
+        Relationships: []
+      }
       driver_fuel_cards: {
         Row: {
           assigned_date: string
@@ -2418,6 +2466,108 @@ export type Database = {
         }
         Relationships: []
       }
+      system_backups: {
+        Row: {
+          backup_data: Json
+          backup_id: string
+          backup_type: string
+          checksum: string | null
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_compressed: boolean | null
+          metadata: Json | null
+          record_count: number
+          status: string | null
+          table_name: string
+        }
+        Insert: {
+          backup_data: Json
+          backup_id: string
+          backup_type?: string
+          checksum?: string | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_compressed?: boolean | null
+          metadata?: Json | null
+          record_count?: number
+          status?: string | null
+          table_name: string
+        }
+        Update: {
+          backup_data?: Json
+          backup_id?: string
+          backup_type?: string
+          checksum?: string | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_compressed?: boolean | null
+          metadata?: Json | null
+          record_count?: number
+          status?: string | null
+          table_name?: string
+        }
+        Relationships: []
+      }
+      system_health_log: {
+        Row: {
+          acid_functions_status: boolean | null
+          active_connections: number | null
+          authentication_status: boolean | null
+          check_timestamp: string
+          created_at: string
+          critical_tables_status: boolean | null
+          database_status: boolean | null
+          detailed_results: Json | null
+          error_rate_percentage: number | null
+          health_percentage: number
+          id: string
+          overall_status: string
+          recommendations: string[] | null
+          response_time_ms: number | null
+          storage_status: boolean | null
+        }
+        Insert: {
+          acid_functions_status?: boolean | null
+          active_connections?: number | null
+          authentication_status?: boolean | null
+          check_timestamp?: string
+          created_at?: string
+          critical_tables_status?: boolean | null
+          database_status?: boolean | null
+          detailed_results?: Json | null
+          error_rate_percentage?: number | null
+          health_percentage: number
+          id?: string
+          overall_status: string
+          recommendations?: string[] | null
+          response_time_ms?: number | null
+          storage_status?: boolean | null
+        }
+        Update: {
+          acid_functions_status?: boolean | null
+          active_connections?: number | null
+          authentication_status?: boolean | null
+          check_timestamp?: string
+          created_at?: string
+          critical_tables_status?: boolean | null
+          database_status?: boolean | null
+          detailed_results?: Json | null
+          error_rate_percentage?: number | null
+          health_percentage?: number
+          id?: string
+          overall_status?: string
+          recommendations?: string[] | null
+          response_time_ms?: number | null
+          storage_status?: boolean | null
+        }
+        Relationships: []
+      }
       system_stats: {
         Row: {
           created_at: string | null
@@ -2749,6 +2899,10 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: Json
       }
+      cleanup_expired_backups: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       cleanup_expired_reset_tokens: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -3071,6 +3225,32 @@ export type Database = {
           period_id: string
           payment_method_used?: string
           payment_ref?: string
+        }
+        Returns: Json
+      }
+      log_deployment_event: {
+        Args: {
+          deployment_id_param: string
+          event_type_param: string
+          version_from_param?: string
+          version_to_param?: string
+          github_commit_sha_param?: string
+          environment_param?: string
+          event_data_param?: Json
+        }
+        Returns: Json
+      }
+      log_health_check: {
+        Args: {
+          overall_status_param: string
+          health_percentage_param: number
+          database_status_param?: boolean
+          authentication_status_param?: boolean
+          critical_tables_status_param?: boolean
+          acid_functions_status_param?: boolean
+          storage_status_param?: boolean
+          response_time_ms_param?: number
+          detailed_results_param?: Json
         }
         Returns: Json
       }
