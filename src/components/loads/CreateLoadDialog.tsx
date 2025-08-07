@@ -789,7 +789,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                         name="client_id"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Cliente *</FormLabel>
+                            <FormLabel>Cliente/Broker *</FormLabel>
                             <FormControl>
                                 <ClientCombobox
                                   clients={clients}

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Check, ChevronsUpDown, Building2, Plus } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { CompanyClient, ClientContact } from '@/hooks/useCompanyClients';
 
@@ -103,8 +104,13 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
                       value === client.id ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  <div className="flex items-center gap-2">
-                    <Building2 className="h-4 w-4 text-muted-foreground" />
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={client.logo_url} alt={client.name} />
+                      <AvatarFallback className="text-xs">
+                        <Building2 className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
                       <div className="font-medium">{formatClientDisplay(client)}</div>
                       {client.address && (
