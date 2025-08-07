@@ -2692,6 +2692,10 @@ export type Database = {
         Args: { assignment_data: Json }
         Returns: Json
       }
+      assign_equipment_with_validation: {
+        Args: { assignment_data: Json }
+        Returns: Json
+      }
       assign_first_superadmin: {
         Args: { target_user_id: string }
         Returns: Json
@@ -2780,6 +2784,10 @@ export type Database = {
       }
       create_load_with_stops_and_documents: {
         Args: { load_data: Json; stops_data?: Json; documents_data?: Json }
+        Returns: Json
+      }
+      create_or_update_equipment_with_validation: {
+        Args: { equipment_data: Json; equipment_id?: string }
         Returns: Json
       }
       create_or_update_expense_template_with_validation: {
@@ -3106,7 +3114,7 @@ export type Database = {
         Returns: Json
       }
       unassign_equipment_with_validation: {
-        Args: { assignment_id: string; unassignment_notes?: string }
+        Args: { assignment_id: string; unassignment_reason?: string }
         Returns: Json
       }
       update_client_with_logo_download: {
