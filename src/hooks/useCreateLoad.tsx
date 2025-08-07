@@ -76,12 +76,15 @@ const uploadTemporaryDocuments = async (
       // Create storage path
       const filePath = `${loadId}/${customFileName}`;
       
-      console.log('⬆️ Uploading to storage:', filePath);
+      console.log('⬆️ Uploading to storage:', filePath, 'for load ID:', loadId);
       
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage with upsert option
       const { error: uploadError } = await supabase.storage
         .from('load-documents')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
 
       if (uploadError) {
         console.error('❌ Upload error:', uploadError);
@@ -559,6 +562,23 @@ export const useCreateLoad = () => {
         // Handle temporary documents for new loads (create and duplicate)
         if (isCreate && data.temporaryDocuments && data.temporaryDocuments.length > 0) {
           console.log('📄 useCreateLoad - Processing temporary documents:', data.temporaryDocuments);
+          console.log('📄 useCreateLoad - Current load for documents:', currentLoad);
+          console.log('📄 useCreateLoad - Current user:', user);
+          
+          // Verify load exists and user has access before uploading documents
+          const { data: loadCheck, error: loadCheckError } = await supabase
+            .from('loads')
+            .select('id, driver_user_id, created_by')
+            .eq('id', currentLoad.id)
+            .single();
+          
+          if (loadCheckError) {
+            console.error('❌ Load verification failed:', loadCheckError);
+            throw new Error(`Error verificando carga: ${loadCheckError.message}`);
+          }
+          
+          console.log('✅ Load verification successful:', loadCheck);
+          
           await uploadTemporaryDocuments(data.temporaryDocuments, currentLoad.id, data.load_number);
         }
       }
