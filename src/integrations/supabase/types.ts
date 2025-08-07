@@ -2802,6 +2802,10 @@ export type Database = {
         Args: { load_data: Json; stops_data?: Json; mode?: string }
         Returns: Json
       }
+      create_or_update_user_profile_with_validation: {
+        Args: { user_data: Json; role_data?: Json }
+        Returns: Json
+      }
       create_other_income_with_validation: {
         Args: { income_data: Json }
         Returns: Json
@@ -2812,6 +2816,14 @@ export type Database = {
       }
       deactivate_expense_template_with_validation: {
         Args: { template_id: string; deactivation_reason?: string }
+        Returns: Json
+      }
+      deactivate_user_with_validation: {
+        Args: {
+          target_user_id: string
+          target_company_id: string
+          deactivation_reason?: string
+        }
         Returns: Json
       }
       delete_company_document_permanently: {
@@ -3157,6 +3169,15 @@ export type Database = {
           target_user_id: string
           target_company_id: string
           new_role_data: Json
+        }
+        Returns: Json
+      }
+      update_user_role_with_validation: {
+        Args: {
+          target_user_id: string
+          target_company_id: string
+          new_role: Database["public"]["Enums"]["user_role"]
+          status_active?: boolean
         }
         Returns: Json
       }
