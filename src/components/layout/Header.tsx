@@ -25,7 +25,7 @@ export function Header() {
   const { getUserInitials, getFullName, user, profile } = useUserProfile();
   const { showSuccess, showError } = useFleetNotifications();
   const navigate = useNavigate();
-  const { open, isMobile } = useSidebar();
+  const { open, isMobile, state } = useSidebar();
 
   const handleLogout = async () => {
     try {
@@ -39,11 +39,16 @@ export function Header() {
     }
   };
   
+  const getLeftPosition = () => {
+    if (isMobile) return 'left-0';
+    if (open) return 'left-[280px]';
+    if (state === 'collapsed') return 'left-14';
+    return 'left-0';
+  };
+
   return (
     <header 
-      className={`fixed top-0 right-0 z-50 h-14 md:h-16 bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 shadow-sm border-b border-border/60 transition-all duration-300 ${
-        open && !isMobile ? 'left-[280px]' : 'left-0'
-      }`}
+      className={`fixed top-0 right-0 z-50 h-14 md:h-16 bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 shadow-sm border-b border-border/60 transition-all duration-300 ${getLeftPosition()}`}
     >
       <div className="flex h-full items-center justify-between pr-3 md:pr-6">
         {/* Menu Toggle */}
