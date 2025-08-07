@@ -2998,7 +2998,7 @@ export type Database = {
         Returns: Json
       }
       recalculate_payment_period_totals: {
-        Args: { target_period_id: string }
+        Args: { period_id: string }
         Returns: undefined
       }
       report_payment_and_lock: {
