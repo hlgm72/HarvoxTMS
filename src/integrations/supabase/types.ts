@@ -2786,6 +2786,14 @@ export type Database = {
         Args: { load_data: Json; stops_data?: Json; documents_data?: Json }
         Returns: Json
       }
+      create_or_update_client_contact_with_validation: {
+        Args: { contact_data: Json; contact_id?: string }
+        Returns: Json
+      }
+      create_or_update_client_with_validation: {
+        Args: { client_data: Json; client_id?: string }
+        Returns: Json
+      }
       create_or_update_company_with_validation: {
         Args: { company_data: Json; company_id?: string }
         Returns: Json
@@ -2828,6 +2836,14 @@ export type Database = {
           target_company_id: string
           deactivation_reason?: string
         }
+        Returns: Json
+      }
+      delete_client_contact_with_validation: {
+        Args: { contact_id_param: string }
+        Returns: Json
+      }
+      delete_client_with_validation: {
+        Args: { client_id_param: string }
         Returns: Json
       }
       delete_company_document_permanently: {
