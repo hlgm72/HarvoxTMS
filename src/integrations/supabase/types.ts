@@ -2794,6 +2794,10 @@ export type Database = {
         Args: { document_id: string }
         Returns: Json
       }
+      delete_fuel_expense_with_validation: {
+        Args: { expense_id: string }
+        Returns: Json
+      }
       delete_load_with_validation: {
         Args: { load_id_param: string }
         Returns: Json
@@ -3091,6 +3095,10 @@ export type Database = {
           client_data: Json
           external_logo_url?: string
         }
+        Returns: Json
+      }
+      update_fuel_expense_with_validation: {
+        Args: { expense_id: string; update_data: Json }
         Returns: Json
       }
       update_other_income_with_validation: {
