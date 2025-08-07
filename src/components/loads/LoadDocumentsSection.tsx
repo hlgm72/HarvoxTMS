@@ -196,14 +196,14 @@ export function LoadDocumentsSection({
           // Remove old file from storage
           const oldFilePath = existingDoc.url.split('/').slice(-4).join('/');
           await supabase.storage
-            .from('documents')
+            .from('load-documents')
             .remove([oldFilePath]);
         }
       }
 
       // Upload file to Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('documents')
+        .from('load-documents')
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: false
@@ -218,7 +218,7 @@ export function LoadDocumentsSection({
 
       // Get public URL
       const { data: urlData } = supabase.storage
-        .from('documents')
+        .from('load-documents')
         .getPublicUrl(uploadData.path);
 
       const publicUrl = urlData.publicUrl;
@@ -383,10 +383,10 @@ export function LoadDocumentsSection({
       if (documentData.file_url) {
         try {
           const urlPath = new URL(documentData.file_url).pathname;
-          const filePath = urlPath.split('/documents/')[1]; // Extract the path after /documents/
+          const filePath = urlPath.split('/load-documents/')[1]; // Extract the path after /load-documents/
           if (filePath) {
             const { error: storageError } = await supabase.storage
-              .from('documents')
+              .from('load-documents')
               .remove([filePath]);
 
             if (storageError) {
@@ -465,7 +465,7 @@ export function LoadDocumentsSection({
 
         // Upload to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('documents')
+          .from('load-documents')
           .upload(filePath, blob, {
             cacheControl: '3600',
             upsert: false
@@ -478,7 +478,7 @@ export function LoadDocumentsSection({
 
         // Get public URL
         const { data: urlData } = supabase.storage
-          .from('documents')
+          .from('load-documents')
           .getPublicUrl(uploadData.path);
 
         const publicUrl = urlData.publicUrl;
