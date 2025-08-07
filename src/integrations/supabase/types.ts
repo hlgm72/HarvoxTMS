@@ -3050,6 +3050,10 @@ export type Database = {
         Args: { company_payment_period_id: string }
         Returns: Json
       }
+      reassign_load_payment_period: {
+        Args: { load_id_param: string; new_period_id: string }
+        Returns: Json
+      }
       reassign_to_payment_period: {
         Args: {
           element_type: string
@@ -3099,6 +3103,14 @@ export type Database = {
       }
       update_fuel_expense_with_validation: {
         Args: { expense_id: string; update_data: Json }
+        Returns: Json
+      }
+      update_load_status_with_validation: {
+        Args: {
+          load_id_param: string
+          new_status: string
+          status_reason?: string
+        }
         Returns: Json
       }
       update_other_income_with_validation: {
