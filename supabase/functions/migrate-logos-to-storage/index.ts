@@ -61,11 +61,8 @@ serve(async (req) => {
         const imageBuffer = await imageResponse.arrayBuffer()
         const imageBlob = new Blob([imageBuffer])
         
-        // Extract domain from clearbit URL for filename
-        const urlParts = client.logo_url.split('/')
-        const domain = urlParts[urlParts.length - 1] || 'logo'
-        const fileName = `${client.id}-${domain}.png`
-        const filePath = fileName
+        // Create organized folder structure: client-id/logo.png
+        const filePath = `${client.id}/logo.png`
 
         // Upload to Supabase Storage
         const { error: uploadError } = await supabaseClient.storage
