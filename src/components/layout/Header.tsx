@@ -39,8 +39,14 @@ export function Header() {
     }
   };
   
+  const getLeftPosition = () => {
+    if (isMobile) return 'left-0';
+    if (open) return 'left-0'; // Cuando está abierto, SidebarInset maneja el espacio
+    return 'left-14'; // Cuando está contraído, necesitamos dejar espacio para los iconos
+  };
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-14 md:h-16 bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 shadow-sm border-b border-border/60">
+    <header className={`fixed top-0 right-0 z-50 h-14 md:h-16 bg-card backdrop-blur-xl supports-[backdrop-filter]:bg-card/92 shadow-sm border-b border-border/60 transition-all duration-300 ${getLeftPosition()}`}>
       <div className="flex h-full items-center justify-between pr-3 md:pr-6">
         {/* Menu Toggle */}
         <MenuToggle />
