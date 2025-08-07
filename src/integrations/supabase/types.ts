@@ -2684,6 +2684,10 @@ export type Database = {
         Args: { document_id: string }
         Returns: Json
       }
+      archive_document_with_validation: {
+        Args: { document_id_param: string; archive_reason?: string }
+        Returns: Json
+      }
       archive_old_loads: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -2796,6 +2800,10 @@ export type Database = {
       }
       create_or_update_company_with_validation: {
         Args: { company_data: Json; company_id?: string }
+        Returns: Json
+      }
+      create_or_update_document_with_validation: {
+        Args: { document_data: Json; document_id?: string }
         Returns: Json
       }
       create_or_update_equipment_with_validation: {
@@ -3152,6 +3160,10 @@ export type Database = {
       }
       restore_company_document: {
         Args: { document_id: string }
+        Returns: Json
+      }
+      restore_document_with_validation: {
+        Args: { document_id_param: string }
         Returns: Json
       }
       unassign_equipment_with_validation: {
