@@ -10,6 +10,7 @@ import { ClientsList } from "@/components/clients/ClientsList";
 import { ClientsGrid } from "@/components/clients/ClientsGrid";
 import { CreateClientDialog } from "@/components/clients/CreateClientDialog";
 import { ClientFilters } from "@/components/clients/ClientFilters";
+import { LogoMigrationDialog } from "@/components/clients/LogoMigrationDialog";
 import { useClients } from "@/hooks/useClients";
 
 export default function Clients() {
@@ -110,13 +111,16 @@ export default function Clients() {
         title="Gestión de Clientes"
         subtitle="Administra tus clientes y brokers de carga"
         actions={
-          <Button 
-            onClick={() => setShowCreateDialog(true)}
-            className="gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Nuevo Cliente
-          </Button>
+          <div className="flex gap-2">
+            <LogoMigrationDialog />
+            <Button 
+              onClick={() => setShowCreateDialog(true)}
+              className="gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Nuevo Cliente
+            </Button>
+          </div>
         }
         viewToggle={
           <div className="flex items-center gap-2">

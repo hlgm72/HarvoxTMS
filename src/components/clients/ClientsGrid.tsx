@@ -24,6 +24,7 @@ import { Client, useDeleteClient } from "@/hooks/useClients";
 import { EditClientDialog } from "./EditClientDialog";
 import { ClientDetailDialog } from "./ClientDetailDialog";
 import { ClientDispatchersPopover } from "./ClientDispatchersPopover";
+import { LogoMigrationDialog } from "./LogoMigrationDialog";
 
 interface ClientsGridProps {
   clients: Client[];
