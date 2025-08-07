@@ -41,7 +41,7 @@ export function Header() {
   
   const getLeftPosition = () => {
     if (isMobile) return 'left-0';
-    if (open) return 'left-0'; // Cuando está abierto, SidebarInset maneja el espacio
+    if (open) return 'left-[280px]'; // Cuando está abierto, dejar espacio completo del Sidebar
     return 'left-[64px]'; // Cuando está contraído, necesitamos dejar espacio para los iconos
   };
 
