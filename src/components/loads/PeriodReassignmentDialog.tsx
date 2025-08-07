@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Calendar, Truck, DollarSign, Fuel, Receipt, Plus } from 'lucide-react';
 import { usePaymentPeriods } from '@/hooks/usePaymentPeriods';
+import { useReassignLoadPeriod } from '@/hooks/useReassignLoadPeriod';
 import { formatCurrency } from '@/lib/utils';
 import { formatPaymentPeriod, formatDateOnly } from '@/lib/dateFormatting';
 import { useFleetNotifications } from '@/components/notifications';
@@ -29,11 +30,8 @@ const PeriodReassignmentDialog = ({
   element 
 }: PeriodReassignmentDialogProps) => {
   const [selectedPeriodId, setSelectedPeriodId] = useState('');
-  const { 
-    paymentPeriods, 
-    reassignElement, 
-    isReassigningElement 
-  } = usePaymentPeriods();
+  const { paymentPeriods } = usePaymentPeriods();
+  const { mutate: reassignLoad, isPending: isReassigningLoad } = useReassignLoadPeriod();
   const { showError } = useFleetNotifications();
 
   const handleReassign = () => {
@@ -45,13 +43,16 @@ const PeriodReassignmentDialog = ({
       return;
     }
 
-    reassignElement({
-      elementType: element.type,
-      elementId: element.id,
-      newPeriodId: selectedPeriodId
-    });
-
-    onClose();
+    // Solo manejar cargas con el nuevo hook específico
+    if (element.type === 'load') {
+      reassignLoad({
+        loadId: element.id,
+        newPeriodId: selectedPeriodId
+      });
+      onClose();
+    } else {
+      showError("Error", "Tipo de elemento no soportado");
+    }
   };
 
   const getElementIcon = (type: string) => {
@@ -247,14 +248,14 @@ const PeriodReassignmentDialog = ({
 
           {/* Botones de acción */}
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={onClose} disabled={isReassigningElement}>
+            <Button variant="outline" onClick={onClose} disabled={isReassigningLoad}>
               Cancelar
             </Button>
             <Button 
               onClick={handleReassign} 
-              disabled={!selectedPeriodId || isReassigningElement || availablePeriods.length === 0}
+              disabled={!selectedPeriodId || isReassigningLoad || availablePeriods.length === 0}
             >
-              {isReassigningElement ? 'Reasignando...' : 'Reasignar'}
+              {isReassigningLoad ? 'Reasignando...' : 'Reasignar'}
             </Button>
           </div>
         </div>

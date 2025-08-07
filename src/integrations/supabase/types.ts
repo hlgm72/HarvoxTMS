@@ -3051,7 +3051,7 @@ export type Database = {
         Returns: Json
       }
       reassign_load_payment_period: {
-        Args: { load_id_param: string; new_period_id: string }
+        Args: { load_id_param: string; target_company_period_id: string }
         Returns: Json
       }
       reassign_to_payment_period: {
@@ -3106,11 +3106,13 @@ export type Database = {
         Returns: Json
       }
       update_load_status_with_validation: {
-        Args: {
-          load_id_param: string
-          new_status: string
-          status_reason?: string
-        }
+        Args:
+          | { load_id_param: string; new_status: string }
+          | {
+              load_id_param: string
+              new_status: string
+              status_reason?: string
+            }
         Returns: Json
       }
       update_other_income_with_validation: {

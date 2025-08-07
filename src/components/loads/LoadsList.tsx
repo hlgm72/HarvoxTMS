@@ -5,11 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2, Copy } from "lucide-react";
+import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2, Copy, Play, CheckCircle, XCircle, Clock } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { formatDateTime } from '@/lib/dateFormatting';
 import { useLoads } from "@/hooks/useLoads";
 import { useDeleteLoad } from "@/hooks/useDeleteLoad";
+import { useUpdateLoadStatus } from "@/hooks/useUpdateLoadStatus";
 import { PeriodFilterValue } from "./PeriodFilter";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
 import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
@@ -177,6 +178,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
   //   error: error?.message || 'No error' 
   // });
   const deleteLoadMutation = useDeleteLoad();
+  const updateStatusMutation = useUpdateLoadStatus();
   
   const [reassignmentDialog, setReassignmentDialog] = useState<{
     isOpen: boolean;
@@ -215,6 +217,44 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
     } catch (error) {
       // El error ya se maneja en el hook
     }
+  };
+
+  const handleUpdateStatus = async (loadId: string, newStatus: string) => {
+    try {
+      await updateStatusMutation.mutateAsync({
+        loadId,
+        newStatus
+      });
+    } catch (error) {
+      // El error ya se maneja en el hook
+    }
+  };
+
+  const getStatusActions = (currentStatus: string) => {
+    const actions: { status: string; label: string; icon: React.ReactNode; disabled?: boolean }[] = [];
+    
+    switch (currentStatus) {
+      case 'draft':
+      case 'open':
+        actions.push(
+          { status: 'in_progress', label: 'Marcar En Progreso', icon: <Play className="h-3 w-3 mr-2" /> },
+          { status: 'cancelled', label: 'Cancelar', icon: <XCircle className="h-3 w-3 mr-2" /> }
+        );
+        break;
+      case 'in_progress':
+        actions.push(
+          { status: 'completed', label: 'Completar', icon: <CheckCircle className="h-3 w-3 mr-2" /> },
+          { status: 'cancelled', label: 'Cancelar', icon: <XCircle className="h-3 w-3 mr-2" /> }
+        );
+        break;
+      case 'completed':
+        actions.push(
+          { status: 'in_progress', label: 'Marcar En Progreso', icon: <Clock className="h-3 w-3 mr-2" /> }
+        );
+        break;
+    }
+    
+    return actions;
   };
   
   // Aplicar filtros a los datos reales
@@ -382,6 +422,22 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     </Button>
                   </DropdownMenuTrigger>
                    <DropdownMenuContent align="end">
+                      {/* Opciones de cambio de estado */}
+                      {getStatusActions(load.status).map((action) => (
+                        <DropdownMenuItem
+                          key={action.status}
+                          onClick={() => handleUpdateStatus(load.id, action.status)}
+                          disabled={action.disabled || updateStatusMutation.isPending}
+                        >
+                          {action.icon}
+                          {action.label}
+                        </DropdownMenuItem>
+                      ))}
+                      
+                      {getStatusActions(load.status).length > 0 && (
+                        <div className="border-t my-1" />
+                      )}
+
                       <DropdownMenuItem 
                         onClick={() => setDuplicateDialog({ 
                           isOpen: true, 
@@ -420,7 +476,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                          <Trash2 className="h-3 w-3 mr-2" />
                          Eliminar Carga
                        </DropdownMenuItem>
-                  </DropdownMenuContent>
+                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
             </div>
