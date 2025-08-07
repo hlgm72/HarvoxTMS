@@ -278,11 +278,6 @@ export function StopEditModal({
 
           {/* Dirección */}
           <div className="space-y-4">
-            <h3 className="text-sm font-medium flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              Dirección
-            </h3>
-            
             <AddressForm
               streetAddress={formData.address || ''}
               onStreetAddressChange={(value) => updateField('address', value)}
