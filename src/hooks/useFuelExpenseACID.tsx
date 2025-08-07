@@ -21,6 +21,7 @@ interface FuelExpenseData {
   receipt_url?: string;
   is_verified?: boolean;
   status?: string;
+  invoice_number?: string; // Agregar este campo
 }
 
 interface CreateOrUpdateFuelExpenseParams {

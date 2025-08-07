@@ -14,10 +14,11 @@ import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatDateSafe } from '@/lib/dateFormatting';
 import { cn } from '@/lib/utils';
-import { useFuelExpense, useUpdateFuelExpense } from '@/hooks/useFuelExpenses';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { useCompanyPaymentPeriods } from '@/hooks/useCompanyPaymentPeriods';
 import { useEquipment } from '@/hooks/useEquipment';
+import { useFuelExpenseACID } from '@/hooks/useFuelExpenseACID';
+import { useFuelExpense } from '@/hooks/useFuelExpenses';
 
 const formSchema = z.object({
   driver_user_id: z.string().min(1, 'Selecciona un conductor'),
@@ -50,7 +51,7 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
   const { drivers } = useCompanyDrivers();
   const { data: paymentPeriods = [] } = useCompanyPaymentPeriods();
   const { equipment } = useEquipment();
-  const updateMutation = useUpdateFuelExpense();
+  const { mutate: updateFuelExpense, isPending } = useFuelExpenseACID();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -79,15 +80,24 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
   const onSubmit = (data: FormData) => {
     if (!expenseId) return;
 
-    updateMutation.mutate({
-      id: expenseId,
-      ...data,
-      transaction_date: data.transaction_date.toISOString(),
-    }, {
-      onSuccess: () => {
-        onOpenChange(false);
+    updateFuelExpense({
+      expenseData: {
+        driver_user_id: data.driver_user_id,
+        payment_period_id: data.payment_period_id,
+        transaction_date: data.transaction_date.toISOString(),
+        fuel_type: data.fuel_type,
+        gallons_purchased: data.gallons_purchased,
+        price_per_gallon: data.price_per_gallon,
+        total_amount: data.total_amount,
+        station_name: data.station_name,
+        station_state: data.station_state,
+        receipt_url: data.receipt_url,
+        notes: data.notes,
       },
+      expenseId: expenseId
     });
+
+    onOpenChange(false);
   };
 
   const gallons = form.watch('gallons_purchased');
@@ -368,8 +378,8 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancelar
               </Button>
-              <Button type="submit" disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
+              <Button type="submit" disabled={isPending}>
+                {isPending ? 'Guardando...' : 'Guardar Cambios'}
               </Button>
             </DialogFooter>
           </form>

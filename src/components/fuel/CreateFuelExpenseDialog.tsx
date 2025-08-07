@@ -15,12 +15,12 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { formatDateInUserTimeZone, formatDateSafe } from '@/lib/dateFormatting';
 import { cn } from '@/lib/utils';
-import { useCreateFuelExpense } from '@/hooks/useFuelExpenses';
+import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { useCompanyPaymentPeriods } from '@/hooks/useCompanyPaymentPeriods';
 import { useEquipment } from '@/hooks/useEquipment';
 import { useDriverEquipment } from '@/hooks/useDriverEquipment';
-import { useCompanyCache } from '@/hooks/useCompanyCache';
+import { useFuelExpenseACID } from '@/hooks/useFuelExpenseACID';
 import { useDriverCards } from '@/hooks/useDriverCards';
 import { StateCombobox } from '@/components/ui/StateCombobox';
 import { supabase } from '@/integrations/supabase/client';
@@ -69,7 +69,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
   const { drivers } = useCompanyDrivers();
   const { data: paymentPeriods = [], refetch: refetchPaymentPeriods } = useCompanyPaymentPeriods(userCompany?.company_id);
   const { equipment } = useEquipment();
-  const createMutation = useCreateFuelExpense();
+  const { mutate: createFuelExpense, isPending } = useFuelExpenseACID();
   const [isDatePickerOpen, setIsDatePickerOpen] = React.useState(false);
   const queryClient = useQueryClient();
 
@@ -168,37 +168,30 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
     }
 
     // Ahora guardar la transacción con el período asignado
-    createMutation.mutate({
-      driver_user_id: data.driver_user_id,
-      payment_period_id: data.payment_period_id,
-      transaction_date: data.transaction_date.toISOString(),
-      fuel_type: data.fuel_type,
-      gallons_purchased: data.gallons_purchased,
-      price_per_gallon: data.price_per_gallon,
-      total_amount: data.total_amount,
-      vehicle_id: data.vehicle_id,
-      
-      // Información de la estación
-      station_name: data.station_name,
-      station_state: data.station_state,
-      
-      // Información de pago/tarjeta
-      card_last_five: data.card_last_five,
-      invoice_number: data.invoice_number,
-      
-      // Desglose de costos
-      gross_amount: data.gross_amount,
-      discount_amount: data.discount_amount,
-      fees: data.fees,
-      
-      receipt_url: data.receipt_url,
-      notes: data.notes,
-    }, {
-      onSuccess: () => {
-        form.reset();
-        onOpenChange(false);
-      },
+    createFuelExpense({
+      expenseData: {
+        driver_user_id: data.driver_user_id,
+        payment_period_id: data.payment_period_id,
+        transaction_date: data.transaction_date.toISOString(),
+        fuel_type: data.fuel_type,
+        gallons_purchased: data.gallons_purchased,
+        price_per_gallon: data.price_per_gallon,
+        total_amount: data.total_amount,
+        station_name: data.station_name,
+        station_state: data.station_state,
+        card_last_five: data.card_last_five,
+        invoice_number: data.invoice_number,
+        gross_amount: data.gross_amount,
+        discount_amount: data.discount_amount,
+        fees: data.fees,
+        receipt_url: data.receipt_url,
+        notes: data.notes,
+      }
     });
+
+    // Resetear form y cerrar dialog
+    form.reset();
+    onOpenChange(false);
   };
 
   const gallons = form.watch('gallons_purchased');
@@ -772,8 +765,8 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancelar
               </Button>
-              <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? 'Guardando...' : 'Guardar'}
+              <Button type="submit" disabled={isPending}>
+                {isPending ? 'Guardando...' : 'Guardar'}
               </Button>
             </DialogFooter>
           </form>

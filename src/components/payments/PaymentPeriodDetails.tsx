@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertTriangle, Calculator, DollarSign, Lock, Play, Users, Fuel, TrendingUp, Receipt, CreditCard } from "lucide-react";
 import { formatPaymentPeriod } from '@/lib/dateFormatting';
 import { useFleetNotifications } from "@/components/notifications";
+import { useClosePaymentPeriod } from "@/hooks/useClosePaymentPeriod";
 import { PaymentPeriodAlerts } from "./PaymentPeriodAlerts";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
 
@@ -35,6 +36,20 @@ interface DriverCalculation {
 export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetailsProps) {
   const { showSuccess, showError } = useFleetNotifications();
   const [isProcessing, setIsProcessing] = useState(false);
+  const { mutate: closePeriod, isPending: isClosingPeriod } = useClosePaymentPeriod();
+
+  // Función para cerrar el período
+  const handleClosePeriod = () => {
+    closePeriod({
+      companyPeriodId: periodId
+    }, {
+      onSuccess: () => {
+        refetchPeriod();
+        refetchCalculations();
+        onClose();
+      }
+    });
+  };
 
   // Obtener detalles del período
   const { data: period, refetch: refetchPeriod } = useQuery({
@@ -151,12 +166,26 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
           </div>
         </div>
         
-        {period.status === 'open' && (
-          <Button onClick={handleProcessPeriod} disabled={true}>
-            <Calculator className="h-4 w-4 mr-2" />
-            Procesar Período
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {period.status === 'open' && !period.is_locked && (
+            <Button onClick={handleProcessPeriod} disabled={isProcessing}>
+              <Calculator className="h-4 w-4 mr-2" />
+              Procesar Período
+            </Button>
+          )}
+          
+          {/* Botón para cerrar período - solo visible si está calculado y no bloqueado */}
+          {(period.status === 'calculated' || period.status === 'approved') && !period.is_locked && (
+            <Button 
+              onClick={handleClosePeriod} 
+              disabled={isClosingPeriod}
+              variant="destructive"
+            >
+              <Lock className="h-4 w-4 mr-2" />
+              {isClosingPeriod ? 'Cerrando...' : 'Cerrar Período'}
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Alertas */}
