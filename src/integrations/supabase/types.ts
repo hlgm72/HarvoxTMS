@@ -2745,6 +2745,10 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: boolean
       }
+      create_client_with_contacts: {
+        Args: { client_data: Json; contacts_data?: Json }
+        Returns: Json
+      }
       create_first_superadmin: {
         Args: {
           admin_email: string
@@ -3017,6 +3021,14 @@ export type Database = {
       }
       restore_company_document: {
         Args: { document_id: string }
+        Returns: Json
+      }
+      update_client_with_logo_download: {
+        Args: {
+          client_id_param: string
+          client_data: Json
+          external_logo_url?: string
+        }
         Returns: Json
       }
       use_reset_token: {
