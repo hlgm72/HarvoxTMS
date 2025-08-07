@@ -3047,6 +3047,15 @@ export type Database = {
         }
         Returns: Json
       }
+      mark_driver_as_paid_with_validation: {
+        Args: {
+          calculation_id: string
+          payment_method_used?: string
+          payment_ref?: string
+          notes?: string
+        }
+        Returns: Json
+      }
       mark_multiple_drivers_as_paid_with_validation: {
         Args: {
           calculation_ids: string[]

@@ -29,26 +29,47 @@ export function useDriverPaymentActions() {
   ) => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.rpc('mark_driver_as_paid', {
+      // ✅ USE ENHANCED ACID FUNCTION
+      const { data, error } = await supabase.rpc('mark_driver_as_paid_with_validation', {
         calculation_id: calculationId,
         payment_method_used: paymentMethod,
         payment_ref: paymentReference || null,
         notes: notes || null
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error marking driver as paid with ACID:', error);
+        
+        // Provide specific error messages
+        let errorMessage = error.message;
+        if (errorMessage.includes('Sin permisos')) {
+          showError('Sin permisos', 'No tienes autorización para marcar este conductor como pagado.');
+        } else if (errorMessage.includes('Período bloqueado')) {
+          showError('Período bloqueado', 'No se pueden procesar pagos en un período bloqueado.');
+        } else if (errorMessage.includes('ya está marcado como pagado')) {
+          showError('Ya pagado', 'El conductor ya está marcado como pagado.');
+        } else if (errorMessage.includes('no permite el pago')) {
+          showError('Estado no válido', 'El estado del cálculo no permite el pago en este momento.');
+        } else {
+          showError('Error en pago', errorMessage);
+        }
+        return { success: false, error: errorMessage };
+      }
 
-      const result = data as { success?: boolean; message?: string };
+      const result = data as any;
       if (result?.success) {
-        showSuccess("Pago Registrado", result.message || "Conductor marcado como pagado");
+        showSuccess(
+          "Pago ACID Registrado", 
+          `Conductor marcado como pagado con validaciones ACID. Monto: $${result.net_payment?.toLocaleString('es-US', { minimumFractionDigits: 2 }) || '0.00'}`
+        );
         return { success: true, data };
       } else {
-        showError(result?.message || "No se pudo registrar el pago");
+        showError(result?.message || "No se pudo registrar el pago ACID");
         return { success: false, error: result?.message };
       }
     } catch (error: any) {
-      console.error('Error marking driver as paid:', error);
-      showError(error.message || "Error al registrar el pago");
+      console.error('❌ Error in markDriverAsPaid ACID:', error);
+      showError(error.message || "Error al registrar el pago ACID");
       return { success: false, error: error.message };
     } finally {
       setIsLoading(false);
