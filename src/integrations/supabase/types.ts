@@ -2762,6 +2762,10 @@ export type Database = {
         }
         Returns: Json
       }
+      create_fuel_expense_with_validation: {
+        Args: { expense_data: Json; receipt_file_data?: Json }
+        Returns: Json
+      }
       create_load_with_stops_and_documents: {
         Args: { load_data: Json; stops_data?: Json; documents_data?: Json }
         Returns: Json
@@ -2788,6 +2792,15 @@ export type Database = {
       }
       generate_company_payment_periods: {
         Args: { company_id_param: string; from_date: string; to_date: string }
+        Returns: Json
+      }
+      generate_company_payment_periods_with_calculations: {
+        Args: {
+          company_id_param: string
+          from_date_param: string
+          to_date_param: string
+          auto_create_driver_calculations?: boolean
+        }
         Returns: Json
       }
       generate_load_percentage_deductions: {

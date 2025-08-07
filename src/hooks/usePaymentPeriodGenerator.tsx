@@ -80,11 +80,12 @@ export const usePaymentPeriodGenerator = () => {
       const toDate = formatDateInUserTimeZone(new Date(Date.parse(targetDate) + rangeDays * 24 * 60 * 60 * 1000));
 
       const { data: generateResult, error: generateError } = await supabase.rpc(
-        'generate_company_payment_periods',
+        'generate_company_payment_periods_with_calculations',
         {
           company_id_param: companyId,
-          from_date: fromDate,
-          to_date: toDate
+          from_date_param: fromDate,
+          to_date_param: toDate,
+          auto_create_driver_calculations: true
         }
       );
 

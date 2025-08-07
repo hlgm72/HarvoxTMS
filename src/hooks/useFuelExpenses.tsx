@@ -108,107 +108,51 @@ export function useCreateFuelExpense() {
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
   const { showSuccess, showError } = useFleetNotifications();
-  const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
 
   return useMutation({
     mutationFn: async (data: CreateFuelExpenseData) => {
-      // Validar duplicados antes de crear
-      console.log('🔍 Validating for duplicate fuel expense...');
+      console.log('🔍 Creating fuel expense with ACID guarantees...');
       
-      // Buscar transacciones existentes para detectar duplicados
-      const { data: existingExpenses, error: searchError } = await supabase
-        .from('fuel_expenses')
-        .select('transaction_date, invoice_number, card_last_five, total_amount, station_name')
-        .eq('driver_user_id', data.driver_user_id);
-
-      if (searchError) {
-        console.error('Error searching for existing expenses:', searchError);
-        throw new Error('Error al validar duplicados');
-      }
-
-      // Verificar si ya existe una transacción similar
-      const txnDateStr = formatDateInUserTimeZone(new Date(data.transaction_date));
-      const existingTransaction = existingExpenses?.find(existing => {
-        const existingDate = formatDateInUserTimeZone(new Date(existing.transaction_date));
-        const sameDate = existingDate === txnDateStr;
-        const sameInvoice = existing.invoice_number === data.invoice_number && data.invoice_number;
-        const sameCard = existing.card_last_five === data.card_last_five && data.card_last_five;
-        const sameAmount = Math.abs(parseFloat(existing.total_amount.toString()) - data.total_amount) < 0.01;
-        const sameStation = existing.station_name === data.station_name && data.station_name;
-        
-        // Considerar duplicado si coinciden al menos 3 de estos criterios
-        const matches = [sameDate, sameInvoice, sameCard, sameAmount, sameStation].filter(Boolean).length;
-        console.log('🔍 Duplicate check:', { sameDate, sameInvoice, sameCard, sameAmount, sameStation, matches });
-        return matches >= 3;
-      });
-
-      if (existingTransaction) {
-        console.log('🚨 Duplicate transaction detected:', existingTransaction);
-        throw new Error('Esta transacción parece estar duplicada. Ya existe un gasto similar con la misma fecha, monto o número de factura.');
-      }
-
-      // Si no hay payment_period_id, intentar generar uno automáticamente
-      let finalData = { ...data };
-      
-      if (!data.payment_period_id && selectedCompany?.id && data.driver_user_id && data.transaction_date) {
-        console.log('🔍 Auto-generating company payment period for fuel expense');
-        
-        const targetDate = formatDateInUserTimeZone(new Date(data.transaction_date));
-        
-        // Buscar período de empresa existente
-        const { data: existingCompanyPeriod, error: periodError } = await supabase
-          .from('company_payment_periods')
-          .select('id')
-          .eq('company_id', selectedCompany.id)
-          .lte('period_start_date', targetDate)
-          .gte('period_end_date', targetDate)
-          .in('status', ['open', 'processing'])
-          .limit(1)
-          .maybeSingle();
-
-        if (periodError) {
-          console.error('Error finding company payment period:', periodError);
-          throw new Error('Error al buscar período de pago de la empresa');
+      // Usar la función ACID para crear el gasto de combustible
+      const { data: result, error } = await supabase.rpc(
+        'create_fuel_expense_with_validation',
+        {
+          expense_data: {
+            driver_user_id: data.driver_user_id,
+            payment_period_id: data.payment_period_id || null,
+            transaction_date: data.transaction_date,
+            fuel_type: data.fuel_type || 'diesel',
+            gallons_purchased: data.gallons_purchased,
+            price_per_gallon: data.price_per_gallon,
+            total_amount: data.total_amount,
+            station_name: data.station_name || null,
+            station_state: data.station_state || null,
+            card_last_five: data.card_last_five || null,
+            vehicle_id: data.vehicle_id || null,
+            receipt_url: data.receipt_url || null,
+            notes: data.notes || null,
+            gross_amount: data.gross_amount || null,
+            discount_amount: data.discount_amount || 0,
+            fees: data.fees || 0,
+            invoice_number: data.invoice_number || null
+          },
+          receipt_file_data: null // TODO: Implementar subida de archivos
         }
-
-        let companyPeriodId = existingCompanyPeriod?.id;
-
-        // Si no existe, generar período de empresa
-        if (!companyPeriodId) {
-          console.log('🔍 Generating company payment period');
-          
-          const generatedPeriodId = await ensurePaymentPeriodExists({
-            companyId: selectedCompany.id,
-            userId: data.driver_user_id,
-            targetDate
-          });
-          
-          if (!generatedPeriodId) {
-            throw new Error('No se pudo generar un período de pago para esta fecha');
-          }
-          
-          companyPeriodId = generatedPeriodId;
-        }
-
-        finalData.payment_period_id = companyPeriodId;
-        console.log('✅ Auto-assigned company payment period:', companyPeriodId);
-      }
-
-      const { data: result, error } = await supabase
-        .from('fuel_expenses')
-        .insert({
-          ...finalData,
-          created_by: user?.id,
-        })
-        .select()
-        .single();
+      );
 
       if (error) {
         console.error('Error creating fuel expense:', error);
-        throw error;
+        throw new Error(error.message || 'Error al crear el gasto de combustible');
       }
 
-      return result;
+      console.log('✅ Fuel expense created with ACID:', result);
+      
+      // Verificar que el resultado es un objeto válido
+      if (result && typeof result === 'object' && 'expense' in result) {
+        return (result as any).expense;
+      }
+      
+      throw new Error('Respuesta inválida del servidor');
     },
     onSuccess: () => {
       showSuccess('Gasto de combustible creado exitosamente');
