@@ -2688,6 +2688,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      assign_equipment_to_driver_with_validation: {
+        Args: { assignment_data: Json }
+        Returns: Json
+      }
       assign_first_superadmin: {
         Args: { target_user_id: string }
         Returns: Json
@@ -2780,6 +2784,10 @@ export type Database = {
       }
       create_other_income_with_validation: {
         Args: { income_data: Json }
+        Returns: Json
+      }
+      create_user_with_company_role_validation: {
+        Args: { user_data: Json; company_role_data: Json }
         Returns: Json
       }
       delete_company_document_permanently: {
@@ -3073,6 +3081,10 @@ export type Database = {
         Args: { document_id: string }
         Returns: Json
       }
+      unassign_equipment_with_validation: {
+        Args: { assignment_id: string; unassignment_notes?: string }
+        Returns: Json
+      }
       update_client_with_logo_download: {
         Args: {
           client_id_param: string
@@ -3083,6 +3095,14 @@ export type Database = {
       }
       update_other_income_with_validation: {
         Args: { income_id: string; income_data: Json }
+        Returns: Json
+      }
+      update_user_company_role_with_validation: {
+        Args: {
+          target_user_id: string
+          target_company_id: string
+          new_role_data: Json
+        }
         Returns: Json
       }
       use_reset_token: {
