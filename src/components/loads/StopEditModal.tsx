@@ -356,6 +356,7 @@ export function StopEditModal({
                 value={formData.special_instructions || ''}
                 onChange={(e) => updateField('special_instructions', e.target.value)}
                 rows={2}
+                className="h-16 min-h-16 resize-none"
               />
             </div>
           </div>
