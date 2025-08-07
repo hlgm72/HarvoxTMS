@@ -355,7 +355,7 @@ export function StopEditModal({
                 placeholder="Instrucciones especiales para esta parada..."
                 value={formData.special_instructions || ''}
                 onChange={(e) => updateField('special_instructions', e.target.value)}
-                rows={3}
+                rows={2}
               />
             </div>
           </div>
