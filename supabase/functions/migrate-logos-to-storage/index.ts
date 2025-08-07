@@ -65,7 +65,7 @@ serve(async (req) => {
         const urlParts = client.logo_url.split('/')
         const domain = urlParts[urlParts.length - 1] || 'logo'
         const fileName = `${client.id}-${domain}.png`
-        const filePath = `client-logos/${fileName}`
+        const filePath = fileName
 
         // Upload to Supabase Storage
         const { error: uploadError } = await supabaseClient.storage
