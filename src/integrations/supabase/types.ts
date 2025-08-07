@@ -2786,6 +2786,10 @@ export type Database = {
         Args: { load_data: Json; stops_data?: Json; documents_data?: Json }
         Returns: Json
       }
+      create_or_update_company_with_validation: {
+        Args: { company_data: Json; company_id?: string }
+        Returns: Json
+      }
       create_or_update_equipment_with_validation: {
         Args: { equipment_data: Json; equipment_id?: string }
         Returns: Json
@@ -3143,6 +3147,14 @@ export type Database = {
           client_id_param: string
           client_data: Json
           external_logo_url?: string
+        }
+        Returns: Json
+      }
+      update_company_status_with_validation: {
+        Args: {
+          target_company_id: string
+          new_status: string
+          status_reason?: string
         }
         Returns: Json
       }

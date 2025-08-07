@@ -22,8 +22,9 @@ interface UserData {
 }
 
 interface RoleData {
+  [key: string]: any;
   company_id: string;
-  role: string;
+  role: 'superadmin' | 'company_owner' | 'operations_manager' | 'senior_dispatcher' | 'dispatcher' | 'driver';
 }
 
 interface CreateOrUpdateUserParams {
@@ -116,7 +117,7 @@ export const useUserRoleACID = () => {
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
 
-  return useMutation<any, Error, { userId: string; companyId: string; role: string; isActive?: boolean }>({
+  return useMutation<any, Error, { userId: string; companyId: string; role: 'superadmin' | 'company_owner' | 'operations_manager' | 'senior_dispatcher' | 'dispatcher' | 'driver'; isActive?: boolean }>({
     mutationFn: async (params) => {
       console.log('🔄 useUserRoleACID - Actualizando rol:', params);
       
