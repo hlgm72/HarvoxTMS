@@ -2694,7 +2694,7 @@ export type Database = {
       }
       calculate_driver_payment_period: {
         Args: { period_calculation_id: string }
-        Returns: undefined
+        Returns: Json
       }
       calculate_driver_period_totals: {
         Args: {
