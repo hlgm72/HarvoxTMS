@@ -2749,6 +2749,10 @@ export type Database = {
         Args: { client_data: Json; contacts_data?: Json }
         Returns: Json
       }
+      create_equipment_with_documents: {
+        Args: { equipment_data: Json; documents_data?: Json }
+        Returns: Json
+      }
       create_first_superadmin: {
         Args: {
           admin_email: string
@@ -2756,6 +2760,10 @@ export type Database = {
           admin_first_name?: string
           admin_last_name?: string
         }
+        Returns: Json
+      }
+      create_load_with_stops_and_documents: {
+        Args: { load_data: Json; stops_data?: Json; documents_data?: Json }
         Returns: Json
       }
       delete_company_document_permanently: {
