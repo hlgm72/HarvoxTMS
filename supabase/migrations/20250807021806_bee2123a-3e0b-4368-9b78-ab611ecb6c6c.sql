@@ -1,0 +1,88 @@
+-- Check if the recalculate function exists and needs to be updated
+-- Since the previous migration created the other_income table, let's also create
+-- the function that might be missing
+
+CREATE OR REPLACE FUNCTION recalculate_payment_period_totals(period_id uuid)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path TO 'public'
+AS $function$
+DECLARE
+  calculation_record RECORD;
+  loads_total NUMERIC := 0;
+  fuel_total NUMERIC := 0;
+  deductions_total NUMERIC := 0;
+  other_income_total NUMERIC := 0;
+  total_income NUMERIC := 0;
+  net_payment NUMERIC := 0;
+  has_negative BOOLEAN := false;
+BEGIN
+  -- Get the calculation record
+  SELECT * INTO calculation_record
+  FROM driver_period_calculations
+  WHERE id = period_id;
+  
+  IF NOT FOUND THEN
+    RETURN jsonb_build_object('success', false, 'message', 'Calculation record not found');
+  END IF;
+  
+  -- Calculate loads total
+  SELECT COALESCE(SUM(total_amount), 0) INTO loads_total
+  FROM loads l
+  WHERE l.driver_user_id = calculation_record.driver_user_id
+  AND l.payment_period_id = calculation_record.company_payment_period_id
+  AND l.status = 'completed';
+  
+  -- Calculate fuel expenses total
+  SELECT COALESCE(SUM(total_amount), 0) INTO fuel_total
+  FROM fuel_expenses fe
+  WHERE fe.driver_user_id = calculation_record.driver_user_id
+  AND fe.payment_period_id = period_id;
+  
+  -- Calculate deductions total
+  SELECT COALESCE(SUM(amount), 0) INTO deductions_total
+  FROM expense_instances ei
+  WHERE ei.user_id = calculation_record.driver_user_id
+  AND ei.payment_period_id = period_id
+  AND ei.status = 'applied';
+  
+  -- Calculate other income total (using user_id, not driver_user_id)
+  SELECT COALESCE(SUM(amount), 0) INTO other_income_total
+  FROM other_income oi
+  WHERE oi.user_id = calculation_record.driver_user_id
+  AND oi.payment_period_id = period_id
+  AND oi.status = 'approved';
+  
+  -- Calculate totals
+  total_income := loads_total + other_income_total;
+  net_payment := total_income - fuel_total - deductions_total;
+  has_negative := net_payment < 0;
+  
+  -- Update the calculation record
+  UPDATE driver_period_calculations
+  SET 
+    gross_earnings = loads_total,
+    fuel_expenses = fuel_total,
+    total_deductions = deductions_total,
+    other_income = other_income_total,
+    total_income = total_income,
+    net_payment = net_payment,
+    has_negative_balance = has_negative,
+    calculated_at = now(),
+    updated_at = now()
+  WHERE id = period_id;
+  
+  RETURN jsonb_build_object(
+    'success', true,
+    'period_id', period_id,
+    'gross_earnings', loads_total,
+    'fuel_expenses', fuel_total,
+    'total_deductions', deductions_total,
+    'other_income', other_income_total,
+    'total_income', total_income,
+    'net_payment', net_payment,
+    'has_negative_balance', has_negative
+  );
+END;
+$function$;
