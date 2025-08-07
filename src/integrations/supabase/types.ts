@@ -2749,6 +2749,10 @@ export type Database = {
         Args: { period_id: string }
         Returns: Json
       }
+      close_payment_period_with_validation: {
+        Args: { company_period_id: string }
+        Returns: Json
+      }
       company_has_owner: {
         Args: { company_id_param: string }
         Returns: boolean
@@ -2776,6 +2780,10 @@ export type Database = {
       }
       create_load_with_stops_and_documents: {
         Args: { load_data: Json; stops_data?: Json; documents_data?: Json }
+        Returns: Json
+      }
+      create_or_update_fuel_expense_with_validation: {
+        Args: { expense_data: Json; expense_id?: string }
         Returns: Json
       }
       create_or_update_load_with_validation: {
