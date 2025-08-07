@@ -2782,6 +2782,10 @@ export type Database = {
         Args: { load_data: Json; stops_data?: Json; documents_data?: Json }
         Returns: Json
       }
+      create_or_update_expense_template_with_validation: {
+        Args: { template_data: Json; template_id?: string }
+        Returns: Json
+      }
       create_or_update_fuel_expense_with_validation: {
         Args: { expense_data: Json; expense_id?: string }
         Returns: Json
@@ -2796,6 +2800,10 @@ export type Database = {
       }
       create_user_with_company_role_validation: {
         Args: { user_data: Json; company_role_data: Json }
+        Returns: Json
+      }
+      deactivate_expense_template_with_validation: {
+        Args: { template_id: string; deactivation_reason?: string }
         Returns: Json
       }
       delete_company_document_permanently: {
@@ -3034,7 +3042,7 @@ export type Database = {
       mark_multiple_drivers_as_paid_with_validation: {
         Args: {
           calculation_ids: string[]
-          payment_method_used: string
+          payment_method_used?: string
           payment_ref?: string
           notes?: string
         }

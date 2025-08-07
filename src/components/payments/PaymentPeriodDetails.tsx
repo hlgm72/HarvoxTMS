@@ -5,10 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertTriangle, Calculator, DollarSign, Lock, Play, Users, Fuel, TrendingUp, Receipt, CreditCard } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { AlertTriangle, Calculator, DollarSign, Lock, Play, Users, Fuel, TrendingUp, Receipt, CreditCard, CreditCard as PaymentIcon } from "lucide-react";
 import { formatPaymentPeriod } from '@/lib/dateFormatting';
 import { useFleetNotifications } from "@/components/notifications";
 import { useClosePaymentPeriod } from "@/hooks/useClosePaymentPeriod";
+import { useMarkMultipleDriversPaid } from "@/hooks/useMarkMultipleDriversPaid";
 import { PaymentPeriodAlerts } from "./PaymentPeriodAlerts";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
 
@@ -26,6 +30,7 @@ interface DriverCalculation {
   other_income: number;
   has_negative_balance: boolean;
   balance_alert_message?: string;
+  payment_status: string;
   calculated_at?: string;
   profiles?: {
     first_name: string;
@@ -36,7 +41,13 @@ interface DriverCalculation {
 export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetailsProps) {
   const { showSuccess, showError } = useFleetNotifications();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedDrivers, setSelectedDrivers] = useState<string[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [paymentReference, setPaymentReference] = useState('');
+  const [paymentNotes, setPaymentNotes] = useState('');
+  
   const { mutate: closePeriod, isPending: isClosingPeriod } = useClosePaymentPeriod();
+  const { mutate: markMultiplePaid, isPending: isMarkingPaid } = useMarkMultipleDriversPaid();
 
   // Función para cerrar el período
   const handleClosePeriod = () => {
@@ -49,6 +60,42 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
         onClose();
       }
     });
+  };
+
+  // Función para marcar conductores seleccionados como pagados
+  const handleMarkAsPaid = () => {
+    if (selectedDrivers.length === 0) {
+      showError('Selecciona conductores', 'Debes seleccionar al menos un conductor para marcar como pagado');
+      return;
+    }
+
+    markMultiplePaid({
+      calculationIds: selectedDrivers,
+      paymentMethod: paymentMethod || undefined,
+      paymentReference: paymentReference || undefined,
+      notes: paymentNotes || undefined
+    }, {
+      onSuccess: () => {
+        setSelectedDrivers([]);
+        setPaymentMethod('');
+        setPaymentReference('');
+        setPaymentNotes('');
+        refetchPeriod();
+        refetchCalculations();
+      }
+    });
+  };
+
+  // Función para seleccionar/deseleccionar todos los conductores no pagados
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      const unpaidDrivers = driverCalculations
+        .filter(calc => calc.payment_status !== 'paid')
+        .map(calc => calc.id);
+      setSelectedDrivers(unpaidDrivers);
+    } else {
+      setSelectedDrivers([]);
+    }
   };
 
   // Obtener detalles del período
@@ -126,6 +173,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
 
   const totalDrivers = driverCalculations.length;
   const driversWithNegativeBalance = driverCalculations.filter(d => d.has_negative_balance).length;
+  const unpaidDrivers = driverCalculations.filter(d => d.payment_status !== 'paid');
   const totalGrossEarnings = driverCalculations.reduce((sum, d) => sum + (d.gross_earnings || 0), 0);
   const totalOtherIncome = driverCalculations.reduce((sum, d) => sum + (d.other_income || 0), 0);
   const totalFuelExpenses = driverCalculations.reduce((sum, d) => sum + (d.fuel_expenses || 0), 0);
@@ -297,19 +345,109 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
         </TabsList>
 
         <TabsContent value="drivers" className="space-y-4">
+          {/* Panel de pagos múltiples */}
+          {unpaidDrivers.length > 0 && !period.is_locked && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Procesar Pagos</CardTitle>
+                <CardDescription>
+                  Selecciona conductores y marca como pagados
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="select-all"
+                    checked={selectedDrivers.length > 0 && selectedDrivers.length === unpaidDrivers.length}
+                    onCheckedChange={handleSelectAll}
+                  />
+                  <Label htmlFor="select-all">
+                    Seleccionar todos ({unpaidDrivers.length} sin pagar)
+                  </Label>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="payment-method">Método de Pago</Label>
+                    <Input
+                      id="payment-method"
+                      placeholder="ACH, Cheque, etc."
+                      value={paymentMethod}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="payment-ref">Referencia</Label>
+                    <Input
+                      id="payment-ref"
+                      placeholder="Número de referencia"
+                      value={paymentReference}
+                      onChange={(e) => setPaymentReference(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="payment-notes">Notas</Label>
+                    <Input
+                      id="payment-notes"
+                      placeholder="Notas adicionales"
+                      value={paymentNotes}
+                      onChange={(e) => setPaymentNotes(e.target.value)}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    {selectedDrivers.length} conductor{selectedDrivers.length !== 1 ? 'es' : ''} seleccionado{selectedDrivers.length !== 1 ? 's' : ''}
+                  </span>
+                  <Button 
+                    onClick={handleMarkAsPaid}
+                    disabled={selectedDrivers.length === 0 || isMarkingPaid}
+                  >
+                    <PaymentIcon className="h-4 w-4 mr-2" />
+                    {isMarkingPaid ? 'Procesando...' : 'Marcar como Pagados'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Lista de conductores */}
           {driverCalculations.map((calc) => (
-            <Card key={calc.id} className={calc.has_negative_balance ? 'border-destructive' : ''}>
+            <Card key={calc.id} className={calc.has_negative_balance ? 'border-destructive' : calc.payment_status === 'paid' ? 'border-success' : ''}>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">
-                    {calc.profiles?.first_name} {calc.profiles?.last_name}
-                  </CardTitle>
-                  {calc.has_negative_balance && (
-                    <Badge variant="destructive">
-                      <AlertTriangle className="h-3 w-3 mr-1" />
-                      Balance Negativo
-                    </Badge>
-                  )}
+                  <div className="flex items-center gap-3">
+                    {calc.payment_status !== 'paid' && !period.is_locked && (
+                      <Checkbox
+                        checked={selectedDrivers.includes(calc.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedDrivers([...selectedDrivers, calc.id]);
+                          } else {
+                            setSelectedDrivers(selectedDrivers.filter(id => id !== calc.id));
+                          }
+                        }}
+                      />
+                    )}
+                    <CardTitle className="text-base">
+                      {calc.profiles?.first_name} {calc.profiles?.last_name}
+                    </CardTitle>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {calc.payment_status === 'paid' && (
+                      <Badge variant="default">
+                        <CreditCard className="h-3 w-3 mr-1" />
+                        Pagado
+                      </Badge>
+                    )}
+                    {calc.has_negative_balance && (
+                      <Badge variant="destructive">
+                        <AlertTriangle className="h-3 w-3 mr-1" />
+                        Balance Negativo
+                      </Badge>
+                    )}
+                  </div>
                 </div>
                 {calc.balance_alert_message && (
                   <CardDescription className="text-destructive">
