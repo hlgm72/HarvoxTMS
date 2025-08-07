@@ -2770,8 +2770,16 @@ export type Database = {
         Args: { load_data: Json; stops_data?: Json; documents_data?: Json }
         Returns: Json
       }
+      create_or_update_load_with_validation: {
+        Args: { load_data: Json; stops_data?: Json; mode?: string }
+        Returns: Json
+      }
       delete_company_document_permanently: {
         Args: { document_id: string }
+        Returns: Json
+      }
+      delete_load_with_validation: {
+        Args: { load_id_param: string }
         Returns: Json
       }
       delete_test_company: {
