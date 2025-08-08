@@ -429,24 +429,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     <Edit className="h-3 w-3 mr-1" />
                     Editar
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    style={{ 
-                      backgroundColor: 'red !important',
-                      color: 'white !important',
-                      zIndex: 9999,
-                      position: 'relative'
-                    }}
-                    onClick={(e) => {
-                      console.log('🔥🔥🔥 RED BUTTON CLICKED for load:', load.load_number);
-                      console.log('🔥🔥🔥 This should definitely appear!');
-                      e.stopPropagation();
-                      alert('BOTÓN ROJO CLICKEADO: ' + load.load_number);
-                    }}
-                  >
-                    <MoreHorizontal className="h-3 w-3" />
-                  </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button 
