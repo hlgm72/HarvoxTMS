@@ -70,6 +70,22 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
     onValueChange?.(newValue / 100);
   }, [onValueChange]);
 
+  const handleFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+    // Move cursor to the end
+    const input = e.target;
+    setTimeout(() => {
+      input.setSelectionRange(input.value.length, input.value.length);
+    }, 0);
+  }, []);
+
+  const handleClick = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
+    // Move cursor to the end
+    const input = e.target as HTMLInputElement;
+    setTimeout(() => {
+      input.setSelectionRange(input.value.length, input.value.length);
+    }, 0);
+  }, []);
+
   const reset = useCallback(() => {
     setValue(0);
     onValueChange?.(0);
@@ -85,6 +101,8 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
     numericValue: value / 100,
     handleKeyDown,
     handlePaste,
+    handleFocus,
+    handleClick,
     reset,
     setValue: setExternalValue,
   };

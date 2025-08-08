@@ -911,6 +911,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                  }}
                                  onKeyDown={atmInput.handleKeyDown}
                                  onPaste={atmInput.handlePaste}
+                                 onFocus={atmInput.handleFocus}
+                                 onClick={atmInput.handleClick}
                                  placeholder="$0.00"
                                  className="text-right"
                                  autoComplete="off"
