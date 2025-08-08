@@ -429,21 +429,8 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   Editar
                 </Button>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={(e) => {
-                        console.log('🔥 DROPDOWN BUTTON CLICKED for load:', load.load_number);
-                        console.log('🔥 Load status:', load.status);
-                        console.log('🔥 Status actions:', getStatusActions(load.status));
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                      className="hover:bg-accent hover:text-accent-foreground"
-                    >
-                      <MoreHorizontal className="h-3 w-3" />
-                    </Button>
+                  <DropdownMenuTrigger className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 border border-input bg-background">
+                    <MoreHorizontal className="h-3 w-3" />
                   </DropdownMenuTrigger>
                    <DropdownMenuContent align="end" className="z-50 bg-background border shadow-lg">
                       {/* Opciones de cambio de estado */}
