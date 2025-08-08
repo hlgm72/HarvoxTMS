@@ -150,7 +150,7 @@ export function LoadsList({
     }
   };
 
-  const filteredLoads = loads.filter(load => {
+  const filteredLoads = (loads || []).filter(load => {
     const matchesStatus = !selectedStatus || selectedStatus === 'all' || load.status === selectedStatus;
     const matchesSearch = !searchQuery || 
       load.load_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
