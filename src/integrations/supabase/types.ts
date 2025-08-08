@@ -2859,7 +2859,7 @@ export type Database = {
         Returns: Json
       }
       calculate_driver_payment_period_with_validation: {
-        Args: { period_calculation_id: string }
+        Args: { calculation_id: string }
         Returns: Json
       }
       calculate_driver_period_totals: {
