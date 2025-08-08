@@ -891,30 +891,35 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                        )}
                      />
 
-                     {/* Total Amount - moved after weight */}
-                     <FormField
-                       control={form.control}
-                       name="total_amount"
-                       render={({ field }) => (
-                         <FormItem>
-                           <FormLabel>Monto Total ($) *</FormLabel>
-                           <FormControl>
-                              <Input 
-                                type="text"
-                                inputMode="decimal"
-                                pattern="[0-9]*"
-                                value={atmInput.displayValue}
-                                onKeyDown={atmInput.handleKeyDown}
-                                onPaste={atmInput.handlePaste}
-                                placeholder="$0.00"
-                                className="text-right"
-                                autoComplete="off"
-                              />
-                           </FormControl>
-                           <FormMessage />
-                         </FormItem>
-                       )}
-                     />
+                      {/* Total Amount - moved after weight */}
+                      <FormField
+                        control={form.control}
+                        name="total_amount"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Monto Total ($) *</FormLabel>
+                            <FormControl>
+                               <Input 
+                                 type="text"
+                                 inputMode="decimal"
+                                 pattern="[0-9]*"
+                                 value={atmInput.displayValue}
+                                 onChange={(e) => {
+                                   // Handle onChange to prevent React warning
+                                   // The actual value handling is done by ATM input handlers
+                                   field.onChange(e.target.value);
+                                 }}
+                                 onKeyDown={atmInput.handleKeyDown}
+                                 onPaste={atmInput.handlePaste}
+                                 placeholder="$0.00"
+                                 className="text-right"
+                                 autoComplete="off"
+                               />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                   </div>
                 </CardContent>
               </Card>
