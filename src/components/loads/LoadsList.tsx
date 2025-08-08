@@ -412,7 +412,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   Creada: {formatDateTime(load.created_at)}
                 </div>
                 
-                <div className="flex gap-2">
+                <div className="flex gap-2" style={{ position: 'relative', zIndex: 1000 }}>
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -428,6 +428,24 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   >
                     <Edit className="h-3 w-3 mr-1" />
                     Editar
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    style={{ 
+                      backgroundColor: 'red !important',
+                      color: 'white !important',
+                      zIndex: 9999,
+                      position: 'relative'
+                    }}
+                    onClick={(e) => {
+                      console.log('🔥🔥🔥 RED BUTTON CLICKED for load:', load.load_number);
+                      console.log('🔥🔥🔥 This should definitely appear!');
+                      e.stopPropagation();
+                      alert('BOTÓN ROJO CLICKEADO: ' + load.load_number);
+                    }}
+                  >
+                    <MoreHorizontal className="h-3 w-3" />
                   </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
