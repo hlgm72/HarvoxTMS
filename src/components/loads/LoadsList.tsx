@@ -421,7 +421,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                       <MoreHorizontal className="h-3 w-3" />
                     </Button>
                   </DropdownMenuTrigger>
-                   <DropdownMenuContent align="end">
+                   <DropdownMenuContent align="end" className="z-50 bg-background border shadow-lg">
                       {/* Opciones de cambio de estado */}
                       {getStatusActions(load.status).map((action) => (
                         <DropdownMenuItem
