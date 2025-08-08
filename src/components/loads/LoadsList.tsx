@@ -236,20 +236,33 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
     switch (currentStatus) {
       case 'draft':
       case 'open':
+      case 'created':
         actions.push(
-          { status: 'in_progress', label: 'Marcar En Progreso', icon: <Play className="h-3 w-3 mr-2" /> },
+          { status: 'assigned', label: 'Asignar', icon: <Play className="h-3 w-3 mr-2" /> },
+          { status: 'cancelled', label: 'Cancelar', icon: <XCircle className="h-3 w-3 mr-2" /> }
+        );
+        break;
+      case 'assigned':
+        actions.push(
+          { status: 'in_transit', label: 'En Tránsito', icon: <Play className="h-3 w-3 mr-2" /> },
           { status: 'cancelled', label: 'Cancelar', icon: <XCircle className="h-3 w-3 mr-2" /> }
         );
         break;
       case 'in_progress':
+      case 'in_transit':
         actions.push(
-          { status: 'completed', label: 'Completar', icon: <CheckCircle className="h-3 w-3 mr-2" /> },
+          { status: 'delivered', label: 'Entregada', icon: <CheckCircle className="h-3 w-3 mr-2" /> },
           { status: 'cancelled', label: 'Cancelar', icon: <XCircle className="h-3 w-3 mr-2" /> }
+        );
+        break;
+      case 'delivered':
+        actions.push(
+          { status: 'completed', label: 'Completar', icon: <CheckCircle className="h-3 w-3 mr-2" /> }
         );
         break;
       case 'completed':
         actions.push(
-          { status: 'in_progress', label: 'Marcar En Progreso', icon: <Clock className="h-3 w-3 mr-2" /> }
+          { status: 'in_transit', label: 'Reabrir (En Tránsito)', icon: <Clock className="h-3 w-3 mr-2" /> }
         );
         break;
     }
