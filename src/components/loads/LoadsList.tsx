@@ -429,8 +429,17 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   Editar
                 </Button>
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 border border-input bg-background">
-                    <MoreHorizontal className="h-3 w-3" />
+                  <DropdownMenuTrigger asChild>
+                    <button 
+                      type="button"
+                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 border border-input bg-background relative z-10"
+                      onClick={(e) => {
+                        console.log('🔥 RAW BUTTON CLICKED for load:', load.load_number);
+                        e.stopPropagation();
+                      }}
+                    >
+                      <MoreHorizontal className="h-3 w-3" />
+                    </button>
                   </DropdownMenuTrigger>
                    <DropdownMenuContent align="end" className="z-50 bg-background border shadow-lg">
                       {/* Opciones de cambio de estado */}
