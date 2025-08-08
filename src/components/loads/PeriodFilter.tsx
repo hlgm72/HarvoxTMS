@@ -467,12 +467,6 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         </PopoverContent>
       </Popover>
 
-      {/* Botón para limpiar filtro */}
-      {value.type !== 'current' && (
-        <Button variant="ghost" size="sm" onClick={clearFilter}>
-          <X className="h-4 w-4" />
-        </Button>
-      )}
     </div>
   );
 }
