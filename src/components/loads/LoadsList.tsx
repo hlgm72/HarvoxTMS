@@ -433,6 +433,10 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     <Button 
                       variant="outline" 
                       size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
                       className="hover:bg-accent hover:text-accent-foreground"
                     >
                       <MoreHorizontal className="h-3 w-3" />
