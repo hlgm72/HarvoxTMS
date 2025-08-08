@@ -412,7 +412,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   Creada: {formatDateTime(load.created_at)}
                 </div>
                 
-                <div className="flex gap-2" style={{ position: 'relative', zIndex: 1000 }}>
+                <div className="flex gap-2">
                   <Button 
                     variant="outline" 
                     size="sm"
