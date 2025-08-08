@@ -78,6 +78,7 @@ export function LoadDocumentsSection({
   onTemporaryDocumentsChange,
   isDialogMode = false,
   onOpenChange,
+  onClose,
   isOpen = false,
   wizardMode = false,
   canGenerate = false,
@@ -974,7 +975,12 @@ export function LoadDocumentsSection({
   if (isDialogMode) {
     return (
       <>
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <Dialog open={isOpen} onOpenChange={(open) => {
+          if (!open) {
+            onClose?.();
+            onOpenChange?.(false);
+          }
+        }}>
           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Documentos de la Carga</DialogTitle>
