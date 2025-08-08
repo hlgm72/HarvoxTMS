@@ -307,7 +307,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
 
   return (
     <>
-      <div className="space-y-4">
+      <div className={`space-y-4 ${(editDialog.isOpen || viewDialog.isOpen || documentsDialog.isOpen || deleteDialog.isOpen || reassignmentDialog.isOpen || duplicateDialog.isOpen) ? 'relative z-10' : ''}`}>
         {filteredLoads.map((load) => (
           <Card key={load.id} className="hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
@@ -412,7 +412,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   Creada: {formatDateTime(load.created_at)}
                 </div>
                 
-                <div className="flex gap-2 relative z-10">
+                <div className="flex gap-2 relative z-50">
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -442,7 +442,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                         <MoreHorizontal className="h-3 w-3" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="z-40 bg-background border shadow-lg">
+                    <DropdownMenuContent align="end" className="z-[60] bg-background border shadow-lg">
                       {/* Opciones de cambio de estado */}
                       {getStatusActions(load.status).map((action) => (
                         <DropdownMenuItem
