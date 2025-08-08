@@ -434,9 +434,18 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                       <Button 
                         variant="outline" 
                         size="sm"
+                        onMouseEnter={() => console.log('🔥 DROPDOWN HOVER ENTER for load:', load.load_number)}
+                        onMouseLeave={() => console.log('🔥 DROPDOWN HOVER LEAVE for load:', load.load_number)}
                         onClick={(e) => {
                           console.log('🔥 DROPDOWN BUTTON CLICKED for load:', load.load_number);
+                          console.log('🔥 Event target:', e.target);
+                          console.log('🔥 Button element:', e.currentTarget);
                           e.stopPropagation();
+                        }}
+                        style={{ 
+                          pointerEvents: 'auto',
+                          position: 'relative',
+                          zIndex: 1
                         }}
                       >
                         <MoreHorizontal className="h-3 w-3" />
