@@ -3046,10 +3046,10 @@ export type Database = {
       }
       generate_company_payment_periods_with_calculations: {
         Args: {
-          company_id_param: string
-          from_date_param: string
-          to_date_param: string
-          auto_create_driver_calculations?: boolean
+          target_company_id: string
+          start_date: string
+          end_date: string
+          run_calculations?: boolean
         }
         Returns: Json
       }
