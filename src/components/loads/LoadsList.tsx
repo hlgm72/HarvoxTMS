@@ -307,7 +307,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
 
   return (
     <>
-      <div className={`space-y-4 ${(editDialog.isOpen || viewDialog.isOpen || documentsDialog.isOpen || deleteDialog.isOpen || reassignmentDialog.isOpen || duplicateDialog.isOpen) ? 'relative z-10' : ''}`}>
+      <div className="space-y-4">
         {filteredLoads.map((load) => (
           <Card key={load.id} className="hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
@@ -412,7 +412,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   Creada: {formatDateTime(load.created_at)}
                 </div>
                 
-                <div className="flex gap-2 relative z-50">
+                <div className="flex gap-2" style={{ position: 'relative', zIndex: 1000 }}>
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -434,8 +434,16 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                       <Button 
                         variant="outline" 
                         size="sm"
+                        onMouseEnter={() => {
+                          console.log('🔥 BUTTON MOUSE ENTER for load:', load.load_number);
+                        }}
+                        onMouseLeave={() => {
+                          console.log('🔥 BUTTON MOUSE LEAVE for load:', load.load_number);
+                        }}
                         onClick={(e) => {
                           console.log('🔥 DROPDOWN BUTTON CLICKED for load:', load.load_number);
+                          console.log('🔥 Event target:', e.target);
+                          console.log('🔥 Current target:', e.currentTarget);
                           e.stopPropagation();
                         }}
                       >
