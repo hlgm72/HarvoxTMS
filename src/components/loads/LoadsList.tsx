@@ -306,148 +306,143 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
   }
 
   return (
-    <div className="space-y-4">
-      {filteredLoads.map((load) => (
-        <Card key={load.id} className="hover:shadow-md transition-shadow">
-          <CardHeader className="pb-3">
-            <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <div className="flex items-center gap-4 flex-wrap">
-                  <CardTitle className="text-lg font-semibold">
-                    {load.load_number}
-                    <span className="text-sm font-normal text-muted-foreground ml-2">
-                      (PO#: {load.po_number || ''})
-                    </span>
-                  </CardTitle>
+    <>
+      <div className="space-y-4">
+        {filteredLoads.map((load) => (
+          <Card key={load.id} className="hover:shadow-md transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <CardTitle className="text-lg font-semibold">
+                      {load.load_number}
+                      <span className="text-sm font-normal text-muted-foreground ml-2">
+                        (PO#: {load.po_number || ''})
+                      </span>
+                    </CardTitle>
+                    
+                    {/* Documentos Subidos al lado del PO# */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        Documentos:
+                      </span>
+                      <LoadDocumentsList 
+                        loadId={load.id} 
+                        maxItems={3}
+                        showActions={false}
+                        refreshTrigger={refreshTrigger}
+                      />
+                    </div>
+                  </div>
                   
-                  {/* Documentos Subidos al lado del PO# */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                      Documentos:
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {load.pickup_city} → {load.delivery_city}
                     </span>
-                    <LoadDocumentsList 
-                      loadId={load.id} 
-                      maxItems={3}
-                      showActions={false}
-                      refreshTrigger={refreshTrigger}
-                    />
+                    <span className="flex items-center gap-1">
+                      <DollarSign className="h-3 w-3" />
+                      {formatCurrency(load.total_amount)}
+                    </span>
                   </div>
                 </div>
-                
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <MapPin className="h-3 w-3" />
-                    {load.pickup_city} → {load.delivery_city}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <DollarSign className="h-3 w-3" />
-                    {formatCurrency(load.total_amount)}
-                  </span>
+                <div className="flex items-center gap-2">
+                  <Badge 
+                    variant="outline" 
+                    className={statusColors[load.status as keyof typeof statusColors]}
+                  >
+                    {statusLabels[load.status as keyof typeof statusLabels]}
+                  </Badge>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Badge 
-                  variant="outline" 
-                  className={statusColors[load.status as keyof typeof statusColors]}
-                >
-                  {statusLabels[load.status as keyof typeof statusLabels]}
-                </Badge>
-              </div>
-            </div>
-          </CardHeader>
-          
-          <CardContent className="pt-0">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div>
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Broker / Cliente
-                </label>
-                <p className="text-sm font-medium">{load.broker_name}</p>
-                {load.dispatcher_name && (
-                  <p className="text-xs text-muted-foreground">Contacto: {load.dispatcher_name}</p>
-                )}
-              </div>
-              
-              <div>
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Conductor Asignado
-                </label>
-                <p className="text-sm font-medium">
-                  {load.driver_name || (
-                    <span className="text-muted-foreground italic">Sin asignar</span>
+            </CardHeader>
+            
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Broker / Cliente
+                  </label>
+                  <p className="text-sm font-medium">{load.broker_name}</p>
+                  {load.dispatcher_name && (
+                    <p className="text-xs text-muted-foreground">Contacto: {load.dispatcher_name}</p>
                   )}
-                </p>
-                {load.internal_dispatcher_name && (
-                  <p className="text-xs text-muted-foreground">Dispatcher: {load.internal_dispatcher_name}</p>
-                )}
+                </div>
+                
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Conductor Asignado
+                  </label>
+                  <p className="text-sm font-medium">
+                    {load.driver_name || (
+                      <span className="text-muted-foreground italic">Sin asignar</span>
+                    )}
+                  </p>
+                  {load.internal_dispatcher_name && (
+                    <p className="text-xs text-muted-foreground">Dispatcher: {load.internal_dispatcher_name}</p>
+                  )}
+                </div>
+                
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Commodity
+                  </label>
+                  <p className="text-sm font-medium">{load.commodity}</p>
+                  <p className="text-xs text-muted-foreground">{load.weight_lbs?.toLocaleString()} lbs</p>
+                </div>
               </div>
               
-              <div>
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Commodity
-                </label>
-                <p className="text-sm font-medium">{load.commodity}</p>
-                <p className="text-xs text-muted-foreground">{load.weight_lbs?.toLocaleString()} lbs</p>
-              </div>
-            </div>
-            
-            {/* Información del período de pago */}
-            <div className="mb-3 pb-3 border-b border-border">
-              <div>
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
-                  Período de Pago
-                </label>
-                <PaymentPeriodInfo
-                  periodStartDate={load.period_start_date}
-                  periodEndDate={load.period_end_date}
-                  periodFrequency={load.period_frequency}
-                  periodStatus={load.period_status}
-                />
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="text-xs text-muted-foreground">
-                Creada: {formatDateTime(load.created_at)}
+              {/* Información del período de pago */}
+              <div className="mb-3 pb-3 border-b border-border">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
+                    Período de Pago
+                  </label>
+                  <PaymentPeriodInfo
+                    periodStartDate={load.period_start_date}
+                    periodEndDate={load.period_end_date}
+                    periodFrequency={load.period_frequency}
+                    periodStatus={load.period_status}
+                  />
+                </div>
               </div>
               
-               <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setViewDialog({ isOpen: true, load })}
-                >
-                  <Eye className="h-3 w-3 mr-1" />
-                  Ver
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setEditDialog({ isOpen: true, load })}
-                >
-                  <Edit className="h-3 w-3 mr-1" />
-                  Editar
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button 
-                      type="button"
-                      style={{ pointerEvents: 'auto' }}
-                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 border border-input bg-background relative z-50"
-                      onMouseDown={(e) => {
-                        console.log('🔥 MOUSE DOWN on dropdown button for load:', load.load_number);
-                      }}
-                      onClick={(e) => {
-                        console.log('🔥 RAW BUTTON CLICKED for load:', load.load_number);
-                        console.log('🔥 Event target:', e.target);
-                        console.log('🔥 Event currentTarget:', e.currentTarget);
-                        e.stopPropagation();
-                      }}
-                    >
-                      <MoreHorizontal className="h-3 w-3" />
-                    </button>
-                  </DropdownMenuTrigger>
-                   <DropdownMenuContent align="end" className="z-50 bg-background border shadow-lg">
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-muted-foreground">
+                  Creada: {formatDateTime(load.created_at)}
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setViewDialog({ isOpen: true, load })}
+                  >
+                    <Eye className="h-3 w-3 mr-1" />
+                    Ver
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setEditDialog({ isOpen: true, load })}
+                  >
+                    <Edit className="h-3 w-3 mr-1" />
+                    Editar
+                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={(e) => {
+                          console.log('🔥 DROPDOWN BUTTON CLICKED for load:', load.load_number);
+                          e.stopPropagation();
+                        }}
+                      >
+                        <MoreHorizontal className="h-3 w-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="z-50 bg-background border shadow-lg">
                       {/* Opciones de cambio de estado */}
                       {getStatusActions(load.status).map((action) => (
                         <DropdownMenuItem
@@ -482,33 +477,34 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                         <ArrowRightLeft className="h-3 w-3 mr-2" />
                         Reasignar Período
                       </DropdownMenuItem>
-                       <DropdownMenuItem 
-                         onClick={() => setDocumentsDialog({ 
-                           isOpen: true, 
-                           load 
-                         })}
-                       >
-                         <FileText className="h-3 w-3 mr-2" />
-                         Gestionar Documentos
-                       </DropdownMenuItem>
-                       <DropdownMenuItem 
-                         onClick={() => setDeleteDialog({ 
-                           isOpen: true, 
-                           load 
-                         })}
-                         disabled={['in_transit', 'delivered', 'completed'].includes(load.status)}
-                         className="text-destructive focus:text-destructive disabled:text-muted-foreground disabled:cursor-not-allowed"
-                       >
-                         <Trash2 className="h-3 w-3 mr-2" />
-                         Eliminar Carga
-                       </DropdownMenuItem>
-                   </DropdownMenuContent>
-                </DropdownMenu>
+                      <DropdownMenuItem 
+                        onClick={() => setDocumentsDialog({ 
+                          isOpen: true, 
+                          load 
+                        })}
+                      >
+                        <FileText className="h-3 w-3 mr-2" />
+                        Gestionar Documentos
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => setDeleteDialog({ 
+                          isOpen: true, 
+                          load 
+                        })}
+                        disabled={['in_transit', 'delivered', 'completed'].includes(load.status)}
+                        className="text-destructive focus:text-destructive disabled:text-muted-foreground disabled:cursor-not-allowed"
+                      >
+                        <Trash2 className="h-3 w-3 mr-2" />
+                        Eliminar Carga
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
       
       {/* Dialog de reasignación */}
       {reassignmentDialog.load && (
@@ -602,6 +598,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 }
