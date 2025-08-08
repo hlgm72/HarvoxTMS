@@ -432,9 +432,15 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   <DropdownMenuTrigger asChild>
                     <button 
                       type="button"
-                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 border border-input bg-background relative z-10"
+                      style={{ pointerEvents: 'auto' }}
+                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 border border-input bg-background relative z-50"
+                      onMouseDown={(e) => {
+                        console.log('🔥 MOUSE DOWN on dropdown button for load:', load.load_number);
+                      }}
                       onClick={(e) => {
                         console.log('🔥 RAW BUTTON CLICKED for load:', load.load_number);
+                        console.log('🔥 Event target:', e.target);
+                        console.log('🔥 Event currentTarget:', e.currentTarget);
                         e.stopPropagation();
                       }}
                     >
