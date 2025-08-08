@@ -434,25 +434,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onMouseEnter={() => {
-                          console.log('🔥 BUTTON MOUSE ENTER for load:', load.load_number);
-                        }}
-                        onMouseLeave={() => {
-                          console.log('🔥 BUTTON MOUSE LEAVE for load:', load.load_number);
-                        }}
-                        onMouseDown={(e) => {
-                          console.log('🔥 BUTTON MOUSE DOWN for load:', load.load_number);
-                        }}
-                        onMouseUp={(e) => {
-                          console.log('🔥 BUTTON MOUSE UP for load:', load.load_number);
-                        }}
-                        onClick={(e) => {
-                          console.log('🔥 DROPDOWN BUTTON CLICKED for load:', load.load_number);
-                          console.log('🔥 Event target:', e.target);
-                          console.log('🔥 Current target:', e.currentTarget);
-                          e.stopPropagation();
-                        }}
-                        style={{ pointerEvents: 'auto' }}
                       >
                         <MoreHorizontal className="h-3 w-3" />
                       </Button>
