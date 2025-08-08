@@ -412,7 +412,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   Creada: {formatDateTime(load.created_at)}
                 </div>
                 
-                <div className="flex gap-2">
+                <div className="flex gap-2" style={{ position: 'relative' }}>
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -429,24 +429,43 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     <Edit className="h-3 w-3 mr-1" />
                     Editar
                   </Button>
+                  
+                  {/* Botón de prueba para verificar si esta posición funciona */}
+                  <button
+                    style={{
+                      padding: '4px 8px',
+                      border: '1px solid red',
+                      background: 'yellow',
+                      cursor: 'pointer',
+                      position: 'relative',
+                      zIndex: 999
+                    }}
+                    onClick={(e) => {
+                      console.log('🟡 BOTÓN AMARILLO CLICKEADO for load:', load.load_number);
+                      e.stopPropagation();
+                      alert('BOTÓN AMARILLO: ' + load.load_number);
+                    }}
+                    onMouseEnter={() => console.log('🟡 AMARILLO HOVER ENTER:', load.load_number)}
+                  >
+                    TEST
+                  </button>
+                  
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                    <DropdownMenuTrigger 
+                      style={{ 
+                        position: 'relative',
+                        zIndex: 10,
+                        pointerEvents: 'auto'
+                      }}
+                      onClick={(e) => {
+                        console.log('🔥 TRIGGER CLICKED for load:', load.load_number);
+                        e.stopPropagation();
+                      }}
+                      onMouseEnter={() => console.log('🔥 TRIGGER HOVER for load:', load.load_number)}
+                    >
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onMouseEnter={() => console.log('🔥 DROPDOWN HOVER ENTER for load:', load.load_number)}
-                        onMouseLeave={() => console.log('🔥 DROPDOWN HOVER LEAVE for load:', load.load_number)}
-                        onClick={(e) => {
-                          console.log('🔥 DROPDOWN BUTTON CLICKED for load:', load.load_number);
-                          console.log('🔥 Event target:', e.target);
-                          console.log('🔥 Button element:', e.currentTarget);
-                          e.stopPropagation();
-                        }}
-                        style={{ 
-                          pointerEvents: 'auto',
-                          position: 'relative',
-                          zIndex: 1
-                        }}
                       >
                         <MoreHorizontal className="h-3 w-3" />
                       </Button>
