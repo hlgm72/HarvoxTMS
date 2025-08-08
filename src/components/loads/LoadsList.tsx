@@ -450,76 +450,20 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     TEST
                   </button>
                   
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
-                        onClick={(e) => {
-                          console.log('🔥 DROPDOWN CLICKED for load:', load.load_number);
-                          e.stopPropagation();
-                        }}
-                        onMouseEnter={() => console.log('🔥 DROPDOWN HOVER for load:', load.load_number)}
-                      >
-                        <MoreHorizontal className="h-3 w-3" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="z-40 bg-background border shadow-md">
-                      {/* Opciones de cambio de estado */}
-                      {getStatusActions(load.status).map((action) => (
-                        <DropdownMenuItem
-                          key={action.status}
-                          onClick={() => handleUpdateStatus(load.id, action.status)}
-                          disabled={action.disabled || updateStatusMutation.isPending}
-                        >
-                          {action.icon}
-                          {action.label}
-                        </DropdownMenuItem>
-                      ))}
-                      
-                      {getStatusActions(load.status).length > 0 && (
-                        <div className="border-t my-1" />
-                      )}
-
-                      <DropdownMenuItem 
-                        onClick={() => setDuplicateDialog({ 
-                          isOpen: true, 
-                          load 
-                        })}
-                      >
-                        <Copy className="h-3 w-3 mr-2" />
-                        Duplicar Carga
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => setReassignmentDialog({ 
-                          isOpen: true, 
-                          load 
-                        })}
-                      >
-                        <ArrowRightLeft className="h-3 w-3 mr-2" />
-                        Reasignar Período
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => setDocumentsDialog({ 
-                          isOpen: true, 
-                          load 
-                        })}
-                      >
-                        <FileText className="h-3 w-3 mr-2" />
-                        Gestionar Documentos
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => setDeleteDialog({ 
-                          isOpen: true, 
-                          load 
-                        })}
-                        disabled={['in_transit', 'delivered', 'completed'].includes(load.status)}
-                        className="text-destructive focus:text-destructive disabled:text-muted-foreground disabled:cursor-not-allowed"
-                      >
-                        <Trash2 className="h-3 w-3 mr-2" />
-                        Eliminar Carga
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {/* Botón de prueba en lugar del dropdown */}
+                  <button
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                    onClick={(e) => {
+                      console.log('🔥 BOTÓN TRES PUNTOS CLICKED for load:', load.load_number);
+                      e.stopPropagation();
+                      alert('Tres puntos: ' + load.load_number);
+                    }}
+                    onMouseEnter={() => console.log('🔥 BOTÓN TRES PUNTOS HOVER for load:', load.load_number)}
+                  >
+                    <MoreHorizontal className="h-3 w-3" />
+                  </button>
+                  
+                   {/* Dropdown comentado temporalmente - solo el botón de prueba funcional */}
                 </div>
               </div>
             </CardContent>
