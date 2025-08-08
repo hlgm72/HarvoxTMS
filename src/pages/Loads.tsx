@@ -107,20 +107,6 @@ export default function Loads() {
             onChange={setPeriodFilter}
             isLoading={false} // TODO: Conectar con el estado real de loading
           />
-          <div className="text-sm text-muted-foreground animate-fade-in">
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              <span>
-                Mostrando cargas de <strong>{periodDescription}</strong>
-                {periodDateRange && (
-                  <>
-                    <br />
-                    <span className="text-xs">({periodDateRange})</span>
-                  </>
-                )}
-              </span>
-            </div>
-          </div>
         </div>
 
         <LoadDocumentsProvider>

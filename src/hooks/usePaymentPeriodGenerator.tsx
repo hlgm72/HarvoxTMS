@@ -82,10 +82,10 @@ export const usePaymentPeriodGenerator = () => {
       const { data: generateResult, error: generateError } = await supabase.rpc(
         'generate_company_payment_periods_with_calculations',
         {
-          company_id_param: companyId,
-          from_date_param: fromDate,
-          to_date_param: toDate,
-          auto_create_driver_calculations: true
+          target_company_id: companyId,
+          start_date: fromDate,
+          end_date: toDate,
+          run_calculations: true
         }
       );
 
