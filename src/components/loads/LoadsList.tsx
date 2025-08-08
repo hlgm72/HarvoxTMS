@@ -452,23 +452,14 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   
                   <DropdownMenu>
                     <DropdownMenuTrigger 
-                      style={{ 
-                        position: 'relative',
-                        zIndex: 10,
-                        pointerEvents: 'auto'
-                      }}
+                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
                       onClick={(e) => {
-                        console.log('🔥 TRIGGER CLICKED for load:', load.load_number);
+                        console.log('🔥 DROPDOWN CLICKED for load:', load.load_number);
                         e.stopPropagation();
                       }}
-                      onMouseEnter={() => console.log('🔥 TRIGGER HOVER for load:', load.load_number)}
+                      onMouseEnter={() => console.log('🔥 DROPDOWN HOVER for load:', load.load_number)}
                     >
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                      >
-                        <MoreHorizontal className="h-3 w-3" />
-                      </Button>
+                      <MoreHorizontal className="h-3 w-3" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="z-40 bg-background border shadow-md">
                       {/* Opciones de cambio de estado */}
