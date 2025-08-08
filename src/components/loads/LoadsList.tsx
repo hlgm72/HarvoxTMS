@@ -412,7 +412,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   Creada: {formatDateTime(load.created_at)}
                 </div>
                 
-                <div className="flex gap-2">
+                <div className="flex gap-2 relative z-10">
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -442,7 +442,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                         <MoreHorizontal className="h-3 w-3" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="z-50 bg-background border shadow-lg">
+                    <DropdownMenuContent align="end" className="z-40 bg-background border shadow-lg">
                       {/* Opciones de cambio de estado */}
                       {getStatusActions(load.status).map((action) => (
                         <DropdownMenuItem
