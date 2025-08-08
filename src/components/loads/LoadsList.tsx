@@ -5,294 +5,197 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2, Copy, Play, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Eye, Edit, MapPin, DollarSign, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2, Copy, Play, CheckCircle, XCircle } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { formatDateTime } from '@/lib/dateFormatting';
-import { useLoads } from "@/hooks/useLoads";
 import { useDeleteLoad } from "@/hooks/useDeleteLoad";
 import { useUpdateLoadStatus } from "@/hooks/useUpdateLoadStatus";
 import { PeriodFilterValue } from "./PeriodFilter";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
-import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
-import { LoadDocumentsSection } from "./LoadDocumentsSection";
 import { EmptyLoadsState } from "./EmptyLoadsState";
-import { CreateLoadDialog } from "./CreateLoadDialog";
-import { LoadViewDialog } from "./LoadViewDialog";
 import { LoadDocumentsList } from "./LoadDocumentsList";
 import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
 
-// Componente de skeleton para cargas
-const LoadSkeleton = () => (
-  <Card className="animate-pulse">
-    <CardHeader className="pb-3">
-      <div className="flex items-start justify-between">
-        <div className="space-y-2">
-          <div className="h-5 bg-muted rounded w-32"></div>
-          <div className="flex items-center gap-4">
-            <div className="h-4 bg-muted rounded w-24"></div>
-            <div className="h-4 bg-muted rounded w-20"></div>
-            <div className="h-4 bg-muted rounded w-20"></div>
-          </div>
-        </div>
-        <div className="h-6 bg-muted rounded w-16"></div>
-      </div>
-    </CardHeader>
-    <CardContent className="pt-0">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div className="space-y-2">
-          <div className="h-3 bg-muted rounded w-16"></div>
-          <div className="h-4 bg-muted rounded w-24"></div>
-        </div>
-        <div className="space-y-2">
-          <div className="h-3 bg-muted rounded w-20"></div>
-          <div className="h-4 bg-muted rounded w-28"></div>
-        </div>
-        <div className="space-y-2">
-          <div className="h-3 bg-muted rounded w-18"></div>
-          <div className="h-4 bg-muted rounded w-20"></div>
-        </div>
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="h-3 bg-muted rounded w-32"></div>
-        <div className="flex gap-2">
-          <div className="h-8 bg-muted rounded w-16"></div>
-          <div className="h-8 bg-muted rounded w-16"></div>
-          <div className="h-8 bg-muted rounded w-8"></div>
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-);
-
-// Componente de loading mejorado
-const LoadingState = () => (
-  <div className="space-y-4">
-    <div className="flex flex-col items-center justify-center py-12 space-y-4">
-      <div className="flex items-center gap-3">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-        <div className="text-lg font-medium">Cargando cargas...</div>
-      </div>
-      <div className="text-sm text-muted-foreground animate-pulse">
-        Obteniendo datos del período seleccionado
-      </div>
-    </div>
-    
-    {/* Skeletons de cargas */}
-    <div className="space-y-4">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <LoadSkeleton key={i} />
-      ))}
-    </div>
-  </div>
-);
-
-// Mock data - later will be replaced with real data from Supabase
-const mockLoads = [
-  {
-    id: "1",
-    load_number: "LD-2024-001",
-    broker_name: "ABC Logistics",
-    dispatcher_name: "Juan Pérez",
-    driver_name: "María García",
-    status: "in_transit",
-    total_amount: 2500.00,
-    pickup_date: "2024-01-15",
-    delivery_date: "2024-01-17",
-    pickup_city: "Houston, TX",
-    delivery_city: "Dallas, TX",
-    commodity: "Electronics",
-    weight_lbs: 25000,
-    created_at: "2024-01-14T10:00:00Z"
-  },
-  {
-    id: "2", 
-    load_number: "LD-2024-002",
-    broker_name: "XYZ Freight",
-    dispatcher_name: "Ana López",
-    driver_name: null,
-    status: "created",
-    total_amount: 1800.00,
-    pickup_date: "2024-01-20",
-    delivery_date: "2024-01-22",
-    pickup_city: "San Antonio, TX",
-    delivery_city: "Austin, TX",
-    commodity: "Food Products",
-    weight_lbs: 35000,
-    created_at: "2024-01-15T14:30:00Z"
-  }
-];
-
-const statusColors = {
-  created: "bg-slate-100 text-slate-700 border-slate-300",
-  route_planned: "bg-blue-100 text-blue-700 border-blue-300",
-  assigned: "bg-yellow-100 text-yellow-700 border-yellow-300",
-  in_transit: "bg-orange-100 text-orange-700 border-orange-300",
-  delivered: "bg-green-100 text-green-700 border-green-300",
-  completed: "bg-emerald-100 text-emerald-700 border-emerald-300"
-};
-
-const statusLabels = {
-  created: "Creada",
-  route_planned: "Ruta Planificada", 
-  assigned: "Asignada",
-  in_transit: "En Tránsito",
-  delivered: "Entregada",
-  completed: "Completada"
-};
-
-interface LoadsListProps {
-  filters: {
-    status: string;
-    driver: string;
-    broker: string;
-    dateRange: { from: Date | undefined; to: Date | undefined };
-  };
-  periodFilter?: PeriodFilterValue;
-  onCreateLoad?: () => void;
+interface DialogState {
+  isOpen: boolean;
+  load?: any;
 }
 
-export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProps) {
-  const { t } = useTranslation();
+interface LoadsListProps {
+  loads?: any[];
+  isLoading?: boolean;
+  selectedStatus?: string;
+  searchQuery?: string;
+  selectedBroker?: string;
+  selectedDriver?: string;
+  selectedPeriod?: PeriodFilterValue;
+  periodFilter?: PeriodFilterValue;
+  filters?: any;
+  onCreateLoad?: () => void;
+  hideFloatingActions?: boolean;
+}
+
+export function LoadsList({ 
+  loads, 
+  isLoading, 
+  selectedStatus, 
+  searchQuery, 
+  selectedBroker, 
+  selectedDriver, 
+  selectedPeriod,
+  onCreateLoad
+}: LoadsListProps) {
+  console.log('🚛 LoadsList COMPONENT RENDERED - Working dropdown version');
+  const { t } = useTranslation("fleet");
   const { refreshTrigger } = useLoadDocuments();
   
-  // console.log('📋 LoadsList - periodFilter recibido:', periodFilter);
-  // console.log('📋 LoadsList - filters recibido:', filters);
-  
-  // Convertir el filtro de períodos al formato que espera el hook useLoads
-  const loadsFilters = periodFilter ? {
-    periodFilter: {
-      type: periodFilter.type,
-      periodId: periodFilter.periodId,
-      startDate: periodFilter.startDate,
-      endDate: periodFilter.endDate
-    }
-  } : undefined;
-  
-  // console.log('📋 LoadsList - loadsFilters enviado a useLoads:', loadsFilters);
-  
-  const { data: loads = [], isLoading, error } = useLoads(loadsFilters);
-  
-  // console.log('📋 LoadsList - Resultado useLoads:', { 
-  //   loadsCount: loads?.length || 0, 
-  //   isLoading, 
-  //   error: error?.message || 'No error' 
-  // });
+  const [deleteDialog, setDeleteDialog] = useState<DialogState>({ isOpen: false });
+
   const deleteLoadMutation = useDeleteLoad();
   const updateStatusMutation = useUpdateLoadStatus();
-  
-  const [reassignmentDialog, setReassignmentDialog] = useState<{
-    isOpen: boolean;
-    load?: any;
-  }>({ isOpen: false });
-  
-  const [editDialog, setEditDialog] = useState<{
-    isOpen: boolean;
-    load?: any;
-  }>({ isOpen: false });
 
-  const [duplicateDialog, setDuplicateDialog] = useState<{
-    isOpen: boolean;
-    load?: any;
-  }>({ isOpen: false });
+  const statusColors = {
+    draft: "bg-gray-100 text-gray-800 border-gray-200",
+    booked: "bg-blue-100 text-blue-800 border-blue-200",
+    dispatched: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    in_transit: "bg-purple-100 text-purple-800 border-purple-200",
+    delivered: "bg-green-100 text-green-800 border-green-200",
+    completed: "bg-emerald-100 text-emerald-800 border-emerald-200",
+    cancelled: "bg-red-100 text-red-800 border-red-200"
+  };
 
-  const [documentsDialog, setDocumentsDialog] = useState<{
-    isOpen: boolean;
-    load?: any;
-  }>({ isOpen: false });
+  const statusLabels = {
+    draft: "Borrador",
+    booked: "Reservada",
+    dispatched: "Enviada",
+    in_transit: "En Tránsito",
+    delivered: "Entregada",
+    completed: "Completada",
+    cancelled: "Cancelada"
+  };
 
-  const [viewDialog, setViewDialog] = useState<{
-    isOpen: boolean;
-    load?: any;
-  }>({ isOpen: false });
-
-  const [deleteDialog, setDeleteDialog] = useState<{
-    isOpen: boolean;
-    load?: any;
-  }>({ isOpen: false });
-
-  const handleDeleteLoad = async (loadId: string) => {
-    try {
-      await deleteLoadMutation.mutateAsync(loadId);
-      setDeleteDialog({ isOpen: false });
-    } catch (error) {
-      // El error ya se maneja en el hook
+  const getStatusActions = (currentStatus: string) => {
+    const actions = [];
+    
+    switch (currentStatus) {
+      case 'draft':
+        actions.push({ 
+          status: 'booked', 
+          label: 'Marcar como Reservada', 
+          icon: <CheckCircle className="h-3 w-3 mr-2" />,
+          disabled: false 
+        });
+        break;
+      case 'booked':
+        actions.push({ 
+          status: 'dispatched', 
+          label: 'Marcar como Enviada', 
+          icon: <Play className="h-3 w-3 mr-2" />,
+          disabled: false 
+        });
+        break;
+      case 'dispatched':
+        actions.push({ 
+          status: 'in_transit', 
+          label: 'Marcar En Tránsito', 
+          icon: <Play className="h-3 w-3 mr-2" />,
+          disabled: false 
+        });
+        break;
+      case 'in_transit':
+        actions.push({ 
+          status: 'delivered', 
+          label: 'Marcar como Entregada', 
+          icon: <CheckCircle className="h-3 w-3 mr-2" />,
+          disabled: false 
+        });
+        break;
+      case 'delivered':
+        actions.push({ 
+          status: 'completed', 
+          label: 'Marcar como Completada', 
+          icon: <CheckCircle className="h-3 w-3 mr-2" />,
+          disabled: false 
+        });
+        break;
     }
+
+    if (!['completed', 'cancelled'].includes(currentStatus)) {
+      actions.push({ 
+        status: 'cancelled', 
+        label: 'Cancelar Carga', 
+        icon: <XCircle className="h-3 w-3 mr-2" />,
+        disabled: false 
+      });
+    }
+
+    return actions;
   };
 
   const handleUpdateStatus = async (loadId: string, newStatus: string) => {
     try {
-      await updateStatusMutation.mutateAsync({
-        loadId,
-        newStatus
-      });
+      await updateStatusMutation.mutateAsync({ loadId, newStatus });
     } catch (error) {
-      // El error ya se maneja en el hook
+      console.error('Error updating load status:', error);
     }
   };
 
-  const getStatusActions = (currentStatus: string) => {
-    const actions: { status: string; label: string; icon: React.ReactNode; disabled?: boolean }[] = [];
-    
-    switch (currentStatus) {
-      case 'draft':
-      case 'open':
-      case 'created':
-        actions.push(
-          { status: 'assigned', label: 'Asignar', icon: <Play className="h-3 w-3 mr-2" /> },
-          { status: 'cancelled', label: 'Cancelar', icon: <XCircle className="h-3 w-3 mr-2" /> }
-        );
-        break;
-      case 'assigned':
-        actions.push(
-          { status: 'in_transit', label: 'En Tránsito', icon: <Play className="h-3 w-3 mr-2" /> },
-          { status: 'cancelled', label: 'Cancelar', icon: <XCircle className="h-3 w-3 mr-2" /> }
-        );
-        break;
-      case 'in_progress':
-      case 'in_transit':
-        actions.push(
-          { status: 'delivered', label: 'Entregada', icon: <CheckCircle className="h-3 w-3 mr-2" /> },
-          { status: 'cancelled', label: 'Cancelar', icon: <XCircle className="h-3 w-3 mr-2" /> }
-        );
-        break;
-      case 'delivered':
-        actions.push(
-          { status: 'completed', label: 'Completar', icon: <CheckCircle className="h-3 w-3 mr-2" /> }
-        );
-        break;
-      case 'completed':
-        actions.push(
-          { status: 'in_transit', label: 'Reabrir (En Tránsito)', icon: <Clock className="h-3 w-3 mr-2" /> }
-        );
-        break;
+  const handleDeleteLoad = () => {
+    if (deleteDialog.load) {
+      deleteLoadMutation.mutate(deleteDialog.load.id, {
+        onSuccess: () => {
+          setDeleteDialog({ isOpen: false });
+        }
+      });
     }
-    
-    return actions;
   };
-  
-  // Aplicar filtros a los datos reales
+
   const filteredLoads = loads.filter(load => {
-    if (filters.status !== "all" && load.status !== filters.status) return false;
-    if (filters.driver !== "all" && load.driver_name !== filters.driver) return false;
-    if (filters.broker !== "all" && load.broker_name !== filters.broker) return false;
+    const matchesStatus = !selectedStatus || selectedStatus === 'all' || load.status === selectedStatus;
+    const matchesSearch = !searchQuery || 
+      load.load_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      load.broker_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      load.driver_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      load.pickup_city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      load.delivery_city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      load.commodity?.toLowerCase().includes(searchQuery.toLowerCase());
     
-    // Filtro por rango de fechas
-    if (filters.dateRange.from && filters.dateRange.to) {
-      const loadDate = new Date(load.created_at);
-      if (loadDate < filters.dateRange.from || loadDate > filters.dateRange.to) return false;
+    const matchesBroker = !selectedBroker || load.broker_id === selectedBroker;
+    const matchesDriver = !selectedDriver || load.driver_id === selectedDriver;
+    
+    let matchesPeriod = true;
+    if (selectedPeriod && selectedPeriod.type !== 'all') {
+      if (selectedPeriod.type === 'current' || selectedPeriod.type === 'previous' || selectedPeriod.type === 'next') {
+        matchesPeriod = load.period_status === 'open' || load.period_status === 'closed';
+      }
     }
     
-    return true;
+    return matchesStatus && matchesSearch && matchesBroker && matchesDriver && matchesPeriod;
   });
 
   if (isLoading) {
-    return <LoadingState />;
-  }
-
-  if (error) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-destructive">Error cargando cargas: {error.message}</div>
+      <div className="space-y-4">
+        {[...Array(5)].map((_, i) => (
+          <Card key={i} className="animate-pulse">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div className="space-y-2">
+                  <div className="h-5 bg-muted rounded w-32"></div>
+                  <div className="h-4 bg-muted rounded w-24"></div>
+                </div>
+                <div className="h-6 bg-muted rounded w-16"></div>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="h-4 bg-muted rounded w-24"></div>
+                <div className="h-4 bg-muted rounded w-28"></div>
+                <div className="h-4 bg-muted rounded w-24"></div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     );
   }
@@ -321,7 +224,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                       </span>
                     </CardTitle>
                     
-                    {/* Documentos Subidos al lado del PO# */}
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Documentos:
@@ -392,7 +294,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                 </div>
               </div>
               
-              {/* Información del período de pago */}
               <div className="mb-3 pb-3 border-b border-border">
                 <div>
                   <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
@@ -412,11 +313,11 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   Creada: {formatDateTime(load.created_at)}
                 </div>
                 
-                <div className="flex gap-2" style={{ position: 'relative' }}>
+                <div className="flex gap-2">
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => setViewDialog({ isOpen: true, load })}
+                    onClick={() => console.log('Ver load:', load.load_number)}
                   >
                     <Eye className="h-3 w-3 mr-1" />
                     Ver
@@ -424,140 +325,103 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => setEditDialog({ isOpen: true, load })}
+                    onClick={() => console.log('Editar load:', load.load_number)}
                   >
                     <Edit className="h-3 w-3 mr-1" />
                     Editar
                   </Button>
                   
-                  {/* Botón de prueba para verificar si esta posición funciona */}
-                  <button
-                    style={{
-                      padding: '4px 8px',
-                      border: '1px solid red',
-                      background: 'yellow',
-                      cursor: 'pointer',
-                      position: 'relative',
-                      zIndex: 999
-                    }}
-                    onClick={(e) => {
-                      console.log('🟡 BOTÓN AMARILLO CLICKEADO for load:', load.load_number);
-                      e.stopPropagation();
-                      alert('BOTÓN AMARILLO: ' + load.load_number);
-                    }}
-                    onMouseEnter={() => console.log('🟡 AMARILLO HOVER ENTER:', load.load_number)}
-                  >
-                    TEST
-                  </button>
-                  
-                  {/* Botón de prueba en lugar del dropdown */}
-                  <button
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
-                    onClick={(e) => {
-                      console.log('🔥 BOTÓN TRES PUNTOS CLICKED for load:', load.load_number);
-                      e.stopPropagation();
-                      alert('Tres puntos: ' + load.load_number);
-                    }}
-                    onMouseEnter={() => console.log('🔥 BOTÓN TRES PUNTOS HOVER for load:', load.load_number)}
-                  >
-                    <MoreHorizontal className="h-3 w-3" />
-                  </button>
-                  
-                   {/* Dropdown comentado temporalmente - solo el botón de prueba funcional */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={(e) => {
+                          console.log('🔥 DROPDOWN CLICKED for load:', load.load_number);
+                          e.stopPropagation();
+                        }}
+                        onMouseEnter={() => console.log('🔥 DROPDOWN HOVER for load:', load.load_number)}
+                      >
+                        <MoreHorizontal className="h-3 w-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {getStatusActions(load.status).map((action) => (
+                        <DropdownMenuItem
+                          key={action.status}
+                          onClick={() => handleUpdateStatus(load.id, action.status)}
+                          disabled={action.disabled || updateStatusMutation.isPending}
+                        >
+                          {action.icon}
+                          {action.label}
+                        </DropdownMenuItem>
+                      ))}
+                      
+                      {getStatusActions(load.status).length > 0 && (
+                        <div className="border-t my-1" />
+                      )}
+
+                      <DropdownMenuItem 
+                        onClick={() => console.log('Duplicar:', load.load_number)}
+                      >
+                        <Copy className="h-3 w-3 mr-2" />
+                        Duplicar Carga
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => console.log('Reasignar:', load.load_number)}
+                      >
+                        <ArrowRightLeft className="h-3 w-3 mr-2" />
+                        Reasignar Período
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => console.log('Documentos:', load.load_number)}
+                      >
+                        <FileText className="h-3 w-3 mr-2" />
+                        Gestionar Documentos
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => setDeleteDialog({ 
+                          isOpen: true, 
+                          load 
+                        })}
+                        disabled={['in_transit', 'delivered', 'completed'].includes(load.status)}
+                        className="text-destructive focus:text-destructive disabled:text-muted-foreground disabled:cursor-not-allowed"
+                      >
+                        <Trash2 className="h-3 w-3 mr-2" />
+                        Eliminar Carga
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
-      
-      {/* Dialog de reasignación */}
-      {reassignmentDialog.load && (
-        <PeriodReassignmentDialog
-          isOpen={reassignmentDialog.isOpen}
-          onClose={() => setReassignmentDialog({ isOpen: false })}
-          element={{
-            id: reassignmentDialog.load.id,
-            type: 'load',
-            name: reassignmentDialog.load.load_number,
-            amount: reassignmentDialog.load.total_amount,
-            currentPeriodId: reassignmentDialog.load.payment_period_id,
-            driverUserId: reassignmentDialog.load.driver_user_id
-          }}
-        />
-      )}
-      
-      {/* Dialog de edición */}
-      {editDialog.load && (
-        <CreateLoadDialog
-          isOpen={editDialog.isOpen}
-          onClose={() => setEditDialog({ isOpen: false })}
-          mode="edit"
-          loadData={editDialog.load}
-        />
-      )}
 
-      {/* Dialog de duplicación */}
-      {duplicateDialog.load && (
-        <CreateLoadDialog
-          isOpen={duplicateDialog.isOpen}
-          onClose={() => setDuplicateDialog({ isOpen: false })}
-          mode="duplicate"
-          loadData={duplicateDialog.load}
-        />
-      )}
-
-      {/* Dialog de gestión de documentos */}
-      {documentsDialog.load && (
-        <LoadDocumentsSection
-          isDialogMode={true}
-          isOpen={documentsDialog.isOpen}
-          onClose={() => setDocumentsDialog({ isOpen: false })}
-          loadId={documentsDialog.load.id}
-          loadNumber={documentsDialog.load.load_number}
-          loadData={documentsDialog.load}
-        />
-      )}
-
-      {/* Dialog de vista de detalles */}
-      {viewDialog.load && (
-        <LoadViewDialog
-          isOpen={viewDialog.isOpen}
-          onClose={() => setViewDialog({ isOpen: false })}
-          load={viewDialog.load}
-        />
-      )}
-
-      {/* Dialog de confirmación de eliminación */}
-      <AlertDialog open={deleteDialog.isOpen} onOpenChange={(open) => !open && setDeleteDialog({ isOpen: false })}>
+      <AlertDialog open={deleteDialog.isOpen} onOpenChange={(open) => setDeleteDialog({ isOpen: open })}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Confirmar eliminación?</AlertDialogTitle>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción eliminará permanentemente la carga <strong>{deleteDialog.load?.load_number}</strong> y todos sus datos asociados (paradas y documentos). 
-              <br /><br />
-              <span className="text-destructive font-medium">Esta acción no se puede deshacer.</span>
+              Esta acción no se puede deshacer. Esto eliminará permanentemente la carga 
+              {deleteDialog.load?.load_number && ` "${deleteDialog.load.load_number}"`} 
+              y todos sus datos asociados.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteLoadMutation.isPending}>
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deleteDialog.load && handleDeleteLoad(deleteDialog.load.id)}
-              disabled={deleteLoadMutation.isPending}
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteLoad}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {deleteLoadMutation.isPending ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Eliminando...
                 </>
               ) : (
-                <>
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Eliminar Carga
-                </>
+                'Eliminar'
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
