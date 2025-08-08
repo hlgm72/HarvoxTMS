@@ -434,6 +434,9 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                       variant="outline" 
                       size="sm"
                       onClick={(e) => {
+                        console.log('🔥 DROPDOWN BUTTON CLICKED for load:', load.load_number);
+                        console.log('🔥 Load status:', load.status);
+                        console.log('🔥 Status actions:', getStatusActions(load.status));
                         e.preventDefault();
                         e.stopPropagation();
                       }}
