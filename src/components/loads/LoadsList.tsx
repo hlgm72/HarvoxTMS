@@ -433,8 +433,8 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     <Button 
                       variant="outline" 
                       size="sm"
-                      disabled={false}
-                      className="hover:bg-accent hover:text-accent-foreground"
+                      type="button"
+                      className="hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
                     >
                       <MoreHorizontal className="h-3 w-3" />
                     </Button>
