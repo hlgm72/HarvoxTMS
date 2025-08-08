@@ -2973,7 +2973,9 @@ export type Database = {
         Returns: Json
       }
       create_or_update_load_with_validation: {
-        Args: { load_data: Json; stops_data?: Json; mode?: string }
+        Args:
+          | { load_data: Json; stops_data: Json; load_id?: string }
+          | { load_data: Json; stops_data?: Json; mode?: string }
         Returns: Json
       }
       create_or_update_user_profile_with_validation: {
