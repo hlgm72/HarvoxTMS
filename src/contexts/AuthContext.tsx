@@ -202,9 +202,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [fetchUserRoles, determineCurrentRole]);
 
   const switchRole = useCallback((roleId: string) => {
+    console.log('🔄 AuthContext: switchRole called with roleId:', roleId);
+    console.log('🔄 AuthContext: Available roles:', userRoles);
+    
     const role = userRoles?.find(r => r.id === roleId);
     if (role) {
-      // console.log('🔄 Switching to role:', role.role);
+      console.log('🔄 AuthContext: Switching to role:', role.role);
       setCurrentRole(role.role);
       
       // Store role preference
@@ -215,6 +218,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Force update
       setForceUpdateCounter(prev => prev + 1);
+      
+      console.log('🔄 AuthContext: Role switched successfully to:', role.role);
+    } else {
+      console.warn('🔄 AuthContext: Role not found for roleId:', roleId);
     }
   }, [userRoles]);
 

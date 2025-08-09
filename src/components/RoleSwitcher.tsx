@@ -32,7 +32,7 @@ const roleColors = {
 };
 
 export const RoleSwitcher = () => {
-  const { currentRole, availableRoles, switchRole, hasMultipleRoles, loading, isAuthenticated } = useAuth();
+  const { currentRole, availableRoles, switchRole, hasMultipleRoles, loading, isAuthenticated, userRole } = useAuth();
   const navigate = useNavigate();
 
   // Function to get the correct dashboard route for a role
@@ -65,9 +65,9 @@ export const RoleSwitcher = () => {
     console.log('🔄 RoleSwitcher: Rol guardado PRIMERO en storage:', role.role);
     console.log('🔄 RoleSwitcher: Verificando localStorage después de guardar:', localStorage.getItem('currentRole'));
     
-    // SECOND: Llamar switchRole DESPUÉS de guardar
-    switchRole(role);
-    console.log('🔄 RoleSwitcher: switchRole llamado');
+    // SECOND: Llamar switchRole DESPUÉS de guardar - usando role.id como espera el context
+    switchRole(role.id);
+    console.log('🔄 RoleSwitcher: switchRole llamado con role.id:', role.id);
     
     // THIRD: Navegar y actualizar la URL actual
     const dashboardRoute = getDashboardRoute(role.role);
@@ -146,7 +146,7 @@ export const RoleSwitcher = () => {
             key={role.id}
             onClick={() => handleRoleChange(role)}
             className={`cursor-pointer ${
-               role.role === currentRole
+               role.id === userRole?.id
                 ? 'bg-primary/10 text-primary font-medium' 
                 : 'hover:bg-muted'
             }`}
@@ -155,7 +155,7 @@ export const RoleSwitcher = () => {
               <span>
                 {roleLabels[role.role as keyof typeof roleLabels] || role.role}
               </span>
-              {role.role === currentRole && (
+              {role.id === userRole?.id && (
                 <Badge 
                   className={`text-xs ${roleColors[role.role as keyof typeof roleColors] || 'bg-gray-500 text-white'}`}
                 >
