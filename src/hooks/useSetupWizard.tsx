@@ -29,6 +29,15 @@ export function useSetupWizard() {
       
       // Mostrar setup solo si completó onboarding pero no setup
       const shouldShow = onboardingCompleted && !completed;
+      
+      console.log('🔧 Setup wizard check:', {
+        setupKey,
+        onboardingKey,
+        onboardingCompleted: !!onboardingCompleted,
+        setupCompleted: !!completed,
+        shouldShow
+      });
+      
       setShouldShowSetup(shouldShow);
     } catch (error) {
       console.error('Error checking setup status:', error);
