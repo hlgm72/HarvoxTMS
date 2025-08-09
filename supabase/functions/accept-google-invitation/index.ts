@@ -228,16 +228,13 @@ const handler = async (req: Request): Promise<Response> => {
       console.log("Creating new role for user");
       const { error: roleError } = await supabase
         .from("user_company_roles")
-        .upsert({
+        .insert({
           user_id: userId,
           company_id: invitation.company_id,
           role: invitation.role,
           is_active: true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
-        }, { 
-          onConflict: 'user_id,company_id,role',
-          ignoreDuplicates: false 
         });
 
       if (roleError) {
