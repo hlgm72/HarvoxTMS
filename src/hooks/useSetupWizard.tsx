@@ -7,8 +7,12 @@ export function useSetupWizard() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    console.log('🔧 useSetupWizard useEffect triggered:', { user: !!user, currentRole });
+    
     if (!user || !currentRole) {
+      console.log('🔧 No user or role, setting loading false');
       setIsLoading(false);
+      setShouldShowSetup(false);
       return;
     }
 
@@ -47,6 +51,7 @@ export function useSetupWizard() {
         setupRaw: completed
       });
       
+      console.log('🔧 Setting shouldShowSetup to:', shouldShow);
       setShouldShowSetup(shouldShow);
     } catch (error) {
       console.error('Error checking setup status:', error);
