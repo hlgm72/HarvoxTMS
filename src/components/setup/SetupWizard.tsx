@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, User, Settings, Building, ArrowRight, ArrowLeft } from 'lucide-react';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { BirthDateInput } from '@/components/ui/BirthDateInput';
 
 interface SetupStep {
   id: string;
@@ -207,14 +209,27 @@ function SetupStepContent({ step }: { step: SetupStep }) {
 
 // Componente para configuración de perfil
 function ProfileSetupStep() {
+  const { profile } = useUserProfile();
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
+    firstName: profile?.first_name || '',
+    lastName: profile?.last_name || '',
+    phone: profile?.phone || '',
     dateOfBirth: '',
     emergencyContact: '',
     emergencyPhone: ''
   });
+
+  // Actualizar el formulario cuando se carga el perfil
+  useEffect(() => {
+    if (profile) {
+      setFormData(prev => ({
+        ...prev,
+        firstName: profile.first_name || '',
+        lastName: profile.last_name || '',
+        phone: profile.phone || ''
+      }));
+    }
+  }, [profile]);
 
   return (
     <div className="space-y-6">
@@ -260,12 +275,15 @@ function ProfileSetupStep() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Fecha de Nacimiento</label>
-          <input
-            type="date"
-            className="w-full px-3 py-2 border rounded-md"
+          <BirthDateInput
             value={formData.dateOfBirth}
-            onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+            onValueChange={(value, isValid, age) => {
+              setFormData({ ...formData, dateOfBirth: value });
+            }}
+            className="w-full"
+            minAge={18}
+            maxAge={70}
+            data-testid="birth-date-input"
           />
         </div>
 
