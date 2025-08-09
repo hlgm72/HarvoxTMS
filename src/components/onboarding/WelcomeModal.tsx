@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Users, Truck, FileText, BarChart3, Settings, MapPin } from 'lucide-react';
+import { AppLogo } from '@/components/ui/AppLogo';
 
 interface WelcomeModalProps {
   isOpen: boolean;
@@ -54,7 +55,9 @@ export function WelcomeModal({ isOpen, onClose, onStartTour, userRole }: Welcome
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="text-center mb-6">
-            <div className="text-6xl mb-4">🚛</div>
+            <div className="flex justify-center mb-4">
+              <AppLogo width={80} height={80} />
+            </div>
             <DialogTitle className="text-3xl font-bold mb-2">
               ¡Bienvenido a FleetNest!
             </DialogTitle>
