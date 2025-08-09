@@ -34,16 +34,25 @@ export function useOnboarding() {
   };
 
   const markOnboardingCompleted = (skipped = false) => {
-    if (!user || !currentRole) return;
+    console.log('🎯 markOnboardingCompleted called:', { user: !!user, currentRole, skipped });
+    
+    if (!user || !currentRole) {
+      console.log('❌ Cannot mark onboarding completed - missing user or role');
+      return;
+    }
 
     try {
       const onboardingKey = `onboarding_${user.id}_${currentRole}`;
-      localStorage.setItem(onboardingKey, JSON.stringify({
+      const dataToSave = {
         completed: true,
         skipped,
         completed_at: new Date().toISOString()
-      }));
+      };
+      
+      console.log('💾 Saving to localStorage:', { key: onboardingKey, data: dataToSave });
+      localStorage.setItem(onboardingKey, JSON.stringify(dataToSave));
 
+      console.log('✅ Onboarding marked as completed, setting shouldShowOnboarding to false');
       setShouldShowOnboarding(false);
     } catch (error) {
       console.error('Error marking onboarding completed:', error);
