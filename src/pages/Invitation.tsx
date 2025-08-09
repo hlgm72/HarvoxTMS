@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Building2, Shield, Users, BarChart3 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
+import { AppLogo } from '@/components/ui/AppLogo';
 
 export default function Invitation() {
   const { token } = useParams<{ token: string }>();
@@ -326,6 +327,9 @@ export default function Invitation() {
         <div className="max-w-2xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
+            <div className="flex justify-center mb-4">
+              <AppLogo width={80} height={80} />
+            </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               Welcome to FleetNest!
             </h1>
