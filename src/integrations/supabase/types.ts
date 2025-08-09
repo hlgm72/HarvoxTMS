@@ -2908,6 +2908,10 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: Json
       }
+      can_user_be_permanently_deleted: {
+        Args: { user_id_param: string }
+        Returns: Json
+      }
       cleanup_expired_backups: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -3313,6 +3317,10 @@ export type Database = {
       needs_initial_setup: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      permanently_delete_user_with_validation: {
+        Args: { user_id_param: string; confirmation_email: string }
+        Returns: Json
       }
       process_company_payment_period: {
         Args: { company_payment_period_id: string }

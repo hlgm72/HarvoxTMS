@@ -49,6 +49,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { EditDriverDialog } from "@/components/drivers/EditDriverDialog";
 import { EditUserDialog } from "@/components/users/EditUserDialog";
 import { DeleteUserDialog } from "@/components/users/DeleteUserDialog";
+import { PermanentDeleteUserDialog } from "@/components/users/PermanentDeleteUserDialog";
 import { getRoleLabel, getRoleConfig } from "@/lib/roleUtils";
 import { deleteTestUser } from "@/utils/deleteTestUser";
 import { PageToolbar } from "@/components/layout/PageToolbar";
@@ -100,6 +101,7 @@ export default function Users() {
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [permanentDeleteDialogOpen, setPermanentDeleteDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [editingRoles, setEditingRoles] = useState<string[]>([]);
   const [editingStatus, setEditingStatus] = useState<string>('');
@@ -816,17 +818,35 @@ export default function Users() {
                             
                             {/* Solo superadmin y company_owner pueden eliminar usuarios */}
                             {userRole?.role && ['superadmin', 'company_owner'].includes(userRole.role) && user.id !== user?.id && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  setSelectedUser(user);
-                                  setDeleteDialogOpen(true);
-                                }}
-                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    setSelectedUser(user);
+                                    setDeleteDialogOpen(true);
+                                  }}
+                                  className="text-orange-600 hover:text-orange-600 hover:bg-orange-100"
+                                  title="Desactivar usuario"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                                
+                                {userRole?.role === 'superadmin' && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      setSelectedUser(user);
+                                      setPermanentDeleteDialogOpen(true);
+                                    }}
+                                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    title="Eliminar permanentemente"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </>
                             )}
                           </div>
                         </TableCell>
@@ -1106,6 +1126,19 @@ export default function Users() {
         }}
         user={selectedUser}
         companyId={userRole?.company_id || ''}
+        onSuccess={() => {
+          fetchUsers(); // Recargar la lista
+        }}
+      />
+
+      {/* Dialog de eliminación permanente de usuario */}
+      <PermanentDeleteUserDialog
+        isOpen={permanentDeleteDialogOpen}
+        onClose={() => {
+          setPermanentDeleteDialogOpen(false);
+          setSelectedUser(null);
+        }}
+        user={selectedUser}
         onSuccess={() => {
           fetchUsers(); // Recargar la lista
         }}
