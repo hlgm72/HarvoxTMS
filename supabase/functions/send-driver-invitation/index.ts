@@ -27,13 +27,14 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
 
     if (!resendApiKey) {
       throw new Error("RESEND_API_KEY is not configured");
     }
 
-    // Create Supabase client with service role key
+    // Create Supabase clients
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Get the current user from the authorization header
@@ -42,10 +43,15 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Authorization header is required");
     }
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    // Validate user token using anon client with forwarded Authorization header
+    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
 
     if (userError || !user) {
+      console.error("Auth validation error:", userError);
       throw new Error("Invalid authorization token");
     }
 
