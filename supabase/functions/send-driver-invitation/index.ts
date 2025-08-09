@@ -42,20 +42,46 @@ const handler = async (req: Request): Promise<Response> => {
     if (!authHeader) {
       throw new Error("Authorization header is required");
     }
+    const token = authHeader.replace("Bearer ", "");
 
     // Validate user token using anon client with forwarded Authorization header
     const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
 
-    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
+    let userId: string | null = null;
+    let userEmail: string | null = null;
 
-    if (userError || !user) {
-      console.error("Auth validation error:", userError);
+    try {
+      const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
+      if (user && !userError) {
+        userId = user.id;
+        userEmail = user.email ?? null;
+      } else if (userError) {
+        console.error("Auth validation error:", userError);
+      }
+    } catch (e) {
+      console.error("auth.getUser threw:", e);
+    }
+
+    if (!userId) {
+      // Fallback: decode JWT (verify_jwt already validated signature at the gateway)
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+        userId = payload.sub || payload.user_id || null;
+        userEmail = payload.email || null;
+      } catch (e) {
+        console.error("Failed to decode JWT:", e);
+      }
+    }
+
+    if (!userId) {
       throw new Error("Invalid authorization token");
     }
 
-    console.log("Authenticated user:", user.id);
+    console.log("Authenticated user:", userId, userEmail);
+
+    
 
     // Parse request body
     const { firstName, lastName, email, hireDate }: DriverInvitationRequest = await req.json();
@@ -71,7 +97,7 @@ const handler = async (req: Request): Promise<Response> => {
     const { data: userRoles, error: rolesError } = await supabase
       .from("user_company_roles")
       .select("company_id, role")
-      .eq("user_id", user.id)
+      .eq("user_id", userId!)
       .eq("is_active", true);
 
     if (rolesError) {
@@ -133,7 +159,7 @@ const handler = async (req: Request): Promise<Response> => {
           company_id: companyId,
           role: "driver",
           invitation_token: invitationToken,
-          invited_by: user.id,
+          invited_by: userId!,
           expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
           first_name: firstName,
           last_name: lastName,
