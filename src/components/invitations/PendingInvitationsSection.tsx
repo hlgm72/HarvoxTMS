@@ -173,13 +173,20 @@ export function PendingInvitationsSection({
 
     setProcessingInvitation(selectedInvitation.id);
     try {
+      // Opción 1: Eliminación física (DELETE)
       const { error } = await supabase
         .from('user_invitations')
-        .update({ 
-          expires_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
+        .delete()
         .eq('id', selectedInvitation.id);
+
+      // Opción 2: Eliminación suave (comentado) - mantiene el registro para auditoría
+      // const { error } = await supabase
+      //   .from('user_invitations')
+      //   .update({ 
+      //     expires_at: new Date().toISOString(),
+      //     updated_at: new Date().toISOString()
+      //   })
+      //   .eq('id', selectedInvitation.id);
 
       if (error) throw error;
 
