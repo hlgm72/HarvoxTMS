@@ -20,7 +20,16 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
 
   // Controlar el flujo de setup wizard con useEffect
   useEffect(() => {
+    console.log('🎯 OnboardingProvider effect:', {
+      shouldShowOnboarding,
+      shouldShowSetup,
+      showTour,
+      showWelcome,
+      shouldActivateSetup: !shouldShowOnboarding && shouldShowSetup && !showTour && !showWelcome
+    });
+    
     if (!shouldShowOnboarding && shouldShowSetup && !showTour && !showWelcome) {
+      console.log('✅ Activating Setup Wizard');
       setShowSetup(true);
     }
   }, [shouldShowOnboarding, shouldShowSetup, showTour, showWelcome]);
