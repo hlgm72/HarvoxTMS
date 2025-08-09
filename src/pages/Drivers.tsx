@@ -14,6 +14,7 @@ import { EquipmentAssignmentDialog } from "@/components/equipment/EquipmentAssig
 import { DriverDetailsModal } from "@/components/drivers/DriverDetailsModal";
 import { EditDriverDialog } from "@/components/drivers/EditDriverDialog";
 import { DeleteUserDialog } from "@/components/users/DeleteUserDialog";
+import { UserActionButton } from "@/components/users/UserActionButton";
 import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -378,20 +379,18 @@ export default function Drivers() {
                         Equipos
                       </Button>
                       
-                      {/* Solo superadmin y company_owner pueden eliminar conductores */}
-                      {userRole?.role && ['superadmin', 'company_owner'].includes(userRole.role) && (
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10"
-                          onClick={() => {
-                            setSelectedDriver(driver);
-                            setShowDeleteDialog(true);
-                          }}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      )}
+                      {/* Botón de acciones de usuario para conductores */}
+                      <UserActionButton
+                        user={{
+                          id: driver.user_id,
+                          email: 'N/A', // El email no está disponible en ConsolidatedDriver
+                          first_name: driver.first_name,
+                          last_name: driver.last_name
+                        }}
+                        onUserUpdated={refetch}
+                        size="sm"
+                        variant="outline"
+                      />
                     </div>
                 </CardContent>
               </Card>

@@ -50,6 +50,7 @@ import { EditDriverDialog } from "@/components/drivers/EditDriverDialog";
 import { EditUserDialog } from "@/components/users/EditUserDialog";
 import { DeleteUserDialog } from "@/components/users/DeleteUserDialog";
 import { PermanentDeleteUserDialog } from "@/components/users/PermanentDeleteUserDialog";
+import { UserActionButton } from "@/components/users/UserActionButton";
 import { getRoleLabel, getRoleConfig } from "@/lib/roleUtils";
 import { deleteTestUser } from "@/utils/deleteTestUser";
 import { PageToolbar } from "@/components/layout/PageToolbar";
@@ -591,17 +592,6 @@ export default function Users() {
               <UserPlus className="h-4 w-4" />
               Invitar Usuario
             </Button>
-            {(userRole?.role === 'superadmin' || userRole?.role === 'company_owner') && (
-              <Button 
-                variant="destructive" 
-                onClick={handleDeleteTestUser}
-                disabled={deletingTestUser}
-                className="gap-2"
-              >
-                <Trash2 className="h-4 w-4" />
-                {deletingTestUser ? 'Eliminando...' : 'Eliminar Usuario Prueba'}
-              </Button>
-            )}
           </div>
         }
         viewToggle={
@@ -816,38 +806,13 @@ export default function Users() {
                               <Edit className="h-4 w-4" />
                             </Button>
                             
-                            {/* Solo superadmin y company_owner pueden eliminar usuarios */}
-                            {userRole?.role && ['superadmin', 'company_owner'].includes(userRole.role) && user.id !== user?.id && (
-                              <>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    setSelectedUser(user);
-                                    setDeleteDialogOpen(true);
-                                  }}
-                                  className="text-orange-600 hover:text-orange-600 hover:bg-orange-100"
-                                  title="Desactivar usuario"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                                
-                                {(userRole?.role === 'superadmin' || userRole?.role === 'company_owner') && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => {
-                                      setSelectedUser(user);
-                                      setPermanentDeleteDialogOpen(true);
-                                    }}
-                                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                                    title="Eliminar permanentemente"
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </Button>
-                                )}
-                              </>
-                            )}
+                            {/* Botón de acciones de usuario */}
+                            <UserActionButton
+                              user={user}
+                              onUserUpdated={fetchUsers}
+                              size="sm"
+                              variant="ghost"
+                            />
                           </div>
                         </TableCell>
                       </TableRow>
@@ -916,7 +881,7 @@ export default function Users() {
                               <span className="text-sm">{new Date(user.created_at).toLocaleDateString()}</span>
                             </div>
                           </div>
-                          <div className="flex justify-end gap-2 mt-4">
+                           <div className="flex justify-end gap-2 mt-4">
                             <Button
                               variant="outline"
                               size="sm"
@@ -956,7 +921,15 @@ export default function Users() {
                               <Edit className="h-4 w-4 mr-2" />
                               Editar
                             </Button>
-                          </div>
+                            
+                            {/* Botón de acciones de usuario para vista de tarjetas */}
+                            <UserActionButton
+                              user={user}
+                              onUserUpdated={fetchUsers}
+                              size="sm"
+                              variant="outline"
+                            />
+                           </div>
                       </CardContent>
                     </Card>
                   ))}
