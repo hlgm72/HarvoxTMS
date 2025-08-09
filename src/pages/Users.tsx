@@ -50,6 +50,7 @@ import { EditDriverDialog } from "@/components/drivers/EditDriverDialog";
 import { EditUserDialog } from "@/components/users/EditUserDialog";
 import { DeleteUserDialog } from "@/components/users/DeleteUserDialog";
 import { getRoleLabel, getRoleConfig } from "@/lib/roleUtils";
+import { deleteTestUser } from "@/utils/deleteTestUser";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { UserFiltersSheet } from "@/components/users/UserFiltersSheet";
 import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
@@ -125,6 +126,7 @@ export default function Users() {
 
   // Estado para la vista actual (tabla o tarjetas)
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
+  const [deletingTestUser, setDeletingTestUser] = useState(false);
 
   // Cargar usuarios al montar el componente
   useEffect(() => {
@@ -293,6 +295,36 @@ export default function Users() {
     }
 
     setFilteredUsers(filtered);
+  };
+
+  const handleDeleteTestUser = async () => {
+    if (!userRole?.role || userRole.role !== 'superadmin') {
+      showError('Solo los superadministradores pueden eliminar usuarios de prueba');
+      return;
+    }
+
+    setDeletingTestUser(true);
+    try {
+      const result = await deleteTestUser();
+      
+      if (result.success) {
+        showSuccess(
+          'Usuario de Prueba Eliminado',
+          result.alreadyDeleted 
+            ? 'El usuario de prueba ya había sido eliminado anteriormente'
+            : 'El usuario de prueba ha sido eliminado permanentemente del sistema'
+        );
+        // Recargar la lista de usuarios
+        fetchUsers();
+      } else {
+        showError(result.error || 'Error al eliminar el usuario de prueba');
+      }
+    } catch (error: any) {
+      console.error('Error deleting test user:', error);
+      showError(error.message || 'Error inesperado al eliminar el usuario de prueba');
+    } finally {
+      setDeletingTestUser(false);
+    }
   };
 
   const calculateStats = async (usersList: User[], companyId?: string) => {
@@ -557,6 +589,17 @@ export default function Users() {
               <UserPlus className="h-4 w-4" />
               Invitar Usuario
             </Button>
+            {userRole?.role === 'superadmin' && (
+              <Button 
+                variant="destructive" 
+                onClick={handleDeleteTestUser}
+                disabled={deletingTestUser}
+                className="gap-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                {deletingTestUser ? 'Eliminando...' : 'Eliminar Usuario Prueba'}
+              </Button>
+            )}
           </div>
         }
         viewToggle={
