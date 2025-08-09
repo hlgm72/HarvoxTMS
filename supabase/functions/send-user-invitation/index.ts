@@ -89,7 +89,28 @@ const handler = async (req: Request): Promise<Response> => {
     // Generate invitation token
     const invitationToken = crypto.randomUUID();
 
-    // Create invitation record (using service role, so no RLS restrictions)
+    // First, deactivate any existing pending invitations for this email and company
+    console.log("Deactivating existing invitations for:", email, "in company:", companyId);
+    
+    const { error: deactivateError } = await supabase
+      .from('user_invitations')
+      .update({ 
+        expires_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('company_id', companyId)
+      .eq('email', email.toLowerCase())
+      .is('accepted_at', null)
+      .gt('expires_at', new Date().toISOString());
+
+    if (deactivateError) {
+      console.error("Error deactivating existing invitations:", deactivateError);
+      // Don't fail the operation, just log the error
+    } else {
+      console.log("Existing invitations deactivated successfully");
+    }
+
+    // Create new invitation record (using service role, so no RLS restrictions)
     const { data: invitation, error: invitationError } = await supabase
       .from('user_invitations')
       .insert({
@@ -97,6 +118,8 @@ const handler = async (req: Request): Promise<Response> => {
         email: email.toLowerCase(),
         invitation_token: invitationToken,
         role: role,
+        first_name: first_name || null,
+        last_name: last_name || null,
         invited_by: user.id
       })
       .select('id')
