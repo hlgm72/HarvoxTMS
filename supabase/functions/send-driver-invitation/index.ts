@@ -286,6 +286,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (error: any) {
     console.error("Error in send-driver-invitation:", error);
+    console.error("Error stack:", error.stack);
     
     return new Response(
       JSON.stringify({ 

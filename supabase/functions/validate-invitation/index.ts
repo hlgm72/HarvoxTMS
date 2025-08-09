@@ -25,11 +25,21 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { token }: ValidateInvitationRequest = await req.json();
     
-    if (!token) {
-      throw new Error("Invitation token is required");
-    }
-
     console.log("Validating invitation token:", token);
+    
+    if (!token) {
+      console.error("No invitation token provided");
+      return new Response(
+        JSON.stringify({ success: false, error: "Invitation token is required" }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
+          },
+        }
+      );
+    }
 
     // Query the user_invitations table directly instead of using RPC
     const { data: invitationData, error: queryError } = await supabase
@@ -113,6 +123,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (error: any) {
     console.error("Error in validate-invitation:", error);
+    console.error("Error stack:", error.stack);
     return new Response(
       JSON.stringify({ 
         success: false, 
