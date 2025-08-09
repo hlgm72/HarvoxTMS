@@ -39,7 +39,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
     return <>{children}</>;
   }
 
-  // No mostrar onboarding/setup si no debe mostrarse
+  // No mostrar onboarding/setup si AMBOS están completados
   if (!shouldShowOnboarding && !shouldShowSetup) {
     return <>{children}</>;
   }
