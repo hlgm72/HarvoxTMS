@@ -90,18 +90,31 @@ export default function Invitation() {
         return;
       }
 
+      console.log('🔍 About to call validate-invitation function...');
+      
       // Call the validate-invitation edge function
       const { data: result, error: functionError } = await supabase.functions.invoke('validate-invitation', {
         body: { token }
       });
 
+      console.log('📡 Function response:', { result, functionError });
+
       if (functionError) {
+        console.error('❌ Function error:', functionError);
         throw new Error(functionError.message || 'Error validating invitation');
       }
 
+      if (!result) {
+        console.error('❌ No result from function');
+        throw new Error('No response from validation function');
+      }
+
       if (!result.success) {
+        console.error('❌ Function returned error:', result.error);
         throw new Error(result.error || 'Invalid invitation');
       }
+
+      console.log('✅ Invitation validation successful:', result.invitation);
 
       // Set the real invitation data
       const invitationData = {
