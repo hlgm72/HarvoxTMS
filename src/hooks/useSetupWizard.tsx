@@ -32,7 +32,7 @@ export function useSetupWizard() {
       const onboardingCompleted = localStorage.getItem(onboardingKey);
       
       // Mostrar setup solo si completó onboarding pero no setup
-      const shouldShow = onboardingCompleted && !completed;
+      const shouldShow = Boolean(onboardingCompleted) && !Boolean(completed);
       
       console.log('🔧 Setup wizard check:', {
         setupKey,
