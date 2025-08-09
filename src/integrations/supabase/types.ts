@@ -2663,12 +2663,15 @@ export type Database = {
           created_at: string
           email: string
           expires_at: string
+          first_name: string | null
           id: string
           invitation_token: string
           invited_by: string | null
           is_active: boolean
+          last_name: string | null
           metadata: Json | null
           role: string
+          status: string
           updated_at: string
         }
         Insert: {
@@ -2678,12 +2681,15 @@ export type Database = {
           created_at?: string
           email: string
           expires_at?: string
+          first_name?: string | null
           id?: string
           invitation_token: string
           invited_by?: string | null
           is_active?: boolean
+          last_name?: string | null
           metadata?: Json | null
           role?: string
+          status?: string
           updated_at?: string
         }
         Update: {
@@ -2693,12 +2699,15 @@ export type Database = {
           created_at?: string
           email?: string
           expires_at?: string
+          first_name?: string | null
           id?: string
           invitation_token?: string
           invited_by?: string | null
           is_active?: boolean
+          last_name?: string | null
           metadata?: Json | null
           role?: string
+          status?: string
           updated_at?: string
         }
         Relationships: [
