@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
 import { useDriverEquipment } from "@/hooks/useDriverEquipment";
 import { getExpiryInfo } from '@/lib/dateFormatting';
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { InviteDriverDialog } from "@/components/drivers/InviteDriverDialog";
 import { EquipmentAssignmentDialog } from "@/components/equipment/EquipmentAssignmentDialog";
 import { DriverDetailsModal } from "@/components/drivers/DriverDetailsModal";
@@ -126,6 +126,12 @@ export default function Drivers() {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState<string>('');
   const [selectedDriver, setSelectedDriver] = useState<any>(null);
+  const [invitationsKey, setInvitationsKey] = useState(0); // Para forzar re-render
+
+  // Callback para actualizar las invitaciones pendientes
+  const handleInvitationsUpdate = useCallback(() => {
+    setInvitationsKey(prev => prev + 1);
+  }, []);
 
   // Force cache invalidation and refetch on mount to get latest data
   useState(() => {
@@ -174,9 +180,11 @@ export default function Drivers() {
         <div className="p-2 md:p-4 space-y-6">
           {/* Sección de Invitaciones Pendientes para Conductores */}
           <PendingInvitationsSection 
+            key={`empty-invitations-${invitationsKey}`}
             roleFilter="driver"
             title="Conductores Pendientes"
             description="Conductores que han sido invitados pero aún no han aceptado su invitación"
+            onInvitationsUpdated={handleInvitationsUpdate}
           />
           
           <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -211,9 +219,11 @@ export default function Drivers() {
         <div className="p-2 md:p-4 space-y-6">
         {/* Sección de Invitaciones Pendientes para Conductores */}
         <PendingInvitationsSection 
+          key={`main-invitations-${invitationsKey}`}
           roleFilter="driver"
           title="Conductores Pendientes"
           description="Conductores que han sido invitados pero aún no han aceptado su invitación"
+          onInvitationsUpdated={handleInvitationsUpdate}
         />
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -379,6 +389,7 @@ export default function Drivers() {
         onClose={() => setShowInviteDialog(false)}
         onSuccess={() => {
           refetch();
+          handleInvitationsUpdate(); // Actualizar también las invitaciones pendientes
         }}
       />
 
