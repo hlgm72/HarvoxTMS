@@ -1,4 +1,4 @@
-import { Truck, UserPlus, Settings, Edit } from "lucide-react";
+import { Truck, UserPlus, Settings, Edit, Trash2 } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,9 @@ import { InviteDriverDialog } from "@/components/drivers/InviteDriverDialog";
 import { EquipmentAssignmentDialog } from "@/components/equipment/EquipmentAssignmentDialog";
 import { DriverDetailsModal } from "@/components/drivers/DriverDetailsModal";
 import { EditDriverDialog } from "@/components/drivers/EditDriverDialog";
+import { DeleteUserDialog } from "@/components/users/DeleteUserDialog";
 import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
+import { useAuth } from "@/hooks/useAuth";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -119,11 +121,13 @@ const DriverSkeleton = () => (
 );
 
 export default function Drivers() {
+  const { userRole } = useAuth();
   const { drivers, loading, refetch } = useCompanyDrivers();
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showAssignmentDialog, setShowAssignmentDialog] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState<string>('');
   const [selectedDriver, setSelectedDriver] = useState<any>(null);
   const [invitationsKey, setInvitationsKey] = useState(0); // Para forzar re-render
@@ -336,44 +340,59 @@ export default function Drivers() {
                        </div>
                      </div>
                   </div>
-                  
-                   <div className="flex gap-2 mt-4">
-                     <Button 
-                       variant="outline" 
-                       size="sm" 
-                       className="flex-1"
-                       onClick={() => {
-                         setSelectedDriver(driver);
-                         setShowDetailsModal(true);
-                       }}
-                     >
-                       Ver Detalles
-                     </Button>
-                     <Button 
-                       variant="outline" 
-                       size="sm" 
-                       className="flex-1"
-                       onClick={() => {
-                         setSelectedDriver(driver);
-                         setShowEditDialog(true);
-                       }}
-                     >
-                       <Edit className="h-3 w-3" />
-                       Editar
-                     </Button>
-                     <Button 
-                       variant="outline" 
-                       size="sm" 
-                       className="flex-1 gap-1"
-                       onClick={() => {
-                         setSelectedDriverId(driver.user_id);
-                         setShowAssignmentDialog(true);
-                       }}
-                     >
-                       <Settings className="h-3 w-3" />
-                       Equipos
-                     </Button>
-                   </div>
+                   
+                    <div className="flex gap-2 mt-4">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => {
+                          setSelectedDriver(driver);
+                          setShowDetailsModal(true);
+                        }}
+                      >
+                        Ver Detalles
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => {
+                          setSelectedDriver(driver);
+                          setShowEditDialog(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                        Editar
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1 gap-1"
+                        onClick={() => {
+                          setSelectedDriverId(driver.user_id);
+                          setShowAssignmentDialog(true);
+                        }}
+                      >
+                        <Settings className="h-3 w-3" />
+                        Equipos
+                      </Button>
+                      
+                      {/* Solo superadmin y company_owner pueden eliminar conductores */}
+                      {userRole?.role && ['superadmin', 'company_owner'].includes(userRole.role) && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => {
+                            setSelectedDriver(driver);
+                            setShowDeleteDialog(true);
+                          }}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
                 </CardContent>
               </Card>
               );
@@ -426,6 +445,28 @@ export default function Drivers() {
           driver={selectedDriver}
           onSuccess={() => {
             refetch();
+          }}
+        />
+      )}
+
+      {/* Dialog de eliminación/desactivación de conductor */}
+      {selectedDriver && (
+        <DeleteUserDialog
+          isOpen={showDeleteDialog}
+          onClose={() => {
+            setShowDeleteDialog(false);
+            setSelectedDriver(null);
+          }}
+          user={{
+            id: selectedDriver.user_id,
+            first_name: selectedDriver.first_name,
+            last_name: selectedDriver.last_name,
+            email: selectedDriver.email || '',
+            role: 'driver'
+          }}
+          companyId={userRole?.company_id || ''}
+          onSuccess={() => {
+            refetch(); // Recargar la lista
           }}
         />
       )}

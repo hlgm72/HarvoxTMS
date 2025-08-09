@@ -48,6 +48,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { EditDriverDialog } from "@/components/drivers/EditDriverDialog";
 import { EditUserDialog } from "@/components/users/EditUserDialog";
+import { DeleteUserDialog } from "@/components/users/DeleteUserDialog";
 import { getRoleLabel, getRoleConfig } from "@/lib/roleUtils";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { UserFiltersSheet } from "@/components/users/UserFiltersSheet";
@@ -97,6 +98,7 @@ export default function Users() {
   });
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [editingRoles, setEditingRoles] = useState<string[]>([]);
   const [editingStatus, setEditingStatus] = useState<string>('');
@@ -775,9 +777,10 @@ export default function Users() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => {
-                                  // TODO: Implementar eliminación de usuario
-                                  showInfo('Función de eliminar usuario próximamente');
+                                  setSelectedUser(user);
+                                  setDeleteDialogOpen(true);
                                 }}
+                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -1046,6 +1049,20 @@ export default function Users() {
           fetchUsers(); // Recargar la lista
         }}
         driver={{ user_id: selectedDriverId, first_name: '', last_name: '' }}
+        onSuccess={() => {
+          fetchUsers(); // Recargar la lista
+        }}
+      />
+
+      {/* Dialog de eliminación/desactivación de usuario */}
+      <DeleteUserDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setSelectedUser(null);
+        }}
+        user={selectedUser}
+        companyId={userRole?.company_id || ''}
         onSuccess={() => {
           fetchUsers(); // Recargar la lista
         }}
