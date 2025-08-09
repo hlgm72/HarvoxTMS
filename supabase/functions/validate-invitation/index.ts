@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -28,37 +29,50 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Invitation token is required");
     }
 
-    // Validate invitation token using the database function
-    const { data: invitationData, error: tokenError } = await supabase.rpc(
-      "validate_invitation_token",
-      { token_param: token }
-    );
+    console.log("Validating invitation token:", token);
 
-    if (tokenError) {
-      throw new Error(`Error validating invitation: ${tokenError.message}`);
+    // Query the user_invitations table directly instead of using RPC
+    const { data: invitationData, error: queryError } = await supabase
+      .from('user_invitations')
+      .select(`
+        *,
+        companies!inner(name)
+      `)
+      .eq('invitation_token', token)
+      .eq('accepted_at', null)
+      .gte('expires_at', new Date().toISOString())
+      .single();
+
+    if (queryError) {
+      console.error("Database query error:", queryError);
+      throw new Error(`Error validating invitation: ${queryError.message}`);
     }
 
-    if (!invitationData || invitationData.length === 0) {
+    if (!invitationData) {
       throw new Error("Invalid or expired invitation token");
     }
 
-    const invitation = invitationData[0];
+    // Check if invitation is still valid (not expired and not used)
+    const now = new Date();
+    const expiresAt = new Date(invitationData.expires_at);
     
-    if (!invitation.is_valid) {
+    if (now > expiresAt || invitationData.accepted_at) {
       throw new Error("Invitation has expired or has already been used");
     }
+
+    console.log("Invitation validation successful for:", invitationData.email);
 
     return new Response(
       JSON.stringify({
         success: true,
         invitation: {
-          email: invitation.email,
-          role: invitation.role,
-          companyName: invitation.company_name,
-          firstName: invitation.first_name,
-          lastName: invitation.last_name,
-          expiresAt: invitation.expires_at,
-          isValid: invitation.is_valid
+          email: invitationData.email,
+          role: invitationData.role,
+          companyName: invitationData.companies.name,
+          firstName: invitationData.first_name,
+          lastName: invitationData.last_name,
+          expiresAt: invitationData.expires_at,
+          isValid: true
         }
       }),
       {
