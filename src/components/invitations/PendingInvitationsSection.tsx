@@ -57,12 +57,15 @@ interface PendingInvitationsSectionProps {
   title?: string;
   /** Descripción personalizada */
   description?: string;
+  /** Callback que se ejecuta cuando se actualiza la lista de invitaciones */
+  onInvitationsUpdated?: () => void;
 }
 
 export function PendingInvitationsSection({ 
   roleFilter, 
   title = 'Invitaciones Pendientes',
-  description = 'Usuarios que han sido invitados pero aún no han aceptado su invitación'
+  description = 'Usuarios que han sido invitados pero aún no han aceptado su invitación',
+  onInvitationsUpdated
 }: PendingInvitationsSectionProps) {
   const { userRole } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
@@ -155,6 +158,8 @@ export function PendingInvitationsSection({
 
       // Refrescar la lista
       fetchPendingInvitations();
+      // Notificar al componente padre
+      onInvitationsUpdated?.();
     } catch (error: any) {
       console.error('Error resending invitation:', error);
       showError(error.message || 'Error al reenviar la invitación');
@@ -185,6 +190,8 @@ export function PendingInvitationsSection({
 
       // Refrescar la lista
       fetchPendingInvitations();
+      // Notificar al componente padre
+      onInvitationsUpdated?.();
       setCancelDialogOpen(false);
       setSelectedInvitation(null);
     } catch (error: any) {
