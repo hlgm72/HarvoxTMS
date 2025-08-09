@@ -300,8 +300,8 @@ export default function Users() {
   };
 
   const handleDeleteTestUser = async () => {
-    if (!userRole?.role || userRole.role !== 'superadmin') {
-      showError('Solo los superadministradores pueden eliminar usuarios de prueba');
+    if (!userRole?.role || !['superadmin', 'company_owner'].includes(userRole.role)) {
+      showError('Solo los superadministradores y propietarios de empresa pueden eliminar usuarios de prueba');
       return;
     }
 
@@ -591,7 +591,7 @@ export default function Users() {
               <UserPlus className="h-4 w-4" />
               Invitar Usuario
             </Button>
-            {userRole?.role === 'superadmin' && (
+            {(userRole?.role === 'superadmin' || userRole?.role === 'company_owner') && (
               <Button 
                 variant="destructive" 
                 onClick={handleDeleteTestUser}
@@ -832,7 +832,7 @@ export default function Users() {
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                                 
-                                {userRole?.role === 'superadmin' && (
+                                {(userRole?.role === 'superadmin' || userRole?.role === 'company_owner') && (
                                   <Button
                                     variant="ghost"
                                     size="sm"
