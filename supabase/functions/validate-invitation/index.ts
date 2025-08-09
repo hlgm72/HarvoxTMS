@@ -41,16 +41,25 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Use the existing database function that has proper security
-    console.log("Calling validate_invitation_token function for token:", token);
+    // Query the user_invitations table directly with service role
+    console.log("Querying user_invitations table for token:", token);
     
     const { data: invitationData, error: queryError } = await supabase
-      .rpc('validate_invitation_token', { token_param: token });
+      .from('user_invitations')
+      .select(`
+        *,
+        companies!inner(name)
+      `)
+      .eq('invitation_token', token)
+      .is('accepted_at', null)
+      .gte('expires_at', new Date().toISOString())
+      .maybeSingle();
 
-    console.log("validate_invitation_token result:", { invitationData, queryError });
+    console.log("Query result:", { invitationData, queryError });
+    console.log("Current time:", new Date().toISOString());
 
     if (queryError) {
-      console.error("Database function error:", queryError);
+      console.error("Database query error:", queryError);
       return new Response(
         JSON.stringify({ success: false, error: "Invalid or expired invitation token" }),
         {
@@ -63,7 +72,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    if (!invitationData || invitationData.length === 0) {
+    if (!invitationData) {
       console.log("No invitation found for token");
       return new Response(
         JSON.stringify({ success: false, error: "Invalid or expired invitation token" }),
@@ -77,39 +86,21 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const invitation = invitationData[0];
-    console.log("Found invitation:", invitation);
+    console.log("Found invitation:", invitationData);
 
-    if (!invitation.is_valid) {
-      console.log("Invitation is not valid:", {
-        expires_at: invitation.expires_at,
-        current_time: new Date().toISOString()
-      });
-      return new Response(
-        JSON.stringify({ success: false, error: "Invitation has expired or has already been used" }),
-        {
-          status: 200,
-          headers: {
-            "Content-Type": "application/json",
-            ...corsHeaders,
-          },
-        }
-      );
-    }
-
-    console.log("Invitation validation successful for:", invitation.email);
+    console.log("Invitation validation successful for:", invitationData.email);
 
     return new Response(
       JSON.stringify({
         success: true,
         invitation: {
-          email: invitation.email,
-          role: invitation.role,
-          companyName: invitation.company_name,
-          firstName: invitation.first_name,
-          lastName: invitation.last_name,
-          expiresAt: invitation.expires_at,
-          isValid: invitation.is_valid
+          email: invitationData.email,
+          role: invitationData.role,
+          companyName: invitationData.companies.name,
+          firstName: invitationData.first_name,
+          lastName: invitationData.last_name,
+          expiresAt: invitationData.expires_at,
+          isValid: true
         }
       }),
       {
