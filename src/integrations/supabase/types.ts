@@ -3436,6 +3436,20 @@ export type Database = {
         Args: { user_id_param: string; company_id_param: string }
         Returns: boolean
       }
+      validate_invitation_token: {
+        Args: { token_param: string }
+        Returns: {
+          invitation_id: string
+          email: string
+          role: Database["public"]["Enums"]["user_role"]
+          company_id: string
+          company_name: string
+          first_name: string
+          last_name: string
+          expires_at: string
+          is_valid: boolean
+        }[]
+      }
       validate_reset_token: {
         Args: { token_param: string }
         Returns: {

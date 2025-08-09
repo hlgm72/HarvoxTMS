@@ -85,23 +85,42 @@ export default function Invitation() {
 
   const validateInvitation = async () => {
     try {
-      // For now, just validate that the token exists and set basic invitation data
       if (!token) {
         setError('No invitation token provided');
         return;
       }
 
-      // Create a mock invitation for now
-      const mockInvitation = {
-        email: 'user@example.com',
-        role: 'driver',
-        is_valid: true,
-        companyName: 'Fleet Company',
-        first_name: '',
-        last_name: ''
+      // Call the validate-invitation edge function
+      const { data: result, error: functionError } = await supabase.functions.invoke('validate-invitation', {
+        body: { token }
+      });
+
+      if (functionError) {
+        throw new Error(functionError.message || 'Error validating invitation');
+      }
+
+      if (!result.success) {
+        throw new Error(result.error || 'Invalid invitation');
+      }
+
+      // Set the real invitation data
+      const invitationData = {
+        ...result.invitation,
+        first_name: result.invitation.firstName,
+        last_name: result.invitation.lastName,
+        is_valid: result.invitation.isValid
       };
 
-      setInvitation(mockInvitation);
+      setInvitation(invitationData);
+      
+      // Pre-fill form with invitation data if available
+      if (result.invitation.firstName || result.invitation.lastName) {
+        setFormData(prev => ({
+          ...prev,
+          firstName: result.invitation.firstName || '',
+          lastName: result.invitation.lastName || ''
+        }));
+      }
       
     } catch (err: any) {
       setError(err.message || 'Error validating invitation');
