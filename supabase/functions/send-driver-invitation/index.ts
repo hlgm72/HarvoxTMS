@@ -121,14 +121,15 @@ const handler = async (req: Request): Promise<Response> => {
     // Use the first company (could be enhanced to specify which company)
     const companyId = userRoles[0].company_id;
 
-    // Check if user with this email already exists
+    // Check if user with this email already has a valid (non-expired) invitation
     const { data: existingInvitation } = await supabase
       .from("user_invitations")
       .select("id")
       .eq("email", email)
       .eq("company_id", companyId)
       .eq("role", "driver")
-      .is("accepted_at", null);
+      .is("accepted_at", null)
+      .gt("expires_at", new Date().toISOString()); // Only check for non-expired invitations
 
     if (existingInvitation && existingInvitation.length > 0) {
       console.log("Existing invitation found for email:", email);
