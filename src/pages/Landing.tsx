@@ -85,17 +85,12 @@ export default function Landing() {
             </nav>
 
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <Link to="/setup">
-                <Button variant="outline" size="sm">
-                  {t('common:navigation.admin')}
-                </Button>
-              </Link>
+              <LanguageSwitcher />
               <Link to="/auth">
                 <Button size="sm">
                   {t('common:navigation.login')}
                 </Button>
               </Link>
-              <LanguageSwitcher />
             </div>
           </div>
         </div>
