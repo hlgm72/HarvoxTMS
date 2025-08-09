@@ -110,18 +110,32 @@ const handler = async (req: Request): Promise<Response> => {
       console.log("Profile created/updated successfully with timezone:", detectedTimezone);
     }
 
-    // Assign the company role
-    const { error: roleError } = await supabase
+    // Check if role already exists before assigning
+    const { data: existingRole } = await supabase
       .from("user_company_roles")
-      .insert({
-        user_id: newUser.user.id,
-        company_id: invitation.company_id,
-        role: invitation.role,
-        is_active: true
-      });
+      .select("id")
+      .eq("user_id", newUser.user.id)
+      .eq("company_id", invitation.company_id)
+      .eq("role", invitation.role)
+      .eq("is_active", true)
+      .maybeSingle();
 
-    if (roleError) {
-      throw new Error(`Error assigning company role: ${roleError.message}`);
+    // Only assign the company role if it doesn't already exist
+    if (!existingRole) {
+      const { error: roleError } = await supabase
+        .from("user_company_roles")
+        .insert({
+          user_id: newUser.user.id,
+          company_id: invitation.company_id,
+          role: invitation.role,
+          is_active: true
+        });
+
+      if (roleError) {
+        throw new Error(`Error assigning company role: ${roleError.message}`);
+      }
+    } else {
+      console.log("Role already exists for user, skipping insertion");
     }
 
     // Mark invitation as accepted
