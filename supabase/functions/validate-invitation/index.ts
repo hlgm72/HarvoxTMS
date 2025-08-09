@@ -41,25 +41,16 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Query the user_invitations table directly instead of using RPC
-    console.log("Querying user_invitations table for token:", token);
+    // Use the existing database function that has proper security
+    console.log("Calling validate_invitation_token function for token:", token);
     
     const { data: invitationData, error: queryError } = await supabase
-      .from('user_invitations')
-      .select(`
-        *,
-        companies!inner(name)
-      `)
-      .eq('invitation_token', token)
-      .is('accepted_at', null)
-      .gte('expires_at', new Date().toISOString())
-      .maybeSingle();
+      .rpc('validate_invitation_token', { token_param: token });
 
-    console.log("Query result:", { invitationData, queryError });
-    console.log("Current time:", new Date().toISOString());
+    console.log("validate_invitation_token result:", { invitationData, queryError });
 
     if (queryError) {
-      console.error("Database query error:", queryError);
+      console.error("Database function error:", queryError);
       return new Response(
         JSON.stringify({ success: false, error: "Invalid or expired invitation token" }),
         {
@@ -72,7 +63,8 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    if (!invitationData) {
+    if (!invitationData || invitationData.length === 0) {
+      console.log("No invitation found for token");
       return new Response(
         JSON.stringify({ success: false, error: "Invalid or expired invitation token" }),
         {
@@ -85,11 +77,14 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Check if invitation is still valid (not expired and not used)
-    const now = new Date();
-    const expiresAt = new Date(invitationData.expires_at);
-    
-    if (now > expiresAt || invitationData.accepted_at) {
+    const invitation = invitationData[0];
+    console.log("Found invitation:", invitation);
+
+    if (!invitation.is_valid) {
+      console.log("Invitation is not valid:", {
+        expires_at: invitation.expires_at,
+        current_time: new Date().toISOString()
+      });
       return new Response(
         JSON.stringify({ success: false, error: "Invitation has expired or has already been used" }),
         {
@@ -102,19 +97,19 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log("Invitation validation successful for:", invitationData.email);
+    console.log("Invitation validation successful for:", invitation.email);
 
     return new Response(
       JSON.stringify({
         success: true,
         invitation: {
-          email: invitationData.email,
-          role: invitationData.role,
-          companyName: invitationData.companies.name,
-          firstName: invitationData.first_name,
-          lastName: invitationData.last_name,
-          expiresAt: invitationData.expires_at,
-          isValid: true
+          email: invitation.email,
+          role: invitation.role,
+          companyName: invitation.company_name,
+          firstName: invitation.first_name,
+          lastName: invitation.last_name,
+          expiresAt: invitation.expires_at,
+          isValid: invitation.is_valid
         }
       }),
       {
