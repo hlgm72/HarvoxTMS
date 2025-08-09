@@ -39,7 +39,7 @@ const handler = async (req: Request): Promise<Response> => {
         companies!inner(name)
       `)
       .eq('invitation_token', token)
-      .eq('accepted_at', null)
+      .is('accepted_at', null)
       .gte('expires_at', new Date().toISOString())
       .single();
 
