@@ -52,6 +52,11 @@ export function useOnboarding() {
       console.log('💾 Saving to localStorage:', { key: onboardingKey, data: dataToSave });
       localStorage.setItem(onboardingKey, JSON.stringify(dataToSave));
 
+      // Disparar evento inmediatamente para activar setup wizard
+      window.dispatchEvent(new CustomEvent('onboardingCompleted', { 
+        detail: { userId: user.id, role: currentRole } 
+      }));
+
       console.log('✅ Onboarding marked as completed, setting shouldShowOnboarding to false');
       setShouldShowOnboarding(false);
     } catch (error) {
