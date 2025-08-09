@@ -47,21 +47,39 @@ const handler = async (req: Request): Promise<Response> => {
       wasProvided: !!userTimezone
     });
 
-    // Validate invitation token
-    const { data: invitationData, error: tokenError } = await supabase.rpc(
-      "validate_invitation_token",
-      { token_param: invitationToken }
-    );
+    // Validate invitation token using direct table access
+    console.log("Querying user_invitations table for token:", invitationToken);
+    
+    const { data: invitationData, error: tokenError } = await supabase
+      .from('user_invitations')
+      .select(`
+        *,
+        companies!inner(name)
+      `)
+      .eq('invitation_token', invitationToken)
+      .is('accepted_at', null)
+      .gte('expires_at', new Date().toISOString())
+      .maybeSingle();
+
+    console.log("Query result:", { invitationData, tokenError });
+    console.log("Current time:", new Date().toISOString());
 
     if (tokenError) {
+      console.error("Database query error:", tokenError);
       throw new Error(`Error validating invitation: ${tokenError.message}`);
     }
 
-    if (!invitationData || invitationData.length === 0) {
-      throw new Error("Invalid invitation token");
+    if (!invitationData) {
+      console.log("No invitation found for token");
+      throw new Error("Invalid or expired invitation token");
     }
 
-    const invitation = invitationData[0];
+    const invitation = {
+      ...invitationData,
+      company_name: invitationData.companies.name,
+      invitation_id: invitationData.id,
+      is_valid: true
+    };
     
     console.log("Invitation details:", { 
       is_valid: invitation.is_valid, 
@@ -69,11 +87,6 @@ const handler = async (req: Request): Promise<Response> => {
       email: invitation.email,
       role: invitation.role 
     });
-
-    // Check if invitation is already accepted but still process it (in case role assignment failed)
-    if (!invitation.is_valid && !invitation.accepted_at) {
-      throw new Error("Invitation has expired or is invalid");
-    }
 
     // Verify that the Google user email matches the invitation email
     if (userEmail.toLowerCase() !== invitation.email.toLowerCase()) {
