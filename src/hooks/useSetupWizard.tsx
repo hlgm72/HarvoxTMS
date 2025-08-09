@@ -34,22 +34,20 @@ export function useSetupWizard() {
       // Mostrar setup solo si completó onboarding pero no setup
       const shouldShow = Boolean(onboardingCompleted) && !Boolean(completed);
       
-      console.log('🔧 Setup wizard check:', {
-        setupKey,
-        onboardingKey,
-        onboardingCompleted: !!onboardingCompleted,
-        setupCompleted: !!completed,
-        shouldShow,
-        userExists: !!user,
-        roleExists: !!currentRole,
-        userId: user?.id,
-        role: currentRole
-      });
+      console.log('🔧 Setup wizard check:');
+      console.log('- setupKey:', setupKey);
+      console.log('- onboardingKey:', onboardingKey);
+      console.log('- onboardingCompleted:', !!onboardingCompleted);
+      console.log('- setupCompleted:', !!completed);
+      console.log('- shouldShow:', shouldShow);
+      console.log('- userExists:', !!user);
+      console.log('- roleExists:', !!currentRole);
+      console.log('- userId:', user?.id);
+      console.log('- role:', currentRole);
       
-      console.log('🔧 Raw localStorage values:', {
-        onboardingRaw: onboardingCompleted,
-        setupRaw: completed
-      });
+      console.log('🔧 Raw localStorage values:');
+      console.log('- onboardingRaw:', onboardingCompleted);
+      console.log('- setupRaw:', completed);
       
       console.log('🔧 Setting shouldShowSetup to:', shouldShow);
       setShouldShowSetup(shouldShow);
