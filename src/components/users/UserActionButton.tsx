@@ -226,9 +226,23 @@ export function UserActionButton({
                 <div className="text-sm">
                   <strong>Resumen de datos:</strong>
                   <ul className="list-disc list-inside mt-1">
-                    {Object.entries(deletionAnalysis.summary).map(([key, value]) => (
-                      <li key={key}>{key}: {String(value)}</li>
-                    ))}
+                    {Object.entries(deletionAnalysis.summary).map(([key, value]) => {
+                      const labelMap: Record<string, string> = {
+                        fuel_expenses: 'Gastos de combustible',
+                        loads_as_driver: 'Cargas como conductor',
+                        owned_companies: 'Empresas propietarias',
+                        uploaded_documents: 'Documentos cargados',
+                        payment_calculations: 'Cálculos de pago',
+                        equipment_assignments: 'Asignaciones de equipos',
+                        active_roles: 'Roles activos',
+                        driver_profiles: 'Perfiles de conductor',
+                        owner_operator_records: 'Registros de operador-propietario'
+                      };
+                      const label = labelMap[key] || key;
+                      return (
+                        <li key={key}>{label}: {String(value)}</li>
+                      );
+                    })}
                   </ul>
                 </div>
               )}
