@@ -83,7 +83,7 @@ const emailHtml = await renderAsync(
 ### Envío con Resend
 ```typescript
 const emailResponse = await resend.emails.send({
-  from: "FleetNest <noreply@fleetnest.app>",
+  from: "FleetNest TMS <noreply@fleetnest.app>",
   to: [email],
   subject: `Invitación para administrar ${companyName} - FleetNest`,
   html: emailHtml,

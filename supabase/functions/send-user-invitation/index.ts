@@ -139,7 +139,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
 
       const emailResponse = await resend.emails.send({
-        from: "FleetNest <noreply@fleetnest.app>",
+        from: "FleetNest TMS <noreply@fleetnest.app>",
         to: [email],
         subject: `Invitación para unirte a ${companyName} - FleetNest`,
         html: emailHtml,
