@@ -65,5 +65,9 @@
     "privacy_policy": "Privacy Policy",
     "rights_reserved": "All rights reserved.",
     "legal_acceptance": "By continuing, you accept our"
+  },
+  "forms": {
+    "birthDate": "Date of Birth",
+    "validDate": "Valid date"
   }
 }

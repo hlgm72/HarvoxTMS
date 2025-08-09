@@ -65,5 +65,9 @@
     "privacy_policy": "Política de Privacidad", 
     "rights_reserved": "Todos los derechos reservados.",
     "legal_acceptance": "Al continuar, aceptas nuestros"
+  },
+  "forms": {
+    "birthDate": "Fecha de Nacimiento",
+    "validDate": "Fecha válida"
   }
 }
