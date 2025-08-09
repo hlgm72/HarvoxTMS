@@ -19,6 +19,29 @@ export function useSetupWizard() {
     checkSetupStatus();
   }, [user, currentRole]);
 
+  // Also re-check when localStorage changes (specifically for onboarding completion)
+  useEffect(() => {
+    if (!user || !currentRole) return;
+    
+    const handleStorageChange = () => {
+      console.log('🔧 Storage changed, re-checking setup status');
+      checkSetupStatus();
+    };
+    
+    // Listen for storage changes
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check periodically (fallback for same-tab localStorage changes)
+    const interval = setInterval(() => {
+      checkSetupStatus();
+    }, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [user, currentRole]);
+
   const checkSetupStatus = () => {
     if (!user || !currentRole) return;
 
