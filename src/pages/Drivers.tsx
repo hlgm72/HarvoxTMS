@@ -13,6 +13,7 @@ import { InviteDriverDialog } from "@/components/drivers/InviteDriverDialog";
 import { EquipmentAssignmentDialog } from "@/components/equipment/EquipmentAssignmentDialog";
 import { DriverDetailsModal } from "@/components/drivers/DriverDetailsModal";
 import { EditDriverDialog } from "@/components/drivers/EditDriverDialog";
+import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -171,6 +172,13 @@ export default function Drivers() {
           }
         />
         <div className="p-2 md:p-4 space-y-6">
+          {/* Sección de Invitaciones Pendientes para Conductores */}
+          <PendingInvitationsSection 
+            roleFilter="driver"
+            title="Conductores Pendientes"
+            description="Conductores que han sido invitados pero aún no han aceptado su invitación"
+          />
+          
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="text-6xl mb-4">🚛</div>
             <h3 className="text-xl font-semibold mb-2">No hay conductores registrados</h3>
@@ -201,6 +209,13 @@ export default function Drivers() {
           }
         />
         <div className="p-2 md:p-4 space-y-6">
+        {/* Sección de Invitaciones Pendientes para Conductores */}
+        <PendingInvitationsSection 
+          roleFilter="driver"
+          title="Conductores Pendientes"
+          description="Conductores que han sido invitados pero aún no han aceptado su invitación"
+        />
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {drivers.map((driver) => {
             const DriverCard = () => {

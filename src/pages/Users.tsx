@@ -51,6 +51,7 @@ import { EditUserDialog } from "@/components/users/EditUserDialog";
 import { getRoleLabel, getRoleConfig } from "@/lib/roleUtils";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { UserFiltersSheet } from "@/components/users/UserFiltersSheet";
+import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
 
 type UserRole = Database["public"]["Enums"]["user_role"];
 
@@ -637,6 +638,9 @@ export default function Users() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Sección de Invitaciones Pendientes */}
+        <PendingInvitationsSection />
 
         {/* Lista de usuarios */}
         {loading ? (
