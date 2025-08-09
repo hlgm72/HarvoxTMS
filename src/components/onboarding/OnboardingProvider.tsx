@@ -20,19 +20,28 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
 
   // Controlar el flujo de setup wizard con useEffect
   useEffect(() => {
-    console.log('🎯 OnboardingProvider effect:', {
+    console.log('🎯 OnboardingProvider effect - DETAILED:', {
       shouldShowOnboarding,
       shouldShowSetup,
       showTour,
       showWelcome,
+      showSetup,
+      isLoading,
       shouldActivateSetup: !shouldShowOnboarding && shouldShowSetup && !showTour && !showWelcome
     });
     
     if (!shouldShowOnboarding && shouldShowSetup && !showTour && !showWelcome) {
-      console.log('✅ Activating Setup Wizard');
+      console.log('✅ Activating Setup Wizard NOW');
       setShowSetup(true);
+    } else {
+      console.log('❌ Setup NOT activated because:', {
+        onboardingStillShowing: shouldShowOnboarding,
+        setupNotNeeded: !shouldShowSetup,
+        tourActive: showTour,
+        welcomeActive: showWelcome
+      });
     }
-  }, [shouldShowOnboarding, shouldShowSetup, showTour, showWelcome]);
+  }, [shouldShowOnboarding, shouldShowSetup, showTour, showWelcome, isLoading]);
 
   // No mostrar nada mientras carga
   if (isLoading) {

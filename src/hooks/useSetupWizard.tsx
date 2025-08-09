@@ -37,7 +37,14 @@ export function useSetupWizard() {
         setupCompleted: !!completed,
         shouldShow,
         userExists: !!user,
-        roleExists: !!currentRole
+        roleExists: !!currentRole,
+        userId: user?.id,
+        role: currentRole
+      });
+      
+      console.log('🔧 Raw localStorage values:', {
+        onboardingRaw: onboardingCompleted,
+        setupRaw: completed
       });
       
       setShouldShowSetup(shouldShow);
