@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useSetupWizard } from '@/hooks/useSetupWizard';
 import { useOnboardingSteps } from './OnboardingSteps';
@@ -18,17 +18,19 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   const [showSetup, setShowSetup] = useState(false);
   const steps = useOnboardingSteps(currentRole);
 
+  // Controlar el flujo de setup wizard con useEffect
+  useEffect(() => {
+    if (!shouldShowOnboarding && shouldShowSetup && !showTour && !showWelcome) {
+      setShowSetup(true);
+    }
+  }, [shouldShowOnboarding, shouldShowSetup, showTour, showWelcome]);
+
   // No mostrar nada mientras carga
   if (isLoading) {
     return <>{children}</>;
   }
 
-  // Mostrar setup wizard si debe mostrarse y no está en onboarding
-  if (!shouldShowOnboarding && shouldShowSetup) {
-    setShowSetup(true);
-  }
-
-  // No mostrar onboarding si no debe mostrarse
+  // No mostrar onboarding/setup si no debe mostrarse
   if (!shouldShowOnboarding && !shouldShowSetup) {
     return <>{children}</>;
   }
@@ -41,19 +43,11 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   const handleCloseWelcome = () => {
     setShowWelcome(false);
     markOnboardingCompleted(true); // Marcar como saltado
-    // Verificar si debe mostrar setup después
-    if (shouldShowSetup) {
-      setShowSetup(true);
-    }
   };
 
   const handleCloseTour = () => {
     setShowTour(false);
     markOnboardingCompleted(false); // Marcar como completado
-    // Mostrar setup wizard después del onboarding
-    if (shouldShowSetup) {
-      setShowSetup(true);
-    }
   };
 
   const handleSetupComplete = () => {
