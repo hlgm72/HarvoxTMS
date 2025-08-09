@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 
 interface OnboardingStep {
   id: string;
@@ -27,7 +25,6 @@ interface OnboardingOverlayProps {
 export function OnboardingOverlay({ isOpen, onClose, steps, currentRole }: OnboardingOverlayProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
-  const { user } = useAuth();
 
   if (!isOpen || steps.length === 0) return null;
 
@@ -45,47 +42,14 @@ export function OnboardingOverlay({ isOpen, onClose, steps, currentRole }: Onboa
     }
   };
 
-  const handleComplete = async () => {
+  const handleComplete = () => {
     setIsCompleted(true);
-    
-    // Marcar onboarding como completado en el backend
-    if (user) {
-      try {
-        await supabase
-          .from('user_onboarding_progress')
-          .upsert({
-            user_id: user.id,
-            role: currentRole,
-            completed: true,
-            completed_at: new Date().toISOString()
-          });
-      } catch (error) {
-        console.error('Error saving onboarding progress:', error);
-      }
-    }
-    
     setTimeout(() => {
       onClose();
     }, 1000);
   };
 
-  const handleSkip = async () => {
-    // Marcar como saltado
-    if (user) {
-      try {
-        await supabase
-          .from('user_onboarding_progress')
-          .upsert({
-            user_id: user.id,
-            role: currentRole,
-            completed: true,
-            skipped: true,
-            completed_at: new Date().toISOString()
-          });
-      } catch (error) {
-        console.error('Error saving onboarding progress:', error);
-      }
-    }
+  const handleSkip = () => {
     onClose();
   };
 

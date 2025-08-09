@@ -41,6 +41,7 @@ import { Layout } from "./components/layout/Layout";
 import { NotificationProvider } from "./components/notifications";
 import { UserProfileProvider } from "./contexts/UserProfileContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { OnboardingProvider } from "./components/onboarding";
 import { useLanguageSync } from "./hooks/useLanguageSync";
 import './i18n/config';
 
@@ -354,7 +355,9 @@ const App = () => {
       <AuthProvider>
         <UserProfileProvider>
           <NotificationProvider>
-            <AppContent />
+            <OnboardingProvider>
+              <AppContent />
+            </OnboardingProvider>
           </NotificationProvider>
         </UserProfileProvider>
       </AuthProvider>
