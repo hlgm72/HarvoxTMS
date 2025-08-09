@@ -61,12 +61,20 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
     setLoading(true);
 
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const session = sessionData?.session;
+      if (!session) {
+        throw new Error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+      }
       const { data, error } = await supabase.functions.invoke('send-driver-invitation', {
         body: {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
           hireDate: formatDateInUserTimeZone(formData.hireDate)
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
         }
       });
 
