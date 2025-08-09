@@ -42,6 +42,8 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Query the user_invitations table directly instead of using RPC
+    console.log("Querying user_invitations table for token:", token);
+    
     const { data: invitationData, error: queryError } = await supabase
       .from('user_invitations')
       .select(`
@@ -52,6 +54,9 @@ const handler = async (req: Request): Promise<Response> => {
       .is('accepted_at', null)
       .gte('expires_at', new Date().toISOString())
       .maybeSingle();
+
+    console.log("Query result:", { invitationData, queryError });
+    console.log("Current time:", new Date().toISOString());
 
     if (queryError) {
       console.error("Database query error:", queryError);
