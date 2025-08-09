@@ -41,15 +41,33 @@ const handler = async (req: Request): Promise<Response> => {
       .eq('invitation_token', token)
       .is('accepted_at', null)
       .gte('expires_at', new Date().toISOString())
-      .single();
+      .maybeSingle();
 
     if (queryError) {
       console.error("Database query error:", queryError);
-      throw new Error(`Error validating invitation: ${queryError.message}`);
+      return new Response(
+        JSON.stringify({ success: false, error: "Invalid or expired invitation token" }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
+          },
+        }
+      );
     }
 
     if (!invitationData) {
-      throw new Error("Invalid or expired invitation token");
+      return new Response(
+        JSON.stringify({ success: false, error: "Invalid or expired invitation token" }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
+          },
+        }
+      );
     }
 
     // Check if invitation is still valid (not expired and not used)
@@ -57,7 +75,16 @@ const handler = async (req: Request): Promise<Response> => {
     const expiresAt = new Date(invitationData.expires_at);
     
     if (now > expiresAt || invitationData.accepted_at) {
-      throw new Error("Invitation has expired or has already been used");
+      return new Response(
+        JSON.stringify({ success: false, error: "Invitation has expired or has already been used" }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
+          },
+        }
+      );
     }
 
     console.log("Invitation validation successful for:", invitationData.email);
@@ -92,7 +119,7 @@ const handler = async (req: Request): Promise<Response> => {
         error: error.message || "Internal server error" 
       }),
       {
-        status: 400,
+        status: 200,
         headers: { 
           "Content-Type": "application/json", 
           ...corsHeaders 
