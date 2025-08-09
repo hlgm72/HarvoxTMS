@@ -53,11 +53,12 @@ function AppContent() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/landing" element={<Landing />} />
-        <Route path="/preview" element={<Preview />} />
-        <Route path="/auth" element={<Auth />} />
+      <OnboardingProvider>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/landing" element={<Landing />} />
+          <Route path="/preview" element={<Preview />} />
+          <Route path="/auth" element={<Auth />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/no-access" element={<NoAccess />} />
         <Route path="/invitation/:token" element={<Invitation />} />
@@ -345,6 +346,7 @@ function AppContent() {
         {/* Catch-all route */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </OnboardingProvider>
     </BrowserRouter>
   );
 }
@@ -355,9 +357,7 @@ const App = () => {
       <AuthProvider>
         <UserProfileProvider>
           <NotificationProvider>
-            <OnboardingProvider>
-              <AppContent />
-            </OnboardingProvider>
+            <AppContent />
           </NotificationProvider>
         </UserProfileProvider>
       </AuthProvider>
