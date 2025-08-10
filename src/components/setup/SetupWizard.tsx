@@ -88,7 +88,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
-        <DialogHeader>
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-2xl font-bold text-center">
             Configuración Inicial
           </DialogTitle>
@@ -97,9 +97,9 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
           </p>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="flex-1 flex flex-col space-y-6 min-h-0">
           {/* Progress Bar */}
-          <div className="space-y-2">
+          <div className="space-y-2 flex-shrink-0">
             <div className="flex justify-between text-sm">
               <span>Progreso de configuración</span>
               <span>{Math.round(progress)}%</span>
@@ -108,7 +108,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
           </div>
 
           {/* Steps Navigation */}
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center flex-shrink-0">
             {steps.map((step, index) => {
               const Icon = step.icon;
               const isActive = index === currentStep;
@@ -146,13 +146,13 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
 
           {/* Step Content */}
           <Card className="flex-1 flex flex-col min-h-0">
-            <CardHeader>
+            <CardHeader className="flex-shrink-0">
               <CardTitle className="flex items-center gap-2">
                 {React.createElement(steps[currentStep].icon, { className: "h-5 w-5" })}
                 {steps[currentStep].title}
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto">
+            <CardContent className="flex-1 min-h-0 p-6">
               {isCompleting ? (
                 <div className="flex flex-col items-center justify-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
@@ -162,14 +162,16 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                   </p>
                 </div>
               ) : (
-                <SetupStepContent step={steps[currentStep]} />
+                <div className="h-full overflow-y-auto">
+                  <SetupStepContent step={steps[currentStep]} />
+                </div>
               )}
             </CardContent>
           </Card>
 
           {/* Navigation Buttons */}
           {!isCompleting && (
-            <div className="flex justify-between pt-4">
+            <div className="flex justify-between pt-4 flex-shrink-0">
               <Button
                 variant="outline"
                 onClick={handlePrevious}
