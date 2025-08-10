@@ -113,22 +113,23 @@ export function UserActionButton({
     try {
       setLoading(true);
       
-      const { data, error } = await supabase
-        .rpc('permanently_delete_user_with_validation', {
-          user_id_param: user.id,
-          confirmation_email: confirmationEmail
-        });
+      const { data, error } = await supabase.functions.invoke('permanently-delete-user', {
+        body: {
+          userId: user.id,
+          confirmationEmail: confirmationEmail
+        }
+      });
 
       if (error) throw error;
 
-      if ((data as any)?.success) {
+      if (data?.success) {
         toast.success("El usuario ha sido eliminado permanentemente del sistema");
         
         setPermanentDeleteDialogOpen(false);
         setConfirmationEmail("");
         onUserUpdated?.();
       } else {
-        toast.error((data as any)?.message || "El usuario no puede ser eliminado");
+        toast.error(data?.message || "El usuario no puede ser eliminado");
       }
     } catch (error: any) {
       console.error('Error deleting user permanently:', error);
