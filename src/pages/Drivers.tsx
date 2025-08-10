@@ -18,6 +18,7 @@ import { DeleteUserDialog } from "@/components/users/DeleteUserDialog";
 import { UserActionButton } from "@/components/users/UserActionButton";
 import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
 import { useAuth } from "@/hooks/useAuth";
+import { useCompanyCache } from "@/hooks/useCompanyCache";
 
 const getStatusColor = (status: string): "default" | "secondary" | "destructive" | "outline" => {
   switch (status) {
@@ -138,6 +139,7 @@ const DriverSkeleton = () => (
 
 export default function Drivers() {
   const { userRole } = useAuth();
+  const { userCompany } = useCompanyCache();
   const { drivers, loading, refetch } = useCompanyDrivers();
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showAssignmentDialog, setShowAssignmentDialog] = useState(false);
@@ -425,7 +427,7 @@ export default function Drivers() {
                               }}
                             >
                               <Settings className="h-3 w-3" />
-                              Equipos
+                              Asignar
                             </Button>
                           </div>
                       </CardContent>
@@ -436,19 +438,10 @@ export default function Drivers() {
                 return <DriverCard key={driver.id} />;
               })}
             </div>
-            {activeDrivers.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="text-6xl mb-4">🚛</div>
-                <h3 className="text-xl font-semibold mb-2">No hay conductores activos</h3>
-                <p className="text-muted-foreground mb-4">
-                  Los conductores aparecerán aquí una vez que activen sus cuentas
-                </p>
-              </div>
-            )}
           </TabsContent>
           
           <TabsContent value="pending" className="space-y-6">
-            {/* Sección de Invitaciones Pendientes para Conductores */}
+            {/* Sección de Invitaciones Pendientes */}
             <PendingInvitationsSection 
               key={`pending-invitations-${invitationsKey}`}
               roleFilter="driver"
@@ -457,136 +450,67 @@ export default function Drivers() {
               onInvitationsUpdated={handleInvitationsUpdate}
             />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {pendingDrivers.map((driver) => {
-                const DriverCard = () => {
-                  const { data: assignedEquipment = [], isLoading: equipmentLoading } = useDriverEquipment(driver.user_id);
-                  
-                  const fullName = `${driver.first_name} ${driver.last_name}`.trim();
-                  const initials = [driver.first_name, driver.last_name]
-                    .filter(Boolean)
-                    .map(name => name.charAt(0))
-                    .join('')
-                    .toUpperCase();
+            {/* Mostrar conductores pendientes del sistema */}
+            {pendingDrivers.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {pendingDrivers.map((driver) => {
+                  const DriverCard = () => {
+                    const { data: assignedEquipment = [], isLoading: equipmentLoading } = useDriverEquipment(driver.user_id);
+                    
+                    const fullName = `${driver.first_name} ${driver.last_name}`.trim();
+                    const initials = [driver.first_name, driver.last_name]
+                      .filter(Boolean)
+                      .map(name => name.charAt(0))
+                      .join('')
+                      .toUpperCase();
 
-                  return (
-                    <Card key={driver.id} className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-12 w-12">
-                              {driver.avatar_url && (
-                                <AvatarImage src={driver.avatar_url} alt={fullName} />
-                              )}
-                              <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                                {initials || '??'}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <CardTitle className="text-lg">{fullName || 'Sin nombre'}</CardTitle>
-                              <p className="text-sm text-muted-foreground">
-                                {driver.license_number ? `${driver.cdl_class || 'CDL'}-${driver.license_number}` : 'Sin licencia'}
-                              </p>
+                    return (
+                      <Card key={driver.id} className="hover:shadow-elegant transition-all duration-300 animate-fade-in border-orange-200">
+                        <CardHeader className="pb-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-12 w-12">
+                                {driver.avatar_url && (
+                                  <AvatarImage src={driver.avatar_url} alt={fullName} />
+                                )}
+                                <AvatarFallback className="bg-orange-100 text-orange-700 font-semibold">
+                                  {initials || '??'}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <CardTitle className="text-lg">{fullName || 'Sin nombre'}</CardTitle>
+                                <p className="text-sm text-muted-foreground">
+                                  {driver.license_number ? `${driver.cdl_class || 'CDL'}-${driver.license_number}` : 'Sin licencia'}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                          {/* Estado del conductor y activación */}
-                          <div className="flex flex-wrap gap-2">
-                            <Badge variant={getStatusColor(driver.current_status)}>
-                              {getStatusText(driver.current_status)}
-                            </Badge>
-                            
-                            {/* Mostrar estado de activación para conductores pre-registrados */}
-                            {driver.is_pre_registered && (
+                            <div className="flex flex-wrap gap-2">
                               <Badge variant={getActivationStatusColor(driver.activation_status)}>
                                 {getActivationStatusText(driver.activation_status)}
                               </Badge>
-                            )}
+                            </div>
                           </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-3">
-                          {/* Mostrar información adicional para conductores pre-registrados */}
-                          {driver.is_pre_registered && driver.activation_status === 'pending_activation' && (
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
-                              <p className="text-sm text-blue-700 font-medium flex items-center gap-2">
-                                💡 Este conductor puede ser gestionado completamente sin necesidad de activar su cuenta
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-3">
+                            <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
+                              <p className="text-sm text-orange-700 font-medium flex items-center gap-2">
+                                ⚠️ Este conductor necesita completar su activación
                               </p>
                             </div>
-                          )}
-                          
-                          <div className="flex items-center gap-2">
-                            <span>📞</span>
-                            <span className="text-sm">{driver.phone || 'No especificado'}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span>📍</span>
-                            <span className="text-sm">
-                              {driver.license_state ? `${driver.license_state}` : 'Ubicación no especificada'}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span>🚛</span>
-                            <span className="text-sm">
-                              {driver.active_loads_count > 0 
-                                ? `${driver.active_loads_count} carga${driver.active_loads_count !== 1 ? 's' : ''} activa${driver.active_loads_count !== 1 ? 's' : ''}`
-                                : 'Sin cargas asignadas'
-                              }
-                            </span>
-                          </div>
-                          
-                          {/* Mostrar equipos asignados */}
-                          <div className="flex items-center gap-2">
-                            <span>🔧</span>
-                            <span className="text-sm">
-                              {equipmentLoading 
-                                ? 'Cargando equipos...'
-                                : assignedEquipment.length > 0 
-                                  ? `${assignedEquipment.length} equipo${assignedEquipment.length !== 1 ? 's' : ''} asignado${assignedEquipment.length !== 1 ? 's' : ''}`
-                                  : 'Sin equipos asignados'
-                              }
-                            </span>
-                          </div>
-                          
-                          {/* Lista de equipos asignados */}
-                          {!equipmentLoading && assignedEquipment.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {assignedEquipment.map((equipment) => (
-                                <Badge
-                                  key={equipment.id}
-                                  variant="outline"
-                                  className="text-xs"
-                                >
-                                  {equipment.equipment_type === 'truck' ? '🚛' : '🚚'} {equipment.equipment_type} #{equipment.equipment_number}
-                                </Badge>
-                              ))}
+                            
+                            <div className="flex items-center gap-2">
+                              <span>📞</span>
+                              <span className="text-sm">{driver.phone || 'No especificado'}</span>
                             </div>
-                          )}
+                            <div className="flex items-center gap-2">
+                              <span>📍</span>
+                              <span className="text-sm">
+                                {driver.license_state ? `${driver.license_state}` : 'Ubicación no especificada'}
+                              </span>
+                            </div>
+                          </div>
                           
-                           <div className="flex items-center gap-2">
-                             <span>🕐</span>
-                             <span className="text-sm">{formatExperience(driver.license_issue_date, driver.hire_date)}</span>
-                           </div>
-                           <div className="flex items-center gap-2">
-                             <span>📋</span>
-                             <div className="text-sm flex flex-col">
-                               {driver.license_expiry_date ? (
-                                 <>
-                                   <span>Vencimiento de Licencia: {getExpiryInfo(driver.license_expiry_date).text}</span>
-                                   {getExpiryInfo(driver.license_expiry_date).isExpired && (
-                                     <span className="text-red-600 font-semibold text-xs">⚠️ VENCIDA</span>
-                                   )}
-                                   {getExpiryInfo(driver.license_expiry_date).isExpiring && !getExpiryInfo(driver.license_expiry_date).isExpired && (
-                                     <span className="text-orange-600 font-semibold text-xs">⚠️ PRÓXIMO A VENCER</span>
-                                   )}
-                                 </>
-                               ) : (
-                                 'Fecha de vencimiento no especificada'
-                               )}
-                             </div>
-                           </div>
-                        </div>
-                         
                           <div className="flex gap-2 mt-4">
                             <Button 
                               variant="outline" 
@@ -611,34 +535,14 @@ export default function Drivers() {
                               <Edit className="h-3 w-3" />
                               Editar
                             </Button>
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="flex-1 gap-1"
-                              onClick={() => {
-                                setSelectedDriverId(driver.user_id);
-                                setShowAssignmentDialog(true);
-                              }}
-                            >
-                              <Settings className="h-3 w-3" />
-                              Asignar
-                            </Button>
                           </div>
-                      </CardContent>
-                    </Card>
-                  );
-                };
-                
-                return <DriverCard key={driver.id} />;
-              })}
-            </div>
-            {pendingDrivers.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="text-6xl mb-4">⏳</div>
-                <h3 className="text-xl font-semibold mb-2">No hay conductores pendientes</h3>
-                <p className="text-muted-foreground mb-4">
-                  Los conductores invitados aparecerán aquí hasta que activen sus cuentas
-                </p>
+                        </CardContent>
+                      </Card>
+                    );
+                  };
+                  
+                  return <DriverCard key={driver.id} />;
+                })}
               </div>
             )}
           </TabsContent>
@@ -692,23 +596,17 @@ export default function Drivers() {
       )}
 
       {/* Dialog de eliminación/desactivación de conductor */}
-      {selectedDriver && (
+      {selectedDriver && userCompany && (
         <DeleteUserDialog
           isOpen={showDeleteDialog}
           onClose={() => {
             setShowDeleteDialog(false);
             setSelectedDriver(null);
           }}
-          user={{
-            id: selectedDriver.user_id,
-            first_name: selectedDriver.first_name,
-            last_name: selectedDriver.last_name,
-            email: selectedDriver.email || '',
-            role: 'driver'
-          }}
-          companyId={userRole?.company_id || ''}
+          user={selectedDriver}
+          companyId={userCompany.company_id}
           onSuccess={() => {
-            refetch(); // Recargar la lista
+            refetch();
           }}
         />
       )}
