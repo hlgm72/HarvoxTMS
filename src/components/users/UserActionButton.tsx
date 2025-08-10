@@ -21,6 +21,7 @@ import { Trash2, UserX, MoreVertical } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface UserActionButtonProps {
   user: {
@@ -40,7 +41,8 @@ export function UserActionButton({
   size = "sm",
   variant = "outline"
 }: UserActionButtonProps) {
-  const { userRole } = useAuth();
+  const { userRole, user: currentUser } = useAuth();
+  const queryClient = useQueryClient();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
   const [permanentDeleteDialogOpen, setPermanentDeleteDialogOpen] = useState(false);
@@ -124,6 +126,11 @@ export function UserActionButton({
 
       if (data?.success) {
         toast.success("El usuario ha sido eliminado permanentemente del sistema");
+        
+        // Invalidar todas las queries relacionadas con usuarios y conductores
+        queryClient.invalidateQueries({ queryKey: ['drivers-count'] });
+        queryClient.invalidateQueries({ queryKey: ['company-users'] });
+        queryClient.invalidateQueries({ queryKey: ['users'] });
         
         setPermanentDeleteDialogOpen(false);
         setConfirmationEmail("");
