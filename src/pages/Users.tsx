@@ -144,7 +144,7 @@ export default function Users() {
     
     setLoading(true);
     try {
-      // Obtener usuarios de la empresa con sus roles
+      // Obtener usuarios activos de la empresa con sus roles
       const { data: companyUsers, error } = await supabase
         .from('user_company_roles')
         .select(`
@@ -159,46 +159,109 @@ export default function Users() {
 
       if (error) throw error;
 
-      if (!companyUsers || companyUsers.length === 0) {
+      // Obtener invitaciones pendientes
+      const { data: pendingInvitations, error: invitationsError } = await supabase
+        .from('user_invitations')
+        .select(`
+          target_user_id,
+          first_name,
+          last_name,
+          email,
+          role,
+          created_at
+        `)
+        .eq('company_id', userRole.company_id)
+        .eq('is_active', true)
+        .is('accepted_at', null)
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false });
+
+      if (invitationsError) throw invitationsError;
+
+      // Combinar usuarios activos y pendientes
+      const allUserIds = new Set();
+      const usersMap = new Map<string, User>();
+
+      // Procesar usuarios activos
+      if (companyUsers && companyUsers.length > 0) {
+        companyUsers.forEach(companyUserRole => {
+          const userId = companyUserRole.user_id;
+          allUserIds.add(userId);
+          
+          if (usersMap.has(userId)) {
+            // Usuario ya existe, agregar rol adicional
+            const existingUser = usersMap.get(userId)!;
+            existingUser.role = existingUser.role + ', ' + getRoleLabel(companyUserRole.role);
+          } else {
+            // Nuevo usuario activo
+            usersMap.set(userId, {
+              id: userId,
+              email: 'N/A', // Se actualizará después si es posible
+              phone: '',
+              role: getRoleLabel(companyUserRole.role),
+              status: 'active',
+              first_name: '',
+              last_name: '',
+              avatar_url: '',
+              created_at: companyUserRole.created_at
+            });
+          }
+        });
+      }
+
+      // Procesar invitaciones pendientes
+      if (pendingInvitations && pendingInvitations.length > 0) {
+        pendingInvitations.forEach(invitation => {
+          // Solo agregar si no es un usuario ya activo
+          if (invitation.target_user_id && !allUserIds.has(invitation.target_user_id)) {
+            const userId = invitation.target_user_id;
+            allUserIds.add(userId);
+            
+            usersMap.set(userId, {
+              id: userId,
+              email: invitation.email || 'N/A',
+              phone: '',
+              role: getRoleLabel(invitation.role),
+              status: 'pending',
+              first_name: invitation.first_name || '',
+              last_name: invitation.last_name || '',
+              avatar_url: '',
+              created_at: invitation.created_at
+            });
+          }
+        });
+      }
+
+      if (usersMap.size === 0) {
         setUsers([]);
         setLoading(false);
         return;
       }
 
-      // Obtener perfiles de usuarios
-      const userIds = [...new Set(companyUsers.map(u => u.user_id))];
+      // Obtener perfiles de usuarios para aquellos que tienen user_id
+      const userIdsWithProfiles = Array.from(allUserIds).filter((id): id is string => 
+        typeof id === 'string' && id.length > 0
+      );
       
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('user_id, first_name, last_name, avatar_url, phone')
-        .in('user_id', userIds);
+      let profiles: any[] = [];
+      if (userIdsWithProfiles.length > 0) {
+        const { data: profilesData, error: profilesError } = await supabase
+          .from('profiles')
+          .select('user_id, first_name, last_name, avatar_url, phone')
+          .in('user_id', userIdsWithProfiles);
 
-      if (profilesError) throw profilesError;
+        if (profilesError) throw profilesError;
+        profiles = profilesData || [];
+      }
 
-      // Agrupar por usuario para manejar múltiples roles
-      const usersMap = new Map<string, User>();
-      
-      companyUsers.forEach(companyUserRole => {
-        const userId = companyUserRole.user_id;
-        const profile = profiles?.find(p => p.user_id === userId);
-        
-        if (usersMap.has(userId)) {
-          // Usuario ya existe, agregar rol adicional
-          const existingUser = usersMap.get(userId)!;
-          existingUser.role = existingUser.role + ', ' + getRoleLabel(companyUserRole.role);
-        } else {
-          // Nuevo usuario
-          usersMap.set(userId, {
-            id: userId,
-            email: 'N/A', // Se actualizará después si es posible
-            phone: profile?.phone || '',
-            role: getRoleLabel(companyUserRole.role),
-            status: companyUserRole.is_active ? 'active' : 'inactive',
-            first_name: profile?.first_name || '',
-            last_name: profile?.last_name || '',
-            avatar_url: profile?.avatar_url || '',
-            created_at: companyUserRole.created_at
-          });
+      // Actualizar información de perfiles
+      profiles.forEach(profile => {
+        if (usersMap.has(profile.user_id)) {
+          const user = usersMap.get(profile.user_id)!;
+          user.first_name = profile.first_name || user.first_name;
+          user.last_name = profile.last_name || user.last_name;
+          user.avatar_url = profile.avatar_url || user.avatar_url;
+          user.phone = profile.phone || user.phone;
         }
       });
 
@@ -222,7 +285,7 @@ export default function Users() {
             userEmails.forEach(({ user_id, email }) => {
               if (usersMap.has(user_id)) {
                 const mappedUser = usersMap.get(user_id)!;
-                mappedUser.email = email || 'N/A';
+                mappedUser.email = email || mappedUser.email;
               }
             });
           }
@@ -231,14 +294,14 @@ export default function Users() {
           // Fallback: solo mostrar email del usuario actual
           if (user?.id && usersMap.has(user.id)) {
             const currentUser = usersMap.get(user.id)!;
-            currentUser.email = user.email || 'N/A';
+            currentUser.email = user.email || currentUser.email;
           }
         }
       } else {
         // Usuarios sin privilegios solo ven su propio email
         if (user?.id && usersMap.has(user.id)) {
           const currentUser = usersMap.get(user.id)!;
-          currentUser.email = user.email || 'N/A';
+          currentUser.email = user.email || currentUser.email;
         }
       }
 
