@@ -95,8 +95,8 @@ export const useConsolidatedDrivers = () => {
           .eq('company_id', userCompany.company_id)
           .eq('role', 'driver')
           .is('accepted_at', null)
-          .gt('expires_at', new Date().toISOString())
-          .not('target_user_id', 'is', null);
+          .gt('expires_at', new Date().toISOString());
+          // REMOVED: .not('target_user_id', 'is', null) para incluir todas las invitaciones pendientes
 
         // Debug log para invitaciones pendientes
         console.log('🚛 Debug invitaciones pendientes:', pendingInvitations);
@@ -105,14 +105,9 @@ export const useConsolidatedDrivers = () => {
         const invitedUserIds = pendingInvitations?.map(inv => inv.target_user_id).filter(Boolean) || [];
         const driverUserIds = driverRoles?.map(role => role.user_id) || [];
         const allDriverUserIds = [...new Set([...driverUserIds, ...invitedUserIds])];
-        
-        console.log('🚛 Debug IDs:', {
-          driverUserIds,
-          invitedUserIds,
-          allDriverUserIds
-        });
 
-        if (allDriverUserIds.length === 0) {
+        // Si no hay conductores existentes NI invitaciones pendientes, retornar array vacío
+        if (allDriverUserIds.length === 0 && (!pendingInvitations || pendingInvitations.length === 0)) {
           return [];
         }
 
@@ -180,16 +175,6 @@ export const useConsolidatedDrivers = () => {
             activationStatus = 'invited';
           }
           
-          // Debug log para este conductor específico
-          console.log(`🚛 Debug conductor ${profile.first_name} ${profile.last_name}:`, {
-            pendingInvitation: Boolean(pendingInvitation),
-            isPreRegistered,
-            driverRoleActive: driverRole?.is_active,
-            activationStatus,
-            phone: profile.phone,
-            avatar_url: profile.avatar_url
-          });
-          
           // Determinar estado actual basado en cargas y activación
           let currentStatus: 'available' | 'on_route' | 'off_duty' | 'pre_registered' = 'available';
           const activeLoadsCount = driverLoads.length;
@@ -230,19 +215,23 @@ export const useConsolidatedDrivers = () => {
           });
         });
 
-        // Add drivers that are only invited (no profile yet) - fallback for older invitations
+        // Add drivers that are only invited (no profile yet) - includes invitations without target_user_id
         pendingInvitations?.forEach(invitation => {
-          if (!invitation.target_user_id || allDrivers.some(d => d.user_id === invitation.target_user_id)) {
-            return; // Skip if already processed or no target user
+          // Skip if already processed (has target_user_id and already in allDrivers)
+          if (invitation.target_user_id && allDrivers.some(d => d.user_id === invitation.target_user_id)) {
+            return;
           }
 
           const hireDate = typeof invitation.metadata === 'object' && invitation.metadata && 'hire_date' in invitation.metadata 
             ? invitation.metadata.hire_date as string 
             : null;
           
+          // Use target_user_id if available, otherwise generate a unique ID based on email
+          const driverId = invitation.target_user_id || `invitation-${invitation.email}`;
+          
           allDrivers.push({
-            id: invitation.target_user_id,
-            user_id: invitation.target_user_id,
+            id: driverId,
+            user_id: invitation.target_user_id || '', // Empty string for invitations without user
             first_name: invitation.first_name || '',
             last_name: invitation.last_name || '',
             phone: null,

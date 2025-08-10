@@ -113,7 +113,6 @@ export function PendingInvitationsSection({
 
       if (error) throw error;
 
-      console.log('🚛 Debug PendingInvitationsSection - invitaciones encontradas:', data);
       setInvitations(data || []);
     } catch (error) {
       console.error('Error fetching pending invitations:', error);
