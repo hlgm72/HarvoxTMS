@@ -43,7 +43,10 @@ export function BirthDateInput({
     setValue,
   } = useBirthDateInput({
     initialValue: externalValue || '',
-    onValueChange,
+    onValueChange: (value, isValid, age) => {
+      // Call the external onValueChange with just the value (for react-hook-form)
+      onValueChange?.(value, isValid, age);
+    },
     minAge,
     maxAge,
   });
@@ -85,7 +88,7 @@ export function BirthDateInput({
           aria-describedby={hasError ? `${testId}-error` : undefined}
         />
         
-        {value && (
+        {!value && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none uppercase">
             {format}
           </div>

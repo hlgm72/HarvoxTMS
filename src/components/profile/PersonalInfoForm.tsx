@@ -242,8 +242,8 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
                 <FormItem>
                   <FormControl>
                     <BirthDateInput 
-                      {...field} 
                       value={field.value || ''}
+                      onValueChange={(value) => field.onChange(value)}
                     />
                   </FormControl>
                   <FormMessage />
