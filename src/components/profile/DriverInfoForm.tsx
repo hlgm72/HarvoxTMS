@@ -346,15 +346,13 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
             name="date_of_birth"
             render={({ field }) => (
               <FormItem>
+                <FormLabel className="text-sm font-medium">Fecha de Nacimiento</FormLabel>
                 <FormControl>
-                  <BirthDateInput
-                    label="Fecha de Nacimiento"
+                  <Input 
+                    placeholder="dd/mm/aaaa" 
+                    {...field} 
                     value={field.value || ''}
-                    onValueChange={(value, isValid) => {
-                      field.onChange(value);
-                    }}
-                    minAge={18}
-                    maxAge={80}
+                    maxLength={10}
                   />
                 </FormControl>
                 <FormMessage />
