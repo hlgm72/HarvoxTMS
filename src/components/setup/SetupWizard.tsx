@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { CheckCircle, User, Settings, Building, Truck, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { PersonalInfoForm } from '@/components/profile/PersonalInfoForm';
 import { PreferencesForm } from '@/components/profile/PreferencesForm';
-import { SecurityForm } from '@/components/profile/SecurityForm';
 import { DriverInfoForm } from '@/components/profile/DriverInfoForm';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
@@ -336,10 +337,10 @@ function CompanySetupStep() {
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Nombre de la Empresa *</label>
-          <input
+          <Label htmlFor="company-name" className="text-sm font-medium">Nombre de la Empresa *</Label>
+          <Input
+            id="company-name"
             type="text"
-            className="w-full px-3 py-2 border rounded-md"
             placeholder="Transportes ABC LLC"
             value={companyData.name}
             onChange={(e) => setCompanyData({ ...companyData, name: e.target.value })}
@@ -348,10 +349,10 @@ function CompanySetupStep() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Número DOT</label>
-            <input
+            <Label htmlFor="dot-number" className="text-sm font-medium">Número DOT</Label>
+            <Input
+              id="dot-number"
               type="text"
-              className="w-full px-3 py-2 border rounded-md"
               placeholder="1234567"
               value={companyData.dotNumber}
               onChange={(e) => setCompanyData({ ...companyData, dotNumber: e.target.value })}
@@ -359,10 +360,10 @@ function CompanySetupStep() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Número MC</label>
-            <input
+            <Label htmlFor="mc-number" className="text-sm font-medium">Número MC</Label>
+            <Input
+              id="mc-number"
               type="text"
-              className="w-full px-3 py-2 border rounded-md"
               placeholder="MC-123456"
               value={companyData.mcNumber}
               onChange={(e) => setCompanyData({ ...companyData, mcNumber: e.target.value })}
@@ -394,10 +395,10 @@ function CompanySetupStep() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Teléfono</label>
-          <input
+          <Label htmlFor="company-phone" className="text-sm font-medium">Teléfono</Label>
+          <Input
+            id="company-phone"
             type="tel"
-            className="w-full px-3 py-2 border rounded-md"
             placeholder="+1 (555) 123-4567"
             value={companyData.phone}
             onChange={(e) => setCompanyData({ ...companyData, phone: e.target.value })}
@@ -405,10 +406,10 @@ function CompanySetupStep() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Email de la Empresa</label>
-          <input
+          <Label htmlFor="company-email" className="text-sm font-medium">Email de la Empresa</Label>
+          <Input
+            id="company-email"
             type="email"
-            className="w-full px-3 py-2 border rounded-md"
             placeholder="info@transportesabc.com"
             value={companyData.email}
             onChange={(e) => setCompanyData({ ...companyData, email: e.target.value })}
