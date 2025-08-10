@@ -99,17 +99,27 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       // Guardar información personal si existe el formulario
       if (personalInfoForm) {
         console.log('💾 Submitting personal info form...');
-        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
-        personalInfoForm.dispatchEvent(submitEvent);
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const submitButton = personalInfoForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+        if (submitButton) {
+          console.log('💾 Clicking personal info submit button...');
+          submitButton.click();
+          await new Promise(resolve => setTimeout(resolve, 2000)); // Más tiempo para procesar
+        } else {
+          console.log('❌ No submit button found in personal info form');
+        }
       }
 
       // Guardar preferencias si existe el formulario
       if (preferencesForm) {
         console.log('💾 Submitting preferences form...');
-        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
-        preferencesForm.dispatchEvent(submitEvent);
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const submitButton = preferencesForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+        if (submitButton) {
+          console.log('💾 Clicking preferences submit button...');
+          submitButton.click();
+          await new Promise(resolve => setTimeout(resolve, 2000)); // Más tiempo para procesar
+        } else {
+          console.log('❌ No submit button found in preferences form');
+        }
       }
 
       // Guardar configuración específica de empresa si es owner
