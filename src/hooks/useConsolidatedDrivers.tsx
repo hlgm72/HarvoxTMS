@@ -161,22 +161,24 @@ export const useConsolidatedDrivers = () => {
           // Check if there's a pending invitation for this user (solo invitaciones NO aceptadas)
           const pendingInvitation = pendingInvitations?.find(inv => inv.target_user_id === profile.user_id);
           
-          // Si el usuario tiene perfil completo (phone y avatar), está activo
-          const hasCompleteProfile = Boolean(profile.phone && profile.avatar_url);
+          // Un conductor está activo si:
+          // 1. No tiene invitación pendiente (ya aceptó), Y
+          // 2. Tiene rol activo, Y
+          // 3. Tiene al menos el nombre en el perfil
+          const hasBasicProfile = Boolean(profile.first_name || profile.last_name);
+          const hasActiveRole = Boolean(driverRole?.is_active);
           
-          // Un conductor está pre-registrado si:
-          // 1. Tiene una invitación pendiente (no aceptada), O
-          // 2. No tiene un perfil completo (indicadores de que no ha completado activación)
-          const isPreRegistered = Boolean(pendingInvitation) || !hasCompleteProfile;
+          // Un conductor está pre-registrado solo si tiene invitación pendiente o no tiene rol activo
+          const isPreRegistered = Boolean(pendingInvitation) || !hasActiveRole;
           
           // Determine activation status based on available data
           let activationStatus: 'active' | 'pending_activation' | 'invited' = 'active';
           if (Boolean(pendingInvitation)) {
             activationStatus = 'invited'; // Aún no ha aceptado la invitación
-          } else if (!hasCompleteProfile) {
-            activationStatus = 'pending_activation'; // Ha aceptado pero no ha completado perfil
-          } else if (!driverRole?.is_active) {
-            activationStatus = 'invited';
+          } else if (!hasActiveRole) {
+            activationStatus = 'pending_activation'; // Aceptó pero rol no está activo
+          } else if (!hasBasicProfile) {
+            activationStatus = 'pending_activation'; // Aceptó pero no tiene datos básicos
           }
           
           // Determinar estado actual basado en cargas y activación
