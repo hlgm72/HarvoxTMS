@@ -67,7 +67,7 @@ export function BirthDateInput({
       )}
       
       <div className="relative">
-        <input
+        <Input
           type="text"
           value={value}
           onChange={handleChange}
@@ -76,7 +76,6 @@ export function BirthDateInput({
           placeholder={placeholder}
           disabled={disabled}
           className={cn(
-            'w-full px-3 py-2 border rounded-md',
             hasError && 'border-destructive focus-visible:ring-destructive'
           )}
           maxLength={10}
@@ -86,7 +85,7 @@ export function BirthDateInput({
         />
         
         {value && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none uppercase">
             {format}
           </div>
         )}
