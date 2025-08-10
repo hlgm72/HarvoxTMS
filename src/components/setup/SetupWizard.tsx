@@ -287,9 +287,12 @@ function ProfileSetupStep() {
           <input
             type="tel"
             className="w-full px-3 py-2 border rounded-md"
-            placeholder="+1 (555) 123-4567"
+            placeholder="(123) 456-7890"
             value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            onChange={(e) => {
+              const formatted = formatPhoneNumber(e.target.value);
+              setFormData({ ...formData, phone: formatted });
+            }}
           />
         </div>
 
@@ -322,7 +325,7 @@ function ProfileSetupStep() {
           <input
             type="tel"
             className="w-full px-3 py-2 border rounded-md"
-            placeholder="(281) 713-3044"
+            placeholder="(123) 456-7890"
             value={formData.emergencyPhone}
             onChange={(e) => {
               const formatted = formatPhoneNumber(e.target.value);
