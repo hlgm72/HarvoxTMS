@@ -87,7 +87,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
             Configuración Inicial
@@ -145,14 +145,14 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
           </div>
 
           {/* Step Content */}
-          <Card className="min-h-[400px]">
+          <Card className="flex-1 flex flex-col min-h-0">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 {React.createElement(steps[currentStep].icon, { className: "h-5 w-5" })}
                 {steps[currentStep].title}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 overflow-y-auto">
               {isCompleting ? (
                 <div className="flex flex-col items-center justify-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
@@ -580,7 +580,7 @@ function CompanySetupStep() {
   };
 
   return (
-    <div className="space-y-6 max-h-[60vh] overflow-y-auto">
+    <div className="space-y-6 h-full flex flex-col">
       <div className="text-center mb-6">
         <h3 className="text-lg font-semibold mb-2">Información de la Empresa</h3>
         <p className="text-muted-foreground">
@@ -588,7 +588,7 @@ function CompanySetupStep() {
         </p>
       </div>
 
-      <div className="space-y-4 px-1">
+      <div className="space-y-4 px-1 flex-1 overflow-y-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2 space-y-2">
             <label className="text-sm font-medium">Nombre de la Empresa *</label>
