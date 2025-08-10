@@ -153,12 +153,19 @@ export const useConsolidatedDrivers = () => {
           
           // Check if there's a pending invitation for this user
           const pendingInvitation = pendingInvitations?.find(inv => inv.target_user_id === profile.user_id);
-          const isPreRegistered = Boolean(pendingInvitation);
+          
+          // Un conductor está pre-registrado si:
+          // 1. Tiene una invitación pendiente, O
+          // 2. Tiene un perfil pero nunca se ha logueado (hire_date posterior a created_at)
+          const isPreRegistered = Boolean(pendingInvitation) || 
+            (!profile.phone && !profile.avatar_url); // Indicadores de que no ha completado su perfil
           
           // Determine activation status based on available data
           let activationStatus: 'active' | 'pending_activation' | 'invited' = 'active';
-          if (isPreRegistered) {
-            activationStatus = 'pending_activation';
+          if (Boolean(pendingInvitation)) {
+            activationStatus = 'invited'; // Aún no ha aceptado la invitación
+          } else if (isPreRegistered) {
+            activationStatus = 'pending_activation'; // Ha aceptado pero no ha completado perfil
           } else if (!driverRole?.is_active) {
             activationStatus = 'invited';
           }
