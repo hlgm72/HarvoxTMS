@@ -16,10 +16,10 @@ export const EmailFooter = () => (
       <Section style={footerContent}>
         <Section style={logoTitleSection}>
           <Img 
-            src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/company-logos/fleetnest-logo.png"
+            src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/avatars/fleetnest-bimi-logo.svg"
             alt="FleetNest Logo"
-            width="24"
-            height="24"
+            width="20"
+            height="20"
             style={logoStyle}
           />
           <Text style={footerTitle}>FleetNest TMS</Text>
@@ -78,8 +78,8 @@ const footerContent = {
 
 const footerTitle = {
   color: '#1e293b',
-  fontSize: '20px',
-  fontWeight: '700',
+  fontSize: '16px',
+  fontWeight: '600',
   margin: '0 0 12px 0',
   fontFamily: 'Inter, Helvetica, Arial, sans-serif',
 };
