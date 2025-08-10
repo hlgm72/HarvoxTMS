@@ -1,17 +1,57 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useCompanyCache } from './useCompanyCache';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 
 export const useDriversCount = () => {
   const { user } = useAuth();
   const { userCompany, isLoading: cacheLoading, error: cacheError } = useCompanyCache();
+  const queryClient = useQueryClient();
 
   // Memoizar queryKey para cache eficiente
   const queryKey = useMemo(() => {
     return ['drivers-count', user?.id, userCompany?.company_id];
   }, [user?.id, userCompany?.company_id]);
+
+  // Configurar escucha en tiempo real
+  useEffect(() => {
+    if (!userCompany?.company_id) return;
+
+    const channel = supabase
+      .channel('drivers-count-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_company_roles',
+          filter: `company_id=eq.${userCompany.company_id}`
+        },
+        () => {
+          console.log('🔄 Roles actualizados, invalidando contador de conductores');
+          queryClient.invalidateQueries({ queryKey: ['drivers-count'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public', 
+          table: 'user_invitations',
+          filter: `company_id=eq.${userCompany.company_id}`
+        },
+        () => {
+          console.log('🔄 Invitaciones actualizadas, invalidando contador de conductores');
+          queryClient.invalidateQueries({ queryKey: ['drivers-count'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userCompany?.company_id, queryClient]);
 
   const driversCountQuery = useQuery({
     queryKey,

@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface InviteDriverDialogProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ interface InviteDriverDialogProps {
 export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverDialogProps) {
   const { t } = useTranslation();
   const { showSuccess, showError } = useFleetNotifications();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -92,6 +94,17 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
         "Invitación enviada",
         `Se ha enviado la invitación al conductor a ${formData.email}`
       );
+
+      // Invalidar queries relacionadas para actualizar contadores y listas
+      await queryClient.invalidateQueries({
+        queryKey: ['drivers-count']
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['consolidated-drivers']
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['user-invitations']
+      });
 
       // Reset form
       setFormData({
