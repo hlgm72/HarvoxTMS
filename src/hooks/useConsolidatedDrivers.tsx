@@ -170,6 +170,16 @@ export const useConsolidatedDrivers = () => {
             activationStatus = 'invited';
           }
           
+          // Debug log para este conductor específico
+          console.log(`🚛 Debug conductor ${profile.first_name} ${profile.last_name}:`, {
+            pendingInvitation: Boolean(pendingInvitation),
+            isPreRegistered,
+            driverRoleActive: driverRole?.is_active,
+            activationStatus,
+            phone: profile.phone,
+            avatar_url: profile.avatar_url
+          });
+          
           // Determinar estado actual basado en cargas y activación
           let currentStatus: 'available' | 'on_route' | 'off_duty' | 'pre_registered' = 'available';
           const activeLoadsCount = driverLoads.length;

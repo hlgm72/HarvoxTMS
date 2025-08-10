@@ -237,6 +237,12 @@ export default function Drivers() {
   // Separar conductores activos de pendientes
   const activeDrivers = drivers.filter(d => d.activation_status === 'active');
   const pendingDrivers = drivers.filter(d => d.activation_status === 'pending_activation' || d.activation_status === 'invited');
+  
+  // Debug logs
+  console.log('🚛 Debug - Todos los conductores:', drivers);
+  console.log('🚛 Debug - Conductores activos:', activeDrivers);
+  console.log('🚛 Debug - Conductores pendientes:', pendingDrivers);
+  console.log('🚛 Debug - Activation statuses:', drivers.map(d => ({ name: `${d.first_name} ${d.last_name}`, status: d.activation_status })));
 
   return (
     <>
