@@ -81,6 +81,7 @@ export const useUserManagementACID = () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       queryClient.invalidateQueries({ queryKey: ['company-users'] });
       queryClient.invalidateQueries({ queryKey: ['drivers'] });
+      queryClient.invalidateQueries({ queryKey: ['drivers-count'] });
       queryClient.invalidateQueries({ queryKey: ['user-roles'] });
       queryClient.invalidateQueries({ queryKey: ['driver-profiles'] });
       
@@ -215,6 +216,7 @@ export const useUserDeactivationACID = () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       queryClient.invalidateQueries({ queryKey: ['company-users'] });
       queryClient.invalidateQueries({ queryKey: ['drivers'] });
+      queryClient.invalidateQueries({ queryKey: ['drivers-count'] });
       queryClient.invalidateQueries({ queryKey: ['user-roles'] });
       
       showSuccess(

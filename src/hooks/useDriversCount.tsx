@@ -51,14 +51,14 @@ export const useDriversCount = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userCompany?.company_id, queryClient]);
+  }, [userCompany?.company_id, queryClient, queryKey]);
 
   const driversCountQuery = useQuery({
     queryKey,
     retry: 1,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    staleTime: 300000, // Cache agresivo - 5 minutos
-    gcTime: 600000, // 10 minutos en cache
+    staleTime: 30000, // Cache menos agresivo - 30 segundos  
+    gcTime: 300000, // 5 minutos en cache
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchInterval: false,
@@ -126,9 +126,16 @@ export const useDriversCount = () => {
     enabled: !!user,
   });
 
+  // Función para invalidar manualmente el cache
+  const invalidateCount = () => {
+    console.log('🔄 Invalidando contador de conductores manualmente', queryKey);
+    queryClient.invalidateQueries({ queryKey });
+  };
+
   return { 
     driversCount: driversCountQuery.data || 0, 
     loading: driversCountQuery.isLoading, 
-    refreshCount: driversCountQuery.refetch 
+    refreshCount: driversCountQuery.refetch,
+    invalidateCount
   };
 };

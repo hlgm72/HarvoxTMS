@@ -22,6 +22,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { useDriversCount } from "@/hooks/useDriversCount";
 
 interface UserActionButtonProps {
   user: {
@@ -42,6 +43,7 @@ export function UserActionButton({
   variant = "outline"
 }: UserActionButtonProps) {
   const { userRole, user: currentUser } = useAuth();
+  const { invalidateCount } = useDriversCount();
   const queryClient = useQueryClient();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
@@ -94,6 +96,11 @@ export function UserActionButton({
 
       toast.success(`${user.first_name} ${user.last_name} ha sido desactivado exitosamente`);
       
+      // Invalidar contadores cuando se desactiva un usuario
+      invalidateCount();
+      queryClient.invalidateQueries({ queryKey: ['drivers-count'] });
+      queryClient.invalidateQueries({ queryKey: ['company-users'] });
+      
       setDeactivateDialogOpen(false);
       onUserUpdated?.();
     } catch (error: any) {
@@ -131,6 +138,9 @@ export function UserActionButton({
         queryClient.invalidateQueries({ queryKey: ['drivers-count'] });
         queryClient.invalidateQueries({ queryKey: ['company-users'] });
         queryClient.invalidateQueries({ queryKey: ['users'] });
+        
+        // También invalidar usando el hook específico
+        invalidateCount();
         
         setPermanentDeleteDialogOpen(false);
         setConfirmationEmail("");
