@@ -155,16 +155,83 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
   });
 
   useEffect(() => {
-    if (isOpen && driver?.user_id) {
+    if (isOpen && driver) {
       loadDriverData();
     }
   }, [isOpen, driver]);
 
   const loadDriverData = async () => {
-    if (!driver?.user_id) return;
+    if (!driver) return;
 
     setLoading(true);
     try {
+      // Si el driver tiene user_id vacío (es una invitación pendiente), 
+      // buscar datos en user_invitations usando el driver.id como email identifier
+      if (!driver.user_id || driver.user_id === '') {
+        // Para invitaciones pendientes, extraer el email del ID
+        const email = driver.id.startsWith('invitation-') 
+          ? driver.id.substring('invitation-'.length) 
+          : driver.id;
+          
+        // Buscar en user_invitations
+        const { data: invitation, error: invitationError } = await supabase
+          .from('user_invitations')
+          .select('first_name, last_name, email, metadata')
+          .eq('email', email)
+          .eq('role', 'driver')
+          .is('accepted_at', null)
+          .maybeSingle();
+
+        if (invitationError) {
+          console.error('Error loading invitation data:', invitationError);
+        }
+
+        if (invitation) {
+          // Extraer datos del metadata si existe
+          const metadata = invitation.metadata as any || {};
+          
+          setDriverData({
+            // Información personal básica desde la invitación
+            first_name: invitation.first_name || '',
+            last_name: invitation.last_name || '',
+            phone: metadata.phone || '',
+            date_of_birth: metadata.date_of_birth ? parseDateFromDatabase(metadata.date_of_birth) : null,
+            
+            // Información de empleo
+            driver_id: metadata.driver_id || '',
+            hire_date: metadata.hire_date ? parseDateFromDatabase(metadata.hire_date) : null,
+            
+            // Información de licencia
+            license_number: metadata.license_number || '',
+            cdl_class: metadata.cdl_class || '',
+            cdl_endorsements: metadata.cdl_endorsements || '',
+            license_state: metadata.license_state || '',
+            license_issue_date: metadata.license_issue_date ? parseDateFromDatabase(metadata.license_issue_date) : null,
+            license_expiry_date: metadata.license_expiry_date ? parseDateFromDatabase(metadata.license_expiry_date) : null,
+            
+            // Contacto de emergencia
+            emergency_contact_name: metadata.emergency_contact_name || '',
+            emergency_contact_phone: metadata.emergency_contact_phone || '',
+            
+            // Owner operator (por defecto false para invitaciones)
+            is_owner_operator: false,
+            business_name: '',
+            business_type: '',
+            business_address: '',
+            business_phone: '',
+            business_email: '',
+            tax_id: '',
+            dispatching_percentage: 0,
+            factoring_percentage: 0,
+            leasing_percentage: 0,
+            insurance_pay: 0,
+          });
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Para conductores ya activados, buscar en las tablas de perfil
       // Cargar perfil básico (incluyendo hire_date)
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
@@ -182,9 +249,6 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
         .maybeSingle();
 
       if (driverError) throw driverError;
-
-      // Cargar fecha de contratación desde driver_profiles (no desde user_company_roles)
-      // La fecha ya está incluida en driverProfile, no necesitamos consulta adicional
 
       // Cargar datos de owner operator
       const { data: ownerOperator, error: ownerOperatorError } = await supabase
@@ -313,10 +377,53 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
   };
 
   const handleSave = async () => {
-    if (!driver?.user_id) return;
+    if (!driver) return;
 
     setSaving(true);
     try {
+      // Si es una invitación pendiente (sin user_id), actualizar la invitación
+      if (!driver.user_id || driver.user_id === '') {
+        const email = driver.id.startsWith('invitation-') 
+          ? driver.id.substring('invitation-'.length) 
+          : driver.id;
+
+        // Crear metadata con todos los campos del formulario
+        const metadata = {
+          phone: handleTextBlur(driverData.phone),
+          date_of_birth: driverData.date_of_birth ? formatDateForDatabase(driverData.date_of_birth) : null,
+          driver_id: handleTextBlur(driverData.driver_id),
+          hire_date: driverData.hire_date ? formatDateForDatabase(driverData.hire_date) : null,
+          license_number: handleTextBlur(driverData.license_number),
+          cdl_class: handleTextBlur(driverData.cdl_class),
+          cdl_endorsements: driverData.cdl_endorsements,
+          license_state: handleTextBlur(driverData.license_state),
+          license_issue_date: driverData.license_issue_date ? formatDateForDatabase(driverData.license_issue_date) : null,
+          license_expiry_date: driverData.license_expiry_date ? formatDateForDatabase(driverData.license_expiry_date) : null,
+          emergency_contact_name: handleTextBlur(driverData.emergency_contact_name),
+          emergency_contact_phone: handleTextBlur(driverData.emergency_contact_phone),
+        };
+
+        // Actualizar la invitación con los nuevos datos
+        const { error: invitationError } = await supabase
+          .from('user_invitations')
+          .update({
+            first_name: handleTextBlur(driverData.first_name),
+            last_name: handleTextBlur(driverData.last_name),
+            metadata: metadata
+          })
+          .eq('email', email)
+          .eq('role', 'driver')
+          .is('accepted_at', null);
+
+        if (invitationError) throw invitationError;
+
+        showSuccess('Información de la invitación actualizada correctamente');
+        onSuccess();
+        onClose();
+        return;
+      }
+
+      // Para conductores ya activados, proceder con la lógica normal
       // Limpiar datos de entrada
       const cleanedData = {
         first_name: handleTextBlur(driverData.first_name),
