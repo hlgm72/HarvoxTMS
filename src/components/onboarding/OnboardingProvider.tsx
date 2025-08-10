@@ -22,26 +22,10 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
 
   // Controlar el flujo de setup wizard con useEffect
   useEffect(() => {
-    console.log('🎯 OnboardingProvider effect - DETAILED:');
-    console.log('- shouldShowOnboarding:', shouldShowOnboarding);
-    console.log('- shouldShowSetup:', shouldShowSetup);
-    console.log('- showTour:', showTour);
-    console.log('- showWelcome:', showWelcome);
-    console.log('- showSetup:', showSetup);
-    console.log('- isLoading:', isLoading);
-    
     const canActivate = !shouldShowOnboarding && shouldShowSetup && !showTour && !showWelcome;
-    console.log('- canActivateSetup:', canActivate);
     
     if (canActivate) {
-      console.log('✅ Activating Setup Wizard NOW');
       setShowSetup(true);
-    } else {
-      console.log('❌ Setup NOT activated because:');
-      console.log('  - onboardingStillShowing:', shouldShowOnboarding);
-      console.log('  - setupNotNeeded:', !shouldShowSetup);
-      console.log('  - tourActive:', showTour);
-      console.log('  - welcomeActive:', showWelcome);
     }
   }, [shouldShowOnboarding, shouldShowSetup, showTour, showWelcome, isLoading]);
 

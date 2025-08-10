@@ -174,16 +174,14 @@ export default function Auth() {
       const passwordValue = passwordInput.value || '';
       let hasChanges = false;
       
-      // Reduce excessive logging - only log significant changes
+      // Update form data if values changed
       if (emailValue && emailValue !== formData.email) {
-        console.log('✅ Email autofill detected:', emailValue);
         setFormData(prev => ({ ...prev, email: emailValue }));
         validateField('email', emailValue);
         hasChanges = true;
       }
       
       if (passwordValue && passwordValue !== formData.password) {
-        console.log('✅ Password autofill detected');
         setFormData(prev => ({ ...prev, password: passwordValue }));
         validateField('password', passwordValue);
         hasChanges = true;
@@ -217,7 +215,6 @@ export default function Auth() {
       });
       
       if (needsCheck) {
-        console.log('🔄 DOM mutation detected, checking autofill');
         setTimeout(detectCredentialAutofill, 50);
       }
     });
@@ -239,7 +236,6 @@ export default function Auth() {
     const checkValue = () => {
       if (!e.target) return;
       const emailValue = e.target.value?.trim() || '';
-      console.log('📍 Focus autofill check:', emailValue, 'vs current:', formData.email);
       if (emailValue && emailValue !== formData.email) {
         setFormData(prev => ({ ...prev, email: emailValue }));
         validateField('email', emailValue);
@@ -258,7 +254,6 @@ export default function Auth() {
   const handleEmailInputEvent = (e: React.FormEvent<HTMLInputElement>) => {
     if (!e.currentTarget) return;
     const emailValue = e.currentTarget.value?.trim() || '';
-    console.log('📝 Input event triggered:', emailValue);
     if (emailValue !== formData.email) {
       setFormData(prev => ({ ...prev, email: emailValue }));
       validateField('email', emailValue);
@@ -270,7 +265,6 @@ export default function Auth() {
 
   // Password autofill detection - reducido para evitar bucle infinito
   const handlePasswordFocus = () => {
-    console.log('🔐 Password field focused, checking autofill');
     setTimeout(detectCredentialAutofill, 50);
     setTimeout(detectCredentialAutofill, 200);
   };
