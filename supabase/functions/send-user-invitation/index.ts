@@ -132,6 +132,211 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Invitation created successfully:", invitation.id);
 
+    // ============================================
+    // PRE-REGISTER USER COMPLETELY IN DATABASE
+    // ============================================
+    let preRegisteredUserId: string | null = null;
+    
+    try {
+      console.log("🔄 Checking if user already exists in auth...");
+      
+      // First check if a user with this email already exists
+      const { data: existingUsers, error: listError } = await supabase.auth.admin.listUsers();
+      
+      if (listError) {
+        console.error("Error checking existing users:", listError);
+        throw new Error(`Failed to check existing users: ${listError.message}`);
+      }
+      
+      const existingUser = existingUsers.users.find(u => u.email === email);
+      
+      if (existingUser) {
+        console.log("✅ User already exists in auth, using existing user:", existingUser.id);
+        preRegisteredUserId = existingUser.id;
+        
+        // Update user metadata to include invitation info
+        const { error: updateError } = await supabase.auth.admin.updateUserById(
+          existingUser.id,
+          {
+            user_metadata: {
+              ...existingUser.user_metadata,
+              first_name: first_name,
+              last_name: last_name,
+              is_pre_registered: true,
+              invited_by: user.id,
+              company_id: companyId,
+              invited_as: role
+            }
+          }
+        );
+        
+        if (updateError) {
+          console.error("Error updating existing user metadata:", updateError);
+          // Don't fail the process, just log the error
+        }
+      } else {
+        console.log("🔄 Creating new pre-registered auth user...");
+        
+        // Create a placeholder user in auth.users for the invited user
+        const { data: newUser, error: authError } = await supabase.auth.admin.createUser({
+          email,
+          email_confirm: false, // Don't require email confirmation yet
+          password: crypto.randomUUID(), // Generate a random password - user will reset this when activating
+          user_metadata: {
+            first_name: first_name,
+            last_name: last_name,
+            is_pre_registered: true, // Flag to indicate this is a pre-registered user
+            invited_by: user.id,
+            company_id: companyId,
+            invited_as: role
+          }
+        });
+
+        if (authError) {
+          console.error("Error creating auth user:", authError);
+          throw new Error(`Failed to create user account: ${authError.message}`);
+        }
+
+        if (!newUser.user) {
+          throw new Error("No user returned from auth.admin.createUser");
+        }
+
+        preRegisteredUserId = newUser.user.id;
+        console.log("✅ New pre-registered auth user created:", preRegisteredUserId);
+      }
+
+      // ============================================
+      // CREATE ALL NECESSARY RECORDS
+      // ============================================
+      
+      // Check if profiles already exist to avoid duplicate key errors
+      const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("user_id")
+        .eq("user_id", preRegisteredUserId)
+        .single();
+
+      const { data: existingRole } = await supabase
+        .from("user_company_roles")
+        .select("id")
+        .eq("user_id", preRegisteredUserId)
+        .eq("company_id", companyId)
+        .eq("role", role)
+        .single();
+
+      const profileInserts = [];
+
+      // Only create profiles that don't exist
+      if (!existingProfile) {
+        profileInserts.push(
+          supabase
+            .from("profiles")
+            .insert({
+              user_id: preRegisteredUserId,
+              first_name: first_name,
+              last_name: last_name
+            })
+        );
+      }
+
+      // Create driver-specific records if role is driver
+      if (role === 'driver') {
+        const { data: existingDriverProfile } = await supabase
+          .from("driver_profiles")
+          .select("user_id")
+          .eq("user_id", preRegisteredUserId)
+          .single();
+
+        if (!existingDriverProfile) {
+          profileInserts.push(
+            supabase
+              .from("driver_profiles")
+              .insert({
+                user_id: preRegisteredUserId,
+                is_active: true
+              })
+          );
+        }
+
+        // Create owner operator record for drivers
+        if (!existingRole) {
+          profileInserts.push(
+            supabase
+              .from("owner_operators")
+              .insert({
+                user_id: preRegisteredUserId,
+                company_id: companyId,
+                operator_type: "company_driver",
+                contract_start_date: new Date().toISOString().split('T')[0],
+                is_active: true
+              })
+          );
+        }
+      }
+
+      // Create user company role
+      if (!existingRole) {
+        profileInserts.push(
+          supabase
+            .from("user_company_roles")
+            .insert({
+              user_id: preRegisteredUserId,
+              company_id: companyId,
+              role: role,
+              is_active: true,
+              assigned_by: user.id
+            })
+        );
+      }
+
+      // Execute all inserts
+      const results = await Promise.allSettled(profileInserts);
+      
+      // Check for any failures
+      const failures = results.filter(result => result.status === 'rejected');
+      if (failures.length > 0) {
+        console.error("Some profile creation operations failed:", failures);
+        // Log failures but don't fail the entire process
+        failures.forEach((failure, index) => {
+          console.error(`Profile creation failure ${index}:`, failure.reason);
+        });
+      }
+
+      // Update invitation with the created user_id
+      const { error: updateError } = await supabase
+        .from("user_invitations")
+        .update({ 
+          target_user_id: preRegisteredUserId,
+          metadata: {
+            pre_registered: true,
+            role: role
+          }
+        })
+        .eq("id", invitation.id);
+
+      if (updateError) {
+        console.error("Error updating invitation with user_id:", updateError);
+      }
+
+      console.log("✅ User pre-registered successfully with full profile");
+      
+    } catch (profileError: any) {
+      console.error("❌ Error during pre-registration:", profileError);
+      
+      // If we created the auth user but failed later, we should clean up
+      if (preRegisteredUserId) {
+        try {
+          await supabase.auth.admin.deleteUser(preRegisteredUserId);
+          console.log("🧹 Cleaned up partially created auth user");
+        } catch (cleanupError) {
+          console.error("Failed to cleanup auth user:", cleanupError);
+        }
+      }
+      
+      // Fail the entire invitation if pre-registration fails
+      throw new Error(`Pre-registration failed: ${profileError.message}`);
+    }
+
     // Send invitation email using Resend
     const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
     
