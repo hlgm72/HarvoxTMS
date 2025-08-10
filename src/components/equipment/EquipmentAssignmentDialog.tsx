@@ -24,7 +24,7 @@ import { useEquipment } from '@/hooks/useEquipment';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { useEquipmentAssignments } from '@/hooks/useEquipmentAssignments';
 import { capitalizeWords } from '@/lib/textUtils';
-import { CreateEquipmentInline } from './CreateEquipmentInline';
+import { CreateEquipmentDialog } from './CreateEquipmentDialog';
 
 interface EquipmentAssignmentDialogProps {
   isOpen: boolean;
@@ -42,8 +42,7 @@ export function EquipmentAssignmentDialog({
   const [selectedDriverId, setSelectedDriverId] = useState<string>('');
   const [assignmentType, setAssignmentType] = useState<'permanent' | 'temporary'>('permanent');
   const [notes, setNotes] = useState('');
-  const [showCreateTruckDialog, setShowCreateTruckDialog] = useState(false);
-  const [showCreateTrailerDialog, setShowCreateTrailerDialog] = useState(false);
+  const [showCreateEquipmentDialog, setShowCreateEquipmentDialog] = useState(false);
 
   const { equipment } = useEquipment();
   const { drivers } = useCompanyDrivers();
@@ -283,51 +282,64 @@ export function EquipmentAssignmentDialog({
 
           {/* Selección de Camión (Requerido) */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="truck-select" className="flex items-center gap-2">
-                <Truck className="h-4 w-4 text-blue-600" />
-                Camión (Requerido)
-              </Label>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowCreateTruckDialog(true)}
-                className="h-8 gap-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-              >
-                <Plus className="h-3 w-3" />
-                Añadir nuevo
-              </Button>
-            </div>
-            <Select value={selectedTruckId} onValueChange={setSelectedTruckId}>
+            <Label htmlFor="truck-select" className="flex items-center gap-2">
+              <Truck className="h-4 w-4 text-blue-600" />
+              Camión (Requerido)
+            </Label>
+            <Select 
+              value={selectedTruckId} 
+              onValueChange={(value) => {
+                if (value === "add-new-truck") {
+                  setShowCreateEquipmentDialog(true);
+                  return;
+                }
+                setSelectedTruckId(value);
+              }}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar camión..." />
               </SelectTrigger>
                <SelectContent className="bg-white z-50">
+                {/* Opción para agregar nuevo camión */}
+                <SelectItem 
+                  value="add-new-truck" 
+                  onSelect={() => {
+                    setShowCreateEquipmentDialog(true);
+                  }}
+                >
+                  <div className="flex items-center gap-2 text-blue-600">
+                    <Plus className="h-4 w-4" />
+                    <span className="font-medium">Añadir Nuevo Camión</span>
+                  </div>
+                </SelectItem>
+                
                 {availableTrucks.length === 0 ? (
-                  <div className="p-4 text-center text-muted-foreground">
+                  <div className="p-4 text-center text-muted-foreground border-t">
                     <Truck className="h-8 w-8 mx-auto mb-2 opacity-50" />
                     <p>No hay camiones disponibles</p>
                     <p className="text-xs">Todos los camiones están asignados</p>
                   </div>
                 ) : (
-                  availableTrucks.map((truck) => (
-                    <SelectItem key={truck.id} value={truck.id}>
-                      <div className="flex items-center gap-2">
-                        <Truck className="h-4 w-4 text-blue-600" />
-                        <span className="font-medium">{truck.equipment_number}</span>
-                         <span className="text-muted-foreground">
-                           {capitalizeWords(truck.make)} {capitalizeWords(truck.model)}
-                          {truck.year && ` (${truck.year})`}
-                        </span>
-                        {truck.license_plate && (
-                          <Badge variant="outline" className="text-xs">
-                            {truck.license_plate}
-                          </Badge>
-                        )}
-                      </div>
-                    </SelectItem>
-                  ))
+                  <>
+                    <div className="h-px bg-border my-1" />
+                    {availableTrucks.map((truck) => (
+                      <SelectItem key={truck.id} value={truck.id}>
+                        <div className="flex items-center gap-2">
+                          <Truck className="h-4 w-4 text-blue-600" />
+                          <span className="font-medium">{truck.equipment_number}</span>
+                           <span className="text-muted-foreground">
+                             {capitalizeWords(truck.make)} {capitalizeWords(truck.model)}
+                            {truck.year && ` (${truck.year})`}
+                          </span>
+                          {truck.license_plate && (
+                            <Badge variant="outline" className="text-xs">
+                              {truck.license_plate}
+                            </Badge>
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </>
                 )}
               </SelectContent>
             </Select>
@@ -335,33 +347,46 @@ export function EquipmentAssignmentDialog({
 
           {/* Selección de Trailer (Opcional) */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="trailer-select" className="flex items-center gap-2">
-                <Truck className="h-4 w-4 text-green-600" />
-                Trailer (Opcional)
-              </Label>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowCreateTrailerDialog(true)}
-                className="h-8 gap-1 text-green-600 hover:text-green-700 hover:bg-green-50"
-              >
-                <Plus className="h-3 w-3" />
-                Añadir nuevo
-              </Button>
-            </div>
-            <Select value={selectedTrailerId} onValueChange={setSelectedTrailerId}>
+            <Label htmlFor="trailer-select" className="flex items-center gap-2">
+              <Truck className="h-4 w-4 text-green-600" />
+              Trailer (Opcional)
+            </Label>
+            <Select 
+              value={selectedTrailerId} 
+              onValueChange={(value) => {
+                if (value === "add-new-trailer") {
+                  setShowCreateEquipmentDialog(true);
+                  return;
+                }
+                setSelectedTrailerId(value);
+              }}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar trailer (opcional)..." />
               </SelectTrigger>
                <SelectContent className="bg-white z-50">
+                {/* Opción para agregar nuevo trailer */}
+                <SelectItem 
+                  value="add-new-trailer" 
+                  onSelect={() => {
+                    setShowCreateEquipmentDialog(true);
+                  }}
+                >
+                  <div className="flex items-center gap-2 text-green-600">
+                    <Plus className="h-4 w-4" />
+                    <span className="font-medium">Añadir Nuevo Trailer</span>
+                  </div>
+                </SelectItem>
+                
+                <div className="h-px bg-border my-1" />
+                
                 <SelectItem value="none">
                   <div className="flex items-center gap-2">
                     <X className="h-4 w-4 text-muted-foreground" />
                     <span>Sin trailer (Power Only)</span>
                   </div>
                 </SelectItem>
+                
                 {availableTrailers.map((trailer) => (
                   <SelectItem key={trailer.id} value={trailer.id}>
                     <div className="flex items-center gap-2">
@@ -452,26 +477,10 @@ export function EquipmentAssignmentDialog({
         </div>
       </DialogContent>
 
-      {/* Modal para crear nuevo camión */}
-      <CreateEquipmentInline
-        open={showCreateTruckDialog}
-        onOpenChange={setShowCreateTruckDialog}
-        equipmentType="truck"
-        onSuccess={(equipmentId) => {
-          setSelectedTruckId(equipmentId);
-          setShowCreateTruckDialog(false);
-        }}
-      />
-
-      {/* Modal para crear nuevo trailer */}
-      <CreateEquipmentInline
-        open={showCreateTrailerDialog}
-        onOpenChange={setShowCreateTrailerDialog}
-        equipmentType="trailer"
-        onSuccess={(equipmentId) => {
-          setSelectedTrailerId(equipmentId);
-          setShowCreateTrailerDialog(false);
-        }}
+      {/* Modal para crear nuevo equipo */}
+      <CreateEquipmentDialog
+        open={showCreateEquipmentDialog}
+        onOpenChange={setShowCreateEquipmentDialog}
       />
     </Dialog>
   );
