@@ -98,27 +98,61 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
 
       // Guardar información personal si existe el formulario
       if (personalInfoForm) {
-        console.log('💾 Submitting personal info form...');
+        console.log('💾 Found personal info form, looking for submit button...');
         const submitButton = personalInfoForm.querySelector('button[type="submit"]') as HTMLButtonElement;
-        if (submitButton) {
+        const allButtons = personalInfoForm.querySelectorAll('button');
+        console.log(`Found ${allButtons.length} buttons in form:`, Array.from(allButtons).map(btn => ({
+          type: btn.type,
+          text: btn.textContent,
+          disabled: btn.disabled
+        })));
+        
+        if (submitButton && !submitButton.disabled) {
           console.log('💾 Clicking personal info submit button...');
-          submitButton.click();
-          await new Promise(resolve => setTimeout(resolve, 2000)); // Más tiempo para procesar
+          
+          // Crear un evento de submit para activar la validación
+          const form = personalInfoForm.querySelector('form');
+          if (form) {
+            console.log('📋 Triggering form submission...');
+            const formEvent = new Event('submit', { bubbles: true, cancelable: true });
+            form.dispatchEvent(formEvent);
+          } else {
+            submitButton.click();
+          }
+          
+          await new Promise(resolve => setTimeout(resolve, 3000)); // Más tiempo para procesar
         } else {
-          console.log('❌ No submit button found in personal info form');
+          console.log('❌ No valid submit button found in personal info form or button is disabled');
         }
       }
 
       // Guardar preferencias si existe el formulario
       if (preferencesForm) {
-        console.log('💾 Submitting preferences form...');
+        console.log('💾 Found preferences form, looking for submit button...');
         const submitButton = preferencesForm.querySelector('button[type="submit"]') as HTMLButtonElement;
-        if (submitButton) {
+        const allButtons = preferencesForm.querySelectorAll('button');
+        console.log(`Found ${allButtons.length} buttons in preferences form:`, Array.from(allButtons).map(btn => ({
+          type: btn.type,
+          text: btn.textContent,
+          disabled: btn.disabled
+        })));
+        
+        if (submitButton && !submitButton.disabled) {
           console.log('💾 Clicking preferences submit button...');
-          submitButton.click();
-          await new Promise(resolve => setTimeout(resolve, 2000)); // Más tiempo para procesar
+          
+          // Crear un evento de submit para activar la validación
+          const form = preferencesForm.querySelector('form');
+          if (form) {
+            console.log('📋 Triggering preferences form submission...');
+            const formEvent = new Event('submit', { bubbles: true, cancelable: true });
+            form.dispatchEvent(formEvent);
+          } else {
+            submitButton.click();
+          }
+          
+          await new Promise(resolve => setTimeout(resolve, 3000)); // Más tiempo para procesar
         } else {
-          console.log('❌ No submit button found in preferences form');
+          console.log('❌ No valid submit button found in preferences form or button is disabled');
         }
       }
 
