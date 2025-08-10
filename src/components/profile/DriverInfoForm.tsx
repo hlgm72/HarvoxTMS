@@ -302,16 +302,6 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
 
   return (
     <div className={className}>
-      <div className="mb-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Truck className="h-5 w-5 text-primary" />
-          <h3 className="text-base md:text-lg font-medium">Información de Conductor</h3>
-        </div>
-        <p className="text-xs md:text-sm text-muted-foreground">
-          Actualiza tu información de conductor y licencia CDL
-        </p>
-      </div>
-      
       <Form {...driverInfoForm}>
         <form onSubmit={driverInfoForm.handleSubmit(onSubmitDriverInfo)} className="space-y-4">
           <LicenseInfoSection
