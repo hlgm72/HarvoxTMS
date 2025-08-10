@@ -14,7 +14,6 @@ import { createTextHandlers } from '@/lib/textUtils';
 import { LicenseInfoSection } from '@/components/drivers/LicenseInfoSection';
 
 const driverInfoSchema = z.object({
-  date_of_birth: z.string().optional(),
   emergency_contact_name: z.string().optional(),
   emergency_contact_phone: z.string().optional(),
 });
@@ -72,13 +71,12 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
   const driverInfoForm = useForm<DriverInfoFormData>({
     resolver: zodResolver(driverInfoSchema),
     defaultValues: {
-      date_of_birth: '',
       emergency_contact_name: '',
       emergency_contact_phone: '',
     },
   });
 
-  // Helper functions for date conversion
+  // Helper functions for date conversion (for license dates only now)
   const formatDateForDisplay = (dateString: string | null): string => {
     if (!dateString) return '';
     
@@ -106,45 +104,12 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
     }
   };
 
-  const convertDisplayToDatabase = (displayDate: string): string | null => {
-    if (!displayDate || displayDate.trim() === '') return null;
-    
-    try {
-      // Handle dd/mm/yyyy format
-      const ddmmyyyy = displayDate.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-      if (ddmmyyyy) {
-        const [, day, month, year] = ddmmyyyy;
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-      }
-      
-      // Handle mm/dd/yyyy format
-      const mmddyyyy = displayDate.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-      if (mmddyyyy) {
-        // For now, assume dd/mm/yyyy for Spanish locale
-        const [, day, month, year] = mmddyyyy;
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-      }
-      
-      return null;
-    } catch (error) {
-      console.error('Error converting date to database format:', error);
-      return null;
-    }
-  };
-
   // Fetch driver profile data
   useEffect(() => {
     const fetchDriverProfile = async () => {
       if (!user) return;
 
       try {
-        // Obtener datos del perfil general (fecha de nacimiento)
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('date_of_birth')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
         // Obtener datos específicos del conductor
         const { data, error } = await supabase
           .from('driver_profiles')
@@ -157,14 +122,9 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
           return;
         }
 
-        if (profileError && profileError.code !== 'PGRST116') {
-          console.error('Error fetching profile:', profileError);
-          return;
-        }
-
-        // Combinar datos de ambas tablas
+        // Set driver profile state
         const combinedProfile = {
-          date_of_birth: profileData?.date_of_birth || null,
+          date_of_birth: null,
           emergency_contact_name: data?.emergency_contact_name || null,
           emergency_contact_phone: data?.emergency_contact_phone || null,
           license_number: data?.license_number || null,
@@ -179,7 +139,6 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
 
         // Update form with profile data
         driverInfoForm.reset({
-          date_of_birth: formatDateForDisplay(profileData?.date_of_birth),
           emergency_contact_name: data?.emergency_contact_name || '',
           emergency_contact_phone: data?.emergency_contact_phone || '',
         });
@@ -210,17 +169,6 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
 
     setUpdating(true);
     try {
-      // Update date_of_birth in profiles table
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          date_of_birth: convertDisplayToDatabase(data.date_of_birth || ''),
-          updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', user.id);
-
-      if (profileError) throw profileError;
-
       // Check if driver profile exists
       const { data: existingProfile } = await supabase
         .from('driver_profiles')
@@ -263,7 +211,7 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
 
       // Update local state
       setDriverProfile({
-        date_of_birth: convertDisplayToDatabase(data.date_of_birth || ''),
+        date_of_birth: null,
         emergency_contact_name: data.emergency_contact_name || null,
         emergency_contact_phone: data.emergency_contact_phone || null,
         license_number: licenseData.license_number || null,
@@ -291,7 +239,6 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
   const handleCancel = () => {
     if (driverProfile) {
       driverInfoForm.reset({
-        date_of_birth: formatDateForDisplay(driverProfile.date_of_birth),
         emergency_contact_name: driverProfile.emergency_contact_name || '',
         emergency_contact_phone: driverProfile.emergency_contact_phone || '',
       });
@@ -361,38 +308,12 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
           <h3 className="text-base md:text-lg font-medium">Información de Conductor</h3>
         </div>
         <p className="text-xs md:text-sm text-muted-foreground">
-          Actualiza tu información personal como conductor
+          Actualiza tu información de conductor y licencia CDL
         </p>
       </div>
       
       <Form {...driverInfoForm}>
         <form onSubmit={driverInfoForm.handleSubmit(onSubmitDriverInfo)} className="space-y-4">
-          <FormField
-            control={driverInfoForm.control}
-            name="date_of_birth"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium">Fecha de Nacimiento</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input 
-                      placeholder="dd/mm/aaaa" 
-                      {...field} 
-                      value={field.value || ''}
-                      maxLength={10}
-                    />
-                    {field.value && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                        dd/mm/aaaa
-                      </div>
-                    )}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           <LicenseInfoSection
             data={licenseData}
             onUpdate={handleLicenseUpdate}

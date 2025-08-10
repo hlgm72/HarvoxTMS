@@ -177,41 +177,43 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
             />
           </div>
 
-          <FormField
-            control={personalInfoForm.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium">Teléfono</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="(555) 123-4567" 
-                    value={field.value || ''} 
-                    {...phoneHandlers}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={personalInfoForm.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Teléfono</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="(555) 123-4567" 
+                      value={field.value || ''} 
+                      {...phoneHandlers}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={personalInfoForm.control}
-            name="date_of_birth"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium">Fecha de Nacimiento</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="date"
-                    {...field} 
-                    value={field.value || ''}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={personalInfoForm.control}
+              name="date_of_birth"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Fecha de Nacimiento</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="date"
+                      {...field} 
+                      value={field.value || ''}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           <AddressForm
             streetAddress={personalInfoForm.watch('street_address') || ''}
