@@ -159,6 +159,9 @@ export default function Users() {
 
       if (error) throw error;
 
+      console.log('🔍 Active company users found:', companyUsers?.length || 0);
+      console.log('🔍 Company users data:', companyUsers);
+
       // Obtener invitaciones pendientes
       const { data: pendingInvitations, error: invitationsError } = await supabase
         .from('user_invitations')
@@ -177,6 +180,9 @@ export default function Users() {
         .order('created_at', { ascending: false });
 
       if (invitationsError) throw invitationsError;
+
+      console.log('🔍 Pending invitations found:', pendingInvitations?.length || 0);
+      console.log('🔍 Pending invitations data:', pendingInvitations);
 
       // Combinar usuarios activos y pendientes
       const allUserIds = new Set();
@@ -308,6 +314,15 @@ export default function Users() {
       }
 
       const usersList = Array.from(usersMap.values());
+      console.log('🔍 Final users list length:', usersList.length);
+      console.log('🔍 Final users list:', usersList.map(u => ({ 
+        id: u.id, 
+        email: u.email, 
+        status: u.status, 
+        first_name: u.first_name, 
+        last_name: u.last_name 
+      })));
+      
       setUsers(usersList);
       setFilteredUsers(usersList); // Inicializar usuarios filtrados
       
@@ -371,6 +386,11 @@ export default function Users() {
   // o tienen invitaciones pendientes
   const activeUsers = filteredUsers.filter(user => user.status === 'active');
   const pendingUsers = filteredUsers.filter(user => user.status !== 'active');
+
+  console.log('🔍 Filtered users total:', filteredUsers.length);
+  console.log('🔍 Active users after filter:', activeUsers.length);
+  console.log('🔍 Pending users after filter:', pendingUsers.length);
+  console.log('🔍 All filtered users statuses:', filteredUsers.map(u => ({ id: u.id, email: u.email, status: u.status })));
 
   const handleDeleteTestUser = async () => {
     if (!userRole?.role || !['superadmin', 'company_owner'].includes(userRole.role)) {
