@@ -18,7 +18,11 @@ export function useDriverEquipment(driverUserId?: string) {
     queryFn: async () => {
       if (!driverUserId) return [];
       
-      if (!driverUserId) return [];
+      // Skip queries for invitation-based IDs that are not real UUIDs
+      if (driverUserId.startsWith('invitation-')) {
+        return [];
+      }
+      
       const { data: assignments, error: assignmentsError } = await supabase
         .from('equipment_assignments')
         .select('id, assigned_date, is_active, equipment_id')
@@ -64,7 +68,7 @@ export function useDriverEquipment(driverUserId?: string) {
       
       return result;
     },
-    enabled: !!driverUserId,
+    enabled: !!driverUserId && !driverUserId.startsWith('invitation-'),
     staleTime: 30000, // 30 seconds
     gcTime: 300000, // 5 minutes
   });
