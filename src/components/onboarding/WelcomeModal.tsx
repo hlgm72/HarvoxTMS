@@ -52,16 +52,16 @@ export function WelcomeModal({ isOpen, onClose, onStartTour, userRole }: Welcome
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
-          <div className="text-center mb-6">
-            <div className="flex justify-center mb-4">
-              <AppLogo width={80} height={80} />
+          <div className="text-center mb-4 sm:mb-6">
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <AppLogo width={60} height={60} className="sm:w-20 sm:h-20" />
             </div>
-            <DialogTitle className="text-3xl font-bold mb-2">
+            <DialogTitle className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">
               ¡Bienvenido a FleetNest!
             </DialogTitle>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground px-2">
               Tu plataforma completa de gestión de flotas como <span className="font-semibold text-primary">{roleName}</span>
             </p>
           </div>
@@ -70,20 +70,20 @@ export function WelcomeModal({ isOpen, onClose, onStartTour, userRole }: Welcome
         <div className="space-y-6">
           {/* Features Grid */}
           <div>
-            <h3 className="text-xl font-semibold mb-4 text-center">
+            <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-center">
               Funciones principales para tu rol
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {features.map((feature, index) => (
                 <Card key={index} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <feature.icon className="h-5 w-5 text-primary" />
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex items-start gap-2 sm:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <feature.icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                       </div>
-                      <div>
-                        <h4 className="font-semibold mb-1">{feature.title}</h4>
-                        <p className="text-sm text-muted-foreground">{feature.description}</p>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-semibold mb-1 text-sm sm:text-base">{feature.title}</h4>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{feature.description}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -94,21 +94,21 @@ export function WelcomeModal({ isOpen, onClose, onStartTour, userRole }: Welcome
 
           {/* Quick Stats */}
           <Card className="bg-gradient-to-r from-primary/5 to-secondary/5">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="text-center">
-                <h3 className="text-lg font-semibold mb-2">¿Sabías que FleetNest te ayuda a...</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <h3 className="text-base sm:text-lg font-semibold mb-2">¿Sabías que FleetNest te ayuda a...</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-3 sm:mt-4">
                   <div>
-                    <div className="text-2xl font-bold text-primary">30%</div>
-                    <div className="text-sm text-muted-foreground">Reducir costos operativos</div>
+                    <div className="text-xl sm:text-2xl font-bold text-primary">30%</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground">Reducir costos operativos</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-primary">25%</div>
-                    <div className="text-sm text-muted-foreground">Mejorar eficiencia de rutas</div>
+                    <div className="text-xl sm:text-2xl font-bold text-primary">25%</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground">Mejorar eficiencia de rutas</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-primary">40%</div>
-                    <div className="text-sm text-muted-foreground">Ahorrar tiempo administrativo</div>
+                    <div className="text-xl sm:text-2xl font-bold text-primary">40%</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground">Ahorrar tiempo administrativo</div>
                   </div>
                 </div>
               </div>
@@ -116,16 +116,16 @@ export function WelcomeModal({ isOpen, onClose, onStartTour, userRole }: Welcome
           </Card>
 
           {/* Action Buttons */}
-          <div className="flex gap-4 justify-center pt-4">
-            <Button variant="outline" onClick={onClose} className="px-8">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-4">
+            <Button variant="outline" onClick={onClose} className="px-4 sm:px-8 text-sm sm:text-base">
               Explorar por mi cuenta
             </Button>
-            <Button onClick={onStartTour} className="px-8">
+            <Button onClick={onStartTour} className="px-4 sm:px-8 text-sm sm:text-base">
               Comenzar tour guiado
             </Button>
           </div>
 
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-center text-xs sm:text-sm text-muted-foreground px-2">
             Puedes acceder a este tutorial en cualquier momento desde el menú de ayuda
           </p>
         </div>

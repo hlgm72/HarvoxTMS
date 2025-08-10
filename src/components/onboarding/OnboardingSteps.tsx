@@ -25,26 +25,26 @@ export function useOnboardingSteps(userRole: string): OnboardingStep[] {
       title: 'Centro de Comando',
       description: 'Tu panel principal donde puedes ver el estado general de tu flota',
       content: (
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-            <BarChart3 className="h-6 w-6 text-primary" />
-            <div>
-              <h4 className="font-medium">Estadísticas en Tiempo Real</h4>
-              <p className="text-sm text-muted-foreground">
-                Visualiza métricas importantes de tu operación
-              </p>
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-background rounded-lg border">
+              <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
+              <div className="min-w-0">
+                <h4 className="font-medium text-sm sm:text-base">Estadísticas en Tiempo Real</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Visualiza métricas importantes de tu operación
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-background rounded-lg border">
+              <MapPin className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 flex-shrink-0" />
+              <div className="min-w-0">
+                <h4 className="font-medium text-sm sm:text-base">Mapa de Seguimiento</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Ubicación en tiempo real de tu flota
+                </p>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-            <MapPin className="h-6 w-6 text-green-600" />
-            <div>
-              <h4 className="font-medium">Mapa de Seguimiento</h4>
-              <p className="text-sm text-muted-foreground">
-                Ubicación en tiempo real de tu flota
-              </p>
-            </div>
-          </div>
-        </div>
       )
     }
   ];
@@ -57,17 +57,17 @@ export function useOnboardingSteps(userRole: string): OnboardingStep[] {
         title: 'Gestión de Usuarios',
         description: 'Administra tu equipo: conductores, despachadores y gerentes',
         content: (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <Users className="h-6 w-6 text-blue-600" />
-              <div>
-                <h4 className="font-medium">Invitar Usuarios</h4>
-                <p className="text-sm text-muted-foreground">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-background rounded-lg border">
+              <Users className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 flex-shrink-0" />
+              <div className="min-w-0">
+                <h4 className="font-medium text-sm sm:text-base">Invitar Usuarios</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Añade conductores y personal administrativo
                 </p>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground px-1">
               💡 <strong>Tip:</strong> Puedes asignar diferentes roles y permisos a cada usuario
             </div>
           </div>
@@ -82,17 +82,17 @@ export function useOnboardingSteps(userRole: string): OnboardingStep[] {
         title: 'Flota de Vehículos',
         description: 'Registra y gestiona todos tus vehículos y equipos',
         content: (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <Truck className="h-6 w-6 text-orange-600" />
-              <div>
-                <h4 className="font-medium">Registro de Vehículos</h4>
-                <p className="text-sm text-muted-foreground">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-background rounded-lg border">
+              <Truck className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600 flex-shrink-0" />
+              <div className="min-w-0">
+                <h4 className="font-medium text-sm sm:text-base">Registro de Vehículos</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Añade tractocamiones, remolques y equipos
                 </p>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground px-1">
               💡 <strong>Tip:</strong> Registra información de mantenimiento y documentos
             </div>
           </div>
@@ -107,17 +107,17 @@ export function useOnboardingSteps(userRole: string): OnboardingStep[] {
         title: 'Sistema de Pagos',
         description: 'Configura pagos a conductores y gestiona deducciones',
         content: (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <CreditCard className="h-6 w-6 text-green-600" />
-              <div>
-                <h4 className="font-medium">Períodos de Pago</h4>
-                <p className="text-sm text-muted-foreground">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-background rounded-lg border">
+              <CreditCard className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 flex-shrink-0" />
+              <div className="min-w-0">
+                <h4 className="font-medium text-sm sm:text-base">Períodos de Pago</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Automatiza el cálculo de pagos por períodos
                 </p>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground px-1">
               💡 <strong>Tip:</strong> Puedes configurar deducciones automáticas y reportes
             </div>
           </div>
@@ -135,17 +135,17 @@ export function useOnboardingSteps(userRole: string): OnboardingStep[] {
         title: 'Gestión de Cargas',
         description: 'Administra entregas, asigna cargas y supervisa el progreso',
         content: (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <Package className="h-6 w-6 text-purple-600" />
-              <div>
-                <h4 className="font-medium">Crear Cargas</h4>
-                <p className="text-sm text-muted-foreground">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-background rounded-lg border">
+              <Package className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600 flex-shrink-0" />
+              <div className="min-w-0">
+                <h4 className="font-medium text-sm sm:text-base">Crear Cargas</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Registra nuevas entregas con todos los detalles
                 </p>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground px-1">
               💡 <strong>Tip:</strong> Asigna cargas a conductores y rastrea su progreso
             </div>
           </div>
@@ -160,17 +160,17 @@ export function useOnboardingSteps(userRole: string): OnboardingStep[] {
         title: 'Rastreo de Flota',
         description: 'Monitorea la ubicación y estado de todos tus vehículos',
         content: (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <MapPin className="h-6 w-6 text-red-600" />
-              <div>
-                <h4 className="font-medium">Ubicación en Tiempo Real</h4>
-                <p className="text-sm text-muted-foreground">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-background rounded-lg border">
+              <MapPin className="h-5 w-5 sm:h-6 sm:w-6 text-red-600 flex-shrink-0" />
+              <div className="min-w-0">
+                <h4 className="font-medium text-sm sm:text-base">Ubicación en Tiempo Real</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Ve dónde están todos tus vehículos
                 </p>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground px-1">
               💡 <strong>Tip:</strong> Recibe alertas de demoras o desvíos de ruta
             </div>
           </div>
@@ -184,17 +184,17 @@ export function useOnboardingSteps(userRole: string): OnboardingStep[] {
         title: 'Despacho de Cargas',
         description: 'Asigna cargas a conductores y coordina entregas',
         content: (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <Package className="h-6 w-6 text-indigo-600" />
-              <div>
-                <h4 className="font-medium">Asignación de Cargas</h4>
-                <p className="text-sm text-muted-foreground">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-background rounded-lg border">
+              <Package className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600 flex-shrink-0" />
+              <div className="min-w-0">
+                <h4 className="font-medium text-sm sm:text-base">Asignación de Cargas</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Conecta cargas con conductores disponibles
                 </p>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground px-1">
               💡 <strong>Tip:</strong> Verifica la disponibilidad antes de asignar
             </div>
           </div>
@@ -209,17 +209,17 @@ export function useOnboardingSteps(userRole: string): OnboardingStep[] {
         title: 'Gestión de Conductores',
         description: 'Supervisa y comunícate con tu equipo de conductores',
         content: (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <Users className="h-6 w-6 text-teal-600" />
-              <div>
-                <h4 className="font-medium">Estado de Conductores</h4>
-                <p className="text-sm text-muted-foreground">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-background rounded-lg border">
+              <Users className="h-5 w-5 sm:h-6 sm:w-6 text-teal-600 flex-shrink-0" />
+              <div className="min-w-0">
+                <h4 className="font-medium text-sm sm:text-base">Estado de Conductores</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Ve quién está disponible, en ruta o descansando
                 </p>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground px-1">
               💡 <strong>Tip:</strong> Mantén comunicación constante para optimizar operaciones
             </div>
           </div>
@@ -236,17 +236,17 @@ export function useOnboardingSteps(userRole: string): OnboardingStep[] {
         title: 'Tu Panel de Conductor',
         description: 'Accede a todas tus herramientas desde cualquier dispositivo',
         content: (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <Package className="h-6 w-6 text-blue-600" />
-              <div>
-                <h4 className="font-medium">Cargas Asignadas</h4>
-                <p className="text-sm text-muted-foreground">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-background rounded-lg border">
+              <Package className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 flex-shrink-0" />
+              <div className="min-w-0">
+                <h4 className="font-medium text-sm sm:text-base">Cargas Asignadas</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Ve tus entregas pendientes y en progreso
                 </p>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground px-1">
               💡 <strong>Tip:</strong> Actualiza el estado de tus cargas en tiempo real
             </div>
           </div>
@@ -257,17 +257,17 @@ export function useOnboardingSteps(userRole: string): OnboardingStep[] {
         title: 'Documentos de Carga',
         description: 'Accede a manifiestos, permisos y documentación necesaria',
         content: (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <FileText className="h-6 w-6 text-green-600" />
-              <div>
-                <h4 className="font-medium">Documentación Digital</h4>
-                <p className="text-sm text-muted-foreground">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-background rounded-lg border">
+              <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 flex-shrink-0" />
+              <div className="min-w-0">
+                <h4 className="font-medium text-sm sm:text-base">Documentación Digital</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Todo lo que necesitas para tus entregas
                 </p>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground px-1">
               💡 <strong>Tip:</strong> Descarga documentos antes de salir sin conexión
             </div>
           </div>

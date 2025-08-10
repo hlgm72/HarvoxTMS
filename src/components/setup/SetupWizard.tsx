@@ -87,12 +87,12 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-4 sm:p-6">
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle className="text-2xl font-bold text-center">
+          <DialogTitle className="text-lg sm:text-xl lg:text-2xl font-bold text-center">
             Configuración Inicial
           </DialogTitle>
-          <p className="text-muted-foreground text-center">
+          <p className="text-sm sm:text-base text-muted-foreground text-center px-2">
             Vamos a configurar tu cuenta paso a paso
           </p>
         </DialogHeader>
@@ -108,7 +108,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
           </div>
 
           {/* Steps Navigation */}
-          <div className="flex justify-between items-center flex-shrink-0">
+          <div className="flex justify-center sm:justify-between items-center flex-shrink-0 overflow-x-auto pb-2 gap-2 sm:gap-0">
             {steps.map((step, index) => {
               const Icon = step.icon;
               const isActive = index === currentStep;
@@ -117,12 +117,12 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
               return (
                 <div
                   key={step.id}
-                  className={`flex items-center gap-3 cursor-pointer transition-all ${
+                  className={`flex items-center gap-2 sm:gap-3 cursor-pointer transition-all flex-shrink-0 ${
                     isActive ? 'text-primary' : isCompleted ? 'text-green-600' : 'text-muted-foreground'
                   }`}
                   onClick={() => handleStepClick(index)}
                 >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 transition-all ${
                     isActive 
                       ? 'bg-primary text-primary-foreground border-primary' 
                       : isCompleted 
@@ -130,13 +130,13 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                       : 'border-muted-foreground'
                   }`}>
                     {isCompleted ? (
-                      <CheckCircle className="h-5 w-5" />
+                      <CheckCircle className="h-3 w-3 sm:h-5 sm:w-5" />
                     ) : (
-                      <Icon className="h-5 w-5" />
+                      <Icon className="h-3 w-3 sm:h-5 sm:w-5" />
                     )}
                   </div>
                   <div className="hidden md:block">
-                    <div className="font-medium">{step.title}</div>
+                    <div className="font-medium text-sm">{step.title}</div>
                     <div className="text-xs text-muted-foreground">{step.description}</div>
                   </div>
                 </div>
@@ -146,9 +146,9 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
 
           {/* Step Content */}
           <Card className="flex-1 flex flex-col min-h-0">
-            <CardHeader className="flex-shrink-0">
-              <CardTitle className="flex items-center gap-2">
-                {React.createElement(steps[currentStep].icon, { className: "h-5 w-5" })}
+            <CardHeader className="flex-shrink-0 pb-3 sm:pb-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                {React.createElement(steps[currentStep].icon, { className: "h-4 w-4 sm:h-5 sm:w-5" })}
                 {steps[currentStep].title}
               </CardTitle>
             </CardHeader>
@@ -162,7 +162,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                   </p>
                 </div>
               ) : (
-                <div className="h-full overflow-y-auto p-6">
+                <div className="h-full overflow-y-auto p-3 sm:p-6">
                   <SetupStepContent step={steps[currentStep]} />
                 </div>
               )}
@@ -171,23 +171,24 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
 
           {/* Navigation Buttons */}
           {!isCompleting && (
-            <div className="flex justify-between pt-4 flex-shrink-0">
+            <div className="flex flex-col sm:flex-row justify-between pt-4 flex-shrink-0 gap-3 sm:gap-0">
               <Button
                 variant="outline"
                 onClick={handlePrevious}
                 disabled={currentStep === 0}
+                className="text-sm sm:text-base"
               >
-                <ArrowLeft className="h-4 w-4 mr-2" />
+                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                 Anterior
               </Button>
 
-              <div className="flex gap-2">
-                <Button variant="ghost" onClick={onClose}>
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-2">
+                <Button variant="ghost" onClick={onClose} className="text-sm sm:text-base order-2 sm:order-1">
                   Saltar configuración
                 </Button>
-                <Button onClick={handleNext}>
+                <Button onClick={handleNext} className="text-sm sm:text-base order-1 sm:order-2">
                   {currentStep === steps.length - 1 ? 'Finalizar' : 'Siguiente'}
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                  <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-2" />
                 </Button>
               </div>
             </div>
@@ -264,7 +265,7 @@ function ProfileSetupStep() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">Nombre *</label>
           <input
@@ -396,8 +397,8 @@ function PreferencesSetupStep() {
         </p>
       </div>
 
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div className="space-y-2">
             <label className="text-sm font-medium">Idioma</label>
             <select
@@ -646,7 +647,7 @@ function CompanySetupStep() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Teléfono</label>
             <input
