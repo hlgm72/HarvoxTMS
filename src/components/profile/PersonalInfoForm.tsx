@@ -153,8 +153,12 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
           onConflict: 'user_id'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving profile:', error);
+        throw error;
+      }
 
+      console.log('Profile saved successfully, refreshing profile data...');
       // Refresh profile data to update the UI
       await refreshProfile();
 

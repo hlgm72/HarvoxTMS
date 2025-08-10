@@ -68,8 +68,13 @@ export function PreferencesForm({ onCancel, showCancelButton = true, className }
           onConflict: 'user_id'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving preferences:', error);
+        throw error;
+      }
 
+      console.log('Preferences saved successfully, refreshing profile data...');
+      
       // Update i18n language if changed
       if (data.preferred_language && data.preferred_language !== i18n.language) {
         i18n.changeLanguage(data.preferred_language);
