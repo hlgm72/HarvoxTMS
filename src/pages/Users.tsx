@@ -173,6 +173,7 @@ export default function Users() {
       const { data: pendingInvitations, error: invitationsError } = await supabase
         .from('user_invitations')
         .select(`
+          id,
           target_user_id,
           first_name,
           last_name,
@@ -227,13 +228,13 @@ export default function Users() {
       // Procesar invitaciones pendientes
       if (pendingInvitations && pendingInvitations.length > 0) {
         pendingInvitations.forEach(invitation => {
-          // Crear un ID único para invitaciones sin target_user_id
-          const userId = invitation.target_user_id || `pending-${invitation.email}`;
+          // Para invitaciones pendientes, usar el invitation.id como identificador único
+          const userId = invitation.target_user_id || invitation.id;
           
           // Solo agregar si no es un usuario ya activo en esta empresa
           if (!allUserIds.has(userId)) {
-            // Solo agregar UUIDs válidos al Set principal
-            if (invitation.target_user_id && !userId.startsWith('pending-')) {
+            // Solo agregar UUIDs válidos para consultas de perfiles
+            if (invitation.target_user_id) {
               allUserIds.add(userId);
             }
             
@@ -259,9 +260,9 @@ export default function Users() {
         return;
       }
 
-      // Obtener perfiles de usuarios para aquellos que tienen user_id
+      // Obtener perfiles de usuarios para aquellos que tienen user_id real (no IDs de invitación)
       const userIdsWithProfiles = Array.from(allUserIds).filter((id): id is string => 
-        typeof id === 'string' && id.length > 0 && !id.startsWith('pending-')
+        typeof id === 'string' && id.length > 0
       );
       
       console.log('🔍 Fetching profiles for users:', userIdsWithProfiles.length);
