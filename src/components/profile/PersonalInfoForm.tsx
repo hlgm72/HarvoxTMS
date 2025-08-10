@@ -202,7 +202,6 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
               name="date_of_birth"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">Fecha de Nacimiento</FormLabel>
                   <FormControl>
                     <BirthDateInput 
                       {...field} 
