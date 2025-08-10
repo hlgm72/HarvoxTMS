@@ -129,7 +129,7 @@ export function LoadAssignmentSection({
                   <SelectValue placeholder="Selecciona un conductor..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {activeDrivers.filter(driver => driver.user_id && driver.user_id.trim() !== '').map((driver) => (
+                  {activeDrivers.map((driver) => (
                     <SelectItem key={driver.user_id} value={driver.user_id}>
                       <div className="flex items-center gap-2">
                         <User className="h-4 w-4 text-muted-foreground" />

@@ -215,7 +215,7 @@ export const useConsolidatedDrivers = () => {
           });
         });
 
-        // Add drivers that are only invited (no profile yet) - includes invitations without target_user_id
+          // Add drivers that are only invited (no profile yet) - includes invitations without target_user_id
         pendingInvitations?.forEach(invitation => {
           // Skip if already processed (has target_user_id and already in allDrivers)
           if (invitation.target_user_id && allDrivers.some(d => d.user_id === invitation.target_user_id)) {
@@ -231,7 +231,7 @@ export const useConsolidatedDrivers = () => {
           
           allDrivers.push({
             id: driverId,
-            user_id: invitation.target_user_id || '', // Empty string for invitations without user
+            user_id: invitation.target_user_id || driverId, // Use the generated ID for invitations without user
             first_name: invitation.first_name || '',
             last_name: invitation.last_name || '',
             phone: null,
@@ -247,7 +247,7 @@ export const useConsolidatedDrivers = () => {
             is_active: true,
             emergency_contact_name: null,
             emergency_contact_phone: null,
-            current_status: 'pre_registered',
+            current_status: 'available', // Los conductores invitados deben estar disponibles para asignación
             active_loads_count: 0,
             is_pre_registered: true,
             activation_status: 'invited'
