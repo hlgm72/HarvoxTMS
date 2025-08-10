@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { VisuallyHidden } from '@/components/ui/visually-hidden';
 import { CheckCircle, User, Settings, Building, Truck, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { PersonalInfoForm } from '@/components/profile/PersonalInfoForm';
@@ -102,6 +103,11 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0">
+        <VisuallyHidden>
+          <DialogDescription>
+            Asistente de configuración inicial para completar el perfil del usuario
+          </DialogDescription>
+        </VisuallyHidden>
         <DialogHeader className="flex-shrink-0 p-4 sm:p-6 border-b">
           <DialogTitle className="text-lg sm:text-xl lg:text-2xl font-bold text-center">
             Configuración Inicial

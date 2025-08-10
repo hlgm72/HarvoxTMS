@@ -1,9 +1,10 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Users, Truck, FileText, BarChart3, Settings, MapPin } from 'lucide-react';
 import { AppLogo } from '@/components/ui/AppLogo';
+import { VisuallyHidden } from '@/components/ui/visually-hidden';
 
 interface WelcomeModalProps {
   isOpen: boolean;
@@ -53,6 +54,11 @@ export function WelcomeModal({ isOpen, onClose, onStartTour, userRole }: Welcome
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+        <VisuallyHidden>
+          <DialogDescription>
+            Modal de bienvenida que introduce las funciones principales de FleetNest
+          </DialogDescription>
+        </VisuallyHidden>
         <DialogHeader>
           <div className="text-center mb-4 sm:mb-6">
             <div className="flex justify-center mb-3 sm:mb-4">
