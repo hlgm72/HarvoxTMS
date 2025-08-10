@@ -318,41 +318,43 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
           <div className="space-y-4 border-t pt-4">
             <h4 className="text-sm font-medium text-muted-foreground">Contacto de Emergencia</h4>
             
-            <FormField
-              control={driverInfoForm.control}
-              name="emergency_contact_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">Nombre del Contacto</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Nombre completo del contacto de emergencia" 
-                      {...field} 
-                      value={field.value || ''}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={driverInfoForm.control}
+                name="emergency_contact_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Nombre del Contacto</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Nombre completo del contacto de emergencia" 
+                        {...field} 
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={driverInfoForm.control}
-              name="emergency_contact_phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">Teléfono del Contacto</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="(555) 123-4567"
-                      value={field.value || ''} 
-                      {...phoneHandlers}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={driverInfoForm.control}
+                name="emergency_contact_phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Teléfono del Contacto</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="(555) 123-4567"
+                        value={field.value || ''} 
+                        {...phoneHandlers}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
