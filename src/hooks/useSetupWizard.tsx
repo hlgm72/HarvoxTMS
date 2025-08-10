@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export function useSetupWizard() {
@@ -6,52 +6,7 @@ export function useSetupWizard() {
   const [shouldShowSetup, setShouldShowSetup] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    console.log('🔧 useSetupWizard useEffect triggered:', { user: !!user, currentRole });
-    
-    if (!user || !currentRole) {
-      console.log('🔧 No user or role, setting loading false');
-      setIsLoading(false);
-      setShouldShowSetup(false);
-      return;
-    }
-
-    checkSetupStatus();
-  }, [user, currentRole]);
-
-  // Listen for onboarding completion to immediately activate setup
-  useEffect(() => {
-    if (!user || !currentRole) return;
-    
-    const handleOnboardingCompleted = (event: CustomEvent) => {
-      console.log('🔧 Onboarding completed event received, immediately checking setup status');
-      checkSetupStatus();
-    };
-    
-    const handleStorageChange = () => {
-      console.log('🔧 Storage changed, re-checking setup status');
-      checkSetupStatus();
-    };
-    
-    // Listen for custom onboarding completion event (immediate)
-    window.addEventListener('onboardingCompleted', handleOnboardingCompleted as EventListener);
-    
-    // Listen for storage changes (fallback for cross-tab)
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Reduced interval as final fallback
-    const interval = setInterval(() => {
-      checkSetupStatus();
-    }, 500);
-    
-    return () => {
-      window.removeEventListener('onboardingCompleted', handleOnboardingCompleted as EventListener);
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
-    };
-  }, [user, currentRole]);
-
-  const checkSetupStatus = () => {
+  const checkSetupStatus = useCallback(() => {
     if (!user || !currentRole) return;
 
     try {
@@ -66,22 +21,6 @@ export function useSetupWizard() {
       // Mostrar setup solo si completó onboarding pero no setup
       const shouldShow = Boolean(onboardingCompleted) && !Boolean(completed);
       
-      console.log('🔧 Setup wizard check:');
-      console.log('- setupKey:', setupKey);
-      console.log('- onboardingKey:', onboardingKey);
-      console.log('- onboardingCompleted:', !!onboardingCompleted);
-      console.log('- setupCompleted:', !!completed);
-      console.log('- shouldShow:', shouldShow);
-      console.log('- userExists:', !!user);
-      console.log('- roleExists:', !!currentRole);
-      console.log('- userId:', user?.id);
-      console.log('- role:', currentRole);
-      
-      console.log('🔧 Raw localStorage values:');
-      console.log('- onboardingRaw:', onboardingCompleted);
-      console.log('- setupRaw:', completed);
-      
-      console.log('🔧 Setting shouldShowSetup to:', shouldShow);
       setShouldShowSetup(shouldShow);
     } catch (error) {
       console.error('Error checking setup status:', error);
@@ -89,9 +28,49 @@ export function useSetupWizard() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user, currentRole]);
 
-  const markSetupCompleted = () => {
+  useEffect(() => {
+    if (!user || !currentRole) {
+      setIsLoading(false);
+      setShouldShowSetup(false);
+      return;
+    }
+
+    checkSetupStatus();
+  }, [checkSetupStatus, user, currentRole]);
+
+  // Listen for onboarding completion to immediately activate setup
+  useEffect(() => {
+    if (!user || !currentRole) return;
+    
+    const handleOnboardingCompleted = () => {
+      checkSetupStatus();
+    };
+    
+    const handleStorageChange = () => {
+      checkSetupStatus();
+    };
+    
+    // Listen for custom onboarding completion event (immediate)
+    window.addEventListener('onboardingCompleted', handleOnboardingCompleted);
+    
+    // Listen for storage changes (fallback for cross-tab)
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Much longer interval as final fallback - only check every 5 seconds
+    const interval = setInterval(() => {
+      checkSetupStatus();
+    }, 5000);
+    
+    return () => {
+      window.removeEventListener('onboardingCompleted', handleOnboardingCompleted);
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [checkSetupStatus, user, currentRole]);
+
+  const markSetupCompleted = useCallback(() => {
     if (!user || !currentRole) return;
 
     try {
@@ -105,9 +84,9 @@ export function useSetupWizard() {
     } catch (error) {
       console.error('Error marking setup completed:', error);
     }
-  };
+  }, [user, currentRole]);
 
-  const resetSetup = () => {
+  const resetSetup = useCallback(() => {
     if (!user || !currentRole) return;
 
     try {
@@ -117,7 +96,7 @@ export function useSetupWizard() {
     } catch (error) {
       console.error('Error resetting setup:', error);
     }
-  };
+  }, [user, currentRole]);
 
   return {
     shouldShowSetup,
