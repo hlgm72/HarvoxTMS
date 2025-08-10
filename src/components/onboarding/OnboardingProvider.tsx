@@ -50,8 +50,8 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
     return <>{children}</>;
   }
 
-  // No mostrar onboarding/setup si AMBOS están completados
-  if (!shouldShowOnboarding && !shouldShowSetup) {
+  // No mostrar onboarding/setup si AMBOS están completados Y no hay modal de completado activo
+  if (!shouldShowOnboarding && !shouldShowSetup && !showSetupCompleted) {
     return <>{children}</>;
   }
 
