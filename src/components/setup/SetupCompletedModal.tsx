@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription } from '@/components/ui/dialog';
 import { CheckCircle } from 'lucide-react';
 
 interface SetupCompletedModalProps {
@@ -13,6 +13,9 @@ export function SetupCompletedModal({ isOpen, onClose }: SetupCompletedModalProp
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md p-0">
+        <DialogDescription className="sr-only">
+          Modal que confirma que la configuración inicial ha sido completada exitosamente
+        </DialogDescription>
         <div className="text-center py-12 px-8">
           <div className="w-20 h-20 bg-gradient-to-r from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="h-10 w-10 text-green-600" />
