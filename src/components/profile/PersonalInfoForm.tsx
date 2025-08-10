@@ -127,7 +127,8 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
     try {
       const { error } = await supabase
         .from('profiles')
-        .update({
+        .upsert({
+          user_id: user.id,
           first_name: data.first_name,
           last_name: data.last_name,
           phone: data.phone || null,
@@ -137,8 +138,9 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
           city_id: data.city_id || null,
           zip_code: data.zip_code || null,
           updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', user.id);
+        }, {
+          onConflict: 'user_id'
+        });
 
       if (error) throw error;
 

@@ -54,12 +54,14 @@ export function PreferencesForm({ onCancel, showCancelButton = true, className }
     try {
       const { error } = await supabase
         .from('profiles')
-        .update({
+        .upsert({
+          user_id: user.id,
           preferred_language: data.preferred_language || 'en',
           timezone: data.timezone || 'America/New_York',
           updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', user.id);
+        }, {
+          onConflict: 'user_id'
+        });
 
       if (error) throw error;
 
