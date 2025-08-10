@@ -193,9 +193,9 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
             name="date_of_birth"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium">Fecha de Nacimiento</FormLabel>
                 <FormControl>
                   <BirthDateInput
+                    label="Fecha de Nacimiento"
                     value={field.value || ''}
                     onValueChange={(value, isValid) => {
                       field.onChange(value);
