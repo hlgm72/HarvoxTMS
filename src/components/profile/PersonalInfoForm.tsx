@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Save, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { createTextHandlers } from '@/lib/textUtils';
+import { BirthDateInput } from '@/components/ui/BirthDateInput';
 
 const personalInfoSchema = z.object({
   first_name: z.string().min(1, 'El nombre es requerido'),
@@ -203,8 +204,7 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
                 <FormItem>
                   <FormLabel className="text-sm font-medium">Fecha de Nacimiento</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="date"
+                    <BirthDateInput 
                       {...field} 
                       value={field.value || ''}
                     />
