@@ -419,44 +419,51 @@ export function PendingInvitationsSection({
 
       {/* Dialog para confirmar cancelación */}
       <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-lg sm:max-w-md mx-4">
           <DialogHeader>
             <DialogTitle>Cancelar Invitación</DialogTitle>
             <DialogDescription>
               ¿Cómo quieres proceder con la invitación para{' '}
-              <strong>{selectedInvitation?.email}</strong>?
+              <strong className="break-all">{selectedInvitation?.email}</strong>?
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-3">
             {selectedInvitation?.target_user_id ? (
-              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                <p className="text-sm text-orange-700">
+              <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-lg p-3">
+                <p className="text-sm text-orange-700 dark:text-orange-300">
                   ⚠️ <strong>Este usuario ya fue pre-registrado</strong> en el sistema con todos sus datos.
                 </p>
               </div>
             ) : (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-sm text-blue-700">
+              <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                <p className="text-sm text-blue-700 dark:text-blue-300">
                   ℹ️ Esta invitación aún no ha creado un usuario en el sistema.
                 </p>
               </div>
             )}
           </div>
-          <DialogFooter className="flex-col gap-2 sm:flex-col">
+          
+          <DialogFooter className="flex flex-col gap-3 sm:gap-2">
             <Button
               variant="outline"
               onClick={handleCancelInvitation}
               disabled={processingInvitation === selectedInvitation?.id}
-              className="w-full"
+              className="w-full justify-start text-left h-auto py-3 px-4"
             >
-              {processingInvitation === selectedInvitation?.id ? (
-                <RefreshCw className="h-4 w-4 animate-spin mr-2" />
-              ) : null}
-              Solo cancelar invitación
-              <span className="text-xs text-muted-foreground ml-1">
-                (mantener usuario pre-registrado)
-              </span>
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-2">
+                  {processingInvitation === selectedInvitation?.id ? (
+                    <RefreshCw className="h-4 w-4 animate-spin flex-shrink-0" />
+                  ) : null}
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium">Solo cancelar invitación</span>
+                    <span className="text-xs text-muted-foreground">
+                      Mantener usuario pre-registrado
+                    </span>
+                  </div>
+                </div>
+              </div>
             </Button>
             
             {selectedInvitation?.target_user_id && (
@@ -464,15 +471,21 @@ export function PendingInvitationsSection({
                 variant="destructive"
                 onClick={handleDeleteUserCompletely}
                 disabled={processingInvitation === selectedInvitation?.id}
-                className="w-full"
+                className="w-full justify-start text-left h-auto py-3 px-4"
               >
-                {processingInvitation === selectedInvitation?.id ? (
-                  <RefreshCw className="h-4 w-4 animate-spin mr-2" />
-                ) : null}
-                Eliminar usuario completamente
-                <span className="text-xs text-muted-foreground ml-1">
-                  (eliminar todo del sistema)
-                </span>
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-2">
+                    {processingInvitation === selectedInvitation?.id ? (
+                      <RefreshCw className="h-4 w-4 animate-spin flex-shrink-0" />
+                    ) : null}
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium">Eliminar usuario completamente</span>
+                      <span className="text-xs text-muted-foreground">
+                        Eliminar todo del sistema
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </Button>
             )}
             
