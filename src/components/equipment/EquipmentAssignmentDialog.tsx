@@ -24,6 +24,7 @@ import { useEquipment } from '@/hooks/useEquipment';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { useEquipmentAssignments } from '@/hooks/useEquipmentAssignments';
 import { capitalizeWords } from '@/lib/textUtils';
+import { CreateEquipmentInline } from './CreateEquipmentInline';
 
 interface EquipmentAssignmentDialogProps {
   isOpen: boolean;
@@ -41,6 +42,8 @@ export function EquipmentAssignmentDialog({
   const [selectedDriverId, setSelectedDriverId] = useState<string>('');
   const [assignmentType, setAssignmentType] = useState<'permanent' | 'temporary'>('permanent');
   const [notes, setNotes] = useState('');
+  const [showCreateTruckDialog, setShowCreateTruckDialog] = useState(false);
+  const [showCreateTrailerDialog, setShowCreateTrailerDialog] = useState(false);
 
   const { equipment } = useEquipment();
   const { drivers } = useCompanyDrivers();
@@ -280,10 +283,22 @@ export function EquipmentAssignmentDialog({
 
           {/* Selección de Camión (Requerido) */}
           <div className="space-y-2">
-            <Label htmlFor="truck-select" className="flex items-center gap-2">
-              <Truck className="h-4 w-4 text-blue-600" />
-              Camión (Requerido)
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="truck-select" className="flex items-center gap-2">
+                <Truck className="h-4 w-4 text-blue-600" />
+                Camión (Requerido)
+              </Label>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowCreateTruckDialog(true)}
+                className="h-8 gap-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              >
+                <Plus className="h-3 w-3" />
+                Añadir nuevo
+              </Button>
+            </div>
             <Select value={selectedTruckId} onValueChange={setSelectedTruckId}>
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar camión..." />
@@ -320,10 +335,22 @@ export function EquipmentAssignmentDialog({
 
           {/* Selección de Trailer (Opcional) */}
           <div className="space-y-2">
-            <Label htmlFor="trailer-select" className="flex items-center gap-2">
-              <Truck className="h-4 w-4 text-green-600" />
-              Trailer (Opcional)
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="trailer-select" className="flex items-center gap-2">
+                <Truck className="h-4 w-4 text-green-600" />
+                Trailer (Opcional)
+              </Label>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowCreateTrailerDialog(true)}
+                className="h-8 gap-1 text-green-600 hover:text-green-700 hover:bg-green-50"
+              >
+                <Plus className="h-3 w-3" />
+                Añadir nuevo
+              </Button>
+            </div>
             <Select value={selectedTrailerId} onValueChange={setSelectedTrailerId}>
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar trailer (opcional)..." />
@@ -424,6 +451,28 @@ export function EquipmentAssignmentDialog({
           </div>
         </div>
       </DialogContent>
+
+      {/* Modal para crear nuevo camión */}
+      <CreateEquipmentInline
+        open={showCreateTruckDialog}
+        onOpenChange={setShowCreateTruckDialog}
+        equipmentType="truck"
+        onSuccess={(equipmentId) => {
+          setSelectedTruckId(equipmentId);
+          setShowCreateTruckDialog(false);
+        }}
+      />
+
+      {/* Modal para crear nuevo trailer */}
+      <CreateEquipmentInline
+        open={showCreateTrailerDialog}
+        onOpenChange={setShowCreateTrailerDialog}
+        equipmentType="trailer"
+        onSuccess={(equipmentId) => {
+          setSelectedTrailerId(equipmentId);
+          setShowCreateTrailerDialog(false);
+        }}
+      />
     </Dialog>
   );
 }
