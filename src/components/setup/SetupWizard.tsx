@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, User, Settings, Shield, Building, Truck, ArrowRight, ArrowLeft } from 'lucide-react';
+import { CheckCircle, User, Settings, Building, Truck, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { PersonalInfoForm } from '@/components/profile/PersonalInfoForm';
 import { PreferencesForm } from '@/components/profile/PreferencesForm';
@@ -61,14 +61,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       description: 'Información de tu empresa',
       icon: Building,
       completed: false
-    }] : []),
-    {
-      id: 'security',
-      title: 'Seguridad',
-      description: 'Configura tu contraseña',
-      icon: Shield,
-      completed: false
-    }
+    }] : [])
   ];
 
   const progress = ((currentStep + 1) / steps.length) * 100;
@@ -225,8 +218,6 @@ function SetupStepContent({ step }: { step: SetupStep }) {
       return <DriverInfoForm showCancelButton={false} />;
     case 'company':
       return <CompanySetupStep />;
-    case 'security':
-      return <SecurityForm showCancelButton={false} />;
     default:
       return <div>Paso no encontrado</div>;
   }
