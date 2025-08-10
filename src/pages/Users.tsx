@@ -212,9 +212,11 @@ export default function Users() {
       // Procesar invitaciones pendientes
       if (pendingInvitations && pendingInvitations.length > 0) {
         pendingInvitations.forEach(invitation => {
+          // Crear un ID único para invitaciones sin target_user_id
+          const userId = invitation.target_user_id || `pending-${invitation.email}`;
+          
           // Solo agregar si no es un usuario ya activo
-          if (invitation.target_user_id && !allUserIds.has(invitation.target_user_id)) {
-            const userId = invitation.target_user_id;
+          if (!allUserIds.has(userId)) {
             allUserIds.add(userId);
             
             usersMap.set(userId, {
