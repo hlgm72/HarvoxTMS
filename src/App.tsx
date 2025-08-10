@@ -36,6 +36,7 @@ import PaymentReports from "./pages/PaymentReports";
 import Preview from "./pages/Preview";
 
 import IconsPreview from "./pages/IconsPreview";
+import SVGPreview from "./pages/SVGPreview";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/layout/Layout";
 import { NotificationProvider } from "./components/notifications";
@@ -339,6 +340,16 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <IconsPreview />
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* SVG Preview */}
+        <Route 
+          path="/svg-preview" 
+          element={
+            <ProtectedRoute>
+              <SVGPreview />
             </ProtectedRoute>
           } 
         />
