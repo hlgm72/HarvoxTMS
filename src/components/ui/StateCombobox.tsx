@@ -1,12 +1,11 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Check, ChevronsUpDown, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
 
@@ -32,8 +31,6 @@ export function StateCombobox({
   const [states, setStates] = useState<State[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [inputValue, setInputValue] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
   const { showError } = useFleetNotifications();
 
   useEffect(() => {
@@ -61,57 +58,25 @@ export function StateCombobox({
   const selectedState = states.find((state) => state.id === value);
   
   const filteredStates = states.filter((state) =>
-    state.name.toLowerCase().includes((inputValue || searchTerm).toLowerCase()) ||
-    state.id.toLowerCase().includes((inputValue || searchTerm).toLowerCase())
+    state.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    state.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Update input value when selection changes
-  useEffect(() => {
-    if (selectedState && !open) {
-      setInputValue(selectedState.name);
-    } else if (!selectedState && !open) {
-      setInputValue("");
-    }
-  }, [selectedState, open]);
-
-  const handleInputChange = (value: string) => {
-    setInputValue(value);
-    setSearchTerm(value);
-    if (!open) {
-      setOpen(true);
-    }
-  };
-
-  const handleInputFocus = () => {
-    setOpen(true);
-  };
-
-  const handleSelect = (state: State | undefined) => {
-    onValueChange(state?.id);
-    setOpen(false);
-    if (state) {
-      setInputValue(state.name);
-    } else {
-      setInputValue("");
-    }
-    setSearchTerm("");
-  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div className="relative">
-          <Input
-            ref={inputRef}
-            value={inputValue}
-            onChange={(e) => handleInputChange(e.target.value)}
-            onFocus={handleInputFocus}
-            placeholder={placeholder}
-            disabled={disabled || loading}
-            className="pr-8"
-          />
-          <ChevronsUpDown className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 shrink-0 opacity-50" />
-        </div>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between"
+          disabled={disabled || loading}
+        >
+          <div className="flex items-center">
+            {selectedState ? selectedState.name : placeholder}
+          </div>
+          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+        </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command shouldFilter={false}>
@@ -130,7 +95,10 @@ export function StateCombobox({
                 <CommandItem
                   key="unspecified"
                   value="sin especificar"
-                  onSelect={() => handleSelect(undefined)}
+                  onSelect={() => {
+                    onValueChange(undefined);
+                    setOpen(false);
+                  }}
                 >
                   <Check
                     className={cn(
@@ -144,7 +112,10 @@ export function StateCombobox({
                   <CommandItem
                     key={state.id}
                     value={state.name.toLowerCase()}
-                    onSelect={() => handleSelect(state)}
+                    onSelect={() => {
+                      onValueChange(state.id === value ? undefined : state.id);
+                      setOpen(false);
+                    }}
                   >
                     <Check
                       className={cn(
