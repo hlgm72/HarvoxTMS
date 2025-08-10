@@ -16,10 +16,10 @@ export const EmailFooter = () => (
       <Section style={footerContent}>
         <Section style={logoTitleSection}>
           <Img 
-            src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/avatars/fleetnest-bimi-logo.svg"
+            src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/company-logos/fleetnest-logo.png"
             alt="FleetNest Logo"
-            width="20"
-            height="20"
+            width="24"
+            height="24"
             style={logoStyle}
           />
           <Text style={footerTitle}>FleetNest TMS</Text>
