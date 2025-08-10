@@ -125,6 +125,18 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
 
     setUpdating(true);
     try {
+      console.log('Attempting to save profile data:', {
+        user_id: user.id,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        phone: data.phone || null,
+        date_of_birth: formatDateForDatabase(data.date_of_birth),
+        street_address: data.street_address || null,
+        state_id: data.state_id || null,
+        city_id: data.city_id ? data.city_id : null,
+        zip_code: data.zip_code || null,
+      });
+
       const { error } = await supabase
         .from('profiles')
         .upsert({
@@ -132,12 +144,11 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
           first_name: data.first_name,
           last_name: data.last_name,
           phone: data.phone || null,
-          date_of_birth: formatDateForDatabase(data.date_of_birth) || null,
+          date_of_birth: formatDateForDatabase(data.date_of_birth),
           street_address: data.street_address || null,
           state_id: data.state_id || null,
-          city_id: data.city_id || null,
+          city_id: data.city_id ? data.city_id : null,
           zip_code: data.zip_code || null,
-          updated_at: new Date().toISOString(),
         }, {
           onConflict: 'user_id'
         });

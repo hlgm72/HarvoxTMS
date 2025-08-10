@@ -52,13 +52,18 @@ export function PreferencesForm({ onCancel, showCancelButton = true, className }
 
     setUpdating(true);
     try {
+      console.log('Attempting to save preferences data:', {
+        user_id: user.id,
+        preferred_language: data.preferred_language || 'en',
+        timezone: data.timezone || 'America/New_York',
+      });
+
       const { error } = await supabase
         .from('profiles')
         .upsert({
           user_id: user.id,
           preferred_language: data.preferred_language || 'en',
           timezone: data.timezone || 'America/New_York',
-          updated_at: new Date().toISOString(),
         }, {
           onConflict: 'user_id'
         });
