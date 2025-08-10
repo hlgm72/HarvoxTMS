@@ -26,7 +26,7 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
             className="flex items-center gap-2 text-sm py-3 px-4 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground min-w-0 flex-1"
           >
             <IdCard className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">Información Personal</span>
+            <span className="truncate">Datos Personales</span>
           </TabsTrigger>
           <TabsTrigger 
             value="preferences" 
