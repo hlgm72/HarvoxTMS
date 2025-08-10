@@ -422,27 +422,27 @@ export function PendingInvitationsSection({
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Cancelar Invitación</DialogTitle>
-            <DialogDescription className="space-y-3">
-              <p>
-                ¿Cómo quieres proceder con la invitación para{' '}
-                <strong>{selectedInvitation?.email}</strong>?
-              </p>
-              
-              {selectedInvitation?.target_user_id ? (
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                  <p className="text-sm text-orange-700">
-                    ⚠️ <strong>Este usuario ya fue pre-registrado</strong> en el sistema con todos sus datos.
-                  </p>
-                </div>
-              ) : (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <p className="text-sm text-blue-700">
-                    ℹ️ Esta invitación aún no ha creado un usuario en el sistema.
-                  </p>
-                </div>
-              )}
+            <DialogDescription>
+              ¿Cómo quieres proceder con la invitación para{' '}
+              <strong>{selectedInvitation?.email}</strong>?
             </DialogDescription>
           </DialogHeader>
+          
+          <div className="space-y-3">
+            {selectedInvitation?.target_user_id ? (
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                <p className="text-sm text-orange-700">
+                  ⚠️ <strong>Este usuario ya fue pre-registrado</strong> en el sistema con todos sus datos.
+                </p>
+              </div>
+            ) : (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-sm text-blue-700">
+                  ℹ️ Esta invitación aún no ha creado un usuario en el sistema.
+                </p>
+              </div>
+            )}
+          </div>
           <DialogFooter className="flex-col gap-2 sm:flex-col">
             <Button
               variant="outline"
