@@ -259,94 +259,98 @@ function ProfileSetupStep() {
   }, [profile]);
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-6">
+    <div className="h-full flex flex-col">
+      <div className="text-center mb-4 sm:mb-6 flex-shrink-0">
         <h3 className="text-lg font-semibold mb-2">Información Personal</h3>
         <p className="text-muted-foreground">
           Esta información nos ayuda a personalizar tu experiencia
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Nombre *</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded-md"
-            placeholder="Tu nombre"
-            value={formData.firstName}
-            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-          />
-        </div>
+      <div className="flex-1 overflow-y-auto">
+        <div className="space-y-4 sm:space-y-6 pb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Nombre *</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="Tu nombre"
+                value={formData.firstName}
+                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+              />
+            </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Apellido *</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded-md"
-            placeholder="Tu apellido"
-            value={formData.lastName}
-            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-          />
-        </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Apellido *</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="Tu apellido"
+                value={formData.lastName}
+                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              />
+            </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Teléfono</label>
-          <input
-            type="tel"
-            className="w-full px-3 py-2 border rounded-md"
-            placeholder="(123) 456-7890"
-            value={formData.phone}
-            onChange={(e) => {
-              const formatted = formatPhoneNumber(e.target.value);
-              setFormData({ ...formData, phone: formatted });
-            }}
-          />
-        </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Teléfono</label>
+              <input
+                type="tel"
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="(123) 456-7890"
+                value={formData.phone}
+                onChange={(e) => {
+                  const formatted = formatPhoneNumber(e.target.value);
+                  setFormData({ ...formData, phone: formatted });
+                }}
+              />
+            </div>
 
-        <div className="space-y-2">
-          <BirthDateInput
-            value={formData.dateOfBirth}
-            onValueChange={(value, isValid, age) => {
-              setFormData({ ...formData, dateOfBirth: value });
-            }}
-            className="w-full"
-            minAge={18}
-            maxAge={70}
-            data-testid="birth-date-input"
-          />
-        </div>
+            <div className="space-y-2">
+              <BirthDateInput
+                value={formData.dateOfBirth}
+                onValueChange={(value, isValid, age) => {
+                  setFormData({ ...formData, dateOfBirth: value });
+                }}
+                className="w-full"
+                minAge={18}
+                maxAge={70}
+                data-testid="birth-date-input"
+              />
+            </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Contacto de Emergencia</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded-md"
-            placeholder="Nombre del contacto"
-            value={formData.emergencyContact}
-            onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
-          />
-        </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Contacto de Emergencia</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="Nombre del contacto"
+                value={formData.emergencyContact}
+                onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
+              />
+            </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Teléfono de Emergencia</label>
-          <input
-            type="tel"
-            className="w-full px-3 py-2 border rounded-md"
-            placeholder="(123) 456-7890"
-            value={formData.emergencyPhone}
-            onChange={(e) => {
-              const formatted = formatPhoneNumber(e.target.value);
-              setFormData({ ...formData, emergencyPhone: formatted });
-            }}
-          />
-        </div>
-      </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Teléfono de Emergencia</label>
+              <input
+                type="tel"
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="(123) 456-7890"
+                value={formData.emergencyPhone}
+                onChange={(e) => {
+                  const formatted = formatPhoneNumber(e.target.value);
+                  setFormData({ ...formData, emergencyPhone: formatted });
+                }}
+              />
+            </div>
+          </div>
 
-      <div className="bg-blue-50 p-4 rounded-lg">
-        <p className="text-sm text-blue-800">
-          💡 <strong>Tip:</strong> Esta información se puede actualizar después desde tu perfil
-        </p>
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <p className="text-sm text-blue-800">
+              💡 <strong>Tip:</strong> Esta información se puede actualizar después desde tu perfil
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -391,90 +395,92 @@ function PreferencesSetupStep() {
   }, []);
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-6">
+    <div className="h-full flex flex-col">
+      <div className="text-center mb-4 sm:mb-6 flex-shrink-0">
         <h3 className="text-lg font-semibold mb-2">Preferencias</h3>
         <p className="text-muted-foreground">
           Personaliza tu experiencia en FleetNest
         </p>
       </div>
 
-        <div className="space-y-4 sm:space-y-6">
+      <div className="flex-1 overflow-y-auto">
+        <div className="space-y-4 sm:space-y-6 pb-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Idioma</label>
-            <select
-              className="w-full px-3 py-2 border rounded-md"
-              value={preferences.language}
-              onChange={(e) => setPreferences({ ...preferences, language: e.target.value })}
-            >
-              <option value="es">Español</option>
-              <option value="en">English</option>
-            </select>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Idioma</label>
+              <select
+                className="w-full px-3 py-2 border rounded-md"
+                value={preferences.language}
+                onChange={(e) => setPreferences({ ...preferences, language: e.target.value })}
+              >
+                <option value="es">Español</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Zona Horaria</label>
+              {detectedTimezone && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
+                  <p className="text-sm text-green-700 flex items-center gap-2">
+                    🌍 <strong>Zona horaria detectada automáticamente:</strong> {detectedTimezone}
+                  </p>
+                  <p className="text-xs text-green-600 mt-1">
+                    Puedes cambiarla si es necesario en la lista de abajo
+                  </p>
+                </div>
+              )}
+              <select
+                className="w-full px-3 py-2 border rounded-md"
+                value={preferences.timezone}
+                onChange={(e) => setPreferences({ ...preferences, timezone: e.target.value })}
+              >
+                {timezoneOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                    {option.value === detectedTimezone ? ' (Detectada)' : ''}
+                  </option>
+                ))}
+                {/* Mostrar la zona horaria detectada si no está en la lista */}
+                {detectedTimezone && !timezoneOptions.find(opt => opt.value === detectedTimezone) && (
+                  <option value={detectedTimezone}>
+                    {detectedTimezone} (Detectada automáticamente)
+                  </option>
+                )}
+              </select>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Zona Horaria</label>
-            {detectedTimezone && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
-                <p className="text-sm text-green-700 flex items-center gap-2">
-                  🌍 <strong>Zona horaria detectada automáticamente:</strong> {detectedTimezone}
-                </p>
-                <p className="text-xs text-green-600 mt-1">
-                  Puedes cambiarla si es necesario en la lista de abajo
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h4 className="font-medium">Notificaciones</h4>
+                <p className="text-sm text-muted-foreground">
+                  Recibir notificaciones sobre cargas, pagos y actualizaciones
                 </p>
               </div>
-            )}
-            <select
-              className="w-full px-3 py-2 border rounded-md"
-              value={preferences.timezone}
-              onChange={(e) => setPreferences({ ...preferences, timezone: e.target.value })}
-            >
-              {timezoneOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                  {option.value === detectedTimezone ? ' (Detectada)' : ''}
-                </option>
-              ))}
-              {/* Mostrar la zona horaria detectada si no está en la lista */}
-              {detectedTimezone && !timezoneOptions.find(opt => opt.value === detectedTimezone) && (
-                <option value={detectedTimezone}>
-                  {detectedTimezone} (Detectada automáticamente)
-                </option>
-              )}
-            </select>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div>
-              <h4 className="font-medium">Notificaciones</h4>
-              <p className="text-sm text-muted-foreground">
-                Recibir notificaciones sobre cargas, pagos y actualizaciones
-              </p>
+              <input
+                type="checkbox"
+                className="w-4 h-4"
+                checked={preferences.notifications}
+                onChange={(e) => setPreferences({ ...preferences, notifications: e.target.checked })}
+              />
             </div>
-            <input
-              type="checkbox"
-              className="w-4 h-4"
-              checked={preferences.notifications}
-              onChange={(e) => setPreferences({ ...preferences, notifications: e.target.checked })}
-            />
-          </div>
 
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div>
-              <h4 className="font-medium">Modo Oscuro</h4>
-              <p className="text-sm text-muted-foreground">
-                Usar tema oscuro para reducir la fatiga visual
-              </p>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h4 className="font-medium">Modo Oscuro</h4>
+                <p className="text-sm text-muted-foreground">
+                  Usar tema oscuro para reducir la fatiga visual
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                className="w-4 h-4"
+                checked={preferences.darkMode}
+                onChange={(e) => setPreferences({ ...preferences, darkMode: e.target.checked })}
+              />
             </div>
-            <input
-              type="checkbox"
-              className="w-4 h-4"
-              checked={preferences.darkMode}
-              onChange={(e) => setPreferences({ ...preferences, darkMode: e.target.checked })}
-            />
           </div>
         </div>
       </div>
@@ -585,7 +591,7 @@ function CompanySetupStep() {
   };
 
   return (
-    <div className="h-full flex flex-col max-h-full">
+    <div className="h-full flex flex-col">
       <div className="text-center mb-4 sm:mb-6 flex-shrink-0">
         <h3 className="text-lg font-semibold mb-2">Información de la Empresa</h3>
         <p className="text-muted-foreground">
@@ -593,10 +599,10 @@ function CompanySetupStep() {
         </p>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto">
-        <div className="px-1 pb-4 sm:pb-8">
+      <div className="flex-1 overflow-y-auto">
+        <div className="space-y-4 sm:space-y-6 pb-6">
           <div className="space-y-4">
-            <div className="md:col-span-2 space-y-2">
+            <div className="space-y-2">
               <label className="text-sm font-medium">Nombre de la Empresa *</label>
               <input
                 type="text"
