@@ -87,21 +87,36 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
     setIsCompleting(true);
     
     try {
-      // Forzar guardado de todos los formularios enviando eventos de submit
-      const forms = document.querySelectorAll('form');
-      for (const form of forms) {
-        const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
-        if (submitButton) {
-          submitButton.click();
-          // Pequeña pausa para que se procese el submit
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
+      // Obtener referencias a los formularios específicos
+      const personalInfoForm = document.querySelector('[data-form="personal-info"]') as HTMLFormElement;
+      const preferencesForm = document.querySelector('[data-form="preferences"]') as HTMLFormElement;
+      
+      console.log('📝 Forms found:', { 
+        personalInfoForm: !!personalInfoForm, 
+        preferencesForm: !!preferencesForm 
+      });
+
+      // Guardar información personal si existe el formulario
+      if (personalInfoForm) {
+        console.log('💾 Submitting personal info form...');
+        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+        personalInfoForm.dispatchEvent(submitEvent);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+
+      // Guardar preferencias si existe el formulario
+      if (preferencesForm) {
+        console.log('💾 Submitting preferences form...');
+        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+        preferencesForm.dispatchEvent(submitEvent);
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
       // Guardar configuración específica de empresa si es owner
       if (isCompanyOwner) {
         const companyForm = document.querySelector('[data-company-form]');
         if (companyForm) {
+          console.log('💾 Submitting company form...');
           const saveButton = companyForm.querySelector('button') as HTMLButtonElement;
           if (saveButton) {
             saveButton.click();

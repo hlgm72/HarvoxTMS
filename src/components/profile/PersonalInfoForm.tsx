@@ -202,7 +202,7 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
       </div>
       
       <Form {...personalInfoForm}>
-        <form onSubmit={personalInfoForm.handleSubmit(onSubmitPersonalInfo)} className="space-y-4">
+        <form onSubmit={personalInfoForm.handleSubmit(onSubmitPersonalInfo)} className="space-y-4" data-form="personal-info">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={personalInfoForm.control}

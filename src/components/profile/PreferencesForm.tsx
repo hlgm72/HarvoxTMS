@@ -117,7 +117,7 @@ export function PreferencesForm({ onCancel, showCancelButton = true, className }
       </div>
       
       <Form {...preferencesForm}>
-        <form onSubmit={preferencesForm.handleSubmit(onSubmitPreferences)} className="space-y-4">
+        <form onSubmit={preferencesForm.handleSubmit(onSubmitPreferences)} className="space-y-4" data-form="preferences">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={preferencesForm.control}
