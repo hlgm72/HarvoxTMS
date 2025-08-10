@@ -6,10 +6,38 @@ import { CheckCircle } from 'lucide-react';
 interface SetupCompletedModalProps {
   isOpen: boolean;
   onClose: () => void;
+  userRole?: string;
 }
 
-export function SetupCompletedModal({ isOpen, onClose }: SetupCompletedModalProps) {
+export function SetupCompletedModal({ isOpen, onClose, userRole }: SetupCompletedModalProps) {
   console.log('🎯 SetupCompletedModal render - isOpen:', isOpen);
+  
+  const isDriver = userRole === 'driver';
+  const isOwner = userRole === 'company_owner' || userRole === 'owner';
+  
+  const getWelcomeMessage = () => {
+    if (isDriver) {
+      return {
+        title: '¡Configuración Completada!',
+        description: 'Tu perfil de conductor está completamente configurado. Ya puedes comenzar a recibir y gestionar tus cargas asignadas.',
+        welcomeText: '🚛 ¡Bienvenido conductor!'
+      };
+    } else if (isOwner) {
+      return {
+        title: '¡Configuración Completada!',
+        description: 'Tu cuenta está completamente configurada. Ya puedes comenzar a gestionar tu flota de manera eficiente con FleetNest.',
+        welcomeText: '🚀 ¡Bienvenido a FleetNest!'
+      };
+    } else {
+      return {
+        title: '¡Configuración Completada!',
+        description: 'Tu cuenta está configurada. Ya puedes comenzar a usar FleetNest.',
+        welcomeText: '🚀 ¡Bienvenido a FleetNest!'
+      };
+    }
+  };
+
+  const welcomeMessage = getWelcomeMessage();
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -26,16 +54,16 @@ export function SetupCompletedModal({ isOpen, onClose }: SetupCompletedModalProp
           </div>
           
           <h2 className="text-2xl font-bold text-foreground mb-3">
-            ¡Configuración Completada!
+            {welcomeMessage.title}
           </h2>
           
           <p className="text-muted-foreground text-base leading-relaxed mb-6">
-            Tu cuenta está completamente configurada. Ya puedes comenzar a gestionar tu flota de manera eficiente con FleetNest.
+            {welcomeMessage.description}
           </p>
           
           <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-4">
             <p className="text-sm text-primary font-medium">
-              🚀 ¡Bienvenido a FleetNest!
+              {welcomeMessage.welcomeText}
             </p>
           </div>
         </div>

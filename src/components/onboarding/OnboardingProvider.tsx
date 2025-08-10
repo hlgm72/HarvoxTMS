@@ -121,6 +121,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       <SetupCompletedModal
         isOpen={showSetupCompleted}
         onClose={handleSetupCompletedClose}
+        userRole={currentRole}
       />
     </>
   );

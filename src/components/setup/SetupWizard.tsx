@@ -82,16 +82,42 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
     }
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     console.log('🎯 SetupWizard handleComplete called');
     setIsCompleting(true);
     
-    // Simular guardado de configuración
-    setTimeout(() => {
+    try {
+      // Forzar guardado de todos los formularios enviando eventos de submit
+      const forms = document.querySelectorAll('form');
+      for (const form of forms) {
+        const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+        if (submitButton) {
+          submitButton.click();
+          // Pequeña pausa para que se procese el submit
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
+
+      // Guardar configuración específica de empresa si es owner
+      if (isCompanyOwner) {
+        const companyForm = document.querySelector('[data-company-form]');
+        if (companyForm) {
+          const saveButton = companyForm.querySelector('button') as HTMLButtonElement;
+          if (saveButton) {
+            saveButton.click();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+      }
+
       console.log('✅ SetupWizard calling onComplete callback');
       onComplete();
+    } catch (error) {
+      console.error('Error during setup completion:', error);
+      onComplete(); // Complete anyway
+    } finally {
       setIsCompleting(false);
-    }, 1500);
+    }
   };
 
   const handleStepClick = (stepIndex: number) => {
@@ -432,7 +458,7 @@ function CompanySetupStep() {
       </div>
 
       {/* Botón para guardar datos */}
-      <div className="flex justify-end pt-4">
+      <div className="flex justify-end pt-4" data-company-form>
         <Button 
           onClick={handleSaveCompany}
           disabled={loading}
