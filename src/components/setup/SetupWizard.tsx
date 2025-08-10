@@ -152,9 +152,9 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                 {steps[currentStep].title}
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 min-h-0 p-6">
+            <CardContent className="flex-1 min-h-0 p-0 overflow-hidden">
               {isCompleting ? (
-                <div className="flex flex-col items-center justify-center py-12">
+                <div className="flex flex-col items-center justify-center py-12 px-6">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
                   <h3 className="text-lg font-semibold mb-2">Guardando configuración...</h3>
                   <p className="text-muted-foreground text-center">
@@ -162,7 +162,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                   </p>
                 </div>
               ) : (
-                <div className="h-full overflow-y-auto">
+                <div className="h-full overflow-y-auto p-6">
                   <SetupStepContent step={steps[currentStep]} />
                 </div>
               )}
