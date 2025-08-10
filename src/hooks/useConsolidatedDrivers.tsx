@@ -214,7 +214,9 @@ export const useConsolidatedDrivers = () => {
             return; // Skip if already processed or no target user
           }
 
-          const hireDate = invitation.metadata?.hire_date || null;
+          const hireDate = typeof invitation.metadata === 'object' && invitation.metadata && 'hire_date' in invitation.metadata 
+            ? invitation.metadata.hire_date as string 
+            : null;
           
           allDrivers.push({
             id: invitation.target_user_id,

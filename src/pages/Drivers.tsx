@@ -18,29 +18,43 @@ import { UserActionButton } from "@/components/users/UserActionButton";
 import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
 import { useAuth } from "@/hooks/useAuth";
 
-const getStatusColor = (status: string) => {
+const getStatusColor = (status: string): "default" | "secondary" | "destructive" | "outline" => {
   switch (status) {
-    case "available":
-      return "default";
-    case "on_route":
-      return "default";
-    case "off_duty":
-      return "secondary";
-    default:
-      return "secondary";
+    case "available": return "default";
+    case "on_route": return "secondary";
+    case "off_duty": return "destructive";
+    case "pre_registered": return "outline";
+    default: return "secondary";
   }
 };
 
-const getStatusText = (status: string) => {
+const getStatusText = (status: string): string => {
   switch (status) {
-    case "available":
-      return "Disponible";
-    case "on_route":
-      return "En Ruta";
-    case "off_duty":
-      return "Fuera de Servicio";
-    default:
-      return status;
+    case "available": return "Disponible";
+    case "on_route": return "En Ruta";
+    case "off_duty": return "Fuera de Servicio";
+    case "pre_registered": return "Pre-registrado";
+    default: return status;
+  }
+};
+
+// Helper function to get activation status color
+const getActivationStatusColor = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+  switch (status) {
+    case 'active': return "default";
+    case 'pending_activation': return "secondary";
+    case 'invited': return "outline";
+    default: return "outline";
+  }
+};
+
+// Helper function to get activation status text
+const getActivationStatusText = (status: string): string => {
+  switch (status) {
+    case 'active': return "Activo";
+    case 'pending_activation': return "Pendiente activación";
+    case 'invited': return "Invitado";
+    default: return status;
   }
 };
 
@@ -263,13 +277,32 @@ export default function Drivers() {
                         </p>
                       </div>
                     </div>
-                    <Badge variant={getStatusColor(driver.current_status) as any}>
-                      {getStatusText(driver.current_status)}
-                    </Badge>
+                    {/* Estado del conductor y activación */}
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant={getStatusColor(driver.current_status)}>
+                        {getStatusText(driver.current_status)}
+                      </Badge>
+                      
+                      {/* Mostrar estado de activación para conductores pre-registrados */}
+                      {driver.is_pre_registered && (
+                        <Badge variant={getActivationStatusColor(driver.activation_status)}>
+                          {getActivationStatusText(driver.activation_status)}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
+                    {/* Mostrar información adicional para conductores pre-registrados */}
+                    {driver.is_pre_registered && driver.activation_status === 'pending_activation' && (
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                        <p className="text-sm text-blue-700 font-medium flex items-center gap-2">
+                          💡 Este conductor puede ser gestionado completamente sin necesidad de activar su cuenta
+                        </p>
+                      </div>
+                    )}
+                    
                     <div className="flex items-center gap-2">
                       <span>📞</span>
                       <span className="text-sm">{driver.phone || 'No especificado'}</span>

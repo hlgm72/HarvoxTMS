@@ -2672,6 +2672,7 @@ export type Database = {
           metadata: Json | null
           role: string
           status: string
+          target_user_id: string | null
           updated_at: string
         }
         Insert: {
@@ -2690,6 +2691,7 @@ export type Database = {
           metadata?: Json | null
           role?: string
           status?: string
+          target_user_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -2708,6 +2710,7 @@ export type Database = {
           metadata?: Json | null
           role?: string
           status?: string
+          target_user_id?: string | null
           updated_at?: string
         }
         Relationships: [
