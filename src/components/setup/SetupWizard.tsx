@@ -14,6 +14,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { supabase } from '@/integrations/supabase/client';
 import { AddressForm } from '@/components/ui/AddressForm';
+import { useFleetNotifications } from '@/components/notifications';
 
 interface SetupStep {
   id: string;
@@ -34,6 +35,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
   const [currentStep, setCurrentStep] = useState(0);
   const [isCompleting, setIsCompleting] = useState(false);
   const { isDriver, isCompanyOwner } = useAuth();
+  const { showSuccess, showError } = useFleetNotifications();
 
   const steps: SetupStep[] = [
     {
@@ -169,10 +171,20 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
         }
       }
 
+      // Mostrar mensaje de confirmación exitosa
+      showSuccess(
+        "Configuración completada",
+        "Tu perfil ha sido configurado exitosamente. Ya puedes comenzar a usar la plataforma."
+      );
+
       console.log('✅ SetupWizard calling onComplete callback');
       onComplete();
     } catch (error) {
       console.error('Error during setup completion:', error);
+      showError(
+        "Error en la configuración", 
+        "Hubo un problema al guardar algunos datos. Puedes completar la configuración desde tu perfil."
+      );
       onComplete(); // Complete anyway
     } finally {
       setIsCompleting(false);
@@ -320,6 +332,7 @@ function SetupStepContent({ step }: { step: SetupStep }) {
 // Componente especializado para configuración de empresa en el setup
 function CompanySetupStep() {
   const { userCompany } = useCompanyCache();
+  const { showSuccess, showError } = useFleetNotifications();
   const [loading, setLoading] = useState(false);
   const [companyData, setCompanyData] = useState({
     name: '',
@@ -404,11 +417,18 @@ function CompanySetupStep() {
 
       if (error) {
         console.error('Error updating company:', error);
-        alert('Error al guardar los datos de la empresa');
+        showError(
+          "Error al guardar",
+          "No se pudieron guardar los datos de la empresa. Inténtalo nuevamente."
+        );
         return false;
       }
 
       console.log('✅ Company data saved successfully');
+      showSuccess(
+        "Datos guardados",
+        "La información de la empresa ha sido guardada exitosamente."
+      );
       return true;
     } catch (error) {
       console.error('Error saving company data:', error);
