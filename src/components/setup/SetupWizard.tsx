@@ -210,12 +210,16 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       }
 
       // Mostrar mensaje según el resultado
+      console.log('📊 Setup completion summary:', { savedSuccessfully, totalSteps: steps.length });
+      
       if (savedSuccessfully > 0) {
+        console.log('✅ Showing success notification');
         showSuccess(
           "Configuración completada",
           "Tu perfil ha sido configurado exitosamente. Ya puedes comenzar a usar la plataforma."
         );
       } else {
+        console.log('❌ Showing error notification');
         showError(
           "Error en la configuración", 
           "Hubo un problema al guardar los datos. Puedes completar la configuración desde tu perfil."
@@ -226,6 +230,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       onComplete();
     } catch (error) {
       console.error('Error during setup completion:', error);
+      console.log('❌ Showing catch block error notification');
       showError(
         "Error en la configuración", 
         "Hubo un problema al guardar algunos datos. Puedes completar la configuración desde tu perfil."
