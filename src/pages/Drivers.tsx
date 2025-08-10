@@ -234,16 +234,16 @@ export default function Drivers() {
     );
   }
 
-  // Separar conductores activos de pendientes
-  const activeDrivers = drivers.filter(d => d.activation_status === 'active');
-  const pendingDrivers = drivers.filter(d => d.activation_status === 'pending_activation' || d.activation_status === 'invited');
+  // Separar conductores - todos incluye activos e invitados, pendientes solo los que necesitan activación
+  const allDrivers = drivers; // Todos los conductores (activos e invitados)
+  const pendingDrivers = drivers.filter(d => d.activation_status === 'pending_activation');
 
   return (
     <>
       <PageToolbar 
         icon={Truck}
         title={`Gestión de Conductores`}
-        subtitle={`${drivers.length} conductores • ${activeDrivers.length} activos • ${pendingDrivers.length} pendientes`}
+        subtitle={`${drivers.length} conductores • ${drivers.filter(d => d.activation_status === 'active').length} activos • ${pendingDrivers.length} pendientes`}
         actions={
           <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
             <UserPlus className="h-4 w-4" />
@@ -255,7 +255,7 @@ export default function Drivers() {
         <Tabs defaultValue="active" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="active">
-              Todos los Conductores ({activeDrivers.length})
+              Todos los Conductores ({allDrivers.length})
             </TabsTrigger>
             <TabsTrigger value="pending">
               Pendientes de Activación ({pendingDrivers.length})
@@ -264,7 +264,7 @@ export default function Drivers() {
           
           <TabsContent value="active" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {activeDrivers.map((driver) => {
+              {allDrivers.map((driver) => {
                 const DriverCard = () => {
                   const { data: assignedEquipment = [], isLoading: equipmentLoading } = useDriverEquipment(driver.user_id);
                   
