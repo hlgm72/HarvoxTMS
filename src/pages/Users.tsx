@@ -215,7 +215,7 @@ export default function Users() {
           // Crear un ID único para invitaciones sin target_user_id
           const userId = invitation.target_user_id || `pending-${invitation.email}`;
           
-          // Solo agregar si no es un usuario ya activo
+          // Solo agregar si no es un usuario ya activo en esta empresa
           if (!allUserIds.has(userId)) {
             allUserIds.add(userId);
             
