@@ -40,20 +40,35 @@ export const useDriversCount = () => {
       }
 
       try {
-        // Get count of active drivers using company from cache
-        const { count, error: countError } = await supabase
+        // Get count of active drivers
+        const { count: activeDriversCount, error: activeDriversError } = await supabase
           .from('user_company_roles')
           .select('*', { count: 'exact', head: true })
           .eq('company_id', userCompany.company_id)
           .eq('role', 'driver')
           .eq('is_active', true);
 
-        if (countError) {
-          console.error('Error obteniendo conteo de drivers:', countError);
-          throw countError;
+        if (activeDriversError) {
+          console.error('Error obteniendo conteo de drivers activos:', activeDriversError);
+          throw activeDriversError;
         }
 
-        const finalCount = count || 0;
+        // Get count of pending driver invitations
+        const { count: pendingInvitationsCount, error: pendingInvitationsError } = await supabase
+          .from('user_invitations')
+          .select('*', { count: 'exact', head: true })
+          .eq('company_id', userCompany.company_id)
+          .eq('role', 'driver')
+          .eq('is_active', true)
+          .is('accepted_at', null)
+          .gt('expires_at', new Date().toISOString());
+
+        if (pendingInvitationsError) {
+          console.error('Error obteniendo conteo de invitaciones pendientes:', pendingInvitationsError);
+          throw pendingInvitationsError;
+        }
+
+        const finalCount = (activeDriversCount || 0) + (pendingInvitationsCount || 0);
         return finalCount;
 
       } catch (error: any) {
