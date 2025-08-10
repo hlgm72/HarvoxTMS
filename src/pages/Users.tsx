@@ -693,34 +693,41 @@ export default function Users() {
           }}
         />
 
-        {/* Lista de usuarios */}
+        {/* Lista de usuarios con tabs */}
         {loading ? (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         ) : (
-          <Card>
-            <CardHeader>
-              <CardDescription>
-                Lista de todos los usuarios registrados en tu empresa
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {viewMode === 'table' ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Usuario</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Teléfono</TableHead>
-                      <TableHead>Rol</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Fecha de Registro</TableHead>
-                      <TableHead className="text-right">Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredUsers.map((user) => (
+          <Tabs defaultValue="active" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="active">Usuarios Activos</TabsTrigger>
+              <TabsTrigger value="pending">Usuarios Pendientes</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="active" className="space-y-6">
+              <Card className="bg-white">
+                <CardHeader>
+                  <CardDescription>
+                    Lista de todos los usuarios activos en tu empresa
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {viewMode === 'table' ? (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Usuario</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Teléfono</TableHead>
+                          <TableHead>Rol</TableHead>
+                          <TableHead>Estado</TableHead>
+                          <TableHead>Fecha de Registro</TableHead>
+                          <TableHead className="text-right">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {activeUsers.map((user) => (
                       <TableRow key={user.id}>
                         <TableCell>
                           <div className="flex items-center gap-3">
@@ -822,13 +829,13 @@ export default function Users() {
                             />
                           </div>
                         </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredUsers.map((user) => (
+                        </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {activeUsers.map((user) => (
                     <Card key={user.id}>
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3 mb-3">
@@ -944,7 +951,6 @@ export default function Users() {
               )}
             </CardContent>
           </Card>
-            )}
           </TabsContent>
           
           <TabsContent value="pending" className="space-y-6">
@@ -964,6 +970,7 @@ export default function Users() {
             )}
           </TabsContent>
         </Tabs>
+        )}
       </div>
 
       {/* Dialog para invitar usuario */}
