@@ -159,7 +159,7 @@ export default function Users() {
 
       if (error) throw error;
 
-      // Obtener invitaciones pendientes
+      // Obtener invitaciones pendientes (no aceptadas)
       const { data: pendingInvitations, error: invitationsError } = await supabase
         .from('user_invitations')
         .select(`
@@ -172,7 +172,7 @@ export default function Users() {
         `)
         .eq('company_id', userRole.company_id)
         .eq('is_active', true)
-        .is('accepted_at', null)
+        .is('accepted_at', null)  // Solo invitaciones no aceptadas
         .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false });
 
