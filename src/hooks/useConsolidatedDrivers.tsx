@@ -90,11 +90,13 @@ export const useConsolidatedDrivers = () => {
             last_name,
             email,
             metadata,
-            created_at
+            created_at,
+            accepted_at
           `)
           .eq('company_id', userCompany.company_id)
           .eq('role', 'driver')
-          .is('accepted_at', null)
+          .is('accepted_at', null)  // Solo invitaciones no aceptadas
+          .eq('is_active', true)
           .gt('expires_at', new Date().toISOString());
           // REMOVED: .not('target_user_id', 'is', null) para incluir todas las invitaciones pendientes
 
@@ -156,20 +158,22 @@ export const useConsolidatedDrivers = () => {
           const driverRole = driverRoles?.find(dr => dr.user_id === profile.user_id);
           const driverLoads = activeLoads.filter(load => load.driver_user_id === profile.user_id) || [];
           
-          // Check if there's a pending invitation for this user
+          // Check if there's a pending invitation for this user (solo invitaciones NO aceptadas)
           const pendingInvitation = pendingInvitations?.find(inv => inv.target_user_id === profile.user_id);
           
+          // Si el usuario tiene perfil completo (phone y avatar), está activo
+          const hasCompleteProfile = Boolean(profile.phone && profile.avatar_url);
+          
           // Un conductor está pre-registrado si:
-          // 1. Tiene una invitación pendiente, O
-          // 2. Tiene un perfil pero nunca se ha logueado (hire_date posterior a created_at)
-          const isPreRegistered = Boolean(pendingInvitation) || 
-            (!profile.phone && !profile.avatar_url); // Indicadores de que no ha completado su perfil
+          // 1. Tiene una invitación pendiente (no aceptada), O
+          // 2. No tiene un perfil completo (indicadores de que no ha completado activación)
+          const isPreRegistered = Boolean(pendingInvitation) || !hasCompleteProfile;
           
           // Determine activation status based on available data
           let activationStatus: 'active' | 'pending_activation' | 'invited' = 'active';
           if (Boolean(pendingInvitation)) {
             activationStatus = 'invited'; // Aún no ha aceptado la invitación
-          } else if (isPreRegistered) {
+          } else if (!hasCompleteProfile) {
             activationStatus = 'pending_activation'; // Ha aceptado pero no ha completado perfil
           } else if (!driverRole?.is_active) {
             activationStatus = 'invited';
