@@ -1,11 +1,12 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Check, ChevronsUpDown, Building } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
 
@@ -35,6 +36,8 @@ export function CityCombobox({
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
   const { showError } = useFleetNotifications();
 
   useEffect(() => {
@@ -71,8 +74,8 @@ export function CityCombobox({
   const selectedCity = cities.find((city) => city.id === value);
   
   const filteredCities = cities.filter((city) =>
-    city.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (city.county && city.county.toLowerCase().includes(searchTerm.toLowerCase()))
+    city.name.toLowerCase().includes((inputValue || searchTerm).toLowerCase()) ||
+    (city.county && city.county.toLowerCase().includes((inputValue || searchTerm).toLowerCase()))
   );
 
   const getPlaceholderText = () => {
@@ -81,31 +84,62 @@ export function CityCombobox({
     return placeholder;
   };
 
+  // Update input value when selection changes
+  useEffect(() => {
+    if (selectedCity && !open) {
+      setInputValue(selectedCity.name);
+    } else if (!selectedCity && !open) {
+      setInputValue("");
+    }
+  }, [selectedCity, open]);
+
+  // Clear input when state changes
+  useEffect(() => {
+    if (!stateId) {
+      setInputValue("");
+    }
+  }, [stateId]);
+
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+    setSearchTerm(value);
+    if (!open && stateId) {
+      setOpen(true);
+    }
+  };
+
+  const handleInputFocus = () => {
+    if (stateId) {
+      setOpen(true);
+    }
+  };
+
+  const handleSelect = (city: City | undefined) => {
+    onValueChange(city?.id);
+    setOpen(false);
+    if (city) {
+      setInputValue(city.name);
+    } else {
+      setInputValue("");
+    }
+    setSearchTerm("");
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between"
-          disabled={disabled || loading || !stateId}
-        >
-          <div className="flex items-center">
-            <Building className="mr-2 h-4 w-4 text-muted-foreground" />
-            {selectedCity ? (
-              <span>
-                {selectedCity.name}
-                {selectedCity.county && (
-                  <span className="text-muted-foreground ml-1">({selectedCity.county})</span>
-                )}
-              </span>
-            ) : (
-              getPlaceholderText()
-            )}
-          </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
+        <div className="relative">
+          <Input
+            ref={inputRef}
+            value={inputValue}
+            onChange={(e) => handleInputChange(e.target.value)}
+            onFocus={handleInputFocus}
+            placeholder={getPlaceholderText()}
+            disabled={disabled || loading || !stateId}
+            className="pr-8"
+          />
+          <ChevronsUpDown className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 shrink-0 opacity-50" />
+        </div>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command shouldFilter={false}>
@@ -124,10 +158,7 @@ export function CityCombobox({
                 <CommandItem
                   key="unspecified"
                   value="sin especificar"
-                  onSelect={() => {
-                    onValueChange(undefined);
-                    setOpen(false);
-                  }}
+                  onSelect={() => handleSelect(undefined)}
                 >
                   <Check
                     className={cn(
@@ -141,10 +172,7 @@ export function CityCombobox({
                   <CommandItem
                     key={city.id}
                     value={`${city.name.toLowerCase()}${city.county ? ` ${city.county.toLowerCase()}` : ''}`}
-                    onSelect={() => {
-                      onValueChange(city.id === value ? undefined : city.id);
-                      setOpen(false);
-                    }}
+                    onSelect={() => handleSelect(city)}
                   >
                     <Check
                       className={cn(
