@@ -115,7 +115,7 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-white dark:bg-white border-border">
         <DialogHeader>
           <DialogTitle>Invitar Nuevo Conductor</DialogTitle>
           <DialogDescription>

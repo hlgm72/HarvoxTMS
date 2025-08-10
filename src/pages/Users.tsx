@@ -1025,7 +1025,7 @@ export default function Users() {
 
       {/* Dialog para invitar usuario */}
       <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-white border-border">
           <DialogHeader>
             <DialogTitle>Invitar Nuevo Usuario</DialogTitle>
             <DialogDescription>
