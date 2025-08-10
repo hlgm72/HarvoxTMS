@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { useBirthDateInput } from '@/hooks/useBirthDateInput';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
-import { CheckCircle2 } from 'lucide-react';
+import { CircleCheck } from 'lucide-react';
 
 interface BirthDateInputProps {
   label?: string;
@@ -103,7 +103,7 @@ export function BirthDateInput({
 
       {isValid && value && (
         <p className="text-sm text-muted-foreground flex items-center gap-1">
-          {t('forms.validDate')} <CheckCircle2 className="h-4 w-4 text-green-500" />
+          {t('forms.validDate')} <CircleCheck className="h-4 w-4 text-green-500" />
         </p>
       )}
     </div>
