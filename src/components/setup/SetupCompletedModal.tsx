@@ -1,5 +1,6 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
+import { VisuallyHidden } from '@/components/ui/visually-hidden';
 import { CheckCircle } from 'lucide-react';
 
 interface SetupCompletedModalProps {
@@ -13,6 +14,9 @@ export function SetupCompletedModal({ isOpen, onClose }: SetupCompletedModalProp
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md p-0">
+        <VisuallyHidden>
+          <DialogTitle>Configuración Completada</DialogTitle>
+        </VisuallyHidden>
         <DialogDescription className="sr-only">
           Modal que confirma que la configuración inicial ha sido completada exitosamente
         </DialogDescription>
