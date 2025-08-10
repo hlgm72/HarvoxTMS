@@ -67,7 +67,8 @@ export function BirthDateInput({
       )}
       
       <div className="relative">
-        <Input
+        <input
+          type="text"
           value={value}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
@@ -75,6 +76,7 @@ export function BirthDateInput({
           placeholder={placeholder}
           disabled={disabled}
           className={cn(
+            'w-full px-3 py-2 border rounded-md',
             hasError && 'border-destructive focus-visible:ring-destructive'
           )}
           maxLength={10}
