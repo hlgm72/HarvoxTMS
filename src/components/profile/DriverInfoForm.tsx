@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -26,6 +26,10 @@ interface DriverInfoFormProps {
   className?: string;
 }
 
+export interface DriverInfoFormRef {
+  saveData: () => Promise<{ success: boolean; error?: string }>;
+}
+
 interface DriverProfile {
   date_of_birth: string | null;
   emergency_contact_name: string | null;
@@ -47,7 +51,7 @@ interface LicenseData {
   cdl_endorsements: string;
 }
 
-export function DriverInfoForm({ onCancel, showCancelButton = true, className }: DriverInfoFormProps) {
+export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>(({ onCancel, showCancelButton = true, className }, ref) => {
   const { showSuccess, showError } = useFleetNotifications();
   const { user } = useAuth();
   const [updating, setUpdating] = useState(false);
@@ -164,10 +168,9 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
     fetchDriverProfile();
   }, [user, driverInfoForm]);
 
-  const onSubmitDriverInfo = async (data: DriverInfoFormData) => {
-    if (!user) return;
+  const saveDriverInfoData = async (data: DriverInfoFormData): Promise<{ success: boolean; error?: string }> => {
+    if (!user) return { success: false, error: 'Usuario no encontrado' };
 
-    setUpdating(true);
     try {
       // Check if driver profile exists
       const { data: existingProfile } = await supabase
@@ -207,7 +210,10 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
           }));
       }
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving driver info:', error);
+        return { success: false, error: error.message };
+      }
 
       // Update local state
       setDriverProfile({
@@ -222,10 +228,24 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
         cdl_endorsements: licenseData.cdl_endorsements || null,
       });
 
-      showSuccess(
-        "Información de conductor actualizada",
-        "Sus datos personales han sido guardados correctamente."
-      );
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Error desconocido' };
+    }
+  };
+
+  const onSubmitDriverInfo = async (data: DriverInfoFormData) => {
+    setUpdating(true);
+    try {
+      const result = await saveDriverInfoData(data);
+      if (result.success) {
+        showSuccess(
+          "Información de conductor actualizada",
+          "Sus datos personales han sido guardados correctamente."
+        );
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error: any) {
       showError(
         "Error en la actualización",
@@ -235,6 +255,14 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
       setUpdating(false);
     }
   };
+
+  // Expose saveData method via ref
+  useImperativeHandle(ref, () => ({
+    saveData: async () => {
+      const data = driverInfoForm.getValues();
+      return await saveDriverInfoData(data);
+    }
+  }));
 
   const handleCancel = () => {
     if (driverProfile) {
@@ -368,4 +396,4 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
       </Form>
     </div>
   );
-}
+});

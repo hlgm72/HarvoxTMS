@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -34,7 +34,11 @@ interface PersonalInfoFormProps {
   className?: string;
 }
 
-export function PersonalInfoForm({ onCancel, showCancelButton = true, className }: PersonalInfoFormProps) {
+export interface PersonalInfoFormRef {
+  saveData: () => Promise<{ success: boolean; error?: string }>;
+}
+
+export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoFormProps>(({ onCancel, showCancelButton = true, className }, ref) => {
   const { t, i18n } = useTranslation(['common']);
   const { showSuccess, showError } = useFleetNotifications();
   const { profile, user, refreshProfile } = useUserProfile();
@@ -120,23 +124,10 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
     }
   }, [profile, personalInfoForm]);
 
-  const onSubmitPersonalInfo = async (data: PersonalInfoFormData) => {
-    if (!user) return;
+  const savePersonalInfoData = async (data: PersonalInfoFormData): Promise<{ success: boolean; error?: string }> => {
+    if (!user) return { success: false, error: 'Usuario no encontrado' };
 
-    setUpdating(true);
     try {
-      console.log('Attempting to save profile data:', {
-        user_id: user.id,
-        first_name: data.first_name,
-        last_name: data.last_name,
-        phone: data.phone || null,
-        date_of_birth: formatDateForDatabase(data.date_of_birth),
-        street_address: data.street_address || null,
-        state_id: data.state_id || null,
-        city_id: data.city_id ? data.city_id : null,
-        zip_code: data.zip_code || null,
-      });
-
       const { error } = await supabase
         .from('profiles')
         .upsert({
@@ -155,17 +146,28 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
 
       if (error) {
         console.error('Error saving profile:', error);
-        throw error;
+        return { success: false, error: error.message };
       }
 
-      console.log('Profile saved successfully, refreshing profile data...');
-      // Refresh profile data to update the UI
       await refreshProfile();
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Error desconocido' };
+    }
+  };
 
-      showSuccess(
-        "Perfil actualizado exitosamente",
-        "Su información personal ha sido guardada correctamente."
-      );
+  const onSubmitPersonalInfo = async (data: PersonalInfoFormData) => {
+    setUpdating(true);
+    try {
+      const result = await savePersonalInfoData(data);
+      if (result.success) {
+        showSuccess(
+          "Perfil actualizado exitosamente",
+          "Su información personal ha sido guardada correctamente."
+        );
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error: any) {
       showError(
         "Error en la actualización",
@@ -175,6 +177,14 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
       setUpdating(false);
     }
   };
+
+  // Expose saveData method via ref
+  useImperativeHandle(ref, () => ({
+    saveData: async () => {
+      const data = personalInfoForm.getValues();
+      return await savePersonalInfoData(data);
+    }
+  }));
 
   const handleCancel = () => {
     if (profile) {
@@ -297,4 +307,4 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
       </Form>
     </div>
   );
-}
+});

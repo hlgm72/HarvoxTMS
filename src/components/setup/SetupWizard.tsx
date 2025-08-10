@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -7,9 +7,9 @@ import { Label } from '@/components/ui/label';
 import { VisuallyHidden } from '@/components/ui/visually-hidden';
 import { CheckCircle, User, Settings, Building, Truck, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { PersonalInfoForm } from '@/components/profile/PersonalInfoForm';
-import { PreferencesForm } from '@/components/profile/PreferencesForm';
-import { DriverInfoForm } from '@/components/profile/DriverInfoForm';
+import { PersonalInfoForm, PersonalInfoFormRef } from '@/components/profile/PersonalInfoForm';
+import { PreferencesForm, PreferencesFormRef } from '@/components/profile/PreferencesForm';
+import { DriverInfoForm, DriverInfoFormRef } from '@/components/profile/DriverInfoForm';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { supabase } from '@/integrations/supabase/client';
@@ -37,6 +37,12 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
   const [isCompleting, setIsCompleting] = useState(false);
   const { user, isDriver, isCompanyOwner } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
+
+  // Form refs
+  const personalInfoFormRef = useRef<PersonalInfoFormRef>(null);
+  const preferencesFormRef = useRef<PreferencesFormRef>(null);
+  const driverInfoFormRef = useRef<DriverInfoFormRef>(null);
+  const companySetupRef = useRef<{ saveData: () => Promise<boolean> }>(null);
 
   const steps: SetupStep[] = [
     {
@@ -89,114 +95,67 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
     setIsCompleting(true);
     
     try {
-      // Recopilar datos directamente de los inputs y guardar usando hooks
-      const dataToSave = {
-        personalInfo: {},
-        preferences: {},
-        driverInfo: {},
-        companyInfo: {}
-      };
-
-      // Recopilar datos de información personal
-      const personalForm = document.querySelector('form[data-form="personal-info"]') as HTMLFormElement;
-      if (personalForm) {
-        const formData = new FormData(personalForm);
-        dataToSave.personalInfo = Object.fromEntries(formData);
+      console.log('Starting setup completion process...');
+      
+      const saveResults: Array<{ step: string; success: boolean; error?: string }> = [];
+      
+      // Save Personal Info (always present)
+      if (personalInfoFormRef.current) {
+        console.log('Saving personal info...');
+        const result = await personalInfoFormRef.current.saveData();
+        saveResults.push({ step: 'Información Personal', ...result });
       }
-
-      // Recopilar datos de preferencias
-      const preferencesForm = document.querySelector('form[data-form="preferences"]') as HTMLFormElement;
-      if (preferencesForm) {
-        const formData = new FormData(preferencesForm);
-        dataToSave.preferences = Object.fromEntries(formData);
+      
+      // Save Preferences (always present)
+      if (preferencesFormRef.current) {
+        console.log('Saving preferences...');
+        const result = await preferencesFormRef.current.saveData();
+        saveResults.push({ step: 'Preferencias', ...result });
       }
-
-      // Recopilar datos de conductor si es driver
-      if (isDriver) {
-        const driverForm = document.querySelector('form[data-form="driver-info"]') as HTMLFormElement;
-        if (driverForm) {
-          const formData = new FormData(driverForm);
-          dataToSave.driverInfo = Object.fromEntries(formData);
-        }
+      
+      // Save Driver Info (only for drivers)
+      if (isDriver && driverInfoFormRef.current) {
+        console.log('Saving driver info...');
+        const result = await driverInfoFormRef.current.saveData();
+        saveResults.push({ step: 'Información del Conductor', ...result });
       }
-
-      // Recopilar datos de empresa si es company owner
-      if (isCompanyOwner) {
-        const companyInputs = document.querySelectorAll('[data-company-form] input, [data-company-form] select');
-        const companyData: any = {};
-        companyInputs.forEach((input: any) => {
-          if (input.name) {
-            companyData[input.name] = input.value;
-          }
+      
+      // Save Company Info (only for company owners)
+      if (isCompanyOwner && companySetupRef.current) {
+        console.log('Saving company info...');
+        const companyResult = await companySetupRef.current.saveData();
+        saveResults.push({ 
+          step: 'Información de la Empresa', 
+          success: companyResult, 
+          error: companyResult ? undefined : 'Error al guardar información de la empresa'
         });
-        dataToSave.companyInfo = companyData;
       }
-
-      // Ahora enviar los datos usando eventos personalizados para que los formularios los procesen
-      let savedSteps = 0;
-
-      // Guardar información personal
-      if (Object.keys(dataToSave.personalInfo).length > 0) {
-        const personalForm = document.querySelector('form[data-form="personal-info"]') as HTMLFormElement;
-        if (personalForm) {
-          const submitButton = personalForm.querySelector('button[type="submit"]') as HTMLButtonElement;
-          if (submitButton) {
-            submitButton.click();
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            savedSteps++;
-          }
-        }
+      
+      // Check if all saves were successful
+      const failedSaves = saveResults.filter(result => !result.success);
+      
+      if (failedSaves.length > 0) {
+        const errorMessage = failedSaves.map(fail => `${fail.step}: ${fail.error}`).join('\n');
+        throw new Error(`Error en los siguientes pasos:\n${errorMessage}`);
       }
-
-      // Guardar preferencias
-      if (Object.keys(dataToSave.preferences).length > 0) {
-        const preferencesForm = document.querySelector('form[data-form="preferences"]') as HTMLFormElement;
-        if (preferencesForm) {
-          const submitButton = preferencesForm.querySelector('button[type="submit"]') as HTMLButtonElement;
-          if (submitButton) {
-            submitButton.click();
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            savedSteps++;
-          }
-        }
-      }
-
-      // Guardar información de conductor
-      if (isDriver && Object.keys(dataToSave.driverInfo).length > 0) {
-        const driverForm = document.querySelector('form[data-form="driver-info"]') as HTMLFormElement;
-        if (driverForm) {
-          const submitButton = driverForm.querySelector('button[type="submit"]') as HTMLButtonElement;
-          if (submitButton) {
-            submitButton.click();
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            savedSteps++;
-          }
-        }
-      }
-
-      // Guardar información de empresa
-      if (isCompanyOwner && Object.keys(dataToSave.companyInfo).length > 0) {
-        const saveButton = document.querySelector('[data-company-form] button') as HTMLButtonElement;
-        if (saveButton) {
-          saveButton.click();
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          savedSteps++;
-        }
-      }
-
+      
+      console.log('All data saved successfully');
+      
+      // Show success message
       showSuccess(
-        "Configuración completada",
-        "Tu configuración inicial se ha completado exitosamente."
+        "¡Configuración completada!",
+        "Todos tus datos han sido guardados exitosamente."
       );
-
+      
+      // Call completion callback
       onComplete();
-    } catch (error) {
+      
+    } catch (error: any) {
       console.error('Error during setup completion:', error);
-      showSuccess(
-        "Configuración completada", 
-        "La configuración inicial se ha terminado. Puedes completar o actualizar la información desde tu perfil."
+      showError(
+        "Error al completar la configuración",
+        error.message || "Algunos datos no pudieron ser guardados. Por favor, inténtalo nuevamente."
       );
-      onComplete();
     } finally {
       setIsCompleting(false);
     }
@@ -289,7 +248,15 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                   </p>
                 </div>
               ) : (
-                <SetupStepContent step={steps[currentStep]} />
+                <SetupStepContent 
+                  step={steps[currentStep]} 
+                  refs={{
+                    personalInfoFormRef,
+                    preferencesFormRef,
+                    driverInfoFormRef,
+                    companySetupRef
+                  }}
+                />
               )}
             </div>
           </div>
@@ -325,23 +292,23 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
 }
 
 // Componente para el contenido de cada paso
-function SetupStepContent({ step }: { step: SetupStep }) {
+function SetupStepContent({ step, refs }: { step: SetupStep, refs: any }) {
   switch (step.id) {
     case 'profile':
-      return <PersonalInfoForm showCancelButton={false} />;
+      return <PersonalInfoForm ref={refs.personalInfoFormRef} showCancelButton={false} />;
     case 'preferences':
-      return <PreferencesForm showCancelButton={false} />;
+      return <PreferencesForm ref={refs.preferencesFormRef} showCancelButton={false} />;
     case 'driver':
-      return <DriverInfoForm showCancelButton={false} />;
+      return <DriverInfoForm ref={refs.driverInfoFormRef} showCancelButton={false} />;
     case 'company':
-      return <CompanySetupStep />;
+      return <CompanySetupStep ref={refs.companySetupRef} />;
     default:
       return <div>Paso no encontrado</div>;
   }
 }
 
 // Componente especializado para configuración de empresa en el setup
-function CompanySetupStep() {
+const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>((props, ref) => {
   const { userCompany } = useCompanyCache();
   const { showSuccess, showError } = useFleetNotifications();
   const [loading, setLoading] = useState(false);
@@ -448,7 +415,12 @@ function CompanySetupStep() {
     } finally {
       setLoading(false);
     }
-  };
+    };
+
+  // Expose saveData method via ref
+  React.useImperativeHandle(ref, () => ({
+    saveData: handleSaveCompany
+  }));
 
   return (
     <div className="space-y-4 sm:space-y-6 pb-6">
@@ -566,4 +538,4 @@ function CompanySetupStep() {
       </div>
     </div>
   );
-}
+});

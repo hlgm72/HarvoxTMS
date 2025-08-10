@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -24,7 +24,11 @@ interface PreferencesFormProps {
   className?: string;
 }
 
-export function PreferencesForm({ onCancel, showCancelButton = true, className }: PreferencesFormProps) {
+export interface PreferencesFormRef {
+  saveData: () => Promise<{ success: boolean; error?: string }>;
+}
+
+export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormProps>(({ onCancel, showCancelButton = true, className }, ref) => {
   const { t, i18n } = useTranslation(['common']);
   const { showSuccess, showError } = useFleetNotifications();
   const { profile, user, refreshProfile } = useUserProfile();
@@ -47,17 +51,10 @@ export function PreferencesForm({ onCancel, showCancelButton = true, className }
     }
   }, [profile, preferencesForm]);
 
-  const onSubmitPreferences = async (data: PreferencesFormData) => {
-    if (!user) return;
+  const savePreferencesData = async (data: PreferencesFormData): Promise<{ success: boolean; error?: string }> => {
+    if (!user) return { success: false, error: 'Usuario no encontrado' };
 
-    setUpdating(true);
     try {
-      console.log('Attempting to save preferences data:', {
-        user_id: user.id,
-        preferred_language: data.preferred_language || 'en',
-        timezone: data.timezone || 'America/New_York',
-      });
-
       const { error } = await supabase
         .from('profiles')
         .upsert({
@@ -70,23 +67,33 @@ export function PreferencesForm({ onCancel, showCancelButton = true, className }
 
       if (error) {
         console.error('Error saving preferences:', error);
-        throw error;
+        return { success: false, error: error.message };
       }
 
-      console.log('Preferences saved successfully, refreshing profile data...');
-      
       // Update i18n language if changed
       if (data.preferred_language && data.preferred_language !== i18n.language) {
         i18n.changeLanguage(data.preferred_language);
       }
 
-      // Refresh profile data to update the UI
       await refreshProfile();
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Error desconocido' };
+    }
+  };
 
-      showSuccess(
-        "Preferencias actualizadas exitosamente",
-        "Su configuración de idioma y zona horaria ha sido guardada correctamente."
-      );
+  const onSubmitPreferences = async (data: PreferencesFormData) => {
+    setUpdating(true);
+    try {
+      const result = await savePreferencesData(data);
+      if (result.success) {
+        showSuccess(
+          "Preferencias actualizadas exitosamente",
+          "Su configuración de idioma y zona horaria ha sido guardada correctamente."
+        );
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error: any) {
       showError(
         "Error en la actualización",
@@ -96,6 +103,14 @@ export function PreferencesForm({ onCancel, showCancelButton = true, className }
       setUpdating(false);
     }
   };
+
+  // Expose saveData method via ref
+  useImperativeHandle(ref, () => ({
+    saveData: async () => {
+      const data = preferencesForm.getValues();
+      return await savePreferencesData(data);
+    }
+  }));
 
   const handleCancel = () => {
     if (profile) {
@@ -182,4 +197,4 @@ export function PreferencesForm({ onCancel, showCancelButton = true, className }
       </Form>
     </div>
   );
-}
+});
