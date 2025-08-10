@@ -5,7 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, User, Settings, Building, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { BirthDateInput } from '@/components/ui/BirthDateInput';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SetupStep {
   id: string;
@@ -476,6 +478,8 @@ function PreferencesSetupStep() {
 
 // Componente para configuración de empresa
 function CompanySetupStep() {
+  const { userCompany } = useCompanyCache();
+  const [loading, setLoading] = useState(false);
   const [companyData, setCompanyData] = useState({
     name: '',
     dotNumber: '',
@@ -487,6 +491,91 @@ function CompanySetupStep() {
     phone: '',
     email: ''
   });
+
+  // Cargar datos existentes de la empresa
+  useEffect(() => {
+    const loadCompanyData = async () => {
+      if (!userCompany?.company_id) return;
+      
+      try {
+        const { data: company, error } = await supabase
+          .from('companies')
+          .select('*')
+          .eq('id', userCompany.company_id)
+          .single();
+
+        if (error) {
+          console.error('Error loading company data:', error);
+          return;
+        }
+
+        if (company) {
+          setCompanyData({
+            name: company.name || '',
+            dotNumber: company.dot_number || '',
+            mcNumber: company.mc_number || '',
+            address: company.street_address || '',
+            city: '', // No tenemos city_name directamente
+            state: company.state_id || '',
+            zipCode: company.zip_code || '',
+            phone: company.phone || '',
+            email: company.email || ''
+          });
+        }
+      } catch (error) {
+        console.error('Error loading company data:', error);
+      }
+    };
+
+    loadCompanyData();
+  }, [userCompany]);
+
+  // Función para guardar datos de la empresa
+  const handleSaveCompany = async () => {
+    if (!userCompany?.company_id) {
+      console.error('No company ID available');
+      return false;
+    }
+
+    // Validar campos requeridos
+    if (!companyData.name.trim() || !companyData.address.trim() || !companyData.state || !companyData.zipCode.trim()) {
+      alert('Por favor completa todos los campos requeridos (*)');
+      return false;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('companies')
+        .update({
+          name: companyData.name.trim(),
+          dot_number: companyData.dotNumber.trim() || null,
+          mc_number: companyData.mcNumber.trim() || null,
+          street_address: companyData.address.trim(),
+          state_id: companyData.state,
+          zip_code: companyData.zipCode.trim(),
+          phone: companyData.phone.trim() || null,
+          email: companyData.email.trim() || null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userCompany.company_id);
+
+      if (error) {
+        console.error('Error updating company:', error);
+        alert('Error al guardar los datos de la empresa');
+        return false;
+      }
+
+      console.log('✅ Company data saved successfully');
+      return true;
+    } catch (error) {
+      console.error('Error saving company data:', error);
+      alert('Error al guardar los datos de la empresa');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -608,6 +697,24 @@ function CompanySetupStep() {
           <p className="text-sm text-amber-800">
             ⚠️ <strong>Importante:</strong> Los números DOT y MC son requeridos para operaciones comerciales en Estados Unidos
           </p>
+        </div>
+
+        {/* Botón para guardar datos */}
+        <div className="flex justify-end pt-4">
+          <Button 
+            onClick={handleSaveCompany}
+            disabled={loading}
+            className="gap-2"
+          >
+            {loading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                Guardando...
+              </>
+            ) : (
+              'Guardar Datos de Empresa'
+            )}
+          </Button>
         </div>
       </div>
     </div>
