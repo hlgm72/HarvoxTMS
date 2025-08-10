@@ -80,34 +80,35 @@ export const useDriversCount = () => {
       }
 
       try {
-        // Contar drivers activos (cuenta activada)
-        const { data: activeDrivers, error: activeError } = await supabase
+        // 1. Contar drivers en user_company_roles (activos e inactivos)
+        const { count: rolesCount, error: rolesError } = await supabase
           .from('user_company_roles')
-          .select('user_id')
+          .select('*', { count: 'exact', head: true })
           .eq('company_id', userCompany.company_id)
-          .eq('role', 'driver')
-          .eq('is_active', true);
+          .eq('role', 'driver');
 
-        if (activeError) {
-          console.error('Error obteniendo drivers activos:', activeError);
-          throw activeError;
+        if (rolesError) {
+          console.error('Error contando roles de drivers:', rolesError);
+          throw rolesError;
         }
 
-        // Contar drivers pre-registrados (invitados pero no activados)
-        const { data: preRegisteredDrivers, error: preRegError } = await supabase
-          .from('user_company_roles')
-          .select('user_id')
+        // 2. Contar invitaciones pendientes con target_user_id (pre-registrados)
+        const { count: pendingCount, error: pendingError } = await supabase
+          .from('user_invitations')
+          .select('*', { count: 'exact', head: true })
           .eq('company_id', userCompany.company_id)
           .eq('role', 'driver')
-          .eq('is_active', false);
+          .eq('is_active', true)
+          .is('accepted_at', null)
+          .not('target_user_id', 'is', null);
 
-        if (preRegError) {
-          console.error('Error obteniendo drivers pre-registrados:', preRegError);
-          throw preRegError;
+        if (pendingError) {
+          console.error('Error contando invitaciones pendientes:', pendingError);
+          throw pendingError;
         }
 
-        const totalCount = (activeDrivers?.length || 0) + (preRegisteredDrivers?.length || 0);
-        console.log(`🚛 Contador drivers: ${activeDrivers?.length || 0} activos + ${preRegisteredDrivers?.length || 0} pre-registrados = ${totalCount}`);
+        const totalCount = (rolesCount || 0) + (pendingCount || 0);
+        console.log(`🚛 Contador drivers: ${rolesCount || 0} en roles + ${pendingCount || 0} pendientes = ${totalCount}`);
         
         return totalCount;
 
