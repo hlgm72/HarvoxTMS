@@ -356,22 +356,15 @@ function PreferencesSetupStep() {
     }
   };
 
-  // Lista de zonas horarias comunes con nombres amigables
+  // Lista de zonas horarias de Estados Unidos
   const timezoneOptions = [
-    { value: 'America/New_York', label: 'Eastern Time (ET) - Nueva York' },
-    { value: 'America/Chicago', label: 'Central Time (CT) - Chicago' },
-    { value: 'America/Denver', label: 'Mountain Time (MT) - Denver' },
-    { value: 'America/Los_Angeles', label: 'Pacific Time (PT) - Los Ángeles' },
-    { value: 'America/Mexico_City', label: 'Hora del Centro (México)' },
-    { value: 'America/Monterrey', label: 'Hora del Norte (México)' },
-    { value: 'America/Tijuana', label: 'Hora del Pacífico (México)' },
-    { value: 'America/Cancun', label: 'Hora del Sureste (México)' },
-    { value: 'America/Toronto', label: 'Eastern Time (Canadá)' },
-    { value: 'America/Vancouver', label: 'Pacific Time (Canadá)' },
-    { value: 'America/Phoenix', label: 'Mountain Time (Arizona)' },
-    { value: 'America/Anchorage', label: 'Alaska Time' },
-    { value: 'Pacific/Honolulu', label: 'Hawaii Time' },
-    { value: 'America/Puerto_Rico', label: 'Atlantic Time (Puerto Rico)' }
+    { value: 'America/New_York', label: 'Eastern Time (ET)' },
+    { value: 'America/Chicago', label: 'Central Time (CT)' },
+    { value: 'America/Denver', label: 'Mountain Time (MT)' },
+    { value: 'America/Los_Angeles', label: 'Pacific Time (PT)' },
+    { value: 'America/Phoenix', label: 'Mountain Time - Arizona (sin cambio horario)' },
+    { value: 'America/Anchorage', label: 'Alaska Time (AKT)' },
+    { value: 'Pacific/Honolulu', label: 'Hawaii Time (HST)' }
   ];
 
   const [preferences, setPreferences] = useState({
