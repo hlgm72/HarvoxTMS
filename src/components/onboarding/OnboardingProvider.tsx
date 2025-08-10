@@ -79,11 +79,11 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
     setShowSetupCompleted(true);
     console.log('✅ SetupCompleted modal activated');
     
-    // Auto-cerrar después de 5 segundos
+    // Auto-cerrar después de 10 segundos
     setTimeout(() => {
       console.log('⏰ Auto-closing setup completed modal');
       setShowSetupCompleted(false);
-    }, 5000);
+    }, 10000);
   };
 
   const handleSetupClose = () => {
