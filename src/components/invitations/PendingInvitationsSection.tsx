@@ -35,6 +35,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { getRoleLabel } from '@/lib/roleUtils';
 import { formatDistance } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { deleteUserCompletely } from '@/utils/deleteTestUser';
 
 interface PendingInvitation {
   id: string;
@@ -45,6 +46,7 @@ interface PendingInvitation {
   created_at: string;
   expires_at: string;
   invited_by: string;
+  target_user_id: string | null;
   companies: {
     name: string;
   };
@@ -97,9 +99,11 @@ export function PendingInvitationsSection({
           created_at,
           expires_at,
           invited_by,
+          target_user_id,
           companies!inner(name)
         `)
         .eq('company_id', userRole.company_id)
+        .eq('is_active', true) // Solo mostrar invitaciones activas
         .is('accepted_at', null)
         .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false });
@@ -173,26 +177,22 @@ export function PendingInvitationsSection({
 
     setProcessingInvitation(selectedInvitation.id);
     try {
-      // Opción 1: Eliminación física (DELETE)
+      // Eliminación suave: marcar como cancelada en lugar de eliminar
+      // Esto mantiene la consistencia de datos si ya se creó el usuario
       const { error } = await supabase
         .from('user_invitations')
-        .delete()
+        .update({ 
+          is_active: false,
+          expires_at: new Date().toISOString(), // Marca como expirada para que no aparezca en la lista
+          updated_at: new Date().toISOString()
+        })
         .eq('id', selectedInvitation.id);
-
-      // Opción 2: Eliminación suave (comentado) - mantiene el registro para auditoría
-      // const { error } = await supabase
-      //   .from('user_invitations')
-      //   .update({ 
-      //     expires_at: new Date().toISOString(),
-      //     updated_at: new Date().toISOString()
-      //   })
-      //   .eq('id', selectedInvitation.id);
 
       if (error) throw error;
 
       showSuccess(
         'Invitación Cancelada',
-        `Se ha cancelado la invitación para ${selectedInvitation.email}`
+        `Se ha cancelado la invitación para ${selectedInvitation.email}. El usuario pre-registrado se mantiene en el sistema.`
       );
 
       // Refrescar la lista
@@ -204,6 +204,39 @@ export function PendingInvitationsSection({
     } catch (error: any) {
       console.error('Error canceling invitation:', error);
       showError(error.message || 'Error al cancelar la invitación');
+    } finally {
+      setProcessingInvitation(null);
+    }
+  };
+
+  const handleDeleteUserCompletely = async () => {
+    if (!selectedInvitation?.target_user_id) return;
+
+    setProcessingInvitation(selectedInvitation.id);
+    try {
+      const result = await deleteUserCompletely(
+        selectedInvitation.target_user_id,
+        `Eliminación completa desde invitación pendiente: ${selectedInvitation.email}`
+      );
+
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+
+      showSuccess(
+        'Usuario Eliminado Completamente',
+        `${selectedInvitation.email} ha sido eliminado completamente del sistema.`
+      );
+
+      // Refrescar la lista
+      fetchPendingInvitations();
+      // Notificar al componente padre
+      onInvitationsUpdated?.();
+      setCancelDialogOpen(false);
+      setSelectedInvitation(null);
+    } catch (error: any) {
+      console.error('Error deleting user completely:', error);
+      showError(error.message || 'Error al eliminar el usuario completamente');
     } finally {
       setProcessingInvitation(null);
     }
@@ -386,34 +419,72 @@ export function PendingInvitationsSection({
 
       {/* Dialog para confirmar cancelación */}
       <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Cancelar Invitación</DialogTitle>
-            <DialogDescription>
-              ¿Estás seguro de que quieres cancelar la invitación para{' '}
-              <strong>{selectedInvitation?.email}</strong>?
-              Esta acción no se puede deshacer.
+            <DialogDescription className="space-y-3">
+              <p>
+                ¿Cómo quieres proceder con la invitación para{' '}
+                <strong>{selectedInvitation?.email}</strong>?
+              </p>
+              
+              {selectedInvitation?.target_user_id ? (
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                  <p className="text-sm text-orange-700">
+                    ⚠️ <strong>Este usuario ya fue pre-registrado</strong> en el sistema con todos sus datos.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-sm text-blue-700">
+                    ℹ️ Esta invitación aún no ha creado un usuario en el sistema.
+                  </p>
+                </div>
+              )}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
             <Button
               variant="outline"
-              onClick={() => {
-                setCancelDialogOpen(false);
-                setSelectedInvitation(null);
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="destructive"
               onClick={handleCancelInvitation}
               disabled={processingInvitation === selectedInvitation?.id}
+              className="w-full"
             >
               {processingInvitation === selectedInvitation?.id ? (
                 <RefreshCw className="h-4 w-4 animate-spin mr-2" />
               ) : null}
-              Sí, cancelar invitación
+              Solo cancelar invitación
+              <span className="text-xs text-muted-foreground ml-1">
+                (mantener usuario pre-registrado)
+              </span>
+            </Button>
+            
+            {selectedInvitation?.target_user_id && (
+              <Button
+                variant="destructive"
+                onClick={handleDeleteUserCompletely}
+                disabled={processingInvitation === selectedInvitation?.id}
+                className="w-full"
+              >
+                {processingInvitation === selectedInvitation?.id ? (
+                  <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
+                Eliminar usuario completamente
+                <span className="text-xs text-muted-foreground ml-1">
+                  (eliminar todo del sistema)
+                </span>
+              </Button>
+            )}
+            
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setCancelDialogOpen(false);
+                setSelectedInvitation(null);
+              }}
+              className="w-full"
+            >
+              Cancelar acción
             </Button>
           </DialogFooter>
         </DialogContent>
