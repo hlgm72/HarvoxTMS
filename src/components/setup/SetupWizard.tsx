@@ -86,127 +86,117 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
   };
 
   const handleComplete = async () => {
-    console.log('🎯 SetupWizard handleComplete called');
     setIsCompleting(true);
     
     try {
-      let savedSuccessfully = 0;
-      let totalAttempts = 0;
-      
-      // Iterar por todos los pasos disponibles y enviar sus formularios
-      for (let i = 0; i < steps.length; i++) {
-        const step = steps[i];
-        
-        // Saltar el paso de empresa ya que se maneja diferente
-        if (step.id === 'company') continue;
-        
-        try {
-          totalAttempts++;
-          console.log('💾 Processing step:', step.id);
-          
-          // Navegar al paso para asegurar que el formulario esté renderizado
-          setCurrentStep(i);
-          await new Promise(resolve => setTimeout(resolve, 200));
-          
-          // Buscar y enviar el formulario específico
-          let formSubmitted = false;
-          
-          if (step.id === 'profile') {
-            const form = document.querySelector('form[data-form="personal-info"]') as HTMLFormElement;
-            if (form) {
-              const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
-              if (submitButton && !submitButton.disabled) {
-                submitButton.click();
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                formSubmitted = true;
-              }
-            }
-          } else if (step.id === 'preferences') {
-            const forms = document.querySelectorAll('form');
-            for (const form of forms) {
-              const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
-              if (submitButton && submitButton.textContent?.includes('Guardar')) {
-                submitButton.click();
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                formSubmitted = true;
-                break;
-              }
-            }
-          } else if (step.id === 'driver') {
-            const forms = document.querySelectorAll('form');
-            // Buscar el formulario de conductor (último formulario sin data-form específico)
-            const driverForm = Array.from(forms).find(form => 
-              form.querySelector('input[placeholder*="emergencia"]') || 
-              form.querySelector('input[placeholder*="contacto"]')
-            ) as HTMLFormElement;
-            
-            if (driverForm) {
-              const submitButton = driverForm.querySelector('button[type="submit"]') as HTMLButtonElement;
-              if (submitButton && !submitButton.disabled) {
-                submitButton.click();
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                formSubmitted = true;
-              }
-            }
-          }
-          
-          if (formSubmitted) {
-            savedSuccessfully++;
-            console.log('✅ Form submission completed for:', step.id);
-          } else {
-            console.log('⚠️ No form or submit button found for:', step.id);
-          }
-          
-        } catch (error) {
-          console.error('Error submitting form for step:', step.id, error);
+      // Recopilar datos directamente de los inputs y guardar usando hooks
+      const dataToSave = {
+        personalInfo: {},
+        preferences: {},
+        driverInfo: {},
+        companyInfo: {}
+      };
+
+      // Recopilar datos de información personal
+      const personalForm = document.querySelector('form[data-form="personal-info"]') as HTMLFormElement;
+      if (personalForm) {
+        const formData = new FormData(personalForm);
+        dataToSave.personalInfo = Object.fromEntries(formData);
+      }
+
+      // Recopilar datos de preferencias
+      const preferencesForm = document.querySelector('form[data-form="preferences"]') as HTMLFormElement;
+      if (preferencesForm) {
+        const formData = new FormData(preferencesForm);
+        dataToSave.preferences = Object.fromEntries(formData);
+      }
+
+      // Recopilar datos de conductor si es driver
+      if (isDriver) {
+        const driverForm = document.querySelector('form[data-form="driver-info"]') as HTMLFormElement;
+        if (driverForm) {
+          const formData = new FormData(driverForm);
+          dataToSave.driverInfo = Object.fromEntries(formData);
         }
       }
 
-      // Manejar el guardado de empresa si es company owner
+      // Recopilar datos de empresa si es company owner
       if (isCompanyOwner) {
-        const companyStepIndex = steps.findIndex(s => s.id === 'company');
-        if (companyStepIndex !== -1) {
-          try {
-            totalAttempts++;
-            setCurrentStep(companyStepIndex);
-            await new Promise(resolve => setTimeout(resolve, 200));
-            
-            const companyFormElement = document.querySelector('[data-company-form]') as HTMLElement;
-            if (companyFormElement) {
-              console.log('💾 Attempting to save company info...');
-              const saveButton = companyFormElement.querySelector('button') as HTMLButtonElement;
-              if (saveButton && !saveButton.disabled) {
-                saveButton.click();
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                savedSuccessfully++;
-              }
-            }
-          } catch (error) {
-            console.error('Error saving company info:', error);
+        const companyInputs = document.querySelectorAll('[data-company-form] input, [data-company-form] select');
+        const companyData: any = {};
+        companyInputs.forEach((input: any) => {
+          if (input.name) {
+            companyData[input.name] = input.value;
+          }
+        });
+        dataToSave.companyInfo = companyData;
+      }
+
+      // Ahora enviar los datos usando eventos personalizados para que los formularios los procesen
+      let savedSteps = 0;
+
+      // Guardar información personal
+      if (Object.keys(dataToSave.personalInfo).length > 0) {
+        const personalForm = document.querySelector('form[data-form="personal-info"]') as HTMLFormElement;
+        if (personalForm) {
+          const submitButton = personalForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+          if (submitButton) {
+            submitButton.click();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            savedSteps++;
           }
         }
       }
 
-      // Mostrar siempre mensaje de éxito
-      console.log('📊 Setup completion summary:', { savedSuccessfully, totalAttempts });
-      console.log('✅ Showing success notification');
+      // Guardar preferencias
+      if (Object.keys(dataToSave.preferences).length > 0) {
+        const preferencesForm = document.querySelector('form[data-form="preferences"]') as HTMLFormElement;
+        if (preferencesForm) {
+          const submitButton = preferencesForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+          if (submitButton) {
+            submitButton.click();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            savedSteps++;
+          }
+        }
+      }
+
+      // Guardar información de conductor
+      if (isDriver && Object.keys(dataToSave.driverInfo).length > 0) {
+        const driverForm = document.querySelector('form[data-form="driver-info"]') as HTMLFormElement;
+        if (driverForm) {
+          const submitButton = driverForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+          if (submitButton) {
+            submitButton.click();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            savedSteps++;
+          }
+        }
+      }
+
+      // Guardar información de empresa
+      if (isCompanyOwner && Object.keys(dataToSave.companyInfo).length > 0) {
+        const saveButton = document.querySelector('[data-company-form] button') as HTMLButtonElement;
+        if (saveButton) {
+          saveButton.click();
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          savedSteps++;
+        }
+      }
+
       showSuccess(
         "Configuración completada",
-        totalAttempts > 0 
-          ? `Configuración completada exitosamente. Se procesaron ${totalAttempts} sección(es).`
-          : "La configuración inicial se ha completado. Puedes actualizar tu información desde tu perfil cuando lo necesites."
+        "Tu configuración inicial se ha completado exitosamente."
       );
 
-      console.log('✅ SetupWizard calling onComplete callback');
       onComplete();
     } catch (error) {
       console.error('Error during setup completion:', error);
-      console.log('❌ Showing catch block error notification');
       showSuccess(
         "Configuración completada", 
         "La configuración inicial se ha terminado. Puedes completar o actualizar la información desde tu perfil."
       );
-      onComplete(); // Complete anyway
+      onComplete();
     } finally {
       setIsCompleting(false);
     }
