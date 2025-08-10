@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -346,12 +346,48 @@ function ProfileSetupStep() {
 
 // Componente para configuración de preferencias
 function PreferencesSetupStep() {
+  // Función para detectar la zona horaria del usuario
+  const detectUserTimezone = () => {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch (error) {
+      console.warn('Error detecting timezone:', error);
+      return 'America/New_York'; // Fallback
+    }
+  };
+
+  // Lista de zonas horarias comunes con nombres amigables
+  const timezoneOptions = [
+    { value: 'America/New_York', label: 'Eastern Time (ET) - Nueva York' },
+    { value: 'America/Chicago', label: 'Central Time (CT) - Chicago' },
+    { value: 'America/Denver', label: 'Mountain Time (MT) - Denver' },
+    { value: 'America/Los_Angeles', label: 'Pacific Time (PT) - Los Ángeles' },
+    { value: 'America/Mexico_City', label: 'Hora del Centro (México)' },
+    { value: 'America/Monterrey', label: 'Hora del Norte (México)' },
+    { value: 'America/Tijuana', label: 'Hora del Pacífico (México)' },
+    { value: 'America/Cancun', label: 'Hora del Sureste (México)' },
+    { value: 'America/Toronto', label: 'Eastern Time (Canadá)' },
+    { value: 'America/Vancouver', label: 'Pacific Time (Canadá)' },
+    { value: 'America/Phoenix', label: 'Mountain Time (Arizona)' },
+    { value: 'America/Anchorage', label: 'Alaska Time' },
+    { value: 'Pacific/Honolulu', label: 'Hawaii Time' },
+    { value: 'America/Puerto_Rico', label: 'Atlantic Time (Puerto Rico)' }
+  ];
+
   const [preferences, setPreferences] = useState({
     language: 'es',
-    timezone: 'America/New_York',
+    timezone: detectUserTimezone(), // Detectar automáticamente
     notifications: true,
     darkMode: false
   });
+
+  const [detectedTimezone, setDetectedTimezone] = useState<string | null>(null);
+
+  // Efecto para mostrar información sobre la detección automática
+  useEffect(() => {
+    const detected = detectUserTimezone();
+    setDetectedTimezone(detected);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -378,16 +414,33 @@ function PreferencesSetupStep() {
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Zona Horaria</label>
+            {detectedTimezone && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
+                <p className="text-sm text-green-700 flex items-center gap-2">
+                  🌍 <strong>Zona horaria detectada automáticamente:</strong> {detectedTimezone}
+                </p>
+                <p className="text-xs text-green-600 mt-1">
+                  Puedes cambiarla si es necesario en la lista de abajo
+                </p>
+              </div>
+            )}
             <select
               className="w-full px-3 py-2 border rounded-md"
               value={preferences.timezone}
               onChange={(e) => setPreferences({ ...preferences, timezone: e.target.value })}
             >
-              <option value="America/New_York">Eastern Time (ET)</option>
-              <option value="America/Chicago">Central Time (CT)</option>
-              <option value="America/Denver">Mountain Time (MT)</option>
-              <option value="America/Los_Angeles">Pacific Time (PT)</option>
-              <option value="America/Mexico_City">México (CDMX)</option>
+              {timezoneOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                  {option.value === detectedTimezone ? ' (Detectada)' : ''}
+                </option>
+              ))}
+              {/* Mostrar la zona horaria detectada si no está en la lista */}
+              {detectedTimezone && !timezoneOptions.find(opt => opt.value === detectedTimezone) && (
+                <option value={detectedTimezone}>
+                  {detectedTimezone} (Detectada automáticamente)
+                </option>
+              )}
             </select>
           </div>
         </div>
