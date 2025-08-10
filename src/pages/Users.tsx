@@ -41,6 +41,7 @@ import {
   Activity, Clock, AlertCircle, TrendingUp, Search, Filter, X, UserPlus, Mail, Shield, Edit, Trash2, Eye,
   Truck
 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFleetNotifications } from "@/components/notifications";
 import { handleTextBlur, createTextHandlers } from "@/lib/textUtils";
 import { supabase } from "@/integrations/supabase/client";
@@ -299,6 +300,12 @@ export default function Users() {
 
     setFilteredUsers(filtered);
   };
+
+  // Separar usuarios activos de pendientes basado en si tienen auth activo
+  // Para usuarios, consideramos que son "pendientes" si están pre-registrados
+  // o tienen invitaciones pendientes
+  const activeUsers = filteredUsers.filter(user => user.status === 'active');
+  const pendingUsers = filteredUsers.filter(user => user.status !== 'active');
 
   const handleDeleteTestUser = async () => {
     if (!userRole?.role || !['superadmin', 'company_owner'].includes(userRole.role)) {
@@ -937,7 +944,26 @@ export default function Users() {
               )}
             </CardContent>
           </Card>
-        )}
+            )}
+          </TabsContent>
+          
+          <TabsContent value="pending" className="space-y-6">
+            <PendingInvitationsSection 
+              title="Invitaciones Pendientes"
+              description="Usuarios que han sido invitados pero aún no han aceptado su invitación"
+              onInvitationsUpdated={fetchUsers}
+            />
+            {pendingUsers.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="text-6xl mb-4">⏳</div>
+                <h3 className="text-xl font-semibold mb-2">No hay usuarios pendientes</h3>
+                <p className="text-muted-foreground">Los usuarios invitados aparecerán aquí</p>
+              </div>
+            ) : (
+              <div>Lista de usuarios pendientes aquí</div>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Dialog para invitar usuario */}
