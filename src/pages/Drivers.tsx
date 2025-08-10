@@ -234,9 +234,9 @@ export default function Drivers() {
     );
   }
 
-  // Separar conductores - todos incluye activos e invitados, pendientes solo los que necesitan activación
+  // Separar conductores - todos incluye activos e invitados, pendientes incluye invitados y los que necesitan activación
   const allDrivers = drivers; // Todos los conductores (activos e invitados)
-  const pendingDrivers = drivers.filter(d => d.activation_status === 'pending_activation');
+  const pendingDrivers = drivers.filter(d => d.activation_status === 'pending_activation' || d.activation_status === 'invited');
 
   return (
     <>
