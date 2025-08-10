@@ -98,9 +98,19 @@ export const useConsolidatedDrivers = () => {
           .gt('expires_at', new Date().toISOString())
           .not('target_user_id', 'is', null);
 
+        // Debug log para invitaciones pendientes
+        console.log('🚛 Debug invitaciones pendientes:', pendingInvitations);
+        console.log('🚛 Debug error invitaciones:', invitationsError);
+
         const invitedUserIds = pendingInvitations?.map(inv => inv.target_user_id).filter(Boolean) || [];
         const driverUserIds = driverRoles?.map(role => role.user_id) || [];
         const allDriverUserIds = [...new Set([...driverUserIds, ...invitedUserIds])];
+        
+        console.log('🚛 Debug IDs:', {
+          driverUserIds,
+          invitedUserIds,
+          allDriverUserIds
+        });
 
         if (allDriverUserIds.length === 0) {
           return [];
