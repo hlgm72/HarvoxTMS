@@ -140,10 +140,15 @@ export default function Users() {
   }, [userRole]);
 
   const fetchUsers = async () => {
-    if (!userRole?.company_id) return;
+    if (!userRole?.company_id) {
+      console.log('❌ No company_id found:', userRole);
+      return;
+    }
     
     setLoading(true);
     try {
+      console.log('🔍 Fetching users for company:', userRole.company_id);
+      
       // Obtener usuarios activos de la empresa con sus roles
       const { data: companyUsers, error } = await supabase
         .from('user_company_roles')
@@ -157,7 +162,12 @@ export default function Users() {
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error fetching company users:', error);
+        throw error;
+      }
+      
+      console.log('✅ Company users loaded:', companyUsers?.length || 0);
 
       // Obtener invitaciones pendientes (no aceptadas)
       const { data: pendingInvitations, error: invitationsError } = await supabase
@@ -176,7 +186,12 @@ export default function Users() {
         .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false });
 
-      if (invitationsError) throw invitationsError;
+      if (invitationsError) {
+        console.error('❌ Error fetching invitations:', invitationsError);
+        throw invitationsError;
+      }
+      
+      console.log('✅ Pending invitations loaded:', pendingInvitations?.length || 0);
 
       // Combinar usuarios activos y pendientes
       const allUserIds = new Set();
@@ -235,6 +250,7 @@ export default function Users() {
       }
 
       if (usersMap.size === 0) {
+        console.log('⚠️ No users found');
         setUsers([]);
         setLoading(false);
         return;
@@ -242,8 +258,10 @@ export default function Users() {
 
       // Obtener perfiles de usuarios para aquellos que tienen user_id
       const userIdsWithProfiles = Array.from(allUserIds).filter((id): id is string => 
-        typeof id === 'string' && id.length > 0
+        typeof id === 'string' && id.length > 0 && !id.startsWith('pending-')
       );
+      
+      console.log('🔍 Fetching profiles for users:', userIdsWithProfiles.length);
       
       let profiles: any[] = [];
       if (userIdsWithProfiles.length > 0) {
@@ -252,8 +270,12 @@ export default function Users() {
           .select('user_id, first_name, last_name, avatar_url, phone')
           .in('user_id', userIdsWithProfiles);
 
-        if (profilesError) throw profilesError;
+        if (profilesError) {
+          console.error('❌ Error fetching profiles:', profilesError);
+          throw profilesError;
+        }
         profiles = profilesData || [];
+        console.log('✅ Profiles loaded:', profiles.length);
       }
 
       // Actualizar información de perfiles
@@ -277,12 +299,19 @@ export default function Users() {
       if (hasAdminPrivileges) {
         // Usar la función segura para obtener emails de usuarios
         try {
+          console.log('🔍 Fetching emails for admin user');
           const { data: userEmails, error: emailError } = await supabase
             .rpc('get_user_emails_for_company', { 
               company_id_param: userRole.company_id 
             });
 
-          if (!emailError && userEmails) {
+          if (emailError) {
+            console.error('❌ Error fetching emails:', emailError);
+            throw emailError;
+          }
+
+          if (userEmails) {
+            console.log('✅ Emails loaded:', userEmails.length);
             // Mapear emails a usuarios
             userEmails.forEach(({ user_id, email }) => {
               if (usersMap.has(user_id)) {
@@ -292,7 +321,7 @@ export default function Users() {
             });
           }
         } catch (error) {
-          console.warn('Error obteniendo emails:', error);
+          console.warn('⚠️ Error obteniendo emails:', error);
           // Fallback: solo mostrar email del usuario actual
           if (user?.id && usersMap.has(user.id)) {
             const currentUser = usersMap.get(user.id)!;
@@ -308,14 +337,15 @@ export default function Users() {
       }
 
       const usersList = Array.from(usersMap.values());
+      console.log('✅ Final users list:', usersList.length);
       setUsers(usersList);
       setFilteredUsers(usersList); // Inicializar usuarios filtrados
       
       // Calcular estadísticas después de obtener los usuarios
       calculateStats(usersList, userRole?.company_id);
     } catch (error) {
-      console.error('Error fetching users:', error);
-      showError('Error al cargar usuarios');
+      console.error('❌ Error fetching users:', error);
+      showError(`Error al cargar usuarios: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setLoading(false);
     }
