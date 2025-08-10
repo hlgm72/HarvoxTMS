@@ -151,7 +151,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
               {steps[currentStep].title}
             </div>
             
-            <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className="flex-1 min-h-0 overflow-y-auto bg-white rounded-lg p-4">
               {isCompleting ? (
                 <div className="flex flex-col items-center justify-center h-full">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
@@ -623,22 +623,23 @@ function CompanySetupStep() {
 
       {/* Componente de dirección reutilizable */}
       <div className="space-y-2">
-        <h4 className="text-sm font-medium">Dirección de la Empresa</h4>
-        <AddressForm
-          streetAddress={companyData.address}
-          onStreetAddressChange={(value) => setCompanyData({ ...companyData, address: value })}
-          stateId={companyData.stateId}
-          onStateChange={(value) => setCompanyData({ ...companyData, stateId: value || '' })}
-          cityId={companyData.cityId}
-          onCityChange={(value) => setCompanyData({ ...companyData, cityId: value || '' })}
-          zipCode={companyData.zipCode}
-          onZipCodeChange={(value) => setCompanyData({ ...companyData, zipCode: value })}
-          required={true}
-          streetAddressLabel="Dirección"
-          stateLabel="Estado"
-          cityLabel="Ciudad"
-          zipCodeLabel="Código Postal"
-        />
+        <div className="px-1">
+          <AddressForm
+            streetAddress={companyData.address}
+            onStreetAddressChange={(value) => setCompanyData({ ...companyData, address: value })}
+            stateId={companyData.stateId}
+            onStateChange={(value) => setCompanyData({ ...companyData, stateId: value || '' })}
+            cityId={companyData.cityId}
+            onCityChange={(value) => setCompanyData({ ...companyData, cityId: value || '' })}
+            zipCode={companyData.zipCode}
+            onZipCodeChange={(value) => setCompanyData({ ...companyData, zipCode: value })}
+            required={true}
+            streetAddressLabel="Dirección"
+            stateLabel="Estado"
+            cityLabel="Ciudad"
+            zipCodeLabel="Código Postal"
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
