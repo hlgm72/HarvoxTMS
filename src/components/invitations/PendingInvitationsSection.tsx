@@ -419,12 +419,12 @@ export function PendingInvitationsSection({
 
       {/* Dialog para confirmar cancelación */}
       <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-        <DialogContent className="max-w-2xl sm:max-w-xl mx-4">
+        <DialogContent className="max-w-3xl sm:max-w-2xl mx-4">
           <DialogHeader>
             <DialogTitle>Cancelar Invitación</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="break-words">
               ¿Cómo quieres proceder con la invitación para{' '}
-              <strong className="break-all">{selectedInvitation?.email}</strong>?
+              <strong className="break-all word-break-all">{selectedInvitation?.email}</strong>?
             </DialogDescription>
           </DialogHeader>
           
