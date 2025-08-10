@@ -7,6 +7,7 @@ import { CheckCircle, User, Settings, Building, ArrowRight, ArrowLeft } from 'lu
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { BirthDateInput } from '@/components/ui/BirthDateInput';
+import { AddressForm } from '@/components/ui/AddressForm';
 import { supabase } from '@/integrations/supabase/client';
 
 interface SetupStep {
@@ -485,8 +486,8 @@ function CompanySetupStep() {
     dotNumber: '',
     mcNumber: '',
     address: '',
-    city: '',
-    state: '',
+    cityId: '',
+    stateId: '',
     zipCode: '',
     phone: '',
     email: ''
@@ -515,8 +516,8 @@ function CompanySetupStep() {
             dotNumber: company.dot_number || '',
             mcNumber: company.mc_number || '',
             address: company.street_address || '',
-            city: '', // No tenemos city_name directamente
-            state: company.state_id || '',
+            cityId: company.city_id || '',
+            stateId: company.state_id || '',
             zipCode: company.zip_code || '',
             phone: company.phone || '',
             email: company.email || ''
@@ -538,7 +539,7 @@ function CompanySetupStep() {
     }
 
     // Validar campos requeridos
-    if (!companyData.name.trim() || !companyData.address.trim() || !companyData.state || !companyData.zipCode.trim()) {
+    if (!companyData.name.trim() || !companyData.address.trim() || !companyData.stateId || !companyData.zipCode.trim()) {
       alert('Por favor completa todos los campos requeridos (*)');
       return false;
     }
@@ -552,7 +553,8 @@ function CompanySetupStep() {
           dot_number: companyData.dotNumber.trim() || null,
           mc_number: companyData.mcNumber.trim() || null,
           street_address: companyData.address.trim(),
-          state_id: companyData.state,
+          city_id: companyData.cityId || null,
+          state_id: companyData.stateId,
           zip_code: companyData.zipCode.trim(),
           phone: companyData.phone.trim() || null,
           email: companyData.email.trim() || null,
@@ -578,7 +580,7 @@ function CompanySetupStep() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-h-[60vh] overflow-y-auto">
       <div className="text-center mb-6">
         <h3 className="text-lg font-semibold mb-2">Información de la Empresa</h3>
         <p className="text-muted-foreground">
@@ -586,7 +588,7 @@ function CompanySetupStep() {
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 px-1">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2 space-y-2">
             <label className="text-sm font-medium">Nombre de la Empresa *</label>
@@ -620,56 +622,29 @@ function CompanySetupStep() {
               onChange={(e) => setCompanyData({ ...companyData, mcNumber: e.target.value })}
             />
           </div>
+        </div>
 
-          <div className="md:col-span-2 space-y-2">
-            <label className="text-sm font-medium">Dirección *</label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border rounded-md"
-              placeholder="123 Main Street"
-              value={companyData.address}
-              onChange={(e) => setCompanyData({ ...companyData, address: e.target.value })}
-            />
-          </div>
+        {/* Componente de dirección reutilizable */}
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium">Dirección de la Empresa</h4>
+          <AddressForm
+            streetAddress={companyData.address}
+            onStreetAddressChange={(value) => setCompanyData({ ...companyData, address: value })}
+            stateId={companyData.stateId}
+            onStateChange={(value) => setCompanyData({ ...companyData, stateId: value || '' })}
+            cityId={companyData.cityId}
+            onCityChange={(value) => setCompanyData({ ...companyData, cityId: value || '' })}
+            zipCode={companyData.zipCode}
+            onZipCodeChange={(value) => setCompanyData({ ...companyData, zipCode: value })}
+            required={true}
+            streetAddressLabel="Dirección"
+            stateLabel="Estado"
+            cityLabel="Ciudad"
+            zipCodeLabel="Código Postal"
+          />
+        </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Ciudad *</label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border rounded-md"
-              placeholder="Houston"
-              value={companyData.city}
-              onChange={(e) => setCompanyData({ ...companyData, city: e.target.value })}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Estado *</label>
-            <select
-              className="w-full px-3 py-2 border rounded-md"
-              value={companyData.state}
-              onChange={(e) => setCompanyData({ ...companyData, state: e.target.value })}
-            >
-              <option value="">Selecciona un estado</option>
-              <option value="TX">Texas</option>
-              <option value="CA">California</option>
-              <option value="FL">Florida</option>
-              <option value="NY">New York</option>
-              <option value="IL">Illinois</option>
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Código Postal *</label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border rounded-md"
-              placeholder="77001"
-              value={companyData.zipCode}
-              onChange={(e) => setCompanyData({ ...companyData, zipCode: e.target.value })}
-            />
-          </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Teléfono</label>
             <input
