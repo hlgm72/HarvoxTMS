@@ -949,15 +949,6 @@ export default function Users() {
               description="Usuarios que han sido invitados pero aún no han aceptado su invitación"
               onInvitationsUpdated={fetchUsers}
             />
-            {pendingUsers.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="text-6xl mb-4">⏳</div>
-                <h3 className="text-xl font-semibold mb-2">No hay usuarios pendientes</h3>
-                <p className="text-muted-foreground">Los usuarios invitados aparecerán aquí</p>
-              </div>
-            ) : (
-              <div>Lista de usuarios pendientes aquí</div>
-            )}
           </TabsContent>
         </Tabs>
         )}
