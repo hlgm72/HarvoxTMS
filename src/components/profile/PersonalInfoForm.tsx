@@ -178,7 +178,7 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
   return (
     <div className={className}>
       <div className="mb-4">
-        <h3 className="text-base md:text-lg font-medium">Información Personal</h3>
+        <h3 className="text-base md:text-lg font-medium">Datos Personales</h3>
         <p className="text-xs md:text-sm text-muted-foreground">
           Actualiza tu información personal y dirección
         </p>
