@@ -1,14 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, User, Settings, Building, ArrowRight, ArrowLeft } from 'lucide-react';
+import { CheckCircle, User, Settings, Shield, Building, Truck, ArrowRight, ArrowLeft } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { PersonalInfoForm } from '@/components/profile/PersonalInfoForm';
+import { PreferencesForm } from '@/components/profile/PreferencesForm';
+import { SecurityForm } from '@/components/profile/SecurityForm';
+import { DriverInfoForm } from '@/components/profile/DriverInfoForm';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
-import { BirthDateInput } from '@/components/ui/BirthDateInput';
-import { AddressForm } from '@/components/ui/AddressForm';
 import { supabase } from '@/integrations/supabase/client';
+import { AddressForm } from '@/components/ui/AddressForm';
 
 interface SetupStep {
   id: string;
@@ -28,12 +31,13 @@ interface SetupWizardProps {
 export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isCompleting, setIsCompleting] = useState(false);
+  const { isDriver, isCompanyOwner } = useAuth();
 
   const steps: SetupStep[] = [
     {
       id: 'profile',
-      title: 'Información Personal',
-      description: 'Completa tu perfil con información básica',
+      title: 'Datos Personales',
+      description: 'Completa tu información personal',
       icon: User,
       completed: false
     },
@@ -44,13 +48,27 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       icon: Settings,
       completed: false
     },
-    ...(userRole === 'company_owner' ? [{
+    ...(isDriver ? [{
+      id: 'driver',
+      title: 'Conductor',
+      description: 'Información de licencia y contactos',
+      icon: Truck,
+      completed: false
+    }] : []),
+    ...(isCompanyOwner ? [{
       id: 'company',
       title: 'Datos de Empresa',
-      description: 'Información de tu empresa de transporte',
+      description: 'Información de tu empresa',
       icon: Building,
       completed: false
-    }] : [])
+    }] : []),
+    {
+      id: 'security',
+      title: 'Seguridad',
+      description: 'Configura tu contraseña',
+      icon: Shield,
+      completed: false
+    }
   ];
 
   const progress = ((currentStep + 1) / steps.length) * 100;
@@ -200,282 +218,21 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
 function SetupStepContent({ step }: { step: SetupStep }) {
   switch (step.id) {
     case 'profile':
-      return <ProfileSetupStep />;
+      return <PersonalInfoForm showCancelButton={false} />;
     case 'preferences':
-      return <PreferencesSetupStep />;
+      return <PreferencesForm showCancelButton={false} />;
+    case 'driver':
+      return <DriverInfoForm showCancelButton={false} />;
     case 'company':
       return <CompanySetupStep />;
+    case 'security':
+      return <SecurityForm showCancelButton={false} />;
     default:
       return <div>Paso no encontrado</div>;
   }
 }
 
-// Componente para configuración de perfil
-function ProfileSetupStep() {
-  const { profile } = useUserProfile();
-  const [formData, setFormData] = useState({
-    firstName: profile?.first_name || '',
-    lastName: profile?.last_name || '',
-    phone: profile?.phone || '',
-    dateOfBirth: '',
-    emergencyContact: '',
-    emergencyPhone: ''
-  });
-
-  // Función para formatear teléfono
-  const formatPhoneNumber = (value: string) => {
-    // Remover todo excepto números
-    const numbers = value.replace(/\D/g, '');
-    
-    // Limitar a 10 dígitos
-    const limitedNumbers = numbers.substring(0, 10);
-    
-    // Aplicar formato (XXX) XXX-XXXX
-    if (limitedNumbers.length >= 6) {
-      return `(${limitedNumbers.substring(0, 3)}) ${limitedNumbers.substring(3, 6)}-${limitedNumbers.substring(6)}`;
-    } else if (limitedNumbers.length >= 3) {
-      return `(${limitedNumbers.substring(0, 3)}) ${limitedNumbers.substring(3)}`;
-    } else if (limitedNumbers.length > 0) {
-      return `(${limitedNumbers}`;
-    }
-    return limitedNumbers;
-  };
-
-  // Actualizar el formulario cuando se carga el perfil
-  useEffect(() => {
-    if (profile) {
-      setFormData(prev => ({
-        ...prev,
-        firstName: profile.first_name || '',
-        lastName: profile.last_name || '',
-        phone: profile.phone || ''
-      }));
-    }
-  }, [profile]);
-
-  return (
-    <div className="space-y-4 sm:space-y-6 pb-6">
-      <div className="text-center mb-4 sm:mb-6">
-        <h3 className="text-lg font-semibold mb-2">Información Personal</h3>
-        <p className="text-muted-foreground">
-          Esta información nos ayuda a personalizar tu experiencia
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Nombre *</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded-md"
-            placeholder="Tu nombre"
-            value={formData.firstName}
-            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Apellido *</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded-md"
-            placeholder="Tu apellido"
-            value={formData.lastName}
-            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Teléfono</label>
-          <input
-            type="tel"
-            className="w-full px-3 py-2 border rounded-md"
-            placeholder="(123) 456-7890"
-            value={formData.phone}
-            onChange={(e) => {
-              const formatted = formatPhoneNumber(e.target.value);
-              setFormData({ ...formData, phone: formatted });
-            }}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <BirthDateInput
-            value={formData.dateOfBirth}
-            onValueChange={(value, isValid, age) => {
-              setFormData({ ...formData, dateOfBirth: value });
-            }}
-            className="w-full"
-            minAge={18}
-            maxAge={70}
-            data-testid="birth-date-input"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Contacto de Emergencia</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded-md"
-            placeholder="Nombre del contacto"
-            value={formData.emergencyContact}
-            onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Teléfono de Emergencia</label>
-          <input
-            type="tel"
-            className="w-full px-3 py-2 border rounded-md"
-            placeholder="(123) 456-7890"
-            value={formData.emergencyPhone}
-            onChange={(e) => {
-              const formatted = formatPhoneNumber(e.target.value);
-              setFormData({ ...formData, emergencyPhone: formatted });
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="bg-blue-50 p-4 rounded-lg">
-        <p className="text-sm text-blue-800">
-          💡 <strong>Tip:</strong> Esta información se puede actualizar después desde tu perfil
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// Componente para configuración de preferencias
-function PreferencesSetupStep() {
-  // Función para detectar la zona horaria del usuario
-  const detectUserTimezone = () => {
-    try {
-      return Intl.DateTimeFormat().resolvedOptions().timeZone;
-    } catch (error) {
-      console.warn('Error detecting timezone:', error);
-      return 'America/New_York'; // Fallback
-    }
-  };
-
-  // Lista de zonas horarias de Estados Unidos
-  const timezoneOptions = [
-    { value: 'America/New_York', label: 'Eastern Time (ET)' },
-    { value: 'America/Chicago', label: 'Central Time (CT)' },
-    { value: 'America/Denver', label: 'Mountain Time (MT)' },
-    { value: 'America/Los_Angeles', label: 'Pacific Time (PT)' },
-    { value: 'America/Phoenix', label: 'Mountain Time - Arizona (sin cambio horario)' },
-    { value: 'America/Anchorage', label: 'Alaska Time (AKT)' },
-    { value: 'Pacific/Honolulu', label: 'Hawaii Time (HST)' }
-  ];
-
-  const [preferences, setPreferences] = useState({
-    language: 'es',
-    timezone: detectUserTimezone(), // Detectar automáticamente
-    notifications: true,
-    darkMode: false
-  });
-
-  const [detectedTimezone, setDetectedTimezone] = useState<string | null>(null);
-
-  // Efecto para mostrar información sobre la detección automática
-  useEffect(() => {
-    const detected = detectUserTimezone();
-    setDetectedTimezone(detected);
-  }, []);
-
-  return (
-    <div className="space-y-4 sm:space-y-6 pb-6">
-      <div className="text-center mb-4 sm:mb-6">
-        <h3 className="text-lg font-semibold mb-2">Preferencias</h3>
-        <p className="text-muted-foreground">
-          Personaliza tu experiencia en FleetNest
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Idioma</label>
-          <select
-            className="w-full px-3 py-2 border rounded-md"
-            value={preferences.language}
-            onChange={(e) => setPreferences({ ...preferences, language: e.target.value })}
-          >
-            <option value="es">Español</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Zona Horaria</label>
-          {detectedTimezone && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
-              <p className="text-sm text-green-700 flex items-center gap-2">
-                🌍 <strong>Zona horaria detectada automáticamente:</strong> {detectedTimezone}
-              </p>
-              <p className="text-xs text-green-600 mt-1">
-                Puedes cambiarla si es necesario en la lista de abajo
-              </p>
-            </div>
-          )}
-          <select
-            className="w-full px-3 py-2 border rounded-md"
-            value={preferences.timezone}
-            onChange={(e) => setPreferences({ ...preferences, timezone: e.target.value })}
-          >
-            {timezoneOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-                {option.value === detectedTimezone ? ' (Detectada)' : ''}
-              </option>
-            ))}
-            {/* Mostrar la zona horaria detectada si no está en la lista */}
-            {detectedTimezone && !timezoneOptions.find(opt => opt.value === detectedTimezone) && (
-              <option value={detectedTimezone}>
-                {detectedTimezone} (Detectada automáticamente)
-              </option>
-            )}
-          </select>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <div className="flex items-center justify-between p-4 border rounded-lg">
-          <div>
-            <h4 className="font-medium">Notificaciones</h4>
-            <p className="text-sm text-muted-foreground">
-              Recibir notificaciones sobre cargas, pagos y actualizaciones
-            </p>
-          </div>
-          <input
-            type="checkbox"
-            className="w-4 h-4"
-            checked={preferences.notifications}
-            onChange={(e) => setPreferences({ ...preferences, notifications: e.target.checked })}
-          />
-        </div>
-
-        <div className="flex items-center justify-between p-4 border rounded-lg">
-          <div>
-            <h4 className="font-medium">Modo Oscuro</h4>
-            <p className="text-sm text-muted-foreground">
-              Usar tema oscuro para reducir la fatiga visual
-            </p>
-          </div>
-          <input
-            type="checkbox"
-            className="w-4 h-4"
-            checked={preferences.darkMode}
-            onChange={(e) => setPreferences({ ...preferences, darkMode: e.target.checked })}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Componente para configuración de empresa
+// Componente especializado para configuración de empresa en el setup
 function CompanySetupStep() {
   const { userCompany } = useCompanyCache();
   const [loading, setLoading] = useState(false);
@@ -598,26 +355,28 @@ function CompanySetupStep() {
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Número DOT</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded-md"
-            placeholder="1234567"
-            value={companyData.dotNumber}
-            onChange={(e) => setCompanyData({ ...companyData, dotNumber: e.target.value })}
-          />
-        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Número DOT</label>
+            <input
+              type="text"
+              className="w-full px-3 py-2 border rounded-md"
+              placeholder="1234567"
+              value={companyData.dotNumber}
+              onChange={(e) => setCompanyData({ ...companyData, dotNumber: e.target.value })}
+            />
+          </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Número MC</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded-md"
-            placeholder="MC-123456"
-            value={companyData.mcNumber}
-            onChange={(e) => setCompanyData({ ...companyData, mcNumber: e.target.value })}
-          />
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Número MC</label>
+            <input
+              type="text"
+              className="w-full px-3 py-2 border rounded-md"
+              placeholder="MC-123456"
+              value={companyData.mcNumber}
+              onChange={(e) => setCompanyData({ ...companyData, mcNumber: e.target.value })}
+            />
+          </div>
         </div>
       </div>
 
