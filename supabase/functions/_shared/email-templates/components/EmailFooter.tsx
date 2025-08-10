@@ -135,7 +135,7 @@ const logoTitleSection = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: '6px',
+  gap: '12px',
   margin: '0 auto 12px auto',
   width: 'fit-content',
 };
