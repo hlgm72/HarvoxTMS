@@ -590,7 +590,7 @@ function CompanySetupStep() {
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-4 px-1">
+      <div className="flex-1 overflow-y-auto space-y-4 px-1 pb-24">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2 space-y-2">
             <label className="text-sm font-medium">Nombre de la Empresa *</label>
@@ -677,7 +677,7 @@ function CompanySetupStep() {
         </div>
 
         {/* Botón para guardar datos */}
-        <div className="flex justify-end pt-4 pb-4">
+        <div className="flex justify-end pt-4">
           <Button 
             onClick={handleSaveCompany}
             disabled={loading}
