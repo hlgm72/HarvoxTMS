@@ -87,8 +87,8 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-4 sm:p-6">
-        <DialogHeader className="flex-shrink-0">
+      <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0">
+        <DialogHeader className="flex-shrink-0 p-4 sm:p-6 border-b">
           <DialogTitle className="text-lg sm:text-xl lg:text-2xl font-bold text-center">
             Configuración Inicial
           </DialogTitle>
@@ -97,9 +97,9 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
           </p>
         </DialogHeader>
 
-        <div className="flex-1 flex flex-col space-y-6 min-h-0">
+        <div className="flex-1 flex flex-col min-h-0">
           {/* Progress Bar */}
-          <div className="space-y-2 flex-shrink-0">
+          <div className="space-y-2 flex-shrink-0 p-4 sm:p-6 pb-3">
             <div className="flex justify-between text-sm">
               <span>Progreso de configuración</span>
               <span>{Math.round(progress)}%</span>
@@ -108,7 +108,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
           </div>
 
           {/* Steps Navigation */}
-          <div className="flex justify-center sm:justify-between items-center flex-shrink-0 overflow-x-auto pb-2 gap-2 sm:gap-0">
+          <div className="flex justify-center sm:justify-between items-center flex-shrink-0 overflow-x-auto px-4 sm:px-6 pb-3 gap-2 sm:gap-0">
             {steps.map((step, index) => {
               const Icon = step.icon;
               const isActive = index === currentStep;
@@ -145,16 +145,15 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
           </div>
 
           {/* Step Content */}
-          <Card className="flex-1 flex flex-col min-h-0">
-            <CardHeader className="flex-shrink-0 pb-3 sm:pb-6">
-              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                {React.createElement(steps[currentStep].icon, { className: "h-4 w-4 sm:h-5 sm:w-5" })}
-                {steps[currentStep].title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 min-h-0 overflow-hidden p-0">
+          <div className="flex-1 flex flex-col min-h-0 px-4 sm:px-6">
+            <div className="flex items-center gap-2 text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex-shrink-0">
+              {React.createElement(steps[currentStep].icon, { className: "h-4 w-4 sm:h-5 sm:w-5" })}
+              {steps[currentStep].title}
+            </div>
+            
+            <div className="flex-1 min-h-0 overflow-y-auto">
               {isCompleting ? (
-                <div className="flex flex-col items-center justify-center h-full px-6">
+                <div className="flex flex-col items-center justify-center h-full">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
                   <h3 className="text-lg font-semibold mb-2">Guardando configuración...</h3>
                   <p className="text-muted-foreground text-center">
@@ -162,18 +161,14 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                   </p>
                 </div>
               ) : (
-                <div className="h-full overflow-y-auto">
-                  <div className="p-3 sm:p-6">
-                    <SetupStepContent step={steps[currentStep]} />
-                  </div>
-                </div>
+                <SetupStepContent step={steps[currentStep]} />
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Navigation Buttons */}
           {!isCompleting && (
-            <div className="flex flex-col sm:flex-row justify-between pt-4 flex-shrink-0 gap-3 sm:gap-0">
+            <div className="flex flex-col sm:flex-row justify-between p-4 sm:p-6 pt-3 flex-shrink-0 gap-3 sm:gap-0 border-t">
               <Button
                 variant="outline"
                 onClick={handlePrevious}
@@ -259,98 +254,94 @@ function ProfileSetupStep() {
   }, [profile]);
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="text-center mb-4 sm:mb-6 flex-shrink-0">
+    <div className="space-y-4 sm:space-y-6 pb-6">
+      <div className="text-center mb-4 sm:mb-6">
         <h3 className="text-lg font-semibold mb-2">Información Personal</h3>
         <p className="text-muted-foreground">
           Esta información nos ayuda a personalizar tu experiencia
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="space-y-4 sm:space-y-6 pb-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Nombre *</label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="Tu nombre"
-                value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Apellido *</label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="Tu apellido"
-                value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Teléfono</label>
-              <input
-                type="tel"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="(123) 456-7890"
-                value={formData.phone}
-                onChange={(e) => {
-                  const formatted = formatPhoneNumber(e.target.value);
-                  setFormData({ ...formData, phone: formatted });
-                }}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <BirthDateInput
-                value={formData.dateOfBirth}
-                onValueChange={(value, isValid, age) => {
-                  setFormData({ ...formData, dateOfBirth: value });
-                }}
-                className="w-full"
-                minAge={18}
-                maxAge={70}
-                data-testid="birth-date-input"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Contacto de Emergencia</label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="Nombre del contacto"
-                value={formData.emergencyContact}
-                onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Teléfono de Emergencia</label>
-              <input
-                type="tel"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="(123) 456-7890"
-                value={formData.emergencyPhone}
-                onChange={(e) => {
-                  const formatted = formatPhoneNumber(e.target.value);
-                  setFormData({ ...formData, emergencyPhone: formatted });
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <p className="text-sm text-blue-800">
-              💡 <strong>Tip:</strong> Esta información se puede actualizar después desde tu perfil
-            </p>
-          </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Nombre *</label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 border rounded-md"
+            placeholder="Tu nombre"
+            value={formData.firstName}
+            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+          />
         </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Apellido *</label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 border rounded-md"
+            placeholder="Tu apellido"
+            value={formData.lastName}
+            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Teléfono</label>
+          <input
+            type="tel"
+            className="w-full px-3 py-2 border rounded-md"
+            placeholder="(123) 456-7890"
+            value={formData.phone}
+            onChange={(e) => {
+              const formatted = formatPhoneNumber(e.target.value);
+              setFormData({ ...formData, phone: formatted });
+            }}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <BirthDateInput
+            value={formData.dateOfBirth}
+            onValueChange={(value, isValid, age) => {
+              setFormData({ ...formData, dateOfBirth: value });
+            }}
+            className="w-full"
+            minAge={18}
+            maxAge={70}
+            data-testid="birth-date-input"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Contacto de Emergencia</label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 border rounded-md"
+            placeholder="Nombre del contacto"
+            value={formData.emergencyContact}
+            onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Teléfono de Emergencia</label>
+          <input
+            type="tel"
+            className="w-full px-3 py-2 border rounded-md"
+            placeholder="(123) 456-7890"
+            value={formData.emergencyPhone}
+            onChange={(e) => {
+              const formatted = formatPhoneNumber(e.target.value);
+              setFormData({ ...formData, emergencyPhone: formatted });
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <p className="text-sm text-blue-800">
+          💡 <strong>Tip:</strong> Esta información se puede actualizar después desde tu perfil
+        </p>
       </div>
     </div>
   );
@@ -395,93 +386,89 @@ function PreferencesSetupStep() {
   }, []);
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="text-center mb-4 sm:mb-6 flex-shrink-0">
+    <div className="space-y-4 sm:space-y-6 pb-6">
+      <div className="text-center mb-4 sm:mb-6">
         <h3 className="text-lg font-semibold mb-2">Preferencias</h3>
         <p className="text-muted-foreground">
           Personaliza tu experiencia en FleetNest
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="space-y-4 sm:space-y-6 pb-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Idioma</label>
-              <select
-                className="w-full px-3 py-2 border rounded-md"
-                value={preferences.language}
-                onChange={(e) => setPreferences({ ...preferences, language: e.target.value })}
-              >
-                <option value="es">Español</option>
-                <option value="en">English</option>
-              </select>
-            </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Idioma</label>
+          <select
+            className="w-full px-3 py-2 border rounded-md"
+            value={preferences.language}
+            onChange={(e) => setPreferences({ ...preferences, language: e.target.value })}
+          >
+            <option value="es">Español</option>
+            <option value="en">English</option>
+          </select>
+        </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Zona Horaria</label>
-              {detectedTimezone && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
-                  <p className="text-sm text-green-700 flex items-center gap-2">
-                    🌍 <strong>Zona horaria detectada automáticamente:</strong> {detectedTimezone}
-                  </p>
-                  <p className="text-xs text-green-600 mt-1">
-                    Puedes cambiarla si es necesario en la lista de abajo
-                  </p>
-                </div>
-              )}
-              <select
-                className="w-full px-3 py-2 border rounded-md"
-                value={preferences.timezone}
-                onChange={(e) => setPreferences({ ...preferences, timezone: e.target.value })}
-              >
-                {timezoneOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                    {option.value === detectedTimezone ? ' (Detectada)' : ''}
-                  </option>
-                ))}
-                {/* Mostrar la zona horaria detectada si no está en la lista */}
-                {detectedTimezone && !timezoneOptions.find(opt => opt.value === detectedTimezone) && (
-                  <option value={detectedTimezone}>
-                    {detectedTimezone} (Detectada automáticamente)
-                  </option>
-                )}
-              </select>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Zona Horaria</label>
+          {detectedTimezone && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
+              <p className="text-sm text-green-700 flex items-center gap-2">
+                🌍 <strong>Zona horaria detectada automáticamente:</strong> {detectedTimezone}
+              </p>
+              <p className="text-xs text-green-600 mt-1">
+                Puedes cambiarla si es necesario en la lista de abajo
+              </p>
             </div>
+          )}
+          <select
+            className="w-full px-3 py-2 border rounded-md"
+            value={preferences.timezone}
+            onChange={(e) => setPreferences({ ...preferences, timezone: e.target.value })}
+          >
+            {timezoneOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+                {option.value === detectedTimezone ? ' (Detectada)' : ''}
+              </option>
+            ))}
+            {/* Mostrar la zona horaria detectada si no está en la lista */}
+            {detectedTimezone && !timezoneOptions.find(opt => opt.value === detectedTimezone) && (
+              <option value={detectedTimezone}>
+                {detectedTimezone} (Detectada automáticamente)
+              </option>
+            )}
+          </select>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between p-4 border rounded-lg">
+          <div>
+            <h4 className="font-medium">Notificaciones</h4>
+            <p className="text-sm text-muted-foreground">
+              Recibir notificaciones sobre cargas, pagos y actualizaciones
+            </p>
           </div>
+          <input
+            type="checkbox"
+            className="w-4 h-4"
+            checked={preferences.notifications}
+            onChange={(e) => setPreferences({ ...preferences, notifications: e.target.checked })}
+          />
+        </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div>
-                <h4 className="font-medium">Notificaciones</h4>
-                <p className="text-sm text-muted-foreground">
-                  Recibir notificaciones sobre cargas, pagos y actualizaciones
-                </p>
-              </div>
-              <input
-                type="checkbox"
-                className="w-4 h-4"
-                checked={preferences.notifications}
-                onChange={(e) => setPreferences({ ...preferences, notifications: e.target.checked })}
-              />
-            </div>
-
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div>
-                <h4 className="font-medium">Modo Oscuro</h4>
-                <p className="text-sm text-muted-foreground">
-                  Usar tema oscuro para reducir la fatiga visual
-                </p>
-              </div>
-              <input
-                type="checkbox"
-                className="w-4 h-4"
-                checked={preferences.darkMode}
-                onChange={(e) => setPreferences({ ...preferences, darkMode: e.target.checked })}
-              />
-            </div>
+        <div className="flex items-center justify-between p-4 border rounded-lg">
+          <div>
+            <h4 className="font-medium">Modo Oscuro</h4>
+            <p className="text-sm text-muted-foreground">
+              Usar tema oscuro para reducir la fatiga visual
+            </p>
           </div>
+          <input
+            type="checkbox"
+            className="w-4 h-4"
+            checked={preferences.darkMode}
+            onChange={(e) => setPreferences({ ...preferences, darkMode: e.target.checked })}
+          />
         </div>
       </div>
     </div>
@@ -591,119 +578,115 @@ function CompanySetupStep() {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="text-center mb-4 sm:mb-6 flex-shrink-0">
+    <div className="space-y-4 sm:space-y-6 pb-6">
+      <div className="text-center mb-4 sm:mb-6">
         <h3 className="text-lg font-semibold mb-2">Información de la Empresa</h3>
         <p className="text-muted-foreground">
           Configura los datos básicos de tu empresa de transporte
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="space-y-4 sm:space-y-6 pb-6">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Nombre de la Empresa *</label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="Transportes ABC LLC"
-                value={companyData.name}
-                onChange={(e) => setCompanyData({ ...companyData, name: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Número DOT</label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="1234567"
-                value={companyData.dotNumber}
-                onChange={(e) => setCompanyData({ ...companyData, dotNumber: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Número MC</label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="MC-123456"
-                value={companyData.mcNumber}
-                onChange={(e) => setCompanyData({ ...companyData, mcNumber: e.target.value })}
-              />
-            </div>
-          </div>
-
-          {/* Componente de dirección reutilizable */}
-          <div className="space-y-2">
-            <h4 className="text-sm font-medium">Dirección de la Empresa</h4>
-            <AddressForm
-              streetAddress={companyData.address}
-              onStreetAddressChange={(value) => setCompanyData({ ...companyData, address: value })}
-              stateId={companyData.stateId}
-              onStateChange={(value) => setCompanyData({ ...companyData, stateId: value || '' })}
-              cityId={companyData.cityId}
-              onCityChange={(value) => setCompanyData({ ...companyData, cityId: value || '' })}
-              zipCode={companyData.zipCode}
-              onZipCodeChange={(value) => setCompanyData({ ...companyData, zipCode: value })}
-              required={true}
-              streetAddressLabel="Dirección"
-              stateLabel="Estado"
-              cityLabel="Ciudad"
-              zipCodeLabel="Código Postal"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Teléfono</label>
-              <input
-                type="tel"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="+1 (555) 123-4567"
-                value={companyData.phone}
-                onChange={(e) => setCompanyData({ ...companyData, phone: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Email de la Empresa</label>
-              <input
-                type="email"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="info@transportesabc.com"
-                value={companyData.email}
-                onChange={(e) => setCompanyData({ ...companyData, email: e.target.value })}
-              />
-            </div>
-          </div>
-
-          <div className="bg-amber-50 p-4 rounded-lg">
-            <p className="text-sm text-amber-800">
-              ⚠️ <strong>Importante:</strong> Los números DOT y MC son requeridos para operaciones comerciales en Estados Unidos
-            </p>
-          </div>
-
-          {/* Botón para guardar datos */}
-          <div className="flex justify-end pt-4">
-            <Button 
-              onClick={handleSaveCompany}
-              disabled={loading}
-              className="gap-2"
-            >
-              {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Guardando...
-                </>
-              ) : (
-                'Guardar Datos de Empresa'
-              )}
-            </Button>
-          </div>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Nombre de la Empresa *</label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 border rounded-md"
+            placeholder="Transportes ABC LLC"
+            value={companyData.name}
+            onChange={(e) => setCompanyData({ ...companyData, name: e.target.value })}
+          />
         </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Número DOT</label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 border rounded-md"
+            placeholder="1234567"
+            value={companyData.dotNumber}
+            onChange={(e) => setCompanyData({ ...companyData, dotNumber: e.target.value })}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Número MC</label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 border rounded-md"
+            placeholder="MC-123456"
+            value={companyData.mcNumber}
+            onChange={(e) => setCompanyData({ ...companyData, mcNumber: e.target.value })}
+          />
+        </div>
+      </div>
+
+      {/* Componente de dirección reutilizable */}
+      <div className="space-y-2">
+        <h4 className="text-sm font-medium">Dirección de la Empresa</h4>
+        <AddressForm
+          streetAddress={companyData.address}
+          onStreetAddressChange={(value) => setCompanyData({ ...companyData, address: value })}
+          stateId={companyData.stateId}
+          onStateChange={(value) => setCompanyData({ ...companyData, stateId: value || '' })}
+          cityId={companyData.cityId}
+          onCityChange={(value) => setCompanyData({ ...companyData, cityId: value || '' })}
+          zipCode={companyData.zipCode}
+          onZipCodeChange={(value) => setCompanyData({ ...companyData, zipCode: value })}
+          required={true}
+          streetAddressLabel="Dirección"
+          stateLabel="Estado"
+          cityLabel="Ciudad"
+          zipCodeLabel="Código Postal"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Teléfono</label>
+          <input
+            type="tel"
+            className="w-full px-3 py-2 border rounded-md"
+            placeholder="+1 (555) 123-4567"
+            value={companyData.phone}
+            onChange={(e) => setCompanyData({ ...companyData, phone: e.target.value })}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Email de la Empresa</label>
+          <input
+            type="email"
+            className="w-full px-3 py-2 border rounded-md"
+            placeholder="info@transportesabc.com"
+            value={companyData.email}
+            onChange={(e) => setCompanyData({ ...companyData, email: e.target.value })}
+          />
+        </div>
+      </div>
+
+      <div className="bg-amber-50 p-4 rounded-lg">
+        <p className="text-sm text-amber-800">
+          ⚠️ <strong>Importante:</strong> Los números DOT y MC son requeridos para operaciones comerciales en Estados Unidos
+        </p>
+      </div>
+
+      {/* Botón para guardar datos */}
+      <div className="flex justify-end pt-4">
+        <Button 
+          onClick={handleSaveCompany}
+          disabled={loading}
+          className="gap-2"
+        >
+          {loading ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              Guardando...
+            </>
+          ) : (
+            'Guardar Datos de Empresa'
+          )}
+        </Button>
       </div>
     </div>
   );
