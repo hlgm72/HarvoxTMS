@@ -150,7 +150,7 @@ export function EquipmentAssignmentDialog({
                   <SelectValue placeholder="Seleccionar conductor..." />
                 </SelectTrigger>
                  <SelectContent className="bg-white z-50">
-                  {activeDrivers.map((driver) => (
+                  {activeDrivers.filter(driver => driver.user_id && driver.user_id.trim() !== '').map((driver) => (
                     <SelectItem key={driver.user_id} value={driver.user_id}>
                       <div className="flex items-center gap-2">
                         <User className="h-4 w-4" />

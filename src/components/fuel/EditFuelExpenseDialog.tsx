@@ -138,7 +138,7 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {drivers.map((driver) => (
+                        {drivers.filter(driver => driver.id && driver.id.trim() !== '').map((driver) => (
                           <SelectItem key={driver.id} value={driver.id}>
                             {driver.first_name} {driver.last_name}
                           </SelectItem>

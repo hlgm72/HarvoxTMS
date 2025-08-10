@@ -129,7 +129,7 @@ export function LoadAssignmentSection({
                   <SelectValue placeholder="Selecciona un conductor..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {activeDrivers.map((driver) => (
+                  {activeDrivers.filter(driver => driver.user_id && driver.user_id.trim() !== '').map((driver) => (
                     <SelectItem key={driver.user_id} value={driver.user_id}>
                       <div className="flex items-center gap-2">
                         <User className="h-4 w-4 text-muted-foreground" />
@@ -286,7 +286,7 @@ export function LoadAssignmentSection({
                   <SelectItem value="none">
                     <span className="text-muted-foreground">Sin dispatcher asignado</span>
                   </SelectItem>
-                  {dispatchers.map((dispatcher) => (
+                  {dispatchers.filter(dispatcher => dispatcher.user_id && dispatcher.user_id.trim() !== '').map((dispatcher) => (
                     <SelectItem key={dispatcher.user_id} value={dispatcher.user_id}>
                       <div className="flex items-center gap-2">
                         <Settings className="h-4 w-4 text-muted-foreground" />

@@ -346,7 +346,7 @@ export function DriverCardsManager() {
                     <SelectValue placeholder="Seleccionar conductor" />
                   </SelectTrigger>
                   <SelectContent>
-                    {drivers?.map((driver) => (
+                    {drivers?.filter(driver => driver.user_id && driver.user_id.trim() !== '').map((driver) => (
                       <SelectItem key={driver.user_id} value={driver.user_id}>
                         {driver.profiles.first_name} {driver.profiles.last_name}
                       </SelectItem>

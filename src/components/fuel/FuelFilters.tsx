@@ -73,7 +73,7 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos los conductores</SelectItem>
-            {drivers.map((driver) => (
+            {drivers.filter(driver => driver.user_id && driver.user_id.trim() !== '').map((driver) => (
               <SelectItem key={driver.user_id} value={driver.user_id}>
                 {driver.first_name} {driver.last_name}
               </SelectItem>
@@ -214,7 +214,7 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los conductores</SelectItem>
-                {drivers.map((driver) => (
+                {drivers.filter(driver => driver.user_id && driver.user_id.trim() !== '').map((driver) => (
                   <SelectItem key={driver.user_id} value={driver.user_id}>
                     {driver.first_name} {driver.last_name}
                     <span className="text-muted-foreground ml-1">
