@@ -5,6 +5,7 @@ import { useOnboardingSteps } from './OnboardingSteps';
 import { WelcomeModal } from './WelcomeModal';
 import { OnboardingOverlay } from './OnboardingOverlay';
 import { SetupWizard } from '../setup/SetupWizard';
+import { SetupCompletedModal } from '../setup/SetupCompletedModal';
 
 interface OnboardingProviderProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   const [showWelcome, setShowWelcome] = useState(true);
   const [showTour, setShowTour] = useState(false);
   const [showSetup, setShowSetup] = useState(false);
+  const [showSetupCompleted, setShowSetupCompleted] = useState(false);
   const steps = useOnboardingSteps(currentRole);
 
   // Controlar el flujo de setup wizard con useEffect
@@ -71,11 +73,23 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   const handleSetupComplete = () => {
     setShowSetup(false);
     markSetupCompleted();
+    
+    // Mostrar modal de configuración completada
+    setShowSetupCompleted(true);
+    
+    // Auto-cerrar después de 3 segundos
+    setTimeout(() => {
+      setShowSetupCompleted(false);
+    }, 3000);
   };
 
   const handleSetupClose = () => {
     setShowSetup(false);
     markSetupCompleted(); // Marcar como completado aunque se haya saltado
+  };
+
+  const handleSetupCompletedClose = () => {
+    setShowSetupCompleted(false);
   };
 
   return (
@@ -108,6 +122,12 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
         onClose={handleSetupClose}
         onComplete={handleSetupComplete}
         userRole={currentRole}
+      />
+
+      {/* Modal de Configuración Completada */}
+      <SetupCompletedModal
+        isOpen={showSetupCompleted}
+        onClose={handleSetupCompletedClose}
       />
     </>
   );
