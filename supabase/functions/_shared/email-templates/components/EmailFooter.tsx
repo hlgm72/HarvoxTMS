@@ -22,7 +22,7 @@ export const EmailFooter = () => (
             height="24"
             style={logoStyle}
           />
-          <Text style={footerTitle}>FleetNest TMS</Text>
+          <span style={footerTitle}>FleetNest TMS</span>
         </Section>
         <Text style={footerDescription}>
           Plataforma profesional de gestión de flotas que conecta transportistas, 
@@ -80,8 +80,10 @@ const footerTitle = {
   color: '#1e293b',
   fontSize: '16px',
   fontWeight: '600',
-  margin: '0 0 12px 0',
+  margin: '0',
   fontFamily: 'Inter, Helvetica, Arial, sans-serif',
+  display: 'inline-block',
+  verticalAlign: 'middle',
 };
 
 const footerDescription = {
