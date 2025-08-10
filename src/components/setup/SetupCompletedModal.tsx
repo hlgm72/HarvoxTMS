@@ -17,7 +17,7 @@ export function SetupCompletedModal({ isOpen, onClose }: SetupCompletedModalProp
         <VisuallyHidden>
           <DialogTitle>Configuración Completada</DialogTitle>
         </VisuallyHidden>
-        <DialogDescription className="sr-only">
+        <DialogDescription className="hidden">
           Modal que confirma que la configuración inicial ha sido completada exitosamente
         </DialogDescription>
         <div className="text-center py-12 px-8">
