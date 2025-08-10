@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useSetupWizard } from '@/hooks/useSetupWizard';
 import { useOnboardingSteps } from './OnboardingSteps';
@@ -12,6 +13,7 @@ interface OnboardingProviderProps {
 }
 
 export function OnboardingProvider({ children }: OnboardingProviderProps) {
+  const navigate = useNavigate();
   const { shouldShowOnboarding, isLoading, markOnboardingCompleted, currentRole } = useOnboarding();
   const { shouldShowSetup, markSetupCompleted } = useSetupWizard();
   const [showWelcome, setShowWelcome] = useState(true);
@@ -47,11 +49,15 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   const handleCloseWelcome = () => {
     setShowWelcome(false);
     markOnboardingCompleted(true); // Marcar como saltado
+    // Navegar al dashboard al cerrar la bienvenida
+    navigate('/');
   };
 
   const handleCloseTour = () => {
     setShowTour(false);
     markOnboardingCompleted(false); // Marcar como completado
+    // Navegar al dashboard al completar el tour
+    navigate('/');
   };
 
   const handleSetupComplete = () => {
