@@ -223,7 +223,8 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
                     onSelect={(date) => {
                       if (date) {
                         setFormData(prev => ({ ...prev, hireDate: date }));
-                        setIsDateOpen(false);
+                        // Close the popover immediately after selection
+                        setTimeout(() => setIsDateOpen(false), 0);
                       }
                     }}
                     month={formData.hireDate || new Date()}
