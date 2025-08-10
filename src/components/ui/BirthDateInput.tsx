@@ -75,7 +75,7 @@ export function BirthDateInput({
           placeholder={placeholder}
           disabled={disabled}
           className={cn(
-            'font-mono tracking-wide',
+            'font-inter tracking-wide',
             hasError && 'border-destructive focus-visible:ring-destructive'
           )}
           maxLength={10}
