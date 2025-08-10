@@ -219,6 +219,25 @@ function ProfileSetupStep() {
     emergencyPhone: ''
   });
 
+  // Función para formatear teléfono
+  const formatPhoneNumber = (value: string) => {
+    // Remover todo excepto números
+    const numbers = value.replace(/\D/g, '');
+    
+    // Limitar a 10 dígitos
+    const limitedNumbers = numbers.substring(0, 10);
+    
+    // Aplicar formato (XXX) XXX-XXXX
+    if (limitedNumbers.length >= 6) {
+      return `(${limitedNumbers.substring(0, 3)}) ${limitedNumbers.substring(3, 6)}-${limitedNumbers.substring(6)}`;
+    } else if (limitedNumbers.length >= 3) {
+      return `(${limitedNumbers.substring(0, 3)}) ${limitedNumbers.substring(3)}`;
+    } else if (limitedNumbers.length > 0) {
+      return `(${limitedNumbers}`;
+    }
+    return limitedNumbers;
+  };
+
   // Actualizar el formulario cuando se carga el perfil
   useEffect(() => {
     if (profile) {
@@ -303,9 +322,12 @@ function ProfileSetupStep() {
           <input
             type="tel"
             className="w-full px-3 py-2 border rounded-md"
-            placeholder="+1 (555) 123-4567"
+            placeholder="(281) 713-3044"
             value={formData.emergencyPhone}
-            onChange={(e) => setFormData({ ...formData, emergencyPhone: e.target.value })}
+            onChange={(e) => {
+              const formatted = formatPhoneNumber(e.target.value);
+              setFormData({ ...formData, emergencyPhone: formatted });
+            }}
           />
         </div>
       </div>
