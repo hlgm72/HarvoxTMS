@@ -8,6 +8,8 @@ interface SetupCompletedModalProps {
 }
 
 export function SetupCompletedModal({ isOpen, onClose }: SetupCompletedModalProps) {
+  console.log('🎯 SetupCompletedModal render - isOpen:', isOpen);
+  
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md p-0">

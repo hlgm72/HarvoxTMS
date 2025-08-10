@@ -71,14 +71,17 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   };
 
   const handleSetupComplete = () => {
+    console.log('🎯 Setup completed - showing completion modal');
     setShowSetup(false);
     markSetupCompleted();
     
     // Mostrar modal de configuración completada
     setShowSetupCompleted(true);
+    console.log('✅ SetupCompleted modal activated');
     
     // Auto-cerrar después de 5 segundos
     setTimeout(() => {
+      console.log('⏰ Auto-closing setup completed modal');
       setShowSetupCompleted(false);
     }, 5000);
   };

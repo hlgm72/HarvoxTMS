@@ -82,10 +82,12 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
   };
 
   const handleComplete = () => {
+    console.log('🎯 SetupWizard handleComplete called');
     setIsCompleting(true);
     
     // Simular guardado de configuración
     setTimeout(() => {
+      console.log('✅ SetupWizard calling onComplete callback');
       onComplete();
       setIsCompleting(false);
     }, 1500);
