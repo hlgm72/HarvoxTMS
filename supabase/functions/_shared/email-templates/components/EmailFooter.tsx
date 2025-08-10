@@ -5,6 +5,7 @@ import {
   Text,
   Hr,
   Link,
+  Img,
 } from 'npm:@react-email/components@0.0.22';
 
 export const EmailFooter = () => (
@@ -13,7 +14,16 @@ export const EmailFooter = () => (
       <Hr style={dividerStyle} />
       
       <Section style={footerContent}>
-        <Text style={footerTitle}>FleetNest</Text>
+        <Section style={logoTitleSection}>
+          <Img 
+            src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/company-logos/fleetnest-logo.png"
+            alt="FleetNest Logo"
+            width="24"
+            height="24"
+            style={logoStyle}
+          />
+          <Text style={footerTitle}>FleetNest TMS</Text>
+        </Section>
         <Text style={footerDescription}>
           Plataforma profesional de gestión de flotas que conecta transportistas, 
           conductores y operaciones de manera eficiente y segura.
@@ -117,4 +127,17 @@ const disclaimerText = {
   margin: '0',
   fontFamily: 'Inter, Helvetica, Arial, sans-serif',
   fontStyle: 'italic',
+};
+
+const logoTitleSection = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '8px',
+  margin: '0 0 12px 0',
+};
+
+const logoStyle = {
+  display: 'inline-block',
+  verticalAlign: 'middle',
 };
