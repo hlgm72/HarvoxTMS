@@ -23,6 +23,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { es } from "date-fns/locale";
 import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
+import { LicenseInfoSection } from '@/components/drivers/LicenseInfoSection';
 
 // Función simple para formatear fechas para la base de datos sin problemas de zona horaria
 const formatDateForDatabase = (date: Date): string => {
@@ -706,155 +707,18 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                 </div>
 
                 {/* Sección de Licencia */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Shield className="h-5 w-5" />
-                    Información de Licencia CDL
-                  </h3>
-                  
-                  {/* Una sola fila con los 4 campos: Número de Licencia, Estado, Fecha de Emisión y Fecha de Vencimiento */}
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="license_number">Número de Licencia</Label>
-                      <Input
-                        id="license_number"
-                        value={driverData.license_number}
-                        onChange={(e) => updateDriverData('license_number', e.target.value)}
-                        placeholder="Número de licencia CDL"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="license_state">Estado de Emisión</Label>
-                      <StateCombobox
-                        value={driverData.license_state}
-                        onValueChange={(value) => updateDriverData('license_state', value || '')}
-                        placeholder="Selecciona estado..."
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="license_issue_date">Fecha de Emisión</Label>
-                      <div>
-                        <DatePicker
-                          id="license_issue_date"
-                          selected={driverData.license_issue_date}
-                          onChange={(date: Date | null) => updateDriverData('license_issue_date', date)}
-                          dateFormat="dd/MM/yyyy"
-                          placeholderText="Seleccionar fecha"
-                          showYearDropdown
-                          showMonthDropdown
-                          dropdownMode="select"
-                          yearDropdownItemNumber={50}
-                          scrollableYearDropdown
-                          locale={es}
-                          className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="license_expiry_date">Fecha de Vencimiento</Label>
-                      <div>
-                        <DatePicker
-                          id="license_expiry_date"
-                          selected={driverData.license_expiry_date}
-                          onChange={(date: Date | null) => updateDriverData('license_expiry_date', date)}
-                          dateFormat="dd/MM/yyyy"
-                          placeholderText="Seleccionar fecha"
-                          showYearDropdown
-                          showMonthDropdown
-                          dropdownMode="select"
-                          yearDropdownItemNumber={50}
-                          scrollableYearDropdown
-                          locale={es}
-                          className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Clase de CDL debajo */}
-                  <div className="space-y-2">
-                    <Label>Clase de CDL</Label>
-                    <RadioGroup
-                      value={driverData.cdl_class}
-                      onValueChange={(value) => updateDriverData('cdl_class', value)}
-                      className="flex gap-6"
-                    >
-                      {['A', 'B', 'C'].map((classType) => (
-                        <div key={classType} className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            value={classType}
-                            id={`cdl_class_${classType}`}
-                          />
-                          <Label htmlFor={`cdl_class_${classType}`} className="text-sm font-normal">
-                            Clase {classType}
-                          </Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                    <p className="text-xs text-muted-foreground">
-                      Selecciona la clase de CDL del conductor
-                    </p>
-                  </div>
-
-                  {/* Sección de Endosos Adicionales */}
-                  <div className="space-y-4">
-                    <h4 className="text-md font-semibold flex items-center gap-2">
-                      <Shield className="h-4 w-4" />
-                      Endosos Adicionales
-                    </h4>
-                    
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {[
-                        { code: 'T', description: 'Doble/triple remolque' },
-                        { code: 'P', description: 'Transporte de pasajeros' },
-                        { code: 'S', description: 'Autobuses escolares' },
-                        { code: 'N', description: 'Vehículos cisterna (tank)' },
-                        { code: 'H', description: 'Materiales peligrosos' },
-                        { code: 'X', description: 'Hazmat + cisterna combinados' }
-                      ].map((endorsement) => {
-                        const isChecked = driverData.cdl_endorsements.includes(endorsement.code);
-                        return (
-                          <div key={endorsement.code} className="flex items-start space-x-2">
-                            <Checkbox
-                              id={`endorsement_${endorsement.code}`}
-                              checked={isChecked}
-                              onCheckedChange={(checked) => {
-                                const currentEndorsements = driverData.cdl_endorsements.split('').filter(e => e.trim() !== '');
-                                let newEndorsements;
-                                
-                                if (checked) {
-                                  // Agregar el endoso si no existe
-                                  if (!currentEndorsements.includes(endorsement.code)) {
-                                    newEndorsements = [...currentEndorsements, endorsement.code].sort();
-                                  } else {
-                                    newEndorsements = currentEndorsements;
-                                  }
-                                } else {
-                                  // Remover el endoso
-                                  newEndorsements = currentEndorsements.filter(e => e !== endorsement.code);
-                                }
-                                
-                                updateDriverData('cdl_endorsements', newEndorsements.join(''));
-                              }}
-                            />
-                            <div className="flex flex-col">
-                              <Label htmlFor={`endorsement_${endorsement.code}`} className="text-sm font-medium">
-                                Endoso {endorsement.code}
-                              </Label>
-                              <span className="text-xs text-muted-foreground">
-                                {endorsement.description}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Selecciona todos los endosos adicionales que posee el conductor
-                    </p>
-                  </div>
-                  
-                </div>
+                <LicenseInfoSection
+                  data={{
+                    license_number: driverData.license_number,
+                    license_state: driverData.license_state,
+                    license_issue_date: driverData.license_issue_date,
+                    license_expiry_date: driverData.license_expiry_date,
+                    cdl_class: driverData.cdl_class,
+                    cdl_endorsements: driverData.cdl_endorsements,
+                  }}
+                  onUpdate={(field, value) => updateDriverData(field as keyof DriverData, value)}
+                  loading={loading || saving}
+                />
               </div>
             </TabsContent>
 
