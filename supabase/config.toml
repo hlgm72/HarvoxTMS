@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.validate-invitation]
 verify_jwt = false
+
+[functions.activate-driver-account]
+verify_jwt = false
