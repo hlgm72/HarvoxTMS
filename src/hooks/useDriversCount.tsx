@@ -30,7 +30,7 @@ export const useDriversCount = () => {
         },
         () => {
           console.log('🔄 Roles actualizados, invalidando contador de conductores');
-          queryClient.invalidateQueries({ queryKey: ['drivers-count'] });
+          queryClient.invalidateQueries({ queryKey });
         }
       )
       .on(
@@ -43,7 +43,7 @@ export const useDriversCount = () => {
         },
         () => {
           console.log('🔄 Invitaciones actualizadas, invalidando contador de conductores');
-          queryClient.invalidateQueries({ queryKey: ['drivers-count'] });
+          queryClient.invalidateQueries({ queryKey });
         }
       )
       .subscribe();
