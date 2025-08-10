@@ -16,6 +16,12 @@ const driverInfoSchema = z.object({
   date_of_birth: z.string().optional(),
   emergency_contact_name: z.string().optional(),
   emergency_contact_phone: z.string().optional(),
+  license_number: z.string().optional(),
+  license_state: z.string().optional(),
+  license_issue_date: z.string().optional(),
+  license_expiry_date: z.string().optional(),
+  cdl_class: z.string().optional(),
+  cdl_endorsements: z.string().optional(),
 });
 
 type DriverInfoFormData = z.infer<typeof driverInfoSchema>;
@@ -30,6 +36,12 @@ interface DriverProfile {
   date_of_birth: string | null;
   emergency_contact_name: string | null;
   emergency_contact_phone: string | null;
+  license_number: string | null;
+  license_state: string | null;
+  license_issue_date: string | null;
+  license_expiry_date: string | null;
+  cdl_class: string | null;
+  cdl_endorsements: string | null;
 }
 
 export function DriverInfoForm({ onCancel, showCancelButton = true, className }: DriverInfoFormProps) {
@@ -50,6 +62,12 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
       date_of_birth: '',
       emergency_contact_name: '',
       emergency_contact_phone: '',
+      license_number: '',
+      license_state: '',
+      license_issue_date: '',
+      license_expiry_date: '',
+      cdl_class: '',
+      cdl_endorsements: '',
     },
   });
 
@@ -61,7 +79,7 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
       try {
         const { data, error } = await supabase
           .from('driver_profiles')
-          .select('date_of_birth, emergency_contact_name, emergency_contact_phone')
+          .select('date_of_birth, emergency_contact_name, emergency_contact_phone, license_number, license_state, license_issue_date, license_expiry_date, cdl_class, cdl_endorsements')
           .eq('user_id', user.id)
           .maybeSingle();
 
@@ -73,7 +91,13 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
         setDriverProfile(data || {
           date_of_birth: null,
           emergency_contact_name: null,
-          emergency_contact_phone: null
+          emergency_contact_phone: null,
+          license_number: null,
+          license_state: null,
+          license_issue_date: null,
+          license_expiry_date: null,
+          cdl_class: null,
+          cdl_endorsements: null
         });
 
         // Update form with fetched data
@@ -82,6 +106,12 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
             date_of_birth: data.date_of_birth || '',
             emergency_contact_name: data.emergency_contact_name || '',
             emergency_contact_phone: data.emergency_contact_phone || '',
+            license_number: data.license_number || '',
+            license_state: data.license_state || '',
+            license_issue_date: data.license_issue_date || '',
+            license_expiry_date: data.license_expiry_date || '',
+            cdl_class: data.cdl_class || '',
+            cdl_endorsements: data.cdl_endorsements || '',
           });
         }
       } catch (error) {
@@ -111,6 +141,12 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
         date_of_birth: data.date_of_birth || null,
         emergency_contact_name: data.emergency_contact_name || null,
         emergency_contact_phone: data.emergency_contact_phone || null,
+        license_number: data.license_number || null,
+        license_state: data.license_state || null,
+        license_issue_date: data.license_issue_date || null,
+        license_expiry_date: data.license_expiry_date || null,
+        cdl_class: data.cdl_class || null,
+        cdl_endorsements: data.cdl_endorsements || null,
         updated_at: new Date().toISOString(),
       };
 
@@ -139,6 +175,12 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
         date_of_birth: data.date_of_birth || null,
         emergency_contact_name: data.emergency_contact_name || null,
         emergency_contact_phone: data.emergency_contact_phone || null,
+        license_number: data.license_number || null,
+        license_state: data.license_state || null,
+        license_issue_date: data.license_issue_date || null,
+        license_expiry_date: data.license_expiry_date || null,
+        cdl_class: data.cdl_class || null,
+        cdl_endorsements: data.cdl_endorsements || null,
       });
 
       showSuccess(
@@ -161,6 +203,12 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
         date_of_birth: driverProfile.date_of_birth || '',
         emergency_contact_name: driverProfile.emergency_contact_name || '',
         emergency_contact_phone: driverProfile.emergency_contact_phone || '',
+        license_number: driverProfile.license_number || '',
+        license_state: driverProfile.license_state || '',
+        license_issue_date: driverProfile.license_issue_date || '',
+        license_expiry_date: driverProfile.license_expiry_date || '',
+        cdl_class: driverProfile.cdl_class || '',
+        cdl_endorsements: driverProfile.cdl_endorsements || '',
       });
     }
     onCancel?.();
@@ -208,6 +256,126 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
               </FormItem>
             )}
           />
+
+          <div className="space-y-4 border-t pt-4">
+            <h4 className="text-sm font-medium text-muted-foreground">Información de Licencia</h4>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={driverInfoForm.control}
+                name="license_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Número de Licencia</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Número de licencia" 
+                        {...field} 
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={driverInfoForm.control}
+                name="license_state"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Estado de Licencia</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="CA, TX, FL, etc." 
+                        {...field} 
+                        value={field.value || ''}
+                        maxLength={2}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={driverInfoForm.control}
+                name="license_issue_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Fecha de Emisión</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="date"
+                        {...field} 
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={driverInfoForm.control}
+                name="license_expiry_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Fecha de Vencimiento</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="date"
+                        {...field} 
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={driverInfoForm.control}
+                name="cdl_class"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Clase de CDL</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="A, B, C" 
+                        {...field} 
+                        value={field.value || ''}
+                        maxLength={1}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={driverInfoForm.control}
+                name="cdl_endorsements"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Endosos CDL</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="H, N, P, S, T, X" 
+                        {...field} 
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
 
           <div className="space-y-4 border-t pt-4">
             <h4 className="text-sm font-medium text-muted-foreground">Contacto de Emergencia</h4>
