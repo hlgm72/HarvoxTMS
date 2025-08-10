@@ -172,23 +172,9 @@ export default function Auth() {
       
       const emailValue = emailInput.value?.trim() || '';
       const passwordValue = passwordInput.value || '';
-      
-      // Only log when there are actual changes or when both fields have values
-      const shouldLog = emailValue !== formData.email || 
-                       passwordValue !== formData.password ||
-                       (emailValue && passwordValue);
-      
-      if (shouldLog) {
-        console.log('🔍 Credential check:', {
-          emailValue,
-          passwordValue: passwordValue ? '***filled***' : 'empty',
-          currentEmailState: formData.email,
-          currentPasswordState: formData.password ? '***filled***' : 'empty'
-        });
-      }
-      
       let hasChanges = false;
       
+      // Reduce excessive logging - only log significant changes
       if (emailValue && emailValue !== formData.email) {
         console.log('✅ Email autofill detected:', emailValue);
         setFormData(prev => ({ ...prev, email: emailValue }));
@@ -247,7 +233,7 @@ export default function Auth() {
     });
 
     return () => observer.disconnect();
-  }, [mounted, formData.email, formData.password]);
+  }, [mounted]); // Solo depender de mounted, no de formData
 
   const handleEmailAutofill = (e: React.FocusEvent<HTMLInputElement>) => {
     const checkValue = () => {
@@ -263,14 +249,9 @@ export default function Auth() {
       detectCredentialAutofill();
     };
     
-    // Multiple delayed checks
+    // Reduce de 6 checks a solo 2 para evitar bucle infinito
     checkValue();
-    setTimeout(checkValue, 50);
     setTimeout(checkValue, 100);
-    setTimeout(checkValue, 200);
-    setTimeout(checkValue, 300);
-    setTimeout(checkValue, 500);
-    setTimeout(checkValue, 1000);
   };
 
   // Input event handler for Samsung Browser
@@ -287,14 +268,11 @@ export default function Auth() {
     setTimeout(detectCredentialAutofill, 50);
   };
 
-  // Password autofill detection
+  // Password autofill detection - reducido para evitar bucle infinito
   const handlePasswordFocus = () => {
     console.log('🔐 Password field focused, checking autofill');
     setTimeout(detectCredentialAutofill, 50);
-    setTimeout(detectCredentialAutofill, 100);
     setTimeout(detectCredentialAutofill, 200);
-    setTimeout(detectCredentialAutofill, 300);
-    setTimeout(detectCredentialAutofill, 500);
   };
 
   // Enhanced periodic check for Samsung Browser (reduced frequency)
