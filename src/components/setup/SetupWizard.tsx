@@ -34,7 +34,7 @@ interface SetupWizardProps {
 export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isCompleting, setIsCompleting] = useState(false);
-  const { isDriver, isCompanyOwner } = useAuth();
+  const { user, isDriver, isCompanyOwner } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
 
   const steps: SetupStep[] = [
@@ -89,7 +89,6 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
     setIsCompleting(true);
     
     try {
-      const { user } = useAuth();
       let savedSuccessfully = 0;
       
       // Obtener datos de los formularios
