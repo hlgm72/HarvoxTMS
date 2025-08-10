@@ -80,20 +80,36 @@ export const useDriversCount = () => {
       }
 
       try {
-        // Contar todos los drivers en user_company_roles (activos e inactivos)
-        // Los pre-registrados aparecen como is_active=false hasta que activen su cuenta
-        const { count, error: driversError } = await supabase
+        // Contar drivers activos (cuenta activada)
+        const { data: activeDrivers, error: activeError } = await supabase
           .from('user_company_roles')
-          .select('*', { count: 'exact', head: true })
+          .select('user_id')
           .eq('company_id', userCompany.company_id)
-          .eq('role', 'driver');
+          .eq('role', 'driver')
+          .eq('is_active', true);
 
-        if (driversError) {
-          console.error('Error contando drivers:', driversError);
-          throw driversError;
+        if (activeError) {
+          console.error('Error obteniendo drivers activos:', activeError);
+          throw activeError;
         }
 
-        return count || 0;
+        // Contar drivers pre-registrados (invitados pero no activados)
+        const { data: preRegisteredDrivers, error: preRegError } = await supabase
+          .from('user_company_roles')
+          .select('user_id')
+          .eq('company_id', userCompany.company_id)
+          .eq('role', 'driver')
+          .eq('is_active', false);
+
+        if (preRegError) {
+          console.error('Error obteniendo drivers pre-registrados:', preRegError);
+          throw preRegError;
+        }
+
+        const totalCount = (activeDrivers?.length || 0) + (preRegisteredDrivers?.length || 0);
+        console.log(`🚛 Contador drivers: ${activeDrivers?.length || 0} activos + ${preRegisteredDrivers?.length || 0} pre-registrados = ${totalCount}`);
+        
+        return totalCount;
 
       } catch (error: any) {
         console.error('Error en useDriversCount:', error);
