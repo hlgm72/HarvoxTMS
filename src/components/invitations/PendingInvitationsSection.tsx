@@ -419,7 +419,7 @@ export function PendingInvitationsSection({
 
       {/* Dialog para confirmar cancelación */}
       <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-        <DialogContent className="max-w-lg sm:max-w-md mx-4">
+        <DialogContent className="max-w-2xl sm:max-w-xl mx-4">
           <DialogHeader>
             <DialogTitle>Cancelar Invitación</DialogTitle>
             <DialogDescription>
