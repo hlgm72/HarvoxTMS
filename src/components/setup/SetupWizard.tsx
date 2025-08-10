@@ -89,7 +89,10 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
     setIsCompleting(true);
     
     try {
-      // Obtener referencias a los formularios específicos
+      const { user } = useAuth();
+      let savedSuccessfully = 0;
+      
+      // Obtener datos de los formularios
       const personalInfoForm = document.querySelector('[data-form="personal-info"]') as HTMLFormElement;
       const preferencesForm = document.querySelector('[data-form="preferences"]') as HTMLFormElement;
       
@@ -98,84 +101,127 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
         preferencesForm: !!preferencesForm 
       });
 
-      // Guardar información personal si existe el formulario
-      if (personalInfoForm) {
-        console.log('💾 Found personal info form, looking for submit button...');
-        const submitButton = personalInfoForm.querySelector('button[type="submit"]') as HTMLButtonElement;
-        const allButtons = personalInfoForm.querySelectorAll('button');
-        console.log(`Found ${allButtons.length} buttons in form:`, Array.from(allButtons).map(btn => ({
-          type: btn.type,
-          text: btn.textContent,
-          disabled: btn.disabled
-        })));
-        
-        if (submitButton && !submitButton.disabled) {
-          console.log('💾 Clicking personal info submit button...');
+      // Guardar información personal
+      if (personalInfoForm && user) {
+        try {
+          console.log('💾 Saving personal info...');
+          const formData = new FormData(personalInfoForm);
           
-          // Crear un evento de submit para activar la validación
-          const form = personalInfoForm.querySelector('form');
-          if (form) {
-            console.log('📋 Triggering form submission...');
-            const formEvent = new Event('submit', { bubbles: true, cancelable: true });
-            form.dispatchEvent(formEvent);
+          const { error } = await supabase
+            .from('profiles')
+            .update({
+              first_name: String(formData.get('first_name') || ''),
+              last_name: String(formData.get('last_name') || ''),
+              phone: formData.get('phone') ? String(formData.get('phone')) : null,
+              hire_date: formData.get('hire_date') ? String(formData.get('hire_date')) : null,
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', user.id);
+          
+          if (error) {
+            console.error('Error saving personal info:', error);
+            showError("Error", "No se pudo guardar la información personal.");
           } else {
-            submitButton.click();
+            console.log('✅ Personal info saved successfully');
+            savedSuccessfully++;
           }
-          
-          await new Promise(resolve => setTimeout(resolve, 3000)); // Más tiempo para procesar
-        } else {
-          console.log('❌ No valid submit button found in personal info form or button is disabled');
+        } catch (error) {
+          console.error('Error saving personal info:', error);
         }
       }
 
-      // Guardar preferencias si existe el formulario
-      if (preferencesForm) {
-        console.log('💾 Found preferences form, looking for submit button...');
-        const submitButton = preferencesForm.querySelector('button[type="submit"]') as HTMLButtonElement;
-        const allButtons = preferencesForm.querySelectorAll('button');
-        console.log(`Found ${allButtons.length} buttons in preferences form:`, Array.from(allButtons).map(btn => ({
-          type: btn.type,
-          text: btn.textContent,
-          disabled: btn.disabled
-        })));
-        
-        if (submitButton && !submitButton.disabled) {
-          console.log('💾 Clicking preferences submit button...');
+      // Guardar preferencias
+      if (preferencesForm && user) {
+        try {
+          console.log('💾 Saving preferences...');
+          const formData = new FormData(preferencesForm);
           
-          // Crear un evento de submit para activar la validación
-          const form = preferencesForm.querySelector('form');
-          if (form) {
-            console.log('📋 Triggering preferences form submission...');
-            const formEvent = new Event('submit', { bubbles: true, cancelable: true });
-            form.dispatchEvent(formEvent);
+          const { error } = await supabase
+            .from('profiles')
+            .update({
+              preferred_language: String(formData.get('language') || 'es'),
+              timezone: String(formData.get('timezone') || 'America/Chicago'),
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', user.id);
+          
+          if (error) {
+            console.error('Error saving preferences:', error);
+            showError("Error", "No se pudieron guardar las preferencias.");
           } else {
-            submitButton.click();
+            console.log('✅ Preferences saved successfully');
+            savedSuccessfully++;
           }
-          
-          await new Promise(resolve => setTimeout(resolve, 3000)); // Más tiempo para procesar
-        } else {
-          console.log('❌ No valid submit button found in preferences form or button is disabled');
+        } catch (error) {
+          console.error('Error saving preferences:', error);
         }
       }
 
-      // Guardar configuración específica de empresa si es owner
+      // Guardar información del conductor si es driver
+      if (isDriver && user) {
+        try {
+          console.log('💾 Saving driver info...');
+          const driverForm = document.querySelector('[data-form="driver-info"]') as HTMLFormElement;
+          if (driverForm) {
+            const formData = new FormData(driverForm);
+            
+            const { error } = await supabase
+              .from('driver_profiles')
+              .upsert({
+                user_id: user.id,
+                license_number: formData.get('license_number') ? String(formData.get('license_number')) : null,
+                license_state: formData.get('license_state') ? String(formData.get('license_state')) : null,
+                license_expiry_date: formData.get('license_expiry_date') ? String(formData.get('license_expiry_date')) : null,
+                cdl_class: formData.get('cdl_class') ? String(formData.get('cdl_class')) : null,
+                emergency_contact_name: formData.get('emergency_contact_name') ? String(formData.get('emergency_contact_name')) : null,
+                emergency_contact_phone: formData.get('emergency_contact_phone') ? String(formData.get('emergency_contact_phone')) : null,
+                updated_at: new Date().toISOString()
+              });
+            
+            if (error) {
+              console.error('Error saving driver info:', error);
+              showError("Error", "No se pudo guardar la información del conductor.");
+            } else {
+              console.log('✅ Driver info saved successfully');
+              savedSuccessfully++;
+            }
+          }
+        } catch (error) {
+          console.error('Error saving driver info:', error);
+        }
+      }
+
+      // Guardar configuración de empresa si es owner
       if (isCompanyOwner) {
-        const companyForm = document.querySelector('[data-company-form]');
-        if (companyForm) {
-          console.log('💾 Submitting company form...');
-          const saveButton = companyForm.querySelector('button') as HTMLButtonElement;
-          if (saveButton) {
-            saveButton.click();
-            await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+          const companyFormElement = document.querySelector('[data-company-form]') as HTMLElement;
+          if (companyFormElement) {
+            console.log('💾 Saving company info via CompanySetupStep...');
+            // Trigger the company save function directly
+            const saveButton = companyFormElement.querySelector('button') as HTMLButtonElement;
+            if (saveButton) {
+              saveButton.click();
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              savedSuccessfully++;
+            }
           }
+        } catch (error) {
+          console.error('Error saving company info:', error);
         }
       }
 
-      // Mostrar mensaje de confirmación exitosa
-      showSuccess(
-        "Configuración completada",
-        "Tu perfil ha sido configurado exitosamente. Ya puedes comenzar a usar la plataforma."
-      );
+      // Mostrar mensaje según el resultado
+      if (savedSuccessfully > 0) {
+        showSuccess(
+          "Configuración completada",
+          "Tu perfil ha sido configurado exitosamente. Ya puedes comenzar a usar la plataforma."
+        );
+      } else {
+        showError(
+          "Error en la configuración", 
+          "Hubo un problema al guardar los datos. Puedes completar la configuración desde tu perfil."
+        );
+      }
 
       console.log('✅ SetupWizard calling onComplete callback');
       onComplete();
