@@ -236,7 +236,7 @@ export default function Drivers() {
 
   // Separar conductores activos de pendientes
   const activeDrivers = drivers.filter(d => d.activation_status === 'active');
-  const pendingDrivers = drivers.filter(d => d.activation_status !== 'active');
+  const pendingDrivers = drivers.filter(d => d.activation_status === 'pending_activation' || d.activation_status === 'invited');
 
   return (
     <>
