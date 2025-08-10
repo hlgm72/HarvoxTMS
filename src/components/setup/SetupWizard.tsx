@@ -152,9 +152,9 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                 {steps[currentStep].title}
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 min-h-0 p-0 overflow-hidden">
+            <CardContent className="flex-1 min-h-0 overflow-hidden p-0">
               {isCompleting ? (
-                <div className="flex flex-col items-center justify-center py-12 px-6">
+                <div className="flex flex-col items-center justify-center h-full px-6">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
                   <h3 className="text-lg font-semibold mb-2">Guardando configuración...</h3>
                   <p className="text-muted-foreground text-center">
@@ -162,8 +162,10 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                   </p>
                 </div>
               ) : (
-                <div className="h-full overflow-y-auto p-3 sm:p-6">
-                  <SetupStepContent step={steps[currentStep]} />
+                <div className="h-full overflow-y-auto">
+                  <div className="p-3 sm:p-6">
+                    <SetupStepContent step={steps[currentStep]} />
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -583,116 +585,118 @@ function CompanySetupStep() {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="text-center mb-6 flex-shrink-0">
+    <div className="h-full flex flex-col max-h-full">
+      <div className="text-center mb-4 sm:mb-6 flex-shrink-0">
         <h3 className="text-lg font-semibold mb-2">Información de la Empresa</h3>
         <p className="text-muted-foreground">
           Configura los datos básicos de tu empresa de transporte
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-1 pb-8">
-        <div className="space-y-4">
-          <div className="md:col-span-2 space-y-2">
-            <label className="text-sm font-medium">Nombre de la Empresa *</label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border rounded-md"
-              placeholder="Transportes ABC LLC"
-              value={companyData.name}
-              onChange={(e) => setCompanyData({ ...companyData, name: e.target.value })}
-            />
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="px-1 pb-4 sm:pb-8">
+          <div className="space-y-4">
+            <div className="md:col-span-2 space-y-2">
+              <label className="text-sm font-medium">Nombre de la Empresa *</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="Transportes ABC LLC"
+                value={companyData.name}
+                onChange={(e) => setCompanyData({ ...companyData, name: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Número DOT</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="1234567"
+                value={companyData.dotNumber}
+                onChange={(e) => setCompanyData({ ...companyData, dotNumber: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Número MC</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="MC-123456"
+                value={companyData.mcNumber}
+                onChange={(e) => setCompanyData({ ...companyData, mcNumber: e.target.value })}
+              />
+            </div>
           </div>
 
+          {/* Componente de dirección reutilizable */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Número DOT</label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border rounded-md"
-              placeholder="1234567"
-              value={companyData.dotNumber}
-              onChange={(e) => setCompanyData({ ...companyData, dotNumber: e.target.value })}
+            <h4 className="text-sm font-medium">Dirección de la Empresa</h4>
+            <AddressForm
+              streetAddress={companyData.address}
+              onStreetAddressChange={(value) => setCompanyData({ ...companyData, address: value })}
+              stateId={companyData.stateId}
+              onStateChange={(value) => setCompanyData({ ...companyData, stateId: value || '' })}
+              cityId={companyData.cityId}
+              onCityChange={(value) => setCompanyData({ ...companyData, cityId: value || '' })}
+              zipCode={companyData.zipCode}
+              onZipCodeChange={(value) => setCompanyData({ ...companyData, zipCode: value })}
+              required={true}
+              streetAddressLabel="Dirección"
+              stateLabel="Estado"
+              cityLabel="Ciudad"
+              zipCodeLabel="Código Postal"
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Número MC</label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border rounded-md"
-              placeholder="MC-123456"
-              value={companyData.mcNumber}
-              onChange={(e) => setCompanyData({ ...companyData, mcNumber: e.target.value })}
-            />
-          </div>
-        </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Teléfono</label>
+              <input
+                type="tel"
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="+1 (555) 123-4567"
+                value={companyData.phone}
+                onChange={(e) => setCompanyData({ ...companyData, phone: e.target.value })}
+              />
+            </div>
 
-        {/* Componente de dirección reutilizable */}
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium">Dirección de la Empresa</h4>
-          <AddressForm
-            streetAddress={companyData.address}
-            onStreetAddressChange={(value) => setCompanyData({ ...companyData, address: value })}
-            stateId={companyData.stateId}
-            onStateChange={(value) => setCompanyData({ ...companyData, stateId: value || '' })}
-            cityId={companyData.cityId}
-            onCityChange={(value) => setCompanyData({ ...companyData, cityId: value || '' })}
-            zipCode={companyData.zipCode}
-            onZipCodeChange={(value) => setCompanyData({ ...companyData, zipCode: value })}
-            required={true}
-            streetAddressLabel="Dirección"
-            stateLabel="Estado"
-            cityLabel="Ciudad"
-            zipCodeLabel="Código Postal"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Teléfono</label>
-            <input
-              type="tel"
-              className="w-full px-3 py-2 border rounded-md"
-              placeholder="+1 (555) 123-4567"
-              value={companyData.phone}
-              onChange={(e) => setCompanyData({ ...companyData, phone: e.target.value })}
-            />
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Email de la Empresa</label>
+              <input
+                type="email"
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="info@transportesabc.com"
+                value={companyData.email}
+                onChange={(e) => setCompanyData({ ...companyData, email: e.target.value })}
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Email de la Empresa</label>
-            <input
-              type="email"
-              className="w-full px-3 py-2 border rounded-md"
-              placeholder="info@transportesabc.com"
-              value={companyData.email}
-              onChange={(e) => setCompanyData({ ...companyData, email: e.target.value })}
-            />
+          <div className="bg-amber-50 p-4 rounded-lg">
+            <p className="text-sm text-amber-800">
+              ⚠️ <strong>Importante:</strong> Los números DOT y MC son requeridos para operaciones comerciales en Estados Unidos
+            </p>
           </div>
-        </div>
 
-        <div className="bg-amber-50 p-4 rounded-lg">
-          <p className="text-sm text-amber-800">
-            ⚠️ <strong>Importante:</strong> Los números DOT y MC son requeridos para operaciones comerciales en Estados Unidos
-          </p>
-        </div>
-
-        {/* Botón para guardar datos */}
-        <div className="flex justify-end pt-4">
-          <Button 
-            onClick={handleSaveCompany}
-            disabled={loading}
-            className="gap-2"
-          >
-            {loading ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                Guardando...
-              </>
-            ) : (
-              'Guardar Datos de Empresa'
-            )}
-          </Button>
+          {/* Botón para guardar datos */}
+          <div className="flex justify-end pt-4">
+            <Button 
+              onClick={handleSaveCompany}
+              disabled={loading}
+              className="gap-2"
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Guardando...
+                </>
+              ) : (
+                'Guardar Datos de Empresa'
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
