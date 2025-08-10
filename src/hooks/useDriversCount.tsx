@@ -80,43 +80,20 @@ export const useDriversCount = () => {
       }
 
       try {
-        // Obtener todos los drivers activos (roles activos)
-        const { data: activeDriverRoles, error: activeDriversError } = await supabase
+        // Contar todos los drivers en user_company_roles (activos e inactivos)
+        // Los pre-registrados aparecen como is_active=false hasta que activen su cuenta
+        const { count, error: driversError } = await supabase
           .from('user_company_roles')
-          .select('user_id')
+          .select('*', { count: 'exact', head: true })
           .eq('company_id', userCompany.company_id)
-          .eq('role', 'driver')
-          .eq('is_active', true);
+          .eq('role', 'driver');
 
-        if (activeDriversError) {
-          console.error('Error obteniendo drivers activos:', activeDriversError);
-          throw activeDriversError;
+        if (driversError) {
+          console.error('Error contando drivers:', driversError);
+          throw driversError;
         }
 
-        // Obtener invitaciones pendientes (no aceptadas)
-        const { data: pendingInvitations, error: pendingInvitationsError } = await supabase
-          .from('user_invitations')
-          .select('target_user_id')
-          .eq('company_id', userCompany.company_id)
-          .eq('role', 'driver')
-          .eq('is_active', true)
-          .is('accepted_at', null)
-          .gt('expires_at', new Date().toISOString());
-
-        if (pendingInvitationsError) {
-          console.error('Error obteniendo invitaciones pendientes:', pendingInvitationsError);
-          throw pendingInvitationsError;
-        }
-
-        // Contar drivers únicos: roles activos + invitaciones pendientes sin target_user_id duplicado
-        const activeDriverIds = new Set(activeDriverRoles?.map(r => r.user_id) || []);
-        const pendingInvitationIds = pendingInvitations?.filter(inv => 
-          inv.target_user_id && !activeDriverIds.has(inv.target_user_id)
-        ) || [];
-        const pendingWithoutTargetUser = pendingInvitations?.filter(inv => !inv.target_user_id) || [];
-
-        const finalCount = activeDriverIds.size + pendingInvitationIds.length + pendingWithoutTargetUser.length;
-        return finalCount;
+        return count || 0;
 
       } catch (error: any) {
         console.error('Error en useDriversCount:', error);
