@@ -77,10 +77,10 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
     // Mostrar modal de configuración completada
     setShowSetupCompleted(true);
     
-    // Auto-cerrar después de 3 segundos
+    // Auto-cerrar después de 5 segundos
     setTimeout(() => {
       setShowSetupCompleted(false);
-    }, 3000);
+    }, 5000);
   };
 
   const handleSetupClose = () => {
