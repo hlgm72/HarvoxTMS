@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -90,6 +91,7 @@ export default function Users() {
   const { t } = useTranslation(['common']);
   const { user, userRole } = useAuth();
   const { showSuccess, showError, showInfo } = useFleetNotifications();
+  const queryClient = useQueryClient();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -581,6 +583,12 @@ export default function Users() {
       
       // Recargar la lista de usuarios
       fetchUsers();
+      
+      // Si se invitó a un conductor, invalidar el contador de conductores
+      if (cleanedForm.role === 'driver') {
+        queryClient.invalidateQueries({ queryKey: ['drivers-count'] });
+        queryClient.invalidateQueries({ queryKey: ['consolidated-drivers'] });
+      }
       
     } catch (error: any) {
       console.error('Error inviting user:', error);
