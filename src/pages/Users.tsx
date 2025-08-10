@@ -683,16 +683,6 @@ export default function Users() {
           </Card>
         </div>
 
-        {/* Sección de Invitaciones Pendientes */}
-        <PendingInvitationsSection 
-          onInvitationsUpdated={() => {
-            // Recalcular estadísticas cuando se actualicen las invitaciones
-            if (userRole?.company_id) {
-              calculateStats(users, userRole.company_id);
-            }
-          }}
-        />
-
         {/* Lista de usuarios con tabs */}
         {loading ? (
           <div className="flex justify-center items-center py-12">
