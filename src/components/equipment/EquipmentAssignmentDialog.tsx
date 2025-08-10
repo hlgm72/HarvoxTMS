@@ -43,6 +43,7 @@ export function EquipmentAssignmentDialog({
   const [assignmentType, setAssignmentType] = useState<'permanent' | 'temporary'>('permanent');
   const [notes, setNotes] = useState('');
   const [showCreateEquipmentDialog, setShowCreateEquipmentDialog] = useState(false);
+  const [equipmentTypeToCreate, setEquipmentTypeToCreate] = useState<"truck" | "trailer">("truck");
 
   const { equipment } = useEquipment();
   const { drivers } = useCompanyDrivers();
@@ -290,6 +291,7 @@ export function EquipmentAssignmentDialog({
               value={selectedTruckId} 
               onValueChange={(value) => {
                 if (value === "add-new-truck") {
+                  setEquipmentTypeToCreate("truck");
                   setShowCreateEquipmentDialog(true);
                   return;
                 }
@@ -355,6 +357,7 @@ export function EquipmentAssignmentDialog({
               value={selectedTrailerId} 
               onValueChange={(value) => {
                 if (value === "add-new-trailer") {
+                  setEquipmentTypeToCreate("trailer");
                   setShowCreateEquipmentDialog(true);
                   return;
                 }
@@ -481,6 +484,7 @@ export function EquipmentAssignmentDialog({
       <CreateEquipmentDialog
         open={showCreateEquipmentDialog}
         onOpenChange={setShowCreateEquipmentDialog}
+        defaultEquipmentType={equipmentTypeToCreate}
       />
     </Dialog>
   );

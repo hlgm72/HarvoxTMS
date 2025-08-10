@@ -45,18 +45,19 @@ type EquipmentFormData = z.infer<typeof equipmentSchema>;
 interface CreateEquipmentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  defaultEquipmentType?: "truck" | "trailer" | "van" | "car";
 }
 
-export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDialogProps) {
+export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType = "truck" }: CreateEquipmentDialogProps) {
   const { t } = useTranslation();
   const { createEquipment, isCreating } = useEquipment();
-  const [currentEquipmentType, setCurrentEquipmentType] = useState("truck");
+  const [currentEquipmentType, setCurrentEquipmentType] = useState(defaultEquipmentType);
 
   const form = useForm<EquipmentFormData>({
     resolver: zodResolver(equipmentSchema),
     defaultValues: {
       equipment_number: "",
-      equipment_type: "truck",
+      equipment_type: defaultEquipmentType,
       make: "",
       model: "",
       year: undefined,
@@ -75,6 +76,16 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
     },
   });
 
+  // Actualizar el tipo de equipo cuando cambie el prop defaultEquipmentType
+  useEffect(() => {
+    if (open) {
+      setCurrentEquipmentType(defaultEquipmentType);
+      form.setValue("equipment_type", defaultEquipmentType);
+      // Limpiar la marca cuando se abra con un tipo diferente
+      form.setValue("make", "");
+    }
+  }, [open, defaultEquipmentType, form]);
+
   // Obtener marcas basadas en el tipo de equipo seleccionado
   const availableBrands = getBrandsByEquipmentType(currentEquipmentType);
 
@@ -82,7 +93,8 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name === "equipment_type" && value.equipment_type) {
-        setCurrentEquipmentType(value.equipment_type);
+        const equipmentType = value.equipment_type as "truck" | "trailer" | "van" | "car";
+        setCurrentEquipmentType(equipmentType);
         // Limpiar la marca seleccionada cuando cambie el tipo
         form.setValue("make", "");
       }
@@ -113,7 +125,7 @@ export function CreateEquipmentDialog({ open, onOpenChange }: CreateEquipmentDia
 
     createEquipment(equipmentData);
     form.reset();
-    setCurrentEquipmentType("truck");
+    setCurrentEquipmentType(defaultEquipmentType);
     onOpenChange(false);
   };
 
