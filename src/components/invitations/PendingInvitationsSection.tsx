@@ -424,7 +424,12 @@ export function PendingInvitationsSection({
             <DialogTitle>Cancelar Invitación</DialogTitle>
             <DialogDescription className="break-words">
               ¿Cómo quieres proceder con la invitación para{' '}
-              <strong className="break-all word-break-all">{selectedInvitation?.email}</strong>?
+              <strong className="break-all word-break-all">
+                {selectedInvitation?.first_name && selectedInvitation?.last_name
+                  ? `${selectedInvitation.first_name} ${selectedInvitation.last_name} (${selectedInvitation.email})`
+                  : selectedInvitation?.email
+                }
+              </strong>?
             </DialogDescription>
           </DialogHeader>
           
