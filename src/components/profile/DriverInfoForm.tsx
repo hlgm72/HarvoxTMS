@@ -348,12 +348,19 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
               <FormItem>
                 <FormLabel className="text-sm font-medium">Fecha de Nacimiento</FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder="dd/mm/aaaa" 
-                    {...field} 
-                    value={field.value || ''}
-                    maxLength={10}
-                  />
+                  <div className="relative">
+                    <Input 
+                      placeholder="dd/mm/aaaa" 
+                      {...field} 
+                      value={field.value || ''}
+                      maxLength={10}
+                    />
+                    {field.value && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
+                        dd/mm/aaaa
+                      </div>
+                    )}
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
