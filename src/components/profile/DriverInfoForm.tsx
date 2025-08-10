@@ -5,16 +5,20 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useFleetNotifications } from '@/components/notifications';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { Save, RotateCcw, Truck } from 'lucide-react';
-import { BirthDateInput } from '@/components/ui/BirthDateInput';
+import { Save, RotateCcw, Truck, CalendarIcon } from 'lucide-react';
 import { createTextHandlers } from '@/lib/textUtils';
 import { LicenseInfoSection } from '@/components/drivers/LicenseInfoSection';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 
 const driverInfoSchema = z.object({
-  date_of_birth: z.string().optional(),
+  date_of_birth: z.date().optional(),
   emergency_contact_name: z.string().optional(),
   emergency_contact_phone: z.string().optional(),
 });
@@ -72,7 +76,7 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
   const driverInfoForm = useForm<DriverInfoFormData>({
     resolver: zodResolver(driverInfoSchema),
     defaultValues: {
-      date_of_birth: '',
+      date_of_birth: undefined,
       emergency_contact_name: '',
       emergency_contact_phone: '',
     },
@@ -144,7 +148,7 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
         // Update form with basic profile data
         if (data) {
           driverInfoForm.reset({
-            date_of_birth: data.date_of_birth || '',
+            date_of_birth: parseDateFromDatabase(data.date_of_birth),
             emergency_contact_name: data.emergency_contact_name || '',
             emergency_contact_phone: data.emergency_contact_phone || '',
           });
@@ -183,7 +187,7 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
 
       const updateData = {
         user_id: user.id,
-        date_of_birth: data.date_of_birth || null,
+        date_of_birth: data.date_of_birth ? formatDateForDatabase(data.date_of_birth) : null,
         emergency_contact_name: data.emergency_contact_name || null,
         emergency_contact_phone: data.emergency_contact_phone || null,
         license_number: licenseData.license_number || null,
@@ -217,7 +221,7 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
 
       // Update local state
       setDriverProfile({
-        date_of_birth: data.date_of_birth || null,
+        date_of_birth: data.date_of_birth ? formatDateForDatabase(data.date_of_birth) : null,
         emergency_contact_name: data.emergency_contact_name || null,
         emergency_contact_phone: data.emergency_contact_phone || null,
         license_number: licenseData.license_number || null,
@@ -245,7 +249,7 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
   const handleCancel = () => {
     if (driverProfile) {
       driverInfoForm.reset({
-        date_of_birth: driverProfile.date_of_birth || '',
+        date_of_birth: parseDateFromDatabase(driverProfile.date_of_birth),
         emergency_contact_name: driverProfile.emergency_contact_name || '',
         emergency_contact_phone: driverProfile.emergency_contact_phone || '',
       });
@@ -292,18 +296,40 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
             control={driverInfoForm.control}
             name="date_of_birth"
             render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <BirthDateInput
-                    label="Fecha de Nacimiento"
-                    value={field.value || ''}
-                    onValueChange={(value, isValid) => {
-                      field.onChange(value);
-                    }}
-                    minAge={18}
-                    maxAge={80}
-                  />
-                </FormControl>
+              <FormItem className="flex flex-col">
+                <FormLabel>Fecha de Nacimiento</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP", { locale: es })
+                        ) : (
+                          <span>Seleccionar fecha</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
                 <FormMessage />
               </FormItem>
             )}
