@@ -176,6 +176,90 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Invitation created successfully:", invitation.id);
 
+    // Create user profile immediately for pre-registration functionality
+    // This allows managing the driver (loads, payments, etc.) before they activate their account
+    try {
+      // First create a placeholder user in auth.users for the driver
+      const { data: newUser, error: authError } = await supabase.auth.admin.createUser({
+        email,
+        email_confirm: false, // Don't require email confirmation yet
+        user_metadata: {
+          first_name: firstName,
+          last_name: lastName,
+          is_pre_registered: true, // Flag to indicate this is a pre-registered user
+          invited_by: userId,
+          company_id: companyId,
+          hire_date: hireDate
+        }
+      });
+
+      if (authError) {
+        console.error("Error creating auth user:", authError);
+        // Don't fail the invitation if we can't create the auth user
+        // The driver can still be managed without authentication
+      } else if (newUser.user) {
+        console.log("Pre-registered auth user created:", newUser.user.id);
+
+        // Create profile
+        await supabase
+          .from("profiles")
+          .insert({
+            user_id: newUser.user.id,
+            first_name: firstName,
+            last_name: lastName,
+            hire_date: hireDate
+          });
+
+        // Create driver profile
+        await supabase
+          .from("driver_profiles")
+          .insert({
+            user_id: newUser.user.id,
+            is_active: true
+          });
+
+        // Create company role
+        await supabase
+          .from("user_company_roles")
+          .insert({
+            user_id: newUser.user.id,
+            company_id: companyId,
+            role: "driver",
+            is_active: true,
+            assigned_by: userId
+          });
+
+        // Create owner operator record
+        await supabase
+          .from("owner_operators")
+          .insert({
+            user_id: newUser.user.id,
+            company_id: companyId,
+            operator_type: "company_driver",
+            contract_start_date: hireDate,
+            is_active: true
+          });
+
+        // Update invitation with the created user_id
+        await supabase
+          .from("user_invitations")
+          .update({ 
+            target_user_id: newUser.user.id,
+            metadata: {
+              hire_date: hireDate,
+              pre_registered: true
+            }
+          })
+          .eq("id", invitation.id);
+
+        console.log("✅ Driver pre-registered successfully with full profile");
+      }
+    } catch (profileError: any) {
+      console.error("Error creating driver profile:", profileError);
+      // Continue with invitation even if profile creation fails
+      // The driver can still be invited normally
+    }
+
     // Send invitation email using Resend
     const resend = new Resend(resendApiKey);
     

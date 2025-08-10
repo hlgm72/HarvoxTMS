@@ -23,8 +23,10 @@ export interface ConsolidatedDriver {
   is_active: boolean;
   emergency_contact_name: string | null;
   emergency_contact_phone: string | null;
-  current_status: 'available' | 'on_route' | 'off_duty';
+  current_status: 'available' | 'on_route' | 'off_duty' | 'pre_registered';
   active_loads_count: number;
+  is_pre_registered: boolean;
+  activation_status: 'active' | 'pending_activation' | 'invited';
 }
 
 export const useConsolidatedDrivers = () => {
@@ -60,8 +62,8 @@ export const useConsolidatedDrivers = () => {
         throw new Error('Cargando datos de compañía...');
       }
 
-      try {
-        // PASO 1: Obtener conductores usando la nueva estructura consolidada
+        try {
+        // PASO 1: Obtener conductores activos y pre-registrados
         const { data: driverRoles, error: rolesError } = await supabase
           .from('user_company_roles')
           .select(`
@@ -79,18 +81,37 @@ export const useConsolidatedDrivers = () => {
           throw new Error('Error obteniendo conductores');
         }
 
-        if (!driverRoles || driverRoles.length === 0) {
+        // PASO 1.5: También obtener invitaciones pendientes para conductores pre-registrados
+        const { data: pendingInvitations, error: invitationsError } = await supabase
+          .from('user_invitations')
+          .select(`
+            target_user_id,
+            first_name,
+            last_name,
+            email,
+            metadata,
+            created_at
+          `)
+          .eq('company_id', userCompany.company_id)
+          .eq('role', 'driver')
+          .is('accepted_at', null)
+          .gt('expires_at', new Date().toISOString())
+          .not('target_user_id', 'is', null);
+
+        const invitedUserIds = pendingInvitations?.map(inv => inv.target_user_id).filter(Boolean) || [];
+        const driverUserIds = driverRoles?.map(role => role.user_id) || [];
+        const allDriverUserIds = [...new Set([...driverUserIds, ...invitedUserIds])];
+
+        if (allDriverUserIds.length === 0) {
           return [];
         }
 
-        const finalDriverUserIds = driverRoles.map(role => role.user_id);
-
         // PASO 2: Obtener datos relacionados en paralelo
-        const [profilesResult, driverProfilesResult, activeLoadsResult] = await Promise.allSettled([
+        const [profilesResult, driverProfilesResult, activeLoadsResult, authUsersResult] = await Promise.allSettled([
           supabase
             .from('profiles')
             .select('user_id, first_name, last_name, phone, avatar_url, hire_date')
-            .in('user_id', finalDriverUserIds),
+            .in('user_id', allDriverUserIds),
           
           supabase
             .from('driver_profiles')
@@ -105,33 +126,55 @@ export const useConsolidatedDrivers = () => {
               emergency_contact_name,
               emergency_contact_phone
             `)
-            .in('user_id', finalDriverUserIds),
+            .in('user_id', allDriverUserIds),
           
           supabase
             .from('loads')
             .select('driver_user_id, status')
-            .in('driver_user_id', finalDriverUserIds)
-            .in('status', ['assigned', 'in_transit', 'pickup', 'delivery'])
+            .in('driver_user_id', allDriverUserIds)
+            .in('status', ['assigned', 'in_transit', 'pickup', 'delivery']),
+
+          // Get auth users to check activation status
+          supabase.auth.admin.listUsers()
         ]);
 
         // PASO 3: Procesar y enriquecer datos
-        const [profiles, driverProfiles, activeLoads] = [
+        const [profiles, driverProfiles, activeLoads, authUsersData] = [
           profilesResult.status === 'fulfilled' ? profilesResult.value.data || [] : [],
           driverProfilesResult.status === 'fulfilled' ? driverProfilesResult.value.data || [] : [],
-          activeLoadsResult.status === 'fulfilled' ? activeLoadsResult.value.data || [] : []
+          activeLoadsResult.status === 'fulfilled' ? activeLoadsResult.value.data || [] : [],
+          authUsersResult.status === 'fulfilled' ? authUsersResult.value.data?.users || [] : []
         ];
 
-        // Combinar toda la información usando los datos consolidados
-        const combinedDrivers: ConsolidatedDriver[] = profiles.map(profile => {
+        // Create a comprehensive list including pre-registered drivers
+        const allDrivers: ConsolidatedDriver[] = [];
+
+        // First, add drivers with profiles
+        profiles.forEach(profile => {
           const driverProfile = driverProfiles.find(dp => dp.user_id === profile.user_id);
-          const driverRole = driverRoles.find(dr => dr.user_id === profile.user_id);
+          const driverRole = driverRoles?.find(dr => dr.user_id === profile.user_id);
           const driverLoads = activeLoads.filter(load => load.driver_user_id === profile.user_id) || [];
+          const authUser = authUsersData.find(u => u.id === profile.user_id);
           
-          // Determinar estado actual basado en cargas
-          let currentStatus: 'available' | 'on_route' | 'off_duty' = 'available';
+          // Check if user is pre-registered
+          const isPreRegistered = authUser?.user_metadata?.is_pre_registered === true;
+          const hasLoggedIn = authUser?.last_sign_in_at !== null;
+          
+          // Determine activation status
+          let activationStatus: 'active' | 'pending_activation' | 'invited' = 'active';
+          if (isPreRegistered && !hasLoggedIn) {
+            activationStatus = 'pending_activation';
+          } else if (!driverRole?.is_active) {
+            activationStatus = 'invited';
+          }
+          
+          // Determinar estado actual basado en cargas y activación
+          let currentStatus: 'available' | 'on_route' | 'off_duty' | 'pre_registered' = 'available';
           const activeLoadsCount = driverLoads.length;
           
-          if (activeLoadsCount > 0) {
+          if (isPreRegistered && !hasLoggedIn) {
+            currentStatus = 'pre_registered';
+          } else if (activeLoadsCount > 0) {
             const hasInTransit = driverLoads.some(load => 
               ['in_transit', 'pickup', 'delivery'].includes(load.status)
             );
@@ -140,7 +183,7 @@ export const useConsolidatedDrivers = () => {
             currentStatus = 'off_duty';
           }
 
-          return {
+          allDrivers.push({
             id: profile.user_id,
             user_id: profile.user_id,
             first_name: profile.first_name || '',
@@ -159,11 +202,48 @@ export const useConsolidatedDrivers = () => {
             emergency_contact_name: driverProfile?.emergency_contact_name || null,
             emergency_contact_phone: driverProfile?.emergency_contact_phone || null,
             current_status: currentStatus,
-            active_loads_count: activeLoadsCount
-          };
+            active_loads_count: activeLoadsCount,
+            is_pre_registered: isPreRegistered,
+            activation_status: activationStatus
+          });
         });
 
-        return combinedDrivers;
+        // Add drivers that are only invited (no profile yet) - fallback for older invitations
+        pendingInvitations?.forEach(invitation => {
+          if (!invitation.target_user_id || allDrivers.some(d => d.user_id === invitation.target_user_id)) {
+            return; // Skip if already processed or no target user
+          }
+
+          const hireDate = invitation.metadata?.hire_date || null;
+          
+          allDrivers.push({
+            id: invitation.target_user_id,
+            user_id: invitation.target_user_id,
+            first_name: invitation.first_name || '',
+            last_name: invitation.last_name || '',
+            phone: null,
+            avatar_url: null,
+            license_number: null,
+            license_expiry_date: null,
+            license_state: null,
+            cdl_class: null,
+            license_issue_date: null,
+            hire_date: hireDate,
+            termination_date: null,
+            termination_reason: null,
+            is_active: true,
+            emergency_contact_name: null,
+            emergency_contact_phone: null,
+            current_status: 'pre_registered',
+            active_loads_count: 0,
+            is_pre_registered: true,
+            activation_status: 'invited'
+          });
+        });
+
+        return allDrivers;
+
+        
 
       } catch (error: any) {
         console.error('Error en useConsolidatedDrivers:', error);
