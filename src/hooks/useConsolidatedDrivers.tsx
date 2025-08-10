@@ -107,7 +107,7 @@ export const useConsolidatedDrivers = () => {
         }
 
         // PASO 2: Obtener datos relacionados en paralelo
-        const [profilesResult, driverProfilesResult, activeLoadsResult, authUsersResult] = await Promise.allSettled([
+        const [profilesResult, driverProfilesResult, activeLoadsResult] = await Promise.allSettled([
           supabase
             .from('profiles')
             .select('user_id, first_name, last_name, phone, avatar_url, hire_date')
@@ -132,18 +132,14 @@ export const useConsolidatedDrivers = () => {
             .from('loads')
             .select('driver_user_id, status')
             .in('driver_user_id', allDriverUserIds)
-            .in('status', ['assigned', 'in_transit', 'pickup', 'delivery']),
-
-          // Get auth users to check activation status
-          supabase.auth.admin.listUsers()
+            .in('status', ['assigned', 'in_transit', 'pickup', 'delivery'])
         ]);
 
         // PASO 3: Procesar y enriquecer datos
-        const [profiles, driverProfiles, activeLoads, authUsersData] = [
+        const [profiles, driverProfiles, activeLoads] = [
           profilesResult.status === 'fulfilled' ? profilesResult.value.data || [] : [],
           driverProfilesResult.status === 'fulfilled' ? driverProfilesResult.value.data || [] : [],
-          activeLoadsResult.status === 'fulfilled' ? activeLoadsResult.value.data || [] : [],
-          authUsersResult.status === 'fulfilled' ? authUsersResult.value.data?.users || [] : []
+          activeLoadsResult.status === 'fulfilled' ? activeLoadsResult.value.data || [] : []
         ];
 
         // Create a comprehensive list including pre-registered drivers
@@ -154,15 +150,14 @@ export const useConsolidatedDrivers = () => {
           const driverProfile = driverProfiles.find(dp => dp.user_id === profile.user_id);
           const driverRole = driverRoles?.find(dr => dr.user_id === profile.user_id);
           const driverLoads = activeLoads.filter(load => load.driver_user_id === profile.user_id) || [];
-          const authUser = authUsersData.find(u => u.id === profile.user_id);
           
-          // Check if user is pre-registered
-          const isPreRegistered = authUser?.user_metadata?.is_pre_registered === true;
-          const hasLoggedIn = authUser?.last_sign_in_at !== null;
+          // Check if there's a pending invitation for this user
+          const pendingInvitation = pendingInvitations?.find(inv => inv.target_user_id === profile.user_id);
+          const isPreRegistered = Boolean(pendingInvitation);
           
-          // Determine activation status
+          // Determine activation status based on available data
           let activationStatus: 'active' | 'pending_activation' | 'invited' = 'active';
-          if (isPreRegistered && !hasLoggedIn) {
+          if (isPreRegistered) {
             activationStatus = 'pending_activation';
           } else if (!driverRole?.is_active) {
             activationStatus = 'invited';
@@ -172,7 +167,7 @@ export const useConsolidatedDrivers = () => {
           let currentStatus: 'available' | 'on_route' | 'off_duty' | 'pre_registered' = 'available';
           const activeLoadsCount = driverLoads.length;
           
-          if (isPreRegistered && !hasLoggedIn) {
+          if (isPreRegistered) {
             currentStatus = 'pre_registered';
           } else if (activeLoadsCount > 0) {
             const hasInTransit = driverLoads.some(load => 
