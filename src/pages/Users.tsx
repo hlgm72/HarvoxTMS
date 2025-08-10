@@ -232,7 +232,10 @@ export default function Users() {
           
           // Solo agregar si no es un usuario ya activo en esta empresa
           if (!allUserIds.has(userId)) {
-            allUserIds.add(userId);
+            // Solo agregar UUIDs válidos al Set principal
+            if (invitation.target_user_id && !userId.startsWith('pending-')) {
+              allUserIds.add(userId);
+            }
             
             usersMap.set(userId, {
               id: userId,
