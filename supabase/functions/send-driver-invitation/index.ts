@@ -124,28 +124,46 @@ const handler = async (req: Request): Promise<Response> => {
     // Check if user with this email already has a valid (non-expired) invitation
     const { data: existingInvitation } = await supabase
       .from("user_invitations")
-      .select("id")
+      .select("id, target_user_id, expires_at")
       .eq("email", email)
       .eq("company_id", companyId)
       .eq("role", "driver")
       .is("accepted_at", null)
-      .gt("expires_at", new Date().toISOString()); // Only check for non-expired invitations
+      .gt("expires_at", new Date().toISOString()) // Only check for non-expired invitations
+      .single();
 
-    if (existingInvitation && existingInvitation.length > 0) {
-      console.log("Existing invitation found for email:", email);
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: "Ya existe una invitación pendiente para este email"
-        }),
-        {
-          status: 200, // Always return 200 to make error handling consistent
-          headers: { 
-            "Content-Type": "application/json",
-            ...corsHeaders 
-          },
+    if (existingInvitation) {
+      // If invitation exists but target_user_id is null, it means pre-registration failed
+      // In this case, we should try to complete the pre-registration process
+      if (!existingInvitation.target_user_id) {
+        console.log("Found incomplete invitation, attempting to complete pre-registration...");
+        // Delete the incomplete invitation so we can create a new complete one
+        const { error: deleteError } = await supabase
+          .from("user_invitations")
+          .delete()
+          .eq("id", existingInvitation.id);
+        
+        if (deleteError) {
+          console.error("Error deleting incomplete invitation:", deleteError);
+          // Continue anyway - the new invitation creation might still work
         }
-      );
+      } else {
+        // Invitation exists and is complete - return error
+        console.log("Existing complete invitation found for email:", email);
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: "Ya existe una invitación pendiente para este email"
+          }),
+          {
+            status: 200, // Always return 200 to make error handling consistent
+            headers: { 
+              "Content-Type": "application/json",
+              ...corsHeaders 
+            },
+          }
+        );
+      }
     }
 
     // Generate invitation token
