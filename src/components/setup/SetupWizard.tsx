@@ -248,15 +248,45 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                   </p>
                 </div>
               ) : (
-                <SetupStepContent 
-                  step={steps[currentStep]} 
-                  refs={{
-                    personalInfoFormRef,
-                    preferencesFormRef,
-                    driverInfoFormRef,
-                    companySetupRef
-                  }}
-                />
+                <div className="space-y-6">
+                  {/* Personal Info Form - Always present */}
+                  <div className={currentStep === 0 ? 'block' : 'hidden'}>
+                    <PersonalInfoForm 
+                      ref={personalInfoFormRef}
+                      showCancelButton={false}
+                      className="space-y-6"
+                    />
+                  </div>
+
+                  {/* Preferences Form - Always present */}
+                  <div className={currentStep === 1 ? 'block' : 'hidden'}>
+                    <PreferencesForm 
+                      ref={preferencesFormRef}
+                      showCancelButton={false}
+                      className="space-y-6"
+                    />
+                  </div>
+
+                  {/* Driver Info Form - Only for drivers */}
+                  {isDriver && (
+                    <div className={currentStep === 2 ? 'block' : 'hidden'}>
+                      <DriverInfoForm 
+                        ref={driverInfoFormRef}
+                        showCancelButton={false}
+                        className="space-y-6"
+                      />
+                    </div>
+                  )}
+
+                  {/* Company Setup Form - Only for company owners */}
+                  {isCompanyOwner && (
+                    <div className={currentStep === (isDriver ? 3 : 2) ? 'block' : 'hidden'}>
+                      <CompanySetupStep 
+                        ref={companySetupRef}
+                      />
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -291,21 +321,6 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
   );
 }
 
-// Componente para el contenido de cada paso
-function SetupStepContent({ step, refs }: { step: SetupStep, refs: any }) {
-  switch (step.id) {
-    case 'profile':
-      return <PersonalInfoForm ref={refs.personalInfoFormRef} showCancelButton={false} />;
-    case 'preferences':
-      return <PreferencesForm ref={refs.preferencesFormRef} showCancelButton={false} />;
-    case 'driver':
-      return <DriverInfoForm ref={refs.driverInfoFormRef} showCancelButton={false} />;
-    case 'company':
-      return <CompanySetupStep ref={refs.companySetupRef} />;
-    default:
-      return <div>Paso no encontrado</div>;
-  }
-}
 
 // Componente especializado para configuración de empresa en el setup
 const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>((props, ref) => {
