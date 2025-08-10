@@ -18,6 +18,7 @@ const personalInfoSchema = z.object({
   first_name: z.string().min(1, 'El nombre es requerido'),
   last_name: z.string().min(1, 'El apellido es requerido'),
   phone: z.string().optional(),
+  date_of_birth: z.string().optional(),
   street_address: z.string().optional(),
   state_id: z.string().optional(),
   city_id: z.string().optional(),
@@ -57,6 +58,7 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
       first_name: '',
       last_name: '',
       phone: '',
+      date_of_birth: '',
       street_address: '',
       state_id: '',
       city_id: '',
@@ -70,6 +72,7 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
         first_name: profile.first_name || '',
         last_name: profile.last_name || '',
         phone: profile.phone || '',
+        date_of_birth: profile.date_of_birth || '',
         street_address: profile.street_address || '',
         state_id: profile.state_id || '',
         city_id: profile.city_id || '',
@@ -89,6 +92,7 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
           first_name: data.first_name,
           last_name: data.last_name,
           phone: data.phone || null,
+          date_of_birth: data.date_of_birth || null,
           street_address: data.street_address || null,
           state_id: data.state_id || null,
           city_id: data.city_id || null,
@@ -122,6 +126,7 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
         first_name: profile.first_name || '',
         last_name: profile.last_name || '',
         phone: profile.phone || '',
+        date_of_birth: profile.date_of_birth || '',
         street_address: profile.street_address || '',
         state_id: profile.state_id || '',
         city_id: profile.city_id || '',
@@ -183,6 +188,24 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
                     placeholder="(555) 123-4567" 
                     value={field.value || ''} 
                     {...phoneHandlers}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={personalInfoForm.control}
+            name="date_of_birth"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">Fecha de Nacimiento</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="date"
+                    {...field} 
+                    value={field.value || ''}
                   />
                 </FormControl>
                 <FormMessage />

@@ -233,10 +233,10 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
       }
 
       // Para conductores ya activados, buscar en las tablas de perfil
-      // Cargar perfil básico (incluyendo hire_date)
+      // Cargar perfil básico (incluyendo hire_date y date_of_birth)
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('first_name, last_name, phone, hire_date')
+        .select('first_name, last_name, phone, hire_date, date_of_birth')
         .eq('user_id', driver.user_id)
         .maybeSingle();
 
@@ -268,7 +268,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
         first_name: profile?.first_name || '',
         last_name: profile?.last_name || '',
         phone: profile?.phone || '',
-        date_of_birth: parseDateFromDatabase(driverProfile?.date_of_birth),
+        date_of_birth: parseDateFromDatabase(profile?.date_of_birth),
         
         // Información de empleo - ahora desde profiles
         driver_id: driverProfile?.driver_id || '',
@@ -438,7 +438,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
         emergency_contact_phone: handleTextBlur(driverData.emergency_contact_phone),
       };
 
-      // Actualizar perfil básico (incluyendo hire_date)
+      // Actualizar perfil básico (incluyendo hire_date y date_of_birth)
       const { error: profileError } = await supabase
         .from('profiles')
         .upsert({
@@ -447,6 +447,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
           last_name: cleanedData.last_name,
           phone: cleanedData.phone,
           hire_date: driverData.hire_date ? formatDateForDatabase(driverData.hire_date) : null,
+          date_of_birth: driverData.date_of_birth ? formatDateForDatabase(driverData.date_of_birth) : null,
         }, {
           onConflict: 'user_id'
         });
@@ -465,7 +466,6 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
           license_state: cleanedData.license_state,
           license_issue_date: driverData.license_issue_date ? formatDateForDatabase(driverData.license_issue_date) : null,
           license_expiry_date: driverData.license_expiry_date ? formatDateForDatabase(driverData.license_expiry_date) : null,
-          date_of_birth: driverData.date_of_birth ? formatDateForDatabase(driverData.date_of_birth) : null,
           emergency_contact_name: cleanedData.emergency_contact_name,
           emergency_contact_phone: cleanedData.emergency_contact_phone,
         }, {

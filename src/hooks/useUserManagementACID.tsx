@@ -13,7 +13,6 @@ interface UserData {
   license_expiry_date?: string;
   cdl_class?: string;
   cdl_endorsements?: string;
-  date_of_birth?: string;
   emergency_contact_name?: string;
   emergency_contact_phone?: string;
   is_active?: boolean;

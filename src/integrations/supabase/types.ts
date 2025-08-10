@@ -664,7 +664,6 @@ export type Database = {
           cdl_class: string | null
           cdl_endorsements: string | null
           created_at: string
-          date_of_birth: string | null
           driver_id: string | null
           emergency_contact_name: string | null
           emergency_contact_phone: string | null
@@ -681,7 +680,6 @@ export type Database = {
           cdl_class?: string | null
           cdl_endorsements?: string | null
           created_at?: string
-          date_of_birth?: string | null
           driver_id?: string | null
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
@@ -698,7 +696,6 @@ export type Database = {
           cdl_class?: string | null
           cdl_endorsements?: string | null
           created_at?: string
-          date_of_birth?: string | null
           driver_id?: string | null
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
@@ -2328,6 +2325,7 @@ export type Database = {
           avatar_url: string | null
           city_id: string | null
           created_at: string
+          date_of_birth: string | null
           first_name: string | null
           hire_date: string | null
           id: string
@@ -2345,6 +2343,7 @@ export type Database = {
           avatar_url?: string | null
           city_id?: string | null
           created_at?: string
+          date_of_birth?: string | null
           first_name?: string | null
           hire_date?: string | null
           id?: string
@@ -2362,6 +2361,7 @@ export type Database = {
           avatar_url?: string | null
           city_id?: string | null
           created_at?: string
+          date_of_birth?: string | null
           first_name?: string | null
           hire_date?: string | null
           id?: string

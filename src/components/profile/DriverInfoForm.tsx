@@ -138,9 +138,17 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
       if (!user) return;
 
       try {
+        // Obtener datos del perfil general (fecha de nacimiento)
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('date_of_birth')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        // Obtener datos específicos del conductor
         const { data, error } = await supabase
           .from('driver_profiles')
-          .select('date_of_birth, emergency_contact_name, emergency_contact_phone, license_number, license_state, license_issue_date, license_expiry_date, cdl_class, cdl_endorsements')
+          .select('emergency_contact_name, emergency_contact_phone, license_number, license_state, license_issue_date, license_expiry_date, cdl_class, cdl_endorsements')
           .eq('user_id', user.id)
           .maybeSingle();
 
@@ -149,27 +157,35 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
           return;
         }
 
-        setDriverProfile(data || {
-          date_of_birth: null,
-          emergency_contact_name: null,
-          emergency_contact_phone: null,
-          license_number: null,
-          license_state: null,
-          license_issue_date: null,
-          license_expiry_date: null,
-          cdl_class: null,
-          cdl_endorsements: null
+        if (profileError && profileError.code !== 'PGRST116') {
+          console.error('Error fetching profile:', profileError);
+          return;
+        }
+
+        // Combinar datos de ambas tablas
+        const combinedProfile = {
+          date_of_birth: profileData?.date_of_birth || null,
+          emergency_contact_name: data?.emergency_contact_name || null,
+          emergency_contact_phone: data?.emergency_contact_phone || null,
+          license_number: data?.license_number || null,
+          license_state: data?.license_state || null,
+          license_issue_date: data?.license_issue_date || null,
+          license_expiry_date: data?.license_expiry_date || null,
+          cdl_class: data?.cdl_class || null,
+          cdl_endorsements: data?.cdl_endorsements || null
+        };
+
+        setDriverProfile(combinedProfile);
+
+        // Update form with profile data
+        driverInfoForm.reset({
+          date_of_birth: formatDateForDisplay(profileData?.date_of_birth),
+          emergency_contact_name: data?.emergency_contact_name || '',
+          emergency_contact_phone: data?.emergency_contact_phone || '',
         });
 
-        // Update form with basic profile data
+        // Update license data separately
         if (data) {
-          driverInfoForm.reset({
-            date_of_birth: formatDateForDisplay(data.date_of_birth),
-            emergency_contact_name: data.emergency_contact_name || '',
-            emergency_contact_phone: data.emergency_contact_phone || '',
-          });
-
-          // Update license data separately
           setLicenseData({
             license_number: data.license_number || '',
             license_state: data.license_state || '',
@@ -194,6 +210,17 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
 
     setUpdating(true);
     try {
+      // Update date_of_birth in profiles table
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          date_of_birth: convertDisplayToDatabase(data.date_of_birth || ''),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', user.id);
+
+      if (profileError) throw profileError;
+
       // Check if driver profile exists
       const { data: existingProfile } = await supabase
         .from('driver_profiles')
@@ -201,9 +228,8 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
         .eq('user_id', user.id)
         .maybeSingle();
 
-      const updateData = {
+      const driverUpdateData = {
         user_id: user.id,
-        date_of_birth: convertDisplayToDatabase(data.date_of_birth || ''),
         emergency_contact_name: data.emergency_contact_name || null,
         emergency_contact_phone: data.emergency_contact_phone || null,
         license_number: licenseData.license_number || null,
@@ -221,14 +247,14 @@ export function DriverInfoForm({ onCancel, showCancelButton = true, className }:
         // Update existing profile
         ({ error } = await supabase
           .from('driver_profiles')
-          .update(updateData)
+          .update(driverUpdateData)
           .eq('user_id', user.id));
       } else {
         // Create new profile
         ({ error } = await supabase
           .from('driver_profiles')
           .insert({
-            ...updateData,
+            ...driverUpdateData,
             is_active: true,
           }));
       }
