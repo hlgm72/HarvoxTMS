@@ -16,7 +16,7 @@ export const EmailFooter = () => (
       <Section style={footerContent}>
         <Section style={logoTitleSection}>
           <Img 
-            src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/company-logos/fleetnest-logo.png"
+            src="https://d3745a06-0e2f-4f63-90d5-4194e6da686a.lovableproject.com/fleetnest-bimi-logo.svg"
             alt="FleetNest Logo"
             width="24"
             height="24"
