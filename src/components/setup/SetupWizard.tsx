@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -93,68 +93,109 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       let savedSuccessfully = 0;
       let totalAttempts = 0;
       
-      // Simular la sumisión de formularios programáticamente
-      // En lugar de usar refs, directamente invocamos los botones de submit de los formularios
-      
-      const forms = document.querySelectorAll('[data-form]');
-      console.log('📝 Found forms:', forms.length);
-      
-      // Intentar enviar cada formulario encontrado
-      for (const form of forms) {
+      // Iterar por todos los pasos disponibles y enviar sus formularios
+      for (let i = 0; i < steps.length; i++) {
+        const step = steps[i];
+        
+        // Saltar el paso de empresa ya que se maneja diferente
+        if (step.id === 'company') continue;
+        
         try {
           totalAttempts++;
-          const formElement = form as HTMLFormElement;
-          const submitButton = formElement.querySelector('button[type="submit"]') as HTMLButtonElement;
+          console.log('💾 Processing step:', step.id);
           
-          if (submitButton && !submitButton.disabled) {
-            console.log('💾 Triggering form submission for:', formElement.getAttribute('data-form'));
+          // Navegar al paso para asegurar que el formulario esté renderizado
+          setCurrentStep(i);
+          await new Promise(resolve => setTimeout(resolve, 200));
+          
+          // Buscar y enviar el formulario específico
+          let formSubmitted = false;
+          
+          if (step.id === 'profile') {
+            const form = document.querySelector('form[data-form="personal-info"]') as HTMLFormElement;
+            if (form) {
+              const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+              if (submitButton && !submitButton.disabled) {
+                submitButton.click();
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                formSubmitted = true;
+              }
+            }
+          } else if (step.id === 'preferences') {
+            const forms = document.querySelectorAll('form');
+            for (const form of forms) {
+              const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+              if (submitButton && submitButton.textContent?.includes('Guardar')) {
+                submitButton.click();
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                formSubmitted = true;
+                break;
+              }
+            }
+          } else if (step.id === 'driver') {
+            const forms = document.querySelectorAll('form');
+            // Buscar el formulario de conductor (último formulario sin data-form específico)
+            const driverForm = Array.from(forms).find(form => 
+              form.querySelector('input[placeholder*="emergencia"]') || 
+              form.querySelector('input[placeholder*="contacto"]')
+            ) as HTMLFormElement;
             
-            // Crear un evento de submit
-            const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
-            const submitted = formElement.dispatchEvent(submitEvent);
-            
-            if (submitted) {
-              // Dar tiempo para que el formulario se procese
-              await new Promise(resolve => setTimeout(resolve, 500));
-              savedSuccessfully++;
+            if (driverForm) {
+              const submitButton = driverForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+              if (submitButton && !submitButton.disabled) {
+                submitButton.click();
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                formSubmitted = true;
+              }
             }
           }
+          
+          if (formSubmitted) {
+            savedSuccessfully++;
+            console.log('✅ Form submission completed for:', step.id);
+          } else {
+            console.log('⚠️ No form or submit button found for:', step.id);
+          }
+          
         } catch (error) {
-          console.error('Error submitting form:', error);
+          console.error('Error submitting form for step:', step.id, error);
         }
       }
 
       // Manejar el guardado de empresa si es company owner
       if (isCompanyOwner) {
-        try {
-          totalAttempts++;
-          const companyFormElement = document.querySelector('[data-company-form]') as HTMLElement;
-          if (companyFormElement) {
-            console.log('💾 Attempting to save company info...');
-            const saveButton = companyFormElement.querySelector('button') as HTMLButtonElement;
-            if (saveButton && !saveButton.disabled) {
-              saveButton.click();
-              await new Promise(resolve => setTimeout(resolve, 1000));
-              savedSuccessfully++;
+        const companyStepIndex = steps.findIndex(s => s.id === 'company');
+        if (companyStepIndex !== -1) {
+          try {
+            totalAttempts++;
+            setCurrentStep(companyStepIndex);
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            const companyFormElement = document.querySelector('[data-company-form]') as HTMLElement;
+            if (companyFormElement) {
+              console.log('💾 Attempting to save company info...');
+              const saveButton = companyFormElement.querySelector('button') as HTMLButtonElement;
+              if (saveButton && !saveButton.disabled) {
+                saveButton.click();
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                savedSuccessfully++;
+              }
             }
+          } catch (error) {
+            console.error('Error saving company info:', error);
           }
-        } catch (error) {
-          console.error('Error saving company info:', error);
         }
       }
 
-      // Mostrar mensaje según el resultado
+      // Mostrar siempre mensaje de éxito
       console.log('📊 Setup completion summary:', { savedSuccessfully, totalAttempts });
-      
-      if (savedSuccessfully >= 0) { // Siempre mostrar éxito
-        console.log('✅ Showing success notification');
-        showSuccess(
-          "Configuración completada",
-          totalAttempts > 0 
-            ? `Configuración completada exitosamente. Se procesaron ${totalAttempts} sección(es).`
-            : "La configuración inicial se ha completado. Puedes actualizar tu información desde tu perfil cuando lo necesites."
-        );
-      }
+      console.log('✅ Showing success notification');
+      showSuccess(
+        "Configuración completada",
+        totalAttempts > 0 
+          ? `Configuración completada exitosamente. Se procesaron ${totalAttempts} sección(es).`
+          : "La configuración inicial se ha completado. Puedes actualizar tu información desde tu perfil cuando lo necesites."
+      );
 
       console.log('✅ SetupWizard calling onComplete callback');
       onComplete();
