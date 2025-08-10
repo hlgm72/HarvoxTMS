@@ -53,6 +53,44 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
     personalInfoForm.setValue('phone', value), 'phone'
   );
 
+  // Helper function to convert database date format to display format
+  const formatDateForDisplay = (dateString: string | null): string => {
+    if (!dateString) return '';
+    
+    try {
+      // Handle yyyy-mm-dd format from database
+      const match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (match) {
+        const [, year, month, day] = match;
+        return `${day}/${month}/${year}`;
+      }
+      
+      return dateString;
+    } catch (error) {
+      console.error('Error formatting date for display:', error);
+      return '';
+    }
+  };
+
+  // Helper function to convert display format to database format
+  const formatDateForDatabase = (displayDate: string): string | null => {
+    if (!displayDate || displayDate.trim() === '') return null;
+    
+    try {
+      // Handle dd/mm/yyyy format
+      const match = displayDate.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (match) {
+        const [, day, month, year] = match;
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error converting date to database format:', error);
+      return null;
+    }
+  };
+
   const personalInfoForm = useForm<PersonalInfoFormData>({
     resolver: zodResolver(personalInfoSchema),
     defaultValues: {
@@ -73,7 +111,7 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
         first_name: profile.first_name || '',
         last_name: profile.last_name || '',
         phone: profile.phone || '',
-        date_of_birth: profile.date_of_birth || '',
+        date_of_birth: formatDateForDisplay(profile.date_of_birth),
         street_address: profile.street_address || '',
         state_id: profile.state_id || '',
         city_id: profile.city_id || '',
@@ -93,7 +131,7 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
           first_name: data.first_name,
           last_name: data.last_name,
           phone: data.phone || null,
-          date_of_birth: data.date_of_birth || null,
+          date_of_birth: formatDateForDatabase(data.date_of_birth) || null,
           street_address: data.street_address || null,
           state_id: data.state_id || null,
           city_id: data.city_id || null,
@@ -127,7 +165,7 @@ export function PersonalInfoForm({ onCancel, showCancelButton = true, className 
         first_name: profile.first_name || '',
         last_name: profile.last_name || '',
         phone: profile.phone || '',
-        date_of_birth: profile.date_of_birth || '',
+        date_of_birth: formatDateForDisplay(profile.date_of_birth),
         street_address: profile.street_address || '',
         state_id: profile.state_id || '',
         city_id: profile.city_id || '',
