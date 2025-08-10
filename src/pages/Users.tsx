@@ -691,8 +691,8 @@ export default function Users() {
         ) : (
           <Tabs defaultValue="active" className="space-y-6">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="active">Usuarios Activos</TabsTrigger>
-              <TabsTrigger value="pending">Usuarios Pendientes</TabsTrigger>
+              <TabsTrigger value="active">Todos los Usuarios</TabsTrigger>
+              <TabsTrigger value="pending">Pendientes de Activación</TabsTrigger>
             </TabsList>
             
             <TabsContent value="active" className="space-y-6">
