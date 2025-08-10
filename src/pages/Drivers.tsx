@@ -255,7 +255,7 @@ export default function Drivers() {
         <Tabs defaultValue="active" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="active">
-              Conductores Activos ({activeDrivers.length})
+              Todos los Conductores ({activeDrivers.length})
             </TabsTrigger>
             <TabsTrigger value="pending">
               Pendientes de Activación ({pendingDrivers.length})
