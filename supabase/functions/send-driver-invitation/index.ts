@@ -181,77 +181,148 @@ const handler = async (req: Request): Promise<Response> => {
     let preRegisteredUserId: string | null = null;
     
     try {
-      console.log("🔄 Creating pre-registered auth user...");
+      console.log("🔄 Checking if user already exists in auth...");
       
-      // First create a placeholder user in auth.users for the driver
-      const { data: newUser, error: authError } = await supabase.auth.admin.createUser({
-        email,
-        email_confirm: false, // Don't require email confirmation yet
-        password: crypto.randomUUID(), // Generate a random password - user will reset this when activating
-        user_metadata: {
-          first_name: firstName,
-          last_name: lastName,
-          is_pre_registered: true, // Flag to indicate this is a pre-registered user
-          invited_by: userId,
-          company_id: companyId,
-          hire_date: hireDate
+      // First check if a user with this email already exists
+      const { data: existingUsers, error: listError } = await supabase.auth.admin.listUsers();
+      
+      if (listError) {
+        console.error("Error checking existing users:", listError);
+        throw new Error(`Failed to check existing users: ${listError.message}`);
+      }
+      
+      const existingUser = existingUsers.users.find(u => u.email === email);
+      
+      if (existingUser) {
+        console.log("✅ User already exists in auth, using existing user:", existingUser.id);
+        preRegisteredUserId = existingUser.id;
+        
+        // Update user metadata to include invitation info
+        const { error: updateError } = await supabase.auth.admin.updateUserById(
+          existingUser.id,
+          {
+            user_metadata: {
+              ...existingUser.user_metadata,
+              first_name: firstName,
+              last_name: lastName,
+              is_pre_registered: true,
+              invited_by: userId,
+              company_id: companyId,
+              hire_date: hireDate
+            }
+          }
+        );
+        
+        if (updateError) {
+          console.error("Error updating existing user metadata:", updateError);
+          // Don't fail the process, just log the error
         }
-      });
-
-      if (authError) {
-        console.error("Error creating auth user:", authError);
-        throw new Error(`Failed to create user account: ${authError.message}`);
-      }
-
-      if (!newUser.user) {
-        throw new Error("No user returned from auth.admin.createUser");
-      }
-
-      preRegisteredUserId = newUser.user.id;
-      console.log("✅ Pre-registered auth user created:", preRegisteredUserId);
-
-      // Create all necessary records in a transaction-like manner
-      const profileInserts = [
-        // Create profile
-        supabase
-          .from("profiles")
-          .insert({
-            user_id: preRegisteredUserId,
+      } else {
+        console.log("🔄 Creating new pre-registered auth user...");
+        
+        // Create a placeholder user in auth.users for the driver
+        const { data: newUser, error: authError } = await supabase.auth.admin.createUser({
+          email,
+          email_confirm: false, // Don't require email confirmation yet
+          password: crypto.randomUUID(), // Generate a random password - user will reset this when activating
+          user_metadata: {
             first_name: firstName,
             last_name: lastName,
+            is_pre_registered: true, // Flag to indicate this is a pre-registered user
+            invited_by: userId,
+            company_id: companyId,
             hire_date: hireDate
-          }),
+          }
+        });
 
-        // Create driver profile
-        supabase
-          .from("driver_profiles")
-          .insert({
-            user_id: preRegisteredUserId,
-            is_active: true
-          }),
+        if (authError) {
+          console.error("Error creating auth user:", authError);
+          throw new Error(`Failed to create user account: ${authError.message}`);
+        }
 
-        // Create company role
-        supabase
-          .from("user_company_roles")
-          .insert({
-            user_id: preRegisteredUserId,
-            company_id: companyId,
-            role: "driver",
-            is_active: true,
-            assigned_by: userId
-          }),
+        if (!newUser.user) {
+          throw new Error("No user returned from auth.admin.createUser");
+        }
 
-        // Create owner operator record
-        supabase
-          .from("owner_operators")
-          .insert({
-            user_id: preRegisteredUserId,
-            company_id: companyId,
-            operator_type: "company_driver",
-            contract_start_date: hireDate,
-            is_active: true
-          })
-      ];
+        preRegisteredUserId = newUser.user.id;
+        console.log("✅ New pre-registered auth user created:", preRegisteredUserId);
+      }
+
+      // Create all necessary records in a transaction-like manner
+      // Check if profiles already exist to avoid duplicate key errors
+      const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("user_id")
+        .eq("user_id", preRegisteredUserId)
+        .single();
+
+      const { data: existingDriverProfile } = await supabase
+        .from("driver_profiles")
+        .select("user_id")
+        .eq("user_id", preRegisteredUserId)
+        .single();
+
+      const { data: existingRole } = await supabase
+        .from("user_company_roles")
+        .select("id")
+        .eq("user_id", preRegisteredUserId)
+        .eq("company_id", companyId)
+        .eq("role", "driver")
+        .single();
+
+      const profileInserts = [];
+
+      // Only create profiles that don't exist
+      if (!existingProfile) {
+        profileInserts.push(
+          supabase
+            .from("profiles")
+            .insert({
+              user_id: preRegisteredUserId,
+              first_name: firstName,
+              last_name: lastName,
+              hire_date: hireDate
+            })
+        );
+      }
+
+      if (!existingDriverProfile) {
+        profileInserts.push(
+          supabase
+            .from("driver_profiles")
+            .insert({
+              user_id: preRegisteredUserId,
+              is_active: true
+            })
+        );
+      }
+
+      if (!existingRole) {
+        profileInserts.push(
+          supabase
+            .from("user_company_roles")
+            .insert({
+              user_id: preRegisteredUserId,
+              company_id: companyId,
+              role: "driver",
+              is_active: true,
+              assigned_by: userId
+            })
+        );
+
+        // Also create owner operator record for new drivers
+        profileInserts.push(
+          supabase
+            .from("owner_operators")
+            .insert({
+              user_id: preRegisteredUserId,
+              company_id: companyId,
+              operator_type: "company_driver",
+              contract_start_date: hireDate,
+              is_active: true
+            })
+        );
+      }
 
       // Execute all inserts
       const results = await Promise.allSettled(profileInserts);
