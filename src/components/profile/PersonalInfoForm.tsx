@@ -60,15 +60,20 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
   // Helper function to convert database date format to display format
   const formatDateForDisplay = (dateString: string | null): string => {
     if (!dateString) return '';
-    
     try {
-      // Handle yyyy-mm-dd format from database
+      // Expect yyyy-mm-dd from database
       const match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})$/);
       if (match) {
         const [, year, month, day] = match;
-        return `${day}/${month}/${year}`;
+        // Locale-aware display
+        if (i18n.language === 'es') {
+          // DD/MM/YYYY
+          return `${day}/${month}/${year}`;
+        } else {
+          // MM/DD/YYYY
+          return `${month}/${day}/${year}`;
+        }
       }
-      
       return dateString;
     } catch (error) {
       console.error('Error formatting date for display:', error);
@@ -79,16 +84,38 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
   // Helper function to convert display format to database format
   const formatDateForDatabase = (displayDate: string): string | null => {
     if (!displayDate || displayDate.trim() === '') return null;
-    
     try {
-      // Handle dd/mm/yyyy format
-      const match = displayDate.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-      if (match) {
-        const [, day, month, year] = match;
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      let day: string | undefined;
+      let month: string | undefined;
+      let year: string | undefined;
+
+      // Match either d/m/yyyy or m/d/yyyy with 1-2 digit day/month
+      const parts = displayDate.split('/');
+      if (parts.length !== 3) return null;
+
+      if (i18n.language === 'es') {
+        // DD/MM/YYYY
+        [day, month, year] = parts;
+      } else {
+        // MM/DD/YYYY
+        [month, day, year] = parts;
       }
-      
-      return null;
+
+      // Normalize
+      const dd = day!.padStart(2, '0');
+      const mm = month!.padStart(2, '0');
+      const yyyy = year!;
+
+      // Basic range checks to avoid invalid months/days
+      const mNum = parseInt(mm, 10);
+      const dNum = parseInt(dd, 10);
+      const yNum = parseInt(yyyy, 10);
+      if (isNaN(mNum) || isNaN(dNum) || isNaN(yNum)) return null;
+      if (mNum < 1 || mNum > 12) return null;
+      if (dNum < 1 || dNum > 31) return null;
+
+      // Return ISO for DB
+      return `${yyyy}-${mm}-${dd}`;
     } catch (error) {
       console.error('Error converting date to database format:', error);
       return null;
