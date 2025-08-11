@@ -73,7 +73,7 @@ export function CityCombobox({
   const filteredCities = cities.filter((city) =>
     city.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (city.county && city.county.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  ).slice(0, 100); // Limit to first 100 results for better performance
 
   const getPlaceholderText = () => {
     if (loading) return "Cargando ciudades...";
