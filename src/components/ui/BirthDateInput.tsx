@@ -88,11 +88,12 @@ export function BirthDateInput({
           aria-describedby={hasError ? `${testId}-error` : undefined}
         />
         
-        {!value && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none uppercase">
-            {format}
-          </div>
-        )}
+        <div className={cn(
+          "absolute right-3 top-1/2 -translate-y-1/2 text-xs pointer-events-none uppercase transition-opacity duration-200",
+          value && value.length >= 10 ? "opacity-30" : "text-muted-foreground"
+        )}>
+          {format}
+        </div>
       </div>
 
       {hasError && (
