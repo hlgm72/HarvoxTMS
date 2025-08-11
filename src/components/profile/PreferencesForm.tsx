@@ -72,7 +72,7 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
 
       // Update i18n language if changed
       if (data.preferred_language && data.preferred_language !== i18n.language) {
-        i18n.changeLanguage(data.preferred_language);
+        await i18n.changeLanguage(data.preferred_language);
       }
 
       await refreshProfile();

@@ -11,8 +11,10 @@ import { useTranslation } from 'react-i18next';
 export const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
   
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
+  const changeLanguage = async (lng: string) => {
+    // Solo cambiar el idioma en i18n
+    // useLanguageSync se encargará de actualizar la BD automáticamente
+    await i18n.changeLanguage(lng);
   };
   
   return (
