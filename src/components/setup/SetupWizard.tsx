@@ -99,28 +99,21 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       
       const saveResults: Array<{ step: string; success: boolean; error?: string }> = [];
       
-      // Save Preferences first (always present) to avoid resets overriding user choice
-      if (preferencesFormRef.current) {
-        console.log('Saving preferences...');
-        const result = await preferencesFormRef.current.saveData();
-        saveResults.push({ step: 'Preferencias', ...result });
-      }
-      
-      // Save Personal Info (always present)
+      // 1) Guardar Datos Personales primero
       if (personalInfoFormRef.current) {
         console.log('Saving personal info...');
         const result = await personalInfoFormRef.current.saveData();
         saveResults.push({ step: 'Información Personal', ...result });
       }
       
-      // Save Driver Info (only for drivers)
+      // 2) Guardar datos de Conductor (si aplica)
       if (isDriver && driverInfoFormRef.current) {
         console.log('Saving driver info...');
         const result = await driverInfoFormRef.current.saveData();
         saveResults.push({ step: 'Información del Conductor', ...result });
       }
       
-      // Save Company Info (only for company owners)
+      // 3) Guardar datos de Empresa (si aplica)
       if (isCompanyOwner && companySetupRef.current) {
         console.log('Saving company info...');
         const companyResult = await companySetupRef.current.saveData();
@@ -129,6 +122,13 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
           success: companyResult, 
           error: companyResult ? undefined : 'Error al guardar información de la empresa'
         });
+      }
+      
+      // 4) Guardar Preferencias al final (esto puede refrescar el perfil y cambiar idioma)
+      if (preferencesFormRef.current) {
+        console.log('Saving preferences...');
+        const result = await preferencesFormRef.current.saveData();
+        saveResults.push({ step: 'Preferencias', ...result });
       }
       
       // Check if all saves were successful
