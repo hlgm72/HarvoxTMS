@@ -199,7 +199,7 @@ export function LoadAssignmentSection({
                               min="0"
                               max="100"
                               step="0.1"
-                              value={leasingPercentage !== undefined ? leasingPercentage.toString() : ''}
+                              value={leasingPercentage !== undefined && leasingPercentage !== null ? leasingPercentage.toString() : ''}
                               onChange={(e) => onLeasingPercentageChange?.(parseFloat(e.target.value) || 0)}
                               placeholder="0.0"
                               className="text-xs h-8"
