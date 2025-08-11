@@ -99,18 +99,18 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       
       const saveResults: Array<{ step: string; success: boolean; error?: string }> = [];
       
+      // Save Preferences first (always present) to avoid resets overriding user choice
+      if (preferencesFormRef.current) {
+        console.log('Saving preferences...');
+        const result = await preferencesFormRef.current.saveData();
+        saveResults.push({ step: 'Preferencias', ...result });
+      }
+      
       // Save Personal Info (always present)
       if (personalInfoFormRef.current) {
         console.log('Saving personal info...');
         const result = await personalInfoFormRef.current.saveData();
         saveResults.push({ step: 'Información Personal', ...result });
-      }
-      
-      // Save Preferences (always present)
-      if (preferencesFormRef.current) {
-        console.log('Saving preferences...');
-        const result = await preferencesFormRef.current.saveData();
-        saveResults.push({ step: 'Preferencias', ...result });
       }
       
       // Save Driver Info (only for drivers)
