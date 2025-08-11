@@ -324,7 +324,8 @@ const handler = async (req: Request): Promise<Response> => {
               company_id: companyId,
               role: "driver",
               is_active: true,
-              assigned_by: userId
+              delegated_by: userId,
+              delegated_at: new Date().toISOString()
             })
         );
 
@@ -334,9 +335,6 @@ const handler = async (req: Request): Promise<Response> => {
             .from("owner_operators")
             .insert({
               user_id: preRegisteredUserId,
-              company_id: companyId,
-              operator_type: "company_driver",
-              contract_start_date: hireDate,
               is_active: true
             })
         );
