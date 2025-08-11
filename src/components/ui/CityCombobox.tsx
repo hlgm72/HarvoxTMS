@@ -70,10 +70,19 @@ export function CityCombobox({
 
   const selectedCity = cities.find((city) => city.id === value);
   
-  const filteredCities = cities.filter((city) =>
-    city.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (city.county && city.county.toLowerCase().includes(searchTerm.toLowerCase()))
-  ).slice(0, 100); // Limit to first 100 results for better performance
+  const filteredCities = cities
+    .filter((city) =>
+      city.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (city.county && city.county.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+    .sort((a, b) => {
+      const aStartsWith = a.name.toLowerCase().startsWith(searchTerm.toLowerCase());
+      const bStartsWith = b.name.toLowerCase().startsWith(searchTerm.toLowerCase());
+      if (aStartsWith && !bStartsWith) return -1;
+      if (!aStartsWith && bStartsWith) return 1;
+      return a.name.localeCompare(b.name);
+    })
+    .slice(0, 100); // Limit to first 100 results for better performance
 
   const getPlaceholderText = () => {
     if (loading) return "Cargando ciudades...";
