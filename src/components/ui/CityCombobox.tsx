@@ -8,6 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface City {
   id: string;
@@ -35,59 +36,84 @@ export function CityCombobox({
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [hasMore, setHasMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
   const { showError } = useFleetNotifications();
 
+  // Debounce search term to avoid too many API calls
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
   useEffect(() => {
-    if (stateId) {
-      loadCities(stateId);
+    if (stateId && debouncedSearchTerm !== undefined) {
+      searchCities(debouncedSearchTerm, 0, true);
+    } else if (stateId && debouncedSearchTerm === undefined) {
+      // Initial load without search term
+      searchCities("", 0, true);
     } else {
       setCities([]);
+      setHasMore(false);
       // Clear selection if state changes
       if (value) {
         onValueChange(undefined);
       }
     }
-  }, [stateId]);
+  }, [stateId, debouncedSearchTerm]);
 
-  const loadCities = async (stateId: string) => {
+  const searchCities = async (term: string, page: number, reset = false) => {
+    if (!stateId) return;
+    
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('state_cities')
-        .select('id, name, county, state_id')
-        .eq('state_id', stateId)
-        .order('name');
+      const { data, error } = await supabase.functions.invoke('search-cities', {
+        body: {
+          stateId,
+          searchTerm: term,
+          page,
+          limit: 100
+        }
+      });
 
       if (error) throw error;
-      setCities(data || []);
+
+      const newCities = data.cities || [];
+      
+      if (reset) {
+        setCities(newCities);
+      } else {
+        setCities(prev => [...prev, ...newCities]);
+      }
+      
+      setHasMore(data.hasMore || false);
+      setCurrentPage(page);
+      
+      console.log(`🔍 Loaded ${newCities.length} cities for "${term}" (page ${page})`);
     } catch (error) {
-      console.error('Error loading cities:', error);
+      console.error('Error searching cities:', error);
       showError("Error", "No se pudieron cargar las ciudades");
+      setCities([]);
+      setHasMore(false);
     } finally {
       setLoading(false);
     }
   };
 
+  const loadMoreCities = () => {
+    if (hasMore && !loading) {
+      searchCities(debouncedSearchTerm || "", currentPage + 1, false);
+    }
+  };
+
   const selectedCity = cities.find((city) => city.id === value);
-  
-  const filteredCities = cities
-    .filter((city) =>
-      city.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (city.county && city.county.toLowerCase().includes(searchTerm.toLowerCase()))
-    )
-    .sort((a, b) => {
-      const aStartsWith = a.name.toLowerCase().startsWith(searchTerm.toLowerCase());
-      const bStartsWith = b.name.toLowerCase().startsWith(searchTerm.toLowerCase());
-      if (aStartsWith && !bStartsWith) return -1;
-      if (!aStartsWith && bStartsWith) return 1;
-      return a.name.localeCompare(b.name);
-    })
-    .slice(0, 100); // Limit to first 100 results for better performance
 
   const getPlaceholderText = () => {
     if (loading) return "Cargando ciudades...";
     if (!stateId) return "Primero selecciona un estado";
     return placeholder;
+  };
+
+  const handleSearchChange = (term: string) => {
+    setSearchTerm(term);
+    setCurrentPage(0);
   };
 
   return (
@@ -98,7 +124,7 @@ export function CityCombobox({
           role="combobox"
           aria-expanded={open}
           className="w-full justify-between"
-          disabled={disabled || loading || !stateId}
+          disabled={disabled || !stateId}
         >
           <div className="flex items-center">
             <Building className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -122,7 +148,7 @@ export function CityCombobox({
             placeholder="Buscar ciudad..." 
             className="h-9"
             value={searchTerm}
-            onValueChange={setSearchTerm}
+            onValueChange={handleSearchChange}
           />
           <CommandList>
             <CommandEmpty>
@@ -146,7 +172,7 @@ export function CityCombobox({
                   />
                   Sin especificar
                 </CommandItem>
-                {filteredCities.map((city) => (
+                {cities.map((city) => (
                   <CommandItem
                     key={city.id}
                     value={`${city.name.toLowerCase()}${city.county ? ` ${city.county.toLowerCase()}` : ''}`}
@@ -169,6 +195,16 @@ export function CityCombobox({
                     </div>
                   </CommandItem>
                 ))}
+                {hasMore && (
+                  <CommandItem
+                    key="load-more"
+                    value="load-more"
+                    onSelect={loadMoreCities}
+                    className="text-center text-primary cursor-pointer"
+                  >
+                    {loading ? "Cargando más..." : "Cargar más ciudades..."}
+                  </CommandItem>
+                )}
               </CommandGroup>
             </ScrollArea>
           </CommandList>
