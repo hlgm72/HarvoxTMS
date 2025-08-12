@@ -59,6 +59,13 @@ export function CityCombobox({
     }
   }, [stateId, debouncedSearchTerm]);
 
+  // Load cities when component mounts and has a value to display
+  useEffect(() => {
+    if (stateId && value && cities.length === 0) {
+      searchCities("", 0, true);
+    }
+  }, [stateId, value]);
+
   const searchCities = async (term: string, page: number, reset = false) => {
     if (!stateId) return;
     
