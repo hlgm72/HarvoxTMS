@@ -118,6 +118,26 @@ export function CityCombobox({
     return placeholder;
   };
 
+  const getDisplayText = () => {
+    if (selectedCity) {
+      return (
+        <span>
+          {selectedCity.name}
+          {selectedCity.county && (
+            <span className="text-muted-foreground ml-1">({selectedCity.county})</span>
+          )}
+        </span>
+      );
+    }
+    
+    // If we have a value but selectedCity is not found (cities not loaded yet), show the value
+    if (value) {
+      return <span>{value}</span>;
+    }
+    
+    return getPlaceholderText();
+  };
+
   const handleSearchChange = (term: string) => {
     setSearchTerm(term);
     setCurrentPage(0);
@@ -135,16 +155,7 @@ export function CityCombobox({
         >
           <div className="flex items-center">
             <Building className="mr-2 h-4 w-4 text-muted-foreground" />
-            {selectedCity ? (
-              <span>
-                {selectedCity.name}
-                {selectedCity.county && (
-                  <span className="text-muted-foreground ml-1">({selectedCity.county})</span>
-                )}
-              </span>
-            ) : (
-              getPlaceholderText()
-            )}
+            {getDisplayText()}
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
