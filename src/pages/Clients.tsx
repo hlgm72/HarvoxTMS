@@ -10,7 +10,7 @@ import { ClientsList } from "@/components/clients/ClientsList";
 import { ClientsGrid } from "@/components/clients/ClientsGrid";
 import { CreateClientDialog } from "@/components/clients/CreateClientDialog";
 import { ClientFilters } from "@/components/clients/ClientFilters";
-import { LogoMigrationDialog } from "@/components/clients/LogoMigrationDialog";
+
 import { useClients } from "@/hooks/useClients";
 
 export default function Clients() {
@@ -112,7 +112,7 @@ export default function Clients() {
         subtitle="Administra tus clientes y brokers de carga"
         actions={
           <div className="flex gap-2">
-            <LogoMigrationDialog />
+            
             <Button 
               onClick={() => setShowCreateDialog(true)}
               className="gap-2"
