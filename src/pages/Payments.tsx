@@ -66,7 +66,7 @@ export default function Payments() {
 
   if (periodsLoading) {
     return (
-      <div className="space-y-6">
+      <div className="p-2 md:p-4 space-y-6">
         <PageToolbar 
           icon={DollarSign}
           title="Gestión de Pagos"
@@ -80,7 +80,7 @@ export default function Payments() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="p-2 md:p-4 space-y-6">
       <PageToolbar 
         icon={DollarSign}
         title="Gestión de Pagos"
