@@ -203,7 +203,7 @@ export default function PaymentReports() {
         {/* Filtros */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 flex-wrap">
               <Filter className="h-5 w-5" />
               Filtros
             </CardTitle>
@@ -275,8 +275,8 @@ export default function PaymentReports() {
                   >
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                       <div className="space-y-2 min-w-0">
-                        <div className="flex items-center gap-3">
-                          <h4 className="font-semibold">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <h4 className="font-semibold truncate">
                             {(() => {
                               const driver = drivers.find(d => d.user_id === calculation.driver_user_id);
                               return `${driver?.first_name || ''} ${driver?.last_name || ''}`;
@@ -284,7 +284,7 @@ export default function PaymentReports() {
                           </h4>
                           {getStatusBadge(calculation)}
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
                             {formatPaymentPeriod(
