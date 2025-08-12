@@ -23,6 +23,7 @@ interface CityComboboxProps {
   stateId?: string;
   placeholder?: string;
   disabled?: boolean;
+  valueType?: 'id' | 'name'; // Nueva prop para indicar si el value es ID o nombre
 }
 
 export function CityCombobox({ 
@@ -30,7 +31,8 @@ export function CityCombobox({
   onValueChange, 
   stateId,
   placeholder = "Selecciona ciudad...",
-  disabled = false 
+  disabled = false,
+  valueType = 'name' // Por defecto usa nombres para mantener compatibilidad
 }: CityComboboxProps) {
   const [open, setOpen] = useState(false);
   const [cities, setCities] = useState<City[]>([]);
@@ -110,7 +112,9 @@ export function CityCombobox({
     }
   };
 
-  const selectedCity = cities.find((city) => city.name === value);
+  const selectedCity = valueType === 'id' 
+    ? cities.find((city) => city.id === value)
+    : cities.find((city) => city.name === value);
 
   const getPlaceholderText = () => {
     if (loading) return "Cargando ciudades...";
@@ -184,14 +188,16 @@ export function CityCombobox({
                     key={city.id}
                     value={`${city.name.toLowerCase()}${city.county ? ` ${city.county.toLowerCase()}` : ''}`}
                     onSelect={() => {
-                      onValueChange(city.name === value ? undefined : city.name);
+                      const newValue = valueType === 'id' ? city.id : city.name;
+                      const currentValue = valueType === 'id' ? city.id : city.name;
+                      onValueChange(currentValue === value ? undefined : newValue);
                       setOpen(false);
                     }}
                   >
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        value === city.name ? "opacity-100" : "opacity-0"
+                        (valueType === 'id' ? value === city.id : value === city.name) ? "opacity-100" : "opacity-0"
                       )}
                     />
                     <div>

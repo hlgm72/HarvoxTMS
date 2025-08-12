@@ -500,6 +500,7 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
             stateLabel="Estado"
             cityLabel="Ciudad"
             zipCodeLabel="Código Postal"
+            cityValueType="id"
           />
         </div>
       </div>

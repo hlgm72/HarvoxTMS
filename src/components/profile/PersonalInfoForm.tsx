@@ -316,6 +316,7 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
             zipCode={personalInfoForm.watch('zip_code') || ''}
             onZipCodeChange={(value) => personalInfoForm.setValue('zip_code', value)}
             required={false}
+            cityValueType="id"
           />
 
           <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">

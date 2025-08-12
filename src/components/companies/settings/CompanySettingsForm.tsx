@@ -390,6 +390,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   onCityChange={(value) => handleInputChange('city_id', value)}
                   zipCode={formData.zip_code}
                   onZipCodeChange={(value) => handleInputChange('zip_code', value)}
+                  cityValueType="id"
                 />
               </div>
             </CardContent>

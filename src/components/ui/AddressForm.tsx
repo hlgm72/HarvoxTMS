@@ -19,6 +19,7 @@ interface AddressFormProps {
   stateLabel?: string;
   cityLabel?: string;
   zipCodeLabel?: string;
+  cityValueType?: 'id' | 'name';
 }
 
 export function AddressForm({
@@ -35,7 +36,8 @@ export function AddressForm({
   streetAddressLabel = "Dirección",
   stateLabel = "Estado",
   cityLabel = "Ciudad",
-  zipCodeLabel = "Código Postal"
+  zipCodeLabel = "Código Postal",
+  cityValueType = 'name' // Por defecto usa nombres
 }: AddressFormProps) {
   // Create handlers for street address with proper text control
   const streetAddressHandlers = createTextHandlers(onStreetAddressChange);
@@ -122,6 +124,7 @@ export function AddressForm({
             stateId={stateId}
             disabled={disabled}
             placeholder="Buscar ciudad (opcional)..."
+            valueType={cityValueType}
           />
         </div>
       </div>
