@@ -309,7 +309,7 @@ export function PaymentReportDialog({
   if (!calculation || !driver) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
           <DialogHeader>
             <DialogTitle>Detalle del Reporte</DialogTitle>
           </DialogHeader>
@@ -323,11 +323,13 @@ export function PaymentReportDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Reporte de Pago - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
+          <DialogTitle className="flex items-center gap-2 min-w-0">
+            <FileText className="h-5 w-5 shrink-0" />
+            <span className="truncate">
+              Reporte de Pago - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
+            </span>
           </DialogTitle>
           <DialogDescription>
             Período: {formatPaymentPeriod(
@@ -350,7 +352,7 @@ export function PaymentReportDialog({
               )}
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -416,14 +418,14 @@ export function PaymentReportDialog({
               <CardContent>
                 <div className="space-y-2">
                   {loads.map((load) => (
-                    <div key={load.id} className="flex items-center justify-between py-2 border-b">
+                    <div key={load.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2 border-b">
                       <div className="space-y-1">
                         <div className="font-medium">{load.load_number}</div>
                         <div className="text-sm text-muted-foreground">
                           Cliente • {new Date(load.pickup_date).toLocaleDateString('es-ES')}
                         </div>
                       </div>
-                      <div className="font-semibold">
+                      <div className="font-semibold sm:text-right">
                         ${load.total_amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}
                       </div>
                     </div>
@@ -445,14 +447,14 @@ export function PaymentReportDialog({
               <CardContent>
                 <div className="space-y-2">
                   {fuelExpenses.map((expense) => (
-                    <div key={expense.id} className="flex items-center justify-between py-2 border-b">
+                    <div key={expense.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2 border-b">
                       <div className="space-y-1">
                         <div className="font-medium">{expense.station_name}</div>
                         <div className="text-sm text-muted-foreground">
                           {expense.gallons_purchased} gal • {new Date(expense.transaction_date).toLocaleDateString('es-ES')}
                         </div>
                       </div>
-                      <div className="font-semibold text-warning">
+                      <div className="font-semibold text-warning sm:text-right">
                         ${expense.total_amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}
                       </div>
                     </div>
@@ -463,12 +465,12 @@ export function PaymentReportDialog({
           )}
 
           {/* Acciones */}
-          <div className="flex items-center gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4">
             <Button 
               onClick={handlePreviewPDF}
               disabled={isGeneratingPDF}
               variant="outline"
-              className="flex-1"
+              className="w-full sm:flex-1"
             >
               <Eye className="h-4 w-4 mr-2" />
               {isGeneratingPDF ? 'Generando...' : 'Ver PDF'}
@@ -476,7 +478,7 @@ export function PaymentReportDialog({
             <Button 
               onClick={handleGeneratePDF}
               disabled={isGeneratingPDF}
-              className="flex-1"
+              className="w-full sm:flex-1"
             >
               <Download className="h-4 w-4 mr-2" />
               {isGeneratingPDF ? 'Generando...' : 'Descargar PDF'}
@@ -485,7 +487,7 @@ export function PaymentReportDialog({
               variant="outline"
               onClick={handleSendEmail}
               disabled={isSendingEmail}
-              className="flex-1"
+              className="w-full sm:flex-1"
             >
               <Mail className="h-4 w-4 mr-2" />
               {isSendingEmail ? 'Enviando...' : 'Enviar por Email'}
