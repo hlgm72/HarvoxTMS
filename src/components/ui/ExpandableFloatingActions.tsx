@@ -53,7 +53,7 @@ export function ExpandableFloatingActions({
 
   return (
     <div className={cn(
-      'fixed z-50',
+      'fixed z-30',
       positionClasses[position],
       className
     )}>

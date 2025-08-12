@@ -412,7 +412,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   Creada: {formatDateTime(load.created_at)}
                 </div>
                 
-                <div className={`flex gap-2 ${(editDialog.isOpen || viewDialog.isOpen || documentsDialog.isOpen || deleteDialog.isOpen || reassignmentDialog.isOpen || duplicateDialog.isOpen) ? 'relative z-10' : 'relative z-[1000]'}`}>
+                <div className="flex gap-2 relative z-20">
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -438,7 +438,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                         <MoreHorizontal className="h-3 w-3" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className={`bg-background border shadow-lg ${(editDialog.isOpen || viewDialog.isOpen || documentsDialog.isOpen || deleteDialog.isOpen || reassignmentDialog.isOpen || duplicateDialog.isOpen) ? 'z-20' : 'z-[1010]'}`}>
+                    <DropdownMenuContent align="end" className="bg-background border shadow-lg z-40">
                       {/* Opciones de cambio de estado */}
                       {getStatusActions(load.status).map((action) => (
                         <DropdownMenuItem

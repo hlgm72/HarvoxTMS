@@ -239,7 +239,7 @@ const Sidebar = React.forwardRef<
         />
         <div
           className={cn(
-            "duration-200 fixed inset-y-0 z-10 hidden h-svh transition-[left,right,width] ease-linear md:flex",
+            "duration-200 fixed inset-y-0 z-60 hidden h-svh transition-[left,right,width] ease-linear md:flex",
             "w-[--sidebar-width]",
             // Forzar el ancho cuando está colapsado
             "group-data-[state=collapsed]:w-[--sidebar-width-icon]",
