@@ -114,7 +114,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
       
       // If state changes, reset city
       if (field === 'state_id') {
-        updated.city_id = undefined;
+        updated.city = undefined;
       }
       
       return updated;
@@ -133,7 +133,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           dot_number: formData.dot_number,
           street_address: formData.street_address,
           state_id: formData.state_id,
-          city_id: formData.city_id,
+          city: formData.city,
           zip_code: formData.zip_code,
           phone: formData.phone,
           email: formData.email,
@@ -386,11 +386,10 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   onStreetAddressChange={(value) => handleInputChange('street_address', value)}
                   stateId={formData.state_id}
                   onStateChange={(value) => handleInputChange('state_id', value || '')}
-                  city={formData.city_id}
-                  onCityChange={(value) => handleInputChange('city_id', value)}
+                  city={formData.city}
+                  onCityChange={(value) => handleInputChange('city', value)}
                   zipCode={formData.zip_code}
                   onZipCodeChange={(value) => handleInputChange('zip_code', value)}
-                  cityValueType="id"
                 />
               </div>
             </CardContent>

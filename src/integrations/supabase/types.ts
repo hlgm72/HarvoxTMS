@@ -55,7 +55,7 @@ export type Database = {
       }
       companies: {
         Row: {
-          city_id: string | null
+          city: string | null
           contract_start_date: string | null
           created_at: string
           default_dispatching_percentage: number | null
@@ -87,7 +87,7 @@ export type Database = {
           zip_code: string
         }
         Insert: {
-          city_id?: string | null
+          city?: string | null
           contract_start_date?: string | null
           created_at?: string
           default_dispatching_percentage?: number | null
@@ -119,7 +119,7 @@ export type Database = {
           zip_code: string
         }
         Update: {
-          city_id?: string | null
+          city?: string | null
           contract_start_date?: string | null
           created_at?: string
           default_dispatching_percentage?: number | null
@@ -151,13 +151,6 @@ export type Database = {
           zip_code?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "companies_city_id_fkey"
-            columns: ["city_id"]
-            isOneToOne: false
-            referencedRelation: "state_cities"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "companies_state_id_fkey"
             columns: ["state_id"]
@@ -2323,7 +2316,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
-          city_id: string | null
+          city: string | null
           created_at: string
           date_of_birth: string | null
           first_name: string | null
@@ -2341,7 +2334,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
-          city_id?: string | null
+          city?: string | null
           created_at?: string
           date_of_birth?: string | null
           first_name?: string | null
@@ -2359,7 +2352,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
-          city_id?: string | null
+          city?: string | null
           created_at?: string
           date_of_birth?: string | null
           first_name?: string | null

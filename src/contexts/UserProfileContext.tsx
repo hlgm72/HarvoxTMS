@@ -13,7 +13,7 @@ interface UserProfile {
   timezone: string | null;
   street_address: string | null;
   state_id: string | null;
-  city_id: string | null;
+  city: string | null;
   zip_code: string | null;
   date_of_birth: string | null;
   hire_date: string | null;

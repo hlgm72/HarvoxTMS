@@ -79,7 +79,7 @@ export function PaymentReportDialog({
       // Obtener datos básicos del perfil
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('user_id, first_name, last_name, phone, street_address, zip_code, state_id, city_id')
+        .select('user_id, first_name, last_name, phone, street_address, zip_code, state_id, city')
         .eq('user_id', calculation.driver_user_id)
         .single();
 
@@ -105,17 +105,8 @@ export function PaymentReportDialog({
         .eq('is_active', true)
         .maybeSingle();
 
-      // Obtener nombre de la ciudad si hay city_id
-      let cityName = null;
-      if (profileData.city_id) {
-        const { data: cityData } = await supabase
-          .from('state_cities')
-          .select('name')
-          .eq('id', profileData.city_id)
-          .single();
-        
-        cityName = cityData?.name || null;
-      }
+      // La ciudad ahora se almacena directamente como texto
+      let cityName = profileData.city || null;
 
       // Lógica para determinar qué información usar
       // Si es Owner Operator y tiene datos de negocio, usar esos datos
@@ -152,8 +143,7 @@ export function PaymentReportDialog({
       const { data, error } = await supabase
         .from('companies')
         .select(`
-          id, name, street_address, zip_code, state_id, phone, email, logo_url,
-          state_cities(name)
+          id, name, street_address, zip_code, state_id, city, phone, email, logo_url
         `)
         .eq('id', calculation.company_payment_periods.company_id)
         .single();
@@ -233,11 +223,11 @@ export function PaymentReportDialog({
       },
       company: {
         name: company.name || 'Tu Empresa',
-        address: company.street_address && company.state_cities?.name && company.state_id && company.zip_code
-          ? `${company.street_address}\n${company.state_cities.name}, ${company.state_id} ${company.zip_code}`
+        address: company.street_address && company.city && company.state_id && company.zip_code
+          ? `${company.street_address}\n${company.city}, ${company.state_id} ${company.zip_code}`
           : [
               company.street_address,
-              [company.state_cities?.name, company.state_id, company.zip_code].filter(Boolean).join(', ')
+              [company.city, company.state_id, company.zip_code].filter(Boolean).join(', ')
             ].filter(Boolean).join(', '),
         phone: company.phone,
         email: company.email,

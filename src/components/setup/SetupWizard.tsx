@@ -332,7 +332,7 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
     dotNumber: '',
     mcNumber: '',
     address: '',
-    cityId: '',
+    city: '',
     stateId: '',
     zipCode: '',
     phone: '',
@@ -362,7 +362,7 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
             dotNumber: company.dot_number || '',
             mcNumber: company.mc_number || '',
             address: company.street_address || '',
-            cityId: company.city_id || '',
+            city: company.city || '',
             stateId: company.state_id || '',
             zipCode: company.zip_code || '',
             phone: company.phone || '',
@@ -399,7 +399,7 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
           dot_number: companyData.dotNumber.trim() || null,
           mc_number: companyData.mcNumber.trim() || null,
           street_address: companyData.address.trim(),
-          city_id: companyData.cityId || null,
+          city: companyData.city || null,
           state_id: companyData.stateId,
           zip_code: companyData.zipCode.trim(),
           phone: companyData.phone.trim() || null,
@@ -491,8 +491,8 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
             onStreetAddressChange={(value) => setCompanyData({ ...companyData, address: value })}
             stateId={companyData.stateId}
             onStateChange={(value) => setCompanyData({ ...companyData, stateId: value || '' })}
-            city={companyData.cityId}
-            onCityChange={(value) => setCompanyData({ ...companyData, cityId: value || '' })}
+            city={companyData.city}
+            onCityChange={(value) => setCompanyData({ ...companyData, city: value || '' })}
             zipCode={companyData.zipCode}
             onZipCodeChange={(value) => setCompanyData({ ...companyData, zipCode: value })}
             required={true}
@@ -500,7 +500,6 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
             stateLabel="Estado"
             cityLabel="Ciudad"
             zipCodeLabel="Código Postal"
-            cityValueType="id"
           />
         </div>
       </div>

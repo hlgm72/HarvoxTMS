@@ -22,7 +22,7 @@ const personalInfoSchema = z.object({
   date_of_birth: z.string().optional(),
   street_address: z.string().optional(),
   state_id: z.string().optional(),
-  city_id: z.string().optional(),
+  city: z.string().optional(),
   zip_code: z.string().optional(),
 });
 
@@ -131,7 +131,7 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
       date_of_birth: '',
       street_address: '',
       state_id: '',
-      city_id: '',
+      city: '',
       zip_code: '',
     },
   });
@@ -145,7 +145,7 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
         date_of_birth: formatDateForDisplay(profile.date_of_birth),
         street_address: profile.street_address || '',
         state_id: profile.state_id || '',
-        city_id: profile.city_id || '',
+        city: profile?.city || '',
         zip_code: profile.zip_code || '',
       });
     }
@@ -165,7 +165,7 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
           date_of_birth: formatDateForDatabase(data.date_of_birth),
           street_address: data.street_address || null,
           state_id: data.state_id || null,
-          city_id: data.city_id ? data.city_id : null,
+          city: data.city || null,
           zip_code: data.zip_code || null,
         }, {
           onConflict: 'user_id'
@@ -222,7 +222,7 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
         date_of_birth: formatDateForDisplay(profile.date_of_birth),
         street_address: profile.street_address || '',
         state_id: profile.state_id || '',
-        city_id: profile.city_id || '',
+        city: profile?.city || '',
         zip_code: profile.zip_code || '',
       });
     }
@@ -311,12 +311,11 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
             onStreetAddressChange={(value) => personalInfoForm.setValue('street_address', value)}
             stateId={personalInfoForm.watch('state_id') || undefined}
             onStateChange={(value) => personalInfoForm.setValue('state_id', value || '')}
-            city={personalInfoForm.watch('city_id') || undefined}
-            onCityChange={(value) => personalInfoForm.setValue('city_id', value || '')}
+            city={personalInfoForm.watch('city') || undefined}
+            onCityChange={(value) => personalInfoForm.setValue('city', value || '')}
             zipCode={personalInfoForm.watch('zip_code') || ''}
             onZipCodeChange={(value) => personalInfoForm.setValue('zip_code', value)}
             required={false}
-            cityValueType="id"
           />
 
           <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">

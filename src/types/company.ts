@@ -6,7 +6,7 @@ export interface Company {
   dot_number?: string;
   street_address: string;
   state_id: string;
-  city_id?: string;
+  city?: string;
   zip_code: string;
   phone?: string;
   email?: string;
