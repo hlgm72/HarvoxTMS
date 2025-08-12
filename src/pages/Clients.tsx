@@ -141,7 +141,7 @@ export default function Clients() {
           </div>
         }
       />
-      <div className="flex-1 space-y-6 p-6">
+      <div className="flex-1 space-y-6 p-2 md:p-4">
 
         {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
