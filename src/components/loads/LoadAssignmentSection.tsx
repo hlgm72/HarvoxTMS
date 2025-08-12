@@ -182,19 +182,6 @@ export function LoadAssignmentSection({
                         </Badge>
                       )}
                     </div>
-                    
-                    {/* DEBUG INFO - Solo para Diosvani */}
-                    {selectedDriver?.first_name === 'Diosvani' && (
-                      <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-xs">
-                        <strong>🐛 DEBUG INFO:</strong><br/>
-                        • Owner Operator: {isOwnerOperator ? 'SÍ' : 'NO'}<br/>
-                        • Loading: {ownerOperatorLoading ? 'SÍ' : 'NO'}<br/>
-                        • Leasing %: {leasingPercentage} (tipo: {typeof leasingPercentage})<br/>
-                        • Factoring %: {factoringPercentage} (tipo: {typeof factoringPercentage})<br/>
-                        • Dispatching %: {dispatchingPercentage} (tipo: {typeof dispatchingPercentage})<br/>
-                        • Owner Data: {ownerOperator ? `L:${ownerOperator.leasing_percentage}, F:${ownerOperator.factoring_percentage}, D:${ownerOperator.dispatching_percentage}` : 'NULL'}
-                      </div>
-                    )}
                   </div>
                   {isOwnerOperator && (
                     <Card className="border-amber-200 bg-amber-50/50">
@@ -218,10 +205,10 @@ export function LoadAssignmentSection({
                               type="number"
                               min="0"
                               max="100"
-                              step="0.1"
-                              value={leasingPercentage !== undefined && leasingPercentage !== null ? leasingPercentage.toString() : ''}
+                              step="0.01"
+                              value={leasingPercentage !== undefined && leasingPercentage !== null ? leasingPercentage.toFixed(2) : ''}
                               onChange={(e) => onLeasingPercentageChange?.(parseFloat(e.target.value) || 0)}
-                              placeholder="0.0"
+                              placeholder="0.00"
                               className="text-xs h-8"
                             />
                           </div>
@@ -234,10 +221,10 @@ export function LoadAssignmentSection({
                               type="number"
                               min="0"
                               max="100"
-                              step="0.1"
-                              value={factoringPercentage || ''}
+                              step="0.01"
+                              value={factoringPercentage !== undefined && factoringPercentage !== null ? factoringPercentage.toFixed(2) : ''}
                               onChange={(e) => onFactoringPercentageChange?.(parseFloat(e.target.value) || 0)}
-                              placeholder="3.0"
+                              placeholder="3.00"
                               className="text-xs h-8"
                             />
                           </div>
@@ -250,10 +237,10 @@ export function LoadAssignmentSection({
                               type="number"
                               min="0"
                               max="100"
-                              step="0.1"
-                              value={dispatchingPercentage || ''}
+                              step="0.01"
+                              value={dispatchingPercentage !== undefined && dispatchingPercentage !== null ? dispatchingPercentage.toFixed(2) : ''}
                               onChange={(e) => onDispatchingPercentageChange?.(parseFloat(e.target.value) || 0)}
-                              placeholder="5.0"
+                              placeholder="5.00"
                               className="text-xs h-8"
                             />
                           </div>
