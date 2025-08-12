@@ -218,8 +218,11 @@ export const useCreateLoad = () => {
         throw new Error(`Error en operación ACID: ${acidError.message}`);
       }
 
+      console.log('🔍 useCreateLoad - Full ACID result object:', JSON.stringify(result, null, 2));
+      
       if (!(result as any)?.success) {
-        throw new Error('La operación ACID no fue exitosa');
+        console.error('❌ useCreateLoad - ACID operation failed. Result:', result);
+        throw new Error(`La operación ACID no fue exitosa. Detalle: ${JSON.stringify(result)}`);
       }
 
       console.log('✅ useCreateLoad - ACID operation completed:', result);
