@@ -309,7 +309,7 @@ export function PaymentReportDialog({
   if (!calculation || !driver) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
+        <DialogContent className="w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6 rounded-none sm:rounded-lg">
           <DialogHeader>
             <DialogTitle>Detalle del Reporte</DialogTitle>
           </DialogHeader>
@@ -323,7 +323,7 @@ export function PaymentReportDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
+      <DialogContent className="w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6 rounded-none sm:rounded-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 min-w-0">
             <FileText className="h-5 w-5 shrink-0" />
@@ -331,7 +331,7 @@ export function PaymentReportDialog({
               Reporte de Pago - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
             </span>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm break-words">
             Período: {formatPaymentPeriod(
               calculation.company_payment_periods.period_start_date,
               calculation.company_payment_periods.period_end_date
@@ -339,11 +339,11 @@ export function PaymentReportDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Resumen Financiero */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Resumen Financiero</CardTitle>
+              <CardTitle className="text-base sm:text-lg">Resumen Financiero</CardTitle>
               {calculation.has_negative_balance && (
                 <div className="flex items-center gap-2 text-destructive">
                   <AlertTriangle className="h-4 w-4" />
@@ -419,9 +419,9 @@ export function PaymentReportDialog({
                 <div className="space-y-2">
                   {loads.map((load) => (
                     <div key={load.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2 border-b">
-                      <div className="space-y-1">
-                        <div className="font-medium">{load.load_number}</div>
-                        <div className="text-sm text-muted-foreground">
+                      <div className="space-y-1 min-w-0">
+                        <div className="font-medium truncate">{load.load_number}</div>
+                        <div className="text-sm text-muted-foreground break-words">
                           Cliente • {new Date(load.pickup_date).toLocaleDateString('es-ES')}
                         </div>
                       </div>
@@ -448,9 +448,9 @@ export function PaymentReportDialog({
                 <div className="space-y-2">
                   {fuelExpenses.map((expense) => (
                     <div key={expense.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2 border-b">
-                      <div className="space-y-1">
-                        <div className="font-medium">{expense.station_name}</div>
-                        <div className="text-sm text-muted-foreground">
+                      <div className="space-y-1 min-w-0">
+                        <div className="font-medium truncate">{expense.station_name}</div>
+                        <div className="text-sm text-muted-foreground break-words">
                           {expense.gallons_purchased} gal • {new Date(expense.transaction_date).toLocaleDateString('es-ES')}
                         </div>
                       </div>
