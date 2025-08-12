@@ -3015,9 +3015,7 @@ export type Database = {
         Returns: Json
       }
       create_or_update_load_with_validation: {
-        Args:
-          | { load_data: Json; stops_data: Json; load_id?: string }
-          | { load_data: Json; stops_data: Json; mode?: string }
+        Args: { load_data: Json; stops_data: Json; load_id?: string }
         Returns: Json
       }
       create_or_update_user_profile_with_validation: {
@@ -3408,6 +3406,10 @@ export type Database = {
       }
       restore_document_with_validation: {
         Args: { document_id_param: string }
+        Returns: Json
+      }
+      simple_load_operation: {
+        Args: { load_data: Json; stops_data: Json; operation_mode?: string }
         Returns: Json
       }
       unassign_equipment_with_validation: {

@@ -201,11 +201,11 @@ export const useCreateLoad = () => {
       console.log('🔥 useCreateLoad - Using ACID function with data:', { loadData, stopsData, mode });
       
       const { data: result, error: acidError } = await supabase.rpc(
-        'create_or_update_load_with_validation',
+        'simple_load_operation',
         {
           load_data: loadData,
           stops_data: stopsData,
-          mode: mode
+          operation_mode: mode
         }
       );
 
@@ -223,13 +223,13 @@ export const useCreateLoad = () => {
       }
 
       console.log('✅ useCreateLoad - ACID operation completed:', result);
-      const currentLoad = (result as any).load;
+      const loadId = (result as any).load_id;
 
       // Handle temporary documents upload (outside ACID transaction for performance)
       if (data.temporaryDocuments && data.temporaryDocuments.length > 0) {
         console.log('📄 useCreateLoad - Processing temporary documents post-ACID');
         try {
-          await uploadTemporaryDocuments(data.temporaryDocuments, currentLoad.id, currentLoad.load_number);
+          await uploadTemporaryDocuments(data.temporaryDocuments, loadId, data.load_number);
           console.log('✅ useCreateLoad - Temporary documents uploaded successfully');
         } catch (uploadError) {
           console.error('❌ useCreateLoad - Error uploading documents:', uploadError);
@@ -239,7 +239,7 @@ export const useCreateLoad = () => {
       }
 
       console.log('✅ useCreateLoad - ACID operation completed successfully');
-      return currentLoad.id;
+      return loadId;
     },
     onSuccess: (loadId, variables) => {
       console.log('✅ useCreateLoad - Mutation successful, load ID:', loadId);
