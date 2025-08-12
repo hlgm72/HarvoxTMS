@@ -632,7 +632,7 @@ export function LoadDocumentsSection({
             const isRemoving = existingDoc ? removingDocuments.has(existingDoc.id) : false;
 
             return (
-              <div key={docType.type} className="flex items-center justify-between p-4 border rounded-lg">
+              <div key={docType.type} className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-4 border rounded-lg">
                 <div className="flex items-center space-x-3">
                   <FileText className="h-5 w-5 text-muted-foreground" />
                   <div>
@@ -645,10 +645,10 @@ export function LoadDocumentsSection({
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-wrap items-center gap-2 md:justify-end">
                   {existingDoc ? (
                     <>
-                      <div className="flex flex-col items-end mr-2">
+                      <div className="flex flex-col items-start md:items-end mr-0 md:mr-2 text-left md:text-right">
                         <span className="text-sm font-medium">{existingDoc.fileName}</span>
                         <span className="text-xs text-muted-foreground">
                           {existingDoc.fileSize ? `${(existingDoc.fileSize / 1024 / 1024).toFixed(2)} MB` : 'Tamaño desconocido'}
@@ -812,7 +812,7 @@ export function LoadDocumentsSection({
 
         {/* Summary */}
         <div className="pt-4 border-t">
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-sm">
             <span className="text-muted-foreground">
               Documentos subidos: {allDocuments.length} de {documentTypes.length}
             </span>
@@ -832,7 +832,7 @@ export function LoadDocumentsSection({
         {/* Additional Documents Section */}
         <div className="space-y-4">
           <h4 className="font-medium">Documentos adicionales</h4>
-          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 md:p-6 text-center">
             <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
             <p className="text-sm text-muted-foreground mb-2">
               Arrastra archivos aquí o haz clic para subir documentos adicionales
@@ -868,7 +868,7 @@ export function LoadDocumentsSection({
             {allDocuments
               .filter(doc => !documentTypes.some(dt => dt.type === doc.type))
               .map(doc => (
-                <div key={doc.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div key={doc.id} className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 p-3 bg-muted/50 rounded-lg">
                   <div className="flex items-center gap-2">
                     <FileText className="h-4 w-4 text-muted-foreground" />
                     <div>
