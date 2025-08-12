@@ -122,7 +122,7 @@ export default function Settings() {
 
   if (loading || profileLoading) {
     return (
-      <div className="p-6">
+      <div className="p-2 md:p-4">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
@@ -134,13 +134,13 @@ export default function Settings() {
   }
 
   return (
-    <>
+    <div className="p-2 md:p-4">
       <PageToolbar 
         icon={SettingsIcon}
         title="Configuración"
         subtitle="Configuración del sistema y preferencias de la empresa"
       />
-      <div className="p-6 min-h-screen bg-gradient-subtle">
+      <div className="min-h-screen bg-gradient-subtle">
         {/* Content */}
         <div className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -419,6 +419,6 @@ export default function Settings() {
         </Tabs>
         </div>
       </div>
-    </>
+    </div>
   );
 }
