@@ -2907,11 +2907,9 @@ export type Database = {
         }
         Returns: {
           gross_earnings: number
+          fuel_expenses: number
           total_deductions: number
           other_income: number
-          total_income: number
-          net_payment: number
-          has_negative_balance: boolean
         }[]
       }
       calculate_fuel_summary_for_period: {
