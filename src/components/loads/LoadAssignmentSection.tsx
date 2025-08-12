@@ -59,22 +59,22 @@ export function LoadAssignmentSection({
     if (isOwnerOperator && ownerOperator && onLeasingPercentageChange && onFactoringPercentageChange && onDispatchingPercentageChange) {
       console.log('✅ LoadAssignmentSection - Conditions met, checking individual percentages...');
       
-      // Only auto-populate if current values are undefined/null (avoid overwriting user changes)
-      if (leasingPercentage === undefined && ownerOperator.leasing_percentage !== undefined && ownerOperator.leasing_percentage !== null) {
+      // Auto-populate if current values are undefined/null OR zero (indicating they need owner-operator defaults)
+      if ((leasingPercentage === undefined || leasingPercentage === 0) && ownerOperator.leasing_percentage !== undefined && ownerOperator.leasing_percentage !== null && ownerOperator.leasing_percentage > 0) {
         console.log('🔄 LoadAssignmentSection - Setting leasing percentage from', leasingPercentage, 'to', ownerOperator.leasing_percentage);
         onLeasingPercentageChange(ownerOperator.leasing_percentage);
       } else {
         console.log('⏭️ LoadAssignmentSection - Skipping leasing percentage:', { leasingPercentage, ownerOperatorValue: ownerOperator.leasing_percentage });
       }
       
-      if (factoringPercentage === undefined && ownerOperator.factoring_percentage !== undefined && ownerOperator.factoring_percentage !== null) {
+      if ((factoringPercentage === undefined || factoringPercentage === 0) && ownerOperator.factoring_percentage !== undefined && ownerOperator.factoring_percentage !== null && ownerOperator.factoring_percentage > 0) {
         console.log('🔄 LoadAssignmentSection - Setting factoring percentage from', factoringPercentage, 'to', ownerOperator.factoring_percentage);
         onFactoringPercentageChange(ownerOperator.factoring_percentage);
       } else {
         console.log('⏭️ LoadAssignmentSection - Skipping factoring percentage:', { factoringPercentage, ownerOperatorValue: ownerOperator.factoring_percentage });
       }
       
-      if (dispatchingPercentage === undefined && ownerOperator.dispatching_percentage !== undefined && ownerOperator.dispatching_percentage !== null) {
+      if ((dispatchingPercentage === undefined || dispatchingPercentage === 0) && ownerOperator.dispatching_percentage !== undefined && ownerOperator.dispatching_percentage !== null && ownerOperator.dispatching_percentage > 0) {
         console.log('🔄 LoadAssignmentSection - Setting dispatching percentage from', dispatchingPercentage, 'to', ownerOperator.dispatching_percentage);
         onDispatchingPercentageChange(ownerOperator.dispatching_percentage);
       } else {
