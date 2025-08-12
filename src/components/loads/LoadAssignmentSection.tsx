@@ -10,6 +10,7 @@ import { CompanyDriver } from "@/hooks/useCompanyDrivers";
 import { CompanyDispatcher } from "@/hooks/useCompanyDispatchers";
 import { useOwnerOperator } from "@/hooks/useOwnerOperator";
 
+
 interface LoadAssignmentSectionProps {
   drivers: CompanyDriver[];
   selectedDriver: CompanyDriver | null;
@@ -181,9 +182,20 @@ export function LoadAssignmentSection({
                         </Badge>
                       )}
                     </div>
+                    
+                    {/* DEBUG INFO - Solo para Diosvani */}
+                    {selectedDriver?.first_name === 'Diosvani' && (
+                      <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-xs">
+                        <strong>🐛 DEBUG INFO:</strong><br/>
+                        • Owner Operator: {isOwnerOperator ? 'SÍ' : 'NO'}<br/>
+                        • Loading: {ownerOperatorLoading ? 'SÍ' : 'NO'}<br/>
+                        • Leasing %: {leasingPercentage} (tipo: {typeof leasingPercentage})<br/>
+                        • Factoring %: {factoringPercentage} (tipo: {typeof factoringPercentage})<br/>
+                        • Dispatching %: {dispatchingPercentage} (tipo: {typeof dispatchingPercentage})<br/>
+                        • Owner Data: {ownerOperator ? `L:${ownerOperator.leasing_percentage}, F:${ownerOperator.factoring_percentage}, D:${ownerOperator.dispatching_percentage}` : 'NULL'}
+                      </div>
+                    )}
                   </div>
-
-                  {/* Owner Operator Percentages */}
                   {isOwnerOperator && (
                     <Card className="border-amber-200 bg-amber-50/50">
                       <CardHeader className="pb-3">
