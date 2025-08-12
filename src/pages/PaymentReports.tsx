@@ -271,10 +271,10 @@ export default function PaymentReports() {
                 {filteredCalculations.map((calculation) => (
                   <div
                     key={calculation.id}
-                    className="border rounded-lg p-4 hover:bg-muted/50 transition-colors"
+                    className="border rounded-lg p-4 hover:bg-muted/50 transition-colors overflow-hidden"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-2">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                      <div className="space-y-2 min-w-0">
                         <div className="flex items-center gap-3">
                           <h4 className="font-semibold">
                             {(() => {
@@ -304,7 +304,7 @@ export default function PaymentReports() {
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2 w-full md:w-auto md:justify-end">
                         {calculation.payment_status !== 'paid' && calculation.calculated_at && (
                           <Button
                             variant="default"
