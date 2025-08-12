@@ -103,7 +103,7 @@ export function CityCombobox({
     }
   };
 
-  const selectedCity = cities.find((city) => city.id === value);
+  const selectedCity = cities.find((city) => city.name === value);
 
   const getPlaceholderText = () => {
     if (loading) return "Cargando ciudades...";
@@ -177,14 +177,14 @@ export function CityCombobox({
                     key={city.id}
                     value={`${city.name.toLowerCase()}${city.county ? ` ${city.county.toLowerCase()}` : ''}`}
                     onSelect={() => {
-                      onValueChange(city.id === value ? undefined : city.id);
+                      onValueChange(city.name === value ? undefined : city.name);
                       setOpen(false);
                     }}
                   >
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        value === city.id ? "opacity-100" : "opacity-0"
+                        value === city.name ? "opacity-100" : "opacity-0"
                       )}
                     />
                     <div>
