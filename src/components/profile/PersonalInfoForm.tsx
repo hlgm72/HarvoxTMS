@@ -311,7 +311,7 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
             onStreetAddressChange={(value) => personalInfoForm.setValue('street_address', value)}
             stateId={personalInfoForm.watch('state_id') || undefined}
             onStateChange={(value) => personalInfoForm.setValue('state_id', value || '')}
-            cityId={personalInfoForm.watch('city_id') || undefined}
+            city={personalInfoForm.watch('city_id') || undefined}
             onCityChange={(value) => personalInfoForm.setValue('city_id', value || '')}
             zipCode={personalInfoForm.watch('zip_code') || ''}
             onZipCodeChange={(value) => personalInfoForm.setValue('zip_code', value)}

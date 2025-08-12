@@ -286,7 +286,7 @@ export function StopEditModal({
                 updateField('state', value);
                 updateField('city', ''); // Reset city when state changes
               }}
-              cityId={formData.city || ''}
+              city={formData.city || ''}
               onCityChange={(value) => updateField('city', value)}
               zipCode={formData.zip_code || ''}
               onZipCodeChange={(value) => updateField('zip_code', value)}

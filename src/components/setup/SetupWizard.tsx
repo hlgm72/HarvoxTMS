@@ -491,7 +491,7 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
             onStreetAddressChange={(value) => setCompanyData({ ...companyData, address: value })}
             stateId={companyData.stateId}
             onStateChange={(value) => setCompanyData({ ...companyData, stateId: value || '' })}
-            cityId={companyData.cityId}
+            city={companyData.cityId}
             onCityChange={(value) => setCompanyData({ ...companyData, cityId: value || '' })}
             zipCode={companyData.zipCode}
             onZipCodeChange={(value) => setCompanyData({ ...companyData, zipCode: value })}

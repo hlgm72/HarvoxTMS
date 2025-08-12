@@ -386,7 +386,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   onStreetAddressChange={(value) => handleInputChange('street_address', value)}
                   stateId={formData.state_id}
                   onStateChange={(value) => handleInputChange('state_id', value || '')}
-                  cityId={formData.city_id}
+                  city={formData.city_id}
                   onCityChange={(value) => handleInputChange('city_id', value)}
                   zipCode={formData.zip_code}
                   onZipCodeChange={(value) => handleInputChange('zip_code', value)}

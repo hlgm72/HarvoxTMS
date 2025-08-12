@@ -9,7 +9,7 @@ interface AddressFormProps {
   onStreetAddressChange: (value: string) => void;
   stateId?: string;
   onStateChange: (value: string | undefined) => void;
-  cityId?: string;
+  city?: string;
   onCityChange: (value: string | undefined) => void;
   zipCode: string;
   onZipCodeChange: (value: string) => void;
@@ -26,7 +26,7 @@ export function AddressForm({
   onStreetAddressChange,
   stateId,
   onStateChange,
-  cityId,
+  city,
   onCityChange,
   zipCode,
   onZipCodeChange,
@@ -117,7 +117,7 @@ export function AddressForm({
             {cityLabel}
           </Label>
           <CityCombobox
-            value={cityId}
+            value={city}
             onValueChange={onCityChange}
             stateId={stateId}
             disabled={disabled}
