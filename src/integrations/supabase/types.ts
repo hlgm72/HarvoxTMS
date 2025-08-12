@@ -3091,6 +3091,10 @@ export type Database = {
         Args: { load_id_param: string; period_id_param: string }
         Returns: boolean
       }
+      force_recalculate_driver_deductions: {
+        Args: { driver_id_param: string; period_id_param: string }
+        Returns: Json
+      }
       generate_company_payment_periods: {
         Args: { company_id_param: string; from_date: string; to_date: string }
         Returns: Json
