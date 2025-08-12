@@ -3409,7 +3409,7 @@ export type Database = {
         Returns: Json
       }
       simple_load_operation: {
-        Args: { load_data: Json; stops_data: Json; operation_mode: string }
+        Args: { load_data: Json; stops_data: Json; operation_mode?: string }
         Returns: Json
       }
       unassign_equipment_with_validation: {
