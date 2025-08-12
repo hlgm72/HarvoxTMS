@@ -48,11 +48,19 @@ export function LoadAssignmentSection({
   // Auto-populate percentages when owner operator is selected
   useEffect(() => {
     console.log('🔍 LoadAssignmentSection - useEffect triggered:', {
+      selectedDriverInfo: selectedDriver ? {
+        user_id: selectedDriver.user_id,
+        name: `${selectedDriver.first_name} ${selectedDriver.last_name}`,
+        id: selectedDriver.id
+      } : null,
       isOwnerOperator,
-      ownerOperator,
-      leasingPercentage,
-      factoringPercentage,
-      dispatchingPercentage,
+      ownerOperatorData: ownerOperator,
+      ownerOperatorLoading,
+      currentPercentages: {
+        leasingPercentage,
+        factoringPercentage,
+        dispatchingPercentage
+      },
       hasCallbacks: !!(onLeasingPercentageChange && onFactoringPercentageChange && onDispatchingPercentageChange)
     });
     
