@@ -246,38 +246,12 @@ export default function Documents() {
         subtitle="Gestiona certificados, permisos y documentación legal"
         actions={
           <div className="flex gap-2">
-            <Button 
-              variant={showArchived ? "default" : "outline"} 
-              size="sm"
-              onClick={() => setShowArchived(!showArchived)}
-            >
-              {showArchived ? (
-                <>
-                  <ArchiveX className="w-4 h-4 mr-2" />
-                  Ver Activos
-                </>
-              ) : (
-                <>
-                  <Archive className="w-4 h-4 mr-2" />
-                  Ver Archivados
-                </>
-              )}
-            </Button>
-            <DocumentViewToggle 
-              currentView={viewMode} 
-              onViewChange={setViewMode} 
-            />
-            {selectedDocuments.size > 0 && (
-              <Button variant="outline" onClick={handleOpenEmailModal}>
-                <Mail className="w-4 h-4 mr-2" />
-                Enviar por Email ({selectedDocuments.size})
-              </Button>
-            )}
             <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
               <DialogTrigger asChild>
                 <Button onClick={() => handleOpenUploadDialog()}>
                   <Plus className="w-4 h-4 mr-2" />
-                  Subir Documento
+                  <span className="hidden sm:inline">Subir Documento</span>
+                  <span className="sm:hidden">Subir</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
@@ -302,6 +276,41 @@ export default function Documents() {
       />
       
       <div className="p-2 md:p-4 md:pr-20 space-y-4 md:space-y-6">
+        {/* Controls Section */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 sm:items-center sm:justify-between">
+          <div className="flex flex-wrap gap-2">
+            <Button 
+              variant={showArchived ? "default" : "outline"} 
+              size="sm"
+              onClick={() => setShowArchived(!showArchived)}
+            >
+              {showArchived ? (
+                <>
+                  <ArchiveX className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">Ver Activos</span>
+                  <span className="sm:hidden">Activos</span>
+                </>
+              ) : (
+                <>
+                  <Archive className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">Ver Archivados</span>
+                  <span className="sm:hidden">Archivados</span>
+                </>
+              )}
+            </Button>
+            {selectedDocuments.size > 0 && (
+              <Button variant="outline" size="sm" onClick={handleOpenEmailModal}>
+                <Mail className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Enviar por Email ({selectedDocuments.size})</span>
+                <span className="sm:hidden">Email ({selectedDocuments.size})</span>
+              </Button>
+            )}
+          </div>
+          <DocumentViewToggle 
+            currentView={viewMode} 
+            onViewChange={setViewMode} 
+          />
+        </div>
 
       {/* Status Overview */}
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
