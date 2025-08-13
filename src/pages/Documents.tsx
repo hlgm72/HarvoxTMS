@@ -345,37 +345,37 @@ export default function Documents() {
       {/* Document Categories */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3 md:grid-cols-7 h-auto gap-1">
-          <TabsTrigger value="all" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="all" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-1 sm:p-2">
             <FolderOpen className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Todos</span>
             <span className="sm:hidden">Todo</span>
           </TabsTrigger>
-          <TabsTrigger value="legal" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="legal" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-1 sm:p-2">
             <FileCheck className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Legales</span>
             <span className="sm:hidden">Legal</span>
           </TabsTrigger>
-          <TabsTrigger value="insurance" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="insurance" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-1 sm:p-2">
             <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Seguros</span>
             <span className="sm:hidden">Seguro</span>
           </TabsTrigger>
-          <TabsTrigger value="permits" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="permits" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-1 sm:p-2">
             <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Permisos</span>
             <span className="sm:hidden">Permit</span>
           </TabsTrigger>
-          <TabsTrigger value="financial" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="financial" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-1 sm:p-2">
             <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Financieros</span>
             <span className="sm:hidden">Money</span>
           </TabsTrigger>
-          <TabsTrigger value="contracts" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="contracts" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-1 sm:p-2">
             <Users className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Contratos</span>
             <span className="sm:hidden">Contr</span>
           </TabsTrigger>
-          <TabsTrigger value="other" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="other" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-1 sm:p-2">
             <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Otros</span>
             <span className="sm:hidden">Otros</span>
