@@ -500,9 +500,18 @@ export function PDFAnalyzer() {
             });
             
             if (generatedCompanyPeriodId) {
-              // Ahora simplemente usamos el company_payment_period_id directamente
-              transaction.payment_period_id = generatedCompanyPeriodId;
-              console.log('✅ Using company period for transaction:', generatedCompanyPeriodId);
+              // The ensurePaymentPeriodExists returns a driver_period_calculation ID
+              // but we need the company_payment_period_id for the RPC function
+              const { data: driverPeriod } = await supabase
+                .from('driver_period_calculations')
+                .select('company_payment_period_id')
+                .eq('id', generatedCompanyPeriodId)
+                .single();
+              
+              if (driverPeriod) {
+                transaction.payment_period_id = driverPeriod.company_payment_period_id;
+                console.log('✅ Using company period for transaction:', driverPeriod.company_payment_period_id);
+              }
             }
           }
         }
