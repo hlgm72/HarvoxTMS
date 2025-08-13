@@ -211,7 +211,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="flex flex-wrap gap-1 p-1 bg-white shadow-sm border">
+        <TabsList className="grid w-full grid-cols-3 gap-1 p-1 bg-white shadow-sm border">
           <TabsTrigger 
             value="company" 
             className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
