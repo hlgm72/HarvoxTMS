@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
 import { useAuth } from '@/hooks/useAuth';
 import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
+import { useFuelExpenseACID } from '@/hooks/useFuelExpenseACID';
 import { formatDateInUserTimeZone, formatDateSafe } from '@/lib/dateFormatting';
 
 interface AnalysisResult {
@@ -53,6 +54,7 @@ export function PDFAnalyzer() {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
+  const fuelExpenseACID = useFuelExpenseACID();
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -507,34 +509,32 @@ export function PDFAnalyzer() {
         }
       }
 
-      const fuelExpenses = validTransactions.map(transaction => ({
-        driver_user_id: transaction.driver_user_id!,
-        payment_period_id: transaction.payment_period_id!,
-        transaction_date: new Date(transaction.date).toISOString(),
-        fuel_type: transaction.category?.toLowerCase() || 'diesel',
-        gallons_purchased: Number(transaction.qty),
-        price_per_gallon: Number(transaction.gross_ppg),
-        gross_amount: Number(transaction.gross_amt),
-        discount_amount: Number(transaction.disc_amt),
-        fees: Number(transaction.fees),
-        total_amount: Number(transaction.total_amt),
-        station_name: transaction.location_name,
-        station_state: transaction.state,
-        card_last_five: transaction.card.slice(-5),
-        invoice_number: transaction.invoice,
-        vehicle_id: transaction.vehicle_id,
-        status: 'pending',
-        created_by: user?.id
-      }));
+      // Insertar transacciones una por una usando el hook ACID
+      for (const transaction of validTransactions) {
+        const fuelExpenseData = {
+          driver_user_id: transaction.driver_user_id!,
+          payment_period_id: transaction.payment_period_id!,
+          transaction_date: new Date(transaction.date).toISOString().split('T')[0],
+          fuel_type: transaction.category?.toLowerCase() || 'diesel',
+          gallons_purchased: Number(transaction.qty),
+          price_per_gallon: Number(transaction.gross_ppg),
+          gross_amount: Number(transaction.gross_amt),
+          discount_amount: Number(transaction.disc_amt),
+          fees: Number(transaction.fees),
+          total_amount: Number(transaction.total_amt),
+          station_name: transaction.location_name,
+          station_state: transaction.state,
+          card_last_five: transaction.card.slice(-5),
+          invoice_number: transaction.invoice,
+          status: 'pending'
+        };
 
-      console.log('📋 Mapped fuel expenses:', fuelExpenses);
-      console.log('🎯 About to insert into fuel_expenses table...');
-
-      const { data, error } = await supabase
-        .from('fuel_expenses')
-        .insert(fuelExpenses);
-
-      if (error) throw error;
+        console.log('📋 Creating fuel expense:', fuelExpenseData);
+        
+        await fuelExpenseACID.mutateAsync({
+          expenseData: fuelExpenseData
+        });
+      }
 
       showSuccess(
         "Importación exitosa",
