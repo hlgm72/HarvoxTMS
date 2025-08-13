@@ -308,38 +308,47 @@ export function PaymentReportDialog({
 
   if (!calculation || !driver) {
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6 rounded-none sm:rounded-lg">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="w-[95vw] max-w-none sm:max-w-4xl h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col p-0 rounded-lg">
+        <div className="p-4 sm:p-6 border-b shrink-0">
           <DialogHeader>
             <DialogTitle>Detalle del Reporte</DialogTitle>
           </DialogHeader>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div className="text-center py-8">
             {isLoading ? "Cargando..." : "No se encontraron datos"}
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      </DialogContent>
+    </Dialog>
     );
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6 rounded-none sm:rounded-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 min-w-0">
-            <FileText className="h-5 w-5 shrink-0" />
-            <span className="truncate">
-              Reporte de Pago - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
-            </span>
-          </DialogTitle>
-          <DialogDescription className="text-sm break-words">
-            Período: {formatPaymentPeriod(
-              calculation.company_payment_periods.period_start_date,
-              calculation.company_payment_periods.period_end_date
-            )}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="w-[95vw] max-w-none sm:max-w-4xl h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col p-0 rounded-lg">
+        {/* Header fijo */}
+        <div className="p-4 sm:p-6 border-b shrink-0">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 min-w-0 text-base sm:text-lg">
+              <FileText className="h-5 w-5 shrink-0" />
+              <span className="truncate">
+                Reporte de Pago - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
+              </span>
+            </DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm break-words mt-1">
+              Período: {formatPaymentPeriod(
+                calculation.company_payment_periods.period_start_date,
+                calculation.company_payment_periods.period_end_date
+              )}
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
-        <div className="space-y-4 sm:space-y-6">
+        {/* Contenido scrolleable */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+          <div className="space-y-4 sm:space-y-6">
           {/* Resumen Financiero */}
           <Card>
             <CardHeader>
@@ -352,52 +361,48 @@ export function PaymentReportDialog({
               )}
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <DollarSign className="h-4 w-4" />
-                      Ingresos Brutos
-                    </span>
-                    <span className="font-semibold">
-                      ${calculation.gross_earnings.toLocaleString('es-US', { minimumFractionDigits: 2 })}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <TrendingUp className="h-4 w-4" />
-                      Otros Ingresos
-                    </span>
-                    <span className="font-semibold text-success">
-                      ${calculation.other_income.toLocaleString('es-US', { minimumFractionDigits: 2 })}
-                    </span>
-                  </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                    <DollarSign className="h-4 w-4 shrink-0" />
+                    <span className="truncate">Ingresos Brutos</span>
+                  </span>
+                  <span className="font-semibold text-xs sm:text-sm">
+                    ${calculation.gross_earnings.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  </span>
                 </div>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Fuel className="h-4 w-4" />
-                      Combustible
-                    </span>
-                    <span className="font-semibold text-warning">
-                      -${calculation.fuel_expenses.toLocaleString('es-US', { minimumFractionDigits: 2 })}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Receipt className="h-4 w-4" />
-                      Deducciones
-                    </span>
-                    <span className="font-semibold text-destructive">
-                      -${calculation.total_deductions.toLocaleString('es-US', { minimumFractionDigits: 2 })}
-                    </span>
-                  </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                    <TrendingUp className="h-4 w-4 shrink-0" />
+                    <span className="truncate">Otros Ingresos</span>
+                  </span>
+                  <span className="font-semibold text-success text-xs sm:text-sm">
+                    ${calculation.other_income.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                    <Fuel className="h-4 w-4 shrink-0" />
+                    <span className="truncate">Combustible</span>
+                  </span>
+                  <span className="font-semibold text-warning text-xs sm:text-sm">
+                    -${calculation.fuel_expenses.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                    <Receipt className="h-4 w-4 shrink-0" />
+                    <span className="truncate">Deducciones</span>
+                  </span>
+                  <span className="font-semibold text-destructive text-xs sm:text-sm">
+                    -${calculation.total_deductions.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  </span>
                 </div>
               </div>
               
               <Separator />
               
-              <div className="flex items-center justify-between text-lg font-bold">
+              <div className="flex items-center justify-between text-base sm:text-lg font-bold">
                 <span>Pago Neto:</span>
                 <span className={calculateNetPayment(calculation) >= 0 ? 'text-success' : 'text-destructive'}>
                   ${calculateNetPayment(calculation).toLocaleString('es-US', { minimumFractionDigits: 2 })}
@@ -418,14 +423,14 @@ export function PaymentReportDialog({
               <CardContent>
                 <div className="space-y-2">
                   {loads.map((load) => (
-                    <div key={load.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2 border-b">
-                      <div className="space-y-1 min-w-0">
-                        <div className="font-medium truncate">{load.load_number}</div>
-                        <div className="text-sm text-muted-foreground break-words">
+                    <div key={load.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b">
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <div className="font-medium truncate text-sm sm:text-base">{load.load_number}</div>
+                        <div className="text-xs sm:text-sm text-muted-foreground">
                           Cliente • {new Date(load.pickup_date).toLocaleDateString('es-ES')}
                         </div>
                       </div>
-                      <div className="font-semibold sm:text-right">
+                      <div className="font-semibold sm:text-right shrink-0 text-sm sm:text-base">
                         ${load.total_amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}
                       </div>
                     </div>
@@ -447,14 +452,14 @@ export function PaymentReportDialog({
               <CardContent>
                 <div className="space-y-2">
                   {fuelExpenses.map((expense) => (
-                    <div key={expense.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2 border-b">
-                      <div className="space-y-1 min-w-0">
-                        <div className="font-medium truncate">{expense.station_name}</div>
-                        <div className="text-sm text-muted-foreground break-words">
+                    <div key={expense.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b">
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <div className="font-medium truncate text-sm sm:text-base">{expense.station_name}</div>
+                        <div className="text-xs sm:text-sm text-muted-foreground">
                           {expense.gallons_purchased} gal • {new Date(expense.transaction_date).toLocaleDateString('es-ES')}
                         </div>
                       </div>
-                      <div className="font-semibold text-warning sm:text-right">
+                      <div className="font-semibold text-warning sm:text-right shrink-0 text-sm sm:text-base">
                         ${expense.total_amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}
                       </div>
                     </div>
@@ -464,33 +469,40 @@ export function PaymentReportDialog({
             </Card>
           )}
 
-          {/* Acciones */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4">
+          </div>
+        </div>
+
+        {/* Footer fijo con acciones */}
+        <div className="p-4 sm:p-6 border-t shrink-0 bg-background">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
             <Button 
               onClick={handlePreviewPDF}
               disabled={isGeneratingPDF}
               variant="outline"
+              size="sm"
               className="w-full sm:flex-1"
             >
               <Eye className="h-4 w-4 mr-2" />
-              {isGeneratingPDF ? 'Generando...' : 'Ver PDF'}
+              <span className="truncate">{isGeneratingPDF ? 'Generando...' : 'Ver PDF'}</span>
             </Button>
             <Button 
               onClick={handleGeneratePDF}
               disabled={isGeneratingPDF}
+              size="sm"
               className="w-full sm:flex-1"
             >
               <Download className="h-4 w-4 mr-2" />
-              {isGeneratingPDF ? 'Generando...' : 'Descargar PDF'}
+              <span className="truncate">{isGeneratingPDF ? 'Generando...' : 'Descargar PDF'}</span>
             </Button>
             <Button 
               variant="outline"
               onClick={handleSendEmail}
               disabled={isSendingEmail}
+              size="sm"
               className="w-full sm:flex-1"
             >
               <Mail className="h-4 w-4 mr-2" />
-              {isSendingEmail ? 'Enviando...' : 'Enviar por Email'}
+              <span className="truncate">{isSendingEmail ? 'Enviando...' : 'Enviar por Email'}</span>
             </Button>
           </div>
         </div>
