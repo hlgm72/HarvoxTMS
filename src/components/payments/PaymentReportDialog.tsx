@@ -256,15 +256,23 @@ export function PaymentReportDialog({
         logo_url: company.logo_url
       },
       loads: loads.map(load => {
-        // Priorizar alias sobre el nombre completo, usar customer_name como fallback
+        // Priorizar alias, pero usar nombre completo si no hay alias
         const clientData = clients.find(c => c.id === load.client_id);
         let clientName = 'Sin cliente';
         
-        if (clientData && clientData.alias && clientData.alias.trim()) {
-          clientName = clientData.alias;
+        console.log('🔍 Load:', load.load_number, 'client_id:', load.client_id, 'clientData:', clientData);
+        
+        if (clientData) {
+          if (clientData.alias && clientData.alias.trim()) {
+            clientName = clientData.alias;
+          } else if (clientData.name && clientData.name.trim()) {
+            clientName = clientData.name;
+          }
         } else if (load.customer_name && load.customer_name.trim()) {
           clientName = load.customer_name;
         }
+        
+        console.log('🏷️ Final client name for', load.load_number, ':', clientName);
         
         return {
           load_number: load.load_number,
@@ -461,13 +469,17 @@ export function PaymentReportDialog({
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="font-medium truncate text-sm sm:text-base">{load.load_number}</div>
                         <div className="text-xs sm:text-sm text-muted-foreground">
-                          {/* Priorizar alias sobre el nombre completo */}
+                          {/* Priorizar alias, pero usar nombre completo si no hay alias */}
                           {(() => {
                             const clientData = clients.find(c => c.id === load.client_id);
                             let clientName = 'Sin cliente';
                             
-                            if (clientData && clientData.alias && clientData.alias.trim()) {
-                              clientName = clientData.alias;
+                            if (clientData) {
+                              if (clientData.alias && clientData.alias.trim()) {
+                                clientName = clientData.alias;
+                              } else if (clientData.name && clientData.name.trim()) {
+                                clientName = clientData.name;
+                              }
                             } else if (load.customer_name && load.customer_name.trim()) {
                               clientName = load.customer_name;
                             }
