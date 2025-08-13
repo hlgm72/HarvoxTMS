@@ -483,44 +483,46 @@ export default function Documents() {
               </Button>
             </div>
             
-{viewMode === "cards" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-white rounded-lg shadow-sm">
-                {getDocumentsByCategory(categoryKey).map((document) => (
-                  <div key={document.id} className="relative">
-                    <div className="absolute top-2 left-2 z-10">
-                      <Checkbox
-                        checked={selectedDocuments.has(document.id)}
-                        onCheckedChange={(checked) => 
-                          handleSelectDocument(document.id, checked as boolean)
-                        }
-                        className="bg-white shadow-sm"
+            {getDocumentsByCategory(categoryKey).length > 0 && (
+              viewMode === "cards" ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-white rounded-lg shadow-sm">
+                  {getDocumentsByCategory(categoryKey).map((document) => (
+                    <div key={document.id} className="relative">
+                      <div className="absolute top-2 left-2 z-10">
+                        <Checkbox
+                          checked={selectedDocuments.has(document.id)}
+                          onCheckedChange={(checked) => 
+                            handleSelectDocument(document.id, checked as boolean)
+                          }
+                          className="bg-white shadow-sm"
+                        />
+                      </div>
+                      <DocumentCard
+                        document={document}
+                        predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                        onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
+                        onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
+                        getExpiryStatus={getExpiryStatus}
+                        isArchived={showArchived}
                       />
                     </div>
-                    <DocumentCard
-                      document={document}
-                      predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                      onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
-                      onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
-                      getExpiryStatus={getExpiryStatus}
-                      isArchived={showArchived}
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="bg-white rounded-lg shadow-sm">
-                <DocumentTable
-                  documents={getDocumentsByCategory(categoryKey)}
-                  predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                  selectedDocuments={selectedDocuments}
-                  onSelectDocument={handleSelectDocument}
-                  onSelectAll={handleSelectAll}
-                  onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
-                  onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
-                  getExpiryStatus={getExpiryStatus}
-                  isArchived={showArchived}
-                />
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-white rounded-lg shadow-sm">
+                  <DocumentTable
+                    documents={getDocumentsByCategory(categoryKey)}
+                    predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                    selectedDocuments={selectedDocuments}
+                    onSelectDocument={handleSelectDocument}
+                    onSelectAll={handleSelectAll}
+                    onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
+                    onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
+                    getExpiryStatus={getExpiryStatus}
+                    isArchived={showArchived}
+                  />
+                </div>
+              )
             )}
 
             {getDocumentsByCategory(categoryKey).length === 0 && (
@@ -554,49 +556,71 @@ export default function Documents() {
             </Button>
           </div>
           
-{viewMode === "cards" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-white rounded-lg shadow-sm">
-              {documents
-                .filter(doc => !Object.values(PREDEFINED_DOCUMENT_TYPES)
-                  .flatMap(cat => cat.types.map(t => t.value))
-                  .includes(doc.document_type))
-                .map((document) => (
-                  <div key={document.id} className="relative">
-                    <div className="absolute top-2 left-2 z-10">
-                      <Checkbox
-                        checked={selectedDocuments.has(document.id)}
-                        onCheckedChange={(checked) => 
-                          handleSelectDocument(document.id, checked as boolean)
-                        }
-                        className="bg-white shadow-sm"
+          {documents.filter(doc => !Object.values(PREDEFINED_DOCUMENT_TYPES)
+            .flatMap(cat => cat.types.map(t => t.value))
+            .includes(doc.document_type)).length > 0 && (
+            viewMode === "cards" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-white rounded-lg shadow-sm">
+                {documents
+                  .filter(doc => !Object.values(PREDEFINED_DOCUMENT_TYPES)
+                    .flatMap(cat => cat.types.map(t => t.value))
+                    .includes(doc.document_type))
+                  .map((document) => (
+                    <div key={document.id} className="relative">
+                      <div className="absolute top-2 left-2 z-10">
+                        <Checkbox
+                          checked={selectedDocuments.has(document.id)}
+                          onCheckedChange={(checked) => 
+                            handleSelectDocument(document.id, checked as boolean)
+                          }
+                          className="bg-white shadow-sm"
+                        />
+                      </div>
+                      <DocumentCard
+                        document={document}
+                        predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                        onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
+                        onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
+                        getExpiryStatus={getExpiryStatus}
+                        isArchived={showArchived}
                       />
                     </div>
-                    <DocumentCard
-                      document={document}
-                      predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                      onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
-                      onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
-                      getExpiryStatus={getExpiryStatus}
-                      isArchived={showArchived}
-                    />
-                  </div>
-                ))}
-            </div>
-          ) : (
-            <div className="bg-white rounded-lg shadow-sm">
-              <DocumentTable
-                documents={documents.filter(doc => !Object.values(PREDEFINED_DOCUMENT_TYPES)
-                  .flatMap(cat => cat.types.map(t => t.value))
-                  .includes(doc.document_type))}
-                predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
-                selectedDocuments={selectedDocuments}
-                onSelectDocument={handleSelectDocument}
-                onSelectAll={handleSelectAll}
-                onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
-                onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
-                getExpiryStatus={getExpiryStatus}
-                isArchived={showArchived}
-              />
+                  ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-lg shadow-sm">
+                <DocumentTable
+                  documents={documents.filter(doc => !Object.values(PREDEFINED_DOCUMENT_TYPES)
+                    .flatMap(cat => cat.types.map(t => t.value))
+                    .includes(doc.document_type))}
+                  predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
+                  selectedDocuments={selectedDocuments}
+                  onSelectDocument={handleSelectDocument}
+                  onSelectAll={handleSelectAll}
+                  onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
+                  onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
+                  getExpiryStatus={getExpiryStatus}
+                  isArchived={showArchived}
+                />
+              </div>
+            )
+          )}
+
+          {documents.filter(doc => !Object.values(PREDEFINED_DOCUMENT_TYPES)
+            .flatMap(cat => cat.types.map(t => t.value))
+            .includes(doc.document_type)).length === 0 && (
+            <div className="text-center py-8">
+              <FileText className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+              <p className="text-muted-foreground mb-4">
+                No hay otros documentos
+              </p>
+              <Button 
+                variant="outline" 
+                onClick={() => handleOpenUploadDialog("custom")}
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Subir Documento
+              </Button>
             </div>
           )}
         </TabsContent>
