@@ -20,7 +20,7 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
   return (
     <div className={className}>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className={`grid w-full ${isDriver ? 'grid-cols-4' : 'grid-cols-3'} h-auto p-1 min-h-[60px] bg-muted/30`}>
+        <TabsList className="flex flex-wrap gap-1 p-1 min-h-[60px] bg-muted/30">
           <TabsTrigger 
             value="profile" 
             className="flex items-center gap-2 text-sm py-3 px-5 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground min-w-0 flex-1"
