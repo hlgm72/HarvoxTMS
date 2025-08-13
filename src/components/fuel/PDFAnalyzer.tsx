@@ -525,7 +525,6 @@ export function PDFAnalyzer() {
       const fuelExpenses = validTransactions.map(transaction => ({
         driver_user_id: transaction.driver_user_id!,
         payment_period_id: transaction.payment_period_id!,
-        company_id: companyId,
         transaction_date: new Date(transaction.date).toISOString().split('T')[0],
         fuel_type: transaction.category?.toLowerCase() || 'diesel',
         gallons_purchased: Number(transaction.qty),
