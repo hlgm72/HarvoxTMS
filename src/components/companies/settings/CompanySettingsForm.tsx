@@ -211,10 +211,10 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-        <TabsList className="grid w-full grid-cols-3 gap-1 p-1 bg-white shadow-sm border">
+        <TabsList className="grid w-full grid-cols-3 gap-1 p-1 bg-muted rounded-lg">
           <TabsTrigger 
             value="company" 
-            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
           >
             <Building className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Empresa</span>
@@ -222,7 +222,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           </TabsTrigger>
           <TabsTrigger 
             value="documentation" 
-            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
           >
             <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Documentación</span>
@@ -230,7 +230,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           </TabsTrigger>
           <TabsTrigger 
             value="contact" 
-            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
           >
             <MapPin className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Ubicación</span>
@@ -238,7 +238,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           </TabsTrigger>
           <TabsTrigger 
             value="owner" 
-            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
           >
             <User className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Propietario</span>
@@ -246,7 +246,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           </TabsTrigger>
           <TabsTrigger 
             value="payments" 
-            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
           >
             <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Pagos</span>
@@ -254,7 +254,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           </TabsTrigger>
           <TabsTrigger 
             value="system" 
-            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
           >
             <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Sistema</span>
