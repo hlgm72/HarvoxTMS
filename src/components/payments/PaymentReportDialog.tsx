@@ -256,14 +256,12 @@ export function PaymentReportDialog({
         logo_url: company.logo_url
       },
       loads: loads.map(load => {
-        // Determinar el nombre del cliente con prioridad: alias > customer_name > nombre de company_clients > 'Sin cliente'
+        // Priorizar alias sobre el nombre completo, usar customer_name como fallback
         const clientData = clients.find(c => c.id === load.client_id);
         let clientName = 'Sin cliente';
         
-        if (clientData) {
-          clientName = (clientData.alias && clientData.alias.trim()) 
-            ? clientData.alias 
-            : clientData.name || 'Sin cliente';
+        if (clientData && clientData.alias && clientData.alias.trim()) {
+          clientName = clientData.alias;
         } else if (load.customer_name && load.customer_name.trim()) {
           clientName = load.customer_name;
         }
@@ -463,15 +461,13 @@ export function PaymentReportDialog({
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="font-medium truncate text-sm sm:text-base">{load.load_number}</div>
                         <div className="text-xs sm:text-sm text-muted-foreground">
-                          {/* Obtener el nombre del cliente de la consulta enriquecida */}
+                          {/* Priorizar alias sobre el nombre completo */}
                           {(() => {
                             const clientData = clients.find(c => c.id === load.client_id);
                             let clientName = 'Sin cliente';
                             
-                            if (clientData) {
-                              clientName = (clientData.alias && clientData.alias.trim()) 
-                                ? clientData.alias 
-                                : clientData.name || 'Sin cliente';
+                            if (clientData && clientData.alias && clientData.alias.trim()) {
+                              clientName = clientData.alias;
                             } else if (load.customer_name && load.customer_name.trim()) {
                               clientName = load.customer_name;
                             }
