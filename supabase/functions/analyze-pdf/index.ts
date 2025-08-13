@@ -75,32 +75,40 @@ serve(async (req) => {
         messages: [
           {
             role: 'user',
-            content: `Eres un asistente experto en contabilidad de transporte. Analiza este texto extraído de un PDF de estado de cuenta de combustible.
+            content: `Eres un asistente experto en análisis de documentos de combustible. Tu tarea es extraer datos de transacciones de combustible de un PDF.
 
-INSTRUCCIONES CRÍTICAS:
-1. Busca ÚNICAMENTE tablas de transacciones de combustible (ignora balances, pagos, headers)
-2. Identifica las columnas exactas del PDF: DATE, CARD, UNIT, INVOICE #, LOCATION NAME, ST, QTY, GROSS PPG, GROSS AMT, DISC AMT, FEES, TOTAL AMT
-3. Para CARD: extrae EXACTAMENTE lo que aparece en la columna CARD del PDF - NO inventes números
-4. Si no hay una columna clara de CARD, busca números de tarjeta de 4-20 dígitos en las filas de transacciones
-5. NO uses códigos genéricos como "0002", "PMT" a menos que aparezcan literalmente en el PDF
+PASO 1 - ANÁLISIS INICIAL DEL TEXTO:
+Primero lee TODO el texto del PDF y identifica:
+- ¿Dónde están las filas de transacciones de combustible?
+- ¿Cuál es la estructura exacta de la tabla?
+- ¿Qué columnas existen realmente?
 
-INSTRUCCIONES ESPECIALES PARA MONTOS:
-- Para GROSS AMT y TOTAL AMT: extrae el número completo con TODOS los dígitos y decimales exactos como aparecen en el PDF
-- NO redondees ni cortes números - mantén la precisión exacta del PDF
-- Si un monto aparece como "156.45", usa 156.45, NO 56.45
-- Si un monto aparece como "1,234.56", usa 1234.56
-- Presta especial atención a los números de más de 2 dígitos antes del decimal
+PASO 2 - IDENTIFICACIÓN DE DATOS:
+Para cada transacción de combustible:
+- NÚMEROS DE TARJETA: Busca secuencias de 10-20 dígitos que representen tarjetas de combustible
+- MONTOS: Lee los números completos exactamente como aparecen, SIN cortar ni modificar
+- FECHAS: En formato MM/DD/YYYY o DD/MM/YYYY o similar
 
-FORMATO DE SALIDA - Solo extrae datos que REALMENTE existan en el PDF:
+REGLAS CRÍTICAS PARA MONTOS:
+- Lee TODOS los dígitos antes del punto decimal
+- Si ves "156.45" escribe 156.45, NO 56.45
+- Si ves "1,234.56" escribe 1234.56
+- Si ves "$155.75" escribe 155.75
+- NUNCA cortes números - extrae el valor completo
 
-Texto del PDF:
+REGLAS PARA NÚMEROS DE TARJETA:
+- Extrae la secuencia completa de dígitos
+- Puede tener espacios o guiones, pero extrae solo los números
+- Longitud típica: 10-20 dígitos
+
+Texto completo del PDF para analizar:
 ${extractedText}
 
-ANTES de responder con JSON, primero identifica:
-- ¿Dónde están las transacciones de combustible en el texto?
-- ¿Cuáles son las columnas exactas que aparecen?
-- ¿Qué números aparecen realmente en la columna de tarjetas?
-- ¿Cuáles son los montos COMPLETOS sin cortar?
+ANÁLISIS PASO A PASO:
+1. Primero identifica las secciones del PDF
+2. Localiza la tabla de transacciones de combustible
+3. Identifica cada columna y su contenido
+4. Extrae cada fila de datos cuidadosamente
 
 Responde SOLO con JSON válido en este formato:
 {
