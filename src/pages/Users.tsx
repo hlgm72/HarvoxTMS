@@ -40,7 +40,7 @@ import {
 import { 
   Users as UsersIcon, Grid, List,
   Activity, Clock, AlertCircle, TrendingUp, Search, Filter, X, UserPlus, Mail, Shield, Edit, Trash2, Eye,
-  Truck
+  Truck, UserCheck, UserX
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFleetNotifications } from "@/components/notifications";
@@ -732,58 +732,58 @@ export default function Users() {
 
       <div className="space-y-6">
         {/* Dashboard de Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4 mb-8">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total de Usuarios</p>
-                  <p className="text-3xl font-bold text-blue-600">{stats.totalUsers}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Total de Usuarios</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-blue-600">{stats.totalUsers}</p>
                 </div>
-                <div className="p-3 bg-blue-100 rounded-full">
-                  <UsersIcon className="h-6 w-6 text-blue-600" />
+                <div className="p-2 sm:p-3 bg-blue-100 rounded-full">
+                  <UsersIcon className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Usuarios Activos</p>
-                  <p className="text-3xl font-bold text-green-600">{stats.activeUsers}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Usuarios Activos</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.activeUsers}</p>
                 </div>
-                <div className="p-3 bg-green-100 rounded-full">
-                  <Activity className="h-6 w-6 text-green-600" />
+                <div className="p-2 sm:p-3 bg-green-100 rounded-full">
+                  <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Invitaciones Pendientes</p>
-                  <p className="text-3xl font-bold text-orange-600">{stats.pendingInvitations}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Invitaciones Pendientes</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-orange-600">{stats.pendingInvitations}</p>
                 </div>
-                <div className="p-3 bg-orange-100 rounded-full">
-                  <Clock className="h-6 w-6 text-orange-600" />
+                <div className="p-2 sm:p-3 bg-orange-100 rounded-full">
+                  <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Nuevos esta Semana</p>
-                  <p className="text-3xl font-bold text-purple-600">{stats.recentUsers}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Nuevos esta Semana</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-purple-600">{stats.recentUsers}</p>
                 </div>
-                <div className="p-3 bg-purple-100 rounded-full">
-                  <TrendingUp className="h-6 w-6 text-purple-600" />
+                <div className="p-2 sm:p-3 bg-purple-100 rounded-full">
+                  <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
                 </div>
               </div>
             </CardContent>
@@ -797,12 +797,18 @@ export default function Users() {
           </div>
         ) : (
           <Tabs defaultValue="active" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="active">
-                Todos los Usuarios ({filteredUsers.length})
+            <TabsList className="grid w-full grid-cols-2 h-auto">
+              <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+                <UserCheck className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Todos los Usuarios</span>
+                <span className="sm:hidden">Todos</span>
+                <span className="ml-1">({filteredUsers.length})</span>
               </TabsTrigger>
-              <TabsTrigger value="pending">
-                Pendientes de Activación ({pendingUsers.length})
+              <TabsTrigger value="pending" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+                <UserX className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Pendientes de Activación</span>
+                <span className="sm:hidden">Pendientes</span>
+                <span className="ml-1">({pendingUsers.length})</span>
               </TabsTrigger>
             </TabsList>
             
