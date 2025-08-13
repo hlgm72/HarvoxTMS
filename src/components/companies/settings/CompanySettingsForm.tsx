@@ -211,48 +211,54 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6 bg-white shadow-sm border">
+        <TabsList className="flex flex-wrap gap-1 p-1 bg-white shadow-sm border">
           <TabsTrigger 
             value="company" 
-            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
           >
-            <Building className="h-4 w-4" />
-            Empresa
+            <Building className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Empresa</span>
+            <span className="sm:hidden">Emp</span>
           </TabsTrigger>
           <TabsTrigger 
             value="documentation" 
-            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
           >
-            <FileText className="h-4 w-4" />
-            Documentación
+            <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Documentación</span>
+            <span className="sm:hidden">Docs</span>
           </TabsTrigger>
           <TabsTrigger 
             value="contact" 
-            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
           >
-            <MapPin className="h-4 w-4" />
-            Ubicación
+            <MapPin className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Ubicación</span>
+            <span className="sm:hidden">Ubic</span>
           </TabsTrigger>
           <TabsTrigger 
             value="owner" 
-            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
           >
-            <User className="h-4 w-4" />
-            Propietario
+            <User className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Propietario</span>
+            <span className="sm:hidden">Prop</span>
           </TabsTrigger>
           <TabsTrigger 
             value="payments" 
-            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
           >
-            <CreditCard className="h-4 w-4" />
-            Pagos
+            <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Pagos</span>
+            <span className="sm:hidden">Pago</span>
           </TabsTrigger>
           <TabsTrigger 
             value="system" 
-            className="flex items-center gap-2 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
           >
-            <Settings className="h-4 w-4" />
-            Sistema
+            <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Sistema</span>
+            <span className="sm:hidden">Sist</span>
           </TabsTrigger>
         </TabsList>
 
