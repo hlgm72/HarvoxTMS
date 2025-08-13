@@ -100,8 +100,10 @@ export function ExpandableFloatingActions({
       {/* Botón principal */}
       <button
         className={cn(
-          'fixed w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-transform duration-300 z-10',
-          'bg-primary hover:bg-primary/90 text-primary-foreground',
+          'fixed w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-10',
+          isExpanded 
+            ? 'bg-fleet-orange-500 hover:bg-fleet-orange-600 text-white' 
+            : 'bg-primary hover:bg-primary/90 text-primary-foreground',
           'flex items-center justify-center',
           'focus:outline-none active:outline-none',
           'border-0 outline-0',
