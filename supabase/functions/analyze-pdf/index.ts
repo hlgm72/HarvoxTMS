@@ -80,10 +80,11 @@ serve(async (req) => {
 INSTRUCCIONES ESPECÍFICAS:
 1. Busca tablas de transacciones de combustible (ignora balances y pagos)
 2. Identifica las columnas: DATE, CARD, UNIT, INVOICE #, LOCATION NAME, ST, QTY, GROSS PPG, GROSS AMT, DISC AMT, FEES, TOTAL AMT
-3. Para CARD: busca códigos como "PMT", "0002", últimos 4 dígitos de tarjeta
-4. Para UNIT: busca números de unidad/vehículo como "4812"
-5. Para LOCATION NAME: busca nombres de estaciones como "P W I # 111 MAIN ST MKT" o "PWI #400"
-6. Extrae TODAS las filas de transacciones de combustible, no omitas ninguna
+3. Para CARD: extrae el número COMPLETO de tarjeta que aparece (puede ser entre 4-20 dígitos, ej: "708305003008652716", "27160", "50148611824986000097"). NO uses códigos cortos como "0002" o "PMT"
+4. Para UNIT: busca números de unidad/vehículo como "4812", "1890"
+5. Para LOCATION NAME: busca nombres de estaciones como "LOVES #233 TRAVEL STOP", "P W I # 111 MAIN ST MKT"
+6. Para GROSS_AMT: asegúrate de extraer el monto bruto ANTES de descuentos
+7. Extrae TODAS las filas de transacciones de combustible, no omitas ninguna
 
 Texto del PDF:
 ${extractedText}
@@ -96,14 +97,14 @@ Responde SOLO con JSON válido en este formato exacto:
   "sampleData": [
     {
       "date": "YYYY-MM-DD",
-      "card": "código de tarjeta (ej: PMT, 0002, últimos 4 dígitos)",
+      "card": "número_completo_de_tarjeta_sin_espacios",
       "unit": "número de unidad (ej: 4812)",
       "invoice": "número de factura completo",
-      "location_name": "nombre completo de la estación (ej: P W I # 111 MAIN ST MKT)",
+      "location_name": "nombre completo de la estación",
       "state": "código de estado (ej: TX)",
       "qty": cantidad_galones_numerica,
       "gross_ppg": precio_por_galón_numerico,
-      "gross_amt": monto_bruto_numerico,
+      "gross_amt": monto_bruto_antes_descuentos_numerico,
       "disc_amt": descuento_numerico,
       "fees": comisiones_numericas,
       "total_amt": total_final_numerico
@@ -113,11 +114,10 @@ Responde SOLO con JSON válido en este formato exacto:
 }
 
 CRÍTICO: 
-- Extrae TODAS las transacciones de combustible (tipo Diesel, Gas, etc.)
-- Para CARD y UNIT, busca los valores exactos en las columnas correspondientes
-- Para LOCATION NAME, captura el texto completo que identifica la estación
+- Para CARD: extrae el número de tarjeta COMPLETO tal como aparece en el PDF (ej: "70830500300865271602" no "0002")
+- Para GROSS_AMT: debe ser el monto ANTES de aplicar descuentos (puede ser diferente al total final)
 - Asegúrate de que los valores numéricos sean números, no texto
-- Presta especial atención a extraer correctamente CARD y UNIT de cada fila`
+- Presta especial atención a los números de tarjeta completos que aparecen en las transacciones`
           }
         ],
         max_tokens: 2000,
