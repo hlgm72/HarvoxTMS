@@ -353,39 +353,39 @@ export default function Documents() {
 
       {/* Document Categories */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3 md:grid-cols-7 h-auto gap-1">
-          <TabsTrigger value="all" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-1 py-1 md:px-2 md:py-2">
-            <FolderOpen className="h-3 w-3 md:h-4 md:w-4" />
+        <TabsList className="flex flex-wrap md:grid md:grid-cols-7 h-auto gap-1 p-1">
+          <TabsTrigger value="all" className="flex items-center gap-1 text-xs md:text-sm px-2 py-1.5 whitespace-nowrap">
+            <FolderOpen className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
             <span className="hidden md:inline">Todos</span>
             <span className="md:hidden">Todo</span>
           </TabsTrigger>
-          <TabsTrigger value="legal" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-1 py-1 md:px-2 md:py-2">
-            <FileCheck className="h-3 w-3 md:h-4 md:w-4" />
+          <TabsTrigger value="legal" className="flex items-center gap-1 text-xs md:text-sm px-2 py-1.5 whitespace-nowrap">
+            <FileCheck className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
             <span className="hidden md:inline">Legales</span>
             <span className="md:hidden">Legal</span>
           </TabsTrigger>
-          <TabsTrigger value="insurance" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-1 py-1 md:px-2 md:py-2">
-            <Shield className="h-3 w-3 md:h-4 md:w-4" />
+          <TabsTrigger value="insurance" className="flex items-center gap-1 text-xs md:text-sm px-2 py-1.5 whitespace-nowrap">
+            <Shield className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
             <span className="hidden md:inline">Seguros</span>
             <span className="md:hidden">Seguro</span>
           </TabsTrigger>
-          <TabsTrigger value="permits" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-1 py-1 md:px-2 md:py-2">
-            <CheckCircle className="h-3 w-3 md:h-4 md:w-4" />
+          <TabsTrigger value="permits" className="flex items-center gap-1 text-xs md:text-sm px-2 py-1.5 whitespace-nowrap">
+            <CheckCircle className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
             <span className="hidden md:inline">Permisos</span>
             <span className="md:hidden">Permit</span>
           </TabsTrigger>
-          <TabsTrigger value="financial" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-1 py-1 md:px-2 md:py-2">
-            <DollarSign className="h-3 w-3 md:h-4 md:w-4" />
+          <TabsTrigger value="financial" className="flex items-center gap-1 text-xs md:text-sm px-2 py-1.5 whitespace-nowrap">
+            <DollarSign className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
             <span className="hidden md:inline">Financieros</span>
             <span className="md:hidden">Money</span>
           </TabsTrigger>
-          <TabsTrigger value="contracts" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-1 py-1 md:px-2 md:py-2">
-            <Users className="h-3 w-3 md:h-4 md:w-4" />
+          <TabsTrigger value="contracts" className="flex items-center gap-1 text-xs md:text-sm px-2 py-1.5 whitespace-nowrap">
+            <Users className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
             <span className="hidden md:inline">Contratos</span>
             <span className="md:hidden">Contr</span>
           </TabsTrigger>
-          <TabsTrigger value="other" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-1 py-1 md:px-2 md:py-2">
-            <FileText className="h-3 w-3 md:h-4 md:w-4" />
+          <TabsTrigger value="other" className="flex items-center gap-1 text-xs md:text-sm px-2 py-1.5 whitespace-nowrap">
+            <FileText className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
             <span className="hidden md:inline">Otros</span>
             <span className="md:hidden">Otros</span>
           </TabsTrigger>
