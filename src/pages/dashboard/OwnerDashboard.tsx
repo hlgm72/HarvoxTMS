@@ -290,7 +290,7 @@ export default function OwnerDashboard() {
         {/* Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Tabs - Estilo similar a FuelManagement */}
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 h-auto">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 h-auto gap-1">
             <TabsTrigger value="overview" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Dashboard</span>

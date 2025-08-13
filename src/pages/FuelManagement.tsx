@@ -70,7 +70,7 @@ export default function FuelManagement() {
       <div className="p-2 md:p-4 md:pr-20 space-y-4 md:space-y-6">
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 h-auto">
+          <TabsList className="grid w-full grid-cols-3 h-auto gap-1">
             <TabsTrigger value="expenses" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <Fuel className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Gastos de Combustible</span>

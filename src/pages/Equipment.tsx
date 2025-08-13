@@ -111,7 +111,7 @@ export default function Equipment() {
 
         {/* Main Content with Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-2 gap-1">
             <TabsTrigger value="equipment" className="gap-2">
               <Wrench className="h-4 w-4" />
               {t("equipment.tabs.equipment", "Equipos")}
