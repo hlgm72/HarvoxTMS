@@ -84,6 +84,13 @@ INSTRUCCIONES CRÍTICAS:
 4. Si no hay una columna clara de CARD, busca números de tarjeta de 4-20 dígitos en las filas de transacciones
 5. NO uses códigos genéricos como "0002", "PMT" a menos que aparezcan literalmente en el PDF
 
+INSTRUCCIONES ESPECIALES PARA MONTOS:
+- Para GROSS AMT y TOTAL AMT: extrae el número completo con TODOS los dígitos y decimales exactos como aparecen en el PDF
+- NO redondees ni cortes números - mantén la precisión exacta del PDF
+- Si un monto aparece como "156.45", usa 156.45, NO 56.45
+- Si un monto aparece como "1,234.56", usa 1234.56
+- Presta especial atención a los números de más de 2 dígitos antes del decimal
+
 FORMATO DE SALIDA - Solo extrae datos que REALMENTE existan en el PDF:
 
 Texto del PDF:
@@ -93,6 +100,7 @@ ANTES de responder con JSON, primero identifica:
 - ¿Dónde están las transacciones de combustible en el texto?
 - ¿Cuáles son las columnas exactas que aparecen?
 - ¿Qué números aparecen realmente en la columna de tarjetas?
+- ¿Cuáles son los montos COMPLETOS sin cortar?
 
 Responde SOLO con JSON válido en este formato:
 {
@@ -107,18 +115,20 @@ Responde SOLO con JSON válido en este formato:
       "invoice": "número de factura exacto",
       "location_name": "nombre exacto de la estación",
       "state": "código de estado",
-      "qty": cantidad_galones_numerica,
-      "gross_ppg": precio_por_galón_numerico,
-      "gross_amt": monto_bruto_numerico,
-      "disc_amt": descuento_numerico,
-      "fees": comisiones_numericas,
-      "total_amt": total_final_numerico
+      "qty": cantidad_galones_numerica_exacta,
+      "gross_ppg": precio_por_galón_numerico_exacto,
+      "gross_amt": monto_bruto_numerico_COMPLETO,
+      "disc_amt": descuento_numerico_exacto,
+      "fees": comisiones_numericas_exactas,
+      "total_amt": total_final_numerico_COMPLETO
     }
   ],
-  "analysis": "Descripción de qué columnas encontraste y de dónde sacaste los números de tarjeta"
+  "analysis": "Descripción de qué columnas encontraste, de dónde sacaste los números de tarjeta, y cómo identificaste los montos completos"
 }
 
-CRÍTICO: Solo extrae datos que REALMENTE aparezcan en el texto del PDF. NO inventes números de tarjeta.`
+CRÍTICO: 
+- Solo extrae datos que REALMENTE aparezcan en el texto del PDF. NO inventes números.
+- MANTÉN los montos COMPLETOS sin cortar dígitos.`
           }
         ],
         max_tokens: 2000,
