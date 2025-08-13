@@ -325,7 +325,7 @@ export default function OwnerDashboard() {
 
           <TabsContent value="overview" className="space-y-6 mt-6">
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
               <Card className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
