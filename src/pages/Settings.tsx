@@ -144,7 +144,7 @@ export default function Settings() {
         {/* Content */}
         <div className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid gap-1 p-1 bg-muted rounded-lg grid-cols-2 md:grid-cols-5">
+          <TabsList className="grid gap-1 p-1 bg-muted rounded-lg grid-cols-3">
             <TabsTrigger 
               value="profile"
               className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
