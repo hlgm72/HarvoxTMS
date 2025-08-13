@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Fuel, BarChart3, Settings, Filter, CreditCard, FileText } from 'lucide-react';
+import { Plus, Fuel, CreditCard, FileText } from 'lucide-react';
 import { PageToolbar } from '@/components/layout/PageToolbar';
 import { FuelStatsCards } from '@/components/fuel/FuelStatsCards';
 import { FuelFloatingActions } from '@/components/fuel/FuelFloatingActions';
@@ -59,21 +59,11 @@ export default function FuelManagement() {
         subtitle="Administra y monitorea los gastos de combustible de la flota"
         icon={Fuel}
         actions={
-          <div className="flex items-center gap-2 flex-wrap">
-            <Button variant="outline" size="sm" className="hidden sm:flex">
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Reportes
-            </Button>
-            <Button variant="outline" size="sm" className="hidden sm:flex">
-              <Settings className="h-4 w-4 mr-2" />
-              Configuración
-            </Button>
-            <Button onClick={() => setCreateDialogOpen(true)} size="sm">
-              <Plus className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Registrar Combustible</span>
-              <span className="sm:hidden">Nuevo</span>
-            </Button>
-          </div>
+          <Button onClick={() => setCreateDialogOpen(true)} size="sm">
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Registrar Combustible</span>
+            <span className="sm:hidden">Nuevo</span>
+          </Button>
         }
       />
 
