@@ -353,7 +353,7 @@ export default function Documents() {
 
       {/* Document Categories */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="inline-flex flex-wrap gap-1 p-1 lg:grid lg:grid-cols-7 lg:h-auto w-full justify-start">
+        <TabsList className="flex flex-wrap gap-1 p-1 lg:grid lg:grid-cols-7 lg:h-auto">
           <TabsTrigger value="all" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <FolderOpen className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Todos</span>
@@ -609,7 +609,7 @@ export default function Documents() {
           setSelectedDocuments(new Set());
           queryClient.invalidateQueries({ queryKey: ["company-documents"] });
         }}
-      />
+       />
       </div>
     </div>
   );
