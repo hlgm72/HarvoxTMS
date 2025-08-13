@@ -25,7 +25,7 @@ import {
   FileText,
   Eye
 } from "lucide-react";
-import { formatPaymentPeriod } from "@/lib/dateFormatting";
+import { formatPaymentPeriod, formatDateOnly } from "@/lib/dateFormatting";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
 import { useFleetNotifications } from "@/components/notifications";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
@@ -167,7 +167,9 @@ export function PaymentReportDialog({
           load_number,
           pickup_date,
           delivery_date,
-          total_amount
+          total_amount,
+          client_id,
+          customer_name
         `)
         .eq('driver_user_id', calculation.driver_user_id)
         .gte('pickup_date', calculation.company_payment_periods.period_start_date)
@@ -178,6 +180,26 @@ export function PaymentReportDialog({
       return data || [];
     },
     enabled: !!calculation
+  });
+
+  // Obtener información de clientes para las cargas
+  const { data: clients = [] } = useQuery({
+    queryKey: ['period-clients', loads?.map(l => l.client_id).filter(Boolean)],
+    queryFn: async () => {
+      if (!loads || loads.length === 0) return [];
+      
+      const clientIds = [...new Set(loads.map(l => l.client_id).filter(Boolean))];
+      if (clientIds.length === 0) return [];
+      
+      const { data, error } = await supabase
+        .from('company_clients')
+        .select('id, name, alias')
+        .in('id', clientIds);
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!loads && loads.length > 0
   });
 
   // Obtener gastos de combustible del período
@@ -233,13 +255,27 @@ export function PaymentReportDialog({
         email: company.email,
         logo_url: company.logo_url
       },
-      loads: loads.map(load => ({
-        load_number: load.load_number,
-        pickup_date: load.pickup_date,
-        delivery_date: load.delivery_date,
-        client_name: 'Cliente',
-        total_amount: load.total_amount
-      })),
+      loads: loads.map(load => {
+        // Determinar el nombre del cliente con prioridad: alias > customer_name > nombre de company_clients > 'Sin cliente'
+        const clientData = clients.find(c => c.id === load.client_id);
+        let clientName = 'Sin cliente';
+        
+        if (clientData) {
+          clientName = (clientData.alias && clientData.alias.trim()) 
+            ? clientData.alias 
+            : clientData.name || 'Sin cliente';
+        } else if (load.customer_name && load.customer_name.trim()) {
+          clientName = load.customer_name;
+        }
+        
+        return {
+          load_number: load.load_number,
+          pickup_date: load.pickup_date,
+          delivery_date: load.delivery_date,
+          client_name: clientName,
+          total_amount: load.total_amount
+        };
+      }),
       fuelExpenses: fuelExpenses.map(expense => ({
         transaction_date: expense.transaction_date,
         station_name: expense.station_name || 'Estación',
@@ -427,7 +463,21 @@ export function PaymentReportDialog({
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="font-medium truncate text-sm sm:text-base">{load.load_number}</div>
                         <div className="text-xs sm:text-sm text-muted-foreground">
-                          Cliente • {new Date(load.pickup_date).toLocaleDateString('es-ES')}
+                          {/* Obtener el nombre del cliente de la consulta enriquecida */}
+                          {(() => {
+                            const clientData = clients.find(c => c.id === load.client_id);
+                            let clientName = 'Sin cliente';
+                            
+                            if (clientData) {
+                              clientName = (clientData.alias && clientData.alias.trim()) 
+                                ? clientData.alias 
+                                : clientData.name || 'Sin cliente';
+                            } else if (load.customer_name && load.customer_name.trim()) {
+                              clientName = load.customer_name;
+                            }
+                            
+                            return clientName;
+                          })()} • {formatDateOnly(load.pickup_date)}
                         </div>
                       </div>
                       <div className="font-semibold sm:text-right shrink-0 text-sm sm:text-base">
@@ -456,7 +506,7 @@ export function PaymentReportDialog({
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="font-medium truncate text-sm sm:text-base">{expense.station_name}</div>
                         <div className="text-xs sm:text-sm text-muted-foreground">
-                          {expense.gallons_purchased} gal • {new Date(expense.transaction_date).toLocaleDateString('es-ES')}
+                          {expense.gallons_purchased} gal • {formatDateOnly(expense.transaction_date)}
                         </div>
                       </div>
                       <div className="font-semibold text-warning sm:text-right shrink-0 text-sm sm:text-base">
