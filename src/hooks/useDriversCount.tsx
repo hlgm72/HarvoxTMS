@@ -93,6 +93,7 @@ export const useDriversCount = () => {
         }
 
         // 2. Contar invitaciones pendientes con target_user_id (pre-registrados)
+        // Excluir usuarios que ya tienen rol activo de driver
         const { count: pendingCount, error: pendingError } = await supabase
           .from('user_invitations')
           .select('*', { count: 'exact', head: true })
@@ -100,7 +101,8 @@ export const useDriversCount = () => {
           .eq('role', 'driver')
           .eq('is_active', true)
           .is('accepted_at', null)
-          .not('target_user_id', 'is', null);
+          .not('target_user_id', 'is', null)
+          .not('target_user_id', 'in', `(SELECT user_id FROM user_company_roles WHERE company_id = '${userCompany.company_id}' AND role = 'driver' AND is_active = true)`);
 
         if (pendingError) {
           console.error('Error contando invitaciones pendientes:', pendingError);
