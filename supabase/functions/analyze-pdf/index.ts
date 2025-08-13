@@ -77,47 +77,48 @@ serve(async (req) => {
             role: 'user',
             content: `Eres un asistente experto en contabilidad de transporte. Analiza este texto extraído de un PDF de estado de cuenta de combustible.
 
-INSTRUCCIONES ESPECÍFICAS:
-1. Busca tablas de transacciones de combustible (ignora balances y pagos)
-2. Identifica las columnas: DATE, CARD, UNIT, INVOICE #, LOCATION NAME, ST, QTY, GROSS PPG, GROSS AMT, DISC AMT, FEES, TOTAL AMT
-3. Para CARD: extrae el número COMPLETO de tarjeta que aparece (puede ser entre 4-20 dígitos, ej: "708305003008652716", "27160", "50148611824986000097"). NO uses códigos cortos como "0002" o "PMT"
-4. Para UNIT: busca números de unidad/vehículo como "4812", "1890"
-5. Para LOCATION NAME: busca nombres de estaciones como "LOVES #233 TRAVEL STOP", "P W I # 111 MAIN ST MKT"
-6. Para GROSS_AMT: asegúrate de extraer el monto bruto ANTES de descuentos
-7. Extrae TODAS las filas de transacciones de combustible, no omitas ninguna
+INSTRUCCIONES CRÍTICAS:
+1. Busca ÚNICAMENTE tablas de transacciones de combustible (ignora balances, pagos, headers)
+2. Identifica las columnas exactas del PDF: DATE, CARD, UNIT, INVOICE #, LOCATION NAME, ST, QTY, GROSS PPG, GROSS AMT, DISC AMT, FEES, TOTAL AMT
+3. Para CARD: extrae EXACTAMENTE lo que aparece en la columna CARD del PDF - NO inventes números
+4. Si no hay una columna clara de CARD, busca números de tarjeta de 4-20 dígitos en las filas de transacciones
+5. NO uses códigos genéricos como "0002", "PMT" a menos que aparezcan literalmente en el PDF
+
+FORMATO DE SALIDA - Solo extrae datos que REALMENTE existan en el PDF:
 
 Texto del PDF:
 ${extractedText}
 
-Responde SOLO con JSON válido en este formato exacto:
+ANTES de responder con JSON, primero identifica:
+- ¿Dónde están las transacciones de combustible en el texto?
+- ¿Cuáles son las columnas exactas que aparecen?
+- ¿Qué números aparecen realmente en la columna de tarjetas?
+
+Responde SOLO con JSON válido en este formato:
 {
-  "columnsFound": ["DATE", "CARD", "UNIT", "INVOICE", "LOCATION_NAME", "ST", "QTY", "GROSS_PPG", "GROSS_AMT", "DISC_AMT", "FEES", "TOTAL_AMT"],
+  "columnsFound": ["lista_de_columnas_reales_encontradas"],
   "hasAuthorizationCode": true/false,
   "authorizationCodeField": "nombre del campo si existe o null",
   "sampleData": [
     {
       "date": "YYYY-MM-DD",
-      "card": "número_completo_de_tarjeta_sin_espacios",
-      "unit": "número de unidad (ej: 4812)",
-      "invoice": "número de factura completo",
-      "location_name": "nombre completo de la estación",
-      "state": "código de estado (ej: TX)",
+      "card": "número_exacto_que_aparece_en_el_PDF",
+      "unit": "número de unidad exacto",
+      "invoice": "número de factura exacto",
+      "location_name": "nombre exacto de la estación",
+      "state": "código de estado",
       "qty": cantidad_galones_numerica,
       "gross_ppg": precio_por_galón_numerico,
-      "gross_amt": monto_bruto_antes_descuentos_numerico,
+      "gross_amt": monto_bruto_numerico,
       "disc_amt": descuento_numerico,
       "fees": comisiones_numericas,
       "total_amt": total_final_numerico
     }
   ],
-  "analysis": "Análisis detallado de las transacciones encontradas"
+  "analysis": "Descripción de qué columnas encontraste y de dónde sacaste los números de tarjeta"
 }
 
-CRÍTICO: 
-- Para CARD: extrae el número de tarjeta COMPLETO tal como aparece en el PDF (ej: "70830500300865271602" no "0002")
-- Para GROSS_AMT: debe ser el monto ANTES de aplicar descuentos (puede ser diferente al total final)
-- Asegúrate de que los valores numéricos sean números, no texto
-- Presta especial atención a los números de tarjeta completos que aparecen en las transacciones`
+CRÍTICO: Solo extrae datos que REALMENTE aparezcan en el texto del PDF. NO inventes números de tarjeta.`
           }
         ],
         max_tokens: 2000,
