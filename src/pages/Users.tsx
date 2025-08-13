@@ -694,41 +694,44 @@ export default function Users() {
         subtitle={`${filteredUsers.length} usuarios • ${filteredUsers.filter(u => u.status === 'active').length} activos • ${new Set(filteredUsers.map(u => u.role)).size} roles diferentes`}
         actions={
           <div className="flex items-center gap-2">
-            <UserFiltersSheet
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              roleFilter={roleFilter}
-              setRoleFilter={setRoleFilter}
-              statusFilter={statusFilter}
-              setStatusFilter={setStatusFilter}
-            />
             <Button onClick={() => setInviteDialogOpen(true)} className="gap-2">
               <UserPlus className="h-4 w-4" />
-              Invitar Usuario
-            </Button>
-          </div>
-        }
-        viewToggle={
-          <div className="flex border border-border rounded-lg">
-            <Button
-              variant={viewMode === 'table' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('table')}
-              className="rounded-r-none"
-            >
-              <List className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'cards' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('cards')}
-              className="rounded-l-none"
-            >
-              <Grid className="h-4 w-4" />
+              <span className="hidden sm:inline">Invitar Usuario</span>
+              <span className="sm:hidden">Invitar</span>
             </Button>
           </div>
         }
       />
+
+      {/* Controls Section */}
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 sm:items-center sm:justify-between mb-6">
+        <UserFiltersSheet
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          roleFilter={roleFilter}
+          setRoleFilter={setRoleFilter}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+        />
+        <div className="flex border border-border rounded-lg">
+          <Button
+            variant={viewMode === 'table' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('table')}
+            className="rounded-r-none"
+          >
+            <List className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={viewMode === 'cards' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('cards')}
+            className="rounded-l-none"
+          >
+            <Grid className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
 
       <div className="space-y-6">
         {/* Dashboard de Estadísticas */}
