@@ -210,7 +210,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
         <TabsList className="grid w-full grid-cols-3 gap-1 p-1 bg-white shadow-sm border">
           <TabsTrigger 
             value="company" 
