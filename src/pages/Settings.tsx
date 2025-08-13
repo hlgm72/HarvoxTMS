@@ -144,41 +144,41 @@ export default function Settings() {
         {/* Content */}
         <div className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm border">
+          <TabsList className="grid gap-1 p-1 bg-muted rounded-lg grid-cols-2 md:grid-cols-5">
             <TabsTrigger 
-              value="profile" 
-              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              value="profile"
+              className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <User className="h-4 w-4" />
-              Mi Perfil
+              <span className="hidden sm:inline">Mi Perfil</span>
             </TabsTrigger>
             <TabsTrigger 
-              value="company" 
-              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              value="company"
+              className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <Building className="h-4 w-4" />
-              Empresa
+              <span className="hidden sm:inline">Empresa</span>
             </TabsTrigger>
             <TabsTrigger 
-              value="system" 
-              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              value="system"
+              className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <Database className="h-4 w-4" />
-              Sistema
+              <span className="hidden sm:inline">Sistema</span>
             </TabsTrigger>
             <TabsTrigger 
-              value="interface" 
-              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              value="interface"
+              className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <Palette className="h-4 w-4" />
-              Interfaz
+              <span className="hidden sm:inline">Interfaz</span>
             </TabsTrigger>
             <TabsTrigger 
-              value="notifications" 
-              className="flex items-center gap-2 transition-all duration-200 hover:bg-primary/20 hover:text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              value="notifications"
+              className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <Bell className="h-4 w-4" />
-              Notificaciones
+              <span className="hidden sm:inline">Notificaciones</span>
             </TabsTrigger>
           </TabsList>
 
