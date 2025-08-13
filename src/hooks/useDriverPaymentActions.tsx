@@ -79,9 +79,9 @@ export function useDriverPaymentActions() {
   const calculateDriverPeriod = async (calculationId: string) => {
     setIsLoading(true);
     try {
-      // ✅ USE ACID FUNCTION FOR ATOMIC CALCULATION
-      const { data, error } = await supabase.rpc('calculate_driver_payment_period_with_validation', {
-        calculation_id: calculationId
+      // ✅ USE NEW IMPROVED V2 FUNCTION
+      const { data, error } = await supabase.rpc('calculate_driver_payment_period_v2', {
+        period_calculation_id: calculationId
       });
 
       if (error) throw error;

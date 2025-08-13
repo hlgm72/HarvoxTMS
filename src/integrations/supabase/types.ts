@@ -2896,6 +2896,10 @@ export type Database = {
         Args: { period_calculation_id: string }
         Returns: Json
       }
+      calculate_driver_payment_period_v2: {
+        Args: { period_calculation_id: string }
+        Returns: Json
+      }
       calculate_driver_payment_period_with_validation: {
         Args: { calculation_id: string }
         Returns: Json
@@ -3100,6 +3104,10 @@ export type Database = {
       generate_load_percentage_deductions: {
         Args: { period_calculation_id: string; load_id_param?: string }
         Returns: undefined
+      }
+      generate_load_percentage_deductions_v2: {
+        Args: { period_calculation_id: string }
+        Returns: Json
       }
       generate_payment_periods: {
         Args:
