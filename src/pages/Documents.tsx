@@ -548,7 +548,7 @@ export default function Documents() {
               onClick={() => handleOpenUploadDialog("custom")}
             >
               <Plus className="w-4 h-4 mr-2" />
-              Agregar Documento Personalizado
+              <span className="hidden sm:inline">Agregar</span>
             </Button>
           </div>
           
