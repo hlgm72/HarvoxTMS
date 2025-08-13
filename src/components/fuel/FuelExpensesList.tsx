@@ -121,8 +121,8 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
             Gastos de Combustible ({expenses.length})
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
+        <CardContent className="relative">
+          <div className="overflow-x-auto overflow-y-visible">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -203,22 +203,50 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            className="h-8 w-8 p-0 relative z-10"
+                            aria-label="Opciones del gasto"
+                          >
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => onView?.(expense.id)}>
+                        <DropdownMenuContent 
+                          align="end" 
+                          className="w-48 z-50 bg-popover border shadow-md"
+                          side="bottom"
+                          sideOffset={5}
+                        >
+                          <DropdownMenuItem 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onView?.(expense.id);
+                            }}
+                            className="cursor-pointer"
+                          >
                             <Eye className="h-4 w-4 mr-2" />
                             Ver detalles
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onEdit?.(expense.id)}>
+                          <DropdownMenuItem 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEdit?.(expense.id);
+                            }}
+                            className="cursor-pointer"
+                          >
                             <Edit className="h-4 w-4 mr-2" />
                             Editar
                           </DropdownMenuItem>
                           {expense.receipt_url && (
                             <DropdownMenuItem asChild>
-                              <a href={expense.receipt_url} target="_blank" rel="noopener noreferrer">
+                              <a 
+                                href={expense.receipt_url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="cursor-pointer"
+                                onClick={(e) => e.stopPropagation()}
+                              >
                                 <Receipt className="h-4 w-4 mr-2" />
                                 Ver recibo
                               </a>
@@ -226,8 +254,11 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                           )}
                           <DropdownMenuSeparator />
                           <DropdownMenuItem 
-                            onClick={() => handleDelete(expense.id)}
-                            className="text-destructive"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(expense.id);
+                            }}
+                            className="text-destructive cursor-pointer"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Eliminar
