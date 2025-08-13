@@ -92,17 +92,38 @@ export const useDriversCount = () => {
           throw rolesError;
         }
 
-        // 2. Contar invitaciones pendientes con target_user_id (pre-registrados)
+        // 2. Obtener los user_ids que ya tienen roles de driver activos
+        const { data: existingDrivers, error: existingError } = await supabase
+          .from('user_company_roles')
+          .select('user_id')
+          .eq('company_id', userCompany.company_id)
+          .eq('role', 'driver')
+          .eq('is_active', true);
+
+        if (existingError) {
+          console.error('Error obteniendo drivers existentes:', existingError);
+          throw existingError;
+        }
+
+        const existingDriverIds = existingDrivers?.map(d => d.user_id) || [];
+
+        // 3. Contar invitaciones pendientes con target_user_id (pre-registrados)
         // Excluir usuarios que ya tienen rol activo de driver
-        const { count: pendingCount, error: pendingError } = await supabase
+        let pendingQuery = supabase
           .from('user_invitations')
           .select('*', { count: 'exact', head: true })
           .eq('company_id', userCompany.company_id)
           .eq('role', 'driver')
           .eq('is_active', true)
           .is('accepted_at', null)
-          .not('target_user_id', 'is', null)
-          .not('target_user_id', 'in', `(SELECT user_id FROM user_company_roles WHERE company_id = '${userCompany.company_id}' AND role = 'driver' AND is_active = true)`);
+          .not('target_user_id', 'is', null);
+
+        // Solo aplicar filtro si hay drivers existentes
+        if (existingDriverIds.length > 0) {
+          pendingQuery = pendingQuery.not('target_user_id', 'in', `(${existingDriverIds.join(',')})`);
+        }
+
+        const { count: pendingCount, error: pendingError } = await pendingQuery;
 
         if (pendingError) {
           console.error('Error contando invitaciones pendientes:', pendingError);
