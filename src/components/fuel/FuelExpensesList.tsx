@@ -116,13 +116,113 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
     <>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Fuel className="h-5 w-5" />
-            Gastos de Combustible ({expenses.length})
+          <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+            <Fuel className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">Gastos de Combustible ({expenses.length})</span>
+            <span className="sm:hidden">Gastos ({expenses.length})</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="relative">
-          <div className="overflow-x-auto overflow-y-visible">
+        <CardContent className="relative p-0 sm:p-6">
+          {/* Vista móvil - Cards */}
+          <div className="block sm:hidden space-y-3 p-4">
+            {expenses.map((expense) => (
+              <div key={expense.id} className="border rounded-lg p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <div className="font-medium text-sm">
+                      {getDriverName(expense.driver_user_id)}
+                    </div>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        aria-label="Opciones del gasto"
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent 
+                      align="end" 
+                      className="w-48 z-[60] bg-popover border shadow-md"
+                    >
+                      <DropdownMenuItem 
+                        onClick={() => onView?.(expense.id)}
+                        className="cursor-pointer"
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        Ver detalles
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => onEdit?.(expense.id)}
+                        className="cursor-pointer"
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Editar
+                      </DropdownMenuItem>
+                      {expense.receipt_url && (
+                        <DropdownMenuItem asChild>
+                          <a 
+                            href={expense.receipt_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="cursor-pointer"
+                          >
+                            <Receipt className="h-4 w-4 mr-2" />
+                            Ver recibo
+                          </a>
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        onClick={() => handleDelete(expense.id)}
+                        className="text-destructive cursor-pointer"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Eliminar
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-3 w-3 text-muted-foreground" />
+                    <span>{formatDateOnly(expense.transaction_date)}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <MapPin className="h-3 w-3 text-muted-foreground" />
+                    <span className="truncate">{expense.station_name || 'N/A'}</span>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="flex items-center gap-1">
+                    <Fuel className="h-3 w-3 text-muted-foreground" />
+                    <span>{expense.gallons_purchased?.toFixed(1)} gal</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <DollarSign className="h-3 w-3 text-muted-foreground" />
+                    <span className="font-semibold">${expense.total_amount?.toFixed(2)}</span>
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-1">
+                    {getFuelTypeIcon(expense.fuel_type)}
+                    <span className="text-xs capitalize">{expense.fuel_type}</span>
+                  </div>
+                  {getStatusBadge(expense.status)}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Vista desktop - Tabla */}
+          <div className="hidden sm:block overflow-x-auto overflow-y-visible">
             <Table>
               <TableHeader>
                 <TableRow>

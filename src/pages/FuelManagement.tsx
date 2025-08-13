@@ -59,38 +59,42 @@ export default function FuelManagement() {
         subtitle="Administra y monitorea los gastos de combustible de la flota"
         icon={Fuel}
         actions={
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button variant="outline" size="sm" className="hidden sm:flex">
               <BarChart3 className="h-4 w-4 mr-2" />
               Reportes
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="hidden sm:flex">
               <Settings className="h-4 w-4 mr-2" />
               Configuración
             </Button>
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Registrar Combustible
+            <Button onClick={() => setCreateDialogOpen(true)} size="sm">
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Registrar Combustible</span>
+              <span className="sm:hidden">Nuevo</span>
             </Button>
           </div>
         }
       />
 
-      <div className="p-2 md:p-4 md:pr-20 space-y-6">
+      <div className="p-2 md:p-4 md:pr-20 space-y-4 md:space-y-6">
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="expenses" className="flex items-center gap-2">
-              <Fuel className="h-4 w-4" />
-              Gastos de Combustible
+          <TabsList className="grid w-full grid-cols-3 h-auto">
+            <TabsTrigger value="expenses" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+              <Fuel className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Gastos de Combustible</span>
+              <span className="sm:hidden">Gastos</span>
             </TabsTrigger>
-            <TabsTrigger value="cards" className="flex items-center gap-2">
-              <CreditCard className="h-4 w-4" />
-              Tarjetas de Combustible
+            <TabsTrigger value="cards" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+              <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Tarjetas de Combustible</span>
+              <span className="sm:hidden">Tarjetas</span>
             </TabsTrigger>
-            <TabsTrigger value="analyzer" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Analizador PDF
+            <TabsTrigger value="analyzer" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+              <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Analizador PDF</span>
+              <span className="sm:hidden">PDF</span>
             </TabsTrigger>
           </TabsList>
 
