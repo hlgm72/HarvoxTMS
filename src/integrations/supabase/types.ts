@@ -3098,7 +3098,7 @@ export type Database = {
         Returns: Json
       }
       generate_load_percentage_deductions: {
-        Args: { load_id_param: string; period_calculation_id: string }
+        Args: { period_calculation_id: string; load_id_param?: string }
         Returns: undefined
       }
       generate_payment_periods: {
