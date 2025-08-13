@@ -1,4 +1,4 @@
-import { Truck, UserPlus, Settings, Edit, Trash2 } from "lucide-react";
+import { Truck, UserPlus, Settings, Edit, Trash2, Users, UserCheck, Clock, FileText, BarChart3 } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -174,7 +174,7 @@ export default function Drivers() {
             </Button>
           }
         />
-        <div className="p-2 md:p-4 space-y-6">
+        <div className="p-2 md:p-4 md:pr-20 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
               <DriverSkeleton key={i} />
@@ -199,7 +199,7 @@ export default function Drivers() {
             </Button>
           }
         />
-        <div className="p-2 md:p-4 space-y-6">
+        <div className="p-2 md:p-4 md:pr-20 space-y-6">
           {/* Sección de Invitaciones Pendientes para Conductores */}
           <PendingInvitationsSection 
             key={`empty-invitations-${invitationsKey}`}
@@ -251,18 +251,24 @@ export default function Drivers() {
           </Button>
         }
       />
-      <div className="p-2 md:p-4 space-y-6">
+      <div className="p-2 md:p-4 md:pr-20 space-y-4 md:space-y-6">
         <Tabs defaultValue="active" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="active">
-              Todos los Conductores ({allDrivers.length})
+          <TabsList className="grid w-full grid-cols-2 h-auto">
+            <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Todos los Conductores</span>
+              <span className="sm:hidden">Todos</span>
+              <span className="ml-1">({allDrivers.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="pending">
-              Pendientes de Activación ({pendingDrivers.length})
+            <TabsTrigger value="pending" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+              <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Pendientes de Activación</span>
+              <span className="sm:hidden">Pendientes</span>
+              <span className="ml-1">({pendingDrivers.length})</span>
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="active" className="space-y-6">
+          <TabsContent value="active" className="space-y-6 mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {allDrivers.map((driver) => {
                 const DriverCard = () => {
@@ -440,7 +446,7 @@ export default function Drivers() {
             </div>
           </TabsContent>
           
-          <TabsContent value="pending" className="space-y-6">
+          <TabsContent value="pending" className="space-y-6 mt-6">
             {/* Sección de Invitaciones Pendientes */}
             <PendingInvitationsSection 
               key={`pending-invitations-${invitationsKey}`}
