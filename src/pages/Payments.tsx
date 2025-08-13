@@ -88,16 +88,16 @@ export default function Payments() {
       />
 
       {/* Resumen de período actual */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
-                <DollarSign className="h-5 w-5 text-primary" />
+                <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Ingresos Brutos</p>
-                <p className="text-xl font-semibold">
+                <p className="text-xs sm:text-sm text-muted-foreground">Ingresos Brutos</p>
+                <p className="text-lg sm:text-xl font-semibold">
                   ${(currentPeriodSummary?.gross_earnings || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                 </p>
               </div>
@@ -109,11 +109,11 @@ export default function Payments() {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-success/10 rounded-lg">
-                <TrendingUp className="h-5 w-5 text-success" />
+                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Otros Ingresos</p>
-                <p className="text-xl font-semibold text-success">
+                <p className="text-xs sm:text-sm text-muted-foreground">Otros Ingresos</p>
+                <p className="text-lg sm:text-xl font-semibold text-success">
                   ${(currentPeriodSummary?.other_income || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                 </p>
               </div>
@@ -125,11 +125,11 @@ export default function Payments() {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-destructive/10 rounded-lg">
-                <Receipt className="h-5 w-5 text-destructive" />
+                <Receipt className="h-4 w-4 sm:h-5 sm:w-5 text-destructive" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Deducciones</p>
-                <p className="text-xl font-semibold text-destructive">
+                <p className="text-xs sm:text-sm text-muted-foreground">Deducciones</p>
+                <p className="text-lg sm:text-xl font-semibold text-destructive">
                   -${(currentPeriodSummary?.deductions || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                 </p>
               </div>
@@ -141,11 +141,11 @@ export default function Payments() {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-warning/10 rounded-lg">
-                <Fuel className="h-5 w-5 text-warning" />
+                <Fuel className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Combustible</p>
-                <p className="text-xl font-semibold text-warning">
+                <p className="text-xs sm:text-sm text-muted-foreground">Combustible</p>
+                <p className="text-lg sm:text-xl font-semibold text-warning">
                   -${(currentPeriodSummary?.fuel_expenses || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                 </p>
               </div>
@@ -153,16 +153,16 @@ export default function Payments() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="col-span-2 lg:col-span-1">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
-                <CreditCard className="h-5 w-5 text-primary" />
+                <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Pago Neto</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Pago Neto</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-xl font-semibold">
+                  <p className="text-lg sm:text-xl font-semibold">
                     ${(currentPeriodSummary?.net_payment || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                   </p>
                   {getStatusBadge(currentPeriod?.status || 'open')}
@@ -195,22 +195,26 @@ export default function Payments() {
 
       {/* Tabs para diferentes secciones */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="other-income" className="gap-2">
-            <TrendingUp className="h-4 w-4" />
-            Otros Ingresos
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
+          <TabsTrigger value="other-income" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Otros Ingresos</span>
+            <span className="sm:hidden">Ingresos</span>
           </TabsTrigger>
-          <TabsTrigger value="fuel-expenses" className="gap-2">
-            <Fuel className="h-4 w-4" />
-            Combustible
+          <TabsTrigger value="fuel-expenses" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <Fuel className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Combustible</span>
+            <span className="sm:hidden">Fuel</span>
           </TabsTrigger>
-          <TabsTrigger value="deductions" className="gap-2">
-            <Receipt className="h-4 w-4" />
-            Deducciones
+          <TabsTrigger value="deductions" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <Receipt className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Deducciones</span>
+            <span className="sm:hidden">Gastos</span>
           </TabsTrigger>
-          <TabsTrigger value="periods" className="gap-2">
-            <Calendar className="h-4 w-4" />
-            Períodos
+          <TabsTrigger value="periods" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Períodos</span>
+            <span className="sm:hidden">Períodos</span>
           </TabsTrigger>
         </TabsList>
 
