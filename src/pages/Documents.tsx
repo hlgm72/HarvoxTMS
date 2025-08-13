@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useFleetNotifications } from "@/components/notifications";
-import { Upload, FileText, Download, Trash2, AlertCircle, CheckCircle, Calendar, Plus, Mail, CheckSquare, Square, Archive, ArchiveX } from "lucide-react";
+import { Upload, FileText, Download, Trash2, AlertCircle, CheckCircle, Calendar, Plus, Mail, CheckSquare, Square, Archive, ArchiveX, Shield, DollarSign, FileCheck, Users, FolderOpen } from "lucide-react";
 import { CompanyDocumentUpload } from "@/components/documents/CompanyDocumentUpload";
 import { DocumentCard } from "@/components/documents/DocumentCard";
 import { DocumentTable } from "@/components/documents/DocumentTable";
@@ -304,14 +304,14 @@ export default function Documents() {
       <div className="p-6 space-y-6">
 
       {/* Status Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <FileText className="w-5 h-5 text-blue-500" />
+              <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
               <div>
-                <p className="text-sm text-muted-foreground">Total Documentos</p>
-                <p className="text-2xl font-bold">{statusCounts.total}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Total Documentos</p>
+                <p className="text-lg sm:text-2xl font-bold">{statusCounts.total}</p>
               </div>
             </div>
           </CardContent>
@@ -320,22 +320,22 @@ export default function Documents() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <AlertCircle className="w-5 h-5 text-amber-500" />
+              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
               <div>
-                <p className="text-sm text-muted-foreground">Por Vencer (30 días)</p>
-                <p className="text-2xl font-bold text-amber-600">{statusCounts.expiring}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Por Vencer (30 días)</p>
+                <p className="text-lg sm:text-2xl font-bold text-amber-600">{statusCounts.expiring}</p>
               </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="col-span-2 lg:col-span-1">
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <AlertCircle className="w-5 h-5 text-red-500" />
+              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
               <div>
-                <p className="text-sm text-muted-foreground">Vencidos</p>
-                <p className="text-2xl font-bold text-red-600">{statusCounts.expired}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Vencidos</p>
+                <p className="text-lg sm:text-2xl font-bold text-red-600">{statusCounts.expired}</p>
               </div>
             </div>
           </CardContent>
@@ -344,14 +344,42 @@ export default function Documents() {
 
       {/* Document Categories */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-7">
-          <TabsTrigger value="all">Todos</TabsTrigger>
-          <TabsTrigger value="legal">Legales</TabsTrigger>
-          <TabsTrigger value="insurance">Seguros</TabsTrigger>
-          <TabsTrigger value="permits">Permisos</TabsTrigger>
-          <TabsTrigger value="financial">Financieros</TabsTrigger>
-          <TabsTrigger value="contracts">Contratos</TabsTrigger>
-          <TabsTrigger value="other">Otros</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 md:grid-cols-7 h-auto gap-1">
+          <TabsTrigger value="all" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <FolderOpen className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Todos</span>
+            <span className="sm:hidden">Todo</span>
+          </TabsTrigger>
+          <TabsTrigger value="legal" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <FileCheck className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Legales</span>
+            <span className="sm:hidden">Legal</span>
+          </TabsTrigger>
+          <TabsTrigger value="insurance" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Seguros</span>
+            <span className="sm:hidden">Seguro</span>
+          </TabsTrigger>
+          <TabsTrigger value="permits" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Permisos</span>
+            <span className="sm:hidden">Permit</span>
+          </TabsTrigger>
+          <TabsTrigger value="financial" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Financieros</span>
+            <span className="sm:hidden">Money</span>
+          </TabsTrigger>
+          <TabsTrigger value="contracts" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Contratos</span>
+            <span className="sm:hidden">Contr</span>
+          </TabsTrigger>
+          <TabsTrigger value="other" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Otros</span>
+            <span className="sm:hidden">Otros</span>
+          </TabsTrigger>
         </TabsList>
 
         {/* All Documents */}
