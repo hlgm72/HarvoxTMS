@@ -286,72 +286,44 @@ export default function OwnerDashboard() {
       <PageToolbar 
         title="Dashboard Ejecutivo"
       />
-      <div className="p-6 pt-2 min-h-screen bg-gradient-subtle">
+      <div className="p-2 md:p-4 md:pr-20 space-y-4 md:space-y-6 min-h-screen bg-gradient-subtle">
         {/* Content */}
-        <div className="space-y-4">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          {/* Mobile Layout - Horizontal Scroll */}
-          <div className="sm:hidden">
-            <TabsList className="flex w-full overflow-x-auto bg-white shadow-sm border p-1">
-              <TabsTrigger value="overview" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
-                <BarChart3 className="h-4 w-4" />
-                <span className="hidden xs:inline">Dashboard</span>
-              </TabsTrigger>
-              <TabsTrigger value="drivers" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
-                <Users className="h-4 w-4" />
-                <span className="hidden xs:inline">Conductores</span>
-              </TabsTrigger>
-              <TabsTrigger value="fleet" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
-                <Truck className="h-4 w-4" />
-                <span className="hidden xs:inline">Fleet Tracking</span>
-              </TabsTrigger>
-              <TabsTrigger value="reports" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
-                <FileText className="h-4 w-4" />
-                <span className="hidden xs:inline">Reportes</span>
-              </TabsTrigger>
-              <TabsTrigger value="payments" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
-                <DollarSign className="h-4 w-4" />
-                <span className="hidden xs:inline">Pagos</span>
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 px-3">
-                <Settings className="h-4 w-4" />
-                <span className="hidden xs:inline">Config</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          {/* Tabs - Estilo similar a FuelManagement */}
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 h-auto">
+            <TabsTrigger value="overview" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+              <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Dashboard</span>
+              <span className="sm:hidden">Panel</span>
+            </TabsTrigger>
+            <TabsTrigger value="drivers" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Conductores</span>
+              <span className="sm:hidden">Drivers</span>
+            </TabsTrigger>
+            <TabsTrigger value="fleet" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+              <Truck className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Fleet Tracking</span>
+              <span className="sm:hidden">Fleet</span>
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+              <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Pagos</span>
+              <span className="sm:hidden">Pagos</span>
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+              <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Reportes</span>
+              <span className="sm:hidden">Reports</span>
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+              <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Configuración</span>
+              <span className="sm:hidden">Config</span>
+            </TabsTrigger>
+          </TabsList>
 
-          {/* Desktop Layout - Grid */}
-          <div className="hidden sm:block">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-6 bg-white shadow-sm border">
-              <TabsTrigger value="overview" className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4" />
-                <span className="hidden md:inline">Dashboard</span>
-              </TabsTrigger>
-              <TabsTrigger value="drivers" className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                <span className="hidden md:inline">Conductores</span>
-              </TabsTrigger>
-              <TabsTrigger value="fleet" className="flex items-center gap-2">
-                <Truck className="h-4 w-4" />
-                <span className="hidden md:inline">Fleet Tracking</span>
-              </TabsTrigger>
-              <TabsTrigger value="payments" className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4" />
-                <span className="hidden md:inline">Pagos</span>
-              </TabsTrigger>
-              <TabsTrigger value="reports" className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                <span className="hidden md:inline">Reportes</span>
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                <span className="hidden md:inline">Configuración</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
-
-          {/* Dashboard Overview */}
-          <TabsContent value="overview" className="space-y-6">
+          <TabsContent value="overview" className="space-y-6 mt-6">
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card className="hover:shadow-elegant transition-all duration-300 animate-fade-in">
@@ -459,7 +431,7 @@ export default function OwnerDashboard() {
           </TabsContent>
 
           {/* Drivers Management */}
-          <TabsContent value="drivers" className="space-y-6">
+          <TabsContent value="drivers" className="space-y-6 mt-6">
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-2xl font-bold">Gestión de Conductores</h2>
@@ -519,7 +491,7 @@ export default function OwnerDashboard() {
           </TabsContent>
 
           {/* Fleet Management */}
-          <TabsContent value="fleet" className="space-y-6">
+          <TabsContent value="fleet" className="space-y-6 mt-6">
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <div>
@@ -538,7 +510,7 @@ export default function OwnerDashboard() {
           </TabsContent>
 
           {/* Reports */}
-          <TabsContent value="reports" className="space-y-6">
+          <TabsContent value="reports" className="space-y-6 mt-6">
             <Card>
               <CardContent className="pt-6">
                 <div className="text-center py-12">
@@ -555,19 +527,18 @@ export default function OwnerDashboard() {
           </TabsContent>
 
           {/* Payment Periods Management */}
-          <TabsContent value="payments" className="space-y-6">
+          <TabsContent value="payments" className="space-y-6 mt-6">
             <PaymentPeriodsManager />
           </TabsContent>
 
           {/* Settings */}
-          <TabsContent value="settings" className="space-y-6">
+          <TabsContent value="settings" className="space-y-6 mt-6">
             <CompanySettingsForm 
               company={companyInfo as Company} 
               onUpdate={setCompanyInfo}
             />
           </TabsContent>
         </Tabs>
-        </div>
       </div>
     </>
   );
