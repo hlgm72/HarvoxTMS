@@ -29,10 +29,10 @@ export function ExpandableFloatingActions({
   const [isExpanded, setIsExpanded] = useState(false);
 
   const positionClasses = {
-    'bottom-right': 'top-1/2 -translate-y-1/2 -right-7',
-    'bottom-left': 'top-1/2 -translate-y-1/2 -left-7', 
-    'top-right': 'top-1/2 -translate-y-1/2 -right-7',
-    'top-left': 'top-1/2 -translate-y-1/2 -left-7'
+    'bottom-right': 'bottom-6 right-6',
+    'bottom-left': 'bottom-6 left-6', 
+    'top-right': 'top-6 right-6',
+    'top-left': 'top-6 left-6'
   };
 
   const animationClasses = {
@@ -53,13 +53,13 @@ export function ExpandableFloatingActions({
 
   return (
     <div className={cn(
-      'fixed z-10',
+      'fixed z-10 w-auto h-auto',
       positionClasses[position],
       className
     )}>
 
       {/* Contenedor relativo para posicionar elementos */}
-      <div className="relative flex items-center">
+      <div className="relative flex items-center w-auto h-auto">
         {/* Botones de acción a la izquierda del botón principal */}
         <div className={cn(
           'flex flex-col gap-3 transition-all duration-300 ease-out mr-4 items-end',
