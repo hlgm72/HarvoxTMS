@@ -9,10 +9,14 @@ import { LoadsFloatingActions } from "@/components/loads/LoadsFloatingActions";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
 import { formatPaymentPeriodCompact } from "@/lib/dateFormatting";
+import { useLoadsStats } from "@/hooks/useLoadsStats";
 
 export default function Loads() {
   const { t } = useTranslation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  
+  // Hook para obtener estadísticas en tiempo real
+  const { data: loadsStats, isLoading: statsLoading } = useLoadsStats();
   
   // Inicializar con período actual simple (sin fechas pre-calculadas)
   const getCurrentPeriodWithDates = (): PeriodFilterValue => {
@@ -80,8 +84,33 @@ export default function Loads() {
     return '';
   };
 
+  // Formatear el monto para mostrarlo en el subtitle
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('es-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
   const periodDateRange = getPeriodDateRange();
   const periodDescription = getPeriodDescription();
+  
+  // Crear el subtitle dinámico con las estadísticas
+  const getSubtitle = () => {
+    if (statsLoading || !loadsStats) {
+      return `Cargando estadísticas...${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`;
+    }
+    
+    const stats = [
+      `${loadsStats.totalActive} cargas activas`,
+      `${formatCurrency(loadsStats.totalAmount)} en tránsito`,
+      `${loadsStats.pendingAssignment} pendientes asignación`
+    ].join(' • ');
+    
+    return `${stats}${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`;
+  };
   
   // console.log('🎯 Final values:', { periodDateRange, periodDescription, periodFilter });
 
@@ -90,7 +119,7 @@ export default function Loads() {
       <PageToolbar 
         icon={Package}
         title={t("loads.title", "Gestión de Cargas")}
-        subtitle={`12 cargas activas • $45,230 en tránsito • 3 pendientes asignación${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`}
+        subtitle={getSubtitle()}
         actions={
           <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
             <Plus className="h-4 w-4" />
