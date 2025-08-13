@@ -23,33 +23,37 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
         <TabsList className="flex flex-wrap gap-1 p-1 min-h-[60px] bg-muted/30">
           <TabsTrigger 
             value="profile" 
-            className="flex items-center gap-2 text-sm py-3 px-5 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground min-w-0 flex-1"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
           >
-            <IdCard className="h-4 w-4 flex-shrink-0" />
-            <span className="whitespace-nowrap">Datos Personales</span>
+            <IdCard className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Datos Personales</span>
+            <span className="sm:hidden">Datos</span>
           </TabsTrigger>
           <TabsTrigger 
             value="preferences" 
-            className="flex items-center gap-2 text-sm py-3 px-5 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground min-w-0 flex-1"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
           >
-            <Settings className="h-4 w-4 flex-shrink-0" />
-            <span className="whitespace-nowrap">Preferencias</span>
+            <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Preferencias</span>
+            <span className="sm:hidden">Pref</span>
           </TabsTrigger>
           {isDriver && (
             <TabsTrigger 
               value="driver" 
-              className="flex items-center gap-2 text-sm py-3 px-4 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground min-w-0 flex-1"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
             >
-              <Truck className="h-4 w-4 flex-shrink-0" />
-              <span className="truncate">Conductor</span>
+              <Truck className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Conductor</span>
+              <span className="sm:hidden">Cond</span>
             </TabsTrigger>
           )}
           <TabsTrigger 
             value="security" 
-            className="flex items-center gap-2 text-sm py-3 px-4 transition-all duration-200 hover:bg-secondary/20 hover:text-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground min-w-0 flex-1"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
           >
-            <Shield className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">Seguridad</span>
+            <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Seguridad</span>
+            <span className="sm:hidden">Seg</span>
           </TabsTrigger>
         </TabsList>
 
