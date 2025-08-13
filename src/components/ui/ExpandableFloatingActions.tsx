@@ -57,7 +57,7 @@ export function ExpandableFloatingActions({
       {isExpanded && (
         <div className={cn(
           'fixed z-10 top-1/2 -translate-y-1/2',
-          position === 'bottom-right' ? '-right-16' : '-left-16'
+          position === 'bottom-right' ? 'right-16' : 'left-16'
         )}>
           <div className="flex flex-col gap-3 items-end">
             {actions.map((action, index) => {
