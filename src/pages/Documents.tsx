@@ -478,7 +478,6 @@ export default function Documents() {
               >
                 <Plus className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">Agregar</span>
-                <span className="sm:hidden">+</span>
               </Button>
             </div>
             
