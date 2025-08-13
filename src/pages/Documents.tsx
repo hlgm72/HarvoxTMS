@@ -353,35 +353,41 @@ export default function Documents() {
 
       {/* Document Categories */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="flex flex-wrap gap-1 p-1 md:grid md:grid-cols-7 md:h-auto">
-          <TabsTrigger value="all" className="flex items-center gap-1 text-xs md:text-sm px-2 py-1.5 flex-shrink-0">
-            <FolderOpen className="h-3 w-3 md:h-4 md:w-4" />
-            <span>Todos</span>
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 h-auto gap-1">
+          <TabsTrigger value="all" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <FolderOpen className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Todos</span>
+            <span className="sm:hidden">Todo</span>
           </TabsTrigger>
-          <TabsTrigger value="legal" className="flex items-center gap-1 text-xs md:text-sm px-2 py-1.5 flex-shrink-0">
-            <FileCheck className="h-3 w-3 md:h-4 md:w-4" />
-            <span>Legales</span>
+          <TabsTrigger value="legal" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <FileCheck className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Legales</span>
+            <span className="sm:hidden">Legal</span>
           </TabsTrigger>
-          <TabsTrigger value="insurance" className="flex items-center gap-1 text-xs md:text-sm px-2 py-1.5 flex-shrink-0">
-            <Shield className="h-3 w-3 md:h-4 md:w-4" />
-            <span>Seguros</span>
+          <TabsTrigger value="insurance" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Seguros</span>
+            <span className="sm:hidden">Seguro</span>
           </TabsTrigger>
-          <TabsTrigger value="permits" className="flex items-center gap-1 text-xs md:text-sm px-2 py-1.5 flex-shrink-0">
-            <CheckCircle className="h-3 w-3 md:h-4 md:w-4" />
-            <span>Permisos</span>
+          <TabsTrigger value="permits" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Permisos</span>
+            <span className="sm:hidden">Permit</span>
           </TabsTrigger>
-          <TabsTrigger value="financial" className="flex items-center gap-1 text-xs md:text-sm px-2 py-1.5 flex-shrink-0">
-            <DollarSign className="h-3 w-3 md:h-4 md:w-4" />
+          <TabsTrigger value="financial" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Financieros</span>
             <span className="sm:hidden">Money</span>
           </TabsTrigger>
-          <TabsTrigger value="contracts" className="flex items-center gap-1 text-xs md:text-sm px-2 py-1.5 flex-shrink-0">
-            <Users className="h-3 w-3 md:h-4 md:w-4" />
-            <span>Contratos</span>
+          <TabsTrigger value="contracts" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Contratos</span>
+            <span className="sm:hidden">Contr</span>
           </TabsTrigger>
-          <TabsTrigger value="other" className="flex items-center gap-1 text-xs md:text-sm px-2 py-1.5 flex-shrink-0">
-            <FileText className="h-3 w-3 md:h-4 md:w-4" />
-            <span>Otros</span>
+          <TabsTrigger value="other" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Otros</span>
+            <span className="sm:hidden">Otros</span>
           </TabsTrigger>
         </TabsList>
 
