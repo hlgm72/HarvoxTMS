@@ -173,16 +173,16 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
   return (
     <div className="space-y-6">
       {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-success/10 rounded-lg">
-                <CheckCircle className="h-5 w-5 text-success" />
+                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Aprobados</p>
-                <p className="text-xl font-semibold">${totalApproved.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Aprobados</p>
+                <p className="text-lg sm:text-xl font-semibold">${totalApproved.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
               </div>
             </div>
           </CardContent>
@@ -192,25 +192,25 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-warning/10 rounded-lg">
-                <Clock className="h-5 w-5 text-warning" />
+                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Pendientes</p>
-                <p className="text-xl font-semibold">${totalPending.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Pendientes</p>
+                <p className="text-lg sm:text-xl font-semibold">${totalPending.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="col-span-2 lg:col-span-1">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
-                <DollarSign className="h-5 w-5 text-primary" />
+                <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total</p>
-                <p className="text-xl font-semibold">${(totalApproved + totalPending).toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Total</p>
+                <p className="text-lg sm:text-xl font-semibold">${(totalApproved + totalPending).toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
               </div>
             </div>
           </CardContent>
