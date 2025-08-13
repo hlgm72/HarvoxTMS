@@ -11,7 +11,7 @@ import { ExpenseTemplateDialog } from "./ExpenseTemplateDialog";
 import { CreateEventualDeductionDialog } from "./CreateEventualDeductionDialog";
 import { EventualDeductionsList } from "./EventualDeductionsList";
 import { formatDateOnly } from '@/lib/dateFormatting';
-import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle } from "lucide-react";
+import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle, Repeat, Clock, Archive, History } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 
 interface DeductionsManagerProps {
@@ -465,18 +465,26 @@ export function DeductionsManager({
   return (
     <div className="space-y-6">
       <Tabs defaultValue="active" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-1">
-          <TabsTrigger value="active" className="text-xs md:text-sm px-2 md:px-3">
-            <span className="hidden sm:inline">Plantillas </span>Activas
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto gap-1">
+          <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <Repeat className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Plantillas Activas</span>
+            <span className="sm:hidden">Activas</span>
           </TabsTrigger>
-          <TabsTrigger value="inactive" className="text-xs md:text-sm px-2 md:px-3">
-            <span className="hidden sm:inline">Plantillas </span>Inactivas
+          <TabsTrigger value="inactive" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <Archive className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Plantillas Inactivas</span>
+            <span className="sm:hidden">Inactivas</span>
           </TabsTrigger>
-          <TabsTrigger value="eventual" className="text-xs md:text-sm px-2 md:px-3">
-            <span className="hidden sm:inline">Deducciones </span>Eventuales
+          <TabsTrigger value="eventual" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Deducciones Eventuales</span>
+            <span className="sm:hidden">Eventuales</span>
           </TabsTrigger>
-          <TabsTrigger value="history" className="text-xs md:text-sm px-2 md:px-3">
-            Historial
+          <TabsTrigger value="history" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <History className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Historial</span>
+            <span className="sm:hidden">Historial</span>
           </TabsTrigger>
         </TabsList>
 
