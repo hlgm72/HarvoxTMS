@@ -53,7 +53,7 @@ export function ExpandableFloatingActions({
 
   return (
     <div className={cn(
-      'fixed z-30',
+      'fixed z-20 pointer-events-none',
       positionClasses[position],
       className
     )}>
@@ -85,7 +85,7 @@ export function ExpandableFloatingActions({
                 key={index}
                 size="default"
                 className={cn(
-                  'animate-scale-in h-16 w-16 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex flex-col items-center justify-center gap-1 p-2 border',
+                  'animate-scale-in h-16 w-16 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex flex-col items-center justify-center gap-1 p-2 border pointer-events-auto',
                   colorClass,
                   action.className
                 )}
@@ -109,7 +109,7 @@ export function ExpandableFloatingActions({
             'bg-primary hover:bg-primary/90 text-primary-foreground',
             'flex items-center justify-center',
             'focus:outline-none active:outline-none',
-            'border-0 outline-0'
+            'border-0 outline-0 pointer-events-auto'
           )}
           onClick={handleMainClick}
           aria-label={mainLabel}
