@@ -345,40 +345,40 @@ export default function Documents() {
       {/* Document Categories */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3 md:grid-cols-7 h-auto gap-1">
-          <TabsTrigger value="all" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-1 sm:p-2">
-            <FolderOpen className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Todos</span>
-            <span className="sm:hidden">Todo</span>
+          <TabsTrigger value="all" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-1 md:p-2">
+            <FolderOpen className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden md:inline">Todos</span>
+            <span className="md:hidden">Todo</span>
           </TabsTrigger>
-          <TabsTrigger value="legal" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-1 sm:p-2">
-            <FileCheck className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Legales</span>
-            <span className="sm:hidden">Legal</span>
+          <TabsTrigger value="legal" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-1 md:p-2">
+            <FileCheck className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden md:inline">Legales</span>
+            <span className="md:hidden">Legal</span>
           </TabsTrigger>
-          <TabsTrigger value="insurance" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-1 sm:p-2">
-            <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Seguros</span>
-            <span className="sm:hidden">Seguro</span>
+          <TabsTrigger value="insurance" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-1 md:p-2">
+            <Shield className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden md:inline">Seguros</span>
+            <span className="md:hidden">Seguro</span>
           </TabsTrigger>
-          <TabsTrigger value="permits" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-1 sm:p-2">
-            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Permisos</span>
-            <span className="sm:hidden">Permit</span>
+          <TabsTrigger value="permits" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-1 md:p-2">
+            <CheckCircle className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden md:inline">Permisos</span>
+            <span className="md:hidden">Permit</span>
           </TabsTrigger>
-          <TabsTrigger value="financial" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-1 sm:p-2">
-            <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Financieros</span>
-            <span className="sm:hidden">Money</span>
+          <TabsTrigger value="financial" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-1 md:p-2">
+            <DollarSign className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden md:inline">Financieros</span>
+            <span className="md:hidden">Money</span>
           </TabsTrigger>
-          <TabsTrigger value="contracts" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-1 sm:p-2">
-            <Users className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Contratos</span>
-            <span className="sm:hidden">Contr</span>
+          <TabsTrigger value="contracts" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-1 md:p-2">
+            <Users className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden md:inline">Contratos</span>
+            <span className="md:hidden">Contr</span>
           </TabsTrigger>
-          <TabsTrigger value="other" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-1 sm:p-2">
-            <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Otros</span>
-            <span className="sm:hidden">Otros</span>
+          <TabsTrigger value="other" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-1 md:p-2">
+            <FileText className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden md:inline">Otros</span>
+            <span className="md:hidden">Otros</span>
           </TabsTrigger>
         </TabsList>
 
