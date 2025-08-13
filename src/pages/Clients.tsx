@@ -144,14 +144,14 @@ export default function Clients() {
       <div className="flex-1 space-y-6 p-2 md:p-4">
 
         {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Clientes</CardTitle>
-              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-xs sm:text-sm font-medium">Total Clientes</CardTitle>
+              <Building2 className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">{stats.total}</div>
+              <div className="text-lg sm:text-2xl font-bold text-primary">{stats.total}</div>
               <p className="text-xs text-muted-foreground">
                 {stats.active} activos, {stats.inactive} inactivos
               </p>
@@ -160,11 +160,11 @@ export default function Clients() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Clientes Activos</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-xs sm:text-sm font-medium">Clientes Activos</CardTitle>
+              <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+              <div className="text-lg sm:text-2xl font-bold text-green-600">{stats.active}</div>
               <p className="text-xs text-muted-foreground">
                 {((stats.active / stats.total) * 100 || 0).toFixed(1)}% del total
               </p>
@@ -173,11 +173,11 @@ export default function Clients() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Ingresos Totales</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-xs sm:text-sm font-medium">Ingresos Totales</CardTitle>
+              <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-lg sm:text-2xl font-bold text-blue-600">
                 ${stats.totalRevenue.toLocaleString()}
               </div>
               <p className="text-xs text-muted-foreground">
@@ -188,11 +188,11 @@ export default function Clients() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Cargas Activas</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-xs sm:text-sm font-medium">Cargas Activas</CardTitle>
+              <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">{stats.activeLoads}</div>
+              <div className="text-lg sm:text-2xl font-bold text-orange-600">{stats.activeLoads}</div>
               <p className="text-xs text-muted-foreground">
                 En progreso
               </p>
