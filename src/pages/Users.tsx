@@ -56,7 +56,7 @@ import { UserActionButton } from "@/components/users/UserActionButton";
 import { getRoleLabel, getRoleConfig } from "@/lib/roleUtils";
 import { deleteTestUser } from "@/utils/deleteTestUser";
 import { PageToolbar } from "@/components/layout/PageToolbar";
-import { UserFiltersSheet } from "@/components/users/UserFiltersSheet";
+import { UsersFloatingActions } from "@/components/users/UsersFloatingActions";
 import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
 
 type UserRole = Database["public"]["Enums"]["user_role"];
@@ -703,16 +703,8 @@ export default function Users() {
         }
       />
 
-      {/* Controls Section */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 sm:items-center sm:justify-between mb-6">
-        <UserFiltersSheet
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          roleFilter={roleFilter}
-          setRoleFilter={setRoleFilter}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-        />
+      {/* View Toggle */}
+      <div className="flex justify-end mb-6">
         <div className="flex border border-border rounded-lg">
           <Button
             variant={viewMode === 'table' ? 'default' : 'ghost'}
@@ -1249,6 +1241,15 @@ export default function Users() {
         onSuccess={() => {
           fetchUsers(); // Recargar la lista
         }}
+      />
+
+      <UsersFloatingActions
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        roleFilter={roleFilter}
+        setRoleFilter={setRoleFilter}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
       />
     </div>
   );
