@@ -57,7 +57,7 @@ export function ExpandableFloatingActions({
       {isExpanded && (
         <div className={cn(
           'fixed z-10 top-1/2 -translate-y-1/2',
-          position === 'bottom-right' ? 'right-16' : 'left-16'
+          position === 'bottom-right' ? 'right-20' : 'left-20'
         )}>
           <div className="flex flex-col gap-3 items-end">
             {actions.map((action, index) => {
@@ -102,7 +102,7 @@ export function ExpandableFloatingActions({
         className={cn(
           'fixed w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-10',
           isExpanded 
-            ? 'bg-fleet-orange-500 hover:bg-fleet-orange-600 text-white' 
+            ? 'bg-fleet-orange hover:bg-fleet-orange-dark text-white' 
             : 'bg-primary hover:bg-primary/90 text-primary-foreground',
           'flex items-center justify-center',
           'focus:outline-none active:outline-none',
