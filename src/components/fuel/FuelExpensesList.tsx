@@ -214,9 +214,11 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                         </DropdownMenuTrigger>
                         <DropdownMenuContent 
                           align="end" 
-                          className="w-48 z-50 bg-popover border shadow-md"
+                          className="w-48 z-[60] bg-popover border shadow-md"
                           side="bottom"
                           sideOffset={5}
+                          avoidCollisions={true}
+                          collisionPadding={10}
                         >
                           <DropdownMenuItem 
                             onClick={(e) => {
