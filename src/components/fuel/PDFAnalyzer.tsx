@@ -54,7 +54,6 @@ export function PDFAnalyzer() {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
-  const fuelExpenseACID = useFuelExpenseACID();
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -509,32 +508,47 @@ export function PDFAnalyzer() {
         }
       }
 
-      // Insertar transacciones una por una usando el hook ACID
-      for (const transaction of validTransactions) {
-        const fuelExpenseData = {
-          driver_user_id: transaction.driver_user_id!,
-          payment_period_id: transaction.payment_period_id!,
-          transaction_date: new Date(transaction.date).toISOString().split('T')[0],
-          fuel_type: transaction.category?.toLowerCase() || 'diesel',
-          gallons_purchased: Number(transaction.qty),
-          price_per_gallon: Number(transaction.gross_ppg),
-          gross_amount: Number(transaction.gross_amt),
-          discount_amount: Number(transaction.disc_amt),
-          fees: Number(transaction.fees),
-          total_amount: Number(transaction.total_amt),
-          station_name: transaction.location_name,
-          station_state: transaction.state,
-          card_last_five: transaction.card.slice(-5),
-          invoice_number: transaction.invoice,
-          status: 'pending'
-        };
-
-        console.log('📋 Creating fuel expense:', fuelExpenseData);
-        
-        await fuelExpenseACID.mutateAsync({
-          expenseData: fuelExpenseData
-        });
+      // Obtener companyId del usuario
+      const { data: userCompanies } = await supabase
+        .from('user_company_roles')
+        .select('company_id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .limit(1);
+      
+      const companyId = userCompanies?.[0]?.company_id;
+      if (!companyId) {
+        throw new Error('No se pudo obtener la empresa del usuario');
       }
+
+      // Preparar datos para inserción directa con todos los campos requeridos
+      const fuelExpenses = validTransactions.map(transaction => ({
+        driver_user_id: transaction.driver_user_id!,
+        payment_period_id: transaction.payment_period_id!,
+        company_id: companyId,
+        transaction_date: new Date(transaction.date).toISOString().split('T')[0],
+        fuel_type: transaction.category?.toLowerCase() || 'diesel',
+        gallons_purchased: Number(transaction.qty),
+        price_per_gallon: Number(transaction.gross_ppg),
+        gross_amount: Number(transaction.gross_amt),
+        discount_amount: Number(transaction.disc_amt) || 0,
+        fees: Number(transaction.fees) || 0,
+        total_amount: Number(transaction.total_amt),
+        station_name: transaction.location_name,
+        station_state: transaction.state,
+        card_last_five: transaction.card.slice(-5),
+        invoice_number: transaction.invoice,
+        status: 'pending',
+        created_by: user?.id
+      }));
+
+      console.log('📋 Inserting fuel expenses:', fuelExpenses);
+      
+      const { data, error } = await supabase
+        .from('fuel_expenses')
+        .insert(fuelExpenses);
+
+      if (error) throw error;
 
       showSuccess(
         "Importación exitosa",
