@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { StateCombobox } from "@/components/ui/StateCombobox";
 import { Shield } from "lucide-react";
 import DatePicker from 'react-datepicker';
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import 'react-datepicker/dist/react-datepicker.css';
 
 interface LicenseInfoData {
@@ -95,7 +95,7 @@ export function LicenseInfoSection({ data, onUpdate, loading = false }: LicenseI
               dropdownMode="select"
               yearDropdownItemNumber={50}
               scrollableYearDropdown
-              locale={es}
+              locale={enUS}
               disabled={loading}
               className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
             />
@@ -115,7 +115,7 @@ export function LicenseInfoSection({ data, onUpdate, loading = false }: LicenseI
               dropdownMode="select"
               yearDropdownItemNumber={50}
               scrollableYearDropdown
-              locale={es}
+              locale={enUS}
               disabled={loading}
               className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
             />

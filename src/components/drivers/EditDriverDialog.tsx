@@ -21,7 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { createPhoneHandlers, handleTextBlur } from '@/lib/textUtils';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { LicenseInfoSection } from '@/components/drivers/LicenseInfoSection';
 
@@ -615,7 +615,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                         dropdownMode="select"
                         yearDropdownItemNumber={53}
                         scrollableYearDropdown
-                        locale={es}
+                        locale={enUS}
                         minDate={new Date(new Date().getFullYear() - 70, 0, 1)}
                         maxDate={new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate())}
                         className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
@@ -698,7 +698,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                           dropdownMode="select"
                           yearDropdownItemNumber={50}
                           scrollableYearDropdown
-                          locale={es}
+                          locale={enUS}
                           className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
                         />
                       </div>
