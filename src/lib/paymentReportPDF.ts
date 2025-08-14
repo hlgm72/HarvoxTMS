@@ -436,7 +436,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const totalAmount = data.loads?.reduce((sum, load) => sum + (load.total_amount || 0), 0) || 0;
   const formattedTotal = formatCurrency(totalAmount);
   
-  addText(`Loads completed: ${loadCount} loads (${formattedTotal})`, margin, currentY, {
+  addText(`Completed Loads (Count: ${loadCount}, Total: ${formattedTotal})`, margin, currentY, {
     fontSize: 12,
     fontStyle: 'bold',
     color: colors.darkGray
@@ -590,7 +590,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   const totalDeductions = data.deductions?.reduce((sum, d) => sum + d.amount, 0) || 0;
   const deductionsCount = data.deductions?.length || 0;
-  addText(`Total Deductions: ${deductionsCount} items (${formatCurrency(totalDeductions)})`, margin + 2, currentY, {
+  addText(`Period Deductions (Count: ${deductionsCount}, Total: ${formatCurrency(totalDeductions)})`, margin + 2, currentY, {
     fontSize: 10,
     fontStyle: 'bold',
     color: colors.darkGray
@@ -628,7 +628,8 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   doc.setFillColor(grayRgb[0], grayRgb[1], grayRgb[2]);
   doc.rect(margin, currentY - 5, pageWidth - margin*2, 8, 'F');
   
-  addText(`Fuel Purchases ($${data.period.fuel_expenses.toFixed(2)})`, margin + 2, currentY, {
+  const fuelCount = data.fuelExpenses?.length || 0;
+  addText(`Fuel Expenses (Count: ${fuelCount}, Total: ${formatCurrency(data.period.fuel_expenses)})`, margin + 2, currentY, {
     fontSize: 10,
     fontStyle: 'bold',
     color: colors.darkGray
