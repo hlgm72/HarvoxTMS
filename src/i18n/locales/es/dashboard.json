@@ -5,7 +5,7 @@
     "tabs": {
       "overview": "Dashboard",
       "drivers": "Conductores", 
-      "fleet": "Fleet Tracking",
+      "fleet": "Seguimiento de Flota",
       "payments": "Pagos",
       "reports": "Reportes",
       "settings": "Configuración"
