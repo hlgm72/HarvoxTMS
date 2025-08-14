@@ -75,25 +75,25 @@ export function MaintenanceScheduleCard({
         <div className="text-xs text-muted-foreground">Upcoming & Overdue</div>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-5">
         {/* Status summary */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="text-center p-2 bg-destructive/10 rounded-lg">
-            <div className="text-lg font-bold text-destructive">{overdueCount}</div>
+          <div className="text-center p-3 bg-destructive/10 rounded-lg">
+            <div className="text-xl font-bold text-destructive">{overdueCount}</div>
             <div className="text-xs text-muted-foreground">Vencidos</div>
           </div>
-          <div className="text-center p-2 bg-warning/10 rounded-lg">
-            <div className="text-lg font-bold text-warning">{thisWeekCount}</div>
+          <div className="text-center p-3 bg-warning/10 rounded-lg">
+            <div className="text-xl font-bold text-warning">{thisWeekCount}</div>
             <div className="text-xs text-muted-foreground">Esta Semana</div>
           </div>
         </div>
         
         {/* Alert summary */}
         {overdueCount > 0 && (
-          <div className="flex items-center gap-2 p-2 bg-destructive/10 rounded-md">
+          <div className="flex items-center gap-2 p-3 bg-destructive/10 rounded-md border border-destructive/20">
             <AlertCircle className="h-4 w-4 text-destructive" />
             <div className="flex-1">
-              <div className="text-xs font-medium text-destructive">
+              <div className="text-sm font-medium text-destructive">
                 Mantenimientos Vencidos
               </div>
               <div className="text-xs text-muted-foreground">
@@ -104,14 +104,14 @@ export function MaintenanceScheduleCard({
         )}
         
         {/* Maintenance list */}
-        <div className="space-y-2">
-          <div className="text-xs font-medium text-foreground mb-2">Próximos Mantenimientos</div>
-          {upcomingMaintenance.slice(0, 4).map((item, index) => (
-            <div key={item.id} className="flex items-center justify-between p-2 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors">
-              <div className="flex items-center gap-2">
+        <div className="space-y-3">
+          <div className="text-sm font-medium text-foreground">Próximos Mantenimientos</div>
+          {upcomingMaintenance.slice(0, 3).map((item, index) => (
+            <div key={item.id} className="flex items-center justify-between p-3 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors">
+              <div className="flex items-center gap-3">
                 {getPriorityIcon(item.priority, item.overdue)}
                 <div>
-                  <div className="text-xs font-medium">{item.equipmentNumber}</div>
+                  <div className="text-sm font-medium">{item.equipmentNumber}</div>
                   <div className="text-xs text-muted-foreground">
                     {item.maintenanceType}
                   </div>
@@ -128,8 +128,8 @@ export function MaintenanceScheduleCard({
         </div>
         
         {/* Quick action */}
-        <div className="pt-2">
-          <Button variant="outline" size="sm" className="w-full text-xs">
+        <div className="pt-1">
+          <Button variant="outline" size="sm" className="w-full text-xs h-8">
             <Calendar className="h-3 w-3 mr-2" />
             Ver Calendario Completo
           </Button>
