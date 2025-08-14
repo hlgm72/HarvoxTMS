@@ -783,51 +783,6 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     align: 'right'
   });
 
-  // === FIRMA DIGITAL ===
-  const signatureX = margin + 100;
-  currentY += 25;
-  
-  addText('✓ Firmado digitalmente y aprobado por el conductor', signatureX, currentY, {
-    fontSize: 10,
-    fontStyle: 'bold',
-    color: colors.darkGray
-  });
-  
-  addText(`Conductor: ${data.driver.name}`, signatureX, currentY + 8, {
-    fontSize: 9,
-    color: colors.gray
-  });
-  
-  const signDate = new Date();
-  addText(`Firmado el: ${signDate.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric', 
-    year: 'numeric'
-  })} at ${signDate.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  })}`, signatureX, currentY + 16, {
-    fontSize: 9,
-    color: colors.gray
-  });
-
-  // Información de contacto final
-  currentY += 35;
-  addText('If you have any questions, please contact us by phone', signatureX, currentY, {
-    fontSize: 8,
-    color: colors.gray
-  });
-  
-  addText(`or email at ${data.company.email || 'hgtransport16@gmail.com'}`, signatureX, currentY + 6, {
-    fontSize: 8,
-    color: colors.gray
-  });
-  
-  addText('Thank you for your business - We really appreciate it.', signatureX, currentY + 12, {
-    fontSize: 8,
-    color: colors.gray
-  });
 
   // === PIE DE PÁGINA ===
   const addFooter = (pageNumber: number, totalPages: number) => {
