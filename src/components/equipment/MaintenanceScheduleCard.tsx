@@ -106,30 +106,32 @@ export function MaintenanceScheduleCard({
         {/* Maintenance list */}
         <div className="space-y-3">
           <div className="text-sm font-medium text-foreground">Próximos Mantenimientos</div>
-          {upcomingMaintenance.slice(0, 3).map((item, index) => (
-            <div key={item.id} className="flex items-center justify-between p-3 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors">
-              <div className="flex items-center gap-3">
-                {getPriorityIcon(item.priority, item.overdue)}
-                <div>
-                  <div className="text-sm font-medium">{item.equipmentNumber}</div>
+          <div className="space-y-3 max-h-44 overflow-y-auto">
+            {upcomingMaintenance.slice(0, 3).map((item, index) => (
+              <div key={item.id} className="flex items-center justify-between p-3 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-3">
+                  {getPriorityIcon(item.priority, item.overdue)}
+                  <div>
+                    <div className="text-sm font-medium">{item.equipmentNumber}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {item.maintenanceType}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  {getPriorityBadge(item.priority, item.overdue)}
                   <div className="text-xs text-muted-foreground">
-                    {item.maintenanceType}
+                    {item.dueDate}
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col items-end gap-1">
-                {getPriorityBadge(item.priority, item.overdue)}
-                <div className="text-xs text-muted-foreground">
-                  {item.dueDate}
-                </div>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
         
         {/* Quick action */}
-        <div className="pt-1">
-          <Button variant="outline" size="sm" className="w-full text-xs h-8">
+        <div className="pt-2 mt-auto">
+          <Button variant="outline" size="sm" className="w-full text-xs h-9 font-medium">
             <Calendar className="h-3 w-3 mr-2" />
             Ver Calendario Completo
           </Button>

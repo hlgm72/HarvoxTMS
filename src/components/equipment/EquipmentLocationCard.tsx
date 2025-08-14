@@ -82,7 +82,7 @@ export function EquipmentLocationCard({
         </div>
         
         {/* Mini map placeholder */}
-        <div className="h-24 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg flex items-center justify-center relative overflow-hidden">
+        <div className="h-28 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg flex items-center justify-center relative overflow-hidden">
           <div className="absolute inset-0 opacity-20">
             <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-400 via-blue-500 to-blue-600"></div>
           </div>
@@ -97,25 +97,27 @@ export function EquipmentLocationCard({
         {/* Recent locations */}
         <div className="space-y-3">
           <div className="text-sm font-medium text-foreground">{t('tracking.recent_locations')}</div>
-          {locations.slice(0, 3).map((location, index) => (
-            <div key={location.id} className="flex items-center justify-between p-3 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors">
-              <div className="flex items-center gap-3">
-                {getStatusIcon(location.status)}
-                <div>
-                  <div className="text-sm font-medium">{location.equipmentNumber}</div>
-                  <div className="text-xs text-muted-foreground truncate max-w-[120px]">
-                    {location.location}
+          <div className="space-y-3 max-h-40 overflow-y-auto">
+            {locations.slice(0, 3).map((location, index) => (
+              <div key={location.id} className="flex items-center justify-between p-3 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-3">
+                  {getStatusIcon(location.status)}
+                  <div>
+                    <div className="text-sm font-medium">{location.equipmentNumber}</div>
+                    <div className="text-xs text-muted-foreground truncate max-w-[120px]">
+                      {location.location}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  {getStatusBadge(location.status)}
+                  <div className="text-xs text-muted-foreground">
+                    {location.lastUpdate}
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col items-end gap-1">
-                {getStatusBadge(location.status)}
-                <div className="text-xs text-muted-foreground">
-                  {location.lastUpdate}
-                </div>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </CardContent>
     </Card>
