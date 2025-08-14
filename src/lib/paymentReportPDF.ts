@@ -508,8 +508,9 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const pickupDate = new Date(load.pickup_date).toLocaleDateString('en-US');
       const pickupInfo = ` ${pickupDate} ${pickupCompany} (${pickupLocation})`;
       
-      // PUP en bold con alineación
-      addText(pupPrefix, margin, currentY + 4, {
+      // PUP en bold con alineación a la derecha
+      const pupPosition = colonPosition - doc.getTextWidth(pupPrefix);
+      addText(pupPrefix, pupPosition, currentY + 4, {
         fontSize: 9,
         fontStyle: 'bold',
         color: colors.darkGray
@@ -524,8 +525,9 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const deliveryDate = new Date(load.delivery_date).toLocaleDateString('en-US');
       const deliveryInfo = ` ${deliveryDate} ${deliveryCompany} (${deliveryLocation})`;
       
-      // DEL en bold con alineación
-      addText(delPrefix, margin, currentY + 8, {
+      // DEL en bold con alineación a la derecha
+      const delPosition = colonPosition - doc.getTextWidth(delPrefix);
+      addText(delPrefix, delPosition, currentY + 8, {
         fontSize: 9,
         fontStyle: 'bold',
         color: colors.darkGray
