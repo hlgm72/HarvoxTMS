@@ -649,6 +649,13 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       currentY += 6;
     });
+  } else {
+    addText('No deductions for this period', margin + 2, currentY, {
+      fontSize: 9,
+      fontStyle: 'italic',
+      color: colors.darkGray
+    });
+    currentY += 6;
   }
 
   currentY += 15;
@@ -711,6 +718,13 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       currentY += 6;
     });
+  } else {
+    addText('No fuel expenses for this period', margin + 2, currentY, {
+      fontSize: 9,
+      fontStyle: 'italic',
+      color: colors.darkGray
+    });
+    currentY += 6;
   }
 
   // Verificar si necesitamos una nueva página antes del Summary
