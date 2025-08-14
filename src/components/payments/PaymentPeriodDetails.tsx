@@ -15,6 +15,7 @@ import { useClosePaymentPeriod } from "@/hooks/useClosePaymentPeriod";
 import { useMarkMultipleDriversPaid } from "@/hooks/useMarkMultipleDriversPaid";
 import { PaymentPeriodAlerts } from "./PaymentPeriodAlerts";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
+import { useTranslation } from 'react-i18next';
 
 interface PaymentPeriodDetailsProps {
   periodId: string;
@@ -39,6 +40,7 @@ interface DriverCalculation {
 }
 
 export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetailsProps) {
+  const { t } = useTranslation('payments');
   const { showSuccess, showError } = useFleetNotifications();
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedDrivers, setSelectedDrivers] = useState<string[]>([]);
@@ -65,7 +67,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
   // Función para marcar conductores seleccionados como pagados
   const handleMarkAsPaid = () => {
     if (selectedDrivers.length === 0) {
-      showError('Selecciona conductores', 'Debes seleccionar al menos un conductor para marcar como pagado');
+      showError(t('mark_as_paid.select_drivers'), t('mark_as_paid.select_drivers_error'));
       return;
     }
 
@@ -218,7 +220,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
           {period.status === 'open' && !period.is_locked && (
             <Button onClick={handleProcessPeriod} disabled={isProcessing}>
               <Calculator className="h-4 w-4 mr-2" />
-              Procesar Período
+              {t('period.process_period')}
             </Button>
           )}
           
@@ -250,7 +252,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
           <CardContent className="p-6">
             <div className="flex flex-col space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-medium text-muted-foreground">Ingresos Brutos</h4>
+                <h4 className="text-sm font-medium text-muted-foreground">{t('summary.gross_income')}</h4>
                 <DollarSign className="h-5 w-5 text-primary" />
               </div>
               <div className="space-y-1">
@@ -266,7 +268,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
           <CardContent className="p-6">
             <div className="flex flex-col space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-medium text-muted-foreground">Otros Ingresos</h4>
+                <h4 className="text-sm font-medium text-muted-foreground">{t('summary.other_income')}</h4>
                 <TrendingUp className="h-5 w-5 text-success" />
               </div>
               <div className="space-y-1">
@@ -282,7 +284,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
           <CardContent className="p-6">
             <div className="flex flex-col space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-medium text-muted-foreground">Deducciones</h4>
+                <h4 className="text-sm font-medium text-muted-foreground">{t('summary.total_deductions')}</h4>
                 <Receipt className="h-5 w-5 text-destructive" />
               </div>
               <div className="space-y-1">
@@ -298,7 +300,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
           <CardContent className="p-6">
             <div className="flex flex-col space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-medium text-muted-foreground">Combustible</h4>
+                <h4 className="text-sm font-medium text-muted-foreground">{t('tabs.fuel_expenses')}</h4>
                 <Fuel className="h-5 w-5 text-warning" />
               </div>
               <div className="space-y-1">
@@ -340,8 +342,8 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
       {/* Tabs con detalles */}
       <Tabs defaultValue="drivers" className="w-full">
         <TabsList>
-          <TabsTrigger value="drivers">Conductores</TabsTrigger>
-          <TabsTrigger value="summary">Resumen</TabsTrigger>
+          <TabsTrigger value="drivers">{t('period.tabs.drivers')}</TabsTrigger>
+          <TabsTrigger value="summary">{t('period.tabs.summary')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="drivers" className="space-y-4">
@@ -349,9 +351,9 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
           {unpaidDrivers.length > 0 && !period.is_locked && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Procesar Pagos</CardTitle>
+                <CardTitle className="text-base">{t('period.process_payments')}</CardTitle>
                 <CardDescription>
-                  Selecciona conductores y marca como pagados
+                  {t('period.select_drivers_description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -405,7 +407,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                     disabled={selectedDrivers.length === 0 || isMarkingPaid}
                   >
                     <PaymentIcon className="h-4 w-4 mr-2" />
-                    {isMarkingPaid ? 'Procesando...' : 'Marcar como Pagados'}
+                    {isMarkingPaid ? t('mark_as_paid.processing') : t('mark_as_paid.button')}
                   </Button>
                 </div>
               </CardContent>
@@ -458,13 +460,13 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
                   <div>
-                    <p className="text-muted-foreground">Ingresos Brutos</p>
+                    <p className="text-muted-foreground">{t('summary.gross_income')}</p>
                     <p className="font-semibold">
                       ${(calc.gross_earnings || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Otros Ingresos</p>
+                    <p className="text-muted-foreground">{t('summary.other_income')}</p>
                     <p className="font-semibold text-success">
                       ${(calc.other_income || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                     </p>
@@ -476,7 +478,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                     </p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Combustible</p>
+                    <p className="text-muted-foreground">{t('tabs.fuel_expenses')}</p>
                     <p className="font-semibold text-warning">
                       -${(calc.fuel_expenses || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                     </p>
@@ -496,29 +498,29 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
         <TabsContent value="summary">
           <Card>
             <CardHeader>
-              <CardTitle>Resumen del Período</CardTitle>
+              <CardTitle>{t('period.summary_title')}</CardTitle>
               <CardDescription>
-                Detalles completos del período de pago
+                {t('period.summary_description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">Período</p>
+                  <p className="text-sm text-muted-foreground">{t('period.period_label')}</p>
                   <p className="font-semibold">
                     {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Frecuencia</p>
+                  <p className="text-sm text-muted-foreground">{t('period.frequency_label')}</p>
                   <p className="font-semibold">{period.period_frequency}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Tipo</p>
+                  <p className="text-sm text-muted-foreground">{t('period.type_label')}</p>
                   <p className="font-semibold">{period.period_type}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Estado</p>
+                  <p className="text-sm text-muted-foreground">{t('period.status_label')}</p>
                   <p className="font-semibold">{period.status}</p>
                 </div>
               </div>

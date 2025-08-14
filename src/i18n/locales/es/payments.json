@@ -51,7 +51,20 @@
     "driver_count": "conductor",
     "driver_count_plural": "conductores",
     "details_title": "Detalles del Período de Pago",
-    "details_description": "Información detallada de ingresos, deducciones y cálculos del período de pago seleccionado."
+    "details_description": "Información detallada de ingresos, deducciones y cálculos del período de pago seleccionado.",
+    "process_period": "Procesar Período",
+    "process_payments": "Procesar Pagos",
+    "select_drivers_description": "Selecciona conductores y marca como pagados",
+    "summary_title": "Resumen del Período",
+    "summary_description": "Detalles completos del período de pago",
+    "period_label": "Período",
+    "frequency_label": "Frecuencia",
+    "type_label": "Tipo",
+    "status_label": "Estado",
+    "tabs": {
+      "drivers": "Conductores",
+      "summary": "Resumen"
+    }
   },
   "deductions": {
     "create": "Crear Deducción",

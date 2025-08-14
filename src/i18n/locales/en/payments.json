@@ -51,7 +51,20 @@
     "driver_count": "driver",
     "driver_count_plural": "drivers",
     "details_title": "Payment Period Details",
-    "details_description": "Detailed information on income, deductions and calculations for the selected payment period."
+    "details_description": "Detailed information on income, deductions and calculations for the selected payment period.",
+    "process_period": "Process Period",
+    "process_payments": "Process Payments",
+    "select_drivers_description": "Select drivers and mark as paid",
+    "summary_title": "Period Summary",
+    "summary_description": "Complete details of the payment period",
+    "period_label": "Period",
+    "frequency_label": "Frequency",
+    "type_label": "Type",
+    "status_label": "Status",
+    "tabs": {
+      "drivers": "Drivers",
+      "summary": "Summary"
+    }
   },
   "deductions": {
     "create": "Create Deduction",
