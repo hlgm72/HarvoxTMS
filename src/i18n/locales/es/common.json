@@ -215,6 +215,87 @@
       "search": "Buscar...",
       "error_loading": "Error al cargar datos",
       "load_more": "Cargar más..."
+    },
+    "sidebar": {
+      "sections": {
+        "dashboard": "Dashboard",
+        "operations": "Gestión Operacional",
+        "commercial": "Gestión Comercial",
+        "financial": "Gestión Financiera",
+        "reports": "Reportes y Análisis",
+        "admin": "Administración",
+        "monitoring": "Dashboard y Supervisión",
+        "loads": "Gestión de Cargas",
+        "resources": "Recursos",
+        "tasks": "Mis Tareas",
+        "business": "Negocios"
+      },
+      "navigation": {
+        "executive_dashboard": "Dashboard Ejecutivo",
+        "operational_dashboard": "Dashboard Operacional",
+        "dispatch_dashboard": "Dashboard",
+        "my_dashboard": "Mi Dashboard",
+        "drivers": "Conductores",
+        "fleet": "Flota",
+        "loads": "Cargas",
+        "clients": "Clientes",
+        "billing": "Facturación",
+        "additional_payments": "Pagos Adicionales",
+        "deductions": "Deducciones",
+        "fuel_management": "Gestión de Combustible",
+        "driver_payments": "Pagos de Conductores",
+        "payment_reports": "Reportes de Pago",
+        "financial_reports": "Reportes Financieros",
+        "documents": "Documentos",
+        "user_management": "Gestión de Usuarios",
+        "settings": "Configuración",
+        "supervision": "Supervisión",
+        "routes": "Rutas",
+        "tracking": "Seguimiento",
+        "active_loads": "Cargas Activas",
+        "assign_loads": "Asignar Cargas",
+        "my_loads": "Mis Cargas",
+        "my_documents": "Mis Documentos",
+        "payments": "Pagos"
+      },
+      "descriptions": {
+        "executive_panel": "Panel ejecutivo",
+        "operational_panel": "Panel operacional",
+        "dispatch_panel": "Panel de despacho",
+        "personal_panel": "Panel personal",
+        "driver_management": "Gestión de conductores",
+        "vehicles_equipment": "Vehículos y equipos",
+        "load_management": "Gestión de cargas",
+        "client_base": "Base de clientes",
+        "billing_payments": "Facturación y pagos",
+        "additional_income": "Ingresos adicionales para conductores y despachadores",
+        "recurring_expenses": "Gastos recurrentes",
+        "fuel_control": "Control de combustible y tarjetas WEX",
+        "payment_management": "Gestión de pagos",
+        "pdf_payment_reports": "Reportes de pago en PDF",
+        "financial_analysis": "Análisis financiero",
+        "company_documents": "Documentos de la compañía",
+        "users_roles": "Usuarios y roles",
+        "company_settings": "Configuración de empresa",
+        "equipment_supervision": "Supervisión de equipos",
+        "route_planning": "Planificación de rutas",
+        "real_time_tracking": "Seguimiento en tiempo real",
+        "loads_in_progress": "Cargas en progreso",
+        "load_assignment": "Asignación de cargas",
+        "assigned_loads": "Cargas asignadas",
+        "personal_documents": "Documentos personales",
+        "payment_history": "Historial de pagos",
+        "driver_status": "Estado de conductores",
+        "documentation": "Documentación"
+      },
+      "status": {
+        "system_online": "Sistema En Línea",
+        "system_status": "Estado del Sistema",
+        "no_role": "Sin rol"
+      },
+      "company": {
+        "professional_tms": "TMS Profesional"
+      }
     }
   }
 }

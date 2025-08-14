@@ -44,129 +44,129 @@ const companies = [
 ];
 
 // Navegación para Company Owner
-const getCompanyOwnerNavigationItems = (driversCount: number, equipmentCount: number, loadsCount: number) => [
+const getCompanyOwnerNavigationItems = (driversCount: number, equipmentCount: number, loadsCount: number, t: any) => [
   // Dashboard
   { 
-    title: "Dashboard Ejecutivo", 
+    title: t('sidebar.navigation.executive_dashboard'), 
     url: "/dashboard/owner", 
     icon: Target, 
     badge: "Live",
     badgeVariant: "live" as const,
-    description: "Panel ejecutivo",
+    description: t('sidebar.descriptions.executive_panel'),
     section: "dashboard"
   },
   
   // Gestión Operacional
   { 
-    title: "Conductores", 
+    title: t('sidebar.navigation.drivers'), 
     url: "/drivers", 
     icon: Users, 
     badge: driversCount.toString(),
     badgeVariant: "count" as const,
-    description: "Gestión de conductores",
+    description: t('sidebar.descriptions.driver_management'),
     section: "operations"
   },
   { 
-    title: "Flota", 
+    title: t('sidebar.navigation.fleet'), 
     url: "/equipment", 
     icon: Truck, 
      badge: equipmentCount.toString(),
     badgeVariant: "count" as const,
-    description: "Vehículos y equipos",
+    description: t('sidebar.descriptions.vehicles_equipment'),
     section: "operations"
   },
   { 
-    title: "Cargas", 
+    title: t('sidebar.navigation.loads'), 
     url: "/loads", 
     icon: Package, 
     badge: loadsCount.toString(),
     badgeVariant: "count" as const,
-    description: "Gestión de cargas",
+    description: t('sidebar.descriptions.load_management'),
     section: "operations"
   },
   
   // Gestión Comercial
   { 
-    title: "Clientes", 
+    title: t('sidebar.navigation.clients'), 
     url: "/clients", 
     icon: Building2,
-    description: "Base de clientes",
+    description: t('sidebar.descriptions.client_base'),
     section: "commercial"
   },
   { 
-    title: "Facturación", 
+    title: t('sidebar.navigation.billing'), 
     url: "/billing", 
     icon: CreditCard,
-    description: "Facturación y pagos",
+    description: t('sidebar.descriptions.billing_payments'),
     section: "commercial"
   },
   
   // Gestión Financiera
   { 
-    title: "Pagos Adicionales", 
+    title: t('sidebar.navigation.additional_payments'), 
     url: "/additional-payments", 
     icon: Calculator,
-    description: "Ingresos adicionales para conductores y despachadores",
+    description: t('sidebar.descriptions.additional_income'),
     section: "financial"
   },
   { 
-    title: "Deducciones", 
+    title: t('sidebar.navigation.deductions'), 
     url: "/deductions", 
     icon: Receipt,
-    description: "Gastos recurrentes",
+    description: t('sidebar.descriptions.recurring_expenses'),
     section: "financial"
   },
   { 
-    title: "Gestión de Combustible", 
+    title: t('sidebar.navigation.fuel_management'), 
     url: "/fuel-management", 
     icon: Fuel,
-    description: "Control de combustible y tarjetas WEX",
+    description: t('sidebar.descriptions.fuel_control'),
     section: "financial"
   },
   { 
-    title: "Pagos de Conductores", 
+    title: t('sidebar.navigation.driver_payments'), 
     url: "/payments", 
     icon: DollarSign,
-    description: "Gestión de pagos",
+    description: t('sidebar.descriptions.payment_management'),
     section: "financial"
   },
   
   // Reportes y Análisis
   { 
-    title: "Reportes de Pago", 
+    title: t('sidebar.navigation.payment_reports'), 
     url: "/payment-reports", 
     icon: FileBarChart,
-    description: "Reportes de pago en PDF",
+    description: t('sidebar.descriptions.pdf_payment_reports'),
     section: "reports"
   },
   { 
-    title: "Reportes Financieros", 
+    title: t('sidebar.navigation.financial_reports'), 
     url: "/reports/financial", 
     icon: BarChart3,
-    description: "Análisis financiero",
+    description: t('sidebar.descriptions.financial_analysis'),
     section: "reports"
   },
   
   // Administración
   { 
-    title: "Documentos", 
+    title: t('sidebar.navigation.documents'), 
     url: "/documents", 
     icon: FileText,
-    description: "Documentos de la compañía",
+    description: t('sidebar.descriptions.company_documents'),
     section: "admin"
   },
   { 
-    title: "Gestión de Usuarios", 
+    title: t('sidebar.navigation.user_management'), 
     url: "/users", 
     icon: Users, 
-    description: "Usuarios y roles",
+    description: t('sidebar.descriptions.users_roles'),
     section: "admin"
   },
   { 
-    title: "Configuración", 
+    title: t('sidebar.navigation.settings'), 
     url: "/settings", 
     icon: Settings,
-    description: "Configuración de empresa",
+    description: t('sidebar.descriptions.company_settings'),
     section: "admin"
   },
 ];
@@ -480,7 +480,7 @@ export function AppSidebar() {
   // Determinar navegación según el rol del usuario
   const getNavigationItems = () => {
     if (isSuperAdmin) return getSuperAdminNavigationItems(t);
-    if (isCompanyOwner) return getCompanyOwnerNavigationItems(driversCount, equipmentCount, loadsCount);
+    if (isCompanyOwner) return getCompanyOwnerNavigationItems(driversCount, equipmentCount, loadsCount, t);
     if (isOperationsManager) return getOperationsManagerNavigationItems(driversCount, equipmentCount, loadsCount);
     if (isDispatcher) return getDispatcherNavigationItems(driversCount);
     if (isDriver) return getDriverNavigationItems();
@@ -497,33 +497,33 @@ export function AppSidebar() {
   const getSectionLabels = () => {
     if (isCompanyOwner) {
       return {
-        dashboard: "Dashboard",
-        operations: "Gestión Operacional", 
-        commercial: "Gestión Comercial",
-        financial: "Gestión Financiera",
-        reports: "Reportes y Análisis",
-        admin: "Administración"
+        dashboard: t('sidebar.sections.dashboard'),
+        operations: t('sidebar.sections.operations'), 
+        commercial: t('sidebar.sections.commercial'),
+        financial: t('sidebar.sections.financial'),
+        reports: t('sidebar.sections.reports'),
+        admin: t('sidebar.sections.admin')
       };
     }
     if (isOperationsManager) {
       return {
-        dashboard: "Dashboard y Supervisión",
-        operations: "Gestión Operacional",
-        reports: "Reportes"
+        dashboard: t('sidebar.sections.monitoring'),
+        operations: t('sidebar.sections.operations'),
+        reports: t('sidebar.sections.reports')
       };
     }
     if (isDispatcher) {
       return {
-        dashboard: "Dashboard y Seguimiento",
-        loads: "Gestión de Cargas",
-        resources: "Recursos"
+        dashboard: t('sidebar.sections.monitoring'),
+        loads: t('sidebar.sections.loads'),
+        resources: t('sidebar.sections.resources')
       };
     }
     if (isDriver) {
       return {
-        dashboard: "Panel Personal",
-        tasks: "Mis Tareas",
-        financial: "Financiero"
+        dashboard: t('sidebar.descriptions.personal_panel'),
+        tasks: t('sidebar.sections.tasks'),
+        financial: t('sidebar.sections.financial')
       };
     }
     return {};
@@ -672,7 +672,7 @@ export function AppSidebar() {
                   {isSuperAdmin && <span className="text-blue-300 ml-2 text-sm font-medium">Admin</span>}
                 </h2>
                 <p className="text-sm text-white/70 font-medium tracking-wide">
-                  Professional TMS
+                  {t('sidebar.company.professional_tms')}
                 </p>
               </div>
               
@@ -695,7 +695,7 @@ export function AppSidebar() {
               {!isSuperAdmin && (
                 <div className="mt-3 flex items-center gap-2 text-xs text-white/60">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="font-medium">System Online</span>
+                  <span className="font-medium">{t('sidebar.status.system_online')}</span>
                 </div>
               )}
             </div>
@@ -754,9 +754,9 @@ export function AppSidebar() {
                        <p className="text-sm font-medium text-slate-900 leading-tight truncate">
                          {selectedCompany.name}
                        </p>
-                       <p className="text-xs text-slate-500 capitalize leading-tight">
-                         {currentRole?.replace('_', ' ') || 'Sin rol'}
-                       </p>
+                        <p className="text-xs text-slate-500 capitalize leading-tight">
+                          {currentRole?.replace('_', ' ') || t('sidebar.status.no_role')}
+                        </p>
                      </div>
                      <ChevronDown className="h-4 w-4 text-slate-400 ml-2 flex-shrink-0" />
                   </div>
@@ -807,7 +807,7 @@ export function AppSidebar() {
           ) : (
             <div className="flex items-center gap-2 text-slate-300 text-xs">
               <Activity className="h-3 w-3" />
-              <span>System Status</span>
+              <span>{t('sidebar.status.system_status')}</span>
               <div className="ml-auto w-2 h-2 bg-green-500 rounded-full"></div>
             </div>
           )}

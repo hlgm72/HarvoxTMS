@@ -215,6 +215,87 @@
       "search": "Search...",
       "error_loading": "Error loading data",
       "load_more": "Load more..."
+    },
+    "sidebar": {
+      "sections": {
+        "dashboard": "Dashboard",
+        "operations": "Operations Management",
+        "commercial": "Commercial Management", 
+        "financial": "Financial Management",
+        "reports": "Reports & Analytics",
+        "admin": "Administration",
+        "monitoring": "Dashboard & Monitoring",
+        "loads": "Load Management",
+        "resources": "Resources",
+        "tasks": "My Tasks",
+        "business": "Business"
+      },
+      "navigation": {
+        "executive_dashboard": "Executive Dashboard",
+        "operational_dashboard": "Operational Dashboard",
+        "dispatch_dashboard": "Dispatch Dashboard",
+        "my_dashboard": "My Dashboard",
+        "drivers": "Drivers",
+        "fleet": "Fleet",
+        "loads": "Loads",
+        "clients": "Clients",
+        "billing": "Billing",
+        "additional_payments": "Additional Payments",
+        "deductions": "Deductions",
+        "fuel_management": "Fuel Management",
+        "driver_payments": "Driver Payments",
+        "payment_reports": "Payment Reports",
+        "financial_reports": "Financial Reports",
+        "documents": "Documents",
+        "user_management": "User Management",
+        "settings": "Settings",
+        "supervision": "Supervision",
+        "routes": "Routes",
+        "tracking": "Tracking",
+        "active_loads": "Active Loads",
+        "assign_loads": "Assign Loads",
+        "my_loads": "My Loads",
+        "my_documents": "My Documents",
+        "payments": "Payments"
+      },
+      "descriptions": {
+        "executive_panel": "Executive panel",
+        "operational_panel": "Operational panel",
+        "dispatch_panel": "Dispatch panel",
+        "personal_panel": "Personal panel",
+        "driver_management": "Driver management",
+        "vehicles_equipment": "Vehicles and equipment",
+        "load_management": "Load management",
+        "client_base": "Client base",
+        "billing_payments": "Billing and payments",
+        "additional_income": "Additional income for drivers and dispatchers",
+        "recurring_expenses": "Recurring expenses",
+        "fuel_control": "Fuel control and WEX cards",
+        "payment_management": "Payment management",
+        "pdf_payment_reports": "PDF payment reports",
+        "financial_analysis": "Financial analysis",
+        "company_documents": "Company documents",
+        "users_roles": "Users and roles",
+        "company_settings": "Company settings",
+        "equipment_supervision": "Equipment supervision",
+        "route_planning": "Route planning",
+        "real_time_tracking": "Real-time tracking",
+        "loads_in_progress": "Loads in progress",
+        "load_assignment": "Load assignment",
+        "assigned_loads": "Assigned loads",
+        "personal_documents": "Personal documents",
+        "payment_history": "Payment history",
+        "driver_status": "Driver status",
+        "documentation": "Documentation"
+      },
+      "status": {
+        "system_online": "System Online",
+        "system_status": "System Status",
+        "no_role": "No role"
+      },
+      "company": {
+        "professional_tms": "Professional TMS"
+      }
     }
   }
 }
