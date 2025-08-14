@@ -555,35 +555,54 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   currentY += 10;
 
   // === OTHER EARNINGS ===
-  addText('Other Earnings', margin, currentY, {
-    fontSize: 12,
+  // Calcular el conteo y total de other earnings
+  const otherIncomeCount = data.otherIncome?.length || 0;
+  const totalOtherIncome = data.period.other_income || 0;
+  
+  // Verificar si toda la sección de other earnings cabe en la página actual
+  const otherIncomeSectionHeight = 8 + 10 + (otherIncomeCount * 6); // Header + spacing + items
+  
+  // Verificar si toda la sección cabe en la página actual
+  if (currentY + otherIncomeSectionHeight > pageHeight - footerSpace) {
+    doc.addPage();
+    await addPageHeader();
+    currentY += 5; // Agregar espaciado consistente con la primera página
+  }
+  
+  const lightBlueRgb = hexToRgb(colors.lightBlue);
+  doc.setFillColor(lightBlueRgb[0], lightBlueRgb[1], lightBlueRgb[2]);
+  doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'F');
+  
+  addText(`Other Earnings (Count: ${otherIncomeCount}, Total: ${formatCurrency(totalOtherIncome)})`, margin + 2, currentY, {
+    fontSize: 10,
     fontStyle: 'bold',
     color: colors.darkGray
   });
+  
   currentY += 10;
 
   if (data.otherIncome && data.otherIncome.length > 0) {
     data.otherIncome.forEach(income => {
-      addText(`• ${income.description}`, margin, currentY, {
+      addText(`• ${income.description}`, margin + 2, currentY, {
         fontSize: 9,
-        color: colors.gray
+        color: colors.darkGray
       });
       
-      addText(formatCurrency(income.amount), pageWidth - margin, currentY, {
+      addText(formatCurrency(income.amount), pageWidth - margin - 2, currentY, {
         fontSize: 9,
-        color: colors.gray,
+        color: colors.success,
         align: 'right'
       });
       
-      currentY += 8;
+      currentY += 6;
     });
   } else {
-    addText('No other earnings for this period', margin, currentY, {
+    addText('No other earnings for this period', margin + 2, currentY, {
       fontSize: 9,
       fontStyle: 'italic',
-      color: colors.gray
+      color: colors.darkGray
     });
-    currentY += 8;
+    currentY += 6;
   }
 
   currentY += 15;
