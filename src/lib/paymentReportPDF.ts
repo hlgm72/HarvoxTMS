@@ -642,8 +642,8 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     await addPageHeader();
   }
   
-  const grayRgb = hexToRgb(colors.lightGray);
-  doc.setFillColor(grayRgb[0], grayRgb[1], grayRgb[2]);
+  const orangeRgb = hexToRgb(colors.lightOrange);
+  doc.setFillColor(orangeRgb[0], orangeRgb[1], orangeRgb[2]);
   doc.rect(margin, currentY - 5, pageWidth - margin*2, 8, 'F');
   
   addText(`Fuel Expenses (Count: ${fuelCount}, Total: ${formatCurrency(data.period.fuel_expenses)})`, margin + 2, currentY, {
