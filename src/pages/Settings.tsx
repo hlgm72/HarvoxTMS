@@ -22,6 +22,7 @@ import { z } from 'zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useTranslation } from 'react-i18next';
 
 // Schema para contraseña
 const passwordSchema = z.object({
@@ -36,6 +37,7 @@ const passwordSchema = z.object({
 type PasswordFormData = z.infer<typeof passwordSchema>;
 
 export default function Settings() {
+  const { t } = useTranslation('common');
   const { user, userRole } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const { profile, loading: profileLoading, refreshProfile } = useUserProfile();
@@ -137,8 +139,8 @@ export default function Settings() {
     <div className="p-2 md:p-4">
       <PageToolbar 
         icon={SettingsIcon}
-        title="Configuración"
-        subtitle="Configuración del sistema y preferencias de la empresa"
+        title={t('settings.title')}
+        subtitle={t('settings.subtitle')}
       />
       <div className="min-h-screen bg-gradient-subtle">
         {/* Content */}
@@ -150,35 +152,35 @@ export default function Settings() {
               className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <User className="h-4 w-4" />
-              <span className="text-xs md:text-sm">Mi Perfil</span>
+              <span className="text-xs md:text-sm">{t('settings.tabs.profile')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="company"
               className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <Building className="h-4 w-4" />
-              <span className="text-xs md:text-sm">Empresa</span>
+              <span className="text-xs md:text-sm">{t('settings.tabs.company')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="system"
               className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <Database className="h-4 w-4" />
-              <span className="text-xs md:text-sm">Sistema</span>
+              <span className="text-xs md:text-sm">{t('settings.tabs.system')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="interface"
               className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <Palette className="h-4 w-4" />
-              <span className="text-xs md:text-sm">Interfaz</span>
+              <span className="text-xs md:text-sm">{t('settings.tabs.interface')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="notifications"
               className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <Bell className="h-4 w-4" />
-              <span className="text-xs md:text-sm">Notificaciones</span>
+              <span className="text-xs md:text-sm">{t('settings.tabs.notifications')}</span>
             </TabsTrigger>
           </TabsList>
 

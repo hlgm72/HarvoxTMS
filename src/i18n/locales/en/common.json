@@ -69,5 +69,16 @@
   "forms": {
     "birthDate": "Date of Birth",
     "validDate": "Valid date"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "System configuration and company preferences",
+    "tabs": {
+      "profile": "My Profile",
+      "company": "Company",
+      "system": "System",
+      "interface": "Interface",
+      "notifications": "Notifications"
+    }
   }
 }
