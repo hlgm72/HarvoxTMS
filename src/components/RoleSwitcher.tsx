@@ -18,7 +18,7 @@ export const RoleSwitcher = () => {
   const { currentRole, availableRoles, switchRole, hasMultipleRoles, loading, isAuthenticated, userRole } = useAuth();
   const navigate = useNavigate();
 
-  // Role mappings using our new 6-role system with translations
+  // Function to get role label with translation
   const getRoleLabel = (role: string) => {
     return t(`roles.labels.${role}`, { defaultValue: role });
   };
@@ -116,7 +116,7 @@ export const RoleSwitcher = () => {
         </Button>
       </DropdownMenuTrigger>
       
-      <DropdownMenuContent align="start" className="w-56">
+      <DropdownMenuContent align="start" className="w-56 bg-white border border-gray-200 shadow-lg z-50">
         <DropdownMenuLabel className="flex items-center gap-2">
           <Building2 className="h-4 w-4" />
           {t('roles.switcher.change_role')}
