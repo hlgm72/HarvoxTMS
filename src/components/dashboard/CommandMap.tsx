@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Activity, RefreshCw, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from 'react-i18next';
 
 interface VehiclePosition {
   id: string;
@@ -19,6 +20,7 @@ interface VehiclePosition {
 
 export function CommandMap() {
   const { userRole } = useAuth();
+  const { t } = useTranslation('fleet');
   const [vehicles, setVehicles] = useState<VehiclePosition[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
@@ -113,10 +115,10 @@ export function CommandMap() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'active': return 'En movimiento';
-      case 'idle': return 'Detenido';
-      case 'offline': return 'Sin conexión';
-      default: return 'Desconocido';
+      case 'active': return t('tracking.status.moving');
+      case 'idle': return t('tracking.status.stopped');
+      case 'offline': return t('tracking.status.offline');
+      default: return t('tracking.status.unknown');
     }
   };
 
@@ -125,14 +127,14 @@ export function CommandMap() {
       {/* Header con controles */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-semibold">Seguimiento de Flota en Tiempo Real</h3>
+          <h3 className="text-lg font-semibold">{t('tracking.real_time_title')}</h3>
           <p className="text-sm text-muted-foreground">
-            {lastUpdate ? `Última actualización: ${lastUpdate.toLocaleTimeString()}` : 'Cargando...'}
+            {lastUpdate ? `${t('tracking.last_update')} ${lastUpdate.toLocaleTimeString()}` : 'Cargando...'}
           </p>
         </div>
         <Button onClick={fetchVehiclePositions} disabled={loading} size="sm">
           <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          Actualizar
+          {t('tracking.update_button')}
         </Button>
       </div>
 
@@ -143,19 +145,19 @@ export function CommandMap() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MapPin className="h-5 w-5" />
-              Mapa de Ubicaciones
+              {t('tracking.location_map')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-full flex items-center justify-center bg-muted/30 rounded-lg">
               <div className="text-center">
                 <div className="text-6xl mb-4">🗺️</div>
-                <h4 className="text-lg font-medium mb-2">Integración de Mapa</h4>
+                <h4 className="text-lg font-medium mb-2">{t('tracking.map_integration')}</h4>
                 <p className="text-sm text-muted-foreground mb-4">
-                  La vista interactiva del mapa estará disponible próximamente
+                  {t('tracking.interactive_view')}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Se mostrará: {vehicles.length} vehículos rastreados
+                  {t('tracking.tracked_vehicles', { count: vehicles.length })}
                 </p>
               </div>
             </div>
@@ -167,7 +169,7 @@ export function CommandMap() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Activity className="h-5 w-5" />
-              Estado de Vehículos ({vehicles.length})
+              {t('tracking.vehicle_status')} ({vehicles.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -195,24 +197,24 @@ export function CommandMap() {
                     
                     <div className="space-y-1 text-xs text-muted-foreground">
                       <div className="flex justify-between">
-                        <span>Estado:</span>
+                        <span>{t('vehicle.status')}:</span>
                         <Badge variant="outline" className="text-xs">
                           {getStatusText(vehicle.status)}
                         </Badge>
                       </div>
                       
                       <div className="flex justify-between">
-                        <span>Velocidad:</span>
+                        <span>{t('tracking.speed')}</span>
                         <span>{Math.round(vehicle.speed)} km/h</span>
                       </div>
                       
                       <div className="flex justify-between">
-                        <span>Ubicación:</span>
+                        <span>{t('tracking.location')}</span>
                         <span>{vehicle.latitude.toFixed(4)}, {vehicle.longitude.toFixed(4)}</span>
                       </div>
                       
                       <div className="flex justify-between">
-                        <span>Última actualización:</span>
+                        <span>{t('vehicle.last_update')}:</span>
                         <span>{new Date(vehicle.last_update).toLocaleTimeString()}</span>
                       </div>
                     </div>
@@ -231,7 +233,7 @@ export function CommandMap() {
             <div className="text-2xl font-bold text-green-600">
               {vehicles.filter(v => v.status === 'active').length}
             </div>
-            <p className="text-sm text-muted-foreground">En movimiento</p>
+            <p className="text-sm text-muted-foreground">{t('tracking.stats.moving')}</p>
           </CardContent>
         </Card>
         
@@ -240,7 +242,7 @@ export function CommandMap() {
             <div className="text-2xl font-bold text-yellow-600">
               {vehicles.filter(v => v.status === 'idle').length}
             </div>
-            <p className="text-sm text-muted-foreground">Detenidos</p>
+            <p className="text-sm text-muted-foreground">{t('tracking.stats.stopped')}</p>
           </CardContent>
         </Card>
         
@@ -249,7 +251,7 @@ export function CommandMap() {
             <div className="text-2xl font-bold text-gray-600">
               {vehicles.filter(v => v.status === 'offline').length}
             </div>
-            <p className="text-sm text-muted-foreground">Sin conexión</p>
+            <p className="text-sm text-muted-foreground">{t('tracking.stats.offline')}</p>
           </CardContent>
         </Card>
         
@@ -258,7 +260,7 @@ export function CommandMap() {
             <div className="text-2xl font-bold text-blue-600">
               {vehicles.reduce((avg, v) => avg + v.speed, 0) / (vehicles.length || 1)}
             </div>
-            <p className="text-sm text-muted-foreground">Velocidad promedio</p>
+            <p className="text-sm text-muted-foreground">{t('tracking.stats.average_speed')}</p>
           </CardContent>
         </Card>
       </div>
