@@ -754,14 +754,14 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     fontSize: 9,
     color: colors.darkGray
   });
-  leftY += 6;
+  leftY += 4;
   
   if (data.driver.license) {
     addText(`License: ${data.driver.license}${data.driver.license_state ? ` (${data.driver.license_state})` : ''}`, leftColumnX, leftY, {
       fontSize: 9,
       color: colors.darkGray
     });
-    leftY += 6;
+    leftY += 4;
   }
   
   if (data.driver.address) {
@@ -769,24 +769,24 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       fontSize: 9,
       color: colors.darkGray
     });
-    leftY += 6;
+    leftY += 4;
   }
   
   // Área de firma
-  leftY += 10;
+  leftY += 6;
   addText('Driver Signature:', leftColumnX, leftY, {
     fontSize: 10,
     fontStyle: 'bold',
     color: colors.darkGray
   });
   
-  leftY += 8;
+  leftY += 6;
   // Línea para firma
   doc.setDrawColor(180, 180, 180);
   doc.setLineWidth(0.5);
   doc.line(leftColumnX, leftY, leftColumnX + columnWidth - 20, leftY);
   
-  leftY += 12;
+  leftY += 8;
   const signDate = new Date();
   addText(`Date: ${signDate.toLocaleDateString('en-US', {
     month: '2-digit',
@@ -798,19 +798,19 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   });
   
   // Mensaje de agradecimiento
-  leftY += 20;
+  leftY += 12;
   addText('If you have any questions, please contact us by phone', leftColumnX, leftY, {
     fontSize: 8,
     color: colors.gray
   });
   
-  leftY += 5;
+  leftY += 4;
   addText(`or email at ${data.company.email || 'hgtransport16@gmail.com'}`, leftColumnX, leftY, {
     fontSize: 8,
     color: colors.gray
   });
   
-  leftY += 8;
+  leftY += 6;
   addText('Thank you for your business - We really appreciate it.', leftColumnX, leftY, {
     fontSize: 8,
     fontStyle: 'bold',
