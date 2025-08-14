@@ -481,16 +481,38 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const deliveryLocation = deliveryStop ? `${deliveryStop.city}, ${deliveryStop.state}` : '';
       
       // Texto de pickup en una línea
-      const pickupText = `PUP: ${new Date(load.pickup_date).toLocaleDateString('en-US')} ${pickupCompany} (${pickupLocation})`;
-      addText(pickupText, margin + 5, currentY + 4, {
+      const pickupDate = new Date(load.pickup_date).toLocaleDateString('en-US');
+      const pickupInfo = ` ${pickupDate} ${pickupCompany} (${pickupLocation})`;
+      
+      // PUP en bold
+      addText('PUP:', margin + 5, currentY + 4, {
+        fontSize: 9,
+        fontStyle: 'bold',
+        color: colors.darkGray
+      });
+      
+      // Resto del texto pickup en normal
+      const pupWidth = doc.getTextWidth('PUP:');
+      addText(pickupInfo, margin + 5 + pupWidth, currentY + 4, {
         fontSize: 9,
         fontStyle: 'normal',
         color: colors.darkGray
       });
       
       // Texto de delivery en la línea siguiente
-      const deliveryText = `DEL: ${new Date(load.delivery_date).toLocaleDateString('en-US')} ${deliveryCompany} (${deliveryLocation})`;
-      addText(deliveryText, margin + 5, currentY + 8, {
+      const deliveryDate = new Date(load.delivery_date).toLocaleDateString('en-US');
+      const deliveryInfo = ` ${deliveryDate} ${deliveryCompany} (${deliveryLocation})`;
+      
+      // DEL en bold
+      addText('DEL:', margin + 5, currentY + 8, {
+        fontSize: 9,
+        fontStyle: 'bold',
+        color: colors.darkGray
+      });
+      
+      // Resto del texto delivery en normal
+      const delWidth = doc.getTextWidth('DEL:');
+      addText(deliveryInfo, margin + 5 + delWidth, currentY + 8, {
         fontSize: 9,
         fontStyle: 'normal',
         color: colors.darkGray
