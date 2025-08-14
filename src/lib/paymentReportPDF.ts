@@ -444,10 +444,15 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         });
       }
       
-      addText(`(Stops: ${load.stops || 2} Total)`, margin, currentY + 5, {
+      const stopsText = `(Stops: ${load.stops || 2} Total)`;
+      addText(stopsText, margin, currentY + 5, {
         fontSize: 9,
         color: colors.darkGray
       });
+
+      // Calcular posición para el texto de pickup/delivery
+      doc.setFontSize(9);
+      const stopsTextWidth = doc.getTextWidth(stopsText);
 
       // Porcentajes y monto (derecha)
       const percentages = [];
@@ -467,7 +472,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const pickupText = `PU: ${new Date(load.pickup_date).toLocaleDateString('en-US')} ${load.pickup_location || ''}`;
       const deliveryText = `DEL: ${new Date(load.delivery_date).toLocaleDateString('en-US')} ${load.delivery_location || ''}`;
       
-      addText(`${pickupText} | ${deliveryText}`, margin + 80, currentY + 5, {
+      addText(` - ${pickupText} | ${deliveryText}`, margin + stopsTextWidth, currentY + 5, {
         fontSize: 8,
         color: colors.darkGray
       });
