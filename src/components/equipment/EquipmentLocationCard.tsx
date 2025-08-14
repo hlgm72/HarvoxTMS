@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, MapPin, Navigation, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from 'react-i18next';
 
 interface LocationData {
   id: string;
@@ -23,6 +24,7 @@ export function EquipmentLocationCard({
   onlineCount, 
   movingCount 
 }: EquipmentLocationCardProps) {
+  const { t } = useTranslation('fleet');
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "moving":
@@ -39,13 +41,13 @@ export function EquipmentLocationCard({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "moving":
-        return <Badge variant="default" className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">En Movimiento</Badge>;
+        return <Badge variant="default" className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">{t('tracking.status.moving')}</Badge>;
       case "parked":
-        return <Badge variant="default" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">Estacionado</Badge>;
+        return <Badge variant="default" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">{t('tracking.status.parked')}</Badge>;
       case "offline":
-        return <Badge variant="secondary" className="text-xs">Sin Conexión</Badge>;
+        return <Badge variant="secondary" className="text-xs">{t('tracking.status.offline')}</Badge>;
       default:
-        return <Badge variant="secondary" className="text-xs">Desconocido</Badge>;
+        return <Badge variant="secondary" className="text-xs">{t('tracking.status.unknown')}</Badge>;
     }
   };
 
@@ -56,14 +58,14 @@ export function EquipmentLocationCard({
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 text-blue-600" />
             <CardTitle className="text-base font-medium text-foreground">
-              Fleet Tracking
+              {t('tracking.title')}
             </CardTitle>
           </div>
           <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
             <ExternalLink className="h-3 w-3" />
           </Button>
         </div>
-        <div className="text-xs text-muted-foreground">Real-time Locations</div>
+        <div className="text-xs text-muted-foreground">{t('tracking.subtitle')}</div>
       </CardHeader>
       
       <CardContent className="space-y-4">
@@ -71,11 +73,11 @@ export function EquipmentLocationCard({
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-2 bg-green-50 dark:bg-green-950/20 rounded-lg">
             <div className="text-lg font-bold text-green-600">{onlineCount}</div>
-            <div className="text-xs text-muted-foreground">En Línea</div>
+            <div className="text-xs text-muted-foreground">{t('tracking.stats.online')}</div>
           </div>
           <div className="text-center p-2 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
             <div className="text-lg font-bold text-blue-600">{movingCount}</div>
-            <div className="text-xs text-muted-foreground">En Movimiento</div>
+            <div className="text-xs text-muted-foreground">{t('tracking.stats.moving')}</div>
           </div>
         </div>
         
@@ -87,14 +89,14 @@ export function EquipmentLocationCard({
           <div className="relative flex items-center justify-center">
             <MapPin className="h-6 w-6 text-blue-600 animate-pulse" />
             <span className="ml-2 text-sm font-medium text-blue-800 dark:text-blue-300">
-              {locations.length} ubicaciones activas
+              {t('tracking.active_locations', { count: locations.length })}
             </span>
           </div>
         </div>
         
         {/* Recent locations */}
         <div className="space-y-2">
-          <div className="text-xs font-medium text-foreground mb-2">Ubicaciones Recientes</div>
+          <div className="text-xs font-medium text-foreground mb-2">{t('tracking.recent_locations')}</div>
           {locations.slice(0, 3).map((location, index) => (
             <div key={location.id} className="flex items-center justify-between p-2 rounded-md bg-muted/30">
               <div className="flex items-center gap-2">

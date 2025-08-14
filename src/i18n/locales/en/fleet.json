@@ -102,5 +102,21 @@
     "live": "LIVE",
     "last_update": "Last update: 30 seconds ago",
     "real_time_operations": "Real-time operations"
+  },
+  "tracking": {
+    "title": "Fleet Tracking",
+    "subtitle": "Real-time Locations",
+    "status": {
+      "moving": "Moving",
+      "parked": "Parked", 
+      "offline": "Offline",
+      "unknown": "Unknown"
+    },
+    "stats": {
+      "online": "Online",
+      "moving": "Moving"
+    },
+    "active_locations": "{{count}} active locations",
+    "recent_locations": "Recent Locations"
   }
 }
