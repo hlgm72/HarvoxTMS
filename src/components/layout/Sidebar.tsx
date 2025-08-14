@@ -433,7 +433,10 @@ const getSuperAdminNavigationItems = (t: any) => [
 ];
 
 export function AppSidebar() {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
+  console.log('Sidebar - Current language:', i18n.language);
+  console.log('Sidebar - Test translation:', t('sidebar.navigation.drivers'));
+  console.log('Sidebar - Test section:', t('sidebar.sections.dashboard'));
   const { state, setOpen, openMobile, setOpenMobile } = useSidebar();
   const { 
     isSuperAdmin, 
