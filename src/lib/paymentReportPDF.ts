@@ -446,7 +446,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       addText(`(Stops: ${load.stops || 2} Total)`, margin, currentY + 5, {
         fontSize: 9,
-        color: colors.gray
+        color: colors.darkGray
       });
 
       // Porcentajes y monto (derecha)
@@ -469,7 +469,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       addText(`${pickupText} | ${deliveryText}`, margin + 50, currentY + 5, {
         fontSize: 8,
-        color: colors.gray
+        color: colors.darkGray
       });
 
       currentY += 15; // Reducido de 20 a 15
