@@ -64,9 +64,9 @@ export function RealtimeDriverPayments() {
         .from('company_payment_periods')
         .select(`
           *,
-          driver_payments (
+          driver_period_calculations (
             *,
-            profiles!driver_payments_driver_user_id_fkey (
+            profiles!driver_period_calculations_driver_user_id_fkey (
               first_name,
               last_name,
               avatar_url
@@ -74,24 +74,24 @@ export function RealtimeDriverPayments() {
           )
         `)
         .eq('company_id', userRole.company_id)
-        .order('start_date', { ascending: false })
+        .order('period_start_date', { ascending: false })
         .limit(1);
 
       if (error) throw error;
 
       if (periods && periods.length > 0) {
         const latestPeriod = periods[0];
-        const driverPayments = latestPeriod.driver_payments?.map((payment: any) => ({
-          driver_id: payment.driver_user_id,
-          driver_name: `${payment.profiles?.first_name || 'N/A'} ${payment.profiles?.last_name || ''}`.trim(),
-          driver_avatar: payment.profiles?.avatar_url,
-          period_dates: `${new Date(latestPeriod.start_date).toLocaleDateString()} - ${new Date(latestPeriod.end_date).toLocaleDateString()}`,
-          gross_earnings: payment.gross_earnings || 0,
-          fuel_expenses: payment.fuel_expenses || 0,
-          total_deductions: payment.total_deductions || 0,
-          net_payment: payment.net_payment || 0,
-          status: payment.status || 'calculated',
-          has_negative_balance: payment.has_negative_balance || false,
+        const driverPayments = latestPeriod.driver_period_calculations?.map((calculation: any) => ({
+          driver_id: calculation.driver_user_id,
+          driver_name: `${calculation.profiles?.first_name || 'N/A'} ${calculation.profiles?.last_name || ''}`.trim(),
+          driver_avatar: calculation.profiles?.avatar_url,
+          period_dates: `${new Date(latestPeriod.period_start_date).toLocaleDateString()} - ${new Date(latestPeriod.period_end_date).toLocaleDateString()}`,
+          gross_earnings: calculation.gross_earnings || 0,
+          fuel_expenses: calculation.fuel_expenses || 0,
+          total_deductions: calculation.total_deductions || 0,
+          net_payment: calculation.net_payment || 0,
+          status: calculation.payment_status || 'calculated',
+          has_negative_balance: calculation.has_negative_balance || false,
         })) || [];
 
         setPayments(driverPayments);
