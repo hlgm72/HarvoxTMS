@@ -490,13 +490,13 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       // Texto de delivery en la línea siguiente
       const deliveryText = `DEL: ${new Date(load.delivery_date).toLocaleDateString('en-US')} ${deliveryCompany} (${deliveryLocation})`;
-      addText(deliveryText, margin + 5, currentY + 12, {
+      addText(deliveryText, margin + 5, currentY + 11, {
         fontSize: 9,
         fontStyle: 'normal',
         color: colors.darkGray
       });
 
-      currentY += 22; // Aumentado para acomodar las dos líneas de pickup y delivery
+      currentY += 18; // Reducido para hacer las paradas más compactas
     });
   }
 
