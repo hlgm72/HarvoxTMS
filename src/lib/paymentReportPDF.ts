@@ -422,16 +422,24 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   if (data.loads && data.loads.length > 0) {
     data.loads.forEach((load, index) => {
-      // Load number con PO number y stops
-      const loadTitle = load.po_number ? 
-        `Load#: ${load.load_number} (${load.po_number})` : 
-        `Load#: ${load.load_number}`;
-      
-      addText(loadTitle, margin, currentY, {
+      // Load number (en negrita)
+      addText(`Load#: ${load.load_number}`, margin, currentY, {
         fontSize: 10,
         fontStyle: 'bold',
         color: colors.darkGray
       });
+      
+      // PO number (sin negrita, al lado del load number)
+      if (load.po_number) {
+        const loadText = `Load#: ${load.load_number}`;
+        const textWidth = doc.getTextWidth(loadText) * 10 / doc.internal.scaleFactor;
+        
+        addText(` (PO: ${load.po_number})`, margin + textWidth, currentY, {
+          fontSize: 10,
+          fontStyle: 'normal',
+          color: colors.darkGray
+        });
+      }
       
       addText(`(Stops: ${load.stops || 2} Total)`, margin, currentY + 5, {
         fontSize: 9,
