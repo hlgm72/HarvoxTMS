@@ -234,6 +234,8 @@ export function PaymentReportDialog({
     queryFn: async () => {
       if (!calculationId) return [];
       
+      console.log('🔍 Querying deductions for calculationId:', calculationId);
+      
       const { data, error } = await supabase
         .from('expense_instances')
         .select(`
@@ -251,7 +253,12 @@ export function PaymentReportDialog({
         .eq('status', 'applied')
         .order('expense_date', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('🚨 Error querying deductions:', error);
+        throw error;
+      }
+      
+      console.log('✅ Deductions query result:', data);
       return data || [];
     },
     enabled: !!calculationId
