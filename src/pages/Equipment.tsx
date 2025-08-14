@@ -85,14 +85,14 @@ export default function Equipment() {
         }
       />
       
-      <div className="container mx-auto p-4 md:p-6 space-y-8">
+      <div className="container mx-auto p-6 md:p-8 space-y-12">
         {/* Stats Cards */}
-        <div className="mb-8">
+        <div className="mb-12">
           <EquipmentStats equipment={equipment} />
         </div>
 
         {/* Advanced Equipment Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           <EquipmentOverviewCard
             totalEquipment={equipment?.length || 0}
             activeCount={activeCount}
@@ -112,9 +112,9 @@ export default function Equipment() {
         </div>
 
         {/* Main Content with Tabs */}
-        <div className="mt-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-            <TabsList className="grid w-full grid-cols-2 gap-2 p-1 h-12">
+        <div className="mt-12">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-10">
+            <TabsList className="grid w-full grid-cols-2 gap-2 p-1 h-12 bg-muted/50">
               <TabsTrigger value="equipment" className="gap-2 h-10">
                 <Wrench className="h-4 w-4" />
                 {t("equipment.tabs.equipment", "Equipos")}
@@ -126,10 +126,10 @@ export default function Equipment() {
             </TabsList>
 
           {/* Equipment Tab */}
-          <TabsContent value="equipment" className="space-y-8 mt-8">
+          <TabsContent value="equipment" className="space-y-10 mt-10">
             {/* Search and Filters */}
-            <Card className="shadow-sm">
-              <CardHeader className="pb-6">
+            <Card className="shadow-sm border-2">
+              <CardHeader className="pb-8">
                 <div className="flex flex-col sm:flex-row gap-6">
                   <div className="flex-1 relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -137,27 +137,27 @@ export default function Equipment() {
                       placeholder={t("equipment.searchPlaceholder", "Buscar por número, marca, modelo o placa...")}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 h-11"
+                      className="pl-10 h-12 text-base"
                     />
                   </div>
                   
-                  <div className="flex gap-3">
+                  <div className="flex gap-4">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setShowFilters(!showFilters)}
-                      className="gap-2 h-11 px-4"
+                      className="gap-2 h-12 px-6"
                     >
                       <Filter className="h-4 w-4" />
                       {t("common.filters", "Filtros")}
                     </Button>
                     
-                    <div className="flex rounded-md border h-11">
+                    <div className="flex rounded-md border h-12">
                       <Button
                         variant={viewMode === "list" ? "default" : "ghost"}
                         size="sm"
                         onClick={() => setViewMode("list")}
-                        className="rounded-r-none h-11 px-3"
+                        className="rounded-r-none h-12 px-4"
                       >
                         <List className="h-4 w-4" />
                       </Button>
@@ -165,7 +165,7 @@ export default function Equipment() {
                         variant={viewMode === "grid" ? "default" : "ghost"}
                         size="sm"
                         onClick={() => setViewMode("grid")}
-                        className="rounded-l-none h-11 px-3"
+                        className="rounded-l-none h-12 px-4"
                       >
                         <Grid3X3 className="h-4 w-4" />
                       </Button>
@@ -174,7 +174,7 @@ export default function Equipment() {
                 </div>
                 
                 {showFilters && (
-                  <div className="mt-6 p-6 border rounded-lg bg-muted/30">
+                  <div className="mt-8 p-8 border rounded-lg bg-muted/30">
                     <EquipmentFilters />
                   </div>
                 )}

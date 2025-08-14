@@ -98,7 +98,7 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
   const displayEquipment = equipmentWithGeotab || equipment;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 py-4">
       {displayEquipment.map((item) => {
         const statusInfo = getStatusBadge(item.status);
         const nextExpiry = getNextExpiryDate(item);

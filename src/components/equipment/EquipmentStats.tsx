@@ -61,7 +61,7 @@ export function EquipmentStats({ equipment = [] }: EquipmentStatsProps) {
   ];
 
   return (
-    <div className="grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-6 md:gap-8 grid-cols-2 lg:grid-cols-4">
       {statCards.map((stat, index) => (
         <Card key={index} className="hover:shadow-md transition-all duration-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
