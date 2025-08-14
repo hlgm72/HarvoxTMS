@@ -735,14 +735,97 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   currentY += 20;
 
-  // === SUMMARY ===
-  addText('Summary', margin, currentY, {
+  // === TWO COLUMN LAYOUT ===
+  const columnWidth = (pageWidth - margin*3) / 2; // Ancho de cada columna
+  const leftColumnX = margin;
+  const rightColumnX = margin + columnWidth + 15; // Columna derecha con espacio
+  
+  // === COLUMNA IZQUIERDA: INFORMACIÓN DEL CONDUCTOR ===
+  addText('Driver Information', leftColumnX, currentY, {
     fontSize: 12,
     fontStyle: 'bold',
     color: colors.darkGray
   });
-  currentY += 15;
-
+  
+  let leftY = currentY + 12;
+  
+  // Información del conductor
+  addText(`Driver Name: ${data.driver.name}`, leftColumnX, leftY, {
+    fontSize: 9,
+    color: colors.darkGray
+  });
+  leftY += 6;
+  
+  if (data.driver.license) {
+    addText(`License: ${data.driver.license}${data.driver.license_state ? ` (${data.driver.license_state})` : ''}`, leftColumnX, leftY, {
+      fontSize: 9,
+      color: colors.darkGray
+    });
+    leftY += 6;
+  }
+  
+  if (data.driver.address) {
+    addText(`Address: ${data.driver.address}`, leftColumnX, leftY, {
+      fontSize: 9,
+      color: colors.darkGray
+    });
+    leftY += 6;
+  }
+  
+  // Área de firma
+  leftY += 10;
+  addText('Driver Signature:', leftColumnX, leftY, {
+    fontSize: 10,
+    fontStyle: 'bold',
+    color: colors.darkGray
+  });
+  
+  leftY += 8;
+  // Línea para firma
+  doc.setDrawColor(180, 180, 180);
+  doc.setLineWidth(0.5);
+  doc.line(leftColumnX, leftY, leftColumnX + columnWidth - 20, leftY);
+  
+  leftY += 12;
+  const signDate = new Date();
+  addText(`Date: ${signDate.toLocaleDateString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric'
+  })}`, leftColumnX, leftY, {
+    fontSize: 9,
+    color: colors.darkGray
+  });
+  
+  // Mensaje de agradecimiento
+  leftY += 20;
+  addText('If you have any questions, please contact us by phone', leftColumnX, leftY, {
+    fontSize: 8,
+    color: colors.gray
+  });
+  
+  leftY += 5;
+  addText(`or email at ${data.company.email || 'hgtransport16@gmail.com'}`, leftColumnX, leftY, {
+    fontSize: 8,
+    color: colors.gray
+  });
+  
+  leftY += 8;
+  addText('Thank you for your business - We really appreciate it.', leftColumnX, leftY, {
+    fontSize: 8,
+    fontStyle: 'bold',
+    color: colors.darkGray
+  });
+  
+  // === COLUMNA DERECHA: RESUMEN ===
+  addText('Period Summary', rightColumnX, currentY, {
+    fontSize: 12,
+    fontStyle: 'bold',
+    color: colors.darkGray
+  });
+  
+  let rightY = currentY + 12;
+  
   const summaryData = [
     { label: 'Gross Earnings', amount: data.period.gross_earnings },
     { label: 'Other Earnings', amount: data.period.other_income },
@@ -751,32 +834,32 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   ];
 
   summaryData.forEach(item => {
-    addText(item.label, margin, currentY, {
+    addText(item.label, rightColumnX, rightY, {
       fontSize: 10,
       color: colors.gray
     });
     
-    addText(formatCurrency(item.amount), margin + 80, currentY, {
+    addText(formatCurrency(item.amount), rightColumnX + 80, rightY, {
       fontSize: 10,
       color: colors.gray,
       align: 'right'
     });
     
-    currentY += 8;
+    rightY += 8;
   });
 
   // Net Pay destacado
   const blueRgb = hexToRgb(colors.lightBlue);
   doc.setFillColor(blueRgb[0], blueRgb[1], blueRgb[2]);
-  doc.rect(margin, currentY, 85, 10, 'F');
+  doc.rect(rightColumnX, rightY, 85, 10, 'F');
   
-  addText('Net Pay', margin + 2, currentY + 6, {
+  addText('Net Pay', rightColumnX + 2, rightY + 6, {
     fontSize: 11,
     fontStyle: 'bold',
     color: colors.primary
   });
   
-  addText(formatCurrency(data.period.net_payment), margin + 78, currentY + 6, {
+  addText(formatCurrency(data.period.net_payment), rightColumnX + 78, rightY + 6, {
     fontSize: 11,
     fontStyle: 'bold',
     color: colors.primary,
