@@ -398,7 +398,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       });
     }
 
-    currentY += 35; // Aumentar margen después de la cabecera
+    currentY += 30; // Reducido de 35 a 30 para usar currentY directamente
   };
 
   // === HEADER EN TRES COLUMNAS ===
@@ -411,19 +411,19 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const boxHeight = 13;
   
   // Gross Earnings (Verde)
-  addColoredBox(boxesStartX, currentY - 5, boxWidth, boxHeight, colors.lightGreen, colors.darkGray,
+  addColoredBox(boxesStartX, currentY, boxWidth, boxHeight, colors.lightGreen, colors.darkGray,
     'Gross Earnings', formatCurrency(data.period.gross_earnings));
   
   // Other Earnings (Azul)
-  addColoredBox(boxesStartX + boxWidth + 5, currentY - 5, boxWidth, boxHeight, colors.lightBlue, colors.darkGray,
+  addColoredBox(boxesStartX + boxWidth + 5, currentY, boxWidth, boxHeight, colors.lightBlue, colors.darkGray,
     'Other Earnings', formatCurrency(data.period.other_income));
   
   // Period Deductions (Rojo)
-  addColoredBox(boxesStartX + (boxWidth + 5) * 2, currentY - 5, boxWidth, boxHeight, colors.lightRed, colors.darkGray,
+  addColoredBox(boxesStartX + (boxWidth + 5) * 2, currentY, boxWidth, boxHeight, colors.lightRed, colors.darkGray,
     'Period Deductions', formatCurrency(-data.period.total_deductions));
   
   // Fuel Expenses (Naranja)
-  addColoredBox(boxesStartX + (boxWidth + 5) * 3, currentY - 5, boxWidth, boxHeight, colors.lightOrange, colors.darkGray,
+  addColoredBox(boxesStartX + (boxWidth + 5) * 3, currentY, boxWidth, boxHeight, colors.lightOrange, colors.darkGray,
     'Fuel Expenses', formatCurrency(-data.period.fuel_expenses));
 
   currentY += boxHeight + 4;
@@ -601,7 +601,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   const redRgb = hexToRgb(colors.lightRed);
   doc.setFillColor(redRgb[0], redRgb[1], redRgb[2]);
-  doc.rect(margin, currentY - 5, pageWidth - margin*2, 8, 'F');
+  doc.rect(margin, currentY, pageWidth - margin*2, 8, 'F');
   
   const totalDeductions = data.deductions?.reduce((sum, d) => sum + d.amount, 0) || 0;
   addText(`Period Deductions (Count: ${deductionsCount}, Total: ${formatCurrency(totalDeductions)})`, margin + 2, currentY, {
