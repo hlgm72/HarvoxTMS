@@ -30,9 +30,9 @@ export function EquipmentOverviewCard({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
-        return <Badge variant="default" className="text-xs">Activo</Badge>;
+        return <Badge variant="default" className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-0">Activo</Badge>;
       case "maintenance":
-        return <Badge variant="warning" className="text-xs">Mantenimiento</Badge>;
+        return <Badge variant="warning" className="text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 border-0">Mantenimiento</Badge>;
       case "inactive":
         return <Badge variant="secondary" className="text-xs">Inactivo</Badge>;
       default:
@@ -41,50 +41,56 @@ export function EquipmentOverviewCard({
   };
 
   return (
-    <Card className="h-[400px] bg-gradient-to-br from-background to-green-50/30 dark:to-green-950/20 border-green-200/50 dark:border-green-800/50 hover:shadow-elegant transition-all duration-300">
-      <CardHeader className="pb-3 border-l-4 border-l-green-500">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Truck className="h-4 w-4 text-green-600" />
-            <CardTitle className="text-base font-medium text-foreground">
-              Fleet Overview
-            </CardTitle>
+    <Card className="h-[450px] bg-gradient-to-br from-green-50/50 to-green-100/30 dark:from-green-950/30 dark:to-green-900/20 border-green-200/30 dark:border-green-800/30 hover:shadow-xl transition-all duration-300 group overflow-hidden">
+      <CardHeader className="relative pb-4">
+        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-green-500 to-green-600"></div>
+        <div className="flex items-center justify-between ml-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-green-100 dark:bg-green-900/40 rounded-lg">
+              <Truck className="h-5 w-5 text-green-600 dark:text-green-400" />
+            </div>
+            <div>
+              <CardTitle className="text-lg font-semibold text-green-900 dark:text-green-100">
+                Fleet Overview
+              </CardTitle>
+              <p className="text-sm text-green-600 dark:text-green-400">Equipment Dashboard</p>
+            </div>
           </div>
-          <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-            <ExternalLink className="h-3 w-3" />
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-green-100 dark:hover:bg-green-900/40">
+            <ExternalLink className="h-4 w-4 text-green-600" />
           </Button>
         </div>
-        <div className="text-xs text-muted-foreground">Equipment Dashboard</div>
       </CardHeader>
       
-      <CardContent className="space-y-5">
+      <CardContent className="space-y-6 ml-4">
         {/* Main stats */}
         <div className="grid grid-cols-3 gap-4">
-          <div className="text-center p-2 bg-muted/30 rounded-lg">
-            <div className="text-xl font-bold text-foreground">{totalEquipment}</div>
-            <div className="text-xs text-muted-foreground">Total</div>
+          <div className="text-center p-4 bg-white/60 dark:bg-gray-800/40 backdrop-blur-sm rounded-xl border border-white/20 shadow-sm">
+            <div className="text-2xl font-bold text-gray-700 dark:text-gray-200">{totalEquipment}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-1">Total</div>
           </div>
-          <div className="text-center p-2 bg-green-50 dark:bg-green-950/20 rounded-lg">
-            <div className="text-xl font-bold text-green-600">{activeCount}</div>
-            <div className="text-xs text-muted-foreground">Activos</div>
+          <div className="text-center p-4 bg-green-50/80 dark:bg-green-900/30 backdrop-blur-sm rounded-xl border border-green-200/30 shadow-sm">
+            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{activeCount}</div>
+            <div className="text-xs text-green-600 dark:text-green-400 font-medium mt-1">Activos</div>
           </div>
-          <div className="text-center p-2 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
-            <div className="text-xl font-bold text-warning">{maintenanceCount}</div>
-            <div className="text-xs text-muted-foreground">Mantenimiento</div>
+          <div className="text-center p-4 bg-yellow-50/80 dark:bg-yellow-900/30 backdrop-blur-sm rounded-xl border border-yellow-200/30 shadow-sm">
+            <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{maintenanceCount}</div>
+            <div className="text-xs text-yellow-600 dark:text-yellow-400 font-medium mt-1">Mantenim.</div>
           </div>
         </div>
         
         {/* Equipment list */}
-        <div className="space-y-2">
-          {equipment.slice(0, 4).map((item, index) => (
-            <div key={item.id} className="flex items-center justify-between p-3 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors">
+        <div className="space-y-3">
+          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Equipos Recientes</h4>
+          {equipment.slice(0, 3).map((item, index) => (
+            <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-white/50 dark:bg-gray-800/30 backdrop-blur-sm border border-white/20 hover:bg-white/70 dark:hover:bg-gray-800/50 transition-all duration-200 group/item">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                  <Truck className="h-4 w-4 text-green-600" />
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/50 dark:to-green-800/50 flex items-center justify-center shadow-sm">
+                  <Truck className="h-4 w-4 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <div className="text-sm font-medium">{item.equipmentNumber}</div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-sm font-semibold text-gray-700 dark:text-gray-200">{item.equipmentNumber}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
                     {capitalizeWords(item.make)} {capitalizeWords(item.model)}
                   </div>
                 </div>
@@ -92,7 +98,7 @@ export function EquipmentOverviewCard({
               <div className="flex items-center gap-2">
                 {getStatusBadge(item.status)}
                 {item.status === "maintenance" && (
-                  <AlertTriangle className="h-3 w-3 text-warning" />
+                  <AlertTriangle className="h-3 w-3 text-yellow-500" />
                 )}
               </div>
             </div>
@@ -101,16 +107,18 @@ export function EquipmentOverviewCard({
         
         {/* Maintenance alerts */}
         {maintenanceCount > 0 && (
-          <div className="pt-2">
-            <div className="flex items-center gap-2 p-2 bg-warning/10 rounded-md">
-              <AlertTriangle className="h-4 w-4 text-warning" />
+          <div className="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl border border-yellow-200/40 dark:border-yellow-800/40 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-yellow-100 dark:bg-yellow-900/40 rounded-lg">
+                <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+              </div>
               <div className="flex-1">
-                <div className="text-xs font-medium">Próximos Mantenimientos</div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">Próximos Mantenimientos</div>
+                <div className="text-xs text-yellow-600 dark:text-yellow-400">
                   {maintenanceCount} equipos requieren atención
                 </div>
               </div>
-              <Badge variant="warning" className="text-xs">
+              <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 border-0">
                 {maintenanceCount}
               </Badge>
             </div>
