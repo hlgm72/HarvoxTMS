@@ -136,7 +136,20 @@
         "factoring_percentage": "% de Factoring por Defecto",
         "dispatching_percentage": "% de Despacho por Defecto",
         "leasing_percentage": "% de Arrendamiento por Defecto",
-        "assignment_criteria": "Criterios de Asignación de Cargas"
+        "assignment_criteria": "Criterios de Asignación de Cargas",
+        "critical_config": "Configuración Crítica",
+        "critical_config_desc": "Estos ajustes afectan directamente los pagos a los conductores. Revisa cuidadosamente antes de guardar cambios.",
+        "assignment_criteria_title": "Criterio de Asignación de Cargas",
+        "assignment_criteria_desc": "Selecciona qué fecha utilizar para asignar cargas a períodos de pago",
+        "delivery_date": "Fecha de Entrega (Recomendado)",
+        "delivery_date_desc": "Asignar cargas basándose en la fecha de entrega. Representa cuando se completa el servicio.",
+        "pickup_date": "Fecha de Recogida",
+        "pickup_date_desc": "Asignar cargas basándose en la fecha de recogida. Representa cuando inicia el servicio.",
+        "owner_operator_config": "Configuración por Defecto - Owner Operators",
+        "owner_operator_config_desc": "Estos porcentajes se aplicarán automáticamente a nuevos Owner Operators. Pueden ser modificados individualmente después.",
+        "future_settings": "Configuraciones Futuras",
+        "future_settings_desc": "Próximamente estará disponible:",
+        "future_settings_list": "• Modo claro/oscuro\n• Configuración de notificaciones\n• Personalización de la interfaz\n• Configuración de reportes automáticos"
       },
       "frequencies": {
         "weekly": "Semanal",

@@ -136,7 +136,20 @@
         "factoring_percentage": "Default Factoring %",
         "dispatching_percentage": "Default Dispatching %",
         "leasing_percentage": "Default Leasing %",
-        "assignment_criteria": "Load Assignment Criteria"
+        "assignment_criteria": "Load Assignment Criteria",
+        "critical_config": "Critical Configuration",
+        "critical_config_desc": "These settings directly affect driver payments. Review carefully before saving changes.",
+        "assignment_criteria_title": "Load Assignment Criteria",
+        "assignment_criteria_desc": "Select which date to use for assigning loads to payment periods",
+        "delivery_date": "Delivery Date (Recommended)",
+        "delivery_date_desc": "Assign loads based on delivery date. Represents when the service is completed.",
+        "pickup_date": "Pickup Date", 
+        "pickup_date_desc": "Assign loads based on pickup date. Represents when the service starts.",
+        "owner_operator_config": "Default Settings - Owner Operators",
+        "owner_operator_config_desc": "These percentages will be automatically applied to new Owner Operators. They can be modified individually later.",
+        "future_settings": "Future Settings",
+        "future_settings_desc": "Coming soon:",
+        "future_settings_list": "• Light/dark mode\n• Notification settings\n• Interface customization\n• Automatic report settings"
       },
       "frequencies": {
         "weekly": "Weekly",

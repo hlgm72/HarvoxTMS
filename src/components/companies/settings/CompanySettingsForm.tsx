@@ -329,43 +329,43 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" />
-                Documentación y Números Regulatorios
+                {t('company.settings.sections.regulatory_docs')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="ein">EIN (Tax ID)</Label>
+                  <Label htmlFor="ein">{t('company.settings.fields.ein')}</Label>
                   <Input
                     id="ein"
                     value={formData.ein || ''}
                     onChange={einHandlers.onChange}
                     onKeyPress={einHandlers.onKeyPress}
-                    placeholder="XX-XXXXXXX"
+                    placeholder={t('company.settings.fields.ein_placeholder')}
                     maxLength={10}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="mc_number">Número MC</Label>
+                  <Label htmlFor="mc_number">{t('company.settings.fields.mc_number')}</Label>
                   <Input
                     id="mc_number"
                     value={formData.mc_number || ''}
                     onChange={mcNumberHandlers.onChange}
                     onKeyPress={mcNumberHandlers.onKeyPress}
-                    placeholder="MC-XXXXXXX"
+                    placeholder={t('company.settings.fields.mc_number_placeholder')}
                     maxLength={10}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="dot_number">Número DOT</Label>
+                  <Label htmlFor="dot_number">{t('company.settings.fields.dot_number')}</Label>
                   <Input
                     id="dot_number"
                     value={formData.dot_number || ''}
                     onChange={dotNumberHandlers.onChange}
                     onKeyPress={dotNumberHandlers.onKeyPress}
-                    placeholder="XXXXXXXX"
+                    placeholder={t('company.settings.fields.dot_number_placeholder')}
                     maxLength={8}
                   />
                 </div>
@@ -380,14 +380,14 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-primary" />
-                Ubicación
+                {t('company.settings.sections.location')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <h4 className="font-semibold flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
-                  Dirección
+                  {t('company.settings.fields.address')}
                 </h4>
                 <AddressForm
                   streetAddress={formData.street_address}
@@ -410,53 +410,53 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5 text-primary" />
-                Información del Propietario
+                {t('company.settings.sections.owner_info')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="owner_name">Nombre Completo</Label>
+                  <Label htmlFor="owner_name">{t('company.settings.fields.owner_name')}</Label>
                   <Input
                     id="owner_name"
                     value={formData.owner_name || ''}
                     onChange={ownerNameHandlers.onChange}
                     onBlur={ownerNameHandlers.onBlur}
-                    placeholder="Juan Pérez"
+                    placeholder={t('company.settings.fields.owner_name_placeholder')}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="owner_title">Título/Cargo</Label>
+                  <Label htmlFor="owner_title">{t('company.settings.fields.owner_title')}</Label>
                   <Input
                     id="owner_title"
                     value={formData.owner_title || ''}
                     onChange={ownerTitleHandlers.onChange}
                     onBlur={ownerTitleHandlers.onBlur}
-                    placeholder="CEO, Presidente, etc."
+                    placeholder={t('company.settings.fields.owner_title_placeholder')}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="owner_email">Email</Label>
+                  <Label htmlFor="owner_email">{t('company.settings.fields.owner_email')}</Label>
                   <Input
                     id="owner_email"
                     type="email"
                     value={formData.owner_email || ''}
                     onChange={ownerEmailHandlers.onChange}
                     onBlur={ownerEmailHandlers.onBlur}
-                    placeholder="propietario@empresa.com"
+                    placeholder={t('company.settings.fields.owner_email_placeholder')}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="owner_phone">Teléfono</Label>
+                  <Label htmlFor="owner_phone">{t('company.settings.fields.owner_phone')}</Label>
                   <Input
                     id="owner_phone"
                     value={formData.owner_phone || ''}
                     onChange={ownerPhoneHandlers.onChange}
                     onKeyPress={ownerPhoneHandlers.onKeyPress}
-                    placeholder="(XXX) XXX-XXXX"
+                    placeholder={t('company.settings.fields.owner_phone_placeholder')}
                   />
                 </div>
               </div>
