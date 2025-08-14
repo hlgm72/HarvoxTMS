@@ -71,6 +71,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const pageWidth = doc.internal.pageSize.width;
   const pageHeight = doc.internal.pageSize.height;
   const margin = 12;
+  const footerSpace = 25; // Espacio reservado para el pie de página
   let currentY = margin;
 
   // Función para cargar imagen desde URL
@@ -590,6 +591,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   if (data.fuelExpenses && data.fuelExpenses.length > 0) {
     data.fuelExpenses.forEach(fuel => {
+      // Verificar si necesitamos nueva página antes de agregar cada línea de combustible
+      if (currentY > pageHeight - footerSpace) {
+        doc.addPage();
+        currentY = margin;
+      }
+      
       const dateStr = new Date(fuel.transaction_date).toLocaleDateString('en-US');
       
       addText(dateStr, margin + 2, currentY, {
@@ -623,7 +630,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   }
 
   // Verificar si necesitamos una nueva página antes del Summary
-  if (currentY > pageHeight - 80) {
+  if (currentY > pageHeight - footerSpace) {
     doc.addPage();
     currentY = margin;
   }
