@@ -454,8 +454,9 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       const rightText = percentages.join(' ') + ` ${formatCurrency(load.total_amount)}`;
       addText(rightText, pageWidth - margin, currentY, {
-        fontSize: 9,
-        color: colors.gray,
+        fontSize: 10,
+        fontStyle: 'bold',
+        color: colors.darkGray,
         align: 'right'
       });
 
