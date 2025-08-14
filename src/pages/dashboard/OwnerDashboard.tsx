@@ -21,6 +21,7 @@ import { ReversMobileCard } from '@/components/dashboard/ReversMobileCard';
 import { Company } from '@/types/company';
 import { PaymentPeriodsManager } from "@/components/payments/PaymentPeriodsManager";
 import { RealtimeDriverPayments } from "@/components/payments/RealtimeDriverPayments";
+import { useTranslation } from 'react-i18next';
 
 // Types
 interface CompanyStats {
@@ -49,6 +50,7 @@ interface Driver {
 export default function OwnerDashboard() {
   const { user, userRole, loading } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation(['common', 'fleet', 'dashboard']);
   
   const [activeTab, setActiveTab] = useState('overview');
   const [loadingData, setLoadingData] = useState(true);
@@ -98,8 +100,8 @@ export default function OwnerDashboard() {
       // Wait for profile to load before showing success message
       setTimeout(() => {
         showSuccess(
-          "¡Cuenta Creada Exitosamente!", 
-          `Bienvenido a ${companyInfo?.name || 'la plataforma'}. Tu cuenta ha sido configurada correctamente.`
+          t('common:messages.success'), 
+          `${t('common:navigation.dashboard')} ${companyInfo?.name || t('common:app.name')}`
         );
       }, 2000);
       
@@ -274,7 +276,7 @@ export default function OwnerDashboard() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-muted-foreground">Cargando dashboard...</p>
+            <p className="mt-2 text-muted-foreground">{t('common:messages.loading')}</p>
           </div>
         </div>
       </div>
@@ -284,7 +286,7 @@ export default function OwnerDashboard() {
   return (
     <>
       <PageToolbar 
-        title="Dashboard Ejecutivo"
+        title={t('common:navigation.dashboard')}
       />
       <div className="p-2 md:p-4 md:pr-20 space-y-4 md:space-y-6 min-h-screen bg-gradient-subtle">
         {/* Content */}
@@ -293,33 +295,33 @@ export default function OwnerDashboard() {
           <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 h-auto gap-1">
             <TabsTrigger value="overview" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Dashboard</span>
-              <span className="sm:hidden">Panel</span>
+              <span className="hidden sm:inline">{t('dashboard:owner.tabs.overview')}</span>
+              <span className="sm:hidden">{t('dashboard:owner.tabs.overview')}</span>
             </TabsTrigger>
             <TabsTrigger value="drivers" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <Users className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Conductores</span>
-              <span className="sm:hidden">Drivers</span>
+              <span className="hidden sm:inline">{t('dashboard:owner.tabs.drivers')}</span>
+              <span className="sm:hidden">{t('dashboard:owner.tabs.drivers')}</span>
             </TabsTrigger>
             <TabsTrigger value="fleet" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <Truck className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Fleet Tracking</span>
-              <span className="sm:hidden">Fleet</span>
+              <span className="hidden sm:inline">{t('dashboard:owner.tabs.fleet')}</span>
+              <span className="sm:hidden">{t('dashboard:owner.tabs.fleet')}</span>
             </TabsTrigger>
             <TabsTrigger value="payments" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Pagos</span>
-              <span className="sm:hidden">Pagos</span>
+              <span className="hidden sm:inline">{t('dashboard:owner.tabs.payments')}</span>
+              <span className="sm:hidden">{t('dashboard:owner.tabs.payments')}</span>
             </TabsTrigger>
             <TabsTrigger value="reports" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Reportes</span>
-              <span className="sm:hidden">Reports</span>
+              <span className="hidden sm:inline">{t('dashboard:owner.tabs.reports')}</span>
+              <span className="sm:hidden">{t('dashboard:owner.tabs.reports')}</span>
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Configuración</span>
-              <span className="sm:hidden">Config</span>
+              <span className="hidden sm:inline">{t('dashboard:owner.tabs.settings')}</span>
+              <span className="sm:hidden">{t('dashboard:owner.tabs.settings')}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -330,7 +332,7 @@ export default function OwnerDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Ingresos Totales</p>
+                      <p className="text-sm font-medium text-muted-foreground">{t('dashboard:owner.stats.total_income')}</p>
                       <p className="text-3xl font-bold text-green-600">${stats.total_income.toLocaleString()}</p>
                     </div>
                     <div className="p-3 bg-green-100 rounded-full">
@@ -344,7 +346,7 @@ export default function OwnerDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Conductores Activos</p>
+                      <p className="text-sm font-medium text-muted-foreground">{t('dashboard:owner.stats.active_drivers')}</p>
                       <p className="text-3xl font-bold text-blue-600">{stats.active_drivers}</p>
                     </div>
                     <div className="p-3 bg-blue-100 rounded-full">
@@ -358,7 +360,7 @@ export default function OwnerDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Cargas Completadas</p>
+                      <p className="text-sm font-medium text-muted-foreground">{t('dashboard:owner.stats.completed_loads')}</p>
                       <p className="text-3xl font-bold text-slate-600">{stats.total_loads}</p>
                     </div>
                     <div className="p-3 bg-slate-100 rounded-full">
@@ -372,7 +374,7 @@ export default function OwnerDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Pagos Pendientes</p>
+                      <p className="text-sm font-medium text-muted-foreground">{t('dashboard:owner.stats.pending_payments')}</p>
                       <p className="text-3xl font-bold text-orange-600">{stats.pending_payments}</p>
                     </div>
                     <div className="p-3 bg-orange-100 rounded-full">
@@ -408,22 +410,22 @@ export default function OwnerDashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Plus className="h-5 w-5 text-primary" />
-                  Acciones Rápidas
+                  {t('dashboard:owner.quick_actions.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                    <Button className="h-20 flex-col gap-2">
                      <User className="h-6 w-6" />
-                     Nuevo Conductor
+                     {t('dashboard:owner.quick_actions.new_driver')}
                    </Button>
                   <Button variant="outline" className="h-20 flex-col gap-2">
                     <Truck className="h-6 w-6" />
-                    Nuevo Vehículo
+                    {t('dashboard:owner.quick_actions.new_vehicle')}
                   </Button>
                   <Button variant="outline" className="h-20 flex-col gap-2">
                     <FileText className="h-6 w-6" />
-                    Nuevo Reporte
+                    {t('dashboard:owner.quick_actions.new_report')}
                   </Button>
                 </div>
               </CardContent>
@@ -434,12 +436,12 @@ export default function OwnerDashboard() {
           <TabsContent value="drivers" className="space-y-6 mt-6">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-2xl font-bold">Gestión de Conductores</h2>
-                <p className="text-muted-foreground">Administra tu equipo de conductores</p>
+                <h2 className="text-2xl font-bold">{t('dashboard:owner.drivers.title')}</h2>
+                <p className="text-muted-foreground">{t('dashboard:owner.drivers.subtitle')}</p>
               </div>
                <Button>
                  <Plus className="h-4 w-4 mr-2" />
-                 Nuevo Conductor
+                 {t('dashboard:owner.drivers.new_driver')}
                </Button>
             </div>
 
@@ -458,7 +460,7 @@ export default function OwnerDashboard() {
                         </div>
                       </div>
                       <Badge variant={driver.is_active ? "default" : "secondary"}>
-                        {driver.is_active ? "Activo" : "Inactivo"}
+                        {driver.is_active ? t('dashboard:owner.drivers.status.active') : t('dashboard:owner.drivers.status.inactive')}
                       </Badge>
                     </div>
                   </CardHeader>
@@ -470,18 +472,18 @@ export default function OwnerDashboard() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">CDL vence: {new Date(driver.license_expiry_date).toLocaleDateString()}</span>
+                        <span className="text-sm">{t('dashboard:owner.drivers.license_expires')}: {new Date(driver.license_expiry_date).toLocaleDateString()}</span>
                       </div>
                     </div>
                     
                     <div className="flex gap-2 mt-4">
                       <Button variant="outline" size="sm" className="flex-1">
                         <Eye className="h-4 w-4 mr-1" />
-                        Ver
+                        {t('dashboard:owner.drivers.actions.view')}
                       </Button>
                       <Button variant="outline" size="sm" className="flex-1">
                         <Edit className="h-4 w-4 mr-1" />
-                        Editar
+                        {t('dashboard:owner.drivers.actions.edit')}
                       </Button>
                     </div>
                   </CardContent>
@@ -495,12 +497,12 @@ export default function OwnerDashboard() {
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <div>
-                  <h2 className="text-2xl font-bold">Gestión de Flota</h2>
-                  <p className="text-muted-foreground">Monitor y sincroniza tu flota con Geotab</p>
+                  <h2 className="text-2xl font-bold">{t('dashboard:owner.fleet.title')}</h2>
+                  <p className="text-muted-foreground">{t('dashboard:owner.fleet.subtitle')}</p>
                 </div>
                 <Button variant="outline">
                   <Plus className="h-4 w-4 mr-2" />
-                  Agregar Vehículo
+                  {t('dashboard:owner.fleet.add_vehicle')}
                 </Button>
               </div>
               
@@ -515,11 +517,11 @@ export default function OwnerDashboard() {
               <CardContent className="pt-6">
                 <div className="text-center py-12">
                   <BarChart3 className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Reportes y Análisis</h3>
-                  <p className="text-muted-foreground mb-4">Los reportes detallados estarán disponibles próximamente</p>
+                  <h3 className="text-lg font-semibold mb-2">{t('dashboard:owner.reports.title')}</h3>
+                  <p className="text-muted-foreground mb-4">{t('dashboard:owner.reports.subtitle')}</p>
                   <Button variant="outline">
                     <FileText className="h-4 w-4 mr-2" />
-                    Generar Reporte
+                    {t('dashboard:owner.reports.generate_report')}
                   </Button>
                 </div>
               </CardContent>

@@ -1,0 +1,49 @@
+{
+  "owner": {
+    "title": "Executive Dashboard",
+    "tabs": {
+      "overview": "Dashboard", 
+      "drivers": "Drivers",
+      "fleet": "Fleet Tracking",
+      "payments": "Payments",
+      "reports": "Reports",
+      "settings": "Configuration"
+    },
+    "stats": {
+      "total_income": "Total Revenue",
+      "active_drivers": "Active Drivers", 
+      "completed_loads": "Completed Loads",
+      "pending_payments": "Pending Payments"
+    },
+    "quick_actions": {
+      "title": "Quick Actions",
+      "new_driver": "New Driver",
+      "new_vehicle": "New Vehicle", 
+      "new_report": "New Report"
+    },
+    "drivers": {
+      "title": "Driver Management",
+      "subtitle": "Manage your driver team",
+      "new_driver": "New Driver",
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "license_expires": "CDL expires",
+      "actions": {
+        "view": "View",
+        "edit": "Edit"
+      }
+    },
+    "fleet": {
+      "title": "Fleet Management",
+      "subtitle": "Monitor and sync your fleet with Geotab",
+      "add_vehicle": "Add Vehicle"
+    },
+    "reports": {
+      "title": "Reports and Analytics", 
+      "subtitle": "Detailed reports will be available soon",
+      "generate_report": "Generate Report"
+    }
+  }
+}

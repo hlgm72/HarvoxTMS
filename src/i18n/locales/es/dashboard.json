@@ -1,0 +1,49 @@
+{
+  "owner": {
+    "title": "Dashboard Ejecutivo",
+    "tabs": {
+      "overview": "Dashboard",
+      "drivers": "Conductores", 
+      "fleet": "Fleet Tracking",
+      "payments": "Pagos",
+      "reports": "Reportes",
+      "settings": "Configuración"
+    },
+    "stats": {
+      "total_income": "Ingresos Totales",
+      "active_drivers": "Conductores Activos",
+      "completed_loads": "Cargas Completadas", 
+      "pending_payments": "Pagos Pendientes"
+    },
+    "quick_actions": {
+      "title": "Acciones Rápidas",
+      "new_driver": "Nuevo Conductor",
+      "new_vehicle": "Nuevo Vehículo",
+      "new_report": "Nuevo Reporte"
+    },
+    "drivers": {
+      "title": "Gestión de Conductores",
+      "subtitle": "Administra tu equipo de conductores",
+      "new_driver": "Nuevo Conductor",
+      "status": {
+        "active": "Activo",
+        "inactive": "Inactivo"
+      },
+      "license_expires": "CDL vence",
+      "actions": {
+        "view": "Ver",
+        "edit": "Editar"
+      }
+    },
+    "fleet": {
+      "title": "Gestión de Flota",
+      "subtitle": "Monitor y sincroniza tu flota con Geotab",
+      "add_vehicle": "Agregar Vehículo"
+    },
+    "reports": {
+      "title": "Reportes y Análisis",
+      "subtitle": "Los reportes detallados estarán disponibles próximamente", 
+      "generate_report": "Generar Reporte"
+    }
+  }
+}
