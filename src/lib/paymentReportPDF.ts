@@ -624,11 +624,20 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   currentY += 15;
 
   // === FUEL PURCHASES ===
+  // Calcular el espacio necesario para toda la sección de combustible
+  const fuelCount = data.fuelExpenses?.length || 0;
+  const fuelSectionHeight = 8 + 10 + (fuelCount * 8); // Header + spacing + items
+  
+  // Verificar si toda la sección de combustible cabe en la página actual
+  if (currentY + fuelSectionHeight > pageHeight - footerSpace) {
+    doc.addPage();
+    currentY = margin;
+  }
+  
   const grayRgb = hexToRgb(colors.lightGray);
   doc.setFillColor(grayRgb[0], grayRgb[1], grayRgb[2]);
   doc.rect(margin, currentY - 5, pageWidth - margin*2, 8, 'F');
   
-  const fuelCount = data.fuelExpenses?.length || 0;
   addText(`Fuel Expenses (Count: ${fuelCount}, Total: ${formatCurrency(data.period.fuel_expenses)})`, margin + 2, currentY, {
     fontSize: 10,
     fontStyle: 'bold',
@@ -639,12 +648,6 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   if (data.fuelExpenses && data.fuelExpenses.length > 0) {
     data.fuelExpenses.forEach(fuel => {
-      // Verificar si necesitamos nueva página antes de agregar cada línea de combustible
-      if (currentY > pageHeight - footerSpace) {
-        doc.addPage();
-        currentY = margin;
-      }
-      
       const dateStr = new Date(fuel.transaction_date).toLocaleDateString('en-US');
       
       addText(dateStr, margin + 2, currentY, {
