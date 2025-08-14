@@ -10,9 +10,11 @@ import { formatPaymentPeriod } from '@/lib/dateFormatting';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CreateSpecialPeriodDialog } from "./CreateSpecialPeriodDialog";
 import { PaymentPeriodDetails } from "./PaymentPeriodDetails";
+import { useTranslation } from 'react-i18next';
 
 export function PaymentPeriodsManager() {
   const { user } = useAuth();
+  const { t } = useTranslation('payments');
   const [selectedPeriod, setSelectedPeriod] = useState<string | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   
@@ -39,22 +41,22 @@ export function PaymentPeriodsManager() {
 
   const getStatusLabel = (status: string) => {
     const labels = {
-      'open': 'Abierto',
-      'processing': 'Procesando',
-      'calculated': 'Calculado',
-      'needs_review': 'Requiere Revisión',
-      'approved': 'Aprobado',
-      'paid': 'Pagado',
-      'locked': 'Bloqueado'
+      'open': t('period.status.open'),
+      'processing': t('period.status.processing'),
+      'calculated': t('period.status.calculated'),
+      'needs_review': t('period.status.needs_review'),
+      'approved': t('period.status.approved'),
+      'paid': t('period.status.paid'),
+      'locked': t('period.status.locked')
     };
     return labels[status as keyof typeof labels] || status;
   };
 
   const getPeriodTypeLabel = (type: string) => {
     const labels = {
-      'regular': 'Regular',
-      'special': 'Especial',
-      'bonus': 'Bono'
+      'regular': t('period.type.regular'),
+      'special': t('period.type.special'),
+      'bonus': t('period.type.bonus')
     };
     return labels[type as keyof typeof labels] || type;
   };
@@ -63,7 +65,7 @@ export function PaymentPeriodsManager() {
     return (
       <Card>
         <CardContent className="flex items-center justify-center h-48">
-          <div className="text-muted-foreground">Cargando períodos...</div>
+          <div className="text-muted-foreground">{t('period.loading')}</div>
         </CardContent>
       </Card>
     );
@@ -74,21 +76,21 @@ export function PaymentPeriodsManager() {
       {/* Header con botón de crear período especial */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Períodos de Pago</h2>
-          <p className="text-muted-foreground">Gestiona los períodos de pago y deducciones</p>
+          <h2 className="text-2xl font-bold tracking-tight">{t('period.title')}</h2>
+          <p className="text-muted-foreground">{t('period.subtitle')}</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Período Especial
+              {t('period.special_period')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Crear Período Especial</DialogTitle>
+              <DialogTitle>{t('period.create_special_title')}</DialogTitle>
               <DialogDescription>
-                Crea un período de pago especial para manejar bonos, deducciones extraordinarias o ajustes específicos.
+                {t('period.create_special_description')}
               </DialogDescription>
             </DialogHeader>
             <CreateSpecialPeriodDialog 
@@ -106,7 +108,7 @@ export function PaymentPeriodsManager() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Períodos Activos</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('period.stats.active')}</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -118,7 +120,7 @@ export function PaymentPeriodsManager() {
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Requieren Revisión</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('period.stats.review_needed')}</CardTitle>
             <AlertTriangle className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
@@ -130,7 +132,7 @@ export function PaymentPeriodsManager() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Listos para Pago</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('period.stats.ready_for_payment')}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -142,7 +144,7 @@ export function PaymentPeriodsManager() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Períodos</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('period.stats.total')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>

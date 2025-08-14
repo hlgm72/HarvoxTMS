@@ -17,11 +17,37 @@
     "select_drivers_error": "You must select at least one driver to mark as paid"
   },
   "period": {
+    "title": "Payment Periods",
+    "subtitle": "Manage payment periods and deductions",
+    "loading": "Loading periods...",
     "create": "Create Period",
     "creating": "Creating...",
     "current": "Current Period",
     "no_periods": "No payment periods available",
-    "no_periods_for_role": "No payment periods available for this {{role}}."
+    "no_periods_for_role": "No payment periods available for this {{role}}.",
+    "special_period": "Special Period",
+    "create_special_title": "Create Special Period",
+    "create_special_description": "Create a special payment period to handle bonuses, extraordinary deductions or specific adjustments.",
+    "stats": {
+      "active": "Active Periods",
+      "review_needed": "Need Review",
+      "ready_for_payment": "Ready for Payment",
+      "total": "Total Periods"
+    },
+    "status": {
+      "open": "Open",
+      "processing": "Processing",
+      "calculated": "Calculated",
+      "needs_review": "Needs Review",
+      "approved": "Approved",
+      "paid": "Paid",
+      "locked": "Locked"
+    },
+    "type": {
+      "regular": "Regular",
+      "special": "Special",
+      "bonus": "Bonus"
+    }
   },
   "deductions": {
     "create": "Create Deduction",

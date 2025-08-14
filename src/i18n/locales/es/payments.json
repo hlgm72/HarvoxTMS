@@ -17,11 +17,37 @@
     "select_drivers_error": "Debes seleccionar al menos un conductor para marcar como pagado"
   },
   "period": {
+    "title": "Períodos de Pago",
+    "subtitle": "Gestiona los períodos de pago y deducciones",
+    "loading": "Cargando períodos...",
     "create": "Crear Período",
     "creating": "Creando...",
     "current": "Período Actual",
     "no_periods": "No hay períodos de pago disponibles",
-    "no_periods_for_role": "No hay períodos de pago disponibles para este {{role}}."
+    "no_periods_for_role": "No hay períodos de pago disponibles para este {{role}}.",
+    "special_period": "Período Especial",
+    "create_special_title": "Crear Período Especial",
+    "create_special_description": "Crea un período de pago especial para manejar bonos, deducciones extraordinarias o ajustes específicos.",
+    "stats": {
+      "active": "Períodos Activos",
+      "review_needed": "Requieren Revisión",
+      "ready_for_payment": "Listos para Pago",
+      "total": "Total Períodos"
+    },
+    "status": {
+      "open": "Abierto",
+      "processing": "Procesando",
+      "calculated": "Calculado",
+      "needs_review": "Requiere Revisión",
+      "approved": "Aprobado",
+      "paid": "Pagado",
+      "locked": "Bloqueado"
+    },
+    "type": {
+      "regular": "Regular",
+      "special": "Especial",
+      "bonus": "Bono"
+    }
   },
   "deductions": {
     "create": "Crear Deducción",
