@@ -432,7 +432,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const totalAmount = data.loads?.reduce((sum, load) => sum + (load.total_amount || 0), 0) || 0;
   const formattedTotal = formatCurrency(totalAmount);
   
-  addText(`Loads completed: ${loadCount} (${formattedTotal})`, margin, currentY, {
+  addText(`Loads completed: ${loadCount} loads (${formattedTotal})`, margin, currentY, {
     fontSize: 12,
     fontStyle: 'bold',
     color: colors.darkGray
