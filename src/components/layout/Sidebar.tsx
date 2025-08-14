@@ -47,126 +47,126 @@ const companies = [
 const getCompanyOwnerNavigationItems = (driversCount: number, equipmentCount: number, loadsCount: number, t: any) => [
   // Dashboard
   { 
-    title: "Executive Dashboard", 
+    title: t('company.sidebar.navigation.executive_dashboard'), 
     url: "/dashboard/owner", 
     icon: Target, 
     badge: "Live",
     badgeVariant: "live" as const,
-    description: "Executive panel",
+    description: t('company.sidebar.descriptions.executive_panel'),
     section: "dashboard"
   },
   
   // Gestión Operacional
   { 
-    title: "Drivers", 
+    title: t('company.sidebar.navigation.drivers'), 
     url: "/drivers", 
     icon: Users, 
     badge: driversCount.toString(),
     badgeVariant: "count" as const,
-    description: "Driver management",
+    description: t('company.sidebar.descriptions.driver_management'),
     section: "operations"
   },
   { 
-    title: "Fleet", 
+    title: t('company.sidebar.navigation.fleet'), 
     url: "/equipment", 
     icon: Truck, 
      badge: equipmentCount.toString(),
     badgeVariant: "count" as const,
-    description: "Vehicles and equipment",
+    description: t('company.sidebar.descriptions.vehicles_equipment'),
     section: "operations"
   },
   { 
-    title: "Loads", 
+    title: t('company.sidebar.navigation.loads'), 
     url: "/loads", 
     icon: Package, 
     badge: loadsCount.toString(),
     badgeVariant: "count" as const,
-    description: "Load management",
+    description: t('company.sidebar.descriptions.load_management'),
     section: "operations"
   },
   
   // Gestión Comercial
   { 
-    title: "Clients", 
+    title: t('company.sidebar.navigation.clients'), 
     url: "/clients", 
     icon: Building2,
-    description: "Client base",
+    description: t('company.sidebar.descriptions.client_base'),
     section: "commercial"
   },
   { 
-    title: "Billing", 
+    title: t('company.sidebar.navigation.billing'), 
     url: "/billing", 
     icon: CreditCard,
-    description: "Billing and payments",
+    description: t('company.sidebar.descriptions.billing_payments'),
     section: "commercial"
   },
   
   // Gestión Financiera
   { 
-    title: "Additional Payments", 
+    title: t('company.sidebar.navigation.additional_payments'), 
     url: "/additional-payments", 
     icon: Calculator,
-    description: "Additional income for drivers and dispatchers",
+    description: t('company.sidebar.descriptions.additional_income'),
     section: "financial"
   },
   { 
-    title: "Deductions", 
+    title: t('company.sidebar.navigation.deductions'), 
     url: "/deductions", 
     icon: Receipt,
-    description: "Recurring expenses",
+    description: t('company.sidebar.descriptions.recurring_expenses'),
     section: "financial"
   },
   { 
-    title: "Fuel Management", 
+    title: t('company.sidebar.navigation.fuel_management'), 
     url: "/fuel-management", 
     icon: Fuel,
-    description: "Fuel control and WEX cards",
+    description: t('company.sidebar.descriptions.fuel_control'),
     section: "financial"
   },
   { 
-    title: "Driver Payments", 
+    title: t('company.sidebar.navigation.driver_payments'), 
     url: "/payments", 
     icon: DollarSign,
-    description: "Payment management",
+    description: t('company.sidebar.descriptions.payment_management'),
     section: "financial"
   },
   
   // Reportes y Análisis
   { 
-    title: "Payment Reports", 
+    title: t('company.sidebar.navigation.payment_reports'), 
     url: "/payment-reports", 
     icon: FileBarChart,
-    description: "PDF payment reports",
+    description: t('company.sidebar.descriptions.pdf_payment_reports'),
     section: "reports"
   },
   { 
-    title: "Financial Reports", 
+    title: t('company.sidebar.navigation.financial_reports'), 
     url: "/reports/financial", 
     icon: BarChart3,
-    description: "Financial analysis",
+    description: t('company.sidebar.descriptions.financial_analysis'),
     section: "reports"
   },
   
   // Administración
   { 
-    title: "Documents", 
+    title: t('company.sidebar.navigation.documents'), 
     url: "/documents", 
     icon: FileText,
-    description: "Company documents",
+    description: t('company.sidebar.descriptions.company_documents'),
     section: "admin"
   },
   { 
-    title: "User Management", 
+    title: t('company.sidebar.navigation.user_management'), 
     url: "/users", 
     icon: Users, 
-    description: "Users and roles",
+    description: t('company.sidebar.descriptions.users_roles'),
     section: "admin"
   },
   { 
-    title: "Settings", 
+    title: t('company.sidebar.navigation.settings'), 
     url: "/settings", 
     icon: Settings,
-    description: "Company settings",
+    description: t('company.sidebar.descriptions.company_settings'),
     section: "admin"
   },
 ];
@@ -497,33 +497,33 @@ export function AppSidebar() {
   const getSectionLabels = () => {
     if (isCompanyOwner) {
       return {
-        dashboard: "Dashboard",
-        operations: "Operations Management", 
-        commercial: "Commercial Management",
-        financial: "Financial Management",
-        reports: "Reports & Analytics",
-        admin: "Administration"
+        dashboard: t('company.sidebar.sections.dashboard'),
+        operations: t('company.sidebar.sections.operations'), 
+        commercial: t('company.sidebar.sections.commercial'),
+        financial: t('company.sidebar.sections.financial'),
+        reports: t('company.sidebar.sections.reports'),
+        admin: t('company.sidebar.sections.admin')
       };
     }
     if (isOperationsManager) {
       return {
-        dashboard: "Dashboard & Monitoring",
-        operations: "Operations Management",
-        reports: "Reports & Analytics"
+        dashboard: t('company.sidebar.sections.monitoring'),
+        operations: t('company.sidebar.sections.operations'),
+        reports: t('company.sidebar.sections.reports')
       };
     }
     if (isDispatcher) {
       return {
-        dashboard: "Dashboard & Monitoring",
-        loads: "Load Management",
-        resources: "Resources"
+        dashboard: t('company.sidebar.sections.monitoring'),
+        loads: t('company.sidebar.sections.loads'),
+        resources: t('company.sidebar.sections.resources')
       };
     }
     if (isDriver) {
       return {
-        dashboard: "Personal panel",
-        tasks: "My Tasks",
-        financial: "Financial Management"
+        dashboard: t('company.sidebar.descriptions.personal_panel'),
+        tasks: t('company.sidebar.sections.tasks'),
+        financial: t('company.sidebar.sections.financial')
       };
     }
     return {};
@@ -672,7 +672,7 @@ export function AppSidebar() {
                   {isSuperAdmin && <span className="text-blue-300 ml-2 text-sm font-medium">Admin</span>}
                 </h2>
                 <p className="text-sm text-white/70 font-medium tracking-wide">
-                  Professional TMS
+                  {t('company.sidebar.company.professional_tms')}
                 </p>
               </div>
               
@@ -695,7 +695,7 @@ export function AppSidebar() {
               {!isSuperAdmin && (
                 <div className="mt-3 flex items-center gap-2 text-xs text-white/60">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="font-medium">System Online</span>
+                  <span className="font-medium">{t('company.sidebar.status.system_online')}</span>
                 </div>
               )}
             </div>
@@ -754,9 +754,9 @@ export function AppSidebar() {
                        <p className="text-sm font-medium text-slate-900 leading-tight truncate">
                          {selectedCompany.name}
                        </p>
-                         <p className="text-xs text-slate-500 capitalize leading-tight">
-                           {currentRole?.replace('_', ' ') || "No role"}
-                         </p>
+                          <p className="text-xs text-slate-500 capitalize leading-tight">
+                            {currentRole?.replace('_', ' ') || t('company.sidebar.status.no_role')}
+                          </p>
                      </div>
                      <ChevronDown className="h-4 w-4 text-slate-400 ml-2 flex-shrink-0" />
                   </div>
@@ -807,7 +807,7 @@ export function AppSidebar() {
           ) : (
             <div className="flex items-center gap-2 text-slate-300 text-xs">
               <Activity className="h-3 w-3" />
-              <span>System Status</span>
+              <span>{t('company.sidebar.status.system_status')}</span>
               <div className="ml-auto w-2 h-2 bg-green-500 rounded-full"></div>
             </div>
           )}
