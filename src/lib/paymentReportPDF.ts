@@ -140,13 +140,13 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     // Fondo de color con esquinas redondeadas
     const bgRgb = hexToRgb(bgColor);
     doc.setFillColor(bgRgb[0], bgRgb[1], bgRgb[2]);
-    doc.roundedRect(x, y, width, height, 3, 3, 'F');
+    doc.roundedRect(x, y, width, height, 2, 2, 'F');
     
     // Borde sutil con esquinas redondeadas
     const borderRgb = hexToRgb(colors.border);
     doc.setDrawColor(borderRgb[0], borderRgb[1], borderRgb[2]);
     doc.setLineWidth(0.3);
-    doc.roundedRect(x, y, width, height, 3, 3, 'S');
+    doc.roundedRect(x, y, width, height, 2, 2, 'S');
     
     // Título
     addText(title, x + width/2, y + height/3, {
@@ -380,30 +380,32 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   currentY += 25;
 
   // === CAJAS DE RESUMEN SUPERIOR ===
-  const boxWidth = (pageWidth - margin*2 - 15) / 4; // 4 cajas con espacios
+  const totalBoxesWidth = pageWidth - margin*2 + 10; // Mismo ancho que la cabecera
+  const boxesStartX = margin - 5; // Misma posición X que la cabecera
+  const boxWidth = (totalBoxesWidth - 15) / 4; // 4 cajas con espacios
   const boxHeight = 13;
   
   // Gross Earnings (Verde)
-  addColoredBox(margin, currentY, boxWidth, boxHeight, colors.lightGreen, colors.darkGray, 
+  addColoredBox(boxesStartX, currentY, boxWidth, boxHeight, colors.lightGreen, colors.darkGray, 
     'Gross Earnings', formatCurrency(data.period.gross_earnings));
   
   // Other Earnings (Azul)
-  addColoredBox(margin + boxWidth + 5, currentY, boxWidth, boxHeight, colors.lightBlue, colors.darkGray,
+  addColoredBox(boxesStartX + boxWidth + 5, currentY, boxWidth, boxHeight, colors.lightBlue, colors.darkGray,
     'Other Earnings', formatCurrency(data.period.other_income));
   
   // Total Deductions (Rojo)
-  addColoredBox(margin + (boxWidth + 5) * 2, currentY, boxWidth, boxHeight, colors.lightRed, colors.darkGray,
+  addColoredBox(boxesStartX + (boxWidth + 5) * 2, currentY, boxWidth, boxHeight, colors.lightRed, colors.darkGray,
     'Total Deductions', formatCurrency(-data.period.total_deductions));
   
   // Fuel Expenses (Naranja)
-  addColoredBox(margin + (boxWidth + 5) * 3, currentY, boxWidth, boxHeight, colors.lightOrange, colors.darkGray,
+  addColoredBox(boxesStartX + (boxWidth + 5) * 3, currentY, boxWidth, boxHeight, colors.lightOrange, colors.darkGray,
     'Fuel Expenses', formatCurrency(-data.period.fuel_expenses));
 
   currentY += boxHeight + 4;
 
   // Net Pay (Caja grande azul)
-  const netPayWidth = pageWidth - margin*2;
-  addColoredBox(margin, currentY, netPayWidth, 13, colors.lightBlue, colors.primary,
+  const netPayWidth = totalBoxesWidth; // Mismo ancho que la cabecera
+  addColoredBox(boxesStartX, currentY, netPayWidth, 13, colors.lightBlue, colors.primary,
     'Net Pay', formatCurrency(data.period.net_payment));
 
   currentY += 20;
