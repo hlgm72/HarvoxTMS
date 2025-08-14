@@ -434,9 +434,33 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   if (data.loads && data.loads.length > 0) {
     data.loads.forEach((load, index) => {
-      // Load number (en negrita)
-      const loadText = `Load#: ${load.load_number}`;
-      addText(loadText, margin, currentY, {
+      // Calcular el ancho necesario para alinear los dos puntos
+      const loadPrefix = 'Load#';
+      const pupPrefix = 'PUP';
+      const delPrefix = 'DEL';
+      
+      // Encontrar el ancho máximo para alinear los dos puntos
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      const loadPrefixWidth = doc.getTextWidth(loadPrefix);
+      
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      const pupPrefixWidth = doc.getTextWidth(pupPrefix);
+      const delPrefixWidth = doc.getTextWidth(delPrefix);
+      
+      const maxPrefixWidth = Math.max(loadPrefixWidth, pupPrefixWidth, delPrefixWidth);
+      const colonPosition = margin + maxPrefixWidth;
+      
+      // Load number (en negrita) con alineación
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      addText(loadPrefix, margin, currentY, {
+        fontSize: 10,
+        fontStyle: 'bold',
+        color: colors.darkGray
+      });
+      addText(`: ${load.load_number}`, colonPosition, currentY, {
         fontSize: 10,
         fontStyle: 'bold',
         color: colors.darkGray
@@ -447,9 +471,9 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         // Configurar la fuente para calcular el ancho correctamente
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(10);
-        const textWidth = doc.getTextWidth(loadText);
+        const loadTextWidth = doc.getTextWidth(`${loadPrefix}: ${load.load_number}`);
         
-        addText(` (PO: ${load.po_number})`, margin + textWidth, currentY, {
+        addText(` (PO: ${load.po_number})`, margin + loadTextWidth, currentY, {
           fontSize: 10,
           fontStyle: 'normal',
           color: colors.darkGray
@@ -484,16 +508,13 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const pickupDate = new Date(load.pickup_date).toLocaleDateString('en-US');
       const pickupInfo = ` ${pickupDate} ${pickupCompany} (${pickupLocation})`;
       
-      // PUP en bold
-      addText('PUP:', margin + 5, currentY + 4, {
+      // PUP en bold con alineación
+      addText(pupPrefix, margin, currentY + 4, {
         fontSize: 9,
         fontStyle: 'bold',
         color: colors.darkGray
       });
-      
-      // Resto del texto pickup en normal
-      const pupWidth = doc.getTextWidth('PUP:');
-      addText(pickupInfo, margin + 5 + pupWidth, currentY + 4, {
+      addText(`: ${pickupDate} ${pickupCompany} (${pickupLocation})`, colonPosition, currentY + 4, {
         fontSize: 9,
         fontStyle: 'normal',
         color: colors.darkGray
@@ -503,16 +524,13 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const deliveryDate = new Date(load.delivery_date).toLocaleDateString('en-US');
       const deliveryInfo = ` ${deliveryDate} ${deliveryCompany} (${deliveryLocation})`;
       
-      // DEL en bold
-      addText('DEL:', margin + 5, currentY + 8, {
+      // DEL en bold con alineación
+      addText(delPrefix, margin, currentY + 8, {
         fontSize: 9,
         fontStyle: 'bold',
         color: colors.darkGray
       });
-      
-      // Resto del texto delivery en normal
-      const delWidth = doc.getTextWidth('DEL:');
-      addText(deliveryInfo, margin + 5 + delWidth, currentY + 8, {
+      addText(`: ${deliveryDate} ${deliveryCompany} (${deliveryLocation})`, colonPosition, currentY + 8, {
         fontSize: 9,
         fontStyle: 'normal',
         color: colors.darkGray
