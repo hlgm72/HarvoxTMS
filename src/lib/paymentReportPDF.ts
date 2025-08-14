@@ -601,7 +601,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   const redRgb = hexToRgb(colors.lightRed);
   doc.setFillColor(redRgb[0], redRgb[1], redRgb[2]);
-  doc.rect(margin, currentY, pageWidth - margin*2, 8, 'F');
+  doc.rect(margin, currentY - 5, pageWidth - margin*2, 8, 'F');
   
   const totalDeductions = data.deductions?.reduce((sum, d) => sum + d.amount, 0) || 0;
   addText(`Period Deductions (Count: ${deductionsCount}, Total: ${formatCurrency(totalDeductions)})`, margin + 2, currentY, {
