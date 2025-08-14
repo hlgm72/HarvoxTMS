@@ -130,10 +130,10 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   // Helper functions mejoradas
   const addText = (text: string, x: number, y: number, options: any = {}) => {
-    const { fontSize = 10, fontStyle = 'normal', color = colors.text, align = 'left' } = options;
+    const { fontSize = 10, fontStyle = 'normal', color = colors.text, align = 'left', fontFamily = 'times' } = options;
     
     doc.setFontSize(fontSize);
-    doc.setFont('helvetica', fontStyle);
+    doc.setFont(fontFamily, fontStyle);
     const rgbColor = hexToRgb(color);
     doc.setTextColor(rgbColor[0], rgbColor[1], rgbColor[2]);
     doc.text(text, x, y, { align: align as any });
