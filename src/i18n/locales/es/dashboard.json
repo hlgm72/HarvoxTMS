@@ -48,6 +48,7 @@
     },
     "payments": {
       "realtime_title": "Pagos de Conductores en Tiempo Real",
+      "live": "En Vivo",
       "gross_income": "Ingresos Brutos",
       "fuel": "Combustible",
       "deductions": "Deducciones",

@@ -47,7 +47,8 @@
       "generate_report": "Generate Report"
     },
     "payments": {
-      "realtime_title": "Real-Time Driver Payments",
+      "realtime_title": "Real-time Driver Payments",
+      "live": "Live",
       "gross_income": "Gross Income",
       "fuel": "Fuel",
       "deductions": "Deductions", 
