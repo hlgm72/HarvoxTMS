@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2, Copy, Play, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatCurrency } from "@/lib/utils";
 import { formatDateTime } from '@/lib/dateFormatting';
 import { useLoads } from "@/hooks/useLoads";
@@ -363,24 +364,60 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     Broker / Cliente
                   </label>
-                  <p className="text-sm font-medium">{load.broker_name}</p>
-                  {load.dispatcher_name && (
-                    <p className="text-xs text-muted-foreground">Contacto: {load.dispatcher_name}</p>
-                  )}
+                  <div className="flex items-center gap-3 mt-1">
+                    {load.broker_logo_url ? (
+                      <img 
+                        src={load.broker_logo_url} 
+                        alt={`Logo de ${load.broker_name}`}
+                        className="h-8 w-8 rounded object-contain bg-white border border-border"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="h-8 w-8 rounded bg-muted border border-border flex items-center justify-center">
+                        <span className="text-xs font-medium text-muted-foreground">
+                          {load.broker_name?.charAt(0)?.toUpperCase() || '?'}
+                        </span>
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-sm font-medium">{load.broker_name}</p>
+                      {load.dispatcher_name && (
+                        <p className="text-xs text-muted-foreground">Contacto: {load.dispatcher_name}</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 
                 <div>
                   <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     Conductor Asignado
                   </label>
-                  <p className="text-sm font-medium">
-                    {load.driver_name || (
-                      <span className="text-muted-foreground italic">Sin asignar</span>
-                    )}
-                  </p>
-                  {load.internal_dispatcher_name && (
-                    <p className="text-xs text-muted-foreground">Dispatcher: {load.internal_dispatcher_name}</p>
-                  )}
+                  <div className="flex items-center gap-3 mt-1">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage 
+                        src={load.driver_avatar_url || ''} 
+                        alt={load.driver_name || 'Sin conductor asignado'} 
+                      />
+                      <AvatarFallback className="text-xs bg-muted text-muted-foreground">
+                        {load.driver_name ? 
+                          load.driver_name.split(' ').map(n => n.charAt(0)).join('').toUpperCase() :
+                          '?'
+                        }
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-sm font-medium">
+                        {load.driver_name || (
+                          <span className="text-muted-foreground italic">Sin asignar</span>
+                        )}
+                      </p>
+                      {load.internal_dispatcher_name && (
+                        <p className="text-xs text-muted-foreground">Dispatcher: {load.internal_dispatcher_name}</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 
                 <div>

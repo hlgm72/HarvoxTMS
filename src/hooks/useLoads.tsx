@@ -28,8 +28,10 @@ export interface Load {
   
   // Datos relacionados calculados
   driver_name?: string;
+  driver_avatar_url?: string;
   broker_name?: string;
   broker_alias?: string;
+  broker_logo_url?: string;
   dispatcher_name?: string | null;
   internal_dispatcher_name?: string | null;
   pickup_city?: string;
@@ -326,10 +328,10 @@ export const useLoads = (filters?: LoadsFilters) => {
         
         const [profilesResult, brokersResult, contactsResult, dispatchersResult, periodsResult] = await Promise.allSettled([
           driverIds.length > 0 
-            ? supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', driverIds)
+            ? supabase.from('profiles').select('user_id, first_name, last_name, avatar_url').in('user_id', driverIds)
             : Promise.resolve({ data: [] }),
           brokerIds.length > 0 
-            ? supabase.from('company_clients').select('id, name, alias').in('id', brokerIds)
+            ? supabase.from('company_clients').select('id, name, alias, logo_url').in('id', brokerIds)
             : Promise.resolve({ data: [] }),
           contactIds.length > 0 
             ? supabase.from('company_client_contacts').select('id, name, client_id').in('id', contactIds)
@@ -404,8 +406,10 @@ export const useLoads = (filters?: LoadsFilters) => {
             ...load,
             broker_id: load.client_id, // Compatibility field
             driver_name: profile ? `${profile.first_name} ${profile.last_name}` : 'Sin asignar',
+            driver_avatar_url: profile?.avatar_url || null,
             broker_name: brokerDisplayName,
             broker_alias: broker?.alias,
+            broker_logo_url: broker?.logo_url || null,
             dispatcher_name: contact?.name || null,
             internal_dispatcher_name: dispatcher ? `${dispatcher.first_name} ${dispatcher.last_name}` : null,
             pickup_city: pickupCityDisplay,
