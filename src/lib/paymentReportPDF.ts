@@ -133,7 +133,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     const { fontSize = 10, fontStyle = 'normal', color = colors.text, align = 'left' } = options;
     
     doc.setFontSize(fontSize);
-    doc.setFont('helvetica', fontStyle);
+    doc.setFont('times', fontStyle);
     const rgbColor = hexToRgb(color);
     doc.setTextColor(rgbColor[0], rgbColor[1], rgbColor[2]);
     doc.text(text, x, y, { align: align as any });
@@ -441,7 +441,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       // PO number (sin negrita, al lado del load number)
       if (load.po_number) {
         // Configurar la fuente para calcular el ancho correctamente
-        doc.setFont(doc.getFont().fontName, 'bold');
+        doc.setFont('times', 'bold');
         doc.setFontSize(10);
         const textWidth = doc.getTextWidth(loadText);
         
