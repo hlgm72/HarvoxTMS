@@ -260,6 +260,9 @@ export function PaymentReportDialog({
   const getReportData = () => {
     if (!calculation || !driver || !company) return null;
     
+    console.log('🔍 Report Data - Deductions count:', deductions.length);
+    console.log('🔍 Report Data - Deductions:', deductions);
+    
     return {
       driver: {
         name: driver.display_name || `${driver.first_name} ${driver.last_name}`,
@@ -292,11 +295,8 @@ export function PaymentReportDialog({
         logo_url: company.logo_url
       },
       loads: loads.map(load => {
-        // Priorizar alias, pero usar nombre completo si no hay alias
         const clientData = clients.find(c => c.id === load.client_id);
         let clientName = 'Sin cliente';
-        
-        console.log('🔍 Load:', load.load_number, 'client_id:', load.client_id, 'clientData:', clientData);
         
         if (clientData) {
           if (clientData.alias && clientData.alias.trim()) {
@@ -307,8 +307,6 @@ export function PaymentReportDialog({
         } else if (load.customer_name && load.customer_name.trim()) {
           clientName = load.customer_name;
         }
-        
-        console.log('🏷️ Final client name for', load.load_number, ':', clientName);
         
         return {
           load_number: load.load_number,

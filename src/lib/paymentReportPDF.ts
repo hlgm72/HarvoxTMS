@@ -78,6 +78,10 @@ interface PaymentReportData {
 }
 
 export async function generatePaymentReportPDF(data: PaymentReportData, isPreview: boolean = false) {
+  console.log('🔍 PDF Generation - Data received:', data);
+  console.log('🔍 PDF Generation - Deductions data:', data.deductions);
+  console.log('🔍 PDF Generation - Deductions length:', data.deductions?.length || 0);
+  
   const doc = new jsPDF('p', 'mm', 'a4');
   
   // Configurar fuente Helvetica como base (que es similar a Inter y está disponible en jsPDF)
