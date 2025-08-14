@@ -496,7 +496,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         color: colors.darkGray
       });
 
-      currentY += 18; // Reducido para hacer las paradas más compactas
+      currentY += 12; // Reducido para hacer las paradas aún más compactas
     });
   }
 
