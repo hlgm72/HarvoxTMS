@@ -163,14 +163,14 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
 
       onUpdate(data);
       showSuccess(
-        "Configuración actualizada",
-        "Los cambios se han guardado exitosamente."
+        t('company.settings.messages.updated'),
+        t('company.settings.messages.updated_desc')
       );
     } catch (error) {
       console.error('Error updating company:', error);
       showError(
-        "Error",
-        "No se pudieron guardar los cambios. Intenta nuevamente."
+        t('company.settings.messages.error'),
+        t('company.settings.messages.error_desc')
       );
     } finally {
       setLoading(false);
@@ -180,8 +180,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
   const handleReset = () => {
     setFormData(company);
     showSuccess(
-      "Formulario restaurado",
-      "Se han restaurado los valores originales."
+      t('company.settings.messages.reset'),
+      t('company.settings.messages.reset_desc')
     );
   };
 
@@ -198,7 +198,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           {hasChanges && (
             <Button variant="outline" onClick={handleReset}>
               <RotateCcw className="h-4 w-4 mr-2" />
-              Restablecer
+              {t('company.settings.buttons.reset')}
             </Button>
           )}
           <Button 
@@ -207,7 +207,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             className="bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-colors"
           >
             <Save className="h-4 w-4 mr-2" />
-            {loading ? 'Guardando...' : 'Guardar Cambios'}
+            {loading ? t('company.settings.buttons.saving') : t('company.settings.buttons.save')}
           </Button>
         </div>
       </div>
@@ -219,7 +219,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
           >
             <Building className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Empresa</span>
+            <span className="hidden sm:inline">{t('company.settings.tabs.company')}</span>
             <span className="sm:hidden">Emp</span>
           </TabsTrigger>
           <TabsTrigger 
@@ -227,7 +227,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
           >
             <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Documentación</span>
+            <span className="hidden sm:inline">{t('company.settings.tabs.documentation')}</span>
             <span className="sm:hidden">Docs</span>
           </TabsTrigger>
           <TabsTrigger 
@@ -235,7 +235,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
           >
             <MapPin className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Ubicación</span>
+            <span className="hidden sm:inline">{t('company.settings.tabs.location')}</span>
             <span className="sm:hidden">Ubic</span>
           </TabsTrigger>
           <TabsTrigger 
@@ -243,7 +243,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
           >
             <User className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Propietario</span>
+            <span className="hidden sm:inline">{t('company.settings.tabs.owner')}</span>
             <span className="sm:hidden">Prop</span>
           </TabsTrigger>
           <TabsTrigger 
@@ -251,7 +251,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
           >
             <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Pagos</span>
+            <span className="hidden sm:inline">{t('company.settings.tabs.payments')}</span>
             <span className="sm:hidden">Pago</span>
           </TabsTrigger>
           <TabsTrigger 
@@ -259,7 +259,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
           >
             <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Sistema</span>
+            <span className="hidden sm:inline">{t('company.settings.tabs.system')}</span>
             <span className="sm:hidden">Sist</span>
           </TabsTrigger>
         </TabsList>
@@ -270,7 +270,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Building className="h-5 w-5 text-primary" />
-                Información Básica de la Empresa
+                {t('company.settings.sections.basic_info')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -286,36 +286,36 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2 space-y-2">
-                  <Label htmlFor="name">Nombre de la Empresa *</Label>
+                  <Label htmlFor="name">{t('company.settings.fields.company_name')} *</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={companyNameHandlers.onChange}
                     onBlur={companyNameHandlers.onBlur}
-                    placeholder="Ingresa el nombre de la empresa"
+                    placeholder={t('company.settings.fields.company_name_placeholder')}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t('company.settings.fields.email')}</Label>
                   <Input
                     id="email"
                     type="email"
                     value={formData.email || ''}
                     onChange={companyEmailHandlers.onChange}
                     onBlur={companyEmailHandlers.onBlur}
-                    placeholder="empresa@ejemplo.com"
+                    placeholder={t('company.settings.fields.email_placeholder')}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Teléfono</Label>
+                  <Label htmlFor="phone">{t('company.settings.fields.phone')}</Label>
                   <Input
                     id="phone"
                     value={formData.phone || ''}
                     onChange={companyPhoneHandlers.onChange}
                     onKeyPress={companyPhoneHandlers.onKeyPress}
-                    placeholder="(XXX) XXX-XXXX"
+                    placeholder={t('company.settings.fields.phone_placeholder')}
                   />
                 </div>
               </div>

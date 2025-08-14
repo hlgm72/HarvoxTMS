@@ -84,7 +84,88 @@
   "company": {
     "settings": {
       "title": "Configuración de la Empresa",
-      "subtitle": "Administra la información y configuración de tu empresa"
+      "subtitle": "Administra la información y configuración de tu empresa",
+      "buttons": {
+        "reset": "Restablecer",
+        "save": "Guardar Cambios",
+        "saving": "Guardando..."
+      },
+      "tabs": {
+        "company": "Empresa",
+        "documentation": "Documentación",
+        "location": "Ubicación",
+        "owner": "Propietario",
+        "payments": "Pagos",
+        "system": "Sistema"
+      },
+      "sections": {
+        "basic_info": "Información Básica de la Empresa",
+        "regulatory_docs": "Documentación y Números Regulatorios",
+        "location": "Ubicación",
+        "owner_info": "Información del Propietario",
+        "payment_config": "Configuración de Pagos",
+        "system_config": "Configuración del Sistema"
+      },
+      "fields": {
+        "company_name": "Nombre de la Empresa",
+        "company_name_placeholder": "Ingresa el nombre de la empresa",
+        "email": "Email",
+        "email_placeholder": "empresa@ejemplo.com",
+        "phone": "Teléfono",
+        "phone_placeholder": "(XXX) XXX-XXXX",
+        "ein": "EIN (Tax ID)",
+        "ein_placeholder": "XX-XXXXXXX",
+        "mc_number": "Número MC",
+        "mc_number_placeholder": "MC-XXXXXXX",
+        "dot_number": "Número DOT",
+        "dot_number_placeholder": "XXXXXXXX",
+        "address": "Dirección",
+        "owner_name": "Nombre Completo",
+        "owner_name_placeholder": "Ingresa el nombre completo del propietario",
+        "owner_title": "Título/Cargo",
+        "owner_title_placeholder": "CEO, Presidente, etc.",
+        "owner_email": "Email",
+        "owner_email_placeholder": "propietario@empresa.com",
+        "owner_phone": "Teléfono",
+        "owner_phone_placeholder": "(XXX) XXX-XXXX",
+        "payment_day": "Día de Pago",
+        "payment_frequency": "Frecuencia de Pago",
+        "cycle_start_day": "Día de Inicio del Ciclo",
+        "max_users": "Máximo de Usuarios",
+        "max_vehicles": "Máximo de Vehículos",
+        "factoring_percentage": "% de Factoring por Defecto",
+        "dispatching_percentage": "% de Despacho por Defecto",
+        "leasing_percentage": "% de Arrendamiento por Defecto",
+        "assignment_criteria": "Criterios de Asignación de Cargas"
+      },
+      "frequencies": {
+        "weekly": "Semanal",
+        "biweekly": "Quincenal",
+        "monthly": "Mensual"
+      },
+      "days": {
+        "monday": "Lunes",
+        "tuesday": "Martes",
+        "wednesday": "Miércoles",
+        "thursday": "Jueves",
+        "friday": "Viernes",
+        "saturday": "Sábado",
+        "sunday": "Domingo"
+      },
+      "messages": {
+        "updated": "Configuración actualizada",
+        "updated_desc": "Los cambios se han guardado exitosamente.",
+        "reset": "Formulario restaurado",
+        "reset_desc": "Se han restaurado los valores originales.",
+        "error": "Error",
+        "error_desc": "No se pudieron guardar los cambios. Intenta nuevamente."
+      },
+      "preview": {
+        "title": "Vista Previa del Cronograma de Pagos",
+        "next_periods": "Próximos {{count}} períodos",
+        "show_preview": "Mostrar Vista Previa",
+        "hide_preview": "Ocultar Vista Previa"
+      }
     }
   }
 }

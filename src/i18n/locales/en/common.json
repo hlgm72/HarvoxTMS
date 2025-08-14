@@ -84,7 +84,88 @@
   "company": {
     "settings": {
       "title": "Company Settings",
-      "subtitle": "Manage your company information and configuration"
+      "subtitle": "Manage your company information and configuration",
+      "buttons": {
+        "reset": "Reset",
+        "save": "Save Changes",
+        "saving": "Saving..."
+      },
+      "tabs": {
+        "company": "Company",
+        "documentation": "Documentation",
+        "location": "Location",
+        "owner": "Owner",
+        "payments": "Payments",
+        "system": "System"
+      },
+      "sections": {
+        "basic_info": "Basic Company Information",
+        "regulatory_docs": "Documentation and Regulatory Numbers",
+        "location": "Location",
+        "owner_info": "Owner Information",
+        "payment_config": "Payment Configuration",
+        "system_config": "System Configuration"
+      },
+      "fields": {
+        "company_name": "Company Name",
+        "company_name_placeholder": "Enter company name",
+        "email": "Email",
+        "email_placeholder": "company@example.com",
+        "phone": "Phone",
+        "phone_placeholder": "(XXX) XXX-XXXX",
+        "ein": "EIN (Tax ID)",
+        "ein_placeholder": "XX-XXXXXXX",
+        "mc_number": "MC Number",
+        "mc_number_placeholder": "MC-XXXXXXX",
+        "dot_number": "DOT Number",
+        "dot_number_placeholder": "XXXXXXXX",
+        "address": "Address",
+        "owner_name": "Full Name",
+        "owner_name_placeholder": "Enter owner's full name",
+        "owner_title": "Title/Position",
+        "owner_title_placeholder": "CEO, President, etc.",
+        "owner_email": "Email",
+        "owner_email_placeholder": "owner@company.com",
+        "owner_phone": "Phone",
+        "owner_phone_placeholder": "(XXX) XXX-XXXX",
+        "payment_day": "Payment Day",
+        "payment_frequency": "Payment Frequency",
+        "cycle_start_day": "Cycle Start Day",
+        "max_users": "Maximum Users",
+        "max_vehicles": "Maximum Vehicles",
+        "factoring_percentage": "Default Factoring %",
+        "dispatching_percentage": "Default Dispatching %",
+        "leasing_percentage": "Default Leasing %",
+        "assignment_criteria": "Load Assignment Criteria"
+      },
+      "frequencies": {
+        "weekly": "Weekly",
+        "biweekly": "Bi-weekly",
+        "monthly": "Monthly"
+      },
+      "days": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      },
+      "messages": {
+        "updated": "Settings Updated",
+        "updated_desc": "Changes have been saved successfully.",
+        "reset": "Form Reset",
+        "reset_desc": "Original values have been restored.",
+        "error": "Error",
+        "error_desc": "Could not save changes. Please try again."
+      },
+      "preview": {
+        "title": "Payment Schedule Preview",
+        "next_periods": "Next {{count}} periods",
+        "show_preview": "Show Preview",
+        "hide_preview": "Hide Preview"
+      }
     }
   }
 }
