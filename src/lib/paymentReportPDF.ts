@@ -433,7 +433,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   addColoredBox(boxesStartX, currentY, netPayWidth, 13, colors.lightBlue, colors.primary,
     'Net Pay', formatCurrency(data.period.net_payment));
 
-  currentY += 20;
+  currentY += 15; // Reducido de 20 a 15 para mantener consistencia con otras páginas
 
   // === LOADS COMPLETED ===
   // Calcular el conteo y suma total de las cargas
