@@ -104,17 +104,31 @@
     "real_time_operations": "Operaciones en tiempo real"
   },
   "tracking": {
-    "title": "Fleet Tracking",
+    "title": "Seguimiento de Flota",
     "subtitle": "Ubicaciones en Tiempo Real",
+    "real_time_title": "Seguimiento de Flota en Tiempo Real",
+    "last_update": "Última actualización:",
+    "update_button": "Actualizar",
+    "location_map": "Mapa de Ubicaciones",
+    "vehicle_status": "Estado de Vehículos",
+    "map_integration": "Integración de Mapa",
+    "interactive_view": "La vista interactiva del mapa estará disponible próximamente",
+    "tracked_vehicles": "Se mostrará: {{count}} vehículos rastreados",
+    "speed": "Velocidad:",
+    "location": "Ubicación:",
     "status": {
       "moving": "En Movimiento",
       "parked": "Estacionado",
       "offline": "Sin Conexión",
-      "unknown": "Desconocido"
+      "unknown": "Desconocido",
+      "stopped": "Detenidos"
     },
     "stats": {
       "online": "En Línea", 
-      "moving": "En Movimiento"
+      "moving": "En Movimiento",
+      "stopped": "Detenidos",
+      "offline": "Sin Conexión",
+      "average_speed": "Velocidad promedio"
     },
     "active_locations": "{{count}} ubicaciones activas",
     "recent_locations": "Ubicaciones Recientes"

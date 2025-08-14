@@ -106,15 +106,29 @@
   "tracking": {
     "title": "Fleet Tracking",
     "subtitle": "Real-time Locations",
+    "real_time_title": "Real-time Fleet Tracking",
+    "last_update": "Last update:",
+    "update_button": "Update",
+    "location_map": "Location Map",
+    "vehicle_status": "Vehicle Status",
+    "map_integration": "Map Integration",
+    "interactive_view": "Interactive map view will be available soon",
+    "tracked_vehicles": "Will show: {{count}} tracked vehicles",
+    "speed": "Speed:",
+    "location": "Location:",
     "status": {
       "moving": "Moving",
       "parked": "Parked", 
       "offline": "Offline",
-      "unknown": "Unknown"
+      "unknown": "Unknown",
+      "stopped": "Stopped"
     },
     "stats": {
       "online": "Online",
-      "moving": "Moving"
+      "moving": "Moving",
+      "stopped": "Stopped",
+      "offline": "Offline",
+      "average_speed": "Average speed"
     },
     "active_locations": "{{count}} active locations",
     "recent_locations": "Recent Locations"
