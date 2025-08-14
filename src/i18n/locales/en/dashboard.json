@@ -52,6 +52,7 @@
       "fuel": "Fuel",
       "deductions": "Deductions", 
       "net_payment": "Net Payment",
+      "no_periods_available": "No payment periods available",
       "calculated": "Calculated",
       "status": {
         "calculated": "Calculated",

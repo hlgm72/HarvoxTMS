@@ -143,7 +143,7 @@ export function RealtimeDriverPayments() {
       <CardContent>
         {payments.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-muted-foreground">No hay períodos de pago disponibles</p>
+            <p className="text-muted-foreground">{t('owner.payments.no_periods_available')}</p>
           </div>
         ) : (
           <div className="space-y-4">

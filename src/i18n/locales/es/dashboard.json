@@ -51,7 +51,8 @@
       "gross_income": "Ingresos Brutos",
       "fuel": "Combustible",
       "deductions": "Deducciones",
-      "net_payment": "Pago Neto", 
+      "net_payment": "Pago Neto",
+      "no_periods_available": "No hay períodos de pago disponibles",
       "calculated": "Calculado",
       "status": {
         "calculated": "Calculado",
