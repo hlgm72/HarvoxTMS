@@ -204,20 +204,20 @@ export default function Drivers() {
           <PendingInvitationsSection 
             key={`empty-invitations-${invitationsKey}`}
             roleFilter="driver"
-            title="Conductores Pendientes"
-            description="Conductores que han sido invitados pero aún no han aceptado su invitación"
+            title="Pending Drivers"
+            description="Drivers who have been invited but have not yet accepted their invitation"
             onInvitationsUpdated={handleInvitationsUpdate}
           />
           
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="text-6xl mb-4">🚛</div>
-            <h3 className="text-xl font-semibold mb-2">No hay conductores registrados</h3>
+            <h3 className="text-xl font-semibold mb-2">No drivers registered</h3>
             <p className="text-muted-foreground mb-4">
-              Comienza agregando conductores a tu flota
+              Start by adding drivers to your fleet
             </p>
             <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />
-              Invitar Primer Conductor
+              Invite First Driver
             </Button>
           </div>
         </div>
@@ -322,7 +322,7 @@ export default function Drivers() {
                           {driver.is_pre_registered && driver.activation_status === 'pending_activation' && (
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
                               <p className="text-sm text-blue-700 font-medium flex items-center gap-2">
-                                💡 Este conductor puede ser gestionado completamente sin necesidad de activar su cuenta
+                                💡 This driver can be managed completely without needing to activate their account
                               </p>
                             </div>
                           )}
@@ -451,8 +451,8 @@ export default function Drivers() {
             <PendingInvitationsSection 
               key={`pending-invitations-${invitationsKey}`}
               roleFilter="driver"
-              title="Conductores Pendientes"
-              description="Conductores que han sido invitados pero aún no han aceptado su invitación"
+              title="Pending Drivers"
+              description="Drivers who have been invited but have not yet accepted their invitation"
               onInvitationsUpdated={handleInvitationsUpdate}
             />
             

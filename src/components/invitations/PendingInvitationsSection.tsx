@@ -65,8 +65,8 @@ interface PendingInvitationsSectionProps {
 
 export function PendingInvitationsSection({ 
   roleFilter, 
-  title = 'Invitaciones Pendientes',
-  description = 'Usuarios que han sido invitados pero aún no han aceptado su invitación',
+  title = 'Pending Invitations',
+  description = 'Users who have been invited but have not yet accepted their invitation',
   onInvitationsUpdated
 }: PendingInvitationsSectionProps) {
   const { userRole } = useAuth();
@@ -120,7 +120,7 @@ export function PendingInvitationsSection({
       setInvitations(data || []);
     } catch (error) {
       console.error('Error fetching pending invitations:', error);
-      showError('Error al cargar las invitaciones pendientes');
+      showError('Error loading pending invitations');
     } finally {
       setLoading(false);
     }
@@ -152,12 +152,12 @@ export function PendingInvitationsSection({
       if (error) throw error;
 
       if (!data || !data.success) {
-        throw new Error(data?.error || 'Error al reenviar invitación');
+        throw new Error(data?.error || 'Error resending invitation');
       }
 
       showSuccess(
-        'Invitación Reenviada',
-        `Se ha reenviado la invitación a ${invitation.email}`
+        'Invitation Resent',
+        `Invitation has been resent to ${invitation.email}`
       );
 
       // Refrescar la lista
@@ -166,7 +166,7 @@ export function PendingInvitationsSection({
       onInvitationsUpdated?.();
     } catch (error: any) {
       console.error('Error resending invitation:', error);
-      showError(error.message || 'Error al reenviar la invitación');
+      showError(error.message || 'Error resending invitation');
     } finally {
       setProcessingInvitation(null);
     }
@@ -191,8 +191,8 @@ export function PendingInvitationsSection({
       if (error) throw error;
 
       showSuccess(
-        'Invitación Cancelada',
-        `Se ha cancelado la invitación para ${selectedInvitation.email}. El usuario pre-registrado se mantiene en el sistema.`
+        'Invitation Cancelled',
+        `Invitation for ${selectedInvitation.email} has been cancelled. The pre-registered user remains in the system.`
       );
 
       // Refrescar la lista
@@ -203,7 +203,7 @@ export function PendingInvitationsSection({
       setSelectedInvitation(null);
     } catch (error: any) {
       console.error('Error canceling invitation:', error);
-      showError(error.message || 'Error al cancelar la invitación');
+      showError(error.message || 'Error cancelling invitation');
     } finally {
       setProcessingInvitation(null);
     }
@@ -216,7 +216,7 @@ export function PendingInvitationsSection({
     try {
       const result = await deleteUserCompletely(
         selectedInvitation.target_user_id,
-        `Eliminación completa desde invitación pendiente: ${selectedInvitation.email}`
+        `Complete deletion from pending invitation: ${selectedInvitation.email}`
       );
 
       if (!result.success) {
@@ -224,8 +224,8 @@ export function PendingInvitationsSection({
       }
 
       showSuccess(
-        'Usuario Eliminado Completamente',
-        `${selectedInvitation.email} ha sido eliminado completamente del sistema.`
+        'User Completely Deleted',
+        `${selectedInvitation.email} has been completely deleted from the system.`
       );
 
       // Refrescar la lista
@@ -236,7 +236,7 @@ export function PendingInvitationsSection({
       setSelectedInvitation(null);
     } catch (error: any) {
       console.error('Error deleting user completely:', error);
-      showError(error.message || 'Error al eliminar el usuario completamente');
+      showError(error.message || 'Error deleting user completely');
     } finally {
       setProcessingInvitation(null);
     }
@@ -251,13 +251,13 @@ export function PendingInvitationsSection({
     if (hoursUntilExpiry < 24) {
       return <Badge variant="destructive" className="gap-1">
         <AlertCircle className="h-3 w-3" />
-        Expira pronto
+        Expires Soon
       </Badge>;
     }
 
     return <Badge variant="secondary" className="gap-1">
       <Clock className="h-3 w-3" />
-      Pendiente
+      Pending
     </Badge>;
   };
 
@@ -268,7 +268,7 @@ export function PendingInvitationsSection({
         locale: es 
       });
     } catch (error) {
-      return 'Fecha inválida';
+      return 'Invalid date';
     }
   };
 
@@ -284,7 +284,7 @@ export function PendingInvitationsSection({
         <CardContent>
           <div className="flex items-center justify-center py-8">
             <RefreshCw className="h-6 w-6 animate-spin" />
-            <span className="ml-2">Cargando invitaciones...</span>
+            <span className="ml-2">Loading invitations...</span>
           </div>
         </CardContent>
       </Card>
@@ -307,12 +307,12 @@ export function PendingInvitationsSection({
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <div className="text-4xl mb-3">📭</div>
             <h3 className="text-lg font-semibold mb-1">
-              {roleFilter === 'driver' ? 'No hay conductores pendientes' : 'No hay invitaciones pendientes'}
+              {roleFilter === 'driver' ? 'No pending drivers' : 'No pending invitations'}
             </h3>
             <p className="text-muted-foreground">
               {roleFilter === 'driver' 
-                ? 'Todas las invitaciones de conductores han sido aceptadas'
-                : 'Todas las invitaciones han sido aceptadas o han expirado'
+                ? 'All driver invitations have been accepted'
+                : 'All invitations have been accepted or expired'
               }
             </p>
           </div>
@@ -339,12 +339,12 @@ export function PendingInvitationsSection({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Usuario</TableHead>
-                  <TableHead>Rol</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead>Enviada</TableHead>
-                  <TableHead>Expira</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
+                  <TableHead>User</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Sent</TableHead>
+                  <TableHead>Expires</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -391,7 +391,7 @@ export function PendingInvitationsSection({
                             ) : (
                               <Send className="h-3 w-3" />
                             )}
-                            Reenviar
+                            Resend
                           </Button>
                           <Button
                             variant="outline"
@@ -404,7 +404,7 @@ export function PendingInvitationsSection({
                             className="gap-1 text-destructive hover:text-destructive"
                           >
                             <Trash2 className="h-3 w-3" />
-                            Cancelar
+                            Cancel
                           </Button>
                         </div>
                       </TableCell>
@@ -421,9 +421,9 @@ export function PendingInvitationsSection({
       <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
         <DialogContent className="max-w-3xl sm:max-w-2xl mx-4">
           <DialogHeader>
-            <DialogTitle>Cancelar Invitación</DialogTitle>
+            <DialogTitle>Cancel Invitation</DialogTitle>
             <DialogDescription className="break-words">
-              ¿Cómo quieres proceder con la invitación para{' '}
+              How do you want to proceed with the invitation for{' '}
               <strong className="break-all word-break-all">
                 {selectedInvitation?.first_name && selectedInvitation?.last_name
                   ? `${selectedInvitation.first_name} ${selectedInvitation.last_name} (${selectedInvitation.email})`
@@ -437,13 +437,13 @@ export function PendingInvitationsSection({
             {selectedInvitation?.target_user_id ? (
               <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-lg p-3">
                 <p className="text-sm text-orange-700 dark:text-orange-300">
-                  ⚠️ <strong>Este usuario ya fue pre-registrado</strong> en el sistema con todos sus datos.
+                  ⚠️ <strong>This user has already been pre-registered</strong> in the system with all their data.
                 </p>
               </div>
             ) : (
               <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                 <p className="text-sm text-blue-700 dark:text-blue-300">
-                  ℹ️ Esta invitación aún no ha creado un usuario en el sistema.
+                  ℹ️ This invitation has not yet created a user in the system.
                 </p>
               </div>
             )}
@@ -462,9 +462,9 @@ export function PendingInvitationsSection({
                     <RefreshCw className="h-4 w-4 animate-spin flex-shrink-0" />
                   ) : null}
                   <div className="flex flex-col items-start">
-                    <span className="font-medium">Solo cancelar invitación</span>
+                    <span className="font-medium">Only cancel invitation</span>
                     <span className="text-xs text-muted-foreground">
-                      Mantener usuario pre-registrado
+                      Keep pre-registered user
                     </span>
                   </div>
                 </div>
@@ -484,9 +484,9 @@ export function PendingInvitationsSection({
                       <RefreshCw className="h-4 w-4 animate-spin flex-shrink-0" />
                     ) : null}
                     <div className="flex flex-col items-start">
-                      <span className="font-medium">Eliminar usuario completamente</span>
+                      <span className="font-medium">Delete user completely</span>
                       <span className="text-xs text-muted-foreground">
-                        Eliminar todo del sistema
+                        Delete everything from system
                       </span>
                     </div>
                   </div>
@@ -502,7 +502,7 @@ export function PendingInvitationsSection({
               }}
               className="w-full"
             >
-              Cancelar acción
+              Cancel Action
             </Button>
           </DialogFooter>
         </DialogContent>
