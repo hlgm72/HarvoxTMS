@@ -433,7 +433,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         color: colors.darkGray
       });
       
-      addText(`Stops: ${load.stops || 2} Total`, margin, currentY + 5, {
+      addText(`(Stops: ${load.stops || 2} Total)`, margin, currentY + 5, {
         fontSize: 9,
         color: colors.gray
       });
