@@ -584,12 +584,21 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   currentY += 15;
 
   // Sección única de deducciones
+  // Calcular el espacio necesario para toda la sección de deducciones
+  const deductionsCount = data.deductions?.length || 0;
+  const deductionsSectionHeight = 8 + 10 + (deductionsCount * 6); // Header + spacing + items
+  
+  // Verificar si toda la sección de deducciones cabe en la página actual
+  if (currentY + deductionsSectionHeight > pageHeight - footerSpace) {
+    doc.addPage();
+    currentY = margin;
+  }
+  
   const redRgb = hexToRgb(colors.lightRed);
   doc.setFillColor(redRgb[0], redRgb[1], redRgb[2]);
   doc.rect(margin, currentY - 5, pageWidth - margin*2, 8, 'F');
   
   const totalDeductions = data.deductions?.reduce((sum, d) => sum + d.amount, 0) || 0;
-  const deductionsCount = data.deductions?.length || 0;
   addText(`Period Deductions (Count: ${deductionsCount}, Total: ${formatCurrency(totalDeductions)})`, margin + 2, currentY, {
     fontSize: 10,
     fontStyle: 'bold',
@@ -600,12 +609,6 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   if (data.deductions && data.deductions.length > 0) {
     data.deductions.forEach(deduction => {
-      // Verificar si necesitamos nueva página
-      if (currentY > pageHeight - footerSpace) {
-        doc.addPage();
-        currentY = margin;
-      }
-      
       addText(deduction.description, margin + 2, currentY, {
         fontSize: 9,
         color: colors.gray
