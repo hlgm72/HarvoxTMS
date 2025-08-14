@@ -133,10 +133,17 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     const { fontSize = 10, fontStyle = 'normal', color = colors.text, align = 'left' } = options;
     
     doc.setFontSize(fontSize);
-    doc.setFont('times', fontStyle);
+    doc.setFont('helvetica', fontStyle);
     const rgbColor = hexToRgb(color);
     doc.setTextColor(rgbColor[0], rgbColor[1], rgbColor[2]);
-    doc.text(text, x, y, { align: align as any });
+    
+    // Configurar opciones de texto para reducir espaciado
+    const textOptions: any = { align: align as any };
+    if (fontStyle === 'normal') {
+      textOptions.charSpace = 0;
+    }
+    
+    doc.text(text, x, y, textOptions);
   };
 
   const addBorder = (x: number, y: number, width: number, height: number, color: string = colors.border) => {
