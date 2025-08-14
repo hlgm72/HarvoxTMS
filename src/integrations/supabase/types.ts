@@ -3072,6 +3072,14 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: Json
       }
+      disable_service_operation: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      enable_service_operation: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       fix_fuel_expenses_separation: {
         Args: Record<PropertyKey, never>
         Returns: undefined
