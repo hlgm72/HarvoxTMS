@@ -144,9 +144,9 @@ export default function Settings() {
       />
       <div className="min-h-screen bg-gradient-subtle">
         {/* Content */}
-        <div className="space-y-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid gap-1 p-1 bg-muted rounded-lg grid-cols-3">
+        <div className="space-y-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid gap-1 p-1 bg-muted rounded-lg grid-cols-3 lg:grid-cols-5">
             <TabsTrigger 
               value="profile"
               className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
@@ -185,64 +185,66 @@ export default function Settings() {
           </TabsList>
 
           {/* Mi Perfil */}
-          <TabsContent value="profile">
-            <div className="grid gap-6">
+          <TabsContent value="profile" className="space-y-8">
+            <div className="grid gap-8">
               {/* Self Role Manager - Only for Company Owners */}
-              <SelfRoleManager />
+              <div className="mb-8">
+                <SelfRoleManager />
+              </div>
               
-              <div className="grid gap-6 md:grid-cols-3">
-              {/* Profile Summary Card */}
-              <Card className="md:col-span-1">
-                <CardHeader className="text-center">
-                  <AvatarUpload 
-                    currentAvatarUrl={profile?.avatar_url}
-                    userName={`${profile?.first_name || ''} ${profile?.last_name || ''}`.trim()}
-                    onAvatarUpdate={async (avatarUrl) => {
-                      await refreshProfile();
-                    }}
-                  />
-                  <CardTitle className="text-xl">{profile?.first_name} {profile?.last_name}</CardTitle>
-                  <p className="text-muted-foreground">{user?.email}</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Teléfono:</span>
-                      <span>{profile?.phone || 'No especificado'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Idioma:</span>
-                      <span>{profile?.preferred_language === 'es' ? 'Español' : 'English'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Zona horaria:</span>
-                      <span>{profile?.timezone || 'America/New_York'}</span>
-                    </div>
-                    {(profile?.street_address || profile?.zip_code) && (
-                      <div className="pt-2 border-t">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-muted-foreground font-medium">Dirección:</span>
-                          <div className="text-foreground text-xs leading-relaxed">
-                            {profile?.street_address && (
-                              <div>{profile.street_address}</div>
-                            )}
-                            {profile?.zip_code && (
-                              <div>{profile.zip_code}</div>
-                            )}
+              <div className="grid gap-8 md:grid-cols-3">
+                {/* Profile Summary Card */}
+                <Card className="md:col-span-1">
+                  <CardHeader className="text-center pb-4">
+                    <AvatarUpload 
+                      currentAvatarUrl={profile?.avatar_url}
+                      userName={`${profile?.first_name || ''} ${profile?.last_name || ''}`.trim()}
+                      onAvatarUpdate={async (avatarUrl) => {
+                        await refreshProfile();
+                      }}
+                    />
+                    <CardTitle className="text-xl mt-4">{profile?.first_name} {profile?.last_name}</CardTitle>
+                    <p className="text-muted-foreground">{user?.email}</p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3 text-sm">
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-muted-foreground">Teléfono:</span>
+                        <span className="font-medium">{profile?.phone || 'No especificado'}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-muted-foreground">Idioma:</span>
+                        <span className="font-medium">{profile?.preferred_language === 'es' ? 'Español' : 'English'}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-muted-foreground">Zona horaria:</span>
+                        <span className="font-medium">{profile?.timezone || 'America/New_York'}</span>
+                      </div>
+                      {(profile?.street_address || profile?.zip_code) && (
+                        <div className="pt-4 border-t border-gray-200">
+                          <div className="flex flex-col gap-2">
+                            <span className="text-muted-foreground font-medium">Dirección:</span>
+                            <div className="text-foreground text-sm leading-relaxed">
+                              {profile?.street_address && (
+                                <div className="mb-1">{profile.street_address}</div>
+                              )}
+                              {profile?.zip_code && (
+                                <div>{profile.zip_code}</div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
 
-              {/* Profile Form */}
-              <Card className="md:col-span-2">
-                <CardContent className="p-6">
-                  <ProfileForm showCancelButton={false} />
-                </CardContent>
-              </Card>
+                {/* Profile Form */}
+                <Card className="md:col-span-2">
+                  <CardContent className="p-8">
+                    <ProfileForm showCancelButton={false} />
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </TabsContent>

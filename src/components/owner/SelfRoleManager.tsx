@@ -109,36 +109,37 @@ export const SelfRoleManager = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Shield className="h-5 w-5" />
+    <Card className="border-2 border-dashed border-gray-200 bg-gradient-to-br from-blue-50/50 to-indigo-50/50">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-3 text-lg">
+          <Shield className="h-5 w-5 text-blue-600" />
           Mis Roles en la Compañía
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-base leading-relaxed">
           Como propietario, puedes asignarte roles adicionales para acceder a diferentes funcionalidades del sistema.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium text-muted-foreground">Roles Actuales</h4>
-          <div className="flex flex-wrap gap-2">
+      <CardContent className="space-y-6">
+        <div className="space-y-4">
+          <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Roles Actuales</h4>
+          <div className="flex flex-wrap gap-3">
             {userRoles.map((userRole) => (
-              <div key={userRole.id} className="flex items-center gap-2">
+              <div key={userRole.id} className="flex items-center gap-2 bg-white rounded-lg p-2 border border-gray-200 shadow-sm">
                 <Badge 
                   variant="secondary"
-                  className={getRoleConfig(userRole.role).className}
+                  className={`${getRoleConfig(userRole.role).className} px-3 py-1`}
                 >
-                  <User className="h-3 w-3 mr-1" />
+                  <User className="h-3 w-3 mr-2" />
                   {getRoleLabel(userRole.role as UserRole)}
                 </Badge>
                 {userRole.role !== 'company_owner' && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full"
                     onClick={() => handleRemoveRole(userRole.role as UserRole)}
                     disabled={loading}
+                    title="Remover rol"
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
@@ -149,8 +150,8 @@ export const SelfRoleManager = () => {
         </div>
 
         {availableToAdd.length > 0 && (
-          <div className="space-y-3">
-            <h4 className="text-sm font-medium text-muted-foreground">Agregar Rol</h4>
+          <div className="space-y-4 pt-4 border-t border-gray-200">
+            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Agregar Rol</h4>
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="w-full">
@@ -210,10 +211,16 @@ export const SelfRoleManager = () => {
         )}
 
         {hasMultipleRoles && (
-          <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-            <p className="text-sm text-muted-foreground">
-              💡 <strong>Tip:</strong> Usa el selector de roles en la parte superior derecha para cambiar entre tus diferentes roles y acceder a las funcionalidades correspondientes.
-            </p>
+          <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <div className="text-amber-600 text-lg">💡</div>
+              <div>
+                <p className="text-sm text-amber-800 font-medium mb-1">Consejo Útil</p>
+                <p className="text-sm text-amber-700 leading-relaxed">
+                  Usa el selector de roles en la parte superior derecha para cambiar entre tus diferentes roles y acceder a las funcionalidades correspondientes.
+                </p>
+              </div>
+            </div>
           </div>
         )}
       </CardContent>
