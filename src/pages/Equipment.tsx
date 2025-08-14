@@ -85,12 +85,14 @@ export default function Equipment() {
         }
       />
       
-      <div className="container mx-auto p-2 md:p-4 space-y-8">
+      <div className="container mx-auto p-4 md:p-6 space-y-8">
         {/* Stats Cards */}
-        <EquipmentStats equipment={equipment} />
+        <div className="mb-8">
+          <EquipmentStats equipment={equipment} />
+        </div>
 
         {/* Advanced Equipment Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <EquipmentOverviewCard
             totalEquipment={equipment?.length || 0}
             activeCount={activeCount}
@@ -110,51 +112,52 @@ export default function Equipment() {
         </div>
 
         {/* Main Content with Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 gap-1">
-            <TabsTrigger value="equipment" className="gap-2">
-              <Wrench className="h-4 w-4" />
-              {t("equipment.tabs.equipment", "Equipos")}
-            </TabsTrigger>
-            <TabsTrigger value="locations" className="gap-2">
-              <MapPin className="h-4 w-4" />
-              {t("equipment.tabs.locations", "Ubicaciones")}
-            </TabsTrigger>
-          </TabsList>
+        <div className="mt-8">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+            <TabsList className="grid w-full grid-cols-2 gap-2 p-1 h-12">
+              <TabsTrigger value="equipment" className="gap-2 h-10">
+                <Wrench className="h-4 w-4" />
+                {t("equipment.tabs.equipment", "Equipos")}
+              </TabsTrigger>
+              <TabsTrigger value="locations" className="gap-2 h-10">
+                <MapPin className="h-4 w-4" />
+                {t("equipment.tabs.locations", "Ubicaciones")}
+              </TabsTrigger>
+            </TabsList>
 
           {/* Equipment Tab */}
-          <TabsContent value="equipment" className="space-y-6">
+          <TabsContent value="equipment" className="space-y-8 mt-8">
             {/* Search and Filters */}
-            <Card>
-              <CardHeader className="pb-4">
-                <div className="flex flex-col sm:flex-row gap-4">
+            <Card className="shadow-sm">
+              <CardHeader className="pb-6">
+                <div className="flex flex-col sm:flex-row gap-6">
                   <div className="flex-1 relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
                       placeholder={t("equipment.searchPlaceholder", "Buscar por número, marca, modelo o placa...")}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 h-11"
                     />
                   </div>
                   
-                  <div className="flex gap-2">
+                  <div className="flex gap-3">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setShowFilters(!showFilters)}
-                      className="gap-2"
+                      className="gap-2 h-11 px-4"
                     >
                       <Filter className="h-4 w-4" />
                       {t("common.filters", "Filtros")}
                     </Button>
                     
-                    <div className="flex rounded-md border">
+                    <div className="flex rounded-md border h-11">
                       <Button
                         variant={viewMode === "list" ? "default" : "ghost"}
                         size="sm"
                         onClick={() => setViewMode("list")}
-                        className="rounded-r-none"
+                        className="rounded-r-none h-11 px-3"
                       >
                         <List className="h-4 w-4" />
                       </Button>
@@ -162,7 +165,7 @@ export default function Equipment() {
                         variant={viewMode === "grid" ? "default" : "ghost"}
                         size="sm"
                         onClick={() => setViewMode("grid")}
-                        className="rounded-l-none"
+                        className="rounded-l-none h-11 px-3"
                       >
                         <Grid3X3 className="h-4 w-4" />
                       </Button>
@@ -171,7 +174,7 @@ export default function Equipment() {
                 </div>
                 
                 {showFilters && (
-                  <div className="mt-4 p-4 border rounded-lg bg-muted/50">
+                  <div className="mt-6 p-6 border rounded-lg bg-muted/30">
                     <EquipmentFilters />
                   </div>
                 )}
@@ -179,12 +182,12 @@ export default function Equipment() {
             </Card>
 
             {/* Equipment List/Grid */}
-            <Card>
-              <CardContent className="p-0">
+            <Card className="shadow-sm">
+              <CardContent className="p-6">
                 {isLoading ? (
                   <div className="flex items-center justify-center h-64">
                     <div className="text-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
                       <p className="text-muted-foreground">{t("common.loading", "Cargando...")}</p>
                     </div>
                   </div>
@@ -196,22 +199,22 @@ export default function Equipment() {
                     </div>
                   </div>
                 ) : filteredEquipment.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Wrench className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-medium mb-2">
+                  <div className="text-center py-16">
+                    <Wrench className="w-16 h-16 text-muted-foreground mx-auto mb-6" />
+                    <h3 className="text-lg font-medium mb-3">
                       {searchQuery 
                         ? t("equipment.noResults", "No se encontraron equipos")
                         : t("equipment.noEquipment", "No hay equipos registrados")
                       }
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                       {searchQuery 
                         ? t("equipment.noResultsDescription", "Intenta ajustar los criterios de búsqueda para encontrar equipos")
                         : t("equipment.noEquipmentDescription", "Comienza agregando el primer vehículo o equipo de tu flota")
                       }
                     </p>
                     {!searchQuery && (
-                      <Button onClick={() => setShowCreateDialog(true)}>
+                      <Button onClick={() => setShowCreateDialog(true)} size="lg">
                         <Plus className="w-4 h-4 mr-2" />
                         {t("equipment.addFirst", "Agregar Primer Equipo")}
                       </Button>
@@ -231,10 +234,11 @@ export default function Equipment() {
           </TabsContent>
 
           {/* Locations Tab */}
-          <TabsContent value="locations">
+          <TabsContent value="locations" className="mt-8">
             <EquipmentLocationMap />
           </TabsContent>
         </Tabs>
+        </div>
 
         {/* Create Equipment Dialog */}
         <CreateEquipmentDialog 
