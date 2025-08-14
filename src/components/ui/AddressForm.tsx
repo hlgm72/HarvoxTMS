@@ -38,7 +38,7 @@ export function AddressForm({
   cityLabel,
   zipCodeLabel
 }: AddressFormProps) {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   // Create handlers for street address with proper text control
   const streetAddressHandlers = createTextHandlers(onStreetAddressChange);
   
@@ -70,7 +70,7 @@ export function AddressForm({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="street-address">
-            {streetAddressLabel || t('address.street_address')}
+            {streetAddressLabel || t('address.street_address', i18n.language === 'es' ? 'Dirección' : 'Street Address')}
             {required && " *"}
           </Label>
           <Input
@@ -78,14 +78,14 @@ export function AddressForm({
             value={streetAddress}
             onChange={streetAddressHandlers.onChange}
             onBlur={streetAddressHandlers.onBlur}
-            placeholder={t('address.street_address_placeholder')}
+            placeholder={t('address.street_address_placeholder', i18n.language === 'es' ? '123 Calle Principal' : '123 Main Street')}
             disabled={disabled}
           />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="zip-code">
-            {zipCodeLabel || t('address.zip_code')}
+            {zipCodeLabel || t('address.zip_code', i18n.language === 'es' ? 'Código Postal' : 'ZIP Code')}
             {required && " *"}
           </Label>
           <Input
@@ -93,7 +93,7 @@ export function AddressForm({
             value={zipCode}
             onChange={zipCodeHandlers.onChange}
             onKeyPress={zipCodeHandlers.onKeyPress}
-            placeholder={t('address.zip_code_placeholder')}
+            placeholder={t('address.zip_code_placeholder', '12345')}
             disabled={disabled}
             maxLength={5}
           />
@@ -103,27 +103,27 @@ export function AddressForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>
-            {stateLabel || t('address.state')}
+            {stateLabel || t('address.state', i18n.language === 'es' ? 'Estado' : 'State')}
             {required && " *"}
           </Label>
           <StateCombobox
             value={stateId}
             onValueChange={onStateChange}
             disabled={disabled}
-            placeholder={t('address.state_placeholder')}
+            placeholder={t('address.state_placeholder', i18n.language === 'es' ? 'Buscar estado...' : 'Search state...')}
           />
         </div>
 
         <div className="space-y-2">
           <Label>
-            {cityLabel || t('address.city')}
+            {cityLabel || t('address.city', i18n.language === 'es' ? 'Ciudad' : 'City')}
           </Label>
           <CityCombobox
             value={city}
             onValueChange={onCityChange}
             stateId={stateId}
             disabled={disabled}
-            placeholder={t('address.city_placeholder')}
+            placeholder={t('address.city_placeholder', i18n.language === 'es' ? 'Buscar ciudad (opcional)...' : 'Search city (optional)...')}
           />
         </div>
       </div>
