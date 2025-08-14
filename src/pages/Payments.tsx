@@ -23,9 +23,11 @@ import { PaymentPeriodsManager } from "@/components/payments/PaymentPeriodsManag
 import { usePaymentPeriodSummary } from "@/hooks/usePaymentPeriodSummary";
 import { useCompanyPaymentPeriods } from "@/hooks/useCompanyPaymentPeriods";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
+import { useTranslation } from 'react-i18next';
 
 export default function Payments() {
   const { user, isDriver, isOperationsManager, isCompanyOwner } = useAuth();
+  const { t } = useTranslation('payments');
   const { companies, selectedCompany } = useUserCompanies();
   const [activeTab, setActiveTab] = useState("other-income");
 
@@ -54,11 +56,11 @@ export default function Payments() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "open":
-        return <Badge variant="secondary" className="gap-1"><Clock className="h-3 w-3" />Abierto</Badge>;
+        return <Badge variant="secondary" className="gap-1"><Clock className="h-3 w-3" />{t('status.pending')}</Badge>;
       case "closed":
-        return <Badge variant="default" className="gap-1"><CheckCircle className="h-3 w-3" />Cerrado</Badge>;
+        return <Badge variant="default" className="gap-1"><CheckCircle className="h-3 w-3" />{t('status.paid')}</Badge>;
       case "processing":
-        return <Badge variant="outline" className="gap-1"><Clock className="h-3 w-3" />Procesando</Badge>;
+        return <Badge variant="outline" className="gap-1"><Clock className="h-3 w-3" />{t('status.processing')}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -69,11 +71,11 @@ export default function Payments() {
       <div className="p-2 md:p-4 space-y-6">
         <PageToolbar 
           icon={DollarSign}
-          title="Gestión de Pagos"
-          subtitle={isDriver ? "Mis ingresos y deducciones" : "Administración de pagos de conductores"}
+          title={t('title')}
+          subtitle={isDriver ? t('subtitle_driver') : t('subtitle_admin')}
         />
         <div className="text-center py-8">
-          <p className="text-muted-foreground">Cargando datos de pagos...</p>
+          <p className="text-muted-foreground">{t('loading')}</p>
         </div>
       </div>
     );
@@ -83,8 +85,8 @@ export default function Payments() {
     <div className="p-2 md:p-4 space-y-6">
       <PageToolbar 
         icon={DollarSign}
-        title="Gestión de Pagos"
-        subtitle={isDriver ? "Mis ingresos y deducciones" : "Administración de pagos de conductores"}
+        title={t('title')}
+        subtitle={isDriver ? t('subtitle_driver') : t('subtitle_admin')}
       />
 
       {/* Resumen de período actual */}
@@ -96,7 +98,7 @@ export default function Payments() {
                 <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Ingresos Brutos</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('summary.gross_income')}</p>
                 <p className="text-lg sm:text-xl font-semibold">
                   ${(currentPeriodSummary?.gross_earnings || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                 </p>
@@ -112,7 +114,7 @@ export default function Payments() {
                 <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Otros Ingresos</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('summary.other_income')}</p>
                 <p className="text-lg sm:text-xl font-semibold text-success">
                   ${(currentPeriodSummary?.other_income || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                 </p>
@@ -128,7 +130,7 @@ export default function Payments() {
                 <Receipt className="h-4 w-4 sm:h-5 sm:w-5 text-destructive" />
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Deducciones</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('summary.total_deductions')}</p>
                 <p className="text-lg sm:text-xl font-semibold text-destructive">
                   -${(currentPeriodSummary?.deductions || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                 </p>
@@ -144,7 +146,7 @@ export default function Payments() {
                 <Fuel className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Combustible</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('tabs.fuel_expenses')}</p>
                 <p className="text-lg sm:text-xl font-semibold text-warning">
                   -${(currentPeriodSummary?.fuel_expenses || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                 </p>
@@ -160,7 +162,7 @@ export default function Payments() {
                 <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Pago Neto</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('summary.net_payment')}</p>
                 <div className="flex items-center gap-2">
                   <p className="text-lg sm:text-xl font-semibold">
                     ${(currentPeriodSummary?.net_payment || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
@@ -181,7 +183,7 @@ export default function Payments() {
               <Calendar className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">
-                  <span className="font-semibold">Período Anterior</span> {previousPeriod ? `(${previousPeriod.period_start_date} - ${previousPeriod.period_end_date})` : '(No disponible)'}
+                  <span className="font-semibold">{t('period.current')}</span> {previousPeriod ? `(${previousPeriod.period_start_date} - ${previousPeriod.period_end_date})` : '(No disponible)'}
                 </p>
                 <p className="font-medium">
                   ${(previousPeriodSummary?.net_payment || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
@@ -198,23 +200,23 @@ export default function Payments() {
         <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto gap-1">
           <TabsTrigger value="other-income" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Otros Ingresos</span>
+            <span className="hidden sm:inline">{t('tabs.other_income')}</span>
             <span className="sm:hidden">Ingresos</span>
           </TabsTrigger>
           <TabsTrigger value="fuel-expenses" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <Fuel className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Combustible</span>
+            <span className="hidden sm:inline">{t('tabs.fuel_expenses')}</span>
             <span className="sm:hidden">Fuel</span>
           </TabsTrigger>
           <TabsTrigger value="deductions" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <Receipt className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Deducciones</span>
+            <span className="hidden sm:inline">{t('tabs.deductions')}</span>
             <span className="sm:hidden">Gastos</span>
           </TabsTrigger>
           <TabsTrigger value="periods" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Períodos</span>
-            <span className="sm:hidden">Períodos</span>
+            <span className="hidden sm:inline">{t('tabs.periods')}</span>
+            <span className="sm:hidden">{t('tabs.periods')}</span>
           </TabsTrigger>
         </TabsList>
 
@@ -227,11 +229,11 @@ export default function Payments() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Fuel className="h-5 w-5" />
-                Gastos de Combustible
+                {t('tabs.fuel_expenses')}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">Sección en desarrollo...</p>
+              <p className="text-muted-foreground">Section under development...</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -241,11 +243,11 @@ export default function Payments() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Receipt className="h-5 w-5" />
-                Deducciones y Gastos
+                {t('tabs.deductions')}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">Sección en desarrollo...</p>
+              <p className="text-muted-foreground">Section under development...</p>
             </CardContent>
           </Card>
         </TabsContent>

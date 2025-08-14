@@ -1,0 +1,91 @@
+{
+  "title": "Gestión de Pagos",
+  "subtitle_driver": "Mis ingresos y deducciones",
+  "subtitle_admin": "Administración de pagos de conductores",
+  "loading": "Cargando datos de pagos...",
+  "tabs": {
+    "other_income": "Ingresos",
+    "fuel_expenses": "Combustible",
+    "deductions": "Deducciones",
+    "periods": "Períodos"
+  },
+  "mark_as_paid": {
+    "title": "Marcar como Pagado",
+    "button": "Marcar como Pagado",
+    "processing": "Procesando...",
+    "select_drivers": "Selecciona conductores",
+    "select_drivers_error": "Debes seleccionar al menos un conductor para marcar como pagado"
+  },
+  "period": {
+    "create": "Crear Período",
+    "creating": "Creando...",
+    "current": "Período Actual",
+    "no_periods": "No hay períodos de pago disponibles",
+    "no_periods_for_role": "No hay períodos de pago disponibles para este {{role}}."
+  },
+  "deductions": {
+    "create": "Crear Deducción",
+    "eventual": {
+      "create_title": "Crear Deducción Eventual",
+      "create_description": "Crea una deducción única para un conductor específico en un período de pago determinado.",
+      "creating": "Creando...",
+      "create_button": "Crear Deducción Eventual",
+      "delete_title": "¿Eliminar deducción eventual?",
+      "delete_description": "Esta acción no se puede deshacer. La deducción eventual será eliminada permanentemente.",
+      "success_created": "Deducción eventual creada exitosamente",
+      "success_deleted": "Deducción eventual eliminada exitosamente",
+      "error_create": "No se pudo crear la deducción eventual",
+      "error_delete": "No se pudo eliminar la deducción",
+      "placeholder": "Describe el motivo de esta deducción eventual (ej: Multa por exceso de velocidad, Reparación de neumático, etc.)"
+    },
+    "template": {
+      "create_title": "Crear Nueva Deducción",
+      "edit_title": "Editar Deducción",
+      "create_button": "Crear Deducción",
+      "update_button": "Actualizar Deducción",
+      "success_created": "Plantilla de deducción creada exitosamente",
+      "success_updated": "Plantilla de deducción actualizada exitosamente",
+      "success_reactivated": "Plantilla de deducción reactivada exitosamente",
+      "error": "No se pudo {{action}} la plantilla de deducción",
+      "delete_title": "¿Eliminar plantilla de deducción?",
+      "placeholder": "Información adicional sobre esta deducción...",
+      "apply_to": "Aplicar Deducción a",
+      "states_title": "Estados de Deducción",
+      "history_placeholder": "Próximamente: Historial de modificaciones en plantillas de deducción"
+    }
+  },
+  "income": {
+    "other": "Otros Ingresos",
+    "type": "Tipo de Ingreso",
+    "description": "Descripción del ingreso",
+    "create": "Crear Ingreso",
+    "create_title": "Nuevo Ingreso",
+    "edit_title": "Editar Ingreso Adicional",
+    "details_title": "Detalles del Ingreso",
+    "no_records": "No hay registros de otros ingresos",
+    "no_records_description": "Los ingresos adicionales aparecerán aquí una vez creados",
+    "loading": "Cargando otros ingresos...",
+    "add_button": "Agregar Ingreso",
+    "delete_title": "¿Eliminar ingreso adicional?",
+    "delete_description": "Esta acción eliminará permanentemente el ingreso \"{{description}}\""
+  },
+  "summary": {
+    "gross_income": "Ingresos Brutos",
+    "other_income": "Otros Ingresos",
+    "total_deductions": "Total Deducciones",
+    "net_payment": "Pago Neto"
+  },
+  "status": {
+    "paid": "Pagado",
+    "pending": "Pendiente",
+    "processing": "Procesando"
+  },
+  "actions": {
+    "success": "Éxito",
+    "error": "Error"
+  },
+  "roles": {
+    "driver": "conductor",
+    "dispatcher": "despachador"
+  }
+}

@@ -8,6 +8,7 @@ import authEn from './locales/en/auth.json';
 import fleetEn from './locales/en/fleet.json';
 import legalEn from './locales/en/legal.json';
 import dashboardEn from './locales/en/dashboard.json';
+import paymentsEn from './locales/en/payments.json';
 
 // Import admin sub-modules
 import adminPagesEn from './locales/en/admin/pages.json';
@@ -21,6 +22,7 @@ import fleetEs from './locales/es/fleet.json';
 import legalEs from './locales/es/legal.json';
 import adminEs from './locales/es/admin.json';
 import dashboardEs from './locales/es/dashboard.json';
+import paymentsEs from './locales/es/payments.json';
 
 const resources = {
   en: {
@@ -30,6 +32,7 @@ const resources = {
     fleet: fleetEn,
     legal: legalEn,
     dashboard: dashboardEn,
+    payments: paymentsEn,
     admin: {
       pages: adminPagesEn,
       navigation: adminNavigationEn,
@@ -43,6 +46,7 @@ const resources = {
     fleet: fleetEs,
     legal: legalEs,
     dashboard: dashboardEs,
+    payments: paymentsEs,
     admin: adminEs,
   },
 };
@@ -56,7 +60,7 @@ i18n
     fallbackLng: 'en',
     
     // Namespaces
-    ns: ['common', 'landing', 'auth', 'fleet', 'dashboard', 'admin', 'legal'],
+    ns: ['common', 'landing', 'auth', 'fleet', 'dashboard', 'admin', 'legal', 'payments'],
     defaultNS: 'common',
     
     // Configuration

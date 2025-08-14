@@ -1,0 +1,91 @@
+{
+  "title": "Payment Management",
+  "subtitle_driver": "My income and deductions",
+  "subtitle_admin": "Driver payment administration",
+  "loading": "Loading payment data...",
+  "tabs": {
+    "other_income": "Income",
+    "fuel_expenses": "Fuel",
+    "deductions": "Deductions", 
+    "periods": "Periods"
+  },
+  "mark_as_paid": {
+    "title": "Mark as Paid",
+    "button": "Mark as Paid",
+    "processing": "Processing...",
+    "select_drivers": "Select drivers",
+    "select_drivers_error": "You must select at least one driver to mark as paid"
+  },
+  "period": {
+    "create": "Create Period",
+    "creating": "Creating...",
+    "current": "Current Period",
+    "no_periods": "No payment periods available",
+    "no_periods_for_role": "No payment periods available for this {{role}}."
+  },
+  "deductions": {
+    "create": "Create Deduction",
+    "eventual": {
+      "create_title": "Create Eventual Deduction",
+      "create_description": "Create a one-time deduction for a specific driver in a given payment period.",
+      "creating": "Creating...",
+      "create_button": "Create Eventual Deduction",
+      "delete_title": "Delete eventual deduction?",
+      "delete_description": "This action cannot be undone. The eventual deduction will be permanently deleted.",
+      "success_created": "Eventual deduction created successfully",
+      "success_deleted": "Eventual deduction deleted successfully",
+      "error_create": "Could not create eventual deduction",
+      "error_delete": "Could not delete deduction",
+      "placeholder": "Describe the reason for this eventual deduction (e.g., Speeding fine, Tire repair, etc.)"
+    },
+    "template": {
+      "create_title": "Create New Deduction",
+      "edit_title": "Edit Deduction",
+      "create_button": "Create Deduction",
+      "update_button": "Update Deduction",
+      "success_created": "Deduction template created successfully",
+      "success_updated": "Deduction template updated successfully",
+      "success_reactivated": "Deduction template reactivated successfully",
+      "error": "Could not {{action}} deduction template",
+      "delete_title": "Delete deduction template?",
+      "placeholder": "Additional information about this deduction...",
+      "apply_to": "Apply Deduction to",
+      "states_title": "Deduction States",
+      "history_placeholder": "Coming soon: Modification history in deduction templates"
+    }
+  },
+  "income": {
+    "other": "Other Income",
+    "type": "Income Type",
+    "description": "Income description",
+    "create": "Create Income",
+    "create_title": "New Income",
+    "edit_title": "Edit Additional Income",
+    "details_title": "Income Details",
+    "no_records": "No other income records",
+    "no_records_description": "Additional income will appear here once created",
+    "loading": "Loading other income...",
+    "add_button": "Add Income",
+    "delete_title": "Delete additional income?",
+    "delete_description": "This action will permanently delete the income \"{{description}}\""
+  },
+  "summary": {
+    "gross_income": "Gross Income",
+    "other_income": "Other Income",
+    "total_deductions": "Total Deductions",
+    "net_payment": "Net Payment"
+  },
+  "status": {
+    "paid": "Paid",
+    "pending": "Pending",
+    "processing": "Processing"
+  },
+  "actions": {
+    "success": "Success",
+    "error": "Error"
+  },
+  "roles": {
+    "driver": "driver",
+    "dispatcher": "dispatcher"
+  }
+}
