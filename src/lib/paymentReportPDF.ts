@@ -231,7 +231,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   };
 
   // Función para generar la cabecera (reutilizable en cada página)
-  const addPageHeader = async (isFirstPage: boolean = false) => {
+  const addPageHeader = async () => {
     currentY = 12;
     
     // Agregar fondo gris claro con esquinas redondeadas y borde para la cabecera
@@ -248,7 +248,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     
     // Intentar cargar logo de la compañía
     let logoWidth = 0;
-    if (data.company.logo_url && isFirstPage) {
+    if (data.company.logo_url) {
       try {
         const logoData = await loadImageFromUrl(data.company.logo_url);
         if (logoData) {
@@ -398,11 +398,11 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       });
     }
 
-    currentY += 25;
+    currentY += 35; // Aumentar margen después de la cabecera
   };
 
   // === HEADER EN TRES COLUMNAS ===
-  await addPageHeader(true);
+  await addPageHeader();
 
   // === CAJAS DE RESUMEN SUPERIOR ===
   const totalBoxesWidth = pageWidth - margin*2 + 10; // Mismo ancho que la cabecera
@@ -596,7 +596,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // Verificar si toda la sección de deducciones cabe en la página actual
   if (currentY + deductionsSectionHeight > pageHeight - footerSpace) {
     doc.addPage();
-    await addPageHeader(false);
+    await addPageHeader();
   }
   
   const redRgb = hexToRgb(colors.lightRed);
@@ -639,7 +639,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // Verificar si toda la sección de combustible cabe en la página actual
   if (currentY + fuelSectionHeight > pageHeight - footerSpace) {
     doc.addPage();
-    await addPageHeader(false);
+    await addPageHeader();
   }
   
   const grayRgb = hexToRgb(colors.lightGray);
