@@ -323,7 +323,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   });
 
   // === COLUMNA 3: INFORMACIÓN DEL CONDUCTOR ===
-  addText(data.driver.name, col3X + colWidth - 5, currentY, {
+  addText(data.driver.name, col3X + colWidth, currentY, {
     fontSize: 12,
     fontStyle: 'bold',
     color: colors.darkGray,
@@ -338,7 +338,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       ? `Driver License: ${data.driver.license} (${data.driver.license_state})`
       : `Driver License: ${data.driver.license}`;
     
-    addText(licenseText, col3X + colWidth - 5, driverInfoY, {
+    addText(licenseText, col3X + colWidth, driverInfoY, {
       fontSize: 9,
       color: colors.text,
       align: 'right'
@@ -350,7 +350,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     const addressLines = data.driver.address.split('\n');
     
     addressLines.forEach((line, index) => {
-      addText(line.trim(), col3X + colWidth - 5, driverInfoY + (index * 4), {
+      addText(line.trim(), col3X + colWidth, driverInfoY + (index * 4), {
         fontSize: 9,
         color: colors.text,
         align: 'right'
@@ -361,7 +361,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   }
   
   if (data.driver.phone) {
-    addText(data.driver.phone, col3X + colWidth - 5, driverInfoY, {
+    addText(data.driver.phone, col3X + colWidth, driverInfoY, {
       fontSize: 9,
       color: colors.text,
       align: 'right'
@@ -370,7 +370,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   }
   
   if (data.driver.email) {
-    addText(data.driver.email, col3X + colWidth - 5, driverInfoY, {
+    addText(data.driver.email, col3X + colWidth, driverInfoY, {
       fontSize: 9,
       color: colors.text,
       align: 'right'
