@@ -301,7 +301,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
       });
     } catch (error) {
       console.error('Error loading driver data:', error);
-      showError('Error al cargar los datos del conductor');
+      showError('Error loading driver data');
     } finally {
       setLoading(false);
     }
@@ -418,7 +418,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
 
         if (invitationError) throw invitationError;
 
-        showSuccess('Información de la invitación actualizada correctamente');
+        showSuccess('Invitation information updated successfully');
         onSuccess();
         onClose();
         return;
@@ -511,12 +511,12 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
         }
       }
 
-      showSuccess('Información del conductor actualizada correctamente');
+      showSuccess('Driver information updated successfully');
       onSuccess();
       onClose();
     } catch (error) {
       console.error('Error saving driver data:', error);
-      showError('Error al guardar los datos del conductor');
+      showError('Error saving driver data');
     } finally {
       setSaving(false);
     }
@@ -524,22 +524,22 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
 
   if (!driver) return null;
 
-  const fullName = `${driver.first_name || ''} ${driver.last_name || ''}`.trim() || 'Conductor';
+  const fullName = `${driver.first_name || ''} ${driver.last_name || ''}`.trim() || 'Driver';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
-          <DialogTitle>Editar Conductor: {fullName}</DialogTitle>
+          <DialogTitle>Edit Driver: {fullName}</DialogTitle>
           <DialogDescription>
-            Gestiona toda la información del conductor, incluyendo datos personales, laborales y de dueño operador.
+            Manage all driver information, including personal, employment and owner operator data.
           </DialogDescription>
         </DialogHeader>
 
         {loading ? (
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-3"></div>
-            <span>Cargando datos del conductor...</span>
+            <span>Loading driver data...</span>
           </div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -550,11 +550,11 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
               </TabsTrigger>
               <TabsTrigger value="employment-license" className="flex items-center gap-2">
                 <IdCard className="h-4 w-4" />
-                Empleo y Licencia
+                Employment & License
               </TabsTrigger>
               <TabsTrigger value="owner" className="flex items-center gap-2">
                 <Truck className="h-4 w-4" />
-                Dueño Operador
+                Owner Operator
               </TabsTrigger>
             </TabsList>
 
@@ -563,30 +563,30 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                   <User className="h-5 w-5" />
-                  Información Personal
+                  Personal Information
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="first_name">Nombre</Label>
+                    <Label htmlFor="first_name">First Name</Label>
                     <Input
                       id="first_name"
                       value={driverData.first_name}
                       onChange={(e) => updateDriverData('first_name', e.target.value)}
-                      placeholder="Nombre"
+                      placeholder="First Name"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="last_name">Apellido</Label>
+                    <Label htmlFor="last_name">Last Name</Label>
                     <Input
                       id="last_name"
                       value={driverData.last_name}
                       onChange={(e) => updateDriverData('last_name', e.target.value)}
-                      placeholder="Apellido"
+                      placeholder="Last Name"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Teléfono</Label>
+                    <Label htmlFor="phone">Phone</Label>
                     <Input
                       id="phone"
                       value={driverData.phone}
@@ -602,14 +602,14 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="date_of_birth">Fecha de Nacimiento</Label>
+                    <Label htmlFor="date_of_birth">Date of Birth</Label>
                     <div>
                       <DatePicker
                         id="date_of_birth"
                         selected={driverData.date_of_birth}
                         onChange={(date: Date | null) => updateDriverData('date_of_birth', date)}
                         dateFormat="dd/MM/yyyy"
-                        placeholderText="Seleccionar fecha"
+                        placeholderText="Select date"
                         showYearDropdown
                         showMonthDropdown
                         dropdownMode="select"
@@ -622,7 +622,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                       />
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Edad permitida: entre 18 y 70 años
+                      Allowed age: between 18 and 70 years
                     </p>
                   </div>
                 </div>
@@ -630,21 +630,21 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                 <div className="space-y-4">
                   <h4 className="text-md font-semibold flex items-center gap-2">
                     <Phone className="h-4 w-4" />
-                    Contacto de Emergencia
+                    Emergency Contact
                   </h4>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="emergency_contact_name">Nombre del Contacto</Label>
+                      <Label htmlFor="emergency_contact_name">Contact Name</Label>
                       <Input
                         id="emergency_contact_name"
                         value={driverData.emergency_contact_name}
                         onChange={(e) => updateDriverData('emergency_contact_name', e.target.value)}
-                        placeholder="Nombre completo"
+                        placeholder="Full name"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="emergency_contact_phone">Teléfono del Contacto</Label>
+                      <Label htmlFor="emergency_contact_phone">Contact Phone</Label>
                       <Input
                         id="emergency_contact_phone"
                         value={driverData.emergency_contact_phone}
@@ -671,28 +671,28 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     <IdCard className="h-5 w-5" />
-                    Información de Empleo
+                    Employment Information
                   </h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="driver_id">ID del Conductor</Label>
+                      <Label htmlFor="driver_id">Driver ID</Label>
                       <Input
                         id="driver_id"
                         value={driverData.driver_id}
                         onChange={(e) => updateDriverData('driver_id', e.target.value)}
-                        placeholder="ID único del conductor"
+                        placeholder="Unique driver ID"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="hire_date">Fecha de Contratación</Label>
+                      <Label htmlFor="hire_date">Hire Date</Label>
                       <div>
                         <DatePicker
                           id="hire_date"
                           selected={driverData.hire_date}
                           onChange={(date: Date | null) => updateDriverData('hire_date', date)}
                           dateFormat="dd/MM/yyyy"
-                          placeholderText="Seleccionar fecha"
+                          placeholderText="Select date"
                           showYearDropdown
                           showMonthDropdown
                           dropdownMode="select"
@@ -728,7 +728,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                 <div className="space-y-2">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     <Truck className="h-5 w-5" />
-                    Dueño Operador
+                    Owner Operator
                   </h3>
                   <div className="flex items-center space-x-2">
                     <Switch
@@ -737,11 +737,11 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                       onCheckedChange={(checked) => updateDriverData('is_owner_operator', checked)}
                     />
                     <Label htmlFor="is_owner_operator" className="text-sm">
-                      {driverData.is_owner_operator ? 'Sí, es Dueño Operador' : 'No es Dueño Operador'}
+                      {driverData.is_owner_operator ? 'Yes, is Owner Operator' : 'Not an Owner Operator'}
                     </Label>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Activa esta opción si el conductor opera con su propio vehículo y negocio.
+                    Enable this option if the driver operates with their own vehicle and business.
                   </p>
                 </div>
 
@@ -749,23 +749,23 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                 {driverData.is_owner_operator && (
                   <Tabs value={activeOwnerTab} onValueChange={setActiveOwnerTab} className="w-full">
                     <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="business">Datos del Negocio</TabsTrigger>
-                      <TabsTrigger value="finance">Configuración Financiera</TabsTrigger>
+                      <TabsTrigger value="business">Business Data</TabsTrigger>
+                      <TabsTrigger value="finance">Financial Configuration</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="business" className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <Label htmlFor="business_name">Nombre del Negocio</Label>
+                          <Label htmlFor="business_name">Business Name</Label>
                           <Input
                             id="business_name"
                             value={driverData.business_name}
                             onChange={(e) => updateDriverData('business_name', e.target.value)}
-                            placeholder="Nombre de la empresa del conductor"
+                            placeholder="Driver's business name"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="business_type">Tipo de Negocio</Label>
+                          <Label htmlFor="business_type">Business Type</Label>
                           <Input
                             id="business_type"
                             value={driverData.business_type}
@@ -774,17 +774,17 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                           />
                         </div>
                         <div className="space-y-2 md:col-span-2">
-                          <Label htmlFor="business_address">Dirección del Negocio</Label>
+                          <Label htmlFor="business_address">Business Address</Label>
                           <Textarea
                             id="business_address"
                             value={driverData.business_address}
                             onChange={(e) => updateDriverData('business_address', e.target.value)}
-                            placeholder="Dirección completa del negocio"
+                            placeholder="Complete business address"
                             rows={3}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="business_phone">Teléfono del Negocio</Label>
+                          <Label htmlFor="business_phone">Business Phone</Label>
                           <Input
                             id="business_phone"
                             value={driverData.business_phone}
@@ -800,7 +800,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="business_email">Email del Negocio</Label>
+                          <Label htmlFor="business_email">Business Email</Label>
                           <Input
                             id="business_email"
                             type="email"
@@ -824,7 +824,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                     <TabsContent value="finance" className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <Label htmlFor="dispatching_percentage">Porcentaje de Dispatching (%)</Label>
+                          <Label htmlFor="dispatching_percentage">Dispatching Percentage (%)</Label>
                           <Input
                             id="dispatching_percentage"
                             type="number"
@@ -836,11 +836,11 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                             placeholder="5.00"
                           />
                           <p className="text-xs text-muted-foreground">
-                            Porcentaje cobrado por servicios de dispatching
+                            Percentage charged for dispatching services
                           </p>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="factoring_percentage">Porcentaje de Factoring (%)</Label>
+                          <Label htmlFor="factoring_percentage">Factoring Percentage (%)</Label>
                           <Input
                             id="factoring_percentage"
                             type="number"
@@ -852,11 +852,11 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                             placeholder="3.00"
                           />
                           <p className="text-xs text-muted-foreground">
-                            Porcentaje cobrado por servicios de factoring
+                            Percentage charged for factoring services
                           </p>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="leasing_percentage">Porcentaje de Leasing (%)</Label>
+                          <Label htmlFor="leasing_percentage">Leasing Percentage (%)</Label>
                           <Input
                             id="leasing_percentage"
                             type="number"
@@ -868,11 +868,11 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                             placeholder="5.00"
                           />
                           <p className="text-xs text-muted-foreground">
-                            Porcentaje cobrado por servicios de leasing
+                            Percentage charged for leasing services
                           </p>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="insurance_pay">Pago de Seguro ($)</Label>
+                          <Label htmlFor="insurance_pay">Insurance Payment ($)</Label>
                           <Input
                             id="insurance_pay"
                             type="number"
@@ -883,7 +883,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                             placeholder="0.00"
                           />
                           <p className="text-xs text-muted-foreground">
-                            Monto fijo para pagos de seguro
+                            Fixed amount for insurance payments
                           </p>
                         </div>
                       </div>
@@ -897,10 +897,10 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
 
         <div className="flex justify-end space-x-2 pt-4">
           <Button variant="outline" onClick={onClose}>
-            Cancelar
+            Cancel
           </Button>
           <Button onClick={handleSave} disabled={saving}>
-            {saving ? 'Guardando...' : 'Guardar Cambios'}
+            {saving ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>
       </DialogContent>
