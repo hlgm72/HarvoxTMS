@@ -230,174 +230,179 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     };
   };
 
-  // === HEADER EN TRES COLUMNAS ===
-  currentY = 12;
-  
-  // Agregar fondo gris claro con esquinas redondeadas y borde para la cabecera
-  const headerHeight = 28;
-  addRoundedBox(margin - 5, currentY - 7, pageWidth - margin*2 + 10, headerHeight, colors.lightGray, 2, colors.border);
-  
-  // Definir columnas
-  const colWidth = (pageWidth - margin*2) / 3;
-  const col1X = margin;
-  const col2X = margin + colWidth;
-  const col3X = margin + colWidth * 2;
-  
-  // === COLUMNA 1: INFORMACIÓN DE LA COMPAÑÍA ===
-  
-  // Intentar cargar logo de la compañía
-  let logoWidth = 0;
-  if (data.company.logo_url) {
-    try {
-      const logoData = await loadImageFromUrl(data.company.logo_url);
-      if (logoData) {
-        // Agregar imagen del logo
-        const logoSize = 15; // Tamaño del logo en mm
-        doc.addImage(logoData, 'PNG', col1X, currentY - 5, logoSize, logoSize);
-        logoWidth = logoSize + 3; // Espacio para el logo + margen reducido
-      }
-    } catch (error) {
-      console.error('Error loading company logo:', error);
-      // Fallback a iniciales si falla cargar la imagen
-      logoWidth = 0;
-    }
-  }
-  
-  // Si no hay logo o fallo al cargar, usar iniciales como fallback
-  if (logoWidth === 0) {
-    const companyLogo = data.company.name ? 
-      data.company.name.split(' ').map(word => word.charAt(0)).join('').substring(0, 3).toUpperCase() :
-      'CO';
-      
-    addText(companyLogo, col1X, currentY, {
-      fontSize: 28,
-      fontStyle: 'bold',
-      color: colors.primary
-    });
-    logoWidth = 16; // Espacio para las iniciales reducido
-  }
-  
-  addText(data.company.name || 'Transport LLC', col1X + logoWidth, currentY, {
-    fontSize: 12,
-    fontStyle: 'bold',
-    color: colors.darkGray
-  });
-  
-  // Posicionar toda la información debajo del nombre de la compañía
-  let companyInfoY = currentY + 6;
-  
-  if (data.company.address) {
-    const addressLines = data.company.address.split('\n');
+  // Función para generar la cabecera (reutilizable en cada página)
+  const addPageHeader = async (isFirstPage: boolean = false) => {
+    currentY = 12;
     
-    addressLines.forEach((line, index) => {
-      addText(line.trim(), col1X + logoWidth, companyInfoY + (index * 4), {
+    // Agregar fondo gris claro con esquinas redondeadas y borde para la cabecera
+    const headerHeight = 28;
+    addRoundedBox(margin - 5, currentY - 7, pageWidth - margin*2 + 10, headerHeight, colors.lightGray, 2, colors.border);
+    
+    // Definir columnas
+    const colWidth = (pageWidth - margin*2) / 3;
+    const col1X = margin;
+    const col2X = margin + colWidth;
+    const col3X = margin + colWidth * 2;
+    
+    // === COLUMNA 1: INFORMACIÓN DE LA COMPAÑÍA ===
+    
+    // Intentar cargar logo de la compañía
+    let logoWidth = 0;
+    if (data.company.logo_url && isFirstPage) {
+      try {
+        const logoData = await loadImageFromUrl(data.company.logo_url);
+        if (logoData) {
+          // Agregar imagen del logo
+          const logoSize = 15; // Tamaño del logo en mm
+          doc.addImage(logoData, 'PNG', col1X, currentY - 5, logoSize, logoSize);
+          logoWidth = logoSize + 3; // Espacio para el logo + margen reducido
+        }
+      } catch (error) {
+        console.error('Error loading company logo:', error);
+        // Fallback a iniciales si falla cargar la imagen
+        logoWidth = 0;
+      }
+    }
+    
+    // Si no hay logo o fallo al cargar, usar iniciales como fallback
+    if (logoWidth === 0) {
+      const companyLogo = data.company.name ? 
+        data.company.name.split(' ').map(word => word.charAt(0)).join('').substring(0, 3).toUpperCase() :
+        'CO';
+        
+      addText(companyLogo, col1X, currentY, {
+        fontSize: 28,
+        fontStyle: 'bold',
+        color: colors.primary
+      });
+      logoWidth = 16; // Espacio para las iniciales reducido
+    }
+    
+    addText(data.company.name || 'Transport LLC', col1X + logoWidth, currentY, {
+      fontSize: 12,
+      fontStyle: 'bold',
+      color: colors.darkGray
+    });
+    
+    // Posicionar toda la información debajo del nombre de la compañía
+    let companyInfoY = currentY + 6;
+    
+    if (data.company.address) {
+      const addressLines = data.company.address.split('\n');
+      
+      addressLines.forEach((line, index) => {
+        addText(line.trim(), col1X + logoWidth, companyInfoY + (index * 4), {
+          fontSize: 9,
+          color: colors.text
+        });
+      });
+      
+      companyInfoY += (addressLines.length * 4);
+    }
+    
+    if (data.company.phone) {
+      addText(data.company.phone, col1X + logoWidth, companyInfoY, {
         fontSize: 9,
         color: colors.text
       });
+      companyInfoY += 4;
+    }
+    
+    if (data.company.email) {
+      addText(data.company.email, col1X + logoWidth, companyInfoY, {
+        fontSize: 9,
+        color: colors.text
+      });
+    }
+
+    // === COLUMNA 2: INFORMACIÓN DEL PERIODO ===
+    const weekInfo = formatWeekInfo();
+    addText('Driver Pay Report', col2X + colWidth/2, currentY, {
+      fontSize: 12,
+      fontStyle: 'bold',
+      color: colors.darkGray,
+      align: 'center'
     });
     
-    companyInfoY += (addressLines.length * 4);
-  }
-  
-  if (data.company.phone) {
-    addText(data.company.phone, col1X + logoWidth, companyInfoY, {
-      fontSize: 9,
-      color: colors.text
+    addText(weekInfo.week, col2X + colWidth/2, currentY + 4, {
+      fontSize: 11,
+      fontStyle: 'bold',
+      color: colors.text,
+      align: 'center'
     });
-    companyInfoY += 4;
-  }
-  
-  if (data.company.email) {
-    addText(data.company.email, col1X + logoWidth, companyInfoY, {
-      fontSize: 9,
-      color: colors.text
-    });
-  }
-
-  // === COLUMNA 2: INFORMACIÓN DEL PERIODO ===
-  const weekInfo = formatWeekInfo();
-  addText('Driver Pay Report', col2X + colWidth/2, currentY, {
-    fontSize: 12,
-    fontStyle: 'bold',
-    color: colors.darkGray,
-    align: 'center'
-  });
-  
-  addText(weekInfo.week, col2X + colWidth/2, currentY + 4, {
-    fontSize: 11,
-    fontStyle: 'bold',
-    color: colors.text,
-    align: 'center'
-  });
-  
-  addText(weekInfo.dateRange, col2X + colWidth/2, currentY + 8, {
-    fontSize: 9,
-    color: colors.text,
-    align: 'center'
-  });
-  
-  addText(weekInfo.paymentDate, col2X + colWidth/2, currentY + 12, {
-    fontSize: 9,
-    color: colors.text,
-    align: 'center'
-  });
-
-  // === COLUMNA 3: INFORMACIÓN DEL CONDUCTOR ===
-  addText(data.driver.name, col3X + colWidth, currentY, {
-    fontSize: 12,
-    fontStyle: 'bold',
-    color: colors.darkGray,
-    align: 'right'
-  });
-  
-  // Posicionar toda la información debajo del nombre del conductor
-  let driverInfoY = currentY + 6;
-  
-  if (data.driver.license) {
-    const licenseText = data.driver.license_state 
-      ? `Driver License: ${data.driver.license} (${data.driver.license_state})`
-      : `Driver License: ${data.driver.license}`;
     
-    addText(licenseText, col3X + colWidth, driverInfoY, {
+    addText(weekInfo.dateRange, col2X + colWidth/2, currentY + 8, {
       fontSize: 9,
       color: colors.text,
+      align: 'center'
+    });
+    
+    addText(weekInfo.paymentDate, col2X + colWidth/2, currentY + 12, {
+      fontSize: 9,
+      color: colors.text,
+      align: 'center'
+    });
+
+    // === COLUMNA 3: INFORMACIÓN DEL CONDUCTOR ===
+    addText(data.driver.name, col3X + colWidth, currentY, {
+      fontSize: 12,
+      fontStyle: 'bold',
+      color: colors.darkGray,
       align: 'right'
     });
-    driverInfoY += 4;
-  }
-  
-  if (data.driver.address) {
-    const addressLines = data.driver.address.split('\n');
     
-    addressLines.forEach((line, index) => {
-      addText(line.trim(), col3X + colWidth, driverInfoY + (index * 4), {
+    // Posicionar toda la información debajo del nombre del conductor
+    let driverInfoY = currentY + 6;
+    
+    if (data.driver.license) {
+      const licenseText = data.driver.license_state 
+        ? `Driver License: ${data.driver.license} (${data.driver.license_state})`
+        : `Driver License: ${data.driver.license}`;
+      
+      addText(licenseText, col3X + colWidth, driverInfoY, {
         fontSize: 9,
         color: colors.text,
         align: 'right'
       });
-    });
+      driverInfoY += 4;
+    }
     
-    driverInfoY += (addressLines.length * 4);
-  }
-  
-  if (data.driver.phone) {
-    addText(data.driver.phone, col3X + colWidth, driverInfoY, {
-      fontSize: 9,
-      color: colors.text,
-      align: 'right'
-    });
-    driverInfoY += 4;
-  }
-  
-  if (data.driver.email) {
-    addText(data.driver.email, col3X + colWidth, driverInfoY, {
-      fontSize: 9,
-      color: colors.text,
-      align: 'right'
-    });
-  }
+    if (data.driver.address) {
+      const addressLines = data.driver.address.split('\n');
+      
+      addressLines.forEach((line, index) => {
+        addText(line.trim(), col3X + colWidth, driverInfoY + (index * 4), {
+          fontSize: 9,
+          color: colors.text,
+          align: 'right'
+        });
+      });
+      
+      driverInfoY += (addressLines.length * 4);
+    }
+    
+    if (data.driver.phone) {
+      addText(data.driver.phone, col3X + colWidth, driverInfoY, {
+        fontSize: 9,
+        color: colors.text,
+        align: 'right'
+      });
+      driverInfoY += 4;
+    }
+    
+    if (data.driver.email) {
+      addText(data.driver.email, col3X + colWidth, driverInfoY, {
+        fontSize: 9,
+        color: colors.text,
+        align: 'right'
+      });
+    }
 
-  currentY += 25;
+    currentY += 25;
+  };
+
+  // === HEADER EN TRES COLUMNAS ===
+  await addPageHeader(true);
 
   // === CAJAS DE RESUMEN SUPERIOR ===
   const totalBoxesWidth = pageWidth - margin*2 + 10; // Mismo ancho que la cabecera
@@ -591,7 +596,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // Verificar si toda la sección de deducciones cabe en la página actual
   if (currentY + deductionsSectionHeight > pageHeight - footerSpace) {
     doc.addPage();
-    currentY = margin;
+    await addPageHeader(false);
   }
   
   const redRgb = hexToRgb(colors.lightRed);
@@ -634,7 +639,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // Verificar si toda la sección de combustible cabe en la página actual
   if (currentY + fuelSectionHeight > pageHeight - footerSpace) {
     doc.addPage();
-    currentY = margin;
+    await addPageHeader(false);
   }
   
   const grayRgb = hexToRgb(colors.lightGray);
@@ -828,6 +833,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   }
 
   // Descargar o ver el PDF
+  const weekInfo = formatWeekInfo();
   const fileName = `Driver_Pay_Report_${data.driver.name.replace(/\s+/g, '_')}_${weekInfo.week.replace(/\s+/g, '_')}.pdf`;
   
   if (isPreview) {
