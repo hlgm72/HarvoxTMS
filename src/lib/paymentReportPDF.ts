@@ -36,6 +36,8 @@ interface PaymentReportData {
     delivery_date: string;
     pickup_location?: string;
     delivery_location?: string;
+    pickup_company?: string;
+    delivery_company?: string;
     client_name?: string;
     total_amount: number;
     factoring_percentage?: number;
@@ -469,8 +471,8 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       });
 
       // Pickup y Delivery
-      const pickupText = `PU: ${new Date(load.pickup_date).toLocaleDateString('en-US')} ${load.pickup_location || ''}`;
-      const deliveryText = `DEL: ${new Date(load.delivery_date).toLocaleDateString('en-US')} ${load.delivery_location || ''}`;
+      const pickupText = `PU: ${new Date(load.pickup_date).toLocaleDateString('en-US')} ${load.pickup_company || ''} (${load.pickup_location || ''})`;
+      const deliveryText = `DEL: ${new Date(load.delivery_date).toLocaleDateString('en-US')} ${load.delivery_company || ''} (${load.delivery_location || ''})`;
       
       addText(` - ${pickupText} | ${deliveryText}`, margin + stopsTextWidth, currentY + 5, {
         fontSize: 8,
