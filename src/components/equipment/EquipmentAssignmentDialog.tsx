@@ -29,7 +29,7 @@ import { CreateEquipmentDialog } from './CreateEquipmentDialog';
 interface EquipmentAssignmentDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  driverUserId?: string; // Si se proporciona, es para asignar equipos a este conductor específico
+  driverUserId?: string; // If provided, it's for assigning equipment to this specific driver
 }
 
 export function EquipmentAssignmentDialog({
@@ -58,7 +58,7 @@ export function EquipmentAssignmentDialog({
     getAssignmentsByDriver 
   } = useEquipmentAssignments();
 
-  // Función para cerrar el modal
+  // Function to close the modal
   const handleClose = useCallback(() => {
     setSelectedTruckId('');
     setSelectedTrailerId('');
@@ -68,7 +68,7 @@ export function EquipmentAssignmentDialog({
     onClose();
   }, [driverUserId, onClose]);
 
-  // Asegurar que selectedDriverId se inicialice correctamente
+  // Ensure selectedDriverId initializes correctly
   useEffect(() => {
     if (driverUserId && selectedDriverId !== driverUserId) {
       setSelectedDriverId(driverUserId);
@@ -76,7 +76,7 @@ export function EquipmentAssignmentDialog({
   }, [driverUserId, selectedDriverId]);
 
 
-  // Filtrar equipos por tipo
+  // Filter equipment by type
   const availableTrucks = equipment?.filter(eq => {
     const assignment = getAssignmentByEquipment(eq.id);
     return !assignment && eq.status === 'active' && eq.equipment_type === 'truck';
@@ -87,43 +87,43 @@ export function EquipmentAssignmentDialog({
     return !assignment && eq.status === 'active' && eq.equipment_type === 'trailer';
   }) || [];
 
-  // Filtrar conductores activos
+  // Filter active drivers
   const activeDrivers = drivers?.filter(driver => driver.is_active) || [];
 
   const handleSubmit = () => {
     if (!selectedTruckId || !selectedDriverId) return;
 
-    // Asignar camión (siempre requerido)
+    // Assign truck (always required)
     createAssignment({
       equipment_id: selectedTruckId,
       driver_user_id: selectedDriverId,
       assignment_type: assignmentType,
-      notes: notes.trim() || 'Camión asignado',
+      notes: notes.trim() || 'Truck assigned',
     });
 
-    // Asignar trailer si se seleccionó (y no es "none")
+    // Assign trailer if selected (and not "none")
     if (selectedTrailerId && selectedTrailerId !== 'none') {
       createAssignment({
         equipment_id: selectedTrailerId,
         driver_user_id: selectedDriverId,
         assignment_type: assignmentType,
-        notes: notes.trim() || 'Trailer asignado',
+        notes: notes.trim() || 'Trailer assigned',
       });
     }
 
-    // Cerrar modal después de llamar a las asignaciones
-    // El toast de éxito se maneja en el hook
+    // Close modal after calling assignments
+    // Success toast is handled in the hook
     setTimeout(() => {
       handleClose();
-    }, 1000); // Dar tiempo a que se ejecuten las mutaciones
+    }, 1000); // Give time for mutations to execute
   };
 
 
-  // Obtener asignaciones del conductor seleccionado
+  // Get assignments for selected driver
   const driverAssignments = selectedDriverId ? getAssignmentsByDriver(selectedDriverId) : [];
   const selectedDriver = activeDrivers.find(d => d.user_id === selectedDriverId);
   
-  // Separar equipos por tipo
+  // Separate equipment by type
   const driverTrucks = driverAssignments.filter(a => a.company_equipment?.equipment_type === 'truck');
   const driverTrailers = driverAssignments.filter(a => a.company_equipment?.equipment_type === 'trailer');
 
@@ -133,24 +133,24 @@ export function EquipmentAssignmentDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ArrowRightLeft className="h-5 w-5" />
-            Asignar Equipo a Conductor{selectedDriver ? `: ${selectedDriver.first_name} ${selectedDriver.last_name}` : ''}
+            Assign Equipment to Driver{selectedDriver ? `: ${selectedDriver.first_name} ${selectedDriver.last_name}` : ''}
           </DialogTitle>
           <DialogDescription>
-            Selecciona un equipo disponible y asígnalo a un conductor de tu flota.
+            Select available equipment and assign it to a driver in your fleet.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Solo mostrar selector de conductor si no viene predefinido */}
+          {/* Only show driver selector if not predefined */}
           {!driverUserId && (
             <div className="space-y-2">
-              <Label htmlFor="driver-select">Conductor</Label>
+              <Label htmlFor="driver-select">Driver</Label>
               <Select
                 value={selectedDriverId}
                 onValueChange={setSelectedDriverId}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar conductor..." />
+                  <SelectValue placeholder="Select driver..." />
                 </SelectTrigger>
                  <SelectContent className="bg-white z-50">
                   {activeDrivers.map((driver) => (
@@ -173,27 +173,27 @@ export function EquipmentAssignmentDialog({
             </div>
           )}
 
-          {/* Equipos Actuales del Conductor */}
+          {/* Current Driver Equipment */}
           {selectedDriver && (
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium">
-                  Equipos Actuales de {selectedDriver.first_name}
+                  Current Equipment for {selectedDriver.first_name}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {driverAssignments.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <Truck className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p className="font-medium">Sin equipos asignados</p>
-                    <p className="text-sm">Este conductor no tiene equipos asignados actualmente</p>
+                    <p className="font-medium">No equipment assigned</p>
+                    <p className="text-sm">This driver currently has no equipment assigned</p>
                   </div>
                 ) : (
                   <>
-                    {/* Camiones */}
+                    {/* Trucks */}
                     {driverTrucks.length > 0 && (
                       <div>
-                        <Label className="text-xs text-muted-foreground mb-2 block">Camiones</Label>
+                        <Label className="text-xs text-muted-foreground mb-2 block">Trucks</Label>
                         <div className="space-y-2">
                           {driverTrucks.map((assignment) => (
                             <div
@@ -213,9 +213,9 @@ export function EquipmentAssignmentDialog({
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="text-xs border-blue-200">
-                                  {assignment.assignment_type === 'permanent' ? 'Permanente' : 'Temporal'}
-                                </Badge>
+                                 <Badge variant="outline" className="text-xs border-blue-200">
+                                   {assignment.assignment_type === 'permanent' ? 'Permanent' : 'Temporary'}
+                                 </Badge>
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -255,9 +255,9 @@ export function EquipmentAssignmentDialog({
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="text-xs border-green-200">
-                                  {assignment.assignment_type === 'permanent' ? 'Permanente' : 'Temporal'}
-                                </Badge>
+                                 <Badge variant="outline" className="text-xs border-green-200">
+                                   {assignment.assignment_type === 'permanent' ? 'Permanent' : 'Temporary'}
+                                 </Badge>
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -281,11 +281,11 @@ export function EquipmentAssignmentDialog({
 
           {(!driverUserId || (driverUserId && driverAssignments.length > 0)) && <Separator />}
 
-          {/* Selección de Camión (Requerido) */}
+          {/* Truck Selection (Required) */}
           <div className="space-y-2">
             <Label htmlFor="truck-select" className="flex items-center gap-2">
               <Truck className="h-4 w-4 text-blue-600" />
-              Camión (Requerido)
+              Truck (Required)
             </Label>
             <Select 
               value={selectedTruckId} 
@@ -299,10 +299,10 @@ export function EquipmentAssignmentDialog({
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar camión..." />
+                <SelectValue placeholder="Select truck..." />
               </SelectTrigger>
                <SelectContent className="bg-white z-50">
-                {/* Opción para agregar nuevo camión */}
+                {/* Option to add new truck */}
                 <SelectItem 
                   value="add-new-truck" 
                   onSelect={() => {
@@ -311,15 +311,15 @@ export function EquipmentAssignmentDialog({
                 >
                   <div className="flex items-center gap-2 text-blue-600">
                     <Plus className="h-4 w-4" />
-                    <span className="font-medium">Añadir Nuevo Camión</span>
+                    <span className="font-medium">Add New Truck</span>
                   </div>
                 </SelectItem>
                 
                 {availableTrucks.length === 0 ? (
                   <div className="p-4 text-center text-muted-foreground border-t">
                     <Truck className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p>No hay camiones disponibles</p>
-                    <p className="text-xs">Todos los camiones están asignados</p>
+                    <p>No trucks available</p>
+                    <p className="text-xs">All trucks are assigned</p>
                   </div>
                 ) : (
                   <>
@@ -347,11 +347,11 @@ export function EquipmentAssignmentDialog({
             </Select>
           </div>
 
-          {/* Selección de Trailer (Opcional) */}
+          {/* Trailer Selection (Optional) */}
           <div className="space-y-2">
             <Label htmlFor="trailer-select" className="flex items-center gap-2">
               <Truck className="h-4 w-4 text-green-600" />
-              Trailer (Opcional)
+              Trailer (Optional)
             </Label>
             <Select 
               value={selectedTrailerId} 
@@ -365,10 +365,10 @@ export function EquipmentAssignmentDialog({
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar trailer (opcional)..." />
+                <SelectValue placeholder="Select trailer (optional)..." />
               </SelectTrigger>
                <SelectContent className="bg-white z-50">
-                {/* Opción para agregar nuevo trailer */}
+                {/* Option to add new trailer */}
                 <SelectItem 
                   value="add-new-trailer" 
                   onSelect={() => {
@@ -377,7 +377,7 @@ export function EquipmentAssignmentDialog({
                 >
                   <div className="flex items-center gap-2 text-green-600">
                     <Plus className="h-4 w-4" />
-                    <span className="font-medium">Añadir Nuevo Trailer</span>
+                    <span className="font-medium">Add New Trailer</span>
                   </div>
                 </SelectItem>
                 
@@ -386,7 +386,7 @@ export function EquipmentAssignmentDialog({
                 <SelectItem value="none">
                   <div className="flex items-center gap-2">
                     <X className="h-4 w-4 text-muted-foreground" />
-                    <span>Sin trailer (Power Only)</span>
+                    <span>No trailer (Power Only)</span>
                   </div>
                 </SelectItem>
                 
@@ -410,13 +410,13 @@ export function EquipmentAssignmentDialog({
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              Deja vacío si es una operación "Power Only" (solo camión)
+              Leave empty if it's a "Power Only" operation (truck only)
             </p>
           </div>
 
-          {/* Tipo de Asignación */}
+          {/* Assignment Type */}
           <div className="space-y-2">
-            <Label htmlFor="assignment-type">Tipo de Asignación</Label>
+            <Label htmlFor="assignment-type">Assignment Type</Label>
             <Select value={assignmentType} onValueChange={(value: 'permanent' | 'temporary') => setAssignmentType(value)}>
               <SelectTrigger>
                 <SelectValue />
@@ -424,17 +424,17 @@ export function EquipmentAssignmentDialog({
               <SelectContent className="bg-white z-50">
                 <SelectItem value="permanent">
                   <div className="flex flex-col items-start">
-                    <div className="font-medium">Permanente</div>
+                    <div className="font-medium">Permanent</div>
                     <div className="text-xs text-muted-foreground">
-                      Asignación fija al conductor
+                      Fixed assignment to driver
                     </div>
                   </div>
                 </SelectItem>
                 <SelectItem value="temporary">
                   <div className="flex flex-col items-start">
-                    <div className="font-medium">Temporal</div>
+                    <div className="font-medium">Temporary</div>
                     <div className="text-xs text-muted-foreground">
-                      Asignación por tiempo limitado
+                      Time-limited assignment
                     </div>
                   </div>
                 </SelectItem>
@@ -442,22 +442,22 @@ export function EquipmentAssignmentDialog({
             </Select>
           </div>
 
-          {/* Notas */}
+          {/* Notes */}
           <div className="space-y-2">
-            <Label htmlFor="notes">Notas (Opcional)</Label>
+            <Label htmlFor="notes">Notes (Optional)</Label>
             <Textarea
               id="notes"
-              placeholder="Añadir notas sobre esta asignación..."
+              placeholder="Add notes about this assignment..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
             />
           </div>
 
-          {/* Botones */}
+          {/* Buttons */}
           <div className="flex gap-2 justify-end">
             <Button variant="outline" onClick={handleClose}>
-              Cancelar
+              Cancel
             </Button>
             <Button
               onClick={handleSubmit}
@@ -467,12 +467,12 @@ export function EquipmentAssignmentDialog({
               {isCreatingAssignment ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                  Asignando...
+                  Assigning...
                 </>
               ) : (
                 <>
                   <Plus className="h-4 w-4" />
-                  Asignar Equipos
+                  Assign Equipment
                 </>
               )}
             </Button>
@@ -480,7 +480,7 @@ export function EquipmentAssignmentDialog({
         </div>
       </DialogContent>
 
-      {/* Modal para crear nuevo equipo */}
+      {/* Modal to create new equipment */}
       <CreateEquipmentDialog
         open={showCreateEquipmentDialog}
         onOpenChange={setShowCreateEquipmentDialog}
