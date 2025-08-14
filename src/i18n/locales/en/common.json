@@ -297,5 +297,19 @@
         "professional_tms": "Professional TMS"
       }
     }
+  },
+  "roles": {
+    "labels": {
+      "superadmin": "Super Admin",
+      "company_owner": "Company Owner",
+      "company_admin": "Company Admin", 
+      "dispatcher": "Dispatcher",
+      "driver": "Driver",
+      "multi_company_dispatcher": "Multi-Company Dispatcher"
+    },
+    "switcher": {
+      "change_role": "Change Role",
+      "active": "Active"
+    }
   }
 }

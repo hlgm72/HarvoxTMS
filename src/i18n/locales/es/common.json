@@ -297,5 +297,19 @@
         "professional_tms": "TMS Profesional"
       }
     }
+  },
+  "roles": {
+    "labels": {
+      "superadmin": "Super Admin",
+      "company_owner": "Propietario de Empresa",
+      "company_admin": "Administrador de Empresa",
+      "dispatcher": "Despachador",
+      "driver": "Conductor",
+      "multi_company_dispatcher": "Despachador Multi-Empresa"
+    },
+    "switcher": {
+      "change_role": "Cambiar Rol",
+      "active": "Activo"
+    }
   }
 }

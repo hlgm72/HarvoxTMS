@@ -1,6 +1,7 @@
 import { ChevronDown, User, Building2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,28 +13,24 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-// Role mappings using our new 6-role system
-const roleLabels = {
-  superadmin: 'Super Admin',
-  company_owner: 'Company Owner', 
-  company_admin: 'Company Admin',
-  dispatcher: 'Dispatcher',
-  driver: 'Driver',
-  multi_company_dispatcher: 'Multi-Company Dispatcher'
-};
-
-const roleColors = {
-  superadmin: 'bg-purple-500 text-white hover:bg-purple-600',
-  company_owner: 'bg-amber-500 text-white hover:bg-amber-600',
-  company_admin: 'bg-blue-500 text-white hover:bg-blue-600',
-  dispatcher: 'bg-emerald-500 text-white hover:bg-emerald-600',
-  driver: 'bg-orange-500 text-white hover:bg-orange-600',
-  multi_company_dispatcher: 'bg-cyan-500 text-white hover:bg-cyan-600',
-};
-
 export const RoleSwitcher = () => {
+  const { t } = useTranslation('common');
   const { currentRole, availableRoles, switchRole, hasMultipleRoles, loading, isAuthenticated, userRole } = useAuth();
   const navigate = useNavigate();
+
+  // Role mappings using our new 6-role system with translations
+  const getRoleLabel = (role: string) => {
+    return t(`roles.labels.${role}`, { defaultValue: role });
+  };
+
+  const roleColors = {
+    superadmin: 'bg-purple-500 text-white hover:bg-purple-600',
+    company_owner: 'bg-amber-500 text-white hover:bg-amber-600',
+    company_admin: 'bg-blue-500 text-white hover:bg-blue-600',
+    dispatcher: 'bg-emerald-500 text-white hover:bg-emerald-600',
+    driver: 'bg-orange-500 text-white hover:bg-orange-600',
+    multi_company_dispatcher: 'bg-cyan-500 text-white hover:bg-cyan-600',
+  };
 
   // Function to get the correct dashboard route for a role
   const getDashboardRoute = (role: string): string => {
@@ -96,7 +93,7 @@ export const RoleSwitcher = () => {
       <div className="flex items-center gap-2 px-3 py-2 rounded-md border bg-muted/50">
         <User className="h-4 w-4" />
         <span className="text-sm font-medium">
-          {roleLabels[currentRole as keyof typeof roleLabels] || currentRole}
+          {getRoleLabel(currentRole)}
         </span>
       </div>
     );
@@ -109,7 +106,7 @@ export const RoleSwitcher = () => {
           <div className="flex items-center gap-2">
             <User className="h-4 w-4" />
             <span className="text-sm font-medium">
-              {roleLabels[currentRole as keyof typeof roleLabels] || currentRole}
+              {getRoleLabel(currentRole)}
             </span>
             <Badge variant="secondary" className="text-xs">
               {availableRoles.length}
@@ -122,7 +119,7 @@ export const RoleSwitcher = () => {
       <DropdownMenuContent align="start" className="w-56">
         <DropdownMenuLabel className="flex items-center gap-2">
           <Building2 className="h-4 w-4" />
-          Cambiar Rol
+          {t('roles.switcher.change_role')}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         
@@ -153,13 +150,13 @@ export const RoleSwitcher = () => {
           >
             <div className="flex items-center justify-between w-full">
               <span>
-                {roleLabels[role.role as keyof typeof roleLabels] || role.role}
+                {getRoleLabel(role.role)}
               </span>
               {role.id === userRole?.id && (
                 <Badge 
                   className={`text-xs ${roleColors[role.role as keyof typeof roleColors] || 'bg-gray-500 text-white'}`}
                 >
-                  Activo
+                  {t('roles.switcher.active')}
                 </Badge>
               )}
             </div>
