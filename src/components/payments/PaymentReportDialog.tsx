@@ -228,6 +228,35 @@ export function PaymentReportDialog({
     enabled: !!calculation
   });
 
+  // Obtener deducciones del período
+  const { data: deductions = [] } = useQuery({
+    queryKey: ['period-deductions', calculationId],
+    queryFn: async () => {
+      if (!calculationId) return [];
+      
+      const { data, error } = await supabase
+        .from('expense_instances')
+        .select(`
+          id,
+          amount,
+          description,
+          expense_date,
+          status,
+          expense_types(
+            name,
+            category
+          )
+        `)
+        .eq('payment_period_id', calculationId)
+        .eq('status', 'applied')
+        .order('expense_date', { ascending: true });
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!calculationId
+  });
+
   const getReportData = () => {
     if (!calculation || !driver || !company) return null;
     
@@ -297,6 +326,11 @@ export function PaymentReportDialog({
         gallons_purchased: expense.gallons_purchased || 0,
         total_amount: expense.total_amount || 0,
         price_per_gallon: expense.price_per_gallon || 0
+      })),
+      deductions: deductions.map(deduction => ({
+        description: deduction.description,
+        amount: deduction.amount,
+        expense_date: deduction.expense_date
       }))
     };
   };
