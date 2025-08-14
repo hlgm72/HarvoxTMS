@@ -724,6 +724,48 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     color: colors.gray
   });
 
+  // === PIE DE PÁGINA ===
+  const addFooter = (pageNumber: number, totalPages: number) => {
+    const footerY = pageHeight - 20;
+    const footerHeight = 12;
+    
+    // Contenedor del pie de página con mismo estilo que la cabecera
+    addRoundedBox(margin - 5, footerY - 7, pageWidth - margin*2 + 10, footerHeight, colors.lightGray, 2, colors.border);
+    
+    // Número de página (izquierda)
+    if (totalPages > 1) {
+      addText(`Page ${pageNumber} of ${totalPages}`, margin, footerY - 1, {
+        fontSize: 8,
+        color: colors.gray
+      });
+    }
+    
+    // Fecha de generación (centro)
+    const reportDate = new Date();
+    addText(`Generated on ${reportDate.toLocaleDateString('en-US')} at ${reportDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`, 
+      pageWidth / 2, footerY - 1, {
+        fontSize: 8,
+        color: colors.gray,
+        align: 'center'
+      });
+    
+    // Información de contacto (derecha)
+    addText(`${data.company.phone || 'Contact: ' + (data.company.email || 'N/A')}`, pageWidth - margin, footerY - 1, {
+      fontSize: 8,
+      color: colors.gray,
+      align: 'right'
+    });
+  };
+
+  // Contar páginas totales del documento
+  const totalPages = doc.getNumberOfPages();
+  
+  // Agregar pie de página a todas las páginas
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i);
+    addFooter(i, totalPages);
+  }
+
   // Descargar o ver el PDF
   const fileName = `Driver_Pay_Report_${data.driver.name.replace(/\s+/g, '_')}_${weekInfo.week.replace(/\s+/g, '_')}.pdf`;
   
