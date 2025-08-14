@@ -637,7 +637,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // === FUEL PURCHASES ===
   // Calcular el espacio necesario para toda la sección de combustible
   const fuelCount = data.fuelExpenses?.length || 0;
-  const fuelSectionHeight = 8 + 10 + (fuelCount * 8); // Header + spacing + items
+  const fuelSectionHeight = 8 + 10 + (fuelCount * 6); // Header + spacing + items
   
   // Verificar si toda la sección de combustible cabe en la página actual
   if (currentY + fuelSectionHeight > pageHeight - footerSpace) {
@@ -690,7 +690,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         align: 'right'
       });
       
-      currentY += 8;
+      currentY += 6;
     });
   }
 
