@@ -599,6 +599,9 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     await addPageHeader();
   }
   
+  // Agregar espaciado consistente con la primera página
+  currentY += 5;
+  
   const redRgb = hexToRgb(colors.lightRed);
   doc.setFillColor(redRgb[0], redRgb[1], redRgb[2]);
   doc.rect(margin, currentY - 5, pageWidth - margin*2, 8, 'F');
@@ -641,6 +644,9 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     doc.addPage();
     await addPageHeader();
   }
+  
+  // Agregar espaciado consistente con la primera página
+  currentY += 5;
   
   const orangeRgb = hexToRgb(colors.lightOrange);
   doc.setFillColor(orangeRgb[0], orangeRgb[1], orangeRgb[2]);
