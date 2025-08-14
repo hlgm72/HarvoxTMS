@@ -456,16 +456,6 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         });
       }
       
-      const stopsText = `(Stops: ${load.stops || 2} Total)`;
-      addText(stopsText, margin, currentY + 5, {
-        fontSize: 9,
-        color: colors.darkGray
-      });
-
-      // Calcular posición para el texto de pickup/delivery
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      const stopsTextWidth = doc.getTextWidth(stopsText);
 
       // Porcentajes y monto (derecha)
       const percentages = [];
