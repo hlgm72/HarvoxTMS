@@ -607,18 +607,20 @@ export function AppSidebar() {
                               {item.title}
                             </span>
                            
-                           {item.badge && (
-                              <Badge 
-                                variant="secondary" 
-                                className={`text-xs font-medium px-1.5 py-0.5 ml-2 rounded-md shadow-sm ${
-                                  active 
-                                    ? "bg-white/30 text-white border-white/50" 
-                                    : "bg-white/15 text-white/90 border-white/30 group-hover:bg-white/25 group-hover:text-white"
-                                }`}
-                             >
-                               {item.badge}
-                             </Badge>
-                           )}
+                            {item.badge && (
+                               <Badge 
+                                 variant="secondary" 
+                                 className={`text-xs font-medium px-1.5 py-0.5 ml-2 rounded-md shadow-sm ${
+                                   item.badgeVariant === "live"
+                                     ? "bg-red-500 text-white border-red-600 animate-pulse"
+                                     : active 
+                                       ? "bg-white/30 text-white border-white/50" 
+                                       : "bg-white/15 text-white/90 border-white/30 group-hover:bg-white/25 group-hover:text-white"
+                                 }`}
+                              >
+                                {item.badge}
+                              </Badge>
+                            )}
                          </div>
                        )}
                        
