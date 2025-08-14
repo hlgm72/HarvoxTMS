@@ -32,10 +32,10 @@ const getStatusColor = (status: string): "default" | "secondary" | "destructive"
 
 const getStatusText = (status: string): string => {
   switch (status) {
-    case "available": return "Disponible";
-    case "on_route": return "En Ruta";
-    case "off_duty": return "Fuera de Servicio";
-    case "pre_registered": return "Pre-registrado";
+    case "available": return "Available";
+    case "on_route": return "On Route";
+    case "off_duty": return "Off Duty";
+    case "pre_registered": return "Pre-registered";
     default: return status;
   }
 };
@@ -53,9 +53,9 @@ const getActivationStatusColor = (status: string): "default" | "secondary" | "de
 // Helper function to get activation status text
 const getActivationStatusText = (status: string): string => {
   switch (status) {
-    case 'active': return "Activo";
-    case 'pending_activation': return "Pendiente activación";
-    case 'invited': return "Invitado";
+    case 'active': return "Active";
+    case 'pending_activation': return "Pending Activation";
+    case 'invited': return "Invited";
     default: return status;
   }
 };
@@ -64,7 +64,7 @@ const formatExperience = (licenseIssueDate: string | null, hireDate: string | nu
   // Priorizar fecha de emisión de licencia (experiencia total como conductor)
   const experienceDate = licenseIssueDate || hireDate;
   
-  if (!experienceDate) return "Experiencia no especificada";
+  if (!experienceDate) return "Experience not specified";
   
   try {
     // Usar la función segura para parsear fechas evitando problemas de zona horaria
@@ -78,7 +78,7 @@ const formatExperience = (licenseIssueDate: string | null, hireDate: string | nu
       // Formato solo fecha: YYYY-MM-DD
       [year, month, day] = experienceDate.split('-').map(Number);
     } else {
-      return "Experiencia no especificada";
+      return "Experience not specified";
     }
     
     // Crear fecha local evitando problemas de zona horaria
@@ -91,18 +91,18 @@ const formatExperience = (licenseIssueDate: string | null, hireDate: string | nu
     if (totalMonths < 0) totalMonths = 0;
     
     if (totalMonths < 12) {
-      return `Experiencia: ${totalMonths} mes${totalMonths !== 1 ? 'es' : ''}`;
+      return `Experience: ${totalMonths} month${totalMonths !== 1 ? 's' : ''}`;
     } else {
       const yearCount = Math.floor(totalMonths / 12);
       const monthCount = totalMonths % 12;
       if (monthCount === 0) {
-        return `Experiencia: ${yearCount} año${yearCount !== 1 ? 's' : ''}`;
+        return `Experience: ${yearCount} year${yearCount !== 1 ? 's' : ''}`;
       }
-      return `Experiencia: ${yearCount} año${yearCount !== 1 ? 's' : ''} y ${monthCount} mes${monthCount !== 1 ? 'es' : ''}`;
+      return `Experience: ${yearCount} year${yearCount !== 1 ? 's' : ''} and ${monthCount} month${monthCount !== 1 ? 's' : ''}`;
     }
   } catch (error) {
     console.error('Error calculating experience:', error);
-    return "Experiencia no especificada";
+    return "Experience not specified";
   }
 };
 
@@ -165,12 +165,12 @@ export default function Drivers() {
       <>
         <PageToolbar 
           icon={Truck}
-          title="Gestión de Conductores"
-          subtitle="Cargando información de conductores..."
+          title="Driver Management"
+          subtitle="Loading driver information..."
           actions={
             <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />
-              Nuevo Conductor
+              New Driver
             </Button>
           }
         />
@@ -190,12 +190,12 @@ export default function Drivers() {
       <>
         <PageToolbar 
           icon={Truck}
-          title="Gestión de Conductores"
-          subtitle="No hay conductores registrados en el sistema"
+          title="Driver Management"
+          subtitle="No drivers registered in the system"
           actions={
             <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />
-              Nuevo Conductor
+              New Driver
             </Button>
           }
         />
@@ -242,12 +242,12 @@ export default function Drivers() {
     <>
       <PageToolbar 
         icon={Truck}
-        title={`Gestión de Conductores`}
-        subtitle={`${drivers.length} conductores • ${drivers.filter(d => d.activation_status === 'active').length} activos • ${pendingDrivers.length} pendientes`}
+        title={`Driver Management`}
+        subtitle={`${drivers.length} drivers • ${drivers.filter(d => d.activation_status === 'active').length} active • ${pendingDrivers.length} pending`}
         actions={
           <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
             <UserPlus className="h-4 w-4" />
-            Nuevo Conductor
+            New Driver
           </Button>
         }
       />
@@ -256,14 +256,14 @@ export default function Drivers() {
           <TabsList className="grid w-full grid-cols-2 h-auto gap-1">
             <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <Users className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Todos los Conductores</span>
-              <span className="sm:hidden">Todos</span>
+              <span className="hidden sm:inline">All Drivers</span>
+              <span className="sm:hidden">All</span>
               <span className="ml-1">({allDrivers.length})</span>
             </TabsTrigger>
             <TabsTrigger value="pending" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Pendientes de Activación</span>
-              <span className="sm:hidden">Pendientes</span>
+              <span className="hidden sm:inline">Pending Activation</span>
+              <span className="sm:hidden">Pending</span>
               <span className="ml-1">({pendingDrivers.length})</span>
             </TabsTrigger>
           </TabsList>
@@ -295,9 +295,9 @@ export default function Drivers() {
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <CardTitle className="text-lg">{fullName || 'Sin nombre'}</CardTitle>
+                              <CardTitle className="text-lg">{fullName || 'No name'}</CardTitle>
                               <p className="text-sm text-muted-foreground">
-                                {driver.license_number ? `${driver.cdl_class || 'CDL'}-${driver.license_number}` : 'Sin licencia'}
+                                {driver.license_number ? `${driver.cdl_class || 'CDL'}-${driver.license_number}` : 'No license'}
                               </p>
                             </div>
                           </div>
@@ -329,20 +329,20 @@ export default function Drivers() {
                           
                           <div className="flex items-center gap-2">
                             <span>📞</span>
-                            <span className="text-sm">{driver.phone || 'No especificado'}</span>
+                            <span className="text-sm">{driver.phone || 'Not specified'}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <span>📍</span>
                             <span className="text-sm">
-                              {driver.license_state ? `${driver.license_state}` : 'Ubicación no especificada'}
+                              {driver.license_state ? `${driver.license_state}` : 'Location not specified'}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <span>🚛</span>
                             <span className="text-sm">
                               {driver.active_loads_count > 0 
-                                ? `${driver.active_loads_count} carga${driver.active_loads_count !== 1 ? 's' : ''} activa${driver.active_loads_count !== 1 ? 's' : ''}`
-                                : 'Sin cargas asignadas'
+                                ? `${driver.active_loads_count} active load${driver.active_loads_count !== 1 ? 's' : ''}`
+                                : 'No assigned loads'
                               }
                             </span>
                           </div>
@@ -352,10 +352,10 @@ export default function Drivers() {
                             <span>🔧</span>
                             <span className="text-sm">
                               {equipmentLoading 
-                                ? 'Cargando equipos...'
+                                ? 'Loading equipment...'
                                 : assignedEquipment.length > 0 
-                                  ? `${assignedEquipment.length} equipo${assignedEquipment.length !== 1 ? 's' : ''} asignado${assignedEquipment.length !== 1 ? 's' : ''}`
-                                  : 'Sin equipos asignados'
+                                  ? `${assignedEquipment.length} assigned equipment piece${assignedEquipment.length !== 1 ? 's' : ''}`
+                                  : 'No assigned equipment'
                               }
                             </span>
                           </div>
@@ -384,16 +384,16 @@ export default function Drivers() {
                              <div className="text-sm flex flex-col">
                                {driver.license_expiry_date ? (
                                  <>
-                                   <span>Vencimiento de Licencia: {getExpiryInfo(driver.license_expiry_date).text}</span>
-                                   {getExpiryInfo(driver.license_expiry_date).isExpired && (
-                                     <span className="text-red-600 font-semibold text-xs">⚠️ VENCIDA</span>
-                                   )}
-                                   {getExpiryInfo(driver.license_expiry_date).isExpiring && !getExpiryInfo(driver.license_expiry_date).isExpired && (
-                                     <span className="text-orange-600 font-semibold text-xs">⚠️ PRÓXIMO A VENCER</span>
-                                   )}
-                                 </>
-                               ) : (
-                                 'Fecha de vencimiento no especificada'
+                                    <span>License Expiry: {getExpiryInfo(driver.license_expiry_date).text}</span>
+                                    {getExpiryInfo(driver.license_expiry_date).isExpired && (
+                                      <span className="text-red-600 font-semibold text-xs">⚠️ EXPIRED</span>
+                                    )}
+                                    {getExpiryInfo(driver.license_expiry_date).isExpiring && !getExpiryInfo(driver.license_expiry_date).isExpired && (
+                                      <span className="text-orange-600 font-semibold text-xs">⚠️ EXPIRING SOON</span>
+                                    )}
+                                  </>
+                                ) : (
+                                  'Expiry date not specified'
                                )}
                              </div>
                            </div>
@@ -408,20 +408,20 @@ export default function Drivers() {
                                 setSelectedDriver(driver);
                                 setShowDetailsModal(true);
                               }}
-                            >
-                              Ver Detalles
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="flex-1"
-                              onClick={() => {
-                                setSelectedDriver(driver);
-                                setShowEditDialog(true);
-                              }}
-                            >
-                              <Edit className="h-3 w-3" />
-                              Editar
+                             >
+                               View Details
+                             </Button>
+                             <Button 
+                               variant="outline" 
+                               size="sm" 
+                               className="flex-1"
+                               onClick={() => {
+                                 setSelectedDriver(driver);
+                                 setShowEditDialog(true);
+                               }}
+                             >
+                               <Edit className="h-3 w-3" />
+                               Edit
                             </Button>
                             <Button 
                               variant="outline" 
@@ -432,9 +432,9 @@ export default function Drivers() {
                                 setShowAssignmentDialog(true);
                               }}
                             >
-                              <Settings className="h-3 w-3" />
-                              Asignar
-                            </Button>
+                               <Settings className="h-3 w-3" />
+                               Assign
+                             </Button>
                           </div>
                       </CardContent>
                     </Card>
