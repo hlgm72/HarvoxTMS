@@ -449,7 +449,9 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const pupPrefixWidth = doc.getTextWidth(pupPrefix);
       const delPrefixWidth = doc.getTextWidth(delPrefix);
       
-      const maxPrefixWidth = Math.max(loadPrefixWidth, pupPrefixWidth, delPrefixWidth);
+      // Usar el ancho máximo entre PUP y DEL para alinearlas correctamente
+      const maxPickupDeliveryWidth = Math.max(pupPrefixWidth, delPrefixWidth);
+      const maxPrefixWidth = Math.max(loadPrefixWidth, maxPickupDeliveryWidth);
       const colonPosition = margin + maxPrefixWidth;
       
       // Load number (en negrita) con alineación
@@ -508,14 +510,19 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const pickupDate = new Date(load.pickup_date).toLocaleDateString('en-US');
       const pickupInfo = ` ${pickupDate} ${pickupCompany} (${pickupLocation})`;
       
-      // PUP en bold con alineación a la derecha
-      const pupPosition = colonPosition - doc.getTextWidth(pupPrefix);
+      // PUP en bold con alineación usando el ancho máximo
+      const pupPosition = colonPosition - maxPickupDeliveryWidth;
       addText(pupPrefix, pupPosition, currentY + 4, {
         fontSize: 9,
         fontStyle: 'bold',
         color: colors.darkGray
       });
-      addText(`: ${pickupDate} ${pickupCompany} (${pickupLocation})`, colonPosition, currentY + 4, {
+      addText(':', colonPosition, currentY + 4, {
+        fontSize: 9,
+        fontStyle: 'bold',
+        color: colors.darkGray
+      });
+      addText(` ${pickupDate} ${pickupCompany} (${pickupLocation})`, colonPosition + 3, currentY + 4, {
         fontSize: 9,
         fontStyle: 'normal',
         color: colors.darkGray
@@ -525,14 +532,19 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const deliveryDate = new Date(load.delivery_date).toLocaleDateString('en-US');
       const deliveryInfo = ` ${deliveryDate} ${deliveryCompany} (${deliveryLocation})`;
       
-      // DEL en bold con alineación a la derecha
-      const delPosition = colonPosition - doc.getTextWidth(delPrefix);
+      // DEL en bold con alineación usando el ancho máximo
+      const delPosition = colonPosition - maxPickupDeliveryWidth;
       addText(delPrefix, delPosition, currentY + 8, {
         fontSize: 9,
         fontStyle: 'bold',
         color: colors.darkGray
       });
-      addText(`: ${deliveryDate} ${deliveryCompany} (${deliveryLocation})`, colonPosition, currentY + 8, {
+      addText(':', colonPosition, currentY + 8, {
+        fontSize: 9,
+        fontStyle: 'bold',
+        color: colors.darkGray
+      });
+      addText(` ${deliveryDate} ${deliveryCompany} (${deliveryLocation})`, colonPosition + 3, currentY + 8, {
         fontSize: 9,
         fontStyle: 'normal',
         color: colors.darkGray
