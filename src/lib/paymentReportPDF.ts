@@ -836,12 +836,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   summaryData.forEach(item => {
     addText(item.label, rightColumnX, rightY, {
       fontSize: 10,
-      color: colors.gray
+      color: colors.darkGray
     });
     
     addText(formatCurrency(item.amount), rightColumnX + 80, rightY, {
       fontSize: 10,
-      color: colors.gray,
+      color: colors.darkGray,
       align: 'right'
     });
     
