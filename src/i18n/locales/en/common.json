@@ -198,6 +198,23 @@
         "upload_error": "Error uploading logo: {{error}}",
         "remove_error": "Error removing logo: {{error}}"
       }
+    },
+    "address": {
+      "street_address": "Street Address",
+      "street_address_placeholder": "123 Main Street",
+      "state": "State",
+      "state_placeholder": "Search state...",
+      "state_select_placeholder": "Select state...",
+      "city": "City",
+      "city_placeholder": "Search city (optional)...",
+      "city_select_placeholder": "Select city...",
+      "zip_code": "ZIP Code",
+      "zip_code_placeholder": "12345",
+      "no_results": "No results found.",
+      "loading": "Loading...",
+      "search": "Search...",
+      "error_loading": "Error loading data",
+      "load_more": "Load more..."
     }
   }
 }

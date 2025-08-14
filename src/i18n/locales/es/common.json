@@ -198,6 +198,23 @@
         "upload_error": "Error al subir el logo: {{error}}",
         "remove_error": "Error al eliminar el logo: {{error}}"
       }
+    },
+    "address": {
+      "street_address": "Dirección",
+      "street_address_placeholder": "123 Calle Principal",
+      "state": "Estado",
+      "state_placeholder": "Buscar estado...",
+      "state_select_placeholder": "Selecciona estado...",
+      "city": "Ciudad",
+      "city_placeholder": "Buscar ciudad (opcional)...",
+      "city_select_placeholder": "Selecciona ciudad...",
+      "zip_code": "Código Postal",
+      "zip_code_placeholder": "12345",
+      "no_results": "No se encontraron resultados.",
+      "loading": "Cargando...",
+      "search": "Buscar...",
+      "error_loading": "Error al cargar datos",
+      "load_more": "Cargar más..."
     }
   }
 }

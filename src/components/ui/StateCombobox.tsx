@@ -8,6 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
+import { useTranslation } from 'react-i18next';
 
 interface State {
   id: string;
@@ -24,7 +25,7 @@ interface StateComboboxProps {
 export function StateCombobox({ 
   value, 
   onValueChange, 
-  placeholder = "Selecciona estado...",
+  placeholder,
   disabled = false 
 }: StateComboboxProps) {
   const [open, setOpen] = useState(false);
@@ -32,6 +33,7 @@ export function StateCombobox({
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const { showError } = useFleetNotifications();
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     loadStates();
@@ -49,7 +51,7 @@ export function StateCombobox({
       setStates(data || []);
     } catch (error) {
       console.error('Error loading states:', error);
-      showError("No se pudieron cargar los estados");
+      showError(t('address.error_loading'));
     } finally {
       setLoading(false);
     }
@@ -73,7 +75,7 @@ export function StateCombobox({
           disabled={disabled || loading}
         >
           <div className="flex items-center">
-            {selectedState ? selectedState.name : placeholder}
+            {selectedState ? selectedState.name : (placeholder || t('address.state_select_placeholder'))}
           </div>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -81,14 +83,14 @@ export function StateCombobox({
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command shouldFilter={false}>
           <CommandInput 
-            placeholder="Buscar estado..." 
+            placeholder={t('address.search')} 
             className="h-9"
             value={searchTerm}
             onValueChange={setSearchTerm}
           />
           <CommandList>
             <CommandEmpty>
-              {loading ? "Cargando estados..." : searchTerm ? "No se encontró el estado." : "Escribe para buscar..."}
+              {loading ? t('address.loading') : searchTerm ? t('address.no_results') : t('address.search')}
             </CommandEmpty>
             <ScrollArea className="h-60 overflow-auto"  onWheel={(e) => e.stopPropagation()}>
               <CommandGroup>
@@ -106,7 +108,7 @@ export function StateCombobox({
                       !value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  Sin especificar
+                  {t('address.state_select_placeholder')}
                 </CommandItem>
                 {filteredStates.map((state) => (
                   <CommandItem

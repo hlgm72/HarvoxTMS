@@ -3,6 +3,7 @@ import { Label } from '@/components/ui/label';
 import { StateCombobox } from '@/components/ui/StateCombobox';
 import { CityCombobox } from '@/components/ui/CityCombobox';
 import { createTextHandlers } from '@/lib/textUtils';
+import { useTranslation } from 'react-i18next';
 
 interface AddressFormProps {
   streetAddress: string;
@@ -32,11 +33,12 @@ export function AddressForm({
   onZipCodeChange,
   disabled = false,
   required = true,
-  streetAddressLabel = "Dirección",
-  stateLabel = "Estado",
-  cityLabel = "Ciudad",
-  zipCodeLabel = "Código Postal"
+  streetAddressLabel,
+  stateLabel,
+  cityLabel,
+  zipCodeLabel
 }: AddressFormProps) {
+  const { t } = useTranslation('common');
   // Create handlers for street address with proper text control
   const streetAddressHandlers = createTextHandlers(onStreetAddressChange);
   
@@ -68,7 +70,7 @@ export function AddressForm({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="street-address">
-            {streetAddressLabel}
+            {streetAddressLabel || t('address.street_address')}
             {required && " *"}
           </Label>
           <Input
@@ -76,14 +78,14 @@ export function AddressForm({
             value={streetAddress}
             onChange={streetAddressHandlers.onChange}
             onBlur={streetAddressHandlers.onBlur}
-            placeholder="123 Calle Principal"
+            placeholder={t('address.street_address_placeholder')}
             disabled={disabled}
           />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="zip-code">
-            {zipCodeLabel}
+            {zipCodeLabel || t('address.zip_code')}
             {required && " *"}
           </Label>
           <Input
@@ -91,7 +93,7 @@ export function AddressForm({
             value={zipCode}
             onChange={zipCodeHandlers.onChange}
             onKeyPress={zipCodeHandlers.onKeyPress}
-            placeholder="12345"
+            placeholder={t('address.zip_code_placeholder')}
             disabled={disabled}
             maxLength={5}
           />
@@ -101,27 +103,27 @@ export function AddressForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>
-            {stateLabel}
+            {stateLabel || t('address.state')}
             {required && " *"}
           </Label>
           <StateCombobox
             value={stateId}
             onValueChange={onStateChange}
             disabled={disabled}
-            placeholder="Buscar estado..."
+            placeholder={t('address.state_placeholder')}
           />
         </div>
 
         <div className="space-y-2">
           <Label>
-            {cityLabel}
+            {cityLabel || t('address.city')}
           </Label>
           <CityCombobox
             value={city}
             onValueChange={onCityChange}
             stateId={stateId}
             disabled={disabled}
-            placeholder="Buscar ciudad (opcional)..."
+            placeholder={t('address.city_placeholder')}
           />
         </div>
       </div>

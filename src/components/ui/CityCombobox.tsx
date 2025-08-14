@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useTranslation } from 'react-i18next';
 
 interface City {
   id: string;
@@ -29,7 +30,7 @@ export function CityCombobox({
   value, 
   onValueChange, 
   stateId,
-  placeholder = "Selecciona ciudad...",
+  placeholder,
   disabled = false
 }: CityComboboxProps) {
   const [open, setOpen] = useState(false);
@@ -39,6 +40,7 @@ export function CityCombobox({
   const [hasMore, setHasMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const { showError } = useFleetNotifications();
+  const { t } = useTranslation('common');
 
   // Debounce search term to avoid too many API calls
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -96,7 +98,7 @@ export function CityCombobox({
       console.log(`🔍 Loaded ${newCities.length} cities for "${term}" (page ${page})`);
     } catch (error) {
       console.error('Error searching cities:', error);
-      showError("Error", "No se pudieron cargar las ciudades");
+      showError(t('address.error'), t('address.error_loading'));
       setCities([]);
       setHasMore(false);
     } finally {
@@ -113,9 +115,9 @@ export function CityCombobox({
   const selectedCity = cities.find((city) => city.name === value);
 
   const getPlaceholderText = () => {
-    if (loading) return "Cargando ciudades...";
-    if (!stateId) return "Primero selecciona un estado";
-    return placeholder;
+    if (loading) return t('address.loading');
+    if (!stateId) return t('address.state_select_placeholder');
+    return placeholder || t('address.city_select_placeholder');
   };
 
   const getDisplayText = () => {
@@ -163,14 +165,14 @@ export function CityCombobox({
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command shouldFilter={false}>
           <CommandInput 
-            placeholder="Buscar ciudad..." 
+            placeholder={t('address.search')} 
             className="h-9"
             value={searchTerm}
             onValueChange={handleSearchChange}
           />
           <CommandList>
             <CommandEmpty>
-              {loading ? "Cargando ciudades..." : searchTerm ? "No se encontró la ciudad." : "Escribe para buscar..."}
+              {loading ? t('address.loading') : searchTerm ? t('address.no_results') : t('address.search')}
             </CommandEmpty>
             <ScrollArea className="h-60">
               <CommandGroup>
@@ -188,7 +190,7 @@ export function CityCombobox({
                       !value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  Sin especificar
+                  {t('address.city_select_placeholder')}
                 </CommandItem>
                 {cities.map((city) => (
                   <CommandItem
@@ -220,7 +222,7 @@ export function CityCombobox({
                     onSelect={loadMoreCities}
                     className="text-center text-primary cursor-pointer"
                   >
-                    {loading ? "Cargando más..." : "Cargar más ciudades..."}
+                    {loading ? t('address.loading') : t('address.load_more')}
                   </CommandItem>
                 )}
               </CommandGroup>
