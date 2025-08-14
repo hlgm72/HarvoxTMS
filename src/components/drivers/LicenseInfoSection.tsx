@@ -26,12 +26,12 @@ interface LicenseInfoSectionProps {
 
 export function LicenseInfoSection({ data, onUpdate, loading = false }: LicenseInfoSectionProps) {
   const endorsements = [
-    { code: 'T', description: 'Doble/triple remolque' },
-    { code: 'P', description: 'Transporte de pasajeros' },
-    { code: 'S', description: 'Autobuses escolares' },
-    { code: 'N', description: 'Vehículos cisterna (tank)' },
-    { code: 'H', description: 'Materiales peligrosos' },
-    { code: 'X', description: 'Hazmat + cisterna combinados' }
+    { code: 'T', description: 'Double/triple trailers' },
+    { code: 'P', description: 'Passenger transport' },
+    { code: 'S', description: 'School buses' },
+    { code: 'N', description: 'Tank vehicles' },
+    { code: 'H', description: 'Hazardous materials' },
+    { code: 'X', description: 'Hazmat + tank combined' }
   ];
 
   const handleEndorsementChange = (endorsementCode: string, checked: boolean) => {
@@ -39,14 +39,14 @@ export function LicenseInfoSection({ data, onUpdate, loading = false }: LicenseI
     let newEndorsements;
     
     if (checked) {
-      // Agregar el endoso si no existe
+      // Add endorsement if it doesn't exist
       if (!currentEndorsements.includes(endorsementCode)) {
         newEndorsements = [...currentEndorsements, endorsementCode].sort();
       } else {
         newEndorsements = currentEndorsements;
       }
     } else {
-      // Remover el endoso
+      // Remove endorsement
       newEndorsements = currentEndorsements.filter(e => e !== endorsementCode);
     }
     
@@ -57,39 +57,39 @@ export function LicenseInfoSection({ data, onUpdate, loading = false }: LicenseI
     <div className="space-y-4">
       <h3 className="text-lg font-semibold flex items-center gap-2">
         <Shield className="h-5 w-5" />
-        Información de Licencia CDL
+        CDL License Information
       </h3>
       
-      {/* Una sola fila con los 4 campos: Número de Licencia, Estado, Fecha de Emisión y Fecha de Vencimiento */}
+      {/* Single row with 4 fields: License Number, State, Issue Date and Expiry Date */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="license_number">Número de Licencia</Label>
+          <Label htmlFor="license_number">License Number</Label>
           <Input
             id="license_number"
             value={data.license_number}
             onChange={(e) => onUpdate('license_number', e.target.value)}
-            placeholder="Número de licencia CDL"
+            placeholder="CDL license number"
             disabled={loading}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="license_state">Estado de Emisión</Label>
+          <Label htmlFor="license_state">Issuing State</Label>
           <StateCombobox
             value={data.license_state}
             onValueChange={(value) => onUpdate('license_state', value || '')}
-            placeholder="Selecciona estado..."
+            placeholder="Select state..."
             disabled={loading}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="license_issue_date">Fecha de Emisión</Label>
+          <Label htmlFor="license_issue_date">Issue Date</Label>
           <div>
             <DatePicker
               id="license_issue_date"
               selected={data.license_issue_date}
               onChange={(date: Date | null) => onUpdate('license_issue_date', date)}
               dateFormat="dd/MM/yyyy"
-              placeholderText="Seleccionar fecha"
+              placeholderText="Select date"
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
@@ -102,14 +102,14 @@ export function LicenseInfoSection({ data, onUpdate, loading = false }: LicenseI
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="license_expiry_date">Fecha de Vencimiento</Label>
+          <Label htmlFor="license_expiry_date">Expiry Date</Label>
           <div>
             <DatePicker
               id="license_expiry_date"
               selected={data.license_expiry_date}
               onChange={(date: Date | null) => onUpdate('license_expiry_date', date)}
               dateFormat="dd/MM/yyyy"
-              placeholderText="Seleccionar fecha"
+              placeholderText="Select date"
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
@@ -123,9 +123,9 @@ export function LicenseInfoSection({ data, onUpdate, loading = false }: LicenseI
         </div>
       </div>
 
-      {/* Clase de CDL debajo */}
+      {/* CDL Class below */}
       <div className="space-y-2">
-        <Label>Clase de CDL</Label>
+        <Label>CDL Class</Label>
         <RadioGroup
           value={data.cdl_class}
           onValueChange={(value) => onUpdate('cdl_class', value)}
@@ -140,21 +140,21 @@ export function LicenseInfoSection({ data, onUpdate, loading = false }: LicenseI
                 disabled={loading}
               />
               <Label htmlFor={`cdl_class_${classType}`} className="text-sm font-normal">
-                Clase {classType}
+                Class {classType}
               </Label>
             </div>
           ))}
         </RadioGroup>
         <p className="text-xs text-muted-foreground">
-          Selecciona la clase de CDL del conductor
+          Select the driver's CDL class
         </p>
       </div>
 
-      {/* Sección de Endosos Adicionales */}
+      {/* Additional Endorsements Section */}
       <div className="space-y-4">
         <h4 className="text-md font-semibold flex items-center gap-2">
           <Shield className="h-4 w-4" />
-          Endosos Adicionales
+          Additional Endorsements
         </h4>
         
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -170,7 +170,7 @@ export function LicenseInfoSection({ data, onUpdate, loading = false }: LicenseI
                 />
                 <div className="flex flex-col">
                   <Label htmlFor={`endorsement_${endorsement.code}`} className="text-sm font-medium">
-                    Endoso {endorsement.code}
+                    Endorsement {endorsement.code}
                   </Label>
                   <span className="text-xs text-muted-foreground">
                     {endorsement.description}
