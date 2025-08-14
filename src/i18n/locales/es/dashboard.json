@@ -1,3 +1,4 @@
+
 {
   "owner": {
     "title": "Dashboard Ejecutivo",
@@ -44,6 +45,19 @@
       "title": "Reportes y Análisis",
       "subtitle": "Los reportes detallados estarán disponibles próximamente", 
       "generate_report": "Generar Reporte"
+    },
+    "payments": {
+      "realtime_title": "Pagos de Conductores en Tiempo Real",
+      "gross_income": "Ingresos Brutos",
+      "fuel": "Combustible",
+      "deductions": "Deducciones",
+      "net_payment": "Pago Neto", 
+      "calculated": "Calculado",
+      "status": {
+        "calculated": "Calculado",
+        "paid": "Pagado",
+        "pending": "Pendiente"
+      }
     }
   }
 }

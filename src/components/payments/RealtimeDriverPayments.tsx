@@ -1,201 +1,130 @@
-import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, TrendingUp, Clock, CheckCircle } from "lucide-react";
-import { formatCurrency } from "@/lib/paymentCalculations";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DollarSign, TrendingUp, User, Circle } from "lucide-react";
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { formatCurrency } from '@/lib/paymentCalculations';
+import { useTranslation } from 'react-i18next';
 
-interface DriverCalculation {
-  id: string;
-  driver_user_id: string;
+interface DriverPayment {
+  driver_id: string;
+  driver_name: string;
+  driver_avatar?: string;
+  period_dates: string;
   gross_earnings: number;
   fuel_expenses: number;
   total_deductions: number;
-  other_income: number;
   net_payment: number;
-  payment_status: string;
-  updated_at: string;
-  company_payment_period_id: string;
-  period_start_date: string;
-  period_end_date: string;
-  driver_name: string;
+  status: 'calculated' | 'paid' | 'pending';
+  has_negative_balance: boolean;
 }
 
 export function RealtimeDriverPayments() {
-  const [realtimeData, setRealtimeData] = useState<DriverCalculation[]>([]);
+  const { userRole } = useAuth();
+  const { t } = useTranslation('dashboard');
+  const [payments, setPayments] = useState<DriverPayment[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Obtener datos iniciales de cálculos de conductores
-  const { data: initialData, isLoading } = useQuery({
-    queryKey: ['realtime-driver-payments'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('driver_period_calculations')
+  useEffect(() => {
+    if (userRole?.company_id) {
+      fetchDriverPayments();
+      
+      // Set up real-time subscription
+      const channel = supabase
+        .channel('driver_payments_updates')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'company_payment_periods'
+          },
+          () => {
+            fetchDriverPayments();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [userRole?.company_id]);
+
+  const fetchDriverPayments = async () => {
+    if (!userRole?.company_id) return;
+
+    try {
+      // Get latest payment periods for the company
+      const { data: periods, error } = await supabase
+        .from('company_payment_periods')
         .select(`
-          id,
-          driver_user_id,
-          gross_earnings,
-          fuel_expenses,
-          total_deductions,
-          other_income,
-          net_payment,
-          payment_status,
-          updated_at,
-          company_payment_period_id,
-          company_payment_periods!inner(
-            period_start_date,
-            period_end_date,
-            status
+          *,
+          driver_payments (
+            *,
+            profiles!driver_payments_driver_user_id_fkey (
+              first_name,
+              last_name,
+              avatar_url
+            )
           )
         `)
-        .eq('company_payment_periods.status', 'open')
-        .order('updated_at', { ascending: false })
-        .limit(10);
+        .eq('company_id', userRole.company_id)
+        .order('start_date', { ascending: false })
+        .limit(1);
 
       if (error) throw error;
 
-      // Obtener nombres de conductores por separado
-      const driverIds = data.map(calc => calc.driver_user_id);
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, first_name, last_name')
-        .in('user_id', driverIds);
+      if (periods && periods.length > 0) {
+        const latestPeriod = periods[0];
+        const driverPayments = latestPeriod.driver_payments?.map((payment: any) => ({
+          driver_id: payment.driver_user_id,
+          driver_name: `${payment.profiles?.first_name || 'N/A'} ${payment.profiles?.last_name || ''}`.trim(),
+          driver_avatar: payment.profiles?.avatar_url,
+          period_dates: `${new Date(latestPeriod.start_date).toLocaleDateString()} - ${new Date(latestPeriod.end_date).toLocaleDateString()}`,
+          gross_earnings: payment.gross_earnings || 0,
+          fuel_expenses: payment.fuel_expenses || 0,
+          total_deductions: payment.total_deductions || 0,
+          net_payment: payment.net_payment || 0,
+          status: payment.status || 'calculated',
+          has_negative_balance: payment.has_negative_balance || false,
+        })) || [];
 
-      return data.map(calc => ({
-        ...calc,
-        period_start_date: calc.company_payment_periods.period_start_date,
-        period_end_date: calc.company_payment_periods.period_end_date,
-        driver_name: profiles?.find(p => p.user_id === calc.driver_user_id)
-          ? `${profiles.find(p => p.user_id === calc.driver_user_id)?.first_name} ${profiles.find(p => p.user_id === calc.driver_user_id)?.last_name}`
-          : 'Conductor'
-      }));
+        setPayments(driverPayments);
+      }
+    } catch (error) {
+      console.error('Error fetching driver payments:', error);
+    } finally {
+      setLoading(false);
     }
-  });
-
-  // Configurar actualizaciones en tiempo real
-  useEffect(() => {
-    if (initialData) {
-      setRealtimeData(initialData);
-    }
-  }, [initialData]);
-
-  useEffect(() => {
-    const channel = supabase
-      .channel('driver-payments-realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'driver_period_calculations'
-        },
-        async (payload) => {
-          console.log('💰 Realtime payment update:', payload);
-          
-          if (payload.eventType === 'UPDATE') {
-            // Obtener datos completos del registro actualizado
-            const { data: updatedCalc } = await supabase
-              .from('driver_period_calculations')
-              .select(`
-                id,
-                driver_user_id,
-                gross_earnings,
-                fuel_expenses,
-                total_deductions,
-                other_income,
-                net_payment,
-                payment_status,
-                updated_at,
-                company_payment_period_id,
-                company_payment_periods!inner(
-                  period_start_date,
-                  period_end_date
-                )
-              `)
-              .eq('id', payload.new.id)
-              .single();
-
-            if (updatedCalc) {
-              // Obtener nombre del conductor por separado
-              const { data: profile } = await supabase
-                .from('profiles')
-                .select('first_name, last_name')
-                .eq('user_id', updatedCalc.driver_user_id)
-                .single();
-
-              const formattedCalc = {
-                ...updatedCalc,
-                period_start_date: updatedCalc.company_payment_periods.period_start_date,
-                period_end_date: updatedCalc.company_payment_periods.period_end_date,
-                driver_name: profile ? `${profile.first_name} ${profile.last_name}` : 'Conductor'
-              };
-
-              setRealtimeData(prev => {
-                const index = prev.findIndex(item => item.id === payload.new.id);
-                if (index >= 0) {
-                  const newData = [...prev];
-                  newData[index] = formattedCalc;
-                  return newData;
-                }
-                return [formattedCalc, ...prev.slice(0, 9)];
-              });
-            }
-          }
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'loads'
-        },
-        (payload) => {
-          console.log('🚛 Realtime load update:', payload);
-          // Los triggers automáticamente recalcularán los pagos
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const getStatusBadge = (status: string) => {
-    const variants = {
-      'projected': { label: 'Proyectado', variant: 'secondary' as const, icon: Clock },
-      'partial': { label: 'Parcial', variant: 'default' as const, icon: TrendingUp },
-      'calculated': { label: 'Calculado', variant: 'default' as const, icon: CheckCircle },
-      'needs_review': { label: 'Revisar', variant: 'destructive' as const, icon: DollarSign },
-      'paid': { label: 'Pagado', variant: 'default' as const, icon: CheckCircle }
-    };
-
-    const config = variants[status as keyof typeof variants] || variants.calculated;
-    const Icon = config.icon;
-
-    return (
-      <Badge variant={config.variant} className="flex items-center gap-1">
-        <Icon className="h-3 w-3" />
-        {config.label}
-      </Badge>
-    );
   };
 
-  if (isLoading) {
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case 'paid': return 'default';
+      case 'calculated': return 'secondary';
+      case 'pending': return 'outline';
+      default: return 'outline';
+    }
+  };
+
+  if (loading) {
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
-            Pagos de Conductores en Tiempo Real
+            <DollarSign className="h-5 w-5 text-green-600" />
+            {t('owner.payments.realtime_title')}
+            <Circle className="h-2 w-2 text-green-500 fill-current animate-pulse" />
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="animate-pulse space-y-3">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-16 bg-muted rounded"></div>
-            ))}
+          <div className="flex items-center justify-center h-32">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         </CardContent>
       </Card>
@@ -206,65 +135,62 @@ export function RealtimeDriverPayments() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <DollarSign className="h-5 w-5" />
-          Pagos de Conductores en Tiempo Real
-          <Badge variant="outline" className="ml-auto animate-pulse">
-            🔴 En Vivo
-          </Badge>
+          <DollarSign className="h-5 w-5 text-green-600" />
+          {t('owner.payments.realtime_title')}
+          <Circle className="h-2 w-2 text-green-500 fill-current animate-pulse" />
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {realtimeData.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">
-              No hay cálculos de pago activos
-            </p>
-          ) : (
-            realtimeData.map((calc) => (
-              <div 
-                key={calc.id} 
-                className="border rounded-lg p-4 space-y-3 transition-all duration-300 hover:shadow-md"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium">{calc.driver_name}</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {calc.period_start_date} - {calc.period_end_date}
-                    </p>
+        {payments.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">No hay períodos de pago disponibles</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {payments.map((payment) => (
+              <div key={payment.driver_id} className="border rounded-lg p-4 hover:shadow-sm transition-shadow">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={payment.driver_avatar} alt={payment.driver_name} />
+                      <AvatarFallback>
+                        <User className="h-5 w-5" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h4 className="font-semibold">{payment.driver_name}</h4>
+                      <p className="text-sm text-muted-foreground">{payment.period_dates}</p>
+                    </div>
                   </div>
-                  {getStatusBadge(calc.payment_status)}
+                  <Badge variant={getStatusBadgeVariant(payment.status)}>
+                    {t(`owner.payments.status.${payment.status}`)}
+                  </Badge>
                 </div>
                 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <div className="text-center">
-                    <p className="text-xs text-muted-foreground">Ingresos Brutos</p>
-                    <p className="font-medium text-green-600">
-                      {formatCurrency(calc.gross_earnings)}
-                    </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">{t('owner.payments.gross_income')}</p>
+                    <p className="font-semibold text-green-600">{formatCurrency(payment.gross_earnings)}</p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-xs text-muted-foreground">Combustible</p>
-                    <p className="font-medium text-red-600">
-                      -{formatCurrency(calc.fuel_expenses)}
-                    </p>
+                  <div>
+                    <p className="text-muted-foreground">{t('owner.payments.fuel')}</p>
+                    <p className="font-semibold text-red-600">-{formatCurrency(Math.abs(payment.fuel_expenses))}</p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-xs text-muted-foreground">Deducciones</p>
-                    <p className="font-medium text-red-600">
-                      -{formatCurrency(calc.total_deductions)}
-                    </p>
+                  <div>
+                    <p className="text-muted-foreground">{t('owner.payments.deductions')}</p>
+                    <p className="font-semibold text-red-600">-{formatCurrency(Math.abs(payment.total_deductions))}</p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-xs text-muted-foreground">Pago Neto</p>
-                    <p className={`font-bold ${calc.net_payment >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {formatCurrency(calc.net_payment)}
+                  <div>
+                    <p className="text-muted-foreground">{t('owner.payments.net_payment')}</p>
+                    <p className={`font-bold ${payment.has_negative_balance ? 'text-red-600' : 'text-green-600'}`}>
+                      {formatCurrency(payment.net_payment)}
                     </p>
                   </div>
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
