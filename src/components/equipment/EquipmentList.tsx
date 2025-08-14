@@ -98,99 +98,110 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
   const displayEquipment = equipmentWithGeotab || equipment;
 
   return (
-    <div className="space-y-4 p-6">
+    <div className="space-y-6">
       {displayEquipment.map((item) => {
         const statusInfo = getStatusBadge(item.status);
         const nextExpiry = getNextExpiryDate(item);
         
         return (
-          <Card key={item.id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
+          <Card key={item.id} className="hover:shadow-md transition-all duration-200 border-l-4 border-l-primary/20">
+            <CardContent className="p-8">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-foreground">
+                  <div className="flex items-center gap-4 mb-6">
+                    <h3 className="text-xl font-semibold text-foreground">
                       {item.equipment_number}
                     </h3>
-                    <Badge variant={statusInfo.variant}>
+                    <Badge variant={statusInfo.variant} className="text-sm px-3 py-1">
                       {statusInfo.label}
                     </Badge>
-                    <Badge variant="outline">
+                    <Badge variant="outline" className="text-sm px-3 py-1">
                       {getEquipmentTypeLabel(item.equipment_type)}
                     </Badge>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
                     {/* Basic Info */}
-                    <div>
-                      <p><strong>{t("equipment.make", "Marca")}:</strong> {item.make || "N/A"}</p>
-                      <p><strong>{t("equipment.model", "Modelo")}:</strong> {item.model || "N/A"}</p>
-                      <p><strong>{t("equipment.year", "Año")}:</strong> {item.year || "N/A"}</p>
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-foreground mb-3">{t("equipment.basicInfo", "Información Básica")}</h4>
+                      <div className="space-y-2 text-muted-foreground">
+                        <p><span className="font-medium">{t("equipment.make", "Marca")}:</span> {item.make || "N/A"}</p>
+                        <p><span className="font-medium">{t("equipment.model", "Modelo")}:</span> {item.model || "N/A"}</p>
+                        <p><span className="font-medium">{t("equipment.year", "Año")}:</span> {item.year || "N/A"}</p>
+                      </div>
                     </div>
                     
                     {/* Vehicle Details */}
-                    <div>
-                      <p><strong>{t("equipment.licensePlate", "Placa")}:</strong> {item.license_plate || "N/A"}</p>
-                      <p><strong>{t("equipment.vin", "VIN")}:</strong> {item.vin_number ? item.vin_number.substring(0, 10) + "..." : "N/A"}</p>
-                      <p><strong>{t("equipment.mileage", "Kilometraje")}:</strong> {item.current_mileage ? `${item.current_mileage.toLocaleString()} km` : "N/A"}</p>
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-foreground mb-3">{t("equipment.vehicleDetails", "Detalles del Vehículo")}</h4>
+                      <div className="space-y-2 text-muted-foreground">
+                        <p><span className="font-medium">{t("equipment.licensePlate", "Placa")}:</span> {item.license_plate || "N/A"}</p>
+                        <p><span className="font-medium">{t("equipment.vin", "VIN")}:</span> {item.vin_number ? item.vin_number.substring(0, 10) + "..." : "N/A"}</p>
+                        <p><span className="font-medium">{t("equipment.mileage", "Kilometraje")}:</span> {item.current_mileage ? `${item.current_mileage.toLocaleString()} km` : "N/A"}</p>
+                      </div>
                     </div>
                     
                     {/* Expiry Info */}
-                    <div>
-                      {nextExpiry && (
-                        <div className="flex items-center gap-1 mb-2">
-                          <Calendar className="h-3 w-3" />
-                          <span className={nextExpiry.isExpiring ? "text-destructive font-medium" : ""}>
-                            <strong>{nextExpiry.type}:</strong> {new Date(nextExpiry.date!).toLocaleDateString()}
-                            {nextExpiry.isExpiring && " ⚠️"}
-                          </span>
-                        </div>
-                      )}
-                      <p className="text-xs">
-                        {t("equipment.createdAt", "Creado")}: {formatDistanceToNow(new Date(item.created_at), { 
-                          addSuffix: true, 
-                          locale: es 
-                        })}
-                      </p>
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-foreground mb-3">{t("equipment.expiryInfo", "Vencimientos")}</h4>
+                      <div className="space-y-2">
+                        {nextExpiry && (
+                          <div className="flex items-center gap-2 p-2 rounded-md bg-muted/30">
+                            <Calendar className="h-4 w-4" />
+                            <div className={nextExpiry.isExpiring ? "text-destructive font-medium" : "text-muted-foreground"}>
+                              <p className="text-xs font-medium">{nextExpiry.type}</p>
+                              <p className="text-sm">{new Date(nextExpiry.date!).toLocaleDateString()}</p>
+                              {nextExpiry.isExpiring && <p className="text-xs text-destructive">⚠️ Próximo a vencer</p>}
+                            </div>
+                          </div>
+                        )}
+                        <p className="text-xs text-muted-foreground mt-4">
+                          {t("equipment.createdAt", "Creado")}: {formatDistanceToNow(new Date(item.created_at), { 
+                            addSuffix: true, 
+                            locale: es 
+                          })}
+                        </p>
+                      </div>
                     </div>
                     
-                    {/* Location Status - New Column */}
-                    <div>
+                    {/* Location Status */}
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-foreground mb-3">{t("equipment.location", "Ubicación")}</h4>
                       <EquipmentLocationStatus equipment={item} />
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-2 ml-4">
+                <div className="flex items-start gap-2 ml-6">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
+                      <Button variant="ghost" size="sm" className="h-10 w-10">
+                        <MoreHorizontal className="h-5 w-5" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Eye className="mr-2 h-4 w-4" />
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem className="py-2">
+                        <Eye className="mr-3 h-4 w-4" />
                         {t("common.view", "Ver detalles")}
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Edit className="mr-2 h-4 w-4" />
+                      <DropdownMenuItem className="py-2">
+                        <Edit className="mr-3 h-4 w-4" />
                         {t("common.edit", "Editar")}
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <FileText className="mr-2 h-4 w-4" />
+                      <DropdownMenuItem className="py-2">
+                        <FileText className="mr-3 h-4 w-4" />
                         {t("equipment.documents", "Documentos")}
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <MapPin className="mr-2 h-4 w-4" />
+                      <DropdownMenuItem className="py-2">
+                        <MapPin className="mr-3 h-4 w-4" />
                         {t("equipment.location", "Ubicación")}
                       </DropdownMenuItem>
                       <DropdownMenuItem 
-                        className="text-destructive"
+                        className="text-destructive py-2"
                         onClick={() => handleDeleteClick(item)}
                         disabled={isDeleting}
                       >
-                        <Trash2 className="mr-2 h-4 w-4" />
+                        <Trash2 className="mr-3 h-4 w-4" />
                         {t("common.delete", "Eliminar")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
