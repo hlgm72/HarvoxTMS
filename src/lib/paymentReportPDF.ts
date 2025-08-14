@@ -481,7 +481,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         align: 'right'
       });
 
-      // Pickup y Delivery
+      // Pickup y Delivery en líneas separadas
       const pickupStop = load.load_stops?.find(stop => stop.stop_type === 'pickup');
       const deliveryStop = load.load_stops?.find(stop => stop.stop_type === 'delivery');
       
@@ -490,16 +490,23 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const deliveryCompany = deliveryStop?.company_name || '';
       const deliveryLocation = deliveryStop ? `${deliveryStop.city}, ${deliveryStop.state}` : '';
       
+      // Texto de pickup en una línea
       const pickupText = `PU: ${new Date(load.pickup_date).toLocaleDateString('en-US')} ${pickupCompany} (${pickupLocation})`;
-      const deliveryText = `DEL: ${new Date(load.delivery_date).toLocaleDateString('en-US')} ${deliveryCompany} (${deliveryLocation})`;
+      addText(pickupText, margin + 5, currentY + 5, {
+        fontSize: 9,
+        fontStyle: 'normal',
+        color: colors.darkGray
+      });
       
-      addText(` - ${pickupText} → ${deliveryText}`, margin + stopsTextWidth, currentY + 5, {
+      // Texto de delivery en la línea siguiente
+      const deliveryText = `DEL: ${new Date(load.delivery_date).toLocaleDateString('en-US')} ${deliveryCompany} (${deliveryLocation})`;
+      addText(deliveryText, margin + 5, currentY + 12, {
         fontSize: 9,
         fontStyle: 'normal',
         color: colors.darkGray
       });
 
-      currentY += 15; // Reducido de 20 a 15
+      currentY += 22; // Aumentado para acomodar las dos líneas de pickup y delivery
     });
   }
 
