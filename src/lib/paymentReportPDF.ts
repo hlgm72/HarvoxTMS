@@ -44,6 +44,12 @@ interface PaymentReportData {
     dispatching_percentage?: number;
     leasing_percentage?: number;
     stops?: number;
+    load_stops?: Array<{
+      stop_type: string;
+      company_name: string;
+      city: string;
+      state: string;
+    }>;
   }>;
   fuelExpenses?: Array<{
     transaction_date: string;
@@ -471,8 +477,16 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       });
 
       // Pickup y Delivery
-      const pickupText = `PU: ${new Date(load.pickup_date).toLocaleDateString('en-US')}`;
-      const deliveryText = `DEL: ${new Date(load.delivery_date).toLocaleDateString('en-US')}`;
+      const pickupStop = load.load_stops?.find(stop => stop.stop_type === 'pickup');
+      const deliveryStop = load.load_stops?.find(stop => stop.stop_type === 'delivery');
+      
+      const pickupCompany = pickupStop?.company_name || '';
+      const pickupLocation = pickupStop ? `${pickupStop.city}, ${pickupStop.state}` : '';
+      const deliveryCompany = deliveryStop?.company_name || '';
+      const deliveryLocation = deliveryStop ? `${deliveryStop.city}, ${deliveryStop.state}` : '';
+      
+      const pickupText = `PU: ${new Date(load.pickup_date).toLocaleDateString('en-US')} ${pickupCompany} (${pickupLocation})`;
+      const deliveryText = `DEL: ${new Date(load.delivery_date).toLocaleDateString('en-US')} ${deliveryCompany} (${deliveryLocation})`;
       
       addText(` - ${pickupText} → ${deliveryText}`, margin + stopsTextWidth, currentY + 5, {
         fontSize: 8,

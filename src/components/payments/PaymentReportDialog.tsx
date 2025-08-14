@@ -170,7 +170,13 @@ export function PaymentReportDialog({
           delivery_date,
           total_amount,
           client_id,
-          customer_name
+          customer_name,
+          load_stops(
+            stop_type,
+            company_name,
+            city,
+            state
+          )
         `)
         .eq('driver_user_id', calculation.driver_user_id)
         .gte('pickup_date', calculation.company_payment_periods.period_start_date)
@@ -281,7 +287,8 @@ export function PaymentReportDialog({
           pickup_date: load.pickup_date,
           delivery_date: load.delivery_date,
           client_name: clientName,
-          total_amount: load.total_amount
+          total_amount: load.total_amount,
+          load_stops: load.load_stops || []
         };
       }),
       fuelExpenses: fuelExpenses.map(expense => ({
