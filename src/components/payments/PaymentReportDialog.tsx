@@ -165,6 +165,7 @@ export function PaymentReportDialog({
         .select(`
           id,
           load_number,
+          po_number,
           pickup_date,
           delivery_date,
           total_amount,
@@ -276,6 +277,7 @@ export function PaymentReportDialog({
         
         return {
           load_number: load.load_number,
+          po_number: load.po_number,
           pickup_date: load.pickup_date,
           delivery_date: load.delivery_date,
           client_name: clientName,
