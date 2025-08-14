@@ -587,19 +587,13 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   });
   currentY += 15;
 
-  // Dos columnas de gastos
-  const expenseColWidth = (pageWidth - margin*2 - 10) / 2;
-  
-  // Columna 1: Deductions
-  const expense1X = margin;
-  const expense1Y = currentY;
-  
+  // Sección única de deducciones
   const redRgb = hexToRgb(colors.lightRed);
   doc.setFillColor(redRgb[0], redRgb[1], redRgb[2]);
-  doc.rect(expense1X, expense1Y - 5, expenseColWidth, 8, 'F');
+  doc.rect(margin, currentY - 5, pageWidth - margin*2, 8, 'F');
   
   const totalDeductions = data.deductions?.reduce((sum, d) => sum + d.amount, 0) || 0;
-  addText(`Deductions ($${totalDeductions.toFixed(2)})`, expense1X + 2, expense1Y, {
+  addText(`Deductions (${formatCurrency(totalDeductions)})`, margin + 2, currentY, {
     fontSize: 10,
     fontStyle: 'bold',
     color: colors.darkGray
@@ -609,12 +603,18 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   if (data.deductions && data.deductions.length > 0) {
     data.deductions.forEach(deduction => {
-      addText(deduction.description, expense1X + 2, currentY, {
+      // Verificar si necesitamos nueva página
+      if (currentY > pageHeight - footerSpace) {
+        doc.addPage();
+        currentY = margin;
+      }
+      
+      addText(deduction.description, margin + 2, currentY, {
         fontSize: 9,
         color: colors.gray
       });
       
-      addText(formatCurrency(-deduction.amount), expense1X + expenseColWidth - 2, currentY, {
+      addText(formatCurrency(-deduction.amount), pageWidth - margin - 2, currentY, {
         fontSize: 9,
         color: colors.danger,
         align: 'right'
@@ -624,41 +624,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     });
   }
 
-  // Columna 2: Weekly Expenses
-  const expense2X = margin + expenseColWidth + 10;
-  let expense2Y = expense1Y;
-  
-  const redRgb2 = hexToRgb(colors.lightRed);
-  doc.setFillColor(redRgb2[0], redRgb2[1], redRgb2[2]);
-  doc.rect(expense2X, expense2Y - 5, expenseColWidth, 8, 'F');
-  
-  const totalWeekly = data.weeklyExpenses?.reduce((sum, w) => sum + w.amount, 0) || 0;
-  addText(`Weekly Expenses ($${totalWeekly.toFixed(2)})`, expense2X + 2, expense2Y, {
-    fontSize: 10,
-    fontStyle: 'bold',
-    color: colors.darkGray
-  });
-  
-  expense2Y += 10;
-  
-  if (data.weeklyExpenses && data.weeklyExpenses.length > 0) {
-    data.weeklyExpenses.forEach(expense => {
-      addText(expense.description, expense2X + 2, expense2Y, {
-        fontSize: 9,
-        color: colors.gray
-      });
-      
-      addText(formatCurrency(-expense.amount), expense2X + expenseColWidth - 2, expense2Y, {
-        fontSize: 9,
-        color: colors.danger,
-        align: 'right'
-      });
-      
-      expense2Y += 6;
-    });
-  }
-
-  currentY = Math.max(currentY, expense2Y) + 15;
+  currentY += 15;
 
   // === FUEL PURCHASES ===
   const grayRgb = hexToRgb(colors.lightGray);
