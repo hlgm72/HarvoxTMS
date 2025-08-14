@@ -136,9 +136,9 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label htmlFor="firstName">Nombre *</Label>
               <Input
                 id="firstName"
@@ -148,7 +148,7 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
               />
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label htmlFor="lastName">Apellido *</Label>
               <Input
                 id="lastName"
@@ -159,7 +159,7 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Label htmlFor="email">Email *</Label>
             <Input
               id="email"
@@ -170,7 +170,7 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Label>Fecha de contratación *</Label>
             <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
               <PopoverTrigger asChild>

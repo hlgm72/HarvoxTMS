@@ -175,7 +175,7 @@ export default function Drivers() {
           }
         />
         <div className="p-2 md:p-4 md:pr-20 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {[1, 2, 3].map((i) => (
               <DriverSkeleton key={i} />
             ))}
@@ -269,7 +269,7 @@ export default function Drivers() {
           </TabsList>
           
           <TabsContent value="active" className="space-y-6 mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {allDrivers.map((driver) => {
                 const DriverCard = () => {
                   const { data: assignedEquipment = [], isLoading: equipmentLoading } = useDriverEquipment(driver.user_id);

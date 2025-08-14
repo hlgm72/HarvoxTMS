@@ -73,21 +73,21 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
 
   return (
     <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {clients.map((client) => {
           console.log('🔍 Cliente en grid:', client.name, 'MC:', client.mc_number, 'DOT:', client.dot_number);
           return (
-          <Card key={client.id} className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
+          <Card key={client.id} className="hover:shadow-md transition-shadow duration-200">
+            <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-8 w-8">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10">
                     <AvatarImage src={client.logo_url} alt={client.name} />
-                    <AvatarFallback className="text-xs">
+                    <AvatarFallback className="text-sm font-medium">
                       {getInitials(client.alias || client.name)}
                     </AvatarFallback>
                   </Avatar>
-                  <Badge variant={client.is_active ? "default" : "secondary"}>
+                  <Badge variant={client.is_active ? "default" : "secondary"} className="text-xs">
                     {client.is_active ? "Activo" : "Inactivo"}
                   </Badge>
                 </div>
