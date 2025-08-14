@@ -276,6 +276,39 @@ export type Database = {
           },
         ]
       }
+      company_data_access_log: {
+        Row: {
+          access_type: string
+          accessed_at: string
+          accessed_by: string
+          action: string
+          company_id: string
+          id: string
+          ip_address: unknown | null
+          user_agent: string | null
+        }
+        Insert: {
+          access_type: string
+          accessed_at?: string
+          accessed_by: string
+          action: string
+          company_id: string
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+        }
+        Update: {
+          access_type?: string
+          accessed_at?: string
+          accessed_by?: string
+          action?: string
+          company_id?: string
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       company_documents: {
         Row: {
           archived_at: string | null
@@ -429,6 +462,62 @@ export type Database = {
             foreignKeyName: "fk_company_equipment_company_id"
             columns: ["company_id"]
             isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_financial_settings: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          default_dispatching_percentage: number | null
+          default_factoring_percentage: number | null
+          default_leasing_percentage: number | null
+          default_payment_frequency: string | null
+          ein: string | null
+          id: string
+          payment_cycle_start_day: number | null
+          payment_day: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          default_dispatching_percentage?: number | null
+          default_factoring_percentage?: number | null
+          default_leasing_percentage?: number | null
+          default_payment_frequency?: string | null
+          ein?: string | null
+          id?: string
+          payment_cycle_start_day?: number | null
+          payment_day?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          default_dispatching_percentage?: number | null
+          default_factoring_percentage?: number | null
+          default_leasing_percentage?: number | null
+          default_payment_frequency?: string | null
+          ein?: string | null
+          id?: string
+          payment_cycle_start_day?: number | null
+          payment_day?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_financial_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
@@ -3291,6 +3380,14 @@ export type Database = {
           period_id: string
         }
         Returns: Json
+      }
+      log_company_data_access: {
+        Args: {
+          access_type_param: string
+          action_param?: string
+          company_id_param: string
+        }
+        Returns: undefined
       }
       log_deployment_event: {
         Args: {
