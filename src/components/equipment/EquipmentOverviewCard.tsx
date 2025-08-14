@@ -57,33 +57,33 @@ export function EquipmentOverviewCard({
         <div className="text-xs text-muted-foreground">Equipment Dashboard</div>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-5">
         {/* Main stats */}
         <div className="grid grid-cols-3 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-foreground">{totalEquipment}</div>
+          <div className="text-center p-2 bg-muted/30 rounded-lg">
+            <div className="text-xl font-bold text-foreground">{totalEquipment}</div>
             <div className="text-xs text-muted-foreground">Total</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">{activeCount}</div>
+          <div className="text-center p-2 bg-green-50 dark:bg-green-950/20 rounded-lg">
+            <div className="text-xl font-bold text-green-600">{activeCount}</div>
             <div className="text-xs text-muted-foreground">Activos</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-warning">{maintenanceCount}</div>
+          <div className="text-center p-2 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
+            <div className="text-xl font-bold text-warning">{maintenanceCount}</div>
             <div className="text-xs text-muted-foreground">Mantenimiento</div>
           </div>
         </div>
         
         {/* Equipment list */}
-        <div className="space-y-2 pt-2">
+        <div className="space-y-2">
           {equipment.slice(0, 4).map((item, index) => (
-            <div key={item.id} className="flex items-center justify-between p-2 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors">
-              <div className="flex items-center gap-2">
+            <div key={item.id} className="flex items-center justify-between p-3 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors">
+              <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                   <Truck className="h-4 w-4 text-green-600" />
                 </div>
                 <div>
-                  <div className="text-xs font-medium">{item.equipmentNumber}</div>
+                  <div className="text-sm font-medium">{item.equipmentNumber}</div>
                   <div className="text-xs text-muted-foreground">
                     {capitalizeWords(item.make)} {capitalizeWords(item.model)}
                   </div>

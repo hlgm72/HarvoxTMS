@@ -85,12 +85,12 @@ export default function Equipment() {
         }
       />
       
-      <div className="container mx-auto p-2 md:p-4 space-y-6">
+      <div className="container mx-auto p-2 md:p-4 space-y-8">
         {/* Stats Cards */}
         <EquipmentStats equipment={equipment} />
 
         {/* Advanced Equipment Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <EquipmentOverviewCard
             totalEquipment={equipment?.length || 0}
             activeCount={activeCount}

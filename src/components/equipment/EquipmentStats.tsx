@@ -61,19 +61,19 @@ export function EquipmentStats({ equipment = [] }: EquipmentStatsProps) {
   ];
 
   return (
-    <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
       {statCards.map((stat, index) => (
-        <Card key={index}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card key={index} className="hover:shadow-md transition-all duration-200">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-xs sm:text-sm font-medium">
               {stat.title}
             </CardTitle>
-            <stat.icon className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+            <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-lg sm:text-2xl font-bold">{stat.value}</div>
+          <CardContent className="pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{stat.value}</div>
             {stat.color === "red" && stat.value > 0 && (
-              <Badge variant="destructive" className="mt-2">
+              <Badge variant="destructive" className="mt-3 text-xs">
                 <AlertTriangle className="w-3 h-3 mr-1" />
                 {t("equipment.stats.attention", "Requiere atención")}
               </Badge>

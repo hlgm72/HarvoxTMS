@@ -68,15 +68,15 @@ export function EquipmentLocationCard({
         <div className="text-xs text-muted-foreground">{t('tracking.subtitle')}</div>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-5">
         {/* Status summary */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="text-center p-2 bg-green-50 dark:bg-green-950/20 rounded-lg">
-            <div className="text-lg font-bold text-green-600">{onlineCount}</div>
+          <div className="text-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
+            <div className="text-xl font-bold text-green-600">{onlineCount}</div>
             <div className="text-xs text-muted-foreground">{t('tracking.stats.online')}</div>
           </div>
-          <div className="text-center p-2 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-            <div className="text-lg font-bold text-blue-600">{movingCount}</div>
+          <div className="text-center p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+            <div className="text-xl font-bold text-blue-600">{movingCount}</div>
             <div className="text-xs text-muted-foreground">{t('tracking.stats.moving')}</div>
           </div>
         </div>
@@ -95,14 +95,14 @@ export function EquipmentLocationCard({
         </div>
         
         {/* Recent locations */}
-        <div className="space-y-2">
-          <div className="text-xs font-medium text-foreground mb-2">{t('tracking.recent_locations')}</div>
+        <div className="space-y-3">
+          <div className="text-sm font-medium text-foreground">{t('tracking.recent_locations')}</div>
           {locations.slice(0, 3).map((location, index) => (
-            <div key={location.id} className="flex items-center justify-between p-2 rounded-md bg-muted/30">
-              <div className="flex items-center gap-2">
+            <div key={location.id} className="flex items-center justify-between p-3 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors">
+              <div className="flex items-center gap-3">
                 {getStatusIcon(location.status)}
                 <div>
-                  <div className="text-xs font-medium">{location.equipmentNumber}</div>
+                  <div className="text-sm font-medium">{location.equipmentNumber}</div>
                   <div className="text-xs text-muted-foreground truncate max-w-[120px]">
                     {location.location}
                   </div>
