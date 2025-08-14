@@ -5,7 +5,7 @@
       "description": "La página que buscas no existe o ha sido movida. No te preocupes, te ayudamos a encontrar lo que necesitas.",
       "buttons": {
         "home": "Ir al Inicio",
-        "dashboard": "Dashboard"
+        "dashboard": "Panel de Control"
       },
       "search_suggestion": "¿Buscabas algo específico? Intenta desde el menú principal"
     },
@@ -52,7 +52,7 @@
         "table": "Tabla",
         "cards": "Tarjetas",
         "list": "Lista",
-        "dashboard": "Dashboard"
+        "dashboard": "Panel de Control"
       },
       "stats": {
         "total_companies": "Total de Empresas",
@@ -120,7 +120,7 @@
       }
     },
     "superadmin": {
-      "title": "Dashboard Super Admin",
+      "title": "Panel Super Admin",
       "description": "Administración y supervisión del sistema",
       "tabs": {
         "overview": "Resumen",
@@ -158,7 +158,7 @@
   "navigation": {
     "system_management": "Gestión del Sistema",
     "navigation": "Navegación",
-    "dashboard": "Dashboard",
+    "dashboard": "Panel de Control",
     "companies": "Empresas",
     "users": "Usuarios",
     "system_health": "Salud del Sistema",

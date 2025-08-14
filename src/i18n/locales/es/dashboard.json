@@ -1,9 +1,9 @@
 
 {
   "owner": {
-    "title": "Dashboard Ejecutivo",
+    "title": "Panel Ejecutivo",
     "tabs": {
-      "overview": "Dashboard",
+      "overview": "Panel Principal",
       "drivers": "Conductores", 
       "fleet": "Seguimiento de Flota",
       "payments": "Pagos",
