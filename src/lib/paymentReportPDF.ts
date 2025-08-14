@@ -413,9 +413,9 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   addColoredBox(boxesStartX + boxWidth + 5, currentY, boxWidth, boxHeight, colors.lightBlue, colors.darkGray,
     'Other Earnings', formatCurrency(data.period.other_income));
   
-  // Total Deductions (Rojo)
+  // Period Deductions (Rojo)
   addColoredBox(boxesStartX + (boxWidth + 5) * 2, currentY, boxWidth, boxHeight, colors.lightRed, colors.darkGray,
-    'Total Deductions', formatCurrency(-data.period.total_deductions));
+    'Period Deductions', formatCurrency(-data.period.total_deductions));
   
   // Fuel Expenses (Naranja)
   addColoredBox(boxesStartX + (boxWidth + 5) * 3, currentY, boxWidth, boxHeight, colors.lightOrange, colors.darkGray,
@@ -583,21 +583,13 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   currentY += 15;
 
-  // === TOTAL EXPENSES ===
-  addText('Total Expenses', margin, currentY, {
-    fontSize: 12,
-    fontStyle: 'bold',
-    color: colors.darkGray
-  });
-  currentY += 15;
-
   // Sección única de deducciones
   const redRgb = hexToRgb(colors.lightRed);
   doc.setFillColor(redRgb[0], redRgb[1], redRgb[2]);
   doc.rect(margin, currentY - 5, pageWidth - margin*2, 8, 'F');
   
   const totalDeductions = data.deductions?.reduce((sum, d) => sum + d.amount, 0) || 0;
-  addText(`Deductions (${formatCurrency(totalDeductions)})`, margin + 2, currentY, {
+  addText(`Total Deductions (${formatCurrency(totalDeductions)})`, margin + 2, currentY, {
     fontSize: 10,
     fontStyle: 'bold',
     color: colors.darkGray
