@@ -34,7 +34,6 @@ import { useFleetNotifications } from '@/components/notifications';
 import { useAuth } from '@/hooks/useAuth';
 import { getRoleLabel } from '@/lib/roleUtils';
 import { formatDistance } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { deleteUserCompletely } from '@/utils/deleteTestUser';
 
 interface PendingInvitation {
@@ -264,8 +263,7 @@ export function PendingInvitationsSection({
   const getTimeAgo = (dateString: string) => {
     try {
       return formatDistance(new Date(dateString), new Date(), { 
-        addSuffix: true, 
-        locale: es 
+        addSuffix: true
       });
     } catch (error) {
       return 'Invalid date';
