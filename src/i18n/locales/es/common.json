@@ -178,6 +178,25 @@
         "next_periods": "Próximos {{count}} períodos",
         "show_preview": "Mostrar Vista Previa",
         "hide_preview": "Ocultar Vista Previa"
+      },
+      "logo": {
+        "title": "Logo de la Empresa",
+        "alt_text": "Logo de {{companyName}}",
+        "change_logo": "Cambiar logo",
+        "upload_logo": "Subir logo",
+        "remove_logo": "Eliminar logo",
+        "uploading": "Subiendo...",
+        "removing": "Eliminando...",
+        "supported_formats": "Formatos soportados: JPG, PNG, GIF. Tamaño máximo: 5MB",
+        "upload_success": "Éxito",
+        "upload_success_desc": "Logo de la empresa actualizado correctamente",
+        "remove_success": "Éxito",
+        "remove_success_desc": "Logo de la empresa eliminado correctamente",
+        "error": "Error",
+        "invalid_file": "Por favor selecciona un archivo de imagen válido",
+        "file_too_large": "El archivo es demasiado grande. Máximo 5MB",
+        "upload_error": "Error al subir el logo: {{error}}",
+        "remove_error": "Error al eliminar el logo: {{error}}"
       }
     }
   }

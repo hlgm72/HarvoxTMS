@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Camera, Loader2, Building, X } from 'lucide-react';
 import { useFleetNotifications } from '@/components/notifications';
+import { useTranslation } from 'react-i18next';
 
 interface CompanyLogoUploadProps {
   companyId: string;
@@ -22,6 +23,7 @@ export function CompanyLogoUpload({
   const [uploading, setUploading] = useState(false);
   const [removing, setRemoving] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation('common');
 
   const uploadLogo = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -33,8 +35,8 @@ export function CompanyLogoUpload({
       // Validate file type
       if (!file.type.startsWith('image/')) {
         showError(
-          "Error",
-          "Por favor selecciona un archivo de imagen válido"
+          t('company.logo.error'),
+          t('company.logo.invalid_file')
         );
         return;
       }
@@ -42,8 +44,8 @@ export function CompanyLogoUpload({
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
         showError(
-          "Error",
-          "El archivo es demasiado grande. Máximo 5MB"
+          t('company.logo.error'),
+          t('company.logo.file_too_large')
         );
         return;
       }
@@ -84,15 +86,15 @@ export function CompanyLogoUpload({
       onLogoUpdate(publicUrl);
       
       showSuccess(
-        "Éxito",
-        "Logo de la empresa actualizado correctamente"
+        t('company.logo.upload_success'),
+        t('company.logo.upload_success_desc')
       );
 
     } catch (error: any) {
       console.error('Error uploading logo:', error);
       showError(
-        "Error",
-        "Error al subir el logo: " + error.message
+        t('company.logo.error'),
+        t('company.logo.upload_error', { error: error.message })
       );
     } finally {
       setUploading(false);
@@ -126,15 +128,15 @@ export function CompanyLogoUpload({
       onLogoUpdate(null);
       
       showSuccess(
-        "Éxito",
-        "Logo de la empresa eliminado correctamente"
+        t('company.logo.remove_success'),
+        t('company.logo.remove_success_desc')
       );
 
     } catch (error: any) {
       console.error('Error removing logo:', error);
       showError(
-        "Error",
-        "Error al eliminar el logo: " + error.message
+        t('company.logo.error'),
+        t('company.logo.remove_error', { error: error.message })
       );
     } finally {
       setRemoving(false);
@@ -143,7 +145,7 @@ export function CompanyLogoUpload({
 
   return (
     <div className="space-y-4">
-      <Label>Logo de la Empresa</Label>
+      <Label>{t('company.logo.title')}</Label>
       
       <div className="flex items-start space-x-4">
         {/* Logo preview */}
@@ -152,7 +154,7 @@ export function CompanyLogoUpload({
             {currentLogoUrl ? (
               <img 
                 src={currentLogoUrl} 
-                alt={`Logo de ${companyName}`}
+                alt={t('company.logo.alt_text', { companyName: companyName })}
                 className="w-full h-full object-contain"
               />
             ) : (
@@ -165,7 +167,7 @@ export function CompanyLogoUpload({
                 <div className="flex flex-col items-center space-y-1">
                   <Loader2 className="h-4 w-4 text-white animate-spin" />
                   <span className="text-xs text-white font-medium">
-                    {uploading ? 'Subiendo...' : 'Eliminando...'}
+                    {uploading ? t('company.logo.uploading') : t('company.logo.removing')}
                   </span>
                 </div>
               </div>
@@ -202,12 +204,12 @@ export function CompanyLogoUpload({
               {uploading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Subiendo...
+                  {t('company.logo.uploading')}
                 </>
               ) : (
                 <>
                   <Camera className="h-4 w-4 mr-2" />
-                  {currentLogoUrl ? 'Cambiar logo' : 'Subir logo'}
+                  {currentLogoUrl ? t('company.logo.change_logo') : t('company.logo.upload_logo')}
                 </>
               )}
             </Button>
@@ -224,19 +226,19 @@ export function CompanyLogoUpload({
               {removing ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Eliminando...
+                  {t('company.logo.removing')}
                 </>
               ) : (
                 <>
                   <X className="h-4 w-4 mr-2" />
-                  Eliminar logo
+                  {t('company.logo.remove_logo')}
                 </>
               )}
             </Button>
           )}
 
           <p className="text-xs text-muted-foreground">
-            Formatos soportados: JPG, PNG, GIF. Tamaño máximo: 5MB
+            {t('company.logo.supported_formats')}
           </p>
         </div>
       </div>

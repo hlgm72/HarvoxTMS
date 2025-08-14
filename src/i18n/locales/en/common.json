@@ -178,6 +178,25 @@
         "next_periods": "Next {{count}} periods",
         "show_preview": "Show Preview",
         "hide_preview": "Hide Preview"
+      },
+      "logo": {
+        "title": "Company Logo",
+        "alt_text": "Logo of {{companyName}}",
+        "change_logo": "Change logo",
+        "upload_logo": "Upload logo",
+        "remove_logo": "Remove logo",
+        "uploading": "Uploading...",
+        "removing": "Removing...",
+        "supported_formats": "Supported formats: JPG, PNG, GIF. Maximum size: 5MB",
+        "upload_success": "Success",
+        "upload_success_desc": "Company logo updated successfully",
+        "remove_success": "Success", 
+        "remove_success_desc": "Company logo removed successfully",
+        "error": "Error",
+        "invalid_file": "Please select a valid image file",
+        "file_too_large": "File is too large. Maximum 5MB",
+        "upload_error": "Error uploading logo: {{error}}",
+        "remove_error": "Error removing logo: {{error}}"
       }
     }
   }
