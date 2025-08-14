@@ -83,7 +83,7 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {equipment.map((item) => {
         const statusInfo = getStatusBadge(item.status);
         const hasExpiring = hasExpiringDocuments(item);
@@ -91,7 +91,7 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
         return (
           <Card key={item.id} className="hover:shadow-lg transition-all duration-200 relative group">
             {hasExpiring && (
-              <div className="absolute top-2 right-2 z-10">
+              <div className="absolute top-3 right-3 z-10">
                 <Badge variant="destructive" className="h-6 w-6 p-0 rounded-full flex items-center justify-center">
                   <AlertTriangle className="h-3 w-3" />
                 </Badge>
@@ -155,13 +155,13 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
             </CardHeader>
             
             <CardContent className="space-y-3">
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between">
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between py-1">
                   <span className="text-muted-foreground">{t("equipment.licensePlate", "Placa")}:</span>
                   <span className="font-medium">{item.license_plate || "N/A"}</span>
                 </div>
                 
-                <div className="flex justify-between">
+                <div className="flex justify-between py-1">
                   <span className="text-muted-foreground">{t("equipment.vin", "VIN")}:</span>
                   <span className="font-medium truncate ml-2" title={item.vin_number}>
                     {item.vin_number ? `***${item.vin_number.slice(-4)}` : "N/A"}
@@ -169,7 +169,7 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
                 </div>
                 
                 {item.current_mileage && (
-                  <div className="flex justify-between">
+                  <div className="flex justify-between py-1">
                     <span className="text-muted-foreground">{t("equipment.mileage", "Kilometraje")}:</span>
                     <span className="font-medium">{item.current_mileage.toLocaleString()} km</span>
                   </div>
@@ -177,9 +177,9 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
               </div>
               
               {hasExpiring && (
-                <div className="bg-destructive/10 border border-destructive/20 rounded-md p-2">
-                  <div className="flex items-center gap-1 text-destructive text-xs">
-                    <Calendar className="h-3 w-3" />
+                <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3 mt-4">
+                  <div className="flex items-center gap-2 text-destructive text-sm">
+                    <Calendar className="h-4 w-4" />
                     <span className="font-medium">
                       {t("equipment.expiringDocuments", "Documentos por vencer")}
                     </span>
@@ -187,7 +187,7 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
                 </div>
               )}
               
-              <div className="text-xs text-muted-foreground pt-2 border-t">
+              <div className="text-xs text-muted-foreground pt-4 border-t mt-4">
                 {t("equipment.createdAt", "Creado")}: {formatDistanceToNow(new Date(item.created_at), { 
                   addSuffix: true, 
                   locale: es 
