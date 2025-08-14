@@ -452,15 +452,24 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         });
       }
       
-      const stopsText = `(Stops: ${load.stops || 2} Total)`;
-      addText(stopsText, margin, currentY + 5, {
+      // Pickup y Delivery
+      const pickupStop = load.load_stops?.find(stop => stop.stop_type === 'pickup');
+      const deliveryStop = load.load_stops?.find(stop => stop.stop_type === 'delivery');
+      
+      const pickupCompany = pickupStop?.company_name || '';
+      const pickupLocation = pickupStop ? `${pickupStop.city}, ${pickupStop.state}` : '';
+      const deliveryCompany = deliveryStop?.company_name || '';
+      const deliveryLocation = deliveryStop ? `${deliveryStop.city}, ${deliveryStop.state}` : '';
+      
+      const pickupText = `PU: ${new Date(load.pickup_date).toLocaleDateString('en-US')} ${pickupCompany} (${pickupLocation})`;
+      const deliveryText = `DEL: ${new Date(load.delivery_date).toLocaleDateString('en-US')} ${deliveryCompany} (${deliveryLocation})`;
+      
+      // Usar el mismo formato que el texto de "Stops" y "Total" para toda la línea
+      const stopsWithDestinationsText = `(Stops: ${load.stops || 2} Total) - ${pickupText} → ${deliveryText}`;
+      addText(stopsWithDestinationsText, margin, currentY + 5, {
         fontSize: 9,
         color: colors.darkGray
       });
-
-      // Calcular posición para el texto de pickup/delivery
-      doc.setFontSize(9);
-      const stopsTextWidth = doc.getTextWidth(stopsText);
 
       // Porcentajes y monto (derecha)
       const percentages = [];
@@ -474,24 +483,6 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         fontStyle: 'bold',
         color: colors.darkGray,
         align: 'right'
-      });
-
-      // Pickup y Delivery
-      const pickupStop = load.load_stops?.find(stop => stop.stop_type === 'pickup');
-      const deliveryStop = load.load_stops?.find(stop => stop.stop_type === 'delivery');
-      
-      const pickupCompany = pickupStop?.company_name || '';
-      const pickupLocation = pickupStop ? `${pickupStop.city}, ${pickupStop.state}` : '';
-      const deliveryCompany = deliveryStop?.company_name || '';
-      const deliveryLocation = deliveryStop ? `${deliveryStop.city}, ${deliveryStop.state}` : '';
-      
-      const pickupText = `PU: ${new Date(load.pickup_date).toLocaleDateString('en-US')} ${pickupCompany} (${pickupLocation})`;
-      const deliveryText = `DEL: ${new Date(load.delivery_date).toLocaleDateString('en-US')} ${deliveryCompany} (${deliveryLocation})`;
-      
-      addText(` - ${pickupText} → ${deliveryText}`, margin + stopsTextWidth, currentY + 5, {
-        fontSize: 9,
-        fontStyle: 'normal',
-        color: colors.darkGray
       });
 
       currentY += 15; // Reducido de 20 a 15
