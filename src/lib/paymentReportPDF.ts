@@ -211,11 +211,11 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   };
 
   // === HEADER EN TRES COLUMNAS ===
-  currentY = 10;
+  currentY = 12;
   
   // Agregar fondo gris claro con esquinas redondeadas y borde para la cabecera
   const headerHeight = 28;
-  addRoundedBox(margin - 5, currentY - 7, pageWidth - margin*2 + 10, headerHeight, colors.lightGray, 5, colors.border);
+  addRoundedBox(margin - 5, currentY - 7, pageWidth - margin*2 + 10, headerHeight, colors.lightGray, 2, colors.border);
   
   // Definir columnas
   const colWidth = (pageWidth - margin*2) / 3;
