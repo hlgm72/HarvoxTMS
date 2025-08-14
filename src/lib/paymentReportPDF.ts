@@ -726,7 +726,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   // === PIE DE PÁGINA ===
   const addFooter = (pageNumber: number, totalPages: number) => {
-    const footerY = pageHeight - 20;
+    const footerY = pageHeight - 12; // Mismo margen que la cabecera (12)
     const footerHeight = 12;
     
     // Contenedor del pie de página con mismo estilo que la cabecera
