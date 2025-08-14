@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -2873,7 +2873,7 @@ export type Database = {
         Returns: Json
       }
       archive_document_with_validation: {
-        Args: { document_id_param: string; archive_reason?: string }
+        Args: { archive_reason?: string; document_id_param: string }
         Returns: Json
       }
       archive_old_loads: {
@@ -2910,21 +2910,21 @@ export type Database = {
           driver_user_id_param: string
         }
         Returns: {
-          gross_earnings: number
           fuel_expenses: number
-          total_deductions: number
+          gross_earnings: number
           other_income: number
+          total_deductions: number
         }[]
       }
       calculate_fuel_summary_for_period: {
         Args: { period_id: string }
         Returns: {
-          total_gallons: number
-          total_amount: number
-          average_price_per_gallon: number
-          transaction_count: number
-          pending_amount: number
           approved_amount: number
+          average_price_per_gallon: number
+          pending_amount: number
+          total_amount: number
+          total_gallons: number
+          transaction_count: number
         }[]
       }
       can_access_load: {
@@ -2968,15 +2968,15 @@ export type Database = {
         Returns: Json
       }
       create_equipment_with_documents: {
-        Args: { equipment_data: Json; documents_data?: Json }
+        Args: { documents_data?: Json; equipment_data: Json }
         Returns: Json
       }
       create_first_superadmin: {
         Args: {
           admin_email: string
-          admin_password: string
           admin_first_name?: string
           admin_last_name?: string
+          admin_password: string
         }
         Returns: Json
       }
@@ -2985,7 +2985,7 @@ export type Database = {
         Returns: Json
       }
       create_load_with_stops_and_documents: {
-        Args: { load_data: Json; stops_data?: Json; documents_data?: Json }
+        Args: { documents_data?: Json; load_data: Json; stops_data?: Json }
         Returns: Json
       }
       create_or_update_client_contact_with_validation: {
@@ -3017,11 +3017,11 @@ export type Database = {
         Returns: Json
       }
       create_or_update_load_with_validation: {
-        Args: { load_data: Json; stops_data: Json; load_id?: string }
+        Args: { load_data: Json; load_id?: string; stops_data: Json }
         Returns: Json
       }
       create_or_update_user_profile_with_validation: {
-        Args: { user_data: Json; role_data?: Json }
+        Args: { role_data?: Json; user_data: Json }
         Returns: Json
       }
       create_other_income_with_validation: {
@@ -3029,18 +3029,18 @@ export type Database = {
         Returns: Json
       }
       create_user_with_company_role_validation: {
-        Args: { user_data: Json; company_role_data: Json }
+        Args: { company_role_data: Json; user_data: Json }
         Returns: Json
       }
       deactivate_expense_template_with_validation: {
-        Args: { template_id: string; deactivation_reason?: string }
+        Args: { deactivation_reason?: string; template_id: string }
         Returns: Json
       }
       deactivate_user_with_validation: {
         Args: {
-          target_user_id: string
-          target_company_id: string
           deactivation_reason?: string
+          target_company_id: string
+          target_user_id: string
         }
         Returns: Json
       }
@@ -3094,15 +3094,15 @@ export type Database = {
       }
       generate_company_payment_periods_with_calculations: {
         Args: {
-          target_company_id: string
-          start_date: string
           end_date: string
           run_calculations?: boolean
+          start_date: string
+          target_company_id: string
         }
         Returns: Json
       }
       generate_load_percentage_deductions: {
-        Args: { period_calculation_id: string; load_id_param?: string }
+        Args: { load_id_param?: string; period_calculation_id: string }
         Returns: undefined
       }
       generate_load_percentage_deductions_v2: {
@@ -3162,14 +3162,14 @@ export type Database = {
       get_period_drivers_summary: {
         Args: { company_payment_period_id_param: string }
         Returns: {
-          driver_user_id: string
           driver_name: string
+          driver_user_id: string
           gross_earnings: number
-          total_deductions: number
-          other_income: number
-          total_income: number
-          net_payment: number
           has_negative_balance: boolean
+          net_payment: number
+          other_income: number
+          total_deductions: number
+          total_income: number
         }[]
       }
       get_real_companies: {
@@ -3205,14 +3205,14 @@ export type Database = {
       get_user_emails_for_company: {
         Args: { company_id_param: string }
         Returns: {
-          user_id: string
           email: string
+          user_id: string
         }[]
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["user_role"]
+          _user_id: string
         }
         Returns: boolean
       }
@@ -3261,11 +3261,11 @@ export type Database = {
         Returns: boolean
       }
       is_user_admin_in_company_safe: {
-        Args: { user_id_param: string; company_id_param: string }
+        Args: { company_id_param: string; user_id_param: string }
         Returns: boolean
       }
       is_user_company_owner: {
-        Args: { user_id_param: string; company_id_param: string }
+        Args: { company_id_param: string; user_id_param: string }
         Returns: boolean
       }
       is_user_superadmin: {
@@ -3278,35 +3278,35 @@ export type Database = {
       }
       lock_payment_period: {
         Args: {
-          period_id: string
           payment_method_used?: string
           payment_ref?: string
+          period_id: string
         }
         Returns: Json
       }
       log_deployment_event: {
         Args: {
           deployment_id_param: string
-          event_type_param: string
-          version_from_param?: string
-          version_to_param?: string
-          github_commit_sha_param?: string
           environment_param?: string
           event_data_param?: Json
+          event_type_param: string
+          github_commit_sha_param?: string
+          version_from_param?: string
+          version_to_param?: string
         }
         Returns: Json
       }
       log_health_check: {
         Args: {
-          overall_status_param: string
-          health_percentage_param: number
-          database_status_param?: boolean
+          acid_functions_status_param?: boolean
           authentication_status_param?: boolean
           critical_tables_status_param?: boolean
-          acid_functions_status_param?: boolean
-          storage_status_param?: boolean
-          response_time_ms_param?: number
+          database_status_param?: boolean
           detailed_results_param?: Json
+          health_percentage_param: number
+          overall_status_param: string
+          response_time_ms_param?: number
+          storage_status_param?: boolean
         }
         Returns: Json
       }
@@ -3317,27 +3317,27 @@ export type Database = {
       mark_driver_as_paid: {
         Args: {
           calculation_id: string
+          notes?: string
           payment_method_used?: string
           payment_ref?: string
-          notes?: string
         }
         Returns: Json
       }
       mark_driver_as_paid_with_validation: {
         Args: {
           calculation_id: string
+          notes?: string
           payment_method_used?: string
           payment_ref?: string
-          notes?: string
         }
         Returns: Json
       }
       mark_multiple_drivers_as_paid_with_validation: {
         Args: {
           calculation_ids: string[]
+          notes?: string
           payment_method_used?: string
           payment_ref?: string
-          notes?: string
         }
         Returns: Json
       }
@@ -3356,7 +3356,7 @@ export type Database = {
         Returns: boolean
       }
       permanently_delete_user_with_validation: {
-        Args: { user_id_param: string; confirmation_email: string }
+        Args: { confirmation_email: string; user_id_param: string }
         Returns: Json
       }
       process_company_payment_period: {
@@ -3369,8 +3369,8 @@ export type Database = {
       }
       reassign_to_payment_period: {
         Args: {
-          element_type: string
           element_id: string
+          element_type: string
           new_period_id: string
           reassigned_by?: string
         }
@@ -3394,11 +3394,11 @@ export type Database = {
       }
       report_payment_and_lock: {
         Args: {
-          period_id: string
-          method_id: string
           amount_paid: number
-          reference_num?: string
+          method_id: string
           payment_notes?: string
+          period_id: string
+          reference_num?: string
         }
         Returns: Json
       }
@@ -3415,7 +3415,7 @@ export type Database = {
         Returns: Json
       }
       simple_load_operation: {
-        Args: { load_data: Json; stops_data: Json; operation_mode?: string }
+        Args: { load_data: Json; operation_mode?: string; stops_data: Json }
         Returns: Json
       }
       unassign_equipment_with_validation: {
@@ -3424,17 +3424,17 @@ export type Database = {
       }
       update_client_with_logo_download: {
         Args: {
-          client_id_param: string
           client_data: Json
+          client_id_param: string
           external_logo_url?: string
         }
         Returns: Json
       }
       update_company_status_with_validation: {
         Args: {
-          target_company_id: string
           new_status: string
           status_reason?: string
+          target_company_id: string
         }
         Returns: Json
       }
@@ -3453,23 +3453,23 @@ export type Database = {
         Returns: Json
       }
       update_other_income_with_validation: {
-        Args: { income_id: string; income_data: Json }
+        Args: { income_data: Json; income_id: string }
         Returns: Json
       }
       update_user_company_role_with_validation: {
         Args: {
-          target_user_id: string
-          target_company_id: string
           new_role_data: Json
+          target_company_id: string
+          target_user_id: string
         }
         Returns: Json
       }
       update_user_role_with_validation: {
         Args: {
-          target_user_id: string
-          target_company_id: string
           new_role: Database["public"]["Enums"]["user_role"]
           status_active?: boolean
+          target_company_id: string
+          target_user_id: string
         }
         Returns: Json
       }
@@ -3483,37 +3483,37 @@ export type Database = {
       }
       user_has_role_in_company: {
         Args: {
-          user_id_param: string
           company_id_param: string
           role_param: Database["public"]["Enums"]["user_role"]
+          user_id_param: string
         }
         Returns: boolean
       }
       user_is_admin_in_company: {
-        Args: { user_id_param: string; company_id_param: string }
+        Args: { company_id_param: string; user_id_param: string }
         Returns: boolean
       }
       validate_invitation_token: {
         Args: { token_param: string }
         Returns: {
-          invitation_id: string
-          email: string
-          role: Database["public"]["Enums"]["user_role"]
           company_id: string
           company_name: string
-          first_name: string
-          last_name: string
+          email: string
           expires_at: string
+          first_name: string
+          invitation_id: string
           is_valid: boolean
+          last_name: string
+          role: Database["public"]["Enums"]["user_role"]
         }[]
       }
       validate_reset_token: {
         Args: { token_param: string }
         Returns: {
-          id: string
-          user_email: string
-          is_valid: boolean
           expires_at: string
+          id: string
+          is_valid: boolean
+          user_email: string
         }[]
       }
     }
