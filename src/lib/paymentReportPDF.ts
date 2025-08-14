@@ -604,7 +604,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   const redRgb = hexToRgb(colors.lightRed);
   doc.setFillColor(redRgb[0], redRgb[1], redRgb[2]);
-  doc.rect(margin, currentY - 5, pageWidth - margin*2, 8, 'F');
+  doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'F');
   
   const totalDeductions = data.deductions?.reduce((sum, d) => sum + d.amount, 0) || 0;
   addText(`Period Deductions (Count: ${deductionsCount}, Total: ${formatCurrency(totalDeductions)})`, margin + 2, currentY, {
@@ -650,7 +650,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   const orangeRgb = hexToRgb(colors.lightOrange);
   doc.setFillColor(orangeRgb[0], orangeRgb[1], orangeRgb[2]);
-  doc.rect(margin, currentY - 5, pageWidth - margin*2, 8, 'F');
+  doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'F');
   
   addText(`Fuel Expenses (Count: ${fuelCount}, Total: ${formatCurrency(data.period.fuel_expenses)})`, margin + 2, currentY, {
     fontSize: 10,
