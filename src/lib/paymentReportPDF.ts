@@ -31,6 +31,7 @@ interface PaymentReportData {
   };
   loads?: Array<{
     load_number: string;
+    po_number?: string;
     pickup_date: string;
     delivery_date: string;
     pickup_location?: string;
@@ -421,14 +422,18 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   if (data.loads && data.loads.length > 0) {
     data.loads.forEach((load, index) => {
-      // Load number y stops
-      addText(`Load#: ${load.load_number}`, margin, currentY, {
+      // Load number con PO number y stops
+      const loadTitle = load.po_number ? 
+        `Load#: ${load.load_number} (${load.po_number})` : 
+        `Load#: ${load.load_number}`;
+      
+      addText(loadTitle, margin, currentY, {
         fontSize: 10,
         fontStyle: 'bold',
         color: colors.darkGray
       });
       
-      addText(`Stops: ${load.stops || 2} Total`, margin, currentY + 6, {
+      addText(`Stops: ${load.stops || 2} Total`, margin, currentY + 5, {
         fontSize: 9,
         color: colors.gray
       });
@@ -450,12 +455,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const pickupText = `PU: ${new Date(load.pickup_date).toLocaleDateString('en-US')} ${load.pickup_location || ''}`;
       const deliveryText = `DEL: ${new Date(load.delivery_date).toLocaleDateString('en-US')} ${load.delivery_location || ''}`;
       
-      addText(`${pickupText} | ${deliveryText}`, margin + 50, currentY + 6, {
+      addText(`${pickupText} | ${deliveryText}`, margin + 50, currentY + 5, {
         fontSize: 8,
         color: colors.gray
       });
 
-      currentY += 20;
+      currentY += 15; // Reducido de 20 a 15
     });
   }
 
