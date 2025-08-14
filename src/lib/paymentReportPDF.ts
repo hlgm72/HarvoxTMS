@@ -49,6 +49,8 @@ interface PaymentReportData {
       company_name: string;
       city: string;
       state: string;
+      stop_number?: number;
+      scheduled_date?: string;
     }>;
   }>;
   fuelExpenses?: Array<{
@@ -497,60 +499,42 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         align: 'right'
       });
 
-      // Pickup y Delivery en líneas separadas
-      const pickupStop = load.load_stops?.find(stop => stop.stop_type === 'pickup');
-      const deliveryStop = load.load_stops?.find(stop => stop.stop_type === 'delivery');
+      // Todas las paradas ordenadas por stop_number
+      const allStops = load.load_stops ? [...load.load_stops].sort((a, b) => (a.stop_number || 0) - (b.stop_number || 0)) : [];
       
-      const pickupCompany = pickupStop?.company_name || '';
-      const pickupLocation = pickupStop ? `${pickupStop.city}, ${pickupStop.state}` : '';
-      const deliveryCompany = deliveryStop?.company_name || '';
-      const deliveryLocation = deliveryStop ? `${deliveryStop.city}, ${deliveryStop.state}` : '';
+      let stopOffset = 4; // Inicio del offset para las paradas
       
-      // Texto de pickup en una línea
-      const pickupDate = new Date(load.pickup_date).toLocaleDateString('en-US');
-      const pickupInfo = ` ${pickupDate} ${pickupCompany} (${pickupLocation})`;
-      
-      // PUP en bold con alineación usando el ancho máximo
-      const pupPosition = colonPosition - maxPickupDeliveryWidth;
-      addText(pupPrefix, pupPosition, currentY + 4, {
-        fontSize: 9,
-        fontStyle: 'bold',
-        color: colors.darkGray
-      });
-      addText(':', colonPosition, currentY + 4, {
-        fontSize: 9,
-        fontStyle: 'bold',
-        color: colors.darkGray
-      });
-      addText(` ${pickupDate} ${pickupCompany} (${pickupLocation})`, colonPosition + 3, currentY + 4, {
-        fontSize: 9,
-        fontStyle: 'normal',
-        color: colors.darkGray
-      });
-      
-      // Texto de delivery en la línea siguiente
-      const deliveryDate = new Date(load.delivery_date).toLocaleDateString('en-US');
-      const deliveryInfo = ` ${deliveryDate} ${deliveryCompany} (${deliveryLocation})`;
-      
-      // DEL en bold con alineación usando el ancho máximo
-      const delPosition = colonPosition - maxPickupDeliveryWidth;
-      addText(delPrefix, delPosition, currentY + 8, {
-        fontSize: 9,
-        fontStyle: 'bold',
-        color: colors.darkGray
-      });
-      addText(':', colonPosition, currentY + 8, {
-        fontSize: 9,
-        fontStyle: 'bold',
-        color: colors.darkGray
-      });
-      addText(` ${deliveryDate} ${deliveryCompany} (${deliveryLocation})`, colonPosition + 3, currentY + 8, {
-        fontSize: 9,
-        fontStyle: 'normal',
-        color: colors.darkGray
+      // Mostrar todas las paradas
+      allStops.forEach((stop, index) => {
+        const stopDate = stop.scheduled_date ? new Date(stop.scheduled_date).toLocaleDateString('en-US') : 'N/A';
+        const stopCompany = stop.company_name || '';
+        const stopLocation = `${stop.city}, ${stop.state}`;
+        
+        // Determinar el prefijo según el tipo de parada
+        const stopPrefix = stop.stop_type === 'pickup' ? 'PUP' : 'DEL';
+        
+        // Mostrar la parada con alineación
+        const stopPosition = colonPosition - maxPickupDeliveryWidth;
+        addText(stopPrefix, stopPosition, currentY + stopOffset, {
+          fontSize: 9,
+          fontStyle: 'bold',
+          color: colors.darkGray
+        });
+        addText(':', colonPosition, currentY + stopOffset, {
+          fontSize: 9,
+          fontStyle: 'bold',
+          color: colors.darkGray
+        });
+        addText(` ${stopDate} ${stopCompany} (${stopLocation})`, colonPosition + 3, currentY + stopOffset, {
+          fontSize: 9,
+          fontStyle: 'normal',
+          color: colors.darkGray
+        });
+        
+        stopOffset += 4; // Incrementar offset para la siguiente parada
       });
 
-      currentY += 15; // Ajustado para evitar superposición pero mantener compactación
+      currentY += stopOffset + 7; // Ajustar currentY basado en el número de paradas
     });
   }
 
