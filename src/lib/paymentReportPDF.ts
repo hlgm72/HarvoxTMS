@@ -411,19 +411,19 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const boxHeight = 13;
   
   // Gross Earnings (Verde)
-  addColoredBox(boxesStartX, currentY, boxWidth, boxHeight, colors.lightGreen, colors.darkGray, 
+  addColoredBox(boxesStartX, currentY - 5, boxWidth, boxHeight, colors.lightGreen, colors.darkGray,
     'Gross Earnings', formatCurrency(data.period.gross_earnings));
   
   // Other Earnings (Azul)
-  addColoredBox(boxesStartX + boxWidth + 5, currentY, boxWidth, boxHeight, colors.lightBlue, colors.darkGray,
+  addColoredBox(boxesStartX + boxWidth + 5, currentY - 5, boxWidth, boxHeight, colors.lightBlue, colors.darkGray,
     'Other Earnings', formatCurrency(data.period.other_income));
   
   // Period Deductions (Rojo)
-  addColoredBox(boxesStartX + (boxWidth + 5) * 2, currentY, boxWidth, boxHeight, colors.lightRed, colors.darkGray,
+  addColoredBox(boxesStartX + (boxWidth + 5) * 2, currentY - 5, boxWidth, boxHeight, colors.lightRed, colors.darkGray,
     'Period Deductions', formatCurrency(-data.period.total_deductions));
   
   // Fuel Expenses (Naranja)
-  addColoredBox(boxesStartX + (boxWidth + 5) * 3, currentY, boxWidth, boxHeight, colors.lightOrange, colors.darkGray,
+  addColoredBox(boxesStartX + (boxWidth + 5) * 3, currentY - 5, boxWidth, boxHeight, colors.lightOrange, colors.darkGray,
     'Fuel Expenses', formatCurrency(-data.period.fuel_expenses));
 
   currentY += boxHeight + 4;
