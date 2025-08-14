@@ -489,7 +489,8 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const deliveryText = `DEL: ${new Date(load.delivery_date).toLocaleDateString('en-US')} ${deliveryCompany} (${deliveryLocation})`;
       
       addText(` - ${pickupText} → ${deliveryText}`, margin + stopsTextWidth, currentY + 5, {
-        fontSize: 8,
+        fontSize: 9,
+        fontStyle: 'normal',
         color: colors.darkGray
       });
 
