@@ -112,21 +112,23 @@ export default function Equipment() {
         </div>
 
         {/* Main Content with Tabs */}
-        <div className="mt-12">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-10">
-            <TabsList className="grid w-full grid-cols-2 gap-2 p-1 h-12 bg-muted/50">
-              <TabsTrigger value="equipment" className="gap-2 h-10">
-                <Wrench className="h-4 w-4" />
-                {t("equipment.tabs.equipment", "Equipos")}
-              </TabsTrigger>
-              <TabsTrigger value="locations" className="gap-2 h-10">
-                <MapPin className="h-4 w-4" />
-                {t("equipment.tabs.locations", "Ubicaciones")}
-              </TabsTrigger>
-            </TabsList>
+        <div className="mt-16 pt-8 border-t border-border/50">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-12">
+            <div className="py-6">
+              <TabsList className="grid w-full grid-cols-2 gap-3 p-2 h-14 bg-muted/50 rounded-lg">
+                <TabsTrigger value="equipment" className="gap-3 h-10 text-sm font-medium">
+                  <Wrench className="h-4 w-4" />
+                  {t("equipment.tabs.equipment", "Equipos")}
+                </TabsTrigger>
+                <TabsTrigger value="locations" className="gap-3 h-10 text-sm font-medium">
+                  <MapPin className="h-4 w-4" />
+                  {t("equipment.tabs.locations", "Ubicaciones")}
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
           {/* Equipment Tab */}
-          <TabsContent value="equipment" className="space-y-10 mt-10">
+          <TabsContent value="equipment" className="space-y-10 mt-8">
             {/* Search and Filters */}
             <Card className="shadow-sm border-2">
               <CardHeader className="pb-8">
