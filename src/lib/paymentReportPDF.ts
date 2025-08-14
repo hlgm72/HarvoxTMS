@@ -619,7 +619,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     data.deductions.forEach(deduction => {
       addText(deduction.description, margin + 2, currentY, {
         fontSize: 9,
-        color: colors.gray
+        color: colors.darkGray
       });
       
       addText(formatCurrency(-deduction.amount), pageWidth - margin - 2, currentY, {
@@ -666,22 +666,22 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       addText(dateStr, margin + 2, currentY, {
         fontSize: 9,
-        color: colors.gray
+        color: colors.darkGray
       });
       
       addText(fuel.station_name, margin + 30, currentY, {
         fontSize: 9,
-        color: colors.gray
+        color: colors.darkGray
       });
       
       addText(`${(fuel.gallons_purchased || 0).toFixed(2)} gal`, margin + 100, currentY, {
         fontSize: 9,
-        color: colors.gray
+        color: colors.darkGray
       });
       
       addText(`$${(fuel.price_per_gallon || 0).toFixed(3)}`, margin + 140, currentY, {
         fontSize: 9,
-        color: colors.gray
+        color: colors.darkGray
       });
       
       addText(formatCurrency(-fuel.total_amount), pageWidth - margin - 2, currentY, {
