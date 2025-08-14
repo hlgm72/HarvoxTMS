@@ -20,6 +20,7 @@ import { createTextHandlers, createPhoneHandlers, createEINHandlers, createMCHan
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 
 interface CompanySettingsFormProps {
   company: Company;
@@ -27,6 +28,7 @@ interface CompanySettingsFormProps {
 }
 
 export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormProps) {
+  const { t } = useTranslation('common');
   const [formData, setFormData] = useState<Company>(company);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('company');
@@ -189,8 +191,8 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Configuración de la Empresa</h2>
-          <p className="text-muted-foreground">Administra la información y configuración de tu empresa</p>
+          <h2 className="text-2xl font-bold">{t('company.settings.title')}</h2>
+          <p className="text-muted-foreground">{t('company.settings.subtitle')}</p>
         </div>
         <div className="flex gap-2">
           {hasChanges && (

@@ -80,5 +80,11 @@
       "interface": "Interfaz",
       "notifications": "Notificaciones"
     }
+  },
+  "company": {
+    "settings": {
+      "title": "Configuración de la Empresa",
+      "subtitle": "Administra la información y configuración de tu empresa"
+    }
   }
 }
