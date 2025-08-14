@@ -351,26 +351,26 @@ const getDriverNavigationItems = () => [
 const getSuperAdminNavigationItems = (t: any) => [
   // Sección Principal
   { 
-    title: t('admin:navigation.dashboard'), 
+    title: "Dashboard", 
     url: "/superadmin", 
     icon: Command, 
     badge: "Admin",
     badgeVariant: "admin" as const,
-    description: t('admin:navigation.admin_panel'),
+    description: "Admin panel",
     section: "main"
   },
   { 
-    title: t('admin:navigation.companies'), 
+    title: "Companies", 
     url: "/superadmin/companies", 
     icon: Building2,
-    description: t('admin:navigation.company_management'),
+    description: "Company management",
     section: "main"
   },
   { 
-    title: t('admin:navigation.users'), 
+    title: "Users", 
     url: "/superadmin/users", 
     icon: Users,
-    description: t('admin:navigation.system_users'),
+    description: "System users",
     section: "main"
   },
   
@@ -709,12 +709,12 @@ export function AppSidebar() {
             // Para SuperAdmin: Estilo Limitless exacto
             <>
               {/* Sección Principal */}
-              {renderSection("main", t('admin:navigation.main_management'))}
+              {renderSection("main", "Main Management")}
 
               {/* Otras secciones usando el mismo renderSection */}
-              {renderSection("monitoring", t('admin:navigation.monitoring'))}
-              {renderSection("business", t('admin:navigation.business'))}
-              {renderSection("settings", t('admin:navigation.settings'))}
+              {renderSection("monitoring", "Monitoring")}
+              {renderSection("business", "Business")}
+              {renderSection("settings", "Settings")}
             </>
           ) : (
             // Para otros roles: Renderizar por secciones con separadores
