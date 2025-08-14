@@ -145,7 +145,7 @@ export function CompanyLogoUpload({
 
   return (
     <div className="space-y-4">
-      <Label>{t('company.logo.title')}</Label>
+      <Label>{t('company.logo.title', 'Logo de la Empresa')}</Label>
       
       <div className="flex items-start space-x-4">
         {/* Logo preview */}
@@ -154,7 +154,7 @@ export function CompanyLogoUpload({
             {currentLogoUrl ? (
               <img 
                 src={currentLogoUrl} 
-                alt={t('company.logo.alt_text', { companyName: companyName })}
+                alt={t('company.logo.alt_text', `Logo de ${companyName || 'la empresa'}`, { companyName: companyName || 'la empresa' })}
                 className="w-full h-full object-contain"
               />
             ) : (
@@ -167,7 +167,7 @@ export function CompanyLogoUpload({
                 <div className="flex flex-col items-center space-y-1">
                   <Loader2 className="h-4 w-4 text-white animate-spin" />
                   <span className="text-xs text-white font-medium">
-                    {uploading ? t('company.logo.uploading') : t('company.logo.removing')}
+                    {uploading ? t('company.logo.uploading', 'Subiendo...') : t('company.logo.removing', 'Eliminando...')}
                   </span>
                 </div>
               </div>
@@ -204,12 +204,12 @@ export function CompanyLogoUpload({
               {uploading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  {t('company.logo.uploading')}
+                  {t('company.logo.uploading', 'Subiendo...')}
                 </>
               ) : (
                 <>
                   <Camera className="h-4 w-4 mr-2" />
-                  {currentLogoUrl ? t('company.logo.change_logo') : t('company.logo.upload_logo')}
+                  {currentLogoUrl ? t('company.logo.change_logo', 'Cambiar logo') : t('company.logo.upload_logo', 'Subir logo')}
                 </>
               )}
             </Button>
@@ -226,19 +226,19 @@ export function CompanyLogoUpload({
               {removing ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  {t('company.logo.removing')}
+                  {t('company.logo.removing', 'Eliminando...')}
                 </>
               ) : (
                 <>
                   <X className="h-4 w-4 mr-2" />
-                  {t('company.logo.remove_logo')}
+                  {t('company.logo.remove_logo', 'Eliminar logo')}
                 </>
               )}
             </Button>
           )}
 
           <p className="text-xs text-muted-foreground">
-            {t('company.logo.supported_formats')}
+            {t('company.logo.supported_formats', 'Formatos soportados: JPG, PNG, GIF. Tamaño máximo: 5MB')}
           </p>
         </div>
       </div>
