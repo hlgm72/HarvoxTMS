@@ -47,7 +47,11 @@
       "regular": "Regular",
       "special": "Special",
       "bonus": "Bonus"
-    }
+    },
+    "driver_count": "driver",
+    "driver_count_plural": "drivers",
+    "details_title": "Payment Period Details",
+    "details_description": "Detailed information on income, deductions and calculations for the selected payment period."
   },
   "deductions": {
     "create": "Create Deduction",

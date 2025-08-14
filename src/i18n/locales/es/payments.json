@@ -47,7 +47,11 @@
       "regular": "Regular",
       "special": "Especial",
       "bonus": "Bono"
-    }
+    },
+    "driver_count": "conductor",
+    "driver_count_plural": "conductores",
+    "details_title": "Detalles del Período de Pago",
+    "details_description": "Información detallada de ingresos, deducciones y cálculos del período de pago seleccionado."
   },
   "deductions": {
     "create": "Crear Deducción",

@@ -175,13 +175,13 @@ export function PaymentPeriodsManager() {
                     <CardDescription>
                       {getPeriodTypeLabel(period.period_type)} • {period.period_frequency}
                       {summary && summary.driver_count > 0 && (
-                        <> • {summary.driver_count} conductor{summary.driver_count !== 1 ? 'es' : ''}</>
+                        <> • {summary.driver_count} {t('period.driver_count', { count: summary.driver_count })}</>
                       )}
                     </CardDescription>
                   </div>
                   <div className="flex items-center gap-2">
                     {period.is_locked && (
-                      <Badge variant="outline">Bloqueado</Badge>
+                      <Badge variant="outline">{t('period.status.locked')}</Badge>
                     )}
                     <Badge variant={getStatusBadgeVariant(period.status)}>
                       {getStatusLabel(period.status)}
@@ -200,7 +200,7 @@ export function PaymentPeriodsManager() {
                         <DollarSign className="h-3 w-3 text-primary" />
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">Ingresos Brutos</p>
+                        <p className="text-xs text-muted-foreground">{t('summary.gross_income')}</p>
                         <p className="text-sm font-medium">
                           ${(summary.gross_earnings || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                         </p>
@@ -213,7 +213,7 @@ export function PaymentPeriodsManager() {
                         <TrendingUp className="h-3 w-3 text-success" />
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">Otros Ingresos</p>
+                        <p className="text-xs text-muted-foreground">{t('summary.other_income')}</p>
                         <p className="text-sm font-medium text-success">
                           ${(summary.other_income || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                         </p>
@@ -226,7 +226,7 @@ export function PaymentPeriodsManager() {
                         <Receipt className="h-3 w-3 text-destructive" />
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">Deducciones</p>
+                        <p className="text-xs text-muted-foreground">{t('summary.total_deductions')}</p>
                         <p className="text-sm font-medium text-destructive">
                           -${(summary.deductions || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                         </p>
@@ -239,7 +239,7 @@ export function PaymentPeriodsManager() {
                         <Fuel className="h-3 w-3 text-warning" />
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">Combustible</p>
+                        <p className="text-xs text-muted-foreground">{t('tabs.fuel_expenses')}</p>
                         <p className="text-sm font-medium text-warning">
                           -${(summary.fuel_expenses || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
                         </p>
@@ -252,7 +252,7 @@ export function PaymentPeriodsManager() {
                         <DollarSign className="h-3 w-3 text-primary" />
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">Pago Neto</p>
+                        <p className="text-xs text-muted-foreground">{t('summary.net_payment')}</p>
                         <div className="flex items-center gap-1">
                           <p className={`text-sm font-medium ${
                             (summary.net_payment || 0) < 0 ? 'text-destructive' : ''
@@ -278,9 +278,9 @@ export function PaymentPeriodsManager() {
         <Dialog open={!!selectedPeriod} onOpenChange={() => setSelectedPeriod(null)}>
           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Detalles del Período de Pago</DialogTitle>
+              <DialogTitle>{t('period.details_title')}</DialogTitle>
               <DialogDescription>
-                Información detallada de ingresos, deducciones y cálculos del período de pago seleccionado.
+                {t('period.details_description')}
               </DialogDescription>
             </DialogHeader>
             <PaymentPeriodDetails 
