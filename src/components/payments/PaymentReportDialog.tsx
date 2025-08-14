@@ -255,10 +255,16 @@ export function PaymentReportDialog({
 
       if (error) {
         console.error('🚨 Error querying deductions:', error);
+        console.error('🚨 Error details:', JSON.stringify(error, null, 2));
         throw error;
       }
       
       console.log('✅ Deductions query result:', data);
+      console.log('✅ Deductions count from query:', data?.length || 0);
+      
+      // Verificar permisos adicionales
+      console.log('🔐 Current user ID:', (await supabase.auth.getUser()).data.user?.id);
+      
       return data || [];
     },
     enabled: !!calculationId
