@@ -427,7 +427,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   currentY += 20;
 
   // === LOADS COMPLETED ===
-  addText('Loads completed', margin, currentY, {
+  // Calcular el conteo y suma total de las cargas
+  const loadCount = data.loads?.length || 0;
+  const totalAmount = data.loads?.reduce((sum, load) => sum + (load.total_amount || 0), 0) || 0;
+  const formattedTotal = formatCurrency(totalAmount);
+  
+  addText(`Loads completed: ${loadCount} (${formattedTotal})`, margin, currentY, {
     fontSize: 12,
     fontStyle: 'bold',
     color: colors.darkGray
