@@ -481,7 +481,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const deliveryLocation = deliveryStop ? `${deliveryStop.city}, ${deliveryStop.state}` : '';
       
       // Texto de pickup en una línea
-      const pickupText = `PU: ${new Date(load.pickup_date).toLocaleDateString('en-US')} ${pickupCompany} (${pickupLocation})`;
+      const pickupText = `PUP: ${new Date(load.pickup_date).toLocaleDateString('en-US')} ${pickupCompany} (${pickupLocation})`;
       addText(pickupText, margin + 5, currentY + 4, {
         fontSize: 9,
         fontStyle: 'normal',
