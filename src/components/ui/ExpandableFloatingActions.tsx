@@ -56,7 +56,7 @@ export function ExpandableFloatingActions({
       {/* Botones de acción expandidos */}
       {isExpanded && (
         <div className={cn(
-          'fixed z-10 top-1/2 -translate-y-1/2',
+          'fixed z-50 top-1/2 -translate-y-1/2',
           position === 'bottom-right' ? 'right-20' : 'left-20'
         )}>
           <div className="flex flex-col gap-3 items-end">
@@ -100,7 +100,7 @@ export function ExpandableFloatingActions({
       {/* Botón principal */}
       <button
         className={cn(
-          'fixed w-14 h-14 rounded-full shadow-lg transition-all duration-300 z-10',
+          'fixed w-14 h-14 rounded-full shadow-lg transition-all duration-300 z-50',
           'hover:shadow-2xl hover:scale-110',
           isExpanded 
             ? 'bg-fleet-orange hover:bg-fleet-orange-dark text-white' 
