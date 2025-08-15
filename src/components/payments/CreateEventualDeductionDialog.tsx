@@ -521,7 +521,6 @@ export function CreateEventualDeductionDialog({
               id="amount"
               type="text"
               inputMode="numeric"
-              pattern="[0-9]*"
               value={atmInput.displayValue}
               onChange={atmInput.handleInput}
               onKeyDown={atmInput.handleKeyDown}
