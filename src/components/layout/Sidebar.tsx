@@ -549,38 +549,44 @@ export function AppSidebar() {
               
               return (
                  <div key={item.title}>
-                   {collapsed ? (
-                     <Tooltip>
-                       <TooltipTrigger asChild>
-                           <NavLink 
-                             to={item.url} 
-                             end
-                             onClick={handleNavClick}
-                             className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
-                                collapsed ? 'w-full py-2 justify-center' : 'px-4 py-2'
-                             } ${
-                               active 
-                                 ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
-                                 : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
-                             }`}
-                          >
-                            <IconComponent 
-                              className={`!h-4 !w-4 flex-shrink-0 transition-all duration-200 ${
-                                active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
-                              }`} 
-                              style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px', lineHeight: '20px' }}
-                            />
-                            
-                            {/* Active indicator - exacto como Limitless */}
-                            {active && (
-                              <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
-                            )}
-                          </NavLink>
-                       </TooltipTrigger>
-                       <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200 shadow-lg">
-                         <p>{item.title}</p>
-                       </TooltipContent>
-                     </Tooltip>
+                    {collapsed ? (
+                      <Tooltip delayDuration={300}>
+                        <TooltipTrigger asChild>
+                          <div>
+                            <NavLink 
+                              to={item.url} 
+                              end
+                              onClick={handleNavClick}
+                              className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
+                                 collapsed ? 'w-full py-2 justify-center' : 'px-4 py-2'
+                              } ${
+                                active 
+                                  ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                                  : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                              }`}
+                           >
+                             <IconComponent 
+                               className={`!h-4 !w-4 flex-shrink-0 transition-all duration-200 ${
+                                 active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
+                               }`} 
+                               style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px', lineHeight: '20px' }}
+                             />
+                             
+                             {/* Active indicator - exacto como Limitless */}
+                             {active && (
+                               <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
+                             )}
+                           </NavLink>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent 
+                          side="right" 
+                          className="bg-white text-slate-900 border-slate-200 shadow-lg z-[9999]"
+                          sideOffset={8}
+                        >
+                          <p className="font-medium">{item.title}</p>
+                        </TooltipContent>
+                      </Tooltip>
                    ) : (
                          <NavLink 
                            to={item.url} 
