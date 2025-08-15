@@ -18,7 +18,7 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
   }, []);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    console.log('🔑 handleKeyDown called with key:', e.key);
+    console.log('🔑 handleKeyDown called with key:', e.key, 'keyCode:', e.keyCode, 'which:', e.which);
     
     // Allow navigation keys
     if (['Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
@@ -27,7 +27,7 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
 
     e.preventDefault();
 
-    if (e.key === 'Backspace') {
+    if (e.key === 'Backspace' || e.keyCode === 8) {
       const newValue = Math.floor(value / 10);
       console.log('🔙 Backspace: new value:', newValue);
       setValue(newValue);
@@ -35,22 +35,36 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
       return;
     }
 
-    // Only allow digits
-    if (!/^\d$/.test(e.key)) {
-      return;
-    }
-
-    const digit = parseInt(e.key);
-    const newValue = (value * 10) + digit;
+    // Handle digits - check key, keyCode, and which for better compatibility
+    let digit: number | null = null;
     
-    // Prevent overflow (max $99,999.99)
-    if (newValue > 9999999) {
-      return;
+    if (e.key && /^\d$/.test(e.key)) {
+      digit = parseInt(e.key);
+    } else if (e.keyCode >= 48 && e.keyCode <= 57) {
+      // Regular number keys (0-9)
+      digit = e.keyCode - 48;
+    } else if (e.keyCode >= 96 && e.keyCode <= 105) {
+      // Numpad keys (0-9)
+      digit = e.keyCode - 96;
+    } else if (e.which >= 48 && e.which <= 57) {
+      // Fallback using which property
+      digit = e.which - 48;
     }
 
-    console.log('🔢 Digit added:', digit, 'new value:', newValue);
-    setValue(newValue);
-    onValueChange?.(newValue / 100);
+    if (digit !== null && digit >= 0 && digit <= 9) {
+      const newValue = (value * 10) + digit;
+      
+      // Prevent overflow (max $99,999.99)
+      if (newValue > 9999999) {
+        return;
+      }
+
+      console.log('🔢 Digit added:', digit, 'new value:', newValue);
+      setValue(newValue);
+      onValueChange?.(newValue / 100);
+    } else {
+      console.log('❌ Invalid key ignored:', e.key, 'keyCode:', e.keyCode);
+    }
   }, [value, onValueChange]);
 
   const handlePaste = useCallback((e: React.ClipboardEvent<HTMLInputElement>) => {
