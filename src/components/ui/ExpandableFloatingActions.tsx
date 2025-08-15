@@ -118,7 +118,7 @@ export function ExpandableFloatingActions({
         {isExpanded ? (
           <X className="h-6 w-6 transition-all duration-300 -translate-x-3 group-hover:rotate-90" />
         ) : (
-          <MainIcon className="h-6 w-6 transition-all duration-300 -translate-x-3 group-hover:rotate-12" />
+          <MainIcon className="h-6 w-6 transition-all duration-300 -translate-x-3" />
         )}
       </button>
     </>
