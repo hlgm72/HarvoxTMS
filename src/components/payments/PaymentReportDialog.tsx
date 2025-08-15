@@ -581,6 +581,35 @@ export function PaymentReportDialog({
             </Card>
           )}
 
+          {/* Deducciones */}
+          {deductions.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Receipt className="h-5 w-5" />
+                  Deducciones ({deductions.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {deductions.map((deduction) => (
+                    <div key={deduction.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b">
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <div className="font-medium truncate text-sm sm:text-base">{deduction.description}</div>
+                        <div className="text-xs sm:text-sm text-muted-foreground">
+                          {formatDateOnly(deduction.expense_date)} • {deduction.status === 'planned' ? 'Planificado' : 'Aplicado'}
+                        </div>
+                      </div>
+                      <div className="font-semibold text-destructive sm:text-right shrink-0 text-sm sm:text-base">
+                        -${deduction.amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           </div>
         </div>
 
