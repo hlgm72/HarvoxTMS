@@ -129,7 +129,8 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
   const setExternalValue = useCallback((newValue: number) => {
     const cents = Math.round(newValue * 100);
     setValue(cents);
-  }, []);
+    onValueChange?.(newValue);
+  }, [onValueChange]);
 
   return {
     displayValue: formatDisplay(value),

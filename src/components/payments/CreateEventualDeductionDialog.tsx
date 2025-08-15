@@ -49,23 +49,15 @@ export function CreateEventualDeductionDialog({
   const [driverComboboxOpen, setDriverComboboxOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
-  // ATM Input - DEBE funcionar igual que en otros lugares
+  // ATM Input - Implementación estable como en ExpenseTemplateDialog
   const atmInput = useATMInput({
     initialValue: 0,
     onValueChange: (value) => {
-      console.log('💳 ATM onValueChange called with:', value);
       setFormData(prev => ({ ...prev, amount: value.toString() }));
     }
   });
 
-  // Debug ATM state
-  console.log('💳 ATM State:', {
-    displayValue: atmInput.displayValue,
-    numericValue: atmInput.numericValue,
-    dialogOpen: isOpen
-  });
-
-  // Reset form when dialog opens
+  // Reset form when dialog opens - SIN incluir atmInput en dependencias
   useEffect(() => {
     if (isOpen) {
       setSelectedRole("driver");
@@ -76,8 +68,8 @@ export function CreateEventualDeductionDialog({
         description: ''
       });
       setExpenseDate(undefined);
-      console.log('💳 Resetting ATM input...');
-      atmInput.reset();
+      // Reset ATM usando setValue que convierte correctamente
+      atmInput.setValue(0);
     }
   }, [isOpen]);
 
