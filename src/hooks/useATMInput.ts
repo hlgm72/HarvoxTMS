@@ -67,19 +67,40 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
     }
   }, [value, onValueChange]);
 
+  const handleInput = useCallback((e: React.FormEvent<HTMLInputElement>) => {
+    // For mobile keyboards that might not trigger keyDown properly
+    const input = e.target as HTMLInputElement;
+    const inputValue = input.value;
+    
+    console.log('📱 Input event, value:', inputValue);
+    
+    // Extract only digits from the input
+    const digits = inputValue.replace(/\D/g, '');
+    
+    if (digits && digits !== value.toString()) {
+      const newValue = parseInt(digits) || 0;
+      console.log('📱 Mobile input detected, setting value:', newValue);
+      setValue(newValue);
+      onValueChange?.(newValue / 100);
+    }
+  }, [value, onValueChange]);
+
   const handlePaste = useCallback((e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
     
     const pastedText = e.clipboardData.getData('text');
+    console.log('📋 Paste event:', pastedText);
     const cleanText = pastedText.replace(/[^\d.]/g, '');
     const numericValue = parseFloat(cleanText) || 0;
     const newValue = Math.round(numericValue * 100);
     
     // Prevent overflow
     if (newValue > 9999999) {
+      console.log('❌ Paste overflow prevented');
       return;
     }
 
+    console.log('📋 Paste processed:', cleanText, '→', newValue);
     setValue(newValue);
     onValueChange?.(newValue / 100);
   }, [onValueChange]);
@@ -114,6 +135,7 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
     displayValue: formatDisplay(value),
     numericValue: value / 100,
     handleKeyDown,
+    handleInput,
     handlePaste,
     handleFocus,
     handleClick,

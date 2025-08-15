@@ -16,6 +16,7 @@ import { CalendarIcon } from "lucide-react";
 import { parseISO, isWithinInterval, isBefore, isAfter, format } from "date-fns";
 import { es } from "date-fns/locale";
 import { formatDateOnly, formatDateInUserTimeZone } from "@/utils/dateUtils";
+import { useATMInput } from "@/hooks/useATMInput";
 import { cn } from "@/lib/utils";
 import { useFleetNotifications } from '@/components/notifications';
 import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
@@ -59,22 +60,24 @@ export function CreateEventualDeductionDialog({
         description: ''
       });
       setExpenseDate(undefined);
-      setRawAmount('');
     }
   }, [isOpen]);
 
-  // Campo de monto híbrido (normal + ATM format)
-  const [rawAmount, setRawAmount] = useState<string>('');
-  
-  // Formatear como moneda cuando el usuario termine de escribir
-  const formatAsCurrency = (value: string) => {
-    const num = parseFloat(value) || 0;
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(num);
-  };
+  // ATM Input para el monto (como en banco)
+  const atmInput = useATMInput({
+    initialValue: 0,
+    onValueChange: (value) => {
+      console.log('🏧 ATM value changed to:', value);
+      setFormData(prev => ({ ...prev, amount: value.toString() }));
+    }
+  });
+
+  // Reset ATM input when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      atmInput.reset();
+    }
+  }, [isOpen, atmInput.reset]);
 
   // Obtener usuarios por rol seleccionado
   const { data: users = [] } = useQuery({
@@ -256,7 +259,7 @@ export function CreateEventualDeductionDialog({
           payment_period_id: paymentPeriods[0]?.id, // Use the first (and likely only) period for the selected date
           user_id: formData.user_id,
           expense_type_id: formData.expense_type_id,
-          amount: parseFloat(rawAmount || '0'),
+          amount: parseFloat(formData.amount),
           description: formData.description,
           expense_date: formatDateInUserTimeZone(expenseDate),
           status: 'planned',
@@ -309,8 +312,8 @@ export function CreateEventualDeductionDialog({
     expenseDate &&
     paymentPeriods.length > 0 &&
     formData.expense_type_id && 
-    rawAmount && 
-    parseFloat(rawAmount) > 0 &&
+    formData.amount && 
+    parseFloat(formData.amount) > 0 &&
     formData.description.trim().length > 0;
 
   return (
@@ -522,48 +525,38 @@ export function CreateEventualDeductionDialog({
             <Label htmlFor="amount">Monto ($) <span className="text-red-500">*</span></Label>
             <Input
               id="amount"
-              type="tel"
-              inputMode="decimal"
-              value={rawAmount}
-              onChange={(e) => {
-                const value = e.target.value;
-                // Solo permitir números y un punto decimal
-                const sanitized = value.replace(/[^0-9.]/g, '');
-                
-                // Evitar múltiples puntos decimales
-                const parts = sanitized.split('.');
-                const finalValue = parts.length > 2 
-                  ? parts[0] + '.' + parts.slice(1).join('')
-                  : sanitized;
-                
-                setRawAmount(finalValue);
-                setFormData(prev => ({ ...prev, amount: finalValue }));
-                
-                console.log('💰 Amount changed:', finalValue);
+              type="text"
+              inputMode="numeric"
+              value={atmInput.displayValue}
+              onChange={() => {}} // Controlado completamente por ATM
+              onKeyDown={(e) => {
+                console.log('🎹 Component Key event:', e.key, e.keyCode);
+                atmInput.handleKeyDown(e);
               }}
-              onBlur={() => {
-                // Formatear como moneda al perder el foco
-                if (rawAmount && parseFloat(rawAmount) > 0) {
-                  const formatted = formatAsCurrency(rawAmount);
-                  console.log('💰 Formatted amount:', formatted);
-                }
+              onInput={(e) => {
+                console.log('📝 Component Input event');
+                atmInput.handleInput(e);
               }}
-              onFocus={() => {
-                console.log('💰 Amount field focused, raw value:', rawAmount);
+              onPaste={atmInput.handlePaste}
+              onFocus={(e) => {
+                console.log('👁️ Component Focus');
+                atmInput.handleFocus(e);
               }}
-              placeholder="0.00"
-              className="text-right"
+              onClick={(e) => {
+                console.log('🖱️ Component Click');
+                atmInput.handleClick(e);
+              }}
+              placeholder="$0.00"
+              className="text-right font-mono text-lg"
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
               spellCheck="false"
               required
             />
-            {rawAmount && parseFloat(rawAmount) > 0 && (
-              <div className="text-xs text-green-600">
-                Monto: {formatAsCurrency(rawAmount)}
-              </div>
-            )}
+            <div className="text-xs text-muted-foreground">
+              Escribe números como en un ATM • Valor: {atmInput.displayValue}
+            </div>
           </div>
 
           <div className="space-y-2">
