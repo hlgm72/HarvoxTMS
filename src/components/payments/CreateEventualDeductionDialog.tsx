@@ -16,6 +16,7 @@ import { CalendarIcon } from "lucide-react";
 import { parseISO, isWithinInterval, isBefore, isAfter, format } from "date-fns";
 import { es } from "date-fns/locale";
 import { formatDateOnly, formatDateInUserTimeZone } from "@/utils/dateUtils";
+import { useATMInput } from "@/hooks/useATMInput";
 import { cn } from "@/lib/utils";
 import { useFleetNotifications } from '@/components/notifications';
 import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
@@ -48,6 +49,22 @@ export function CreateEventualDeductionDialog({
   const [driverComboboxOpen, setDriverComboboxOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
+  // ATM Input - DEBE funcionar igual que en otros lugares
+  const atmInput = useATMInput({
+    initialValue: 0,
+    onValueChange: (value) => {
+      console.log('💳 ATM onValueChange called with:', value);
+      setFormData(prev => ({ ...prev, amount: value.toString() }));
+    }
+  });
+
+  // Debug ATM state
+  console.log('💳 ATM State:', {
+    displayValue: atmInput.displayValue,
+    numericValue: atmInput.numericValue,
+    dialogOpen: isOpen
+  });
+
   // Reset form when dialog opens
   useEffect(() => {
     if (isOpen) {
@@ -59,21 +76,10 @@ export function CreateEventualDeductionDialog({
         description: ''
       });
       setExpenseDate(undefined);
-      setAmount('');
+      console.log('💳 Resetting ATM input...');
+      atmInput.reset();
     }
-  }, [isOpen]);
-
-  // Input numérico simple que SÍ funciona (ATM falló específicamente en este componente)
-  const [amount, setAmount] = useState<string>('');
-  
-  const formatAsCurrency = (value: string) => {
-    const num = parseFloat(value) || 0;
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(num);
-  };
+  }, [isOpen, atmInput]);
 
   // Obtener usuarios por rol seleccionado
   const { data: users = [] } = useQuery({
@@ -255,7 +261,7 @@ export function CreateEventualDeductionDialog({
           payment_period_id: paymentPeriods[0]?.id, // Use the first (and likely only) period for the selected date
           user_id: formData.user_id,
           expense_type_id: formData.expense_type_id,
-          amount: parseFloat(amount || '0'),
+          amount: parseFloat(formData.amount),
           description: formData.description,
           expense_date: formatDateInUserTimeZone(expenseDate),
           status: 'planned',
@@ -308,8 +314,8 @@ export function CreateEventualDeductionDialog({
     expenseDate &&
     paymentPeriods.length > 0 &&
     formData.expense_type_id && 
-    amount && 
-    parseFloat(amount) > 0 &&
+    formData.amount && 
+    parseFloat(formData.amount) > 0 &&
     formData.description.trim().length > 0;
 
   return (
@@ -519,28 +525,36 @@ export function CreateEventualDeductionDialog({
 
           <div className="space-y-2">
             <Label htmlFor="amount">Monto ($) <span className="text-red-500">*</span></Label>
-            <div className="relative">
-              <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                min="0"
-                value={amount}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setAmount(value);
-                  setFormData(prev => ({ ...prev, amount: value }));
-                }}
-                placeholder="0.00"
-                className="text-right text-lg pr-4"
-                autoComplete="off"
-                required
-              />
-              {amount && parseFloat(amount) > 0 && (
-                <div className="absolute -bottom-6 right-0 text-sm text-green-600 font-semibold">
-                  {formatAsCurrency(amount)}
-                </div>
-              )}
+            <Input
+              id="amount"
+              type="text"
+              value={atmInput.displayValue}
+              onChange={(e) => {
+                console.log('💳 Input onChange triggered (should not be used):', e.target.value);
+              }}
+              onKeyDown={(e) => {
+                console.log('💳 Input onKeyDown - Key:', e.key, 'KeyCode:', e.keyCode, 'Target:', e.target);
+                console.log('💳 Before ATM handleKeyDown - ATM value:', atmInput.numericValue);
+                atmInput.handleKeyDown(e);
+                console.log('💳 After ATM handleKeyDown - ATM value:', atmInput.numericValue);
+              }}
+              onPaste={(e) => {
+                console.log('💳 Input onPaste triggered');
+                atmInput.handlePaste(e);
+              }}
+              onFocus={(e) => {
+                console.log('💳 Input focused - Current ATM value:', atmInput.displayValue);
+              }}
+              onBlur={(e) => {
+                console.log('💳 Input blurred - Final ATM value:', atmInput.displayValue);
+              }}
+              placeholder="$0.00"
+              className="text-right"
+              autoComplete="off"
+              required
+            />
+            <div className="text-xs text-gray-500">
+              Debug ATM: {atmInput.displayValue} | Numeric: {atmInput.numericValue} | Form: {formData.amount}
             </div>
           </div>
 
