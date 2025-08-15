@@ -114,7 +114,7 @@ export function ExpandableFloatingActions({
         aria-label={mainLabel}
       >
         <MainIcon className={cn(
-          "h-6 w-6 transition-transform duration-300 -translate-x-2",
+          "h-6 w-6 transition-transform duration-300 -translate-x-3",
           isExpanded ? "rotate-180" : ""
         )} />
       </button>
