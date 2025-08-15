@@ -40,13 +40,12 @@ export function CreateEventualDeductionDialog({
   
   const [formData, setFormData] = useState({
     user_id: '',
-    payment_period_id: '',
     expense_type_id: '',
     amount: '',
     description: ''
   });
   
-  const [expenseDate, setExpenseDate] = useState<Date>(new Date());
+  const [expenseDate, setExpenseDate] = useState<Date | undefined>(undefined);
   const [driverComboboxOpen, setDriverComboboxOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
@@ -56,12 +55,11 @@ export function CreateEventualDeductionDialog({
       setSelectedRole("driver");
       setFormData({
         user_id: '',
-        payment_period_id: '',
         expense_type_id: '',
         amount: '',
         description: ''
       });
-      setExpenseDate(new Date());
+      setExpenseDate(undefined);
     }
   }, [isOpen]);
 
@@ -112,14 +110,14 @@ export function CreateEventualDeductionDialog({
 
   // Obtener períodos de pago de la empresa para el conductor seleccionado
   const { data: paymentPeriods = [], isLoading: isLoadingPeriods } = useQuery({
-    queryKey: ['company-payment-periods-for-driver', formData.user_id],
+    queryKey: ['company-payment-periods-for-driver', formData.user_id, expenseDate],
     queryFn: async () => {
-      if (!formData.user_id) {
-        console.log('No driver selected');
+      if (!formData.user_id || !expenseDate) {
+        console.log('No driver selected or no expense date');
         return [];
       }
 
-      console.log('Fetching periods for driver:', formData.user_id);
+      console.log('Fetching periods for driver:', formData.user_id, 'date:', expenseDate);
 
       try {
         // Primero obtenemos la empresa del conductor
@@ -144,12 +142,14 @@ export function CreateEventualDeductionDialog({
         const companyId = userCompanyRoles[0].company_id;
         console.log('User company found:', companyId);
 
-        // Obtenemos los períodos abiertos de la empresa
-        console.log('Step 2: Getting company periods...');
+        // Obtenemos los períodos que contienen la fecha del gasto
+        console.log('Step 2: Getting company periods for date...');
         const { data: companyPeriods, error: periodsError } = await supabase
           .from('company_payment_periods')
           .select('*')
           .eq('company_id', companyId)
+          .lte('period_start_date', formatDateInUserTimeZone(expenseDate))
+          .gte('period_end_date', formatDateInUserTimeZone(expenseDate))
           .in('status', ['open', 'processing'])
           .order('period_start_date', { ascending: false });
 
@@ -161,7 +161,7 @@ export function CreateEventualDeductionDialog({
         console.log('Company periods found:', companyPeriods?.length || 0);
 
         if (!companyPeriods || companyPeriods.length === 0) {
-          console.log('No company periods found');
+          console.log('No company periods found for this date');
           return [];
         }
 
@@ -225,7 +225,7 @@ export function CreateEventualDeductionDialog({
         return [];
       }
     },
-    enabled: !!formData.user_id && isOpen
+    enabled: !!formData.user_id && !!expenseDate && isOpen
   });
 
   // Obtener tipos de gastos
@@ -249,16 +249,15 @@ export function CreateEventualDeductionDialog({
     setIsLoading(true);
 
     try {
+      if (!expenseDate) {
+        throw new Error('La fecha del gasto es requerida');
+      }
+
       const { error } = await supabase
         .from('expense_instances')
         .insert({
-          payment_period_id: paymentPeriods.find(p => {
-            const today = new Date();
-            const startDate = parseISO(p.company_payment_periods.period_start_date);
-            const endDate = parseISO(p.company_payment_periods.period_end_date);
-            return isWithinInterval(today, { start: startDate, end: endDate });
-          })?.id,
-          user_id: formData.user_id, // Campo actualizado
+          payment_period_id: paymentPeriods[0]?.id, // Use the first (and likely only) period for the selected date
+          user_id: formData.user_id,
           expense_type_id: formData.expense_type_id,
           amount: parseFloat(formData.amount),
           description: formData.description,
@@ -308,17 +307,10 @@ export function CreateEventualDeductionDialog({
     return '';
   };
 
-  // Derivar el período de empresa actual desde paymentPeriods
-  const companyPeriod = paymentPeriods.find(period => {
-    const today = new Date();
-    const startDate = parseISO(period.company_payment_periods.period_start_date);
-    const endDate = parseISO(period.company_payment_periods.period_end_date);
-    return isWithinInterval(today, { start: startDate, end: endDate });
-  })?.company_payment_periods;
-
   const isFormValid = 
     formData.user_id &&
-    companyPeriod &&
+    expenseDate &&
+    paymentPeriods.length > 0 &&
     formData.expense_type_id && 
     formData.amount && 
     parseFloat(formData.amount) > 0 &&
@@ -373,8 +365,7 @@ export function CreateEventualDeductionDialog({
                           onSelect={() => {
                             setFormData(prev => ({
                               ...prev,
-                              user_id: user.user_id,
-                              payment_period_id: '' // No longer needed with global periods
+                              user_id: user.user_id
                             }));
                             setDriverComboboxOpen(false);
                           }}
@@ -395,80 +386,121 @@ export function CreateEventualDeductionDialog({
             </Popover>
           </div>
 
-          {formData.user_id && (
-            <div className="space-y-2">
-              <Label htmlFor="payment-period">Período de Pago</Label>
-              {formData.user_id && isLoadingPeriods ? (
-                <div className="p-3 border border-blue-200 bg-blue-50 rounded-md">
-                  <p className="text-sm text-blue-800">
-                    Cargando períodos de pago...
-                  </p>
-                </div>
-              ) : !formData.user_id ? (
-                <div className="p-3 border border-gray-200 bg-gray-50 rounded-md">
-                  <p className="text-sm text-gray-600">
-                    Selecciona un conductor para ver los períodos de pago disponibles.
-                  </p>
-                </div>
-              ) : paymentPeriods.length === 0 ? (
-                <div className="space-y-2">
-                  <div className="p-3 border border-orange-200 bg-orange-50 rounded-md">
-                    <p className="text-sm text-orange-800">
-                      No hay períodos de pago disponibles para este {selectedRole === "driver" ? "conductor" : "despachador"}.
-                    </p>
-                    <p className="text-xs text-orange-600 mt-1">
-                      Los períodos de pago deben estar en estado "abierto" o "procesando" para crear deducciones eventuales.
-                    </p>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      window.open('/payments', '_blank');
-                    }}
-                    className="w-full"
-                  >
-                    Ir a Períodos de Pago
-                  </Button>
-                </div>
-              ) : (
-                <Select 
-                  value={companyPeriod?.id || ''} 
-                  onValueChange={() => {}} // Readonly since we use global periods
+          <div className="space-y-2">
+            <Label>Fecha del Gasto <span className="text-red-500">*</span></Label>
+            <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !expenseDate && "text-muted-foreground"
+                  )}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar período" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {paymentPeriods.map((period) => (
-                      <SelectItem key={period.id} value={period.id}>
-                        <div className={`flex items-center justify-between w-full ${
-                          getPeriodLabel(period) === 'actual' 
-                            ? 'font-semibold text-primary' 
-                            : ''
-                        }`}>
-                          <span>
-                            {formatDateOnly(period.company_payment_periods.period_start_date)} - {' '}
-                            {formatDateOnly(period.company_payment_periods.period_end_date)}
-                          </span>
-                          {getPeriodLabel(period) && (
-                            <span className={`ml-2 text-xs ${
-                              getPeriodLabel(period) === 'actual' 
-                                ? 'text-primary font-medium' 
-                                : 'text-muted-foreground'
-                            }`}>
-                              ({getPeriodLabel(period)})
-                            </span>
-                          )}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            </div>
-          )}
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {expenseDate ? format(expenseDate, "PPP", { locale: es }) : "Seleccionar fecha"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <div className="p-4 space-y-4">
+                  {/* Selectores de mes y año */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <Select
+                      value={expenseDate ? format(expenseDate, 'MMMM', { locale: es }) : ""}
+                      onValueChange={(monthName) => {
+                        const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                                          'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+                                          .indexOf(monthName.toLowerCase());
+                        if (monthIndex !== -1) {
+                          const currentYear = expenseDate?.getFullYear() || new Date().getFullYear();
+                          const currentDay = expenseDate?.getDate() || 1;
+                          setExpenseDate(new Date(currentYear, monthIndex, currentDay));
+                        }
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Mes" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="enero">Enero</SelectItem>
+                        <SelectItem value="febrero">Febrero</SelectItem>
+                        <SelectItem value="marzo">Marzo</SelectItem>
+                        <SelectItem value="abril">Abril</SelectItem>
+                        <SelectItem value="mayo">Mayo</SelectItem>
+                        <SelectItem value="junio">Junio</SelectItem>
+                        <SelectItem value="julio">Julio</SelectItem>
+                        <SelectItem value="agosto">Agosto</SelectItem>
+                        <SelectItem value="septiembre">Septiembre</SelectItem>
+                        <SelectItem value="octubre">Octubre</SelectItem>
+                        <SelectItem value="noviembre">Noviembre</SelectItem>
+                        <SelectItem value="diciembre">Diciembre</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <Select
+                      value={expenseDate?.getFullYear()?.toString() || ""}
+                      onValueChange={(year) => {
+                        const currentMonth = expenseDate?.getMonth() || 0;
+                        const currentDay = expenseDate?.getDate() || 1;
+                        setExpenseDate(new Date(parseInt(year), currentMonth, currentDay));
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Año" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="2024">2024</SelectItem>
+                        <SelectItem value="2025">2025</SelectItem>
+                        <SelectItem value="2026">2026</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Calendar */}
+                  <Calendar
+                    mode="single"
+                    selected={expenseDate}
+                    onSelect={(date) => {
+                      if (date) {
+                        setExpenseDate(date);
+                        setIsDatePickerOpen(false);
+                      }
+                    }}
+                    month={expenseDate}
+                    onMonthChange={setExpenseDate}
+                    className="p-0 pointer-events-auto"
+                  />
+                </div>
+              </PopoverContent>
+            </Popover>
+            
+            {formData.user_id && expenseDate && isLoadingPeriods && (
+              <div className="p-3 border border-blue-200 bg-blue-50 rounded-md">
+                <p className="text-sm text-blue-800">
+                  Verificando período de pago para la fecha seleccionada...
+                </p>
+              </div>
+            )}
+            
+            {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length === 0 && (
+              <div className="p-3 border border-orange-200 bg-orange-50 rounded-md">
+                <p className="text-sm text-orange-800">
+                  No hay un período de pago abierto para la fecha {format(expenseDate, "PPP", { locale: es })}.
+                </p>
+                <p className="text-xs text-orange-600 mt-1">
+                  Selecciona una fecha que esté dentro de un período de pago abierto.
+                </p>
+              </div>
+            )}
+            
+            {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length > 0 && (
+              <div className="p-3 border border-green-200 bg-green-50 rounded-md">
+                <p className="text-sm text-green-800">
+                  ✓ Período encontrado: {formatDateOnly(paymentPeriods[0].company_payment_periods.period_start_date)} - {formatDateOnly(paymentPeriods[0].company_payment_periods.period_end_date)}
+                </p>
+              </div>
+            )}
+          </div>
 
           <div className="space-y-2">
             <Label htmlFor="expense-type">Tipo de Gasto</Label>
@@ -489,120 +521,22 @@ export function CreateEventualDeductionDialog({
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="amount">Monto ($)</Label>
-              <Input
-                id="amount"
-                type="text"
-                value={atmInput.displayValue}
-                onChange={() => {}} // Dummy onChange to satisfy React warning
-                onKeyDown={(e) => {
-                  console.log('⌨️ Key pressed:', e.key, 'Input focused:', document.activeElement === e.target);
-                  atmInput.handleKeyDown(e);
-                }}
-                onPaste={(e) => {
-                  console.log('📋 Paste event triggered');
-                  atmInput.handlePaste(e);
-                }}
-                onFocus={() => console.log('🔍 Input focused')}
-                onBlur={() => console.log('😴 Input blurred')}
-                placeholder="$0.00"
-                className="text-right"
-                autoComplete="off"
-                readOnly
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Fecha del Gasto</Label>
-              <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !expenseDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {expenseDate ? format(expenseDate, "PPP", { locale: es }) : "Seleccionar fecha"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <div className="p-4 space-y-4">
-                    {/* Selectores de mes y año */}
-                    <div className="grid grid-cols-2 gap-2">
-                      <Select
-                        value={expenseDate ? format(expenseDate, 'MMMM', { locale: es }) : ""}
-                        onValueChange={(monthName) => {
-                          const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
-                                            'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
-                                            .indexOf(monthName.toLowerCase());
-                          if (monthIndex !== -1) {
-                            const currentYear = expenseDate?.getFullYear() || new Date().getFullYear();
-                            const currentDay = expenseDate?.getDate() || 1;
-                            setExpenseDate(new Date(currentYear, monthIndex, currentDay));
-                          }
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Mes" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="enero">Enero</SelectItem>
-                          <SelectItem value="febrero">Febrero</SelectItem>
-                          <SelectItem value="marzo">Marzo</SelectItem>
-                          <SelectItem value="abril">Abril</SelectItem>
-                          <SelectItem value="mayo">Mayo</SelectItem>
-                          <SelectItem value="junio">Junio</SelectItem>
-                          <SelectItem value="julio">Julio</SelectItem>
-                          <SelectItem value="agosto">Agosto</SelectItem>
-                          <SelectItem value="septiembre">Septiembre</SelectItem>
-                          <SelectItem value="octubre">Octubre</SelectItem>
-                          <SelectItem value="noviembre">Noviembre</SelectItem>
-                          <SelectItem value="diciembre">Diciembre</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      
-                      <Select
-                        value={expenseDate?.getFullYear()?.toString() || ""}
-                        onValueChange={(year) => {
-                          const currentMonth = expenseDate?.getMonth() || 0;
-                          const currentDay = expenseDate?.getDate() || 1;
-                          setExpenseDate(new Date(parseInt(year), currentMonth, currentDay));
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Año" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="2024">2024</SelectItem>
-                          <SelectItem value="2025">2025</SelectItem>
-                          <SelectItem value="2026">2026</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    {/* Calendar */}
-                    <Calendar
-                      mode="single"
-                      selected={expenseDate}
-                      onSelect={(date) => {
-                        if (date) {
-                          setExpenseDate(date);
-                          setIsDatePickerOpen(false);
-                        }
-                      }}
-                      month={expenseDate}
-                      onMonthChange={setExpenseDate}
-                      className="p-0 pointer-events-auto"
-                    />
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="amount">Monto ($) <span className="text-red-500">*</span></Label>
+            <Input
+              id="amount"
+              type="text"
+              value={atmInput.displayValue}
+              onChange={() => {}} // Controlled by handleKeyDown and handlePaste
+              onKeyDown={atmInput.handleKeyDown}
+              onPaste={atmInput.handlePaste}
+              onFocus={atmInput.handleFocus}
+              onClick={atmInput.handleClick}
+              placeholder="$0.00"
+              className="text-right"
+              autoComplete="off"
+              required
+            />
           </div>
 
           <div className="space-y-2">
