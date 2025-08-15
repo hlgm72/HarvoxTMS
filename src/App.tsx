@@ -37,6 +37,7 @@ import PaymentReports from "./pages/PaymentReports";
 import Preview from "./pages/Preview";
 
 import IconsPreview from "./pages/IconsPreview";
+import ImagePreview from "./pages/ImagePreview";
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/layout/Layout";
@@ -331,6 +332,16 @@ function AppContent() {
               <Layout>
                 <Settings />
               </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Image Preview */}
+        <Route 
+          path="/image-preview" 
+          element={
+            <ProtectedRoute>
+              <ImagePreview />
             </ProtectedRoute>
           } 
         />
