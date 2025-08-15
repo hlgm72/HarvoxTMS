@@ -572,7 +572,16 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       } else {
         // Mostrar todas las paradas si hay datos en load_stops
         allStops.forEach((stop, index) => {
-          const stopDate = stop.scheduled_date ? formatDateSafe(stop.scheduled_date, 'MM/dd/yyyy') : 'N/A';
+          // Usar la fecha principal de pickup o delivery si está disponible, sino usar scheduled_date
+          let stopDate = 'N/A';
+          if (stop.stop_type === 'pickup' && load.pickup_date) {
+            stopDate = formatDateSafe(load.pickup_date, 'MM/dd/yyyy');
+          } else if (stop.stop_type === 'delivery' && load.delivery_date) {
+            stopDate = formatDateSafe(load.delivery_date, 'MM/dd/yyyy');
+          } else if (stop.scheduled_date) {
+            stopDate = formatDateSafe(stop.scheduled_date, 'MM/dd/yyyy');
+          }
+          
           const stopCompany = stop.company_name || '';
           const stopLocation = `${stop.city}, ${stop.state}`;
           
