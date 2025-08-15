@@ -610,7 +610,7 @@ export function AppSidebar() {
                             {item.badge && (
                                <Badge 
                                  variant="secondary" 
-                                 className={`text-xs font-medium px-1.5 py-0.5 ml-2 rounded-md shadow-sm ${
+                                 className={`text-xs font-medium px-1.5 py-0.5 rounded-md shadow-sm ${
                                    item.badgeVariant === "live"
                                      ? "bg-red-500 text-white border-red-600 animate-pulse"
                                      : active 
