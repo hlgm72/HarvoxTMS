@@ -821,7 +821,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // === COLUMNA DERECHA: RESUMEN ===
   // Agregar contenedor con bordes redondeados para la sección de resumen
   const summaryHeight = 60; // Altura aproximada del contenedor
-  addRoundedBox(rightColumnX - 5, currentY - 2, 95, summaryHeight, colors.lightGray, 2, colors.border);
+  addRoundedBox(rightColumnX - 5, currentY - 8, 95, summaryHeight, colors.lightGray, 2, colors.border);
   
   addText('Period Summary', rightColumnX, currentY, {
     fontSize: 12,
