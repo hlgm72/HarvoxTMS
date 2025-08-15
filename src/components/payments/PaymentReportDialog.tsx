@@ -250,7 +250,7 @@ export function PaymentReportDialog({
           )
         `)
         .eq('payment_period_id', calculationId)
-        .eq('status', 'applied')
+        .in('status', ['applied', 'planned'])
         .order('expense_date', { ascending: true });
 
       if (error) {
