@@ -527,16 +527,36 @@ export function CreateEventualDeductionDialog({
               id="amount"
               type="text"
               value={atmInput.displayValue}
-              onChange={() => {}} // Controlled by handleKeyDown and handlePaste
-              onKeyDown={atmInput.handleKeyDown}
-              onPaste={atmInput.handlePaste}
-              onFocus={atmInput.handleFocus}
-              onClick={atmInput.handleClick}
+              onChange={(e) => {
+                console.log('💰 Amount field onChange triggered:', e.target.value);
+              }}
+              onKeyDown={(e) => {
+                console.log('💰 Amount field onKeyDown:', e.key, 'preventDefault?', e.defaultPrevented);
+                atmInput.handleKeyDown(e);
+              }}
+              onPaste={(e) => {
+                console.log('💰 Amount field onPaste triggered');
+                atmInput.handlePaste(e);
+              }}
+              onFocus={(e) => {
+                console.log('💰 Amount field focused');
+                atmInput.handleFocus(e);
+              }}
+              onClick={(e) => {
+                console.log('💰 Amount field clicked');
+                atmInput.handleClick(e);
+              }}
+              onInput={(e) => {
+                console.log('💰 Amount field onInput:', (e.target as HTMLInputElement).value);
+              }}
               placeholder="$0.00"
               className="text-right"
               autoComplete="off"
               required
             />
+            <div className="text-xs text-muted-foreground">
+              Debug: ATM Value = {atmInput.displayValue} | Numeric = {atmInput.numericValue}
+            </div>
           </div>
 
           <div className="space-y-2">
