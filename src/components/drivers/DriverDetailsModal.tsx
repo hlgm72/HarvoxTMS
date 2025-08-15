@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { User, Truck, Phone, MapPin, Calendar, Shield, Clock, FileText, CreditCard, Edit } from "lucide-react";
 import {
   Dialog,
@@ -51,11 +51,11 @@ const getStatusColor = (status: string) => {
 const getStatusText = (status: string) => {
   switch (status) {
     case "available":
-      return "Disponible";
+      return "Available";
     case "on_route":
-      return "En Ruta";
+      return "On Route";
     case "off_duty":
-      return "Fuera de Servicio";
+      return "Off Duty";
     default:
       return status;
   }
@@ -64,24 +64,24 @@ const getStatusText = (status: string) => {
 const formatExperience = (licenseIssueDate: string | null, hireDate: string | null) => {
   const experienceDate = licenseIssueDate || hireDate;
   
-  if (!experienceDate) return "No especificada";
+  if (!experienceDate) return "Not specified";
   
   try {
-    // Usar la función segura para parsear fechas
+    // Use safe function to parse dates
     let year: number, month: number, day: number;
     
     if (experienceDate.includes('T') || experienceDate.includes('Z')) {
-      // Formato ISO: extraer solo la parte de fecha
+      // ISO format: extract only date part
       const datePart = experienceDate.split('T')[0];
       [year, month, day] = datePart.split('-').map(Number);
     } else if (experienceDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      // Formato solo fecha: YYYY-MM-DD
+      // Date only format: YYYY-MM-DD
       [year, month, day] = experienceDate.split('-').map(Number);
     } else {
-      return "No especificada";
+      return "Not specified";
     }
     
-    // Crear fecha local evitando problemas de zona horaria
+    // Create local date avoiding timezone issues
     const startDate = new Date(year, month - 1, day);
     const now = new Date();
     const years = now.getFullYear() - startDate.getFullYear();
@@ -91,18 +91,18 @@ const formatExperience = (licenseIssueDate: string | null, hireDate: string | nu
     if (totalMonths < 0) totalMonths = 0;
     
     if (totalMonths < 12) {
-      return `${totalMonths} mes${totalMonths !== 1 ? 'es' : ''}`;
+      return `${totalMonths} month${totalMonths !== 1 ? 's' : ''}`;
     } else {
       const yearCount = Math.floor(totalMonths / 12);
       const monthCount = totalMonths % 12;
       if (monthCount === 0) {
-        return `${yearCount} año${yearCount !== 1 ? 's' : ''}`;
+        return `${yearCount} year${yearCount !== 1 ? 's' : ''}`;
       }
-      return `${yearCount} año${yearCount !== 1 ? 's' : ''} y ${monthCount} mes${monthCount !== 1 ? 'es' : ''}`;
+      return `${yearCount} year${yearCount !== 1 ? 's' : ''} and ${monthCount} month${monthCount !== 1 ? 's' : ''}`;
     }
   } catch (error) {
     console.error('Error calculating experience:', error);
-    return "No especificada";
+    return "Not specified";
   }
 };
 
@@ -124,7 +124,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
   const loadProfileData = async () => {
     setLoading(true);
     try {
-      // Obtener datos básicos del perfil
+      // Get basic profile data
       const { data, error } = await supabase
         .from('profiles')
         .select('created_at')
@@ -133,15 +133,15 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
 
       if (error) throw error;
       
-      // Intentar obtener el email del usuario autenticado
-      let email = 'No disponible';
+      // Try to get email from authenticated user
+      let email = 'Not available';
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user && user.id === driver.user_id) {
-          // Si el usuario autenticado es el mismo conductor, mostrar su email
-          email = user.email || 'No especificado';
+          // If authenticated user is same driver, show their email
+          email = user.email || 'Not specified';
         } else {
-          // Si es un administrador, intentar obtener el email de otra manera
+          // If it's an admin, try to get email another way
           const { data: userData, error: userError } = await supabase
             .rpc('get_user_email_by_id', { user_id_param: driver.user_id });
           
@@ -150,7 +150,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
           }
         }
       } catch (emailError) {
-        console.log('No se pudo obtener el email:', emailError);
+        console.log('Could not get email:', emailError);
       }
       
       setProfileData({
@@ -165,12 +165,12 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
   };
 
   const handleDriverUpdated = () => {
-    // Recargar todos los datos del modal de detalles
+    // Reload all driver detail modal data
     loadProfileData();
     refetchEquipment();
     refetchCards();
     refetchOwnerOperator();
-    // Notificar a la página padre para que también actualice
+    // Notify parent page to also update
     onDriverUpdated?.();
   };
 
@@ -196,7 +196,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h2 className="text-xl font-semibold">{fullName || 'Sin nombre'}</h2>
+                <h2 className="text-xl font-semibold">{fullName || 'No name'}</h2>
                 <div className="flex items-center gap-2">
                   <Badge variant={getStatusColor(driver.current_status) as any}>
                     {getStatusText(driver.current_status)}
@@ -216,7 +216,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
               className="flex items-center gap-2 bg-primary hover:bg-primary/90"
             >
               <Edit className="h-4 w-4" />
-              Editar
+              Edit
             </Button>
           </div>
         </DialogHeader>
@@ -224,9 +224,9 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
         <Tabs defaultValue="personal" className="w-full">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="personal">Personal</TabsTrigger>
-            <TabsTrigger value="license">Licencia</TabsTrigger>
-            <TabsTrigger value="equipment">Equipos</TabsTrigger>
-            <TabsTrigger value="business">Negocio</TabsTrigger>
+            <TabsTrigger value="license">License</TabsTrigger>
+            <TabsTrigger value="equipment">Equipment</TabsTrigger>
+            <TabsTrigger value="business">Business</TabsTrigger>
           </TabsList>
 
           <TabsContent value="personal" className="space-y-4">
@@ -234,7 +234,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <User className="h-5 w-5" />
-                  Información Personal
+                  Personal Information
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -242,8 +242,8 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
                   <div className="flex items-center gap-3">
                     <Phone className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Teléfono</p>
-                      <p className="text-sm text-muted-foreground">{driver.phone || 'No especificado'}</p>
+                      <p className="text-sm font-medium">Phone</p>
+                      <p className="text-sm text-muted-foreground">{driver.phone || 'Not specified'}</p>
                     </div>
                   </div>
                   
@@ -251,18 +251,18 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
                     <User className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Email</p>
-                      <p className="text-sm text-muted-foreground">{profileData.email || 'No especificado'}</p>
+                      <p className="text-sm text-muted-foreground">{profileData.email || 'Not specified'}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Fecha de Contratación</p>
+                      <p className="text-sm font-medium">Hire Date</p>
                       <p className="text-sm text-muted-foreground">
                         {driver.hire_date 
                           ? formatDateOnly(driver.hire_date)
-                          : 'No especificada'
+                          : 'Not specified'
                         }
                       </p>
                     </div>
@@ -271,7 +271,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
                   <div className="flex items-center gap-3">
                     <Clock className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Experiencia</p>
+                      <p className="text-sm font-medium">Experience</p>
                       <p className="text-sm text-muted-foreground">
                         {formatExperience(driver.license_issue_date, driver.hire_date)}
                       </p>
@@ -281,15 +281,15 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
 
                 {driver.emergency_contact_name && (
                   <div className="border-t pt-4">
-                    <h4 className="font-medium mb-2">Contacto de Emergencia</h4>
+                    <h4 className="font-medium mb-2">Emergency Contact</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm font-medium">Nombre</p>
+                        <p className="text-sm font-medium">Name</p>
                         <p className="text-sm text-muted-foreground">{driver.emergency_contact_name}</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium">Teléfono</p>
-                        <p className="text-sm text-muted-foreground">{driver.emergency_contact_phone || 'No especificado'}</p>
+                        <p className="text-sm font-medium">Phone</p>
+                        <p className="text-sm text-muted-foreground">{driver.emergency_contact_phone || 'Not specified'}</p>
                       </div>
                     </div>
                   </div>
@@ -303,7 +303,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="h-5 w-5" />
-                  Información de Licencia
+                  License Information
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -311,35 +311,35 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
                   <div className="flex items-center gap-3">
                     <FileText className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Número de Licencia</p>
-                      <p className="text-sm text-muted-foreground">{driver.license_number || 'No especificado'}</p>
+                      <p className="text-sm font-medium">License Number</p>
+                      <p className="text-sm text-muted-foreground">{driver.license_number || 'Not specified'}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <Shield className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Clase CDL</p>
-                      <p className="text-sm text-muted-foreground">{driver.cdl_class || 'No especificada'}</p>
+                      <p className="text-sm font-medium">CDL Class</p>
+                      <p className="text-sm text-muted-foreground">{driver.cdl_class || 'Not specified'}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Estado de Emisión</p>
-                      <p className="text-sm text-muted-foreground">{driver.license_state || 'No especificado'}</p>
+                      <p className="text-sm font-medium">Issuing State</p>
+                      <p className="text-sm text-muted-foreground">{driver.license_state || 'Not specified'}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Fecha de Emisión</p>
+                      <p className="text-sm font-medium">Issue Date</p>
                       <p className="text-sm text-muted-foreground">
                         {driver.license_issue_date 
                           ? formatDateOnly(driver.license_issue_date)
-                          : 'No especificada'
+                          : 'Not specified'
                         }
                       </p>
                     </div>
@@ -348,21 +348,21 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
                   <div className="flex items-center gap-3">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">Fecha de Vencimiento</p>
+                      <p className="text-sm font-medium">Expiry Date</p>
                        <div className="flex flex-col">
                          <p className="text-sm text-muted-foreground">
                            {driver.license_expiry_date 
                              ? formatDateOnly(driver.license_expiry_date)
-                             : 'No especificada'
+                             : 'Not specified'
                            }
                          </p>
                          {driver.license_expiry_date && (
                           <>
                             {getExpiryInfo(driver.license_expiry_date).isExpired && (
-                              <span className="text-red-600 font-semibold text-xs">⚠️ VENCIDA</span>
+                              <span className="text-red-600 font-semibold text-xs">⚠️ EXPIRED</span>
                             )}
                             {getExpiryInfo(driver.license_expiry_date).isExpiring && !getExpiryInfo(driver.license_expiry_date).isExpired && (
-                              <span className="text-orange-600 font-semibold text-xs">⚠️ PRÓXIMO A VENCER</span>
+                              <span className="text-orange-600 font-semibold text-xs">⚠️ EXPIRING SOON</span>
                             )}
                           </>
                         )}
@@ -379,7 +379,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Truck className="h-5 w-5" />
-                  Equipos Asignados
+                  Assigned Equipment
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -403,29 +403,29 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
                           <p className="text-sm text-muted-foreground">
                             {capitalizeWords(equipment.make)} {capitalizeWords(equipment.model)} {equipment.year}
                           </p>
-                          <p className="text-xs text-muted-foreground">
-                            Asignado: {formatDateOnly(equipment.assigned_date)}
-                          </p>
-                        </div>
-                        <Badge variant={equipment.is_active ? "default" : "secondary"}>
-                          {equipment.is_active ? "Activo" : "Inactivo"}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground text-center py-8">
-                    No hay equipos asignados a este conductor
-                  </p>
-                )}
-              </CardContent>
+                           <p className="text-xs text-muted-foreground">
+                             Assigned: {formatDateOnly(equipment.assigned_date)}
+                           </p>
+                         </div>
+                         <Badge variant={equipment.is_active ? "default" : "secondary"}>
+                           {equipment.is_active ? "Active" : "Inactive"}
+                         </Badge>
+                       </div>
+                     ))}
+                   </div>
+                 ) : (
+                   <p className="text-muted-foreground text-center py-8">
+                     No equipment assigned to this driver
+                   </p>
+                 )}
+               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CreditCard className="h-5 w-5" />
-                  Tarjetas de Combustible
+                  Fuel Cards
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -446,18 +446,18 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
                             **** **** **** {card.card_number_last_five}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Asignada: {formatDateOnly(card.assigned_date)}
+                            Assigned: {formatDateOnly(card.assigned_date)}
                           </p>
                         </div>
                         <Badge variant={card.is_active ? "default" : "secondary"}>
-                          {card.is_active ? "Activa" : "Inactiva"}
+                          {card.is_active ? "Active" : "Inactive"}
                         </Badge>
                       </div>
                     ))}
                   </div>
                 ) : (
                   <p className="text-muted-foreground text-center py-8">
-                    No hay tarjetas de combustible asignadas
+                    No fuel cards assigned
                   </p>
                 )}
               </CardContent>
@@ -480,50 +480,50 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Truck className="h-5 w-5" />
-                    Información de Negocio (Owner-Operator)
+                    Business Information (Owner-Operator)
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm font-medium">Nombre del Negocio</p>
-                      <p className="text-sm text-muted-foreground">{ownerOperator.business_name || 'No especificado'}</p>
+                      <p className="text-sm font-medium">Business Name</p>
+                      <p className="text-sm text-muted-foreground">{ownerOperator.business_name || 'Not specified'}</p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium">Tipo de Negocio</p>
-                      <p className="text-sm text-muted-foreground">{ownerOperator.business_type || 'No especificado'}</p>
+                      <p className="text-sm font-medium">Business Type</p>
+                      <p className="text-sm text-muted-foreground">{ownerOperator.business_type || 'Not specified'}</p>
                     </div>
                     <div>
                       <p className="text-sm font-medium">Tax ID / EIN</p>
-                      <p className="text-sm text-muted-foreground">{ownerOperator.tax_id || 'No especificado'}</p>
+                      <p className="text-sm text-muted-foreground">{ownerOperator.tax_id || 'Not specified'}</p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium">Teléfono del Negocio</p>
-                      <p className="text-sm text-muted-foreground">{ownerOperator.business_phone || 'No especificado'}</p>
+                      <p className="text-sm font-medium">Business Phone</p>
+                      <p className="text-sm text-muted-foreground">{ownerOperator.business_phone || 'Not specified'}</p>
                     </div>
                     <div className="md:col-span-2">
-                      <p className="text-sm font-medium">Dirección del Negocio</p>
-                      <p className="text-sm text-muted-foreground">{ownerOperator.business_address || 'No especificada'}</p>
+                      <p className="text-sm font-medium">Business Address</p>
+                      <p className="text-sm text-muted-foreground">{ownerOperator.business_address || 'Not specified'}</p>
                     </div>
                   </div>
 
                   <div className="border-t pt-4">
-                    <h4 className="font-medium mb-2">Configuración Financiera</h4>
+                    <h4 className="font-medium mb-2">Financial Configuration</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       <div>
-                        <p className="text-sm font-medium">Comisión Dispatching</p>
+                        <p className="text-sm font-medium">Dispatching Commission</p>
                         <p className="text-sm text-muted-foreground">{ownerOperator.dispatching_percentage}%</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium">Comisión Factoring</p>
+                        <p className="text-sm font-medium">Factoring Commission</p>
                         <p className="text-sm text-muted-foreground">{ownerOperator.factoring_percentage}%</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium">Comisión Leasing</p>
+                        <p className="text-sm font-medium">Leasing Commission</p>
                         <p className="text-sm text-muted-foreground">{ownerOperator.leasing_percentage}%</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium">Pago de Seguro</p>
+                        <p className="text-sm font-medium">Insurance Payment</p>
                         <p className="text-sm text-muted-foreground">${ownerOperator.insurance_pay}</p>
                       </div>
                     </div>
@@ -534,7 +534,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
               <Card>
                 <CardContent className="pt-6">
                   <p className="text-muted-foreground text-center py-8">
-                    Este conductor no es Owner-Operator
+                    This driver is not an Owner-Operator
                   </p>
                 </CardContent>
               </Card>
@@ -542,7 +542,7 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
           </TabsContent>
         </Tabs>
 
-        {/* Dialog de edición */}
+        {/* Edit dialog */}
         <EditDriverDialog
           isOpen={showEditDialog}
           onClose={() => setShowEditDialog(false)}
