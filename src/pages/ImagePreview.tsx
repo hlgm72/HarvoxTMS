@@ -7,8 +7,8 @@ export default function ImagePreview() {
 
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = '/professional-payment-report-mockup.png';
-    link.download = 'professional-payment-report-mockup.png';
+    link.href = '/diosvani-payment-report-august-2025.png';
+    link.download = 'diosvani-payment-report-august-2025.png';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -26,7 +26,7 @@ export default function ImagePreview() {
             <ArrowLeft className="h-4 w-4" />
             Volver
           </Button>
-          <h1 className="text-2xl font-bold">PDF Report Mockup</h1>
+          <h1 className="text-2xl font-bold">Reporte de Pago - Diosvani González</h1>
           <Button 
             onClick={handleDownload}
             className="flex items-center gap-2 ml-auto"
@@ -38,8 +38,8 @@ export default function ImagePreview() {
         
         <div className="bg-white rounded-lg shadow-lg p-4">
           <img 
-            src="/professional-payment-report-mockup.png" 
-            alt="Professional Payment Report Mockup"
+            src="/diosvani-payment-report-august-2025.png" 
+            alt="Reporte de Pago Diosvani González - Agosto 2025"
             className="w-full h-auto rounded-lg border"
             style={{ maxHeight: '80vh', objectFit: 'contain' }}
           />
