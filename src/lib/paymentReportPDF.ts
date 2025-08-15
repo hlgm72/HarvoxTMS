@@ -853,10 +853,8 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     rightY += 8;
   });
 
-  // Net Pay destacado
-  const blueRgb = hexToRgb(colors.lightBlue);
-  doc.setFillColor(blueRgb[0], blueRgb[1], blueRgb[2]);
-  doc.rect(rightColumnX, rightY, 85, 10, 'F');
+  // Usar addRoundedBox para Net Pay destacado
+  addRoundedBox(rightColumnX, rightY, 85, 10, colors.lightBlue, 2, colors.lightBlue);
   
   addText('Net Pay', rightColumnX + 2, rightY + 6, {
     fontSize: 12,
