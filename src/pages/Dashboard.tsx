@@ -38,7 +38,7 @@ export default function Dashboard() {
         title="Centro de Comando"
         subtitle="Operaciones en tiempo real • Monitoreo de flota activo"
       />
-      <div className="p-3 md:p-6 space-y-4 md:space-y-6">
+      <div className="p-2 md:p-4 space-y-6">
         {/* PWA Install Banner - Temporarily disabled for debugging */}
         {/* <PWAInstallBanner /> */}
 
