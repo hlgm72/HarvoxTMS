@@ -85,7 +85,7 @@ export default function Equipment() {
         }
       />
       
-      <div className="container mx-auto p-6 md:p-8 space-y-12">
+      <div className="p-2 md:p-4 space-y-12">
         {/* Stats Cards */}
         <div className="mb-12">
           <EquipmentStats equipment={equipment} />
