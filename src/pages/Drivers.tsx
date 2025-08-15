@@ -1,4 +1,4 @@
-import { Truck, UserPlus, Settings, Edit, Trash2, Users, UserCheck, Clock, FileText, BarChart3 } from "lucide-react";
+import { Truck, UserPlus, Settings, Edit, Trash2, Users, UserCheck, Clock, FileText, BarChart3, Eye } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -422,43 +422,47 @@ export default function Drivers() {
                            </div>
                         </div>
                          
-                          <div className="flex gap-2 mt-4">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="flex-1"
-                              onClick={() => {
-                                setSelectedDriver(driver);
-                                setShowDetailsModal(true);
-                              }}
-                              >
-                                {t('fleet:drivers.actions.view_details')}
+                           <div className="flex flex-col sm:flex-row gap-2 mt-4">
+                             <Button 
+                               variant="outline" 
+                               size="sm" 
+                               className="flex-1"
+                               onClick={() => {
+                                 setSelectedDriver(driver);
+                                 setShowDetailsModal(true);
+                               }}
+                               >
+                                 <Eye className="h-3 w-3 mr-1 sm:mr-0 sm:hidden" />
+                                 <span className="sm:hidden">{t('fleet:drivers.actions.view')}</span>
+                                 <span className="hidden sm:inline">{t('fleet:drivers.actions.view_details')}</span>
+                               </Button>
+                               <Button 
+                                 variant="outline" 
+                                 size="sm" 
+                                 className="flex-1"
+                                 onClick={() => {
+                                   setSelectedDriver(driver);
+                                   setShowEditDialog(true);
+                                 }}
+                               >
+                                 <Edit className="h-3 w-3 mr-1 sm:mr-0" />
+                                 <span className="sm:hidden">{t('fleet:drivers.actions.edit')}</span>
+                                 <span className="hidden sm:inline">{t('fleet:drivers.actions.edit')}</span>
                               </Button>
                               <Button 
                                 variant="outline" 
                                 size="sm" 
                                 className="flex-1"
                                 onClick={() => {
-                                  setSelectedDriver(driver);
-                                  setShowEditDialog(true);
+                                  setSelectedDriverId(driver.user_id);
+                                  setShowAssignmentDialog(true);
                                 }}
                               >
-                                <Edit className="h-3 w-3" />
-                                {t('fleet:drivers.actions.edit')}
-                             </Button>
-                             <Button 
-                               variant="outline" 
-                               size="sm" 
-                               className="flex-1 gap-1"
-                               onClick={() => {
-                                 setSelectedDriverId(driver.user_id);
-                                 setShowAssignmentDialog(true);
-                               }}
-                             >
-                                <Settings className="h-3 w-3" />
-                                {t('fleet:drivers.actions.assign_equipment')}
-                              </Button>
-                          </div>
+                                 <Settings className="h-3 w-3 mr-1 sm:mr-0" />
+                                 <span className="sm:hidden">{t('fleet:drivers.actions.equipment')}</span>
+                                 <span className="hidden sm:inline">{t('fleet:drivers.actions.assign_equipment')}</span>
+                               </Button>
+                           </div>
                       </CardContent>
                     </Card>
                   );
