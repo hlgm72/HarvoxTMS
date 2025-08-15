@@ -641,15 +641,14 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="overflow-x-hidden mr-0"
+      className="overflow-x-hidden"
       collapsible="icon"
       variant="sidebar"
       side="left"
       style={{ 
         backgroundColor: 'hsl(var(--sidebar-background))',
-        width: collapsed ? '64px' : 'var(--sidebar-width)',
-        overflowX: 'hidden',
-        marginRight: '0px'
+        width: collapsed ? '64px' : '280px',
+        overflowX: 'hidden'
       } as any}
     >
       <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'px-3 py-4' : 'px-6 py-6'}`} style={{ 
