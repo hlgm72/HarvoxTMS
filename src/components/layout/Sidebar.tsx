@@ -556,13 +556,13 @@ export function AppSidebar() {
                              to={item.url} 
                              end
                              onClick={handleNavClick}
-                             className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
-                               collapsed ? 'px-3 py-2 justify-center' : 'px-4 py-2'
-                             } ${
-                               active 
-                                 ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
-                                 : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
-                             }`}
+                              className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
+                                collapsed ? 'px-0 py-2 justify-center w-full' : 'px-4 py-2'
+                              } ${
+                                active 
+                                  ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                                  : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                              }`}
                           >
                             <IconComponent 
                               className={`!h-4 !w-4 flex-shrink-0 transition-all duration-200 ${
@@ -586,13 +586,13 @@ export function AppSidebar() {
                            to={item.url} 
                            end
                            onClick={handleNavClick}
-                          className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
-                            collapsed ? 'px-3 py-2 justify-center' : 'px-4 py-2'
-                          } ${
-                            active 
-                              ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
-                              : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
-                          }`}
+                           className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
+                             collapsed ? 'px-0 py-2 justify-center w-full' : 'px-4 py-2'
+                           } ${
+                             active 
+                               ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                               : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                           }`}
                       >
                         <IconComponent 
                           className={`!h-4 !w-4 flex-shrink-0 transition-all duration-200 ${
