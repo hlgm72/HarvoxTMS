@@ -279,7 +279,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     }
     
     addText(data.company.name || 'Transport LLC', col1X + logoWidth, currentY, {
-      fontSize: 12,
+      fontSize: 10,
       fontStyle: 'bold',
       color: colors.darkGray
     });
@@ -345,7 +345,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
     // === COLUMNA 3: INFORMACIÓN DEL CONDUCTOR ===
     addText(data.driver.name, col3X + colWidth, currentY, {
-      fontSize: 12,
+      fontSize: 10,
       fontStyle: 'bold',
       color: colors.darkGray,
       align: 'right'
