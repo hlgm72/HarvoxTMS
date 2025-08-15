@@ -16,7 +16,6 @@ import { CalendarIcon } from "lucide-react";
 import { parseISO, isWithinInterval, isBefore, isAfter, format } from "date-fns";
 import { es } from "date-fns/locale";
 import { formatDateOnly, formatDateInUserTimeZone } from "@/utils/dateUtils";
-import { useATMInput } from "@/hooks/useATMInput";
 import { cn } from "@/lib/utils";
 import { useFleetNotifications } from '@/components/notifications';
 import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
@@ -60,24 +59,23 @@ export function CreateEventualDeductionDialog({
         description: ''
       });
       setExpenseDate(undefined);
+      setAmount('');
     }
   }, [isOpen]);
 
-  // ATM Input para el monto (como en banco)
-  const atmInput = useATMInput({
-    initialValue: 0,
-    onValueChange: (value) => {
-      console.log('🏧 ATM value changed to:', value);
-      setFormData(prev => ({ ...prev, amount: value.toString() }));
-    }
-  });
-
-  // Reset ATM input when dialog opens
-  useEffect(() => {
-    if (isOpen) {
-      atmInput.reset();
-    }
-  }, [isOpen, atmInput.reset]);
+  // Monto simple que funcione de verdad
+  const [amount, setAmount] = useState<string>('');
+  
+  // Formatear como ATM pero permitir escritura normal
+  const formatAsATM = (value: string) => {
+    if (!value) return '$0.00';
+    const num = parseFloat(value) || 0;
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+    }).format(num);
+  };
 
   // Obtener usuarios por rol seleccionado
   const { data: users = [] } = useQuery({
@@ -259,7 +257,7 @@ export function CreateEventualDeductionDialog({
           payment_period_id: paymentPeriods[0]?.id, // Use the first (and likely only) period for the selected date
           user_id: formData.user_id,
           expense_type_id: formData.expense_type_id,
-          amount: parseFloat(formData.amount),
+          amount: parseFloat(amount || '0'),
           description: formData.description,
           expense_date: formatDateInUserTimeZone(expenseDate),
           status: 'planned',
@@ -312,8 +310,8 @@ export function CreateEventualDeductionDialog({
     expenseDate &&
     paymentPeriods.length > 0 &&
     formData.expense_type_id && 
-    formData.amount && 
-    parseFloat(formData.amount) > 0 &&
+    amount && 
+    parseFloat(amount) > 0 &&
     formData.description.trim().length > 0;
 
   return (
@@ -525,34 +523,25 @@ export function CreateEventualDeductionDialog({
             <Label htmlFor="amount">Monto ($) <span className="text-red-500">*</span></Label>
             <Input
               id="amount"
-              type="tel"
-              inputMode="numeric"
-              value={atmInput.displayValue}
-              readOnly={false}
-              onKeyDown={(e) => {
-                console.log('🔑 Key pressed:', e.key, 'Code:', e.code, 'KeyCode:', e.keyCode);
-                atmInput.handleKeyDown(e);
+              type="number"
+              step="0.01"
+              min="0"
+              value={amount}
+              onChange={(e) => {
+                const value = e.target.value;
+                setAmount(value);
+                setFormData(prev => ({ ...prev, amount: value }));
               }}
-              onPaste={(e) => {
-                console.log('📋 Paste event');
-                atmInput.handlePaste(e);
-              }}
-              onFocus={(e) => {
-                console.log('👁️ Field focused');
-                atmInput.handleFocus(e);
-              }}
-              onClick={(e) => {
-                console.log('🖱️ Field clicked');
-                atmInput.handleClick(e);
-              }}
-              placeholder="$0.00"
+              placeholder="0.00"
               className="text-right"
               autoComplete="off"
               required
             />
-            <div className="text-xs text-muted-foreground">
-              Cada número que escribas se agrega como centavo • Debug: {atmInput.displayValue} = ${atmInput.numericValue}
-            </div>
+            {amount && parseFloat(amount) > 0 && (
+              <div className="text-sm text-green-600 font-medium">
+                💰 {formatAsATM(amount)}
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">
