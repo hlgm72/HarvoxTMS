@@ -559,9 +559,9 @@ export function AppSidebar() {
                              className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
                                 collapsed ? 'w-full py-2 justify-center' : 'px-4 py-2'
                              } ${
-                               active 
-                                 ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
-                                 : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                                active 
+                                  ? (collapsed ? "bg-white/20 text-white shadow-lg" : "bg-white/20 text-white shadow-lg border-l-2 border-white")
+                                  : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
                              }`}
                           >
                             <IconComponent 
@@ -572,9 +572,9 @@ export function AppSidebar() {
                             />
                             
                             {/* Active indicator - exacto como Limitless */}
-                            {active && (
-                              <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
-                            )}
+                             {active && !collapsed && (
+                               <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
+                             )}
                           </NavLink>
                        </TooltipTrigger>
                        <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200 shadow-lg">
@@ -589,9 +589,9 @@ export function AppSidebar() {
                           className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
                             collapsed ? 'w-full py-2 justify-center' : 'px-4 py-2'
                           } ${
-                            active 
-                              ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
-                              : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                             active 
+                               ? (collapsed ? "bg-white/20 text-white shadow-lg" : "bg-white/20 text-white shadow-lg border-l-2 border-white")
+                               : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
                           }`}
                       >
                         <IconComponent 
