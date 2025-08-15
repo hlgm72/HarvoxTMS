@@ -520,33 +520,21 @@ export function CreateEventualDeductionDialog({
             <Input
               id="amount"
               type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={atmInput.displayValue}
-              onChange={(e) => {
-                console.log('💳 Input onChange triggered (should not be used):', e.target.value);
-              }}
-              onKeyDown={(e) => {
-                console.log('💳 Input onKeyDown - Key:', e.key, 'KeyCode:', e.keyCode, 'Target:', e.target);
-                console.log('💳 Before ATM handleKeyDown - ATM value:', atmInput.numericValue);
-                atmInput.handleKeyDown(e);
-                console.log('💳 After ATM handleKeyDown - ATM value:', atmInput.numericValue);
-              }}
-              onPaste={(e) => {
-                console.log('💳 Input onPaste triggered');
-                atmInput.handlePaste(e);
-              }}
-              onFocus={(e) => {
-                console.log('💳 Input focused - Current ATM value:', atmInput.displayValue);
-              }}
-              onBlur={(e) => {
-                console.log('💳 Input blurred - Final ATM value:', atmInput.displayValue);
-              }}
+              onChange={atmInput.handleInput}
+              onKeyDown={atmInput.handleKeyDown}
+              onPaste={atmInput.handlePaste}
+              onFocus={atmInput.handleFocus}
+              onClick={atmInput.handleClick}
               placeholder="$0.00"
-              className="text-right"
+              className="text-right font-mono text-lg"
               autoComplete="off"
               required
             />
-            <div className="text-xs text-gray-500">
-              Debug ATM: {atmInput.displayValue} | Numeric: {atmInput.numericValue} | Form: {formData.amount}
+            <div className="text-xs text-muted-foreground text-center">
+              Introduce los números como en un cajero automático
             </div>
           </div>
 
