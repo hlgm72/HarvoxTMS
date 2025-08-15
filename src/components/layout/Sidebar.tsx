@@ -535,20 +535,20 @@ export function AppSidebar() {
     if (sectionItems.length === 0) return null;
 
      return (
-      <div key={sectionName} className={`mb-1 ${collapsed ? 'w-full' : ''}`}>
+      <div key={sectionName} className="mb-1">
         {!collapsed && (
           <div className="px-4 py-1 text-xs font-body font-normal text-white/70 uppercase tracking-wide">
             {sectionLabel}
           </div>
         )}
-        <div className={collapsed ? 'w-full' : ''}>
-          <div className={`space-y-0 ${collapsed ? 'w-full' : ''}`}>
+        <div>
+          <div className="space-y-0">
             {sectionItems.map((item: any) => {
               const active = isActive(item.url);
               const IconComponent = item.icon;
               
               return (
-                 <div key={item.title} className={collapsed ? 'w-full' : ''}>
+                 <div key={item.title}>
                    {collapsed ? (
                      <Tooltip>
                        <TooltipTrigger asChild>
@@ -559,9 +559,9 @@ export function AppSidebar() {
                              className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
                                 collapsed ? 'w-full py-2 justify-center' : 'px-4 py-2'
                              } ${
-                                active 
-                                  ? (collapsed ? "bg-white/20 text-white shadow-lg" : "bg-white/20 text-white shadow-lg border-l-2 border-white")
-                                  : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                               active 
+                                 ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                                 : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
                              }`}
                           >
                             <IconComponent 
@@ -572,9 +572,9 @@ export function AppSidebar() {
                             />
                             
                             {/* Active indicator - exacto como Limitless */}
-                             {active && !collapsed && (
-                               <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
-                             )}
+                            {active && (
+                              <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
+                            )}
                           </NavLink>
                        </TooltipTrigger>
                        <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200 shadow-lg">
@@ -589,9 +589,9 @@ export function AppSidebar() {
                           className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
                             collapsed ? 'w-full py-2 justify-center' : 'px-4 py-2'
                           } ${
-                             active 
-                               ? (collapsed ? "bg-white/20 text-white shadow-lg" : "bg-white/20 text-white shadow-lg border-l-2 border-white")
-                               : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                            active 
+                              ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                              : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
                           }`}
                       >
                         <IconComponent 
