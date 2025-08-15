@@ -177,7 +177,6 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
       {/* Botones Flotantes Expandibles */}
       <ExpandableFloatingActions
         actions={floatingActions}
-        mainIcon={Plus}
         mainLabel="Acciones de Cargas"
         position="bottom-right"
       />

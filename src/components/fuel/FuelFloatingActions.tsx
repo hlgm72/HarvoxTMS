@@ -124,7 +124,6 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
       {/* Botones Flotantes Expandibles */}
       <ExpandableFloatingActions
         actions={floatingActions}
-        mainIcon={Plus}
         mainLabel="Acciones de Combustible"
         position="bottom-right"
       />

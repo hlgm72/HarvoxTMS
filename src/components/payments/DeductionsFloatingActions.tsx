@@ -144,7 +144,6 @@ export function DeductionsFloatingActions({
       {/* Botones Flotantes Expandibles */}
       <ExpandableFloatingActions
         actions={floatingActions}
-        mainIcon={Plus}
         mainLabel="Acciones de Deducciones"
         position="bottom-right"
       />
