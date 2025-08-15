@@ -535,13 +535,13 @@ export function AppSidebar() {
     if (sectionItems.length === 0) return null;
 
      return (
-      <div key={sectionName} className={`mb-1 ${collapsed ? 'flex flex-col items-center' : ''}`}>
+      <div key={sectionName} className="mb-1">
         {!collapsed && (
           <div className="px-4 py-1 text-xs font-body font-normal text-white/70 uppercase tracking-wide">
             {sectionLabel}
           </div>
         )}
-        <div className={collapsed ? 'w-full' : ''}>
+        <div>
           <div className="space-y-0">
             {sectionItems.map((item: any) => {
               const active = isActive(item.url);
@@ -556,13 +556,13 @@ export function AppSidebar() {
                              to={item.url} 
                              end
                              onClick={handleNavClick}
-                               className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
-                                 collapsed ? 'px-2 py-2 justify-center w-full' : 'px-4 py-2'
-                               } ${
-                                active 
-                                  ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
-                                  : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
-                              }`}
+                             className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
+                               collapsed ? 'px-3 py-2 justify-center' : 'px-4 py-2'
+                             } ${
+                               active 
+                                 ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                                 : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                             }`}
                           >
                             <IconComponent 
                               className={`!h-4 !w-4 flex-shrink-0 transition-all duration-200 ${
@@ -586,13 +586,13 @@ export function AppSidebar() {
                            to={item.url} 
                            end
                            onClick={handleNavClick}
-                            className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
-                              collapsed ? 'px-2 py-2 justify-center w-full' : 'px-4 py-2'
-                            } ${
-                             active 
-                               ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
-                               : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
-                           }`}
+                          className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
+                            collapsed ? 'px-3 py-2 justify-center' : 'px-4 py-2'
+                          } ${
+                            active 
+                              ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                              : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                          }`}
                       >
                         <IconComponent 
                           className={`!h-4 !w-4 flex-shrink-0 transition-all duration-200 ${
@@ -641,14 +641,15 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="overflow-x-hidden"
+      className="overflow-x-hidden mr-0"
       collapsible="icon"
       variant="sidebar"
       side="left"
       style={{ 
         backgroundColor: 'hsl(var(--sidebar-background))',
-        width: collapsed ? '64px' : '280px',
-        overflowX: 'hidden'
+        width: collapsed ? '64px' : 'var(--sidebar-width)',
+        overflowX: 'hidden',
+        marginRight: '0px'
       } as any}
     >
       <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'px-3 py-4' : 'px-6 py-6'}`} style={{ 
@@ -704,7 +705,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className={`py-2 ${collapsed ? 'px-0' : 'px-0'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
+      <SidebarContent className={`py-2 ${collapsed ? 'px-2' : 'px-0'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
         <TooltipProvider>
           {isSuperAdmin ? (
             // Para SuperAdmin: Estilo Limitless exacto
