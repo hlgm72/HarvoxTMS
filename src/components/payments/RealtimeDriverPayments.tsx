@@ -59,19 +59,12 @@ export function RealtimeDriverPayments() {
     if (!userRole?.company_id) return;
 
     try {
-      // Get latest payment periods for the company
+      // Get latest payment periods for the company with driver calculations
       const { data: periods, error } = await supabase
         .from('company_payment_periods')
         .select(`
           *,
-          driver_period_calculations (
-            *,
-            profiles!driver_user_id (
-              first_name,
-              last_name,
-              avatar_url
-            )
-          )
+          driver_period_calculations (*)
         `)
         .eq('company_id', userRole.company_id)
         .order('period_start_date', { ascending: false })
@@ -81,18 +74,35 @@ export function RealtimeDriverPayments() {
 
       if (periods && periods.length > 0) {
         const latestPeriod = periods[0];
-        const driverPayments = latestPeriod.driver_period_calculations?.map((calculation: any) => ({
-          driver_id: calculation.driver_user_id,
-          driver_name: `${calculation.profiles?.first_name || 'N/A'} ${calculation.profiles?.last_name || ''}`.trim(),
-          driver_avatar: calculation.profiles?.avatar_url,
-          period_dates: `${new Date(latestPeriod.period_start_date).toLocaleDateString()} - ${new Date(latestPeriod.period_end_date).toLocaleDateString()}`,
-          gross_earnings: calculation.gross_earnings || 0,
-          fuel_expenses: calculation.fuel_expenses || 0,
-          total_deductions: calculation.total_deductions || 0,
-          net_payment: calculation.net_payment || 0,
-          status: calculation.payment_status || 'calculated',
-          has_negative_balance: calculation.has_negative_balance || false,
-        })) || [];
+        
+        // Get profiles for all drivers in this period
+        const driverIds = latestPeriod.driver_period_calculations?.map((calc: any) => calc.driver_user_id) || [];
+        
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('user_id, first_name, last_name, avatar_url')
+          .in('user_id', driverIds);
+
+        if (profilesError) throw profilesError;
+
+        // Create a map of driver profiles for easy lookup
+        const profilesMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
+
+        const driverPayments = latestPeriod.driver_period_calculations?.map((calculation: any) => {
+          const profile = profilesMap.get(calculation.driver_user_id);
+          return {
+            driver_id: calculation.driver_user_id,
+            driver_name: profile ? `${profile.first_name || 'N/A'} ${profile.last_name || ''}`.trim() : 'Driver',
+            driver_avatar: profile?.avatar_url,
+            period_dates: `${new Date(latestPeriod.period_start_date).toLocaleDateString()} - ${new Date(latestPeriod.period_end_date).toLocaleDateString()}`,
+            gross_earnings: calculation.gross_earnings || 0,
+            fuel_expenses: calculation.fuel_expenses || 0,
+            total_deductions: calculation.total_deductions || 0,
+            net_payment: calculation.net_payment || 0,
+            status: calculation.payment_status || 'calculated',
+            has_negative_balance: calculation.has_negative_balance || false,
+          };
+        }) || [];
 
         setPayments(driverPayments);
       }
