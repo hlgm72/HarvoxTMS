@@ -535,13 +535,13 @@ export function AppSidebar() {
     if (sectionItems.length === 0) return null;
 
      return (
-      <div key={sectionName} className="mb-1">
+      <div key={sectionName} className={`mb-1 ${collapsed ? 'flex flex-col items-center' : ''}`}>
         {!collapsed && (
           <div className="px-4 py-1 text-xs font-body font-normal text-white/70 uppercase tracking-wide">
             {sectionLabel}
           </div>
         )}
-        <div>
+        <div className={collapsed ? 'w-full' : ''}>
           <div className="space-y-0">
             {sectionItems.map((item: any) => {
               const active = isActive(item.url);
