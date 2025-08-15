@@ -19,9 +19,9 @@ export function Layout({ children }: LayoutProps) {
         } as React.CSSProperties
       }
     >
-      <div className="min-h-screen w-full bg-background">
+      <div className="min-h-screen w-full bg-background flex">
         <AppSidebar />
-        <SidebarInset className="flex flex-col flex-1">
+        <SidebarInset className="flex flex-col flex-1 min-w-0">
           <Header />
           <main className="flex-1 bg-gradient-subtle overflow-hidden pt-14 md:pt-16">
             <div className="h-full overflow-y-auto">
