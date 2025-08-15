@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Menu, X } from 'lucide-react';
+import { ChevronLeft, X } from 'lucide-react';
 
 interface FloatingAction {
   icon: React.ComponentType<{ className?: string }>;
@@ -21,7 +21,7 @@ interface ExpandableFloatingActionsProps {
 
 export function ExpandableFloatingActions({
   actions,
-  mainIcon: MainIcon = Menu,
+  mainIcon: MainIcon = ChevronLeft,
   mainLabel = 'Acciones',
   position = 'bottom-right',
   className
