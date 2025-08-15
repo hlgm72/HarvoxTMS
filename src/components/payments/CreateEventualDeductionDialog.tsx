@@ -16,7 +16,6 @@ import { CalendarIcon } from "lucide-react";
 import { parseISO, isWithinInterval, isBefore, isAfter, format } from "date-fns";
 import { es } from "date-fns/locale";
 import { formatDateOnly, formatDateInUserTimeZone } from "@/utils/dateUtils";
-import { useATMInput } from "@/hooks/useATMInput";
 import { cn } from "@/lib/utils";
 import { useFleetNotifications } from '@/components/notifications';
 import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
@@ -60,24 +59,12 @@ export function CreateEventualDeductionDialog({
         description: ''
       });
       setExpenseDate(undefined);
+      setAmount('');
     }
   }, [isOpen]);
 
-  // ATM Input para el monto
-  const atmInput = useATMInput({
-    initialValue: 0,
-    onValueChange: (value) => {
-      console.log('🏧 ATM Input value changed:', value);
-      setFormData(prev => ({ ...prev, amount: value.toString() }));
-    }
-  });
-
-  // Reset ATM input when dialog opens
-  useEffect(() => {
-    if (isOpen) {
-      atmInput.reset();
-    }
-  }, [isOpen]);
+  // Campo de monto simple
+  const [amount, setAmount] = useState<string>('');
 
   // Obtener usuarios por rol seleccionado
   const { data: users = [] } = useQuery({
@@ -259,7 +246,7 @@ export function CreateEventualDeductionDialog({
           payment_period_id: paymentPeriods[0]?.id, // Use the first (and likely only) period for the selected date
           user_id: formData.user_id,
           expense_type_id: formData.expense_type_id,
-          amount: parseFloat(formData.amount),
+          amount: parseFloat(amount || '0'),
           description: formData.description,
           expense_date: formatDateInUserTimeZone(expenseDate),
           status: 'planned',
@@ -312,8 +299,8 @@ export function CreateEventualDeductionDialog({
     expenseDate &&
     paymentPeriods.length > 0 &&
     formData.expense_type_id && 
-    formData.amount && 
-    parseFloat(formData.amount) > 0 &&
+    amount && 
+    parseFloat(amount) > 0 &&
     formData.description.trim().length > 0;
 
   return (
@@ -525,38 +512,20 @@ export function CreateEventualDeductionDialog({
             <Label htmlFor="amount">Monto ($) <span className="text-red-500">*</span></Label>
             <Input
               id="amount"
-              type="text"
-              value={atmInput.displayValue}
+              type="number"
+              step="0.01"
+              min="0"
+              value={amount}
               onChange={(e) => {
-                console.log('💰 Amount field onChange triggered:', e.target.value);
+                const value = e.target.value;
+                setAmount(value);
+                setFormData(prev => ({ ...prev, amount: value }));
               }}
-              onKeyDown={(e) => {
-                console.log('💰 Amount field onKeyDown:', e.key, 'preventDefault?', e.defaultPrevented);
-                atmInput.handleKeyDown(e);
-              }}
-              onPaste={(e) => {
-                console.log('💰 Amount field onPaste triggered');
-                atmInput.handlePaste(e);
-              }}
-              onFocus={(e) => {
-                console.log('💰 Amount field focused');
-                atmInput.handleFocus(e);
-              }}
-              onClick={(e) => {
-                console.log('💰 Amount field clicked');
-                atmInput.handleClick(e);
-              }}
-              onInput={(e) => {
-                console.log('💰 Amount field onInput:', (e.target as HTMLInputElement).value);
-              }}
-              placeholder="$0.00"
+              placeholder="0.00"
               className="text-right"
               autoComplete="off"
               required
             />
-            <div className="text-xs text-muted-foreground">
-              Debug: ATM Value = {atmInput.displayValue} | Numeric = {atmInput.numericValue}
-            </div>
           </div>
 
           <div className="space-y-2">
