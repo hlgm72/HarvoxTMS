@@ -422,11 +422,11 @@ export default function Drivers() {
                            </div>
                         </div>
                          
-                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2 mt-4">
+                            <div className="flex flex-col sm:flex-row gap-2 mt-4">
                               <Button 
                                 variant="outline" 
                                 size="sm" 
-                                className="w-full justify-start"
+                                className="flex-1"
                                 onClick={() => {
                                   setSelectedDriver(driver);
                                   setShowDetailsModal(true);
@@ -438,7 +438,7 @@ export default function Drivers() {
                                 <Button 
                                   variant="outline" 
                                   size="sm" 
-                                  className="w-full justify-start"
+                                  className="flex-1"
                                   onClick={() => {
                                     setSelectedDriver(driver);
                                     setShowEditDialog(true);
@@ -450,7 +450,7 @@ export default function Drivers() {
                                 <Button 
                                   variant="outline" 
                                   size="sm" 
-                                  className="w-full justify-start sm:col-span-2 xl:col-span-1"
+                                  className="flex-1"
                                   onClick={() => {
                                     setSelectedDriverId(driver.user_id);
                                     setShowAssignmentDialog(true);
