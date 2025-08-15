@@ -101,7 +101,7 @@ export function ExpandableFloatingActions({
       <button
         className={cn(
           'fixed w-14 h-14 rounded-full shadow-lg transition-all duration-300 z-10',
-          'hover:shadow-2xl hover:scale-110 hover:-translate-y-1',
+          'hover:shadow-2xl hover:scale-110',
           isExpanded 
             ? 'bg-fleet-orange hover:bg-fleet-orange-dark text-white' 
             : 'bg-primary hover:bg-primary/90 text-primary-foreground',
