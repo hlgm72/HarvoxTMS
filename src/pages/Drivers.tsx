@@ -187,7 +187,7 @@ export default function Drivers() {
             </Button>
           }
         />
-        <div className="p-2 md:p-4 md:pr-20 space-y-6">
+        <div className="p-2 md:p-4 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {[1, 2, 3].map((i) => (
               <DriverSkeleton key={i} />
@@ -212,7 +212,7 @@ export default function Drivers() {
             </Button>
           }
         />
-        <div className="p-2 md:p-4 md:pr-20 space-y-6">
+        <div className="p-2 md:p-4 space-y-6">
           {/* Sección de Invitaciones Pendientes para Conductores */}
           <PendingInvitationsSection 
             key={`empty-invitations-${invitationsKey}`}
@@ -268,7 +268,7 @@ export default function Drivers() {
           </Button>
         }
       />
-      <div className="p-2 md:p-4 md:pr-20 space-y-4 md:space-y-6">
+      <div className="p-2 md:p-4 space-y-6">
         <Tabs defaultValue="active" className="w-full">
           <TabsList className="grid w-full grid-cols-2 h-auto gap-1">
             <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
