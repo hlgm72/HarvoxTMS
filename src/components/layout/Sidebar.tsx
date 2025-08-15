@@ -640,18 +640,19 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar
-      className="overflow-x-hidden mr-0"
-      collapsible="icon"
-      variant="sidebar"
-      side="left"
-      style={{ 
-        backgroundColor: 'hsl(var(--sidebar-background))',
-        width: collapsed ? '64px' : 'var(--sidebar-width)',
-        overflowX: 'hidden',
-        marginRight: '0px'
-      } as any}
-    >
+    <TooltipProvider>
+      <Sidebar
+        className="overflow-x-hidden mr-0"
+        collapsible="icon"
+        variant="sidebar"
+        side="left"
+        style={{ 
+          backgroundColor: 'hsl(var(--sidebar-background))',
+          width: collapsed ? '64px' : 'var(--sidebar-width)',
+          overflowX: 'hidden',
+          marginRight: '0px'
+        } as any}
+      >
       <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-4' : 'px-6 py-6'}`} style={{ 
         backgroundColor: 'hsl(var(--fleet-sidebar-darker))'
       }}>
@@ -706,7 +707,6 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className={`py-2 ${collapsed ? '' : 'px-0'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
-        <TooltipProvider>
           {isSuperAdmin ? (
             // Para SuperAdmin: Estilo Limitless exacto
             <>
@@ -726,7 +726,6 @@ export function AppSidebar() {
               )}
             </>
           )}
-        </TooltipProvider>
 
         {/* Company selector moved to bottom - Professional style */}
         {!collapsed && !isSuperAdmin && !loading && selectedCompany && (
@@ -816,5 +815,6 @@ export function AppSidebar() {
         </div>
       </SidebarContent>
     </Sidebar>
+    </TooltipProvider>
   );
 }
