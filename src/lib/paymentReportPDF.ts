@@ -819,6 +819,10 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   });
   
   // === COLUMNA DERECHA: RESUMEN ===
+  // Agregar contenedor con bordes redondeados para la sección de resumen
+  const summaryHeight = 50; // Altura aproximada del contenedor
+  addRoundedBox(rightColumnX - 5, currentY - 2, 95, summaryHeight, colors.lightGray, 2, colors.border);
+  
   addText('Period Summary', rightColumnX, currentY, {
     fontSize: 12,
     fontStyle: 'bold',
@@ -855,13 +859,13 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   doc.rect(rightColumnX, rightY, 85, 10, 'F');
   
   addText('Net Pay', rightColumnX + 2, rightY + 6, {
-    fontSize: 11,
+    fontSize: 12,
     fontStyle: 'bold',
     color: colors.primary
   });
   
   addText(formatCurrency(data.period.net_payment), rightColumnX + 78, rightY + 6, {
-    fontSize: 11,
+    fontSize: 12,
     fontStyle: 'bold',
     color: colors.primary,
     align: 'right'
