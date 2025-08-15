@@ -556,9 +556,9 @@ export function AppSidebar() {
                              to={item.url} 
                              end
                              onClick={handleNavClick}
-                              className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
-                                collapsed ? 'px-0 py-2 justify-center w-full' : 'px-4 py-2'
-                              } ${
+                               className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
+                                 collapsed ? 'px-2 py-2 justify-center w-full' : 'px-4 py-2'
+                               } ${
                                 active 
                                   ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
                                   : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
@@ -586,9 +586,9 @@ export function AppSidebar() {
                            to={item.url} 
                            end
                            onClick={handleNavClick}
-                           className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
-                             collapsed ? 'px-0 py-2 justify-center w-full' : 'px-4 py-2'
-                           } ${
+                            className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
+                              collapsed ? 'px-2 py-2 justify-center w-full' : 'px-4 py-2'
+                            } ${
                              active 
                                ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
                                : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
@@ -704,7 +704,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className={`py-2 ${collapsed ? 'px-3' : 'px-0'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
+      <SidebarContent className={`py-2 ${collapsed ? 'px-0' : 'px-0'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
         <TooltipProvider>
           {isSuperAdmin ? (
             // Para SuperAdmin: Estilo Limitless exacto
