@@ -557,7 +557,7 @@ export function AppSidebar() {
                              end
                              onClick={handleNavClick}
                              className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
-                               collapsed ? 'px-3 py-2 justify-center' : 'px-4 py-2'
+                                collapsed ? 'py-2 justify-center' : 'px-4 py-2'
                              } ${
                                active 
                                  ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
@@ -587,7 +587,7 @@ export function AppSidebar() {
                            end
                            onClick={handleNavClick}
                           className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
-                            collapsed ? 'px-3 py-2 justify-center' : 'px-4 py-2'
+                            collapsed ? 'py-2 justify-center' : 'px-4 py-2'
                           } ${
                             active 
                               ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
@@ -652,7 +652,7 @@ export function AppSidebar() {
         marginRight: '0px'
       } as any}
     >
-      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'px-3 py-4' : 'px-6 py-6'}`} style={{ 
+      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-4' : 'px-6 py-6'}`} style={{ 
         backgroundColor: 'hsl(var(--fleet-sidebar-darker))'
       }}>
         <div className={`flex items-center transition-all duration-300 ${collapsed ? 'justify-center' : 'gap-4'}`}>
@@ -705,7 +705,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className={`py-2 ${collapsed ? 'px-2' : 'px-0'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
+      <SidebarContent className={`py-2 ${collapsed ? '' : 'px-0'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
         <TooltipProvider>
           {isSuperAdmin ? (
             // Para SuperAdmin: Estilo Limitless exacto
@@ -801,7 +801,7 @@ export function AppSidebar() {
         )}
 
         {/* Bottom section como en Limitless */}
-        <div className={`${collapsed ? 'px-3 py-2' : 'px-4 py-4'} border-t border-[hsl(var(--sidebar-border))]`}>
+        <div className={`${collapsed ? 'py-2' : 'px-4 py-4'} border-t border-[hsl(var(--sidebar-border))]`}>
           {collapsed ? (
             <div className="flex justify-center">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
