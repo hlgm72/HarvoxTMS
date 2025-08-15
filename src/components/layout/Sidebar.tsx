@@ -651,7 +651,7 @@ export function AppSidebar() {
         overflowX: 'hidden'
       } as any}
     >
-      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'px-3 py-4' : 'px-6 py-6'}`} style={{ 
+      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'px-0 py-4' : 'px-6 py-6'}`} style={{ 
         backgroundColor: 'hsl(var(--fleet-sidebar-darker))'
       }}>
         <div className={`flex items-center transition-all duration-300 ${collapsed ? 'justify-center' : 'gap-4'}`}>
@@ -800,7 +800,7 @@ export function AppSidebar() {
         )}
 
         {/* Bottom section como en Limitless */}
-        <div className={`${collapsed ? 'px-3 py-2' : 'px-4 py-4'} border-t border-[hsl(var(--sidebar-border))]`}>
+        <div className={`${collapsed ? 'px-0 py-2' : 'px-4 py-4'} border-t border-[hsl(var(--sidebar-border))]`}>
           {collapsed ? (
             <div className="flex justify-center">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
