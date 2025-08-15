@@ -18,7 +18,7 @@ export default function OperationsManagerDashboard() {
       <PageToolbar 
         title="Dashboard Operacional"
       />
-      <div className="p-6 space-y-6">
+      <div className="p-2 md:p-4 space-y-6">
 
       {/* Operational KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
