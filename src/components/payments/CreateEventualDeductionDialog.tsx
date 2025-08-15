@@ -525,18 +525,47 @@ export function CreateEventualDeductionDialog({
             <Label htmlFor="amount">Monto ($) <span className="text-red-500">*</span></Label>
             <Input
               id="amount"
-              type="text"
+              type="tel"
+              inputMode="decimal"
               value={atmInput.displayValue}
-              onChange={() => {}} // Controlado por el hook ATM
-              onKeyDown={atmInput.handleKeyDown}
+              onKeyDown={(e) => {
+                console.log('🔑 Key event:', {
+                  key: e.key,
+                  keyCode: e.keyCode,
+                  which: e.which,
+                  code: e.code,
+                  type: e.type
+                });
+                
+                // No preventDefault here - let's see what happens
+                atmInput.handleKeyDown(e);
+              }}
+              onInput={(e) => {
+                console.log('📝 Input event:', (e.target as HTMLInputElement).value);
+              }}
+              onChange={(e) => {
+                console.log('🔄 Change event:', e.target.value);
+              }}
               onPaste={atmInput.handlePaste}
-              onFocus={atmInput.handleFocus}
-              onClick={atmInput.handleClick}
+              onFocus={(e) => {
+                console.log('👁️ Focus event');
+                atmInput.handleFocus(e);
+              }}
+              onClick={(e) => {
+                console.log('🖱️ Click event');
+                atmInput.handleClick(e);
+              }}
               placeholder="$0.00"
               className="text-right"
               autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
               required
             />
+            <div className="text-xs text-gray-500">
+              ATM: {atmInput.displayValue} | Numeric: {atmInput.numericValue}
+            </div>
           </div>
 
           <div className="space-y-2">
