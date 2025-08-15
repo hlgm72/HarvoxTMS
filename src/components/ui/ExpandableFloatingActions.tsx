@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Eye } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 interface FloatingAction {
   icon: React.ComponentType<{ className?: string }>;
@@ -21,7 +21,7 @@ interface ExpandableFloatingActionsProps {
 
 export function ExpandableFloatingActions({
   actions,
-  mainIcon: MainIcon = Eye,
+  mainIcon: MainIcon = Menu,
   mainLabel = 'Acciones',
   position = 'bottom-right',
   className
@@ -113,10 +113,11 @@ export function ExpandableFloatingActions({
         onClick={handleMainClick}
         aria-label={mainLabel}
       >
-        <MainIcon className={cn(
-          "h-6 w-6 transition-transform duration-300 -translate-x-3",
-          isExpanded ? "rotate-180" : ""
-        )} />
+        {isExpanded ? (
+          <X className="h-6 w-6 transition-transform duration-300 -translate-x-3" />
+        ) : (
+          <MainIcon className="h-6 w-6 transition-transform duration-300 -translate-x-3" />
+        )}
       </button>
     </>
   );
