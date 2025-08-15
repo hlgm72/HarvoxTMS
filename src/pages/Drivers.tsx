@@ -19,6 +19,7 @@ import { UserActionButton } from "@/components/users/UserActionButton";
 import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
 import { useAuth } from "@/hooks/useAuth";
 import { useCompanyCache } from "@/hooks/useCompanyCache";
+import { useTranslation } from "react-i18next";
 
 const getStatusColor = (status: string): "default" | "secondary" | "destructive" | "outline" => {
   switch (status) {
@@ -30,12 +31,12 @@ const getStatusColor = (status: string): "default" | "secondary" | "destructive"
   }
 };
 
-const getStatusText = (status: string): string => {
+const getStatusText = (status: string, t: any): string => {
   switch (status) {
-    case "available": return "Available";
-    case "on_route": return "On Route";
-    case "off_duty": return "Off Duty";
-    case "pre_registered": return "Pre-registered";
+    case "available": return t('fleet:drivers.status.available');
+    case "on_route": return t('fleet:drivers.status.on_route');
+    case "off_duty": return t('fleet:drivers.status.off_duty');
+    case "pre_registered": return t('fleet:drivers.status.pre_registered');
     default: return status;
   }
 };
@@ -51,20 +52,20 @@ const getActivationStatusColor = (status: string): "default" | "secondary" | "de
 };
 
 // Helper function to get activation status text
-const getActivationStatusText = (status: string): string => {
+const getActivationStatusText = (status: string, t: any): string => {
   switch (status) {
-    case 'active': return "Active";
-    case 'pending_activation': return "Pending Activation";
-    case 'invited': return "Invited";
+    case 'active': return t('fleet:drivers.status.active');
+    case 'pending_activation': return t('fleet:drivers.status.pending_activation');
+    case 'invited': return t('fleet:drivers.status.invited');
     default: return status;
   }
 };
 
-const formatExperience = (licenseIssueDate: string | null, hireDate: string | null) => {
+const formatExperience = (licenseIssueDate: string | null, hireDate: string | null, t: any) => {
   // Priorizar fecha de emisión de licencia (experiencia total como conductor)
   const experienceDate = licenseIssueDate || hireDate;
   
-  if (!experienceDate) return "Experience not specified";
+  if (!experienceDate) return t('fleet:drivers.info.experience_not_specified');
   
   try {
     // Usar la función segura para parsear fechas evitando problemas de zona horaria
@@ -78,7 +79,7 @@ const formatExperience = (licenseIssueDate: string | null, hireDate: string | nu
       // Formato solo fecha: YYYY-MM-DD
       [year, month, day] = experienceDate.split('-').map(Number);
     } else {
-      return "Experience not specified";
+      return t('fleet:drivers.info.experience_not_specified');
     }
     
     // Crear fecha local evitando problemas de zona horaria
@@ -91,18 +92,29 @@ const formatExperience = (licenseIssueDate: string | null, hireDate: string | nu
     if (totalMonths < 0) totalMonths = 0;
     
     if (totalMonths < 12) {
-      return `Experience: ${totalMonths} month${totalMonths !== 1 ? 's' : ''}`;
+      return t('fleet:drivers.info.experience_months', { 
+        count: totalMonths, 
+        plural: totalMonths !== 1 ? 's' : '' 
+      });
     } else {
       const yearCount = Math.floor(totalMonths / 12);
       const monthCount = totalMonths % 12;
       if (monthCount === 0) {
-        return `Experience: ${yearCount} year${yearCount !== 1 ? 's' : ''}`;
+        return t('fleet:drivers.info.experience_years', { 
+          count: yearCount, 
+          plural: yearCount !== 1 ? 's' : '' 
+        });
       }
-      return `Experience: ${yearCount} year${yearCount !== 1 ? 's' : ''} and ${monthCount} month${monthCount !== 1 ? 's' : ''}`;
+      return t('fleet:drivers.info.experience_years_months', { 
+        years: yearCount, 
+        yearPlural: yearCount !== 1 ? 's' : '',
+        months: monthCount,
+        monthPlural: monthCount !== 1 ? 's' : ''
+      });
     }
   } catch (error) {
     console.error('Error calculating experience:', error);
-    return "Experience not specified";
+    return t('fleet:drivers.info.experience_not_specified');
   }
 };
 
@@ -138,6 +150,7 @@ const DriverSkeleton = () => (
 );
 
 export default function Drivers() {
+  const { t } = useTranslation(['fleet', 'common']);
   const { userRole } = useAuth();
   const { userCompany } = useCompanyCache();
   const { drivers, loading, refetch } = useCompanyDrivers();
@@ -165,12 +178,12 @@ export default function Drivers() {
       <>
         <PageToolbar 
           icon={Truck}
-          title="Driver Management"
-          subtitle="Loading driver information..."
+          title={t('fleet:drivers.page_title')}
+          subtitle={t('fleet:drivers.page_subtitle')}
           actions={
             <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />
-              New Driver
+              {t('fleet:drivers.new_driver')}
             </Button>
           }
         />
@@ -190,12 +203,12 @@ export default function Drivers() {
       <>
         <PageToolbar 
           icon={Truck}
-          title="Driver Management"
-          subtitle="No drivers registered in the system"
+          title={t('fleet:drivers.page_title')}
+          subtitle={t('fleet:drivers.page_subtitle_empty')}
           actions={
             <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />
-              New Driver
+              {t('fleet:drivers.new_driver')}
             </Button>
           }
         />
@@ -204,20 +217,20 @@ export default function Drivers() {
           <PendingInvitationsSection 
             key={`empty-invitations-${invitationsKey}`}
             roleFilter="driver"
-            title="Pending Drivers"
-            description="Drivers who have been invited but have not yet accepted their invitation"
+            title={t('fleet:drivers.pending_drivers_title')}
+            description={t('fleet:drivers.pending_drivers_description')}
             onInvitationsUpdated={handleInvitationsUpdate}
           />
           
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="text-6xl mb-4">🚛</div>
-            <h3 className="text-xl font-semibold mb-2">No drivers registered</h3>
+            <h3 className="text-xl font-semibold mb-2">{t('fleet:drivers.no_drivers_title')}</h3>
             <p className="text-muted-foreground mb-4">
-              Start by adding drivers to your fleet
+              {t('fleet:drivers.no_drivers_description')}
             </p>
             <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="h-4 w-4" />
-              Invite First Driver
+              {t('fleet:drivers.invite_first_driver')}
             </Button>
           </div>
         </div>
@@ -242,12 +255,16 @@ export default function Drivers() {
     <>
       <PageToolbar 
         icon={Truck}
-        title={`Driver Management`}
-        subtitle={`${drivers.length} drivers • ${drivers.filter(d => d.activation_status === 'active').length} active • ${pendingDrivers.length} pending`}
+        title={t('fleet:drivers.page_title')}
+        subtitle={t('fleet:drivers.page_subtitle_count', {
+          count: drivers.length,
+          active: drivers.filter(d => d.activation_status === 'active').length,
+          pending: pendingDrivers.length
+        })}
         actions={
           <Button className="gap-2" onClick={() => setShowInviteDialog(true)}>
             <UserPlus className="h-4 w-4" />
-            New Driver
+            {t('fleet:drivers.new_driver')}
           </Button>
         }
       />
@@ -256,14 +273,14 @@ export default function Drivers() {
           <TabsList className="grid w-full grid-cols-2 h-auto gap-1">
             <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <Users className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">All Drivers</span>
-              <span className="sm:hidden">All</span>
+              <span className="hidden sm:inline">{t('fleet:drivers.all_drivers')}</span>
+              <span className="sm:hidden">{t('fleet:drivers.all')}</span>
               <span className="ml-1">({allDrivers.length})</span>
             </TabsTrigger>
             <TabsTrigger value="pending" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Pending Activation</span>
-              <span className="sm:hidden">Pending</span>
+              <span className="hidden sm:inline">{t('fleet:drivers.pending_activation')}</span>
+              <span className="sm:hidden">{t('fleet:drivers.pending')}</span>
               <span className="ml-1">({pendingDrivers.length})</span>
             </TabsTrigger>
           </TabsList>
@@ -295,22 +312,22 @@ export default function Drivers() {
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <CardTitle className="text-lg">{fullName || 'No name'}</CardTitle>
+                              <CardTitle className="text-lg">{fullName || t('fleet:drivers.info.no_name')}</CardTitle>
                               <p className="text-sm text-muted-foreground">
-                                {driver.license_number ? `${driver.cdl_class || 'CDL'}-${driver.license_number}` : 'No license'}
+                                {driver.license_number ? `${driver.cdl_class || 'CDL'}-${driver.license_number}` : t('fleet:drivers.info.no_license')}
                               </p>
                             </div>
                           </div>
                           {/* Estado del conductor y activación */}
                           <div className="flex flex-wrap gap-2">
                             <Badge variant={getStatusColor(driver.current_status)}>
-                              {getStatusText(driver.current_status)}
+                              {getStatusText(driver.current_status, t)}
                             </Badge>
                             
                             {/* Mostrar estado de activación para conductores pre-registrados */}
                             {driver.is_pre_registered && (
                               <Badge variant={getActivationStatusColor(driver.activation_status)}>
-                                {getActivationStatusText(driver.activation_status)}
+                                {getActivationStatusText(driver.activation_status, t)}
                               </Badge>
                             )}
                           </div>
@@ -322,27 +339,30 @@ export default function Drivers() {
                           {driver.is_pre_registered && driver.activation_status === 'pending_activation' && (
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
                               <p className="text-sm text-blue-700 font-medium flex items-center gap-2">
-                                💡 This driver can be managed completely without needing to activate their account
+                                💡 {t('fleet:drivers.info.pre_registered_info')}
                               </p>
                             </div>
                           )}
                           
                           <div className="flex items-center gap-2">
                             <span>📞</span>
-                            <span className="text-sm">{driver.phone || 'Not specified'}</span>
+                            <span className="text-sm">{driver.phone || t('fleet:drivers.info.not_specified')}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <span>📍</span>
                             <span className="text-sm">
-                              {driver.license_state ? `${driver.license_state}` : 'Location not specified'}
+                              {driver.license_state ? `${driver.license_state}` : t('fleet:drivers.info.location_not_specified')}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <span>🚛</span>
                             <span className="text-sm">
                               {driver.active_loads_count > 0 
-                                ? `${driver.active_loads_count} active load${driver.active_loads_count !== 1 ? 's' : ''}`
-                                : 'No assigned loads'
+                                ? t('fleet:drivers.info.active_loads', { 
+                                    count: driver.active_loads_count, 
+                                    plural: driver.active_loads_count !== 1 ? 's' : '' 
+                                  })
+                                : t('fleet:drivers.info.no_assigned_loads')
                               }
                             </span>
                           </div>
@@ -352,10 +372,13 @@ export default function Drivers() {
                             <span>🔧</span>
                             <span className="text-sm">
                               {equipmentLoading 
-                                ? 'Loading equipment...'
+                                ? t('fleet:drivers.info.loading_equipment')
                                 : assignedEquipment.length > 0 
-                                  ? `${assignedEquipment.length} assigned equipment piece${assignedEquipment.length !== 1 ? 's' : ''}`
-                                  : 'No assigned equipment'
+                                  ? t('fleet:drivers.info.assigned_equipment', { 
+                                      count: assignedEquipment.length, 
+                                      plural: assignedEquipment.length !== 1 ? 's' : '' 
+                                    })
+                                  : t('fleet:drivers.info.no_assigned_equipment')
                               }
                             </span>
                           </div>
@@ -369,7 +392,7 @@ export default function Drivers() {
                                   variant="outline"
                                   className="text-xs"
                                 >
-                                  {equipment.equipment_type === 'truck' ? '🚛' : '🚚'} {equipment.equipment_type} #{equipment.equipment_number}
+                                  {equipment.equipment_type === 'truck' ? '🚛' : '🚚'} {t(`fleet:drivers.info.${equipment.equipment_type}`)} #{equipment.equipment_number}
                                 </Badge>
                               ))}
                             </div>
@@ -377,24 +400,24 @@ export default function Drivers() {
                           
                            <div className="flex items-center gap-2">
                              <span>🕐</span>
-                             <span className="text-sm">{formatExperience(driver.license_issue_date, driver.hire_date)}</span>
+                             <span className="text-sm">{formatExperience(driver.license_issue_date, driver.hire_date, t)}</span>
                            </div>
                            <div className="flex items-center gap-2">
                              <span>📋</span>
                              <div className="text-sm flex flex-col">
                                {driver.license_expiry_date ? (
                                  <>
-                                    <span>License Expiry: {getExpiryInfo(driver.license_expiry_date).text}</span>
+                                    <span>{t('fleet:drivers.info.license_expiry', { date: getExpiryInfo(driver.license_expiry_date).text })}</span>
                                     {getExpiryInfo(driver.license_expiry_date).isExpired && (
-                                      <span className="text-red-600 font-semibold text-xs">⚠️ EXPIRED</span>
+                                      <span className="text-red-600 font-semibold text-xs">⚠️ {t('fleet:drivers.info.expired')}</span>
                                     )}
-                                    {getExpiryInfo(driver.license_expiry_date).isExpiring && !getExpiryInfo(driver.license_expiry_date).isExpired && (
-                                      <span className="text-orange-600 font-semibold text-xs">⚠️ EXPIRING SOON</span>
-                                    )}
+                                     {getExpiryInfo(driver.license_expiry_date).isExpiring && !getExpiryInfo(driver.license_expiry_date).isExpired && (
+                                       <span className="text-orange-600 font-semibold text-xs">⚠️ {t('common:status.expiring_soon')}</span>
+                                     )}
                                   </>
-                                ) : (
-                                  'Expiry date not specified'
-                               )}
+                                 ) : (
+                                   <span>{t('fleet:drivers.info.license_expiry', { date: t('fleet:drivers.info.not_specified') })}</span>
+                                 )}
                              </div>
                            </div>
                         </div>
@@ -408,33 +431,33 @@ export default function Drivers() {
                                 setSelectedDriver(driver);
                                 setShowDetailsModal(true);
                               }}
-                             >
-                               View Details
+                              >
+                                {t('fleet:drivers.actions.view_details')}
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="flex-1"
+                                onClick={() => {
+                                  setSelectedDriver(driver);
+                                  setShowEditDialog(true);
+                                }}
+                              >
+                                <Edit className="h-3 w-3" />
+                                {t('fleet:drivers.actions.edit')}
                              </Button>
                              <Button 
                                variant="outline" 
                                size="sm" 
-                               className="flex-1"
+                               className="flex-1 gap-1"
                                onClick={() => {
-                                 setSelectedDriver(driver);
-                                 setShowEditDialog(true);
+                                 setSelectedDriverId(driver.user_id);
+                                 setShowAssignmentDialog(true);
                                }}
                              >
-                               <Edit className="h-3 w-3" />
-                               Edit
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="flex-1 gap-1"
-                              onClick={() => {
-                                setSelectedDriverId(driver.user_id);
-                                setShowAssignmentDialog(true);
-                              }}
-                            >
-                               <Settings className="h-3 w-3" />
-                               Assign
-                             </Button>
+                                <Settings className="h-3 w-3" />
+                                {t('fleet:drivers.actions.assign_equipment')}
+                              </Button>
                           </div>
                       </CardContent>
                     </Card>
@@ -451,8 +474,8 @@ export default function Drivers() {
             <PendingInvitationsSection 
               key={`pending-invitations-${invitationsKey}`}
               roleFilter="driver"
-              title="Pending Drivers"
-              description="Drivers who have been invited but have not yet accepted their invitation"
+              title={t('fleet:drivers.pending_drivers_title')}
+              description={t('fleet:drivers.pending_drivers_description')}
               onInvitationsUpdated={handleInvitationsUpdate}
             />
             

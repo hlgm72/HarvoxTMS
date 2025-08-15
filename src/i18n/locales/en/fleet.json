@@ -103,6 +103,57 @@
     "last_update": "Last update: 30 seconds ago",
     "real_time_operations": "Real-time operations"
   },
+  "drivers": {
+    "page_title": "Driver Management",
+    "page_subtitle": "Loading driver information...",
+    "page_subtitle_empty": "No drivers registered in the system",
+    "page_subtitle_count": "{{count}} drivers • {{active}} active • {{pending}} pending",
+    "new_driver": "New Driver",
+    "invite_first_driver": "Invite First Driver",
+    "no_drivers_title": "No drivers registered",
+    "no_drivers_description": "Start by adding drivers to your fleet",
+    "pending_drivers_title": "Pending Drivers",
+    "pending_drivers_description": "Drivers who have been invited but have not yet accepted their invitation",
+    "all_drivers": "All Drivers",
+    "pending_activation": "Pending Activation",
+    "all": "All",
+    "pending": "Pending",
+    "status": {
+      "available": "Available",
+      "on_route": "On Route", 
+      "off_duty": "Off Duty",
+      "pre_registered": "Pre-registered",
+      "active": "Active",
+      "pending_activation": "Pending Activation",
+      "invited": "Invited"
+    },
+    "info": {
+      "not_specified": "Not specified",
+      "location_not_specified": "Location not specified",
+      "no_license": "No license",
+      "no_name": "No name",
+      "no_assigned_loads": "No assigned loads",
+      "active_loads": "{{count}} active load{{plural}}",
+      "no_assigned_equipment": "No assigned equipment",
+      "assigned_equipment": "{{count}} assigned equipment piece{{plural}}",
+      "loading_equipment": "Loading equipment...",
+      "experience_not_specified": "Experience not specified",
+      "experience_months": "Experience: {{count}} month{{plural}}",
+      "experience_years": "Experience: {{count}} year{{plural}}",
+      "experience_years_months": "Experience: {{years}} year{{yearPlural}} and {{months}} month{{monthPlural}}",
+      "license_expiry": "License Expiry: {{date}}",
+      "expired": "EXPIRED",
+      "truck": "truck",
+      "trailer": "trailer",
+      "pre_registered_info": "This driver can be managed completely without needing to activate their account"
+    },
+    "actions": {
+      "view_details": "View Details",
+      "assign_equipment": "Assign Equipment",
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
   "tracking": {
     "title": "Fleet Tracking",
     "subtitle": "Real-time Locations",

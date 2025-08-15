@@ -103,6 +103,57 @@
     "last_update": "Última actualización: hace 30 segundos",
     "real_time_operations": "Operaciones en tiempo real"
   },
+  "drivers": {
+    "page_title": "Gestión de Conductores",
+    "page_subtitle": "Cargando información de conductores...",
+    "page_subtitle_empty": "No hay conductores registrados en el sistema",
+    "page_subtitle_count": "{{count}} conductores • {{active}} activos • {{pending}} pendientes",
+    "new_driver": "Nuevo Conductor",
+    "invite_first_driver": "Invitar Primer Conductor",
+    "no_drivers_title": "No hay conductores registrados",
+    "no_drivers_description": "Comienza agregando conductores a tu flota",
+    "pending_drivers_title": "Conductores Pendientes",
+    "pending_drivers_description": "Conductores que han sido invitados pero aún no han aceptado su invitación",
+    "all_drivers": "Todos los Conductores",
+    "pending_activation": "Activación Pendiente",
+    "all": "Todos",
+    "pending": "Pendientes",
+    "status": {
+      "available": "Disponible",
+      "on_route": "En Ruta",
+      "off_duty": "Fuera de Servicio",
+      "pre_registered": "Pre-registrado",
+      "active": "Activo",
+      "pending_activation": "Activación Pendiente",
+      "invited": "Invitado"
+    },
+    "info": {
+      "not_specified": "No especificado",
+      "location_not_specified": "Ubicación no especificada",
+      "no_license": "Sin licencia",
+      "no_name": "Sin nombre",
+      "no_assigned_loads": "Sin cargas asignadas",
+      "active_loads": "{{count}} carga{{plural}} activa{{plural}}",
+      "no_assigned_equipment": "Sin equipos asignados",
+      "assigned_equipment": "{{count}} equipo{{plural}} asignado{{plural}}",
+      "loading_equipment": "Cargando equipos...",
+      "experience_not_specified": "Experiencia no especificada",
+      "experience_months": "Experiencia: {{count}} mes{{plural}}",
+      "experience_years": "Experiencia: {{count}} año{{plural}}",
+      "experience_years_months": "Experiencia: {{years}} año{{yearPlural}} y {{months}} mes{{monthPlural}}",
+      "license_expiry": "Vencimiento de Licencia: {{date}}",
+      "expired": "VENCIDA",
+      "truck": "camión",
+      "trailer": "trailer",
+      "pre_registered_info": "Este conductor puede ser gestionado completamente sin necesidad de activar su cuenta"
+    },
+    "actions": {
+      "view_details": "Ver Detalles",
+      "assign_equipment": "Asignar Equipo",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    }
+  },
   "tracking": {
     "title": "Seguimiento de Flota",
     "subtitle": "Ubicaciones en Tiempo Real",

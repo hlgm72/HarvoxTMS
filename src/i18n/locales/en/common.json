@@ -41,7 +41,8 @@
     "en_route": "En Route",
     "delivered": "Delivered",
     "maintenance": "Maintenance",
-    "offline": "Offline"
+    "offline": "Offline",
+    "expiring_soon": "EXPIRING SOON"
   },
   "messages": {
     "error": "Error",

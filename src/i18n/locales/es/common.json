@@ -41,7 +41,8 @@
     "en_route": "En Ruta",
     "delivered": "Entregado",
     "maintenance": "Mantenimiento",
-    "offline": "Desconectado"
+    "offline": "Desconectado",
+    "expiring_soon": "VENCE PRONTO"
   },
   "messages": {
     "error": "Error",
