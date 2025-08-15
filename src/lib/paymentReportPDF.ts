@@ -775,7 +775,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   // Área de firma
   leftY += 6;
-  addText('Driver Signature:', leftColumnX, leftY, {
+  addText('Signature:', leftColumnX, leftY, {
     fontSize: 10,
     fontStyle: 'bold',
     color: colors.darkGray
