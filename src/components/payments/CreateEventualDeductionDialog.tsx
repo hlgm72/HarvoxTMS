@@ -525,37 +525,33 @@ export function CreateEventualDeductionDialog({
             <Label htmlFor="amount">Monto ($) <span className="text-red-500">*</span></Label>
             <Input
               id="amount"
-              type="text"
+              type="tel"
               inputMode="numeric"
               value={atmInput.displayValue}
-              onChange={() => {}} // Controlado completamente por ATM
+              readOnly={false}
               onKeyDown={(e) => {
-                console.log('🎹 Component Key event:', e.key, e.keyCode);
+                console.log('🔑 Key pressed:', e.key, 'Code:', e.code, 'KeyCode:', e.keyCode);
                 atmInput.handleKeyDown(e);
               }}
-              onInput={(e) => {
-                console.log('📝 Component Input event');
-                atmInput.handleInput(e);
+              onPaste={(e) => {
+                console.log('📋 Paste event');
+                atmInput.handlePaste(e);
               }}
-              onPaste={atmInput.handlePaste}
               onFocus={(e) => {
-                console.log('👁️ Component Focus');
+                console.log('👁️ Field focused');
                 atmInput.handleFocus(e);
               }}
               onClick={(e) => {
-                console.log('🖱️ Component Click');
+                console.log('🖱️ Field clicked');
                 atmInput.handleClick(e);
               }}
               placeholder="$0.00"
-              className="text-right font-mono text-lg"
+              className="text-right"
               autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck="false"
               required
             />
             <div className="text-xs text-muted-foreground">
-              Escribe números como en un ATM • Valor: {atmInput.displayValue}
+              Cada número que escribas se agrega como centavo • Debug: {atmInput.displayValue} = ${atmInput.numericValue}
             </div>
           </div>
 
