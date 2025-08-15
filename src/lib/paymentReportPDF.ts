@@ -786,7 +786,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   doc.setLineWidth(0.5);
   doc.line(leftColumnX, leftY, leftColumnX + columnWidth - 20, leftY);
   
-  leftY += 8;
+  leftY += 4;
   const signDate = new Date();
   addText(`Date: ${signDate.toLocaleDateString('en-US', {
     month: '2-digit',
@@ -798,7 +798,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   });
   
   // Mensaje de agradecimiento
-  leftY += 12;
+  leftY += 8;
   addText('If you have any questions, please contact us by phone', leftColumnX, leftY, {
     fontSize: 8,
     color: colors.gray
