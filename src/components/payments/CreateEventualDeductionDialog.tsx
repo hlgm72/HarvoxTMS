@@ -79,7 +79,7 @@ export function CreateEventualDeductionDialog({
       console.log('💳 Resetting ATM input...');
       atmInput.reset();
     }
-  }, [isOpen, atmInput]);
+  }, [isOpen]);
 
   // Obtener usuarios por rol seleccionado
   const { data: users = [] } = useQuery({
