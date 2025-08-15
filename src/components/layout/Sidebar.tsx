@@ -552,13 +552,14 @@ export function AppSidebar() {
                     {collapsed ? (
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <NavLink 
-                            to={item.url} 
-                            end
-                            onClick={handleNavClick}
-                            className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
-                               collapsed ? 'w-full py-2 justify-center' : 'px-4 py-2'
-                            } ${
+                          <button
+                            onClick={() => {
+                              console.log('Tooltip clicked for:', item.title);
+                              window.location.href = item.url;
+                            }}
+                            onMouseEnter={() => console.log('Mouse entered tooltip for:', item.title)}
+                            onMouseLeave={() => console.log('Mouse left tooltip for:', item.title)}
+                            className={`font-body group relative flex items-center gap-3 transition-all duration-200 w-full py-2 justify-center ${
                               active 
                                 ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
                                 : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
@@ -571,11 +572,11 @@ export function AppSidebar() {
                              style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px', lineHeight: '20px' }}
                            />
                            
-                           {/* Active indicator - exacto como Limitless */}
+                           {/* Active indicator */}
                            {active && (
                              <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
                            )}
-                         </NavLink>
+                         </button>
                         </TooltipTrigger>
                         <TooltipContent 
                           side="right" 
