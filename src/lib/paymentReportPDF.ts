@@ -752,6 +752,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // Información del conductor
   addText(`Driver Name: ${data.driver.name}`, leftColumnX, leftY, {
     fontSize: 9,
+    fontStyle: 'bold',
     color: colors.darkGray
   });
   leftY += 4;
@@ -786,7 +787,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   doc.setLineWidth(0.5);
   doc.line(leftColumnX, leftY, leftColumnX + columnWidth - 20, leftY);
   
-  leftY += 4;
+  leftY += 6;
   const signDate = new Date();
   addText(`Date: ${signDate.toLocaleDateString('en-US', {
     month: '2-digit',
