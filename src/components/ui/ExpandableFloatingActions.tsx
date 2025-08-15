@@ -100,13 +100,15 @@ export function ExpandableFloatingActions({
       {/* Botón principal */}
       <button
         className={cn(
-          'fixed w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-10',
+          'fixed w-14 h-14 rounded-full shadow-lg transition-all duration-300 z-10',
+          'hover:shadow-2xl hover:scale-110 hover:-translate-y-1',
           isExpanded 
             ? 'bg-fleet-orange hover:bg-fleet-orange-dark text-white' 
             : 'bg-primary hover:bg-primary/90 text-primary-foreground',
           'flex items-center justify-center',
-          'focus:outline-none active:outline-none',
+          'focus:outline-none active:outline-none active:scale-95',
           'border-0 outline-0',
+          'group',
           positionClasses[position],
           className
         )}
@@ -114,9 +116,9 @@ export function ExpandableFloatingActions({
         aria-label={mainLabel}
       >
         {isExpanded ? (
-          <X className="h-6 w-6 transition-transform duration-300 -translate-x-3" />
+          <X className="h-6 w-6 transition-all duration-300 -translate-x-3 group-hover:rotate-90" />
         ) : (
-          <MainIcon className="h-6 w-6 transition-transform duration-300 -translate-x-3" />
+          <MainIcon className="h-6 w-6 transition-all duration-300 -translate-x-3 group-hover:rotate-12" />
         )}
       </button>
     </>
