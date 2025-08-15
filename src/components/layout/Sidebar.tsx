@@ -535,20 +535,20 @@ export function AppSidebar() {
     if (sectionItems.length === 0) return null;
 
      return (
-      <div key={sectionName} className="mb-1">
+      <div key={sectionName} className={`mb-1 ${collapsed ? 'w-full' : ''}`}>
         {!collapsed && (
           <div className="px-4 py-1 text-xs font-body font-normal text-white/70 uppercase tracking-wide">
             {sectionLabel}
           </div>
         )}
-        <div>
-          <div className="space-y-0">
+        <div className={collapsed ? 'w-full' : ''}>
+          <div className={`space-y-0 ${collapsed ? 'w-full' : ''}`}>
             {sectionItems.map((item: any) => {
               const active = isActive(item.url);
               const IconComponent = item.icon;
               
               return (
-                 <div key={item.title}>
+                 <div key={item.title} className={collapsed ? 'w-full' : ''}>
                    {collapsed ? (
                      <Tooltip>
                        <TooltipTrigger asChild>
