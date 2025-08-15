@@ -288,7 +288,7 @@ export default function OwnerDashboard() {
       <PageToolbar 
         title={t('common:navigation.dashboard')}
       />
-      <div className="p-2 md:p-4 md:pr-20 space-y-4 md:space-y-6 min-h-screen bg-gradient-subtle">
+      <div className="p-2 md:p-4 space-y-6 min-h-screen bg-gradient-subtle">
         {/* Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Tabs - Estilo similar a FuelManagement */}
