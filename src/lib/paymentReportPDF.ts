@@ -518,35 +518,88 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       let stopOffset = 4; // Inicio del offset para las paradas
       
-      // Mostrar todas las paradas
-      allStops.forEach((stop, index) => {
-        const stopDate = stop.scheduled_date ? new Date(stop.scheduled_date).toLocaleDateString('en-US') : 'N/A';
-        const stopCompany = stop.company_name || '';
-        const stopLocation = `${stop.city}, ${stop.state}`;
+      // Si no hay paradas específicas en load_stops, usar las fechas principales de pickup y delivery
+      if (allStops.length === 0) {
+        // Mostrar PUP con fecha
+        if (load.pickup_date) {
+          const pupDate = formatDateSafe(load.pickup_date, 'MM/dd/yyyy');
+          const pupLocation = load.pickup_location || load.pickup_company || '';
+          
+          const stopPosition = colonPosition - maxPickupDeliveryWidth;
+          addText('PUP', stopPosition, currentY + stopOffset, {
+            fontSize: 9,
+            fontStyle: 'bold',
+            color: colors.darkGray
+          });
+          addText(':', colonPosition, currentY + stopOffset, {
+            fontSize: 9,
+            fontStyle: 'bold',
+            color: colors.darkGray
+          });
+          addText(` ${pupDate} ${pupLocation}`, colonPosition + 3, currentY + stopOffset, {
+            fontSize: 9,
+            fontStyle: 'normal',
+            color: colors.darkGray
+          });
+          
+          stopOffset += 4;
+        }
         
-        // Determinar el prefijo según el tipo de parada
-        const stopPrefix = stop.stop_type === 'pickup' ? 'PUP' : 'DEL';
-        
-        // Mostrar la parada con alineación
-        const stopPosition = colonPosition - maxPickupDeliveryWidth;
-        addText(stopPrefix, stopPosition, currentY + stopOffset, {
-          fontSize: 9,
-          fontStyle: 'bold',
-          color: colors.darkGray
+        // Mostrar DEL con fecha
+        if (load.delivery_date) {
+          const delDate = formatDateSafe(load.delivery_date, 'MM/dd/yyyy');
+          const delLocation = load.delivery_location || load.delivery_company || '';
+          
+          const stopPosition = colonPosition - maxPickupDeliveryWidth;
+          addText('DEL', stopPosition, currentY + stopOffset, {
+            fontSize: 9,
+            fontStyle: 'bold',
+            color: colors.darkGray
+          });
+          addText(':', colonPosition, currentY + stopOffset, {
+            fontSize: 9,
+            fontStyle: 'bold',
+            color: colors.darkGray
+          });
+          addText(` ${delDate} ${delLocation}`, colonPosition + 3, currentY + stopOffset, {
+            fontSize: 9,
+            fontStyle: 'normal',
+            color: colors.darkGray
+          });
+          
+          stopOffset += 4;
+        }
+      } else {
+        // Mostrar todas las paradas si hay datos en load_stops
+        allStops.forEach((stop, index) => {
+          const stopDate = stop.scheduled_date ? formatDateSafe(stop.scheduled_date, 'MM/dd/yyyy') : 'N/A';
+          const stopCompany = stop.company_name || '';
+          const stopLocation = `${stop.city}, ${stop.state}`;
+          
+          // Determinar el prefijo según el tipo de parada
+          const stopPrefix = stop.stop_type === 'pickup' ? 'PUP' : 'DEL';
+          
+          // Mostrar la parada con alineación
+          const stopPosition = colonPosition - maxPickupDeliveryWidth;
+          addText(stopPrefix, stopPosition, currentY + stopOffset, {
+            fontSize: 9,
+            fontStyle: 'bold',
+            color: colors.darkGray
+          });
+          addText(':', colonPosition, currentY + stopOffset, {
+            fontSize: 9,
+            fontStyle: 'bold',
+            color: colors.darkGray
+          });
+          addText(` ${stopDate} ${stopCompany} (${stopLocation})`, colonPosition + 3, currentY + stopOffset, {
+            fontSize: 9,
+            fontStyle: 'normal',
+            color: colors.darkGray
+          });
+          
+          stopOffset += 4; // Incrementar offset para la siguiente parada
         });
-        addText(':', colonPosition, currentY + stopOffset, {
-          fontSize: 9,
-          fontStyle: 'bold',
-          color: colors.darkGray
-        });
-        addText(` ${stopDate} ${stopCompany} (${stopLocation})`, colonPosition + 3, currentY + stopOffset, {
-          fontSize: 9,
-          fontStyle: 'normal',
-          color: colors.darkGray
-        });
-        
-        stopOffset += 4; // Incrementar offset para la siguiente parada
-      });
+      }
 
       currentY += stopOffset + 7; // Ajustar currentY basado en el número de paradas
     });
