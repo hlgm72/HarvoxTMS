@@ -65,7 +65,12 @@ export function RealtimeDriverPayments() {
         .select(`
           *,
           driver_period_calculations (
-            *
+            *,
+            profiles!driver_user_id (
+              first_name,
+              last_name,
+              avatar_url
+            )
           )
         `)
         .eq('company_id', userRole.company_id)
@@ -78,8 +83,8 @@ export function RealtimeDriverPayments() {
         const latestPeriod = periods[0];
         const driverPayments = latestPeriod.driver_period_calculations?.map((calculation: any) => ({
           driver_id: calculation.driver_user_id,
-          driver_name: 'Driver',
-          driver_avatar: undefined,
+          driver_name: `${calculation.profiles?.first_name || 'N/A'} ${calculation.profiles?.last_name || ''}`.trim(),
+          driver_avatar: calculation.profiles?.avatar_url,
           period_dates: `${new Date(latestPeriod.period_start_date).toLocaleDateString()} - ${new Date(latestPeriod.period_end_date).toLocaleDateString()}`,
           gross_earnings: calculation.gross_earnings || 0,
           fuel_expenses: calculation.fuel_expenses || 0,
