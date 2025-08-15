@@ -529,7 +529,7 @@ export function CreateEventualDeductionDialog({
               onFocus={atmInput.handleFocus}
               onClick={atmInput.handleClick}
               placeholder="$0.00"
-              className="text-right font-mono text-lg"
+              className="text-right text-lg"
               autoComplete="off"
               required
             />
