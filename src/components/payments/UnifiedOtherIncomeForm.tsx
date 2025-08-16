@@ -9,7 +9,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatPrettyDate } from '@/lib/dateFormatting';
 import { useCreateOtherIncome, useUpdateOtherIncome } from "@/hooks/useOtherIncome";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
@@ -170,7 +170,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? format(date, "PPP") : <span>Seleccionar fecha</span>}
+              {date ? formatPrettyDate(date) : <span>Seleccionar fecha</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">

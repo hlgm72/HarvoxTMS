@@ -22,6 +22,7 @@ import { Company } from '@/types/company';
 import { PaymentPeriodsManager } from "@/components/payments/PaymentPeriodsManager";
 import { RealtimeDriverPayments } from "@/components/payments/RealtimeDriverPayments";
 import { useTranslation } from 'react-i18next';
+import { formatDateAuto } from '@/lib/dateFormatting';
 
 // Types
 interface CompanyStats {
@@ -472,7 +473,7 @@ export default function OwnerDashboard() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">{t('dashboard:owner.drivers.license_expires')}: {new Date(driver.license_expiry_date).toLocaleDateString()}</span>
+                        <span className="text-sm">{t('dashboard:owner.drivers.license_expires')}: {formatDateAuto(driver.license_expiry_date)}</span>
                       </div>
                     </div>
                     

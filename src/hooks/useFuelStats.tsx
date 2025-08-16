@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserCompanies } from '@/hooks/useUserCompanies';
-import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatMediumDate } from '@/lib/dateFormatting';
 
 export interface FuelStatsFilters {
   periodId?: string;
@@ -102,7 +102,7 @@ export function useFuelStats(filters: FuelStatsFilters = {}) {
         const monthGallons = monthExpenses.reduce((sum, item) => sum + (item.gallons_purchased || 0), 0);
 
         monthlyData.push({
-          month: date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' }),
+          month: formatMediumDate(date),
           amount: monthTotal,
           gallons: monthGallons,
           count: monthExpenses.length,

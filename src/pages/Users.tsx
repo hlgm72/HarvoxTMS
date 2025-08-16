@@ -58,6 +58,7 @@ import { deleteTestUser } from "@/utils/deleteTestUser";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { UsersFloatingActions } from "@/components/users/UsersFloatingActions";
 import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
+import { formatDateAuto } from '@/lib/dateFormatting';
 
 type UserRole = Database["public"]["Enums"]["user_role"];
 
@@ -881,7 +882,7 @@ export default function Users() {
                          </TableCell>
                         <TableCell>{getStatusBadge(user.status)}</TableCell>
                         <TableCell>
-                          {new Date(user.created_at).toLocaleDateString()}
+                           {formatDateAuto(user.created_at)}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
@@ -994,7 +995,7 @@ export default function Users() {
                             </div>
                             <div className="flex justify-between items-center">
                               <span className="text-sm text-muted-foreground">Registro:</span>
-                              <span className="text-sm">{new Date(user.created_at).toLocaleDateString()}</span>
+                              <span className="text-sm">{formatDateAuto(user.created_at)}</span>
                             </div>
                           </div>
                            <div className="flex justify-end gap-2 mt-4">
@@ -1182,7 +1183,7 @@ export default function Users() {
                 </div>
                 <div>
                   <Label>Fecha de Registro</Label>
-                  <p>{new Date(selectedUser.created_at).toLocaleDateString()}</p>
+                  <p>{formatDateAuto(selectedUser.created_at)}</p>
                 </div>
               </div>
             </div>

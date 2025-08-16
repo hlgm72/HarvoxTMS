@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { formatDateInUserTimeZone, formatDateAuto, formatDateTimeAuto } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatDateAuto, formatDateTimeAuto, formatPrettyDate } from '@/lib/dateFormatting';
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -396,7 +396,7 @@ export function CompanyDocumentUpload({
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {expiryDate ? format(expiryDate, "PPP") : <span>Seleccionar fecha</span>}
+              {expiryDate ? formatPrettyDate(expiryDate) : <span>Seleccionar fecha</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">

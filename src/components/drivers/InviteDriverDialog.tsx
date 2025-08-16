@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from 'date-fns/locale';
-import { formatDateInUserTimeZone, formatMonthName } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatMonthName, formatPrettyDate } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -182,7 +182,7 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {formData.hireDate ? format(formData.hireDate, "PPP", { locale: es }) : <span>Seleccionar fecha</span>}
+                  {formData.hireDate ? formatPrettyDate(formData.hireDate) : <span>Seleccionar fecha</span>}
                 </Button>
               </PopoverTrigger>
                <PopoverContent className="w-auto p-0 bg-background border-border">

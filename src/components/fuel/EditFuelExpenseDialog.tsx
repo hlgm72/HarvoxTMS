@@ -12,7 +12,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
-import { formatDateSafe } from '@/lib/dateFormatting';
+import { formatDateSafe, formatPrettyDate } from '@/lib/dateFormatting';
 import { cn } from '@/lib/utils';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { useCompanyPaymentPeriods } from '@/hooks/useCompanyPaymentPeriods';
@@ -193,9 +193,9 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
                               !field.value && "text-muted-foreground"
                             )}
                           >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
+                             {field.value ? (
+                               formatPrettyDate(field.value)
+                             ) : (
                               <span>Seleccionar fecha</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />

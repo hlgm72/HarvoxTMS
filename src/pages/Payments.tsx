@@ -23,6 +23,7 @@ import { PaymentPeriodsManager } from "@/components/payments/PaymentPeriodsManag
 import { usePaymentPeriodSummary } from "@/hooks/usePaymentPeriodSummary";
 import { useCompanyPaymentPeriods } from "@/hooks/useCompanyPaymentPeriods";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
+import { getTodayInUserTimeZone, formatCurrency } from '@/lib/dateFormatting';
 import { useTranslation } from 'react-i18next';
 
 export default function Payments() {
@@ -36,7 +37,7 @@ export default function Payments() {
   const { data: paymentPeriods, isLoading: periodsLoading } = useCompanyPaymentPeriods(currentCompanyId);
   
   // Determinar el período actual basado en la fecha actual del usuario (zona horaria local)
-  const todayUserDate = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD en zona local
+  const todayUserDate = getTodayInUserTimeZone(); // YYYY-MM-DD en zona local
   
   const currentPeriod = paymentPeriods?.find(period => 
     todayUserDate >= period.period_start_date && todayUserDate <= period.period_end_date
@@ -100,7 +101,7 @@ export default function Payments() {
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">{t('summary.gross_income')}</p>
                 <p className="text-lg sm:text-xl font-semibold">
-                  ${(currentPeriodSummary?.gross_earnings || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  ${formatCurrency(currentPeriodSummary?.gross_earnings || 0)}
                 </p>
               </div>
             </div>
@@ -116,7 +117,7 @@ export default function Payments() {
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">{t('summary.other_income')}</p>
                 <p className="text-lg sm:text-xl font-semibold text-success">
-                  ${(currentPeriodSummary?.other_income || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  ${formatCurrency(currentPeriodSummary?.other_income || 0)}
                 </p>
               </div>
             </div>
@@ -132,7 +133,7 @@ export default function Payments() {
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">{t('summary.total_deductions')}</p>
                 <p className="text-lg sm:text-xl font-semibold text-destructive">
-                  -${(currentPeriodSummary?.deductions || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  -${formatCurrency(currentPeriodSummary?.deductions || 0)}
                 </p>
               </div>
             </div>
@@ -148,7 +149,7 @@ export default function Payments() {
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">{t('tabs.fuel_expenses')}</p>
                 <p className="text-lg sm:text-xl font-semibold text-warning">
-                  -${(currentPeriodSummary?.fuel_expenses || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  -${formatCurrency(currentPeriodSummary?.fuel_expenses || 0)}
                 </p>
               </div>
             </div>
@@ -165,7 +166,7 @@ export default function Payments() {
                 <p className="text-xs sm:text-sm text-muted-foreground">{t('summary.net_payment')}</p>
                 <div className="flex items-center gap-2">
                   <p className="text-lg sm:text-xl font-semibold">
-                    ${(currentPeriodSummary?.net_payment || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                    ${formatCurrency(currentPeriodSummary?.net_payment || 0)}
                   </p>
                   {getStatusBadge(currentPeriod?.status || 'open')}
                 </div>
@@ -186,7 +187,7 @@ export default function Payments() {
                   <span className="font-semibold">{t('period.current')}</span> {previousPeriod ? `(${previousPeriod.period_start_date} - ${previousPeriod.period_end_date})` : '(No disponible)'}
                 </p>
                 <p className="font-medium">
-                  ${(previousPeriodSummary?.net_payment || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  ${formatCurrency(previousPeriodSummary?.net_payment || 0)}
                 </p>
               </div>
             </div>

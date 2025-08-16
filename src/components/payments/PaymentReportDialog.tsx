@@ -25,7 +25,7 @@ import {
   FileText,
   Eye
 } from "lucide-react";
-import { formatPaymentPeriod, formatDateOnly } from "@/lib/dateFormatting";
+import { formatPaymentPeriod, formatDateOnly, formatCurrency } from "@/lib/dateFormatting";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
 import { useFleetNotifications } from "@/components/notifications";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
@@ -464,7 +464,7 @@ export function PaymentReportDialog({
                     <span className="truncate">Ingresos Brutos</span>
                   </span>
                   <span className="font-semibold text-xs sm:text-sm">
-                    ${calculation.gross_earnings.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                    ${formatCurrency(calculation.gross_earnings)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -473,7 +473,7 @@ export function PaymentReportDialog({
                     <span className="truncate">Otros Ingresos</span>
                   </span>
                   <span className="font-semibold text-success text-xs sm:text-sm">
-                    ${calculation.other_income.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                    ${formatCurrency(calculation.other_income)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -482,7 +482,7 @@ export function PaymentReportDialog({
                     <span className="truncate">Combustible</span>
                   </span>
                   <span className="font-semibold text-warning text-xs sm:text-sm">
-                    -${calculation.fuel_expenses.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                    -${formatCurrency(calculation.fuel_expenses)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -491,7 +491,7 @@ export function PaymentReportDialog({
                     <span className="truncate">Deducciones</span>
                   </span>
                   <span className="font-semibold text-destructive text-xs sm:text-sm">
-                    -${calculation.total_deductions.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                    -${formatCurrency(calculation.total_deductions)}
                   </span>
                 </div>
               </div>
@@ -501,7 +501,7 @@ export function PaymentReportDialog({
               <div className="flex items-center justify-between text-base sm:text-lg font-bold">
                 <span>Pago Neto:</span>
                 <span className={calculateNetPayment(calculation) >= 0 ? 'text-success' : 'text-destructive'}>
-                  ${calculateNetPayment(calculation).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  ${formatCurrency(calculateNetPayment(calculation))}
                 </span>
               </div>
             </CardContent>
@@ -543,7 +543,7 @@ export function PaymentReportDialog({
                         </div>
                       </div>
                       <div className="font-semibold sm:text-right shrink-0 text-sm sm:text-base">
-                        ${load.total_amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                        ${formatCurrency(load.total_amount)}
                       </div>
                     </div>
                   ))}
@@ -572,7 +572,7 @@ export function PaymentReportDialog({
                         </div>
                       </div>
                       <div className="font-semibold text-warning sm:text-right shrink-0 text-sm sm:text-base">
-                        ${expense.total_amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                        ${formatCurrency(expense.total_amount)}
                       </div>
                     </div>
                   ))}
@@ -601,7 +601,7 @@ export function PaymentReportDialog({
                         </div>
                       </div>
                       <div className="font-semibold text-destructive sm:text-right shrink-0 text-sm sm:text-base">
-                        -${deduction.amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                        -${formatCurrency(deduction.amount)}
                       </div>
                     </div>
                   ))}

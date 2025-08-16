@@ -2,6 +2,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
+import { formatCurrency } from "@/lib/dateFormatting";
 
 export interface DriverCalculation {
   id: string;
@@ -60,7 +61,7 @@ export function useDriverPaymentActions() {
       if (result?.success) {
         showSuccess(
           "Pago ACID Registrado", 
-          `Conductor marcado como pagado con validaciones ACID. Monto: $${result.net_payment?.toLocaleString('es-US', { minimumFractionDigits: 2 }) || '0.00'}`
+          `Conductor marcado como pagado con validaciones ACID. Monto: $${formatCurrency(result.net_payment || 0)}`
         );
         return { success: true, data };
       } else {
@@ -90,7 +91,7 @@ export function useDriverPaymentActions() {
       if (result?.success) {
         showSuccess(
           "Cálculo ACID Completado", 
-          `Período calculado con garantías ACID. Pago neto: $${result.net_payment?.toLocaleString('es-US', { minimumFractionDigits: 2 }) || '0.00'}`
+          `Período calculado con garantías ACID. Pago neto: $${formatCurrency(result.net_payment || 0)}`
         );
         return { success: true, data };
       } else {

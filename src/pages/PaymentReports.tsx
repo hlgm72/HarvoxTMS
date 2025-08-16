@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { Calendar, Download, FileText, Search, Filter, Plus, DollarSign, Clock, Calculator } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { formatPaymentPeriod } from "@/lib/dateFormatting";
+import { formatPaymentPeriod, formatDateAuto, formatCurrency } from "@/lib/dateFormatting";
 import { useFleetNotifications } from "@/components/notifications";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
@@ -188,7 +188,7 @@ export default function PaymentReports() {
           />
           <StatsCard
             title="Pago Neto Total"
-            value={`$${totalEarnings.toLocaleString('es-US', { minimumFractionDigits: 2 })}`}
+            value={`$${formatCurrency(totalEarnings)}`}
             icon="💰"
             variant="success"
           />
@@ -294,12 +294,12 @@ export default function PaymentReports() {
                           </span>
                           <span className="flex items-center gap-1">
                             <DollarSign className="h-4 w-4" />
-                            Neto: ${calculateNetPayment(calculation).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                            Neto: ${formatCurrency(calculateNetPayment(calculation))}
                           </span>
                           {calculation.calculated_at && (
                             <span className="flex items-center gap-1">
                               <Clock className="h-4 w-4" />
-                              {new Date(calculation.calculated_at).toLocaleDateString('es-ES')}
+                              {formatDateAuto(calculation.calculated_at)}
                             </span>
                           )}
                         </div>

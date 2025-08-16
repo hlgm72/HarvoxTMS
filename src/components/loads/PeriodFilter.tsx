@@ -38,14 +38,14 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         return {
           startDate: format(startOfMonth(now), 'yyyy-MM-dd'),
           endDate: format(endOfMonth(now), 'yyyy-MM-dd'),
-          label: `Este mes (${format(now, 'MMMM yyyy', { locale: es })})`
+          label: `Este mes (${formatMonthName(now)} ${now.getFullYear()})`
         };
       case 'last_month':
         const lastMonth = subMonths(now, 1);
         return {
           startDate: format(startOfMonth(lastMonth), 'yyyy-MM-dd'),
           endDate: format(endOfMonth(lastMonth), 'yyyy-MM-dd'),
-          label: `Mes pasado (${format(lastMonth, 'MMMM yyyy', { locale: es })})`
+          label: `Mes pasado (${formatMonthName(lastMonth)} ${lastMonth.getFullYear()})`
         };
       case 'this_quarter':
         return {

@@ -8,6 +8,7 @@ import { DollarSign, TrendingUp, User, Circle } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatCurrency } from '@/lib/paymentCalculations';
+import { formatPaymentPeriod } from '@/lib/dateFormatting';
 import { useTranslation } from 'react-i18next';
 
 interface DriverPayment {
@@ -94,7 +95,7 @@ export function RealtimeDriverPayments() {
             driver_id: calculation.driver_user_id,
             driver_name: profile ? `${profile.first_name || 'N/A'} ${profile.last_name || ''}`.trim() : 'Driver',
             driver_avatar: profile?.avatar_url,
-            period_dates: `${new Date(latestPeriod.period_start_date).toLocaleDateString()} - ${new Date(latestPeriod.period_end_date).toLocaleDateString()}`,
+            period_dates: formatPaymentPeriod(latestPeriod.period_start_date, latestPeriod.period_end_date),
             gross_earnings: calculation.gross_earnings || 0,
             fuel_expenses: calculation.fuel_expenses || 0,
             total_deductions: calculation.total_deductions || 0,

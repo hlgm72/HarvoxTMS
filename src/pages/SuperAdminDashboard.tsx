@@ -22,6 +22,7 @@ import { getTodayInUserTimeZone } from '@/lib/dateFormatting';
 // import { useFleetNotifications } from '@/components/notifications'; // Temporarily disabled due to provider context issue
 import { createTextHandlers, handlePhoneInput } from '@/lib/textUtils';
 import { useTranslation } from 'react-i18next';
+import { formatDateAuto, formatDateTimeAuto } from '@/lib/dateFormatting';
 import { useSuperAdminDashboard } from '@/hooks/useSuperAdminDashboard';
 import { refreshAuthSession, forceReauth } from '@/lib/authUtils';
 import { HealthCheckTester } from '@/components/debug/HealthCheckTester';
@@ -966,7 +967,7 @@ export default function SuperAdminDashboard() {
                                              <div className="bg-muted p-3 rounded-lg">
                                                <p className="font-semibold">{deleteValidation.company_name}</p>
                                                <p className="text-sm text-muted-foreground">
-                                                 {t('admin:common.plan')}: {deleteValidation.plan_type} | {t('admin:common.created')}: {new Date(deleteValidation.created_at).toLocaleDateString()}
+                                                 {t('admin:common.plan')}: {deleteValidation.plan_type} | {t('admin:common.created')}: {formatDateAuto(deleteValidation.created_at)}
                                                </p>
                                              </div>
                                              <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
@@ -1256,13 +1257,7 @@ export default function SuperAdminDashboard() {
                               </Label>
                               <div className="flex items-center gap-2 mt-1">
                                 <Clock className="h-4 w-4 text-muted-foreground" />
-                                <p>{new Date(companyToView.created_at).toLocaleDateString('en-US', {
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}</p>
+                                 <p>{formatDateTimeAuto(companyToView.created_at)}</p>
                               </div>
                             </div>
                             {companyToView.contract_start_date && (
@@ -1272,11 +1267,7 @@ export default function SuperAdminDashboard() {
                                 </Label>
                                 <div className="flex items-center gap-2 mt-1">
                                   <CheckCircle className="h-4 w-4 text-green-600" />
-                                  <p>{new Date(companyToView.contract_start_date).toLocaleDateString('en-US', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                  })}</p>
+                                   <p>{formatDateAuto(companyToView.contract_start_date)}</p>
                                 </div>
                               </div>
                             )}
