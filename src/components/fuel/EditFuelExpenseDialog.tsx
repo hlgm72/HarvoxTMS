@@ -12,7 +12,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
-import { formatDateSafe, formatPrettyDate } from '@/lib/dateFormatting';
+import { formatDateSafe, formatPrettyDate, formatDateAuto } from '@/lib/dateFormatting';
 import { cn } from '@/lib/utils';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { useCompanyPaymentPeriods } from '@/hooks/useCompanyPaymentPeriods';
@@ -165,7 +165,7 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
                       <SelectContent>
                          {paymentPeriods.map((period) => (
                            <SelectItem key={period.id} value={period.id}>
-                             {formatDateSafe(period.period_start_date, 'dd/MM/yyyy')} - {formatDateSafe(period.period_end_date, 'dd/MM/yyyy')}
+                             {formatDateAuto(period.period_start_date)} - {formatDateAuto(period.period_end_date)}
                            </SelectItem>
                          ))}
                       </SelectContent>

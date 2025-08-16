@@ -7,7 +7,7 @@ import { Calendar, CalendarDays, ChevronDown, Clock, X, TrendingUp, FileText, Lo
 import { usePaymentPeriods, useCurrentPaymentPeriod, usePreviousPaymentPeriod, useNextPaymentPeriod } from '@/hooks/usePaymentPeriods';
 import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { formatPaymentPeriod, formatPaymentPeriodCompact, formatPaymentPeriodBadge, formatDateOnly, formatMonthName } from '@/lib/dateFormatting';
+import { formatPaymentPeriod, formatPaymentPeriodCompact, formatPaymentPeriodBadge, formatDateOnly, formatMonthName, formatDateInUserTimeZone } from '@/lib/dateFormatting';
 
 export interface PeriodFilterValue {
   type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
@@ -36,41 +36,41 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
     switch (type) {
       case 'this_month':
         return {
-          startDate: format(startOfMonth(now), 'yyyy-MM-dd'),
-          endDate: format(endOfMonth(now), 'yyyy-MM-dd'),
+           startDate: formatDateInUserTimeZone(startOfMonth(now)),
+           endDate: formatDateInUserTimeZone(endOfMonth(now)),
           label: `Este mes (${formatMonthName(now)} ${now.getFullYear()})`
         };
       case 'last_month':
         const lastMonth = subMonths(now, 1);
         return {
-          startDate: format(startOfMonth(lastMonth), 'yyyy-MM-dd'),
-          endDate: format(endOfMonth(lastMonth), 'yyyy-MM-dd'),
+           startDate: formatDateInUserTimeZone(startOfMonth(lastMonth)),
+           endDate: formatDateInUserTimeZone(endOfMonth(lastMonth)),
           label: `Mes pasado (${formatMonthName(lastMonth)} ${lastMonth.getFullYear()})`
         };
       case 'this_quarter':
         return {
-          startDate: format(startOfQuarter(now), 'yyyy-MM-dd'),
-          endDate: format(endOfQuarter(now), 'yyyy-MM-dd'),
+           startDate: formatDateInUserTimeZone(startOfQuarter(now)),
+           endDate: formatDateInUserTimeZone(endOfQuarter(now)),
           label: `Este trimestre (Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()})`
         };
       case 'last_quarter':
         const lastQuarter = subQuarters(now, 1);
         return {
-          startDate: format(startOfQuarter(lastQuarter), 'yyyy-MM-dd'),
-          endDate: format(endOfQuarter(lastQuarter), 'yyyy-MM-dd'),
+           startDate: formatDateInUserTimeZone(startOfQuarter(lastQuarter)),
+           endDate: formatDateInUserTimeZone(endOfQuarter(lastQuarter)),
           label: `Trimestre pasado (Q${Math.ceil((lastQuarter.getMonth() + 1) / 3)} ${lastQuarter.getFullYear()})`
         };
       case 'this_year':
         return {
-          startDate: format(startOfYear(now), 'yyyy-MM-dd'),
-          endDate: format(endOfYear(now), 'yyyy-MM-dd'),
+           startDate: formatDateInUserTimeZone(startOfYear(now)),
+           endDate: formatDateInUserTimeZone(endOfYear(now)),
           label: `Este año (${now.getFullYear()})`
         };
       case 'last_year':
         const lastYear = subYears(now, 1);
         return {
-          startDate: format(startOfYear(lastYear), 'yyyy-MM-dd'),
-          endDate: format(endOfYear(lastYear), 'yyyy-MM-dd'),
+           startDate: formatDateInUserTimeZone(startOfYear(lastYear)),
+           endDate: formatDateInUserTimeZone(endOfYear(lastYear)),
           label: `Año pasado (${lastYear.getFullYear()})`
         };
       default:

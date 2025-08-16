@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { formatDateInUserTimeZone, formatDateSafe, formatMonthName } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatDateSafe, formatMonthName, formatDateAuto } from '@/lib/dateFormatting';
 import { cn } from '@/lib/utils';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
@@ -421,7 +421,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                              <SelectValue 
                                placeholder={
                                  predictedPeriod 
-                                   ? `Se creará: ${formatDateSafe(predictedPeriod.start, 'dd/MM/yyyy')} - ${formatDateSafe(predictedPeriod.end, 'dd/MM/yyyy')}`
+                                   ? `Se creará: ${formatDateAuto(predictedPeriod.start)} - ${formatDateAuto(predictedPeriod.end)}`
                                    : "Se seleccionará automáticamente"
                                } 
                              />
@@ -430,7 +430,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                         <SelectContent>
                            {paymentPeriods.map((period) => (
                              <SelectItem key={period.id} value={period.id}>
-                               {formatDateSafe(period.period_start_date, 'dd/MM/yyyy')} - {formatDateSafe(period.period_end_date, 'dd/MM/yyyy')}
+                               {formatDateAuto(period.period_start_date)} - {formatDateAuto(period.period_end_date)}
                              </SelectItem>
                            ))}
                         </SelectContent>
