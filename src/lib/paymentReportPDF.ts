@@ -637,7 +637,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'F');
   
   addText(`Other Earnings (Count: ${otherIncomeCount}, Total: ${formatCurrency(totalOtherIncome)})`, margin + 2, currentY, {
-    fontSize: 12,
+    fontSize: 11,
     fontStyle: 'bold',
     color: colors.darkGray
   });
@@ -690,7 +690,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   const totalDeductions = data.deductions?.reduce((sum, d) => sum + d.amount, 0) || 0;
   addText(`Period Deductions (Count: ${deductionsCount}, Total: ${formatCurrency(totalDeductions)})`, margin + 2, currentY, {
-    fontSize: 12,
+    fontSize: 11,
     fontStyle: 'bold',
     color: colors.darkGray
   });
@@ -742,7 +742,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'F');
   
   addText(`Fuel Expenses (Count: ${fuelCount}, Total: ${formatCurrency(data.period.fuel_expenses)})`, margin + 2, currentY, {
-    fontSize: 12,
+    fontSize: 11,
     fontStyle: 'bold',
     color: colors.darkGray
   });
