@@ -53,7 +53,7 @@ export const EmailHeader = ({ title, subtitle }: EmailHeaderProps) => (
 
 const headerSection = {
   background: '#002652',
-  padding: '24px 20px',
+  padding: '30px 20px',
   borderRadius: '12px 12px 0 0',
 };
 
