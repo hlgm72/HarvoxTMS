@@ -171,6 +171,9 @@ export function PaymentReportDialog({
           total_amount,
           client_id,
           customer_name,
+          dispatching_percentage,
+          factoring_percentage,
+          leasing_percentage,
           load_stops(
             stop_type,
             company_name,
@@ -328,6 +331,9 @@ export function PaymentReportDialog({
           delivery_date: load.delivery_date,
           client_name: clientName,
           total_amount: load.total_amount,
+          dispatching_percentage: load.dispatching_percentage || 0,
+          factoring_percentage: load.factoring_percentage || 0,
+          leasing_percentage: load.leasing_percentage || 0,
           load_stops: load.load_stops || []
         };
       }),
@@ -519,32 +525,55 @@ export function PaymentReportDialog({
               <CardContent>
                 <div className="space-y-2">
                   {loads.map((load) => (
-                    <div key={load.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b">
-                      <div className="space-y-1 min-w-0 flex-1">
-                        <div className="font-medium truncate text-sm sm:text-base">{load.load_number}</div>
-                        <div className="text-xs sm:text-sm text-muted-foreground">
-                          {/* Priorizar alias, pero usar nombre completo si no hay alias */}
-                          {(() => {
-                            const clientData = clients.find(c => c.id === load.client_id);
-                            let clientName = 'Sin cliente';
-                            
-                            if (clientData) {
-                              if (clientData.alias && clientData.alias.trim()) {
-                                clientName = clientData.alias;
-                              } else if (clientData.name && clientData.name.trim()) {
-                                clientName = clientData.name;
+                    <div key={load.id} className="flex flex-col gap-2 py-3 border-b">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <div className="font-medium truncate text-sm sm:text-base">{load.load_number}</div>
+                          <div className="text-xs sm:text-sm text-muted-foreground">
+                            {/* Priorizar alias, pero usar nombre completo si no hay alias */}
+                            {(() => {
+                              const clientData = clients.find(c => c.id === load.client_id);
+                              let clientName = 'Sin cliente';
+                              
+                              if (clientData) {
+                                if (clientData.alias && clientData.alias.trim()) {
+                                  clientName = clientData.alias;
+                                } else if (clientData.name && clientData.name.trim()) {
+                                  clientName = clientData.name;
+                                }
+                              } else if (load.customer_name && load.customer_name.trim()) {
+                                clientName = load.customer_name;
                               }
-                            } else if (load.customer_name && load.customer_name.trim()) {
-                              clientName = load.customer_name;
-                            }
-                            
-                            return clientName;
-                          })()} • {formatDateOnly(load.pickup_date)}
+                              
+                              return clientName;
+                            })()} • {formatDateOnly(load.pickup_date)}
+                          </div>
+                        </div>
+                        <div className="font-semibold sm:text-right shrink-0 text-sm sm:text-base">
+                          ${formatCurrency(load.total_amount)}
                         </div>
                       </div>
-                      <div className="font-semibold sm:text-right shrink-0 text-sm sm:text-base">
-                        ${formatCurrency(load.total_amount)}
-                      </div>
+                      
+                      {/* Mostrar porcentajes si alguno es mayor que 0 */}
+                      {(load.dispatching_percentage > 0 || load.factoring_percentage > 0 || load.leasing_percentage > 0) && (
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {load.dispatching_percentage > 0 && (
+                            <Badge variant="outline" className="text-xs">
+                              Despacho: {load.dispatching_percentage}%
+                            </Badge>
+                          )}
+                          {load.factoring_percentage > 0 && (
+                            <Badge variant="outline" className="text-xs">
+                              Factoring: {load.factoring_percentage}%
+                            </Badge>
+                          )}
+                          {load.leasing_percentage > 0 && (
+                            <Badge variant="outline" className="text-xs">
+                              Leasing: {load.leasing_percentage}%
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
