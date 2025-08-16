@@ -27,12 +27,32 @@ export const EmailHeader = ({ title, subtitle }: EmailHeaderProps) => (
         fontStyle="normal"
       />
     </Head>
-    {/* Cabecera simplificada sin logo ni branding repetitivo */}
+    <Section style={headerSection}>
+      <Container style={headerContainer}>
+        <div style={logoSection}>
+          <Img
+            src="https://cdn.jsdelivr.net/gh/user-attachments/assets/4ca477a6-e9f1-4afd-bf78-6c3f91a0e52c"
+            alt="Logo"
+            width="40"
+            height="40"
+            style={logoStyle}
+          />
+          <Text style={brandName}>FleetPro</Text>
+        </div>
+        
+        <div style={gradientLine}></div>
+        
+        <div style={titleSection}>
+          <Text style={mainTitle}>{title}</Text>
+          {subtitle && <Text style={subtitleStyle}>{subtitle}</Text>}
+        </div>
+      </Container>
+    </Section>
   </>
 );
 
 const headerSection = {
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  background: '#002652',
   padding: '40px 20px',
   borderRadius: '12px 12px 0 0',
 };
@@ -48,7 +68,7 @@ const logoSection = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: '12px',
+  gap: '20px',
 };
 
 const logoStyle = {
