@@ -407,7 +407,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // === CAJAS DE RESUMEN SUPERIOR ===
   const totalBoxesWidth = pageWidth - margin*2 + 10; // Mismo ancho que la cabecera
   const boxesStartX = margin - 5; // Misma posición X que la cabecera
-  const boxWidth = (totalBoxesWidth - 15) / 4; // 4 cajas con espacios
+  const boxWidth = (totalBoxesWidth - 9) / 4; // 4 cajas con espacios reducidos
   const boxHeight = 11;
   
   // Gross Earnings (Verde)
@@ -415,15 +415,15 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     'Gross Earnings', formatCurrency(data.period.gross_earnings));
   
   // Other Earnings (Azul)
-  addColoredBox(boxesStartX + boxWidth + 5, currentY, boxWidth, boxHeight, colors.lightBlue, colors.darkGray,
+  addColoredBox(boxesStartX + boxWidth + 3, currentY, boxWidth, boxHeight, colors.lightBlue, colors.darkGray,
     'Other Earnings', formatCurrency(data.period.other_income));
   
   // Period Deductions (Rojo)
-  addColoredBox(boxesStartX + (boxWidth + 5) * 2, currentY, boxWidth, boxHeight, colors.lightRed, colors.darkGray,
+  addColoredBox(boxesStartX + (boxWidth + 3) * 2, currentY, boxWidth, boxHeight, colors.lightRed, colors.darkGray,
     'Period Deductions', formatCurrency(-data.period.total_deductions));
   
   // Fuel Expenses (Naranja)
-  addColoredBox(boxesStartX + (boxWidth + 5) * 3, currentY, boxWidth, boxHeight, colors.lightOrange, colors.darkGray,
+  addColoredBox(boxesStartX + (boxWidth + 3) * 3, currentY, boxWidth, boxHeight, colors.lightOrange, colors.darkGray,
     'Fuel Expenses', formatCurrency(-data.period.fuel_expenses));
 
   currentY += boxHeight + 4;
