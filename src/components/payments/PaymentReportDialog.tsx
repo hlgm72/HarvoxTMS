@@ -435,7 +435,12 @@ export function PaymentReportDialog({
           <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
             <!-- Header -->
             <div style="background: linear-gradient(135deg, #2563eb, #059669); padding: 30px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">FleetNest TMS</h1>
+              <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                <img src="${company?.logo_url || 'https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/company-logos/e5d52767-ca59-4c28-94e4-058aff6a037b/logo.png'}" 
+                     alt="FleetNest TMS Logo" 
+                     style="width: 40px; height: 40px; border-radius: 8px; background-color: white; padding: 5px;">
+                <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">FleetNest TMS</h1>
+              </div>
               <p style="color: #e5e7eb; margin: 10px 0 0 0; font-size: 16px;">Reporte de Pago del Conductor</p>
             </div>
             
