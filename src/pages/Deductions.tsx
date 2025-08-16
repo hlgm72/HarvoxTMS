@@ -12,6 +12,7 @@ import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 import { useExpenseTypes } from "@/hooks/useExpenseTypes";
 import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
 import { useAuth } from "@/contexts/AuthContext";
+import { formatCurrency } from '@/lib/dateFormatting';
 
 export default function Deductions() {
   const { t } = useTranslation();
@@ -66,7 +67,7 @@ export default function Deductions() {
 
     const { activeTemplates, totalMonthlyAmount, affectedDrivers } = stats;
     
-    return `${activeTemplates} plantillas activas • $${totalMonthlyAmount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} total mensual • ${affectedDrivers} conductores afectados`;
+    return `${activeTemplates} plantillas activas • $${formatCurrency(totalMonthlyAmount)} total mensual • ${affectedDrivers} conductores afectados`;
   };
 
   return (

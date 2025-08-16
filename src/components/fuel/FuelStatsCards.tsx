@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Fuel, DollarSign, BarChart3, TrendingUp, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { useFuelStats } from '@/hooks/useFuelStats';
+import { formatCurrency } from '@/lib/dateFormatting';
 
 interface FuelStatsCardsProps {
   filters?: {
@@ -33,13 +34,9 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
     );
   }
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(amount);
-  };
+   const formatCurrency = (amount: number) => {
+     return formatCurrency(amount);
+   };
 
   const formatGallons = (gallons: number) => {
     return `${gallons.toFixed(1)} gal`;

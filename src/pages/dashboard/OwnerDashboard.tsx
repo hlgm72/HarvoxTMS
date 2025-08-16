@@ -22,7 +22,7 @@ import { Company } from '@/types/company';
 import { PaymentPeriodsManager } from "@/components/payments/PaymentPeriodsManager";
 import { RealtimeDriverPayments } from "@/components/payments/RealtimeDriverPayments";
 import { useTranslation } from 'react-i18next';
-import { formatDateAuto } from '@/lib/dateFormatting';
+import { formatDateAuto, formatCurrency } from '@/lib/dateFormatting';
 
 // Types
 interface CompanyStats {
@@ -334,7 +334,7 @@ export default function OwnerDashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">{t('dashboard:owner.stats.total_income')}</p>
-                      <p className="text-3xl font-bold text-green-600">${stats.total_income.toLocaleString()}</p>
+                      <p className="text-3xl font-bold text-green-600">${formatCurrency(stats.total_income)}</p>
                     </div>
                     <div className="p-3 bg-green-100 rounded-full">
                       <DollarSign className="h-6 w-6 text-green-600" />

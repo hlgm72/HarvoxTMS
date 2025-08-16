@@ -522,7 +522,7 @@ export function PDFAnalyzer() {
         const fuelExpenseData = {
           driver_user_id: transaction.driver_user_id!,
           payment_period_id: transaction.payment_period_id!,
-          transaction_date: new Date(transaction.date).toISOString().split('T')[0],
+          transaction_date: formatDateInUserTimeZone(new Date(transaction.date)),
           fuel_type: transaction.category?.toLowerCase() || 'diesel',
           gallons_purchased: Number(transaction.qty),
           price_per_gallon: Number(transaction.gross_ppg),

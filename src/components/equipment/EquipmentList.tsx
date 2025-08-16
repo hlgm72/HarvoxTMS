@@ -13,6 +13,7 @@ import type { Equipment } from "@/hooks/useEquipment";
 import { useEquipment } from "@/hooks/useEquipment";
 import { EquipmentLocationStatus } from "./EquipmentLocationStatus";
 import { useGeotabVehicles } from "@/hooks/useGeotabVehicles";
+import { formatInternationalized } from '@/lib/dateFormatting';
 
 interface EquipmentListProps {
   equipment: Equipment[];
@@ -157,10 +158,7 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                           </div>
                         )}
                         <p className="text-xs text-muted-foreground mt-4">
-                          {t("equipment.createdAt", "Creado")}: {formatDistanceToNow(new Date(item.created_at), { 
-                            addSuffix: true, 
-                            locale: es 
-                          })}
+                           {t("equipment.createdAt", "Creado")}: {formatInternationalized(new Date(item.created_at), 'PPP')}
                         </p>
                       </div>
                     </div>

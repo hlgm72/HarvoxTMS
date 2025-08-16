@@ -12,6 +12,7 @@ import { CreateClientDialog } from "@/components/clients/CreateClientDialog";
 import { ClientFilters } from "@/components/clients/ClientFilters";
 
 import { useClients } from "@/hooks/useClients";
+import { formatCurrency } from '@/lib/dateFormatting';
 
 export default function Clients() {
   const { t } = useTranslation(['common', 'fleet']);
@@ -178,7 +179,7 @@ export default function Clients() {
             </CardHeader>
             <CardContent>
               <div className="text-lg sm:text-2xl font-bold text-blue-600">
-                ${stats.totalRevenue.toLocaleString()}
+                ${formatCurrency(stats.totalRevenue)}
               </div>
               <p className="text-xs text-muted-foreground">
                 Este mes

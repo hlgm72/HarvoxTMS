@@ -8,7 +8,7 @@ import { LoadDocumentsProvider } from "@/contexts/LoadDocumentsContext";
 import { LoadsFloatingActions } from "@/components/loads/LoadsFloatingActions";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
-import { formatPaymentPeriodCompact } from "@/lib/dateFormatting";
+import { formatPaymentPeriodCompact, formatCurrency } from "@/lib/dateFormatting";
 import { useLoadsStats } from "@/hooks/useLoadsStats";
 
 export default function Loads() {
@@ -85,14 +85,9 @@ export default function Loads() {
   };
 
   // Formatear el monto para mostrarlo en el subtitle
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+   const formatCurrency = (amount: number) => {
+     return formatCurrency(amount);
+   };
 
   const periodDateRange = getPeriodDateRange();
   const periodDescription = getPeriodDescription();

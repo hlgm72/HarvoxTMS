@@ -11,6 +11,7 @@ import { es } from "date-fns/locale";
 import type { Equipment } from "@/hooks/useEquipment";
 import { useEquipment } from "@/hooks/useEquipment";
 import { capitalizeWords } from "@/lib/textUtils";
+import { formatInternationalized } from '@/lib/dateFormatting';
 
 interface EquipmentGridProps {
   equipment: Equipment[];
@@ -171,7 +172,7 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
                 {item.current_mileage && (
                   <div className="flex justify-between py-1">
                     <span className="text-muted-foreground">{t("equipment.mileage", "Kilometraje")}:</span>
-                    <span className="font-medium">{item.current_mileage.toLocaleString()} km</span>
+                     <span className="font-medium">{item.current_mileage.toLocaleString()} km</span>
                   </div>
                 )}
               </div>
@@ -188,10 +189,7 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
               )}
               
               <div className="text-xs text-muted-foreground pt-4 border-t mt-4">
-                {t("equipment.createdAt", "Creado")}: {formatDistanceToNow(new Date(item.created_at), { 
-                  addSuffix: true, 
-                  locale: es 
-                })}
+                 {t("equipment.createdAt", "Creado")}: {formatInternationalized(new Date(item.created_at), 'PPP')}
               </div>
             </CardContent>
           </Card>

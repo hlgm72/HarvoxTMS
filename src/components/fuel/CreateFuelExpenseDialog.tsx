@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { formatDateInUserTimeZone, formatDateSafe } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatDateSafe, formatMonthName } from '@/lib/dateFormatting';
 import { cn } from '@/lib/utils';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
@@ -337,7 +337,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                             {/* Selectores de mes y año */}
                             <div className="grid grid-cols-2 gap-2">
                               <Select
-                                value={field.value ? format(field.value, 'MMMM') : ""}
+                                value={field.value ? formatMonthName(field.value) : ""}
                                 onValueChange={(monthName) => {
                                   const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
                                                     'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
