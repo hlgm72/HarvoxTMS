@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { AddressForm } from '@/components/ui/AddressForm';
 import { useFleetNotifications } from '@/components/notifications';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Save, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -42,6 +43,7 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
   const { t, i18n } = useTranslation(['common']);
   const { showSuccess, showError } = useFleetNotifications();
   const { profile, user, refreshProfile } = useUserProfile();
+  const { refreshRoles } = useAuth();
   const [updating, setUpdating] = useState(false);
 
   // Create handlers for text inputs
@@ -155,6 +157,16 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
     if (!user) return { success: false, error: 'Usuario no encontrado' };
 
     try {
+      // Check if this is the user's first time completing their profile
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      const isFirstTime = !existingProfile;
+
+      // Save profile data
       const { error } = await supabase
         .from('profiles')
         .upsert({
@@ -174,6 +186,53 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
       if (error) {
         console.error('Error saving profile:', error);
         return { success: false, error: error.message };
+      }
+
+      // If first time and user doesn't have any company roles, create a default company
+      if (isFirstTime) {
+        console.log('🏢 First time profile completion - checking for existing roles...');
+        
+        const { data: userRoles } = await supabase
+          .from('user_company_roles')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('is_active', true);
+
+        if (!userRoles || userRoles.length === 0) {
+          console.log('🏢 No existing roles found - creating default company...');
+          
+          // Create a default company for the user
+          const companyName = `${data.first_name} ${data.last_name} Transportation`;
+          
+          const { data: companyResult, error: companyError } = await supabase.rpc(
+            'create_or_update_company_with_validation',
+            {
+              company_data: {
+                name: companyName,
+                street_address: data.street_address || 'Address not provided',
+                state_id: data.state_id || 'TX',
+                zip_code: data.zip_code || '00000',
+                city_id: null,
+                plan_type: 'basic',
+                status: 'active'
+              }
+            }
+          );
+
+          if (companyError) {
+            console.error('Error creating default company:', companyError);
+            // Don't fail the profile save if company creation fails
+          } else {
+            console.log('🎉 Default company created successfully:', companyResult);
+            showSuccess(
+              "Empresa creada automáticamente",
+              `Se ha creado la empresa "${companyName}" y se le ha asignado como propietario.`
+            );
+            
+            // Refresh user roles to update the auth context
+            await refreshRoles();
+          }
+        }
       }
 
       await refreshProfile();
