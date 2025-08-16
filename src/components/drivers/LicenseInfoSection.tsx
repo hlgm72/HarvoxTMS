@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { StateCombobox } from "@/components/ui/StateCombobox";
 import { Shield } from "lucide-react";
 import DatePicker from 'react-datepicker';
-import { enUS } from "date-fns/locale";
+import { enUS, es } from "date-fns/locale";
 import 'react-datepicker/dist/react-datepicker.css';
 
 interface LicenseInfoData {
@@ -22,9 +22,10 @@ interface LicenseInfoSectionProps {
   data: LicenseInfoData;
   onUpdate: (field: keyof LicenseInfoData, value: any) => void;
   loading?: boolean;
+  currentLanguage?: string;
 }
 
-export function LicenseInfoSection({ data, onUpdate, loading = false }: LicenseInfoSectionProps) {
+export function LicenseInfoSection({ data, onUpdate, loading = false, currentLanguage = 'en' }: LicenseInfoSectionProps) {
   const endorsements = [
     { code: 'T', description: 'Double/triple trailers' },
     { code: 'P', description: 'Passenger transport' },
@@ -88,14 +89,14 @@ export function LicenseInfoSection({ data, onUpdate, loading = false }: LicenseI
               id="license_issue_date"
               selected={data.license_issue_date}
               onChange={(date: Date | null) => onUpdate('license_issue_date', date)}
-              dateFormat="dd/MM/yyyy"
+              dateFormat={currentLanguage === 'es' ? "dd/MM/yyyy" : "MM/dd/yyyy"}
               placeholderText="Select date"
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
               yearDropdownItemNumber={50}
               scrollableYearDropdown
-              locale={enUS}
+              locale={currentLanguage === 'es' ? es : enUS}
               disabled={loading}
               className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
             />
@@ -108,14 +109,14 @@ export function LicenseInfoSection({ data, onUpdate, loading = false }: LicenseI
               id="license_expiry_date"
               selected={data.license_expiry_date}
               onChange={(date: Date | null) => onUpdate('license_expiry_date', date)}
-              dateFormat="dd/MM/yyyy"
+              dateFormat={currentLanguage === 'es' ? "dd/MM/yyyy" : "MM/dd/yyyy"}
               placeholderText="Select date"
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
               yearDropdownItemNumber={50}
               scrollableYearDropdown
-              locale={enUS}
+              locale={currentLanguage === 'es' ? es : enUS}
               disabled={loading}
               className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
             />

@@ -21,9 +21,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { createPhoneHandlers, handleTextBlur } from '@/lib/textUtils';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { enUS } from "date-fns/locale";
+import { enUS, es } from "date-fns/locale";
 import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { LicenseInfoSection } from '@/components/drivers/LicenseInfoSection';
+import { useTranslation } from 'react-i18next';
 
 // Función simple para formatear fechas para la base de datos sin problemas de zona horaria
 const formatDateForDatabase = (date: Date): string => {
@@ -112,6 +113,7 @@ interface EditDriverDialogProps {
 }
 
 export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDriverDialogProps) {
+  const { i18n } = useTranslation();
   const { showSuccess, showError } = useFleetNotifications();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -608,14 +610,14 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                         id="date_of_birth"
                         selected={driverData.date_of_birth}
                         onChange={(date: Date | null) => updateDriverData('date_of_birth', date)}
-                        dateFormat="dd/MM/yyyy"
+                        dateFormat={i18n.language === 'es' ? "dd/MM/yyyy" : "MM/dd/yyyy"}
                         placeholderText="Select date"
                         showYearDropdown
                         showMonthDropdown
                         dropdownMode="select"
                         yearDropdownItemNumber={53}
                         scrollableYearDropdown
-                        locale={enUS}
+                        locale={i18n.language === 'es' ? es : enUS}
                         minDate={new Date(new Date().getFullYear() - 70, 0, 1)}
                         maxDate={new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate())}
                         className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
@@ -691,14 +693,14 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                           id="hire_date"
                           selected={driverData.hire_date}
                           onChange={(date: Date | null) => updateDriverData('hire_date', date)}
-                          dateFormat="dd/MM/yyyy"
+                          dateFormat={i18n.language === 'es' ? "dd/MM/yyyy" : "MM/dd/yyyy"}
                           placeholderText="Select date"
                           showYearDropdown
                           showMonthDropdown
                           dropdownMode="select"
                           yearDropdownItemNumber={50}
                           scrollableYearDropdown
-                          locale={enUS}
+                          locale={i18n.language === 'es' ? es : enUS}
                           className="w-full px-3 py-2 border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md block"
                         />
                       </div>
@@ -718,6 +720,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                   }}
                   onUpdate={(field, value) => updateDriverData(field as keyof DriverData, value)}
                   loading={loading || saving}
+                  currentLanguage={i18n.language}
                 />
               </div>
             </TabsContent>
