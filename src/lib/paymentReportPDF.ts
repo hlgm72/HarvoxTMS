@@ -493,29 +493,23 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       }
       
 
-      // Porcentajes y monto (derecha)
+      // Porcentajes y monto (derecha) - en la misma línea
       const percentages = [];
       if (load.factoring_percentage) percentages.push(`F.${load.factoring_percentage}%: (-$${(load.total_amount * load.factoring_percentage / 100).toFixed(2)})`);
       if (load.dispatching_percentage) percentages.push(`D.${load.dispatching_percentage}%: (-$${(load.total_amount * load.dispatching_percentage / 100).toFixed(2)})`);
       if (load.leasing_percentage) percentages.push(`L.${load.leasing_percentage}%: (-$${(load.total_amount * load.leasing_percentage / 100).toFixed(2)})`);
       
-      // Mostrar el monto total primero con fuente más grande
-      addText(formatCurrency(load.total_amount), pageWidth - margin, currentY, {
+      // Construir el texto completo: porcentajes + monto
+      const rightText = percentages.length > 0 
+        ? `${percentages.join(' ')} ${formatCurrency(load.total_amount)}`
+        : formatCurrency(load.total_amount);
+      
+      addText(rightText, pageWidth - margin, currentY, {
         fontSize: 9,
         fontStyle: 'bold',
         color: colors.darkGray,
         align: 'right'
       });
-      
-      // Mostrar porcentajes debajo con fuente más pequeña y color rojo para montos negativos
-      if (percentages.length > 0) {
-        addText(percentages.join(' '), pageWidth - margin, currentY + 3, {
-          fontSize: 6, // Fuente aún más pequeña para evitar solapamientos
-          fontStyle: 'normal',
-          color: colors.danger, // Color rojo para los montos negativos
-          align: 'right'
-        });
-      }
 
       // Todas las paradas ordenadas por stop_number
       const allStops = load.load_stops ? [...load.load_stops].sort((a, b) => (a.stop_number || 0) - (b.stop_number || 0)) : [];
