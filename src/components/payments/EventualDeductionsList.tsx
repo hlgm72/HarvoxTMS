@@ -100,10 +100,10 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         const enrichedData = await Promise.all(
           (data || []).map(async (expense) => {
             // Obtener información del período a través de driver_period_calculations
-            const { data: period } = await supabase
+            const { data: driverPeriod } = await supabase
               .from('driver_period_calculations')
               .select(`
-                company_payment_periods!inner(
+                company_payment_periods(
                   period_start_date, 
                   period_end_date, 
                   period_frequency, 
@@ -111,18 +111,18 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 )
               `)
               .eq('id', expense.payment_period_id)
-              .single();
+              .maybeSingle();
 
             // Obtener información del conductor
             const { data: profile } = await supabase
               .from('profiles')
               .select('first_name, last_name')
               .eq('user_id', expense.user_id)
-              .single();
+              .maybeSingle();
 
             return {
               ...expense,
-              company_payment_periods: period?.company_payment_periods,
+              company_payment_periods: driverPeriod?.company_payment_periods,
               profiles: profile
             };
           })
