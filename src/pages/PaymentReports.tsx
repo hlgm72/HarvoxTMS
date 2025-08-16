@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PageToolbar } from "@/components/layout/PageToolbar";
-import { Calendar, Download, FileText, Search, Filter, Plus, DollarSign, Clock, Calculator } from "lucide-react";
+import { Calendar, Download, FileText, Search, Filter, Plus, DollarSign, Clock, Calculator, Banknote, CalendarDays, Timer } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { formatPaymentPeriod, formatDateAuto, formatCurrency } from "@/lib/dateFormatting";
 import { useFleetNotifications } from "@/components/notifications";
@@ -287,18 +287,21 @@ export default function PaymentReports() {
                           {getStatusBadge(calculation)}
                         </div>
                         <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1 font-semibold text-foreground">
-                            💰 Neto: ${formatCurrency(calculateNetPayment(calculation))}
+                          <span className="flex items-center gap-2 font-semibold text-foreground">
+                            <Banknote className="h-4 w-4 text-green-600" />
+                            Neto: ${formatCurrency(calculateNetPayment(calculation))}
                           </span>
-                          <span className="flex items-center gap-1">
-                            📅 {formatPaymentPeriod(
+                          <span className="flex items-center gap-2">
+                            <CalendarDays className="h-4 w-4 text-blue-600" />
+                            {formatPaymentPeriod(
                               calculation.company_payment_periods.period_start_date,
                               calculation.company_payment_periods.period_end_date
                             )}
                           </span>
                           {calculation.company_payment_periods.payment_date && (
-                            <span className="flex items-center gap-1">
-                              🕐 Pago: {formatDateAuto(calculation.company_payment_periods.payment_date)}
+                            <span className="flex items-center gap-2">
+                              <Timer className="h-4 w-4 text-orange-600" />
+                              Pago: {formatDateAuto(calculation.company_payment_periods.payment_date)}
                             </span>
                           )}
                         </div>
