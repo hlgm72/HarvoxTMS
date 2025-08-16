@@ -668,7 +668,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     currentY += 6;
   }
 
-  currentY += 15;
+  currentY += 10;
 
   // Sección única de deducciones
   // Calcular el espacio necesario para toda la sección de deducciones
@@ -721,7 +721,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     currentY += 6;
   }
 
-  currentY += 15;
+  currentY += 10;
 
   // === FUEL PURCHASES ===
   // Calcular el espacio necesario para toda la sección de combustible
