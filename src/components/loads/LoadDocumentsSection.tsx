@@ -254,7 +254,14 @@ export function LoadDocumentsSection({
       }
 
       if (result.error) {
-        console.error('❌ LoadDocumentsSection - Database insert error:', result.error);
+        console.error('❌ LoadDocumentsSection - Database insert error:', {
+          error: result.error,
+          code: result.error.code,
+          message: result.error.message,
+          details: result.error.details,
+          hint: result.error.hint,
+          documentData
+        });
         throw result.error;
       }
 
