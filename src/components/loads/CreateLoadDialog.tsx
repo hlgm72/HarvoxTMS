@@ -875,20 +875,44 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                      <FormField
                        control={form.control}
                        name="weight_lbs"
-                       render={({ field }) => (
-                         <FormItem>
-                           <FormLabel>Peso (lbs)</FormLabel>
-                           <FormControl>
-                              <Input 
-                                type="number"
-                                placeholder="Ej: 25000"
-                                value={field.value ?? ''}
-                                onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
-                              />
-                           </FormControl>
-                           <FormMessage />
-                         </FormItem>
-                       )}
+                       render={({ field }) => {
+                         const formatWeight = (value) => {
+                           if (!value) return '';
+                           return value.toLocaleString('en-US');
+                         };
+
+                         const parseWeight = (value) => {
+                           if (!value) return undefined;
+                           // Remove commas and parse
+                           const parsed = parseInt(value.replace(/,/g, ''));
+                           return isNaN(parsed) ? undefined : parsed;
+                         };
+
+                         return (
+                           <FormItem>
+                             <FormLabel>Peso (lbs)</FormLabel>
+                             <FormControl>
+                               <Input 
+                                 type="text"
+                                 placeholder="Ej: 25,000"
+                                 value={formatWeight(field.value)}
+                                 onChange={(e) => {
+                                   const parsed = parseWeight(e.target.value);
+                                   field.onChange(parsed);
+                                 }}
+                                 onBlur={(e) => {
+                                   // Re-format on blur to ensure consistent formatting
+                                   const parsed = parseWeight(e.target.value);
+                                   if (parsed) {
+                                     e.target.value = formatWeight(parsed);
+                                   }
+                                 }}
+                               />
+                             </FormControl>
+                             <FormMessage />
+                           </FormItem>
+                         );
+                       }}
                      />
 
                       {/* Total Amount - moved after weight */}
