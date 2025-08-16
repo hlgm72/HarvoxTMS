@@ -7,8 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { formatPaymentPeriod, formatDeductionDate, formatDateInUserTimeZone } from "@/lib/dateFormatting";
-import { Trash2, AlertTriangle, Calendar, DollarSign, User, FileText } from "lucide-react";
+import { Trash2, AlertTriangle, Calendar, DollarSign, User, FileText, Edit2 } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
+import { EventualDeductionDialog } from "./EventualDeductionDialog";
 
 interface EventualDeductionsListProps {
   onRefresh: () => void;
@@ -33,6 +34,8 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const [deletingExpense, setDeletingExpense] = useState<any>(null);
+  const [editingExpense, setEditingExpense] = useState<any>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   // Obtener deducciones eventuales
   const { data: eventualDeductions = [], refetch } = useQuery({
@@ -96,10 +99,17 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         // Enriquecer con información de períodos y conductores
         const enrichedData = await Promise.all(
           (data || []).map(async (expense) => {
-            // Obtener información del período
+            // Obtener información del período a través de driver_period_calculations
             const { data: period } = await supabase
-              .from('company_payment_periods')
-              .select('period_start_date, period_end_date, period_frequency')
+              .from('driver_period_calculations')
+              .select(`
+                company_payment_periods!inner(
+                  period_start_date, 
+                  period_end_date, 
+                  period_frequency, 
+                  is_locked
+                )
+              `)
               .eq('id', expense.payment_period_id)
               .single();
 
@@ -112,7 +122,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
             return {
               ...expense,
-              company_payment_periods: period,
+              company_payment_periods: period?.company_payment_periods,
               profiles: profile
             };
           })
@@ -159,6 +169,20 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
     }
   };
 
+  const handleEditExpense = (expense: any) => {
+    // Formatear los datos para el dialog de edición
+    setEditingExpense({
+      id: expense.id,
+      user_id: expense.user_id,
+      expense_type_id: expense.expense_type_id,
+      amount: expense.amount,
+      description: expense.description || '',
+      expense_date: expense.expense_date,
+      applied_to_role: expense.applied_to_role || 'driver'
+    });
+    setIsEditDialogOpen(true);
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       planned: { variant: "outline" as const, label: "Planificado" },
@@ -170,6 +194,10 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                   { variant: "outline" as const, label: status };
     
     return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const canEdit = (expense: any) => {
+    return expense.status === 'planned' && !expense.company_payment_periods?.is_locked;
   };
 
   if (eventualDeductions.length === 0) {
@@ -238,15 +266,27 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                   </div>
                 </div>
                 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setDeletingExpense(deduction)}
-                  className="text-destructive hover:text-destructive h-8"
-                  disabled={deduction.status === 'applied'}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-2">
+                  {canEdit(deduction) && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEditExpense(deduction)}
+                      className="h-8"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDeletingExpense(deduction)}
+                    className="text-destructive hover:text-destructive h-8"
+                    disabled={deduction.status === 'applied'}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
 
               {deduction.description && (
@@ -277,6 +317,21 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Dialog de edición */}
+      <EventualDeductionDialog
+        isOpen={isEditDialogOpen}
+        onClose={() => {
+          setIsEditDialogOpen(false);
+          setEditingExpense(null);
+        }}
+        onSuccess={() => {
+          refetch();
+          setIsEditDialogOpen(false);
+          setEditingExpense(null);
+        }}
+        editingDeduction={editingExpense}
+      />
     </div>
   );
 }
