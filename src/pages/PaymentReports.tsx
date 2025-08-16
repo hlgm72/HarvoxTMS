@@ -288,20 +288,17 @@ export default function PaymentReports() {
                         </div>
                         <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1 font-semibold text-foreground">
-                            <DollarSign className="h-4 w-4" />
-                            Neto: ${formatCurrency(calculateNetPayment(calculation))}
+                            💰 Neto: ${formatCurrency(calculateNetPayment(calculation))}
                           </span>
                           <span className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            {formatPaymentPeriod(
+                            📅 {formatPaymentPeriod(
                               calculation.company_payment_periods.period_start_date,
                               calculation.company_payment_periods.period_end_date
                             )}
                           </span>
                           {calculation.company_payment_periods.payment_date && (
                             <span className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" />
-                              Pago: {formatDateAuto(calculation.company_payment_periods.payment_date)}
+                              🕐 Pago: {formatDateAuto(calculation.company_payment_periods.payment_date)}
                             </span>
                           )}
                         </div>
