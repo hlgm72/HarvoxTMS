@@ -3958,6 +3958,10 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: boolean
       }
+      user_can_access_role_record: {
+        Args: { target_company_id: string; target_user_id: string }
+        Returns: boolean
+      }
       user_has_role_in_company: {
         Args: {
           company_id_param: string
@@ -3968,6 +3972,10 @@ export type Database = {
       }
       user_is_admin_in_company: {
         Args: { company_id_param: string; user_id_param: string }
+        Returns: boolean
+      }
+      user_is_superadmin: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       validate_invitation_token: {
