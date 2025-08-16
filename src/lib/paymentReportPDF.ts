@@ -981,19 +981,46 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
 
   // === PIE DE PÁGINA ===
-  const addFooter = (pageNumber: number, totalPages: number) => {
+  const addFooter = async (pageNumber: number, totalPages: number) => {
     const footerY = pageHeight - 12; // Mismo margen que la cabecera (12)
     const footerHeight = 12;
     
     // Contenedor del pie de página con mismo estilo que la cabecera
     addRoundedBox(margin - 5, footerY - 7, pageWidth - margin*2 + 10, footerHeight, colors.lightGray, 2, colors.border);
     
-    // Privacy Notice en dos líneas (izquierda)
-    addText('Confidential Employment Record', margin, footerY - 3, {
+    // Logo y textos de FleetNest TMS (izquierda)
+    // Intentar cargar logo de la app
+    const logoSize = 8; // Tamaño pequeño para el pie de página
+    let logoWidth = 0;
+    
+    try {
+      // Usar el mismo logo de la compañía como logo de la app
+      if (data.company.logo_url) {
+        const logoData = await loadImageFromUrl(data.company.logo_url);
+        if (logoData) {
+          doc.addImage(logoData, 'PNG', margin, footerY - 5, logoSize, logoSize);
+          logoWidth = logoSize + 2;
+        }
+      }
+    } catch (error) {
+      console.error('Error loading app logo in footer:', error);
+    }
+    
+    // Si no hay logo, usar iniciales como fallback
+    if (logoWidth === 0) {
+      addText('FN', margin, footerY - 1, {
+        fontSize: 10,
+        fontStyle: 'bold',
+        color: colors.primary
+      });
+      logoWidth = 12;
+    }
+    
+    addText('Powered by FleetNest TMS', margin + logoWidth, footerY - 3, {
       fontSize: 8,
       color: colors.gray
     });
-    addText('Unauthorized sharing prohibited', margin, footerY + 1, {
+    addText('Unauthorized sharing prohibited', margin + logoWidth, footerY + 1, {
       fontSize: 8,
       color: colors.gray
     });
@@ -1023,7 +1050,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // Agregar pie de página a todas las páginas
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
-    addFooter(i, totalPages);
+    await addFooter(i, totalPages);
   }
 
   // Descargar o ver el PDF
