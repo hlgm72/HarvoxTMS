@@ -526,7 +526,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         doc.setFontSize(9);
         const amountWidth = doc.getTextWidth(formatCurrency(load.total_amount));
         
-        addText(percentageText, pageWidth - margin - amountWidth - 3, currentY, {
+        addText(percentageText, pageWidth - margin - amountWidth - 5, currentY, {
           fontSize: 8, // Fuente pequeña para porcentajes
           fontStyle: 'normal',
           color: '#ff7a00', // Color naranja para los porcentajes
