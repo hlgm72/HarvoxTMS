@@ -738,7 +738,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // === FUEL PURCHASES ===
   // Calcular el espacio necesario para toda la sección de combustible
   const fuelCount = data.fuelExpenses?.length || 0;
-  const fuelSectionHeight = 8 + 10 + (fuelCount * 6); // Header + spacing + items
+  const fuelSectionHeight = 8 + 10 + (fuelCount * 4); // Header + spacing + items (actualizado a 4 puntos)
   
   // Verificar si toda la sección de combustible cabe en la página actual
   if (currentY + fuelSectionHeight > pageHeight - footerSpace) {
