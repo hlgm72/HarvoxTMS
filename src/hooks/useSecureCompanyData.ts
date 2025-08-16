@@ -56,11 +56,29 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
     queryKey: ['secure_company_data', companyId, requireFinancialAccess, selectedCompany?.role],
     queryFn: async () => {
       if (requireFinancialAccess && canAccessFinancialData) {
-        // Use financial view for sensitive data
+        // Log access to sensitive financial data
+        if (companyId) {
+          await supabase.rpc('log_sensitive_company_access', {
+            company_id_param: companyId,
+            access_type_param: 'financial_data_view'
+          });
+        }
+        
+        // Use companies table but with explicit field selection for financial data
         if (companyId) {
           const { data, error } = await supabase
             .from('companies')
-            .select('*')
+            .select(`
+              id, name, street_address, state_id, zip_code, city, 
+              phone, email, logo_url, status, plan_type, 
+              ein, mc_number, dot_number, owner_name, owner_email, 
+              owner_phone, owner_title, max_vehicles, max_users,
+              contract_start_date, default_payment_frequency, 
+              payment_cycle_start_day, payment_day, 
+              default_factoring_percentage, default_dispatching_percentage, 
+              default_leasing_percentage, load_assignment_criteria,
+              created_at, updated_at
+            `)
             .eq('id', companyId)
             .single();
 
@@ -69,7 +87,17 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
         } else {
           const { data, error } = await supabase
             .from('companies')
-            .select('*')
+            .select(`
+              id, name, street_address, state_id, zip_code, city, 
+              phone, email, logo_url, status, plan_type, 
+              ein, mc_number, dot_number, owner_name, owner_email, 
+              owner_phone, owner_title, max_vehicles, max_users,
+              contract_start_date, default_payment_frequency, 
+              payment_cycle_start_day, payment_day, 
+              default_factoring_percentage, default_dispatching_percentage, 
+              default_leasing_percentage, load_assignment_criteria,
+              created_at, updated_at
+            `)
             .order('created_at', { ascending: false });
 
           if (error) throw error;
@@ -140,10 +168,26 @@ export const useCompanyFinancialData = (companyId?: string) => {
         throw new Error('Insufficient permissions to access financial data');
       }
 
+      // Log access to sensitive financial data
       if (companyId) {
+        await supabase.rpc('log_sensitive_company_access', {
+          company_id_param: companyId,
+          access_type_param: 'financial_data_direct'
+        });
+        
         const { data, error } = await supabase
           .from('companies')
-          .select('*')
+          .select(`
+            id, name, street_address, state_id, zip_code, city, 
+            phone, email, logo_url, status, plan_type, 
+            ein, mc_number, dot_number, owner_name, owner_email, 
+            owner_phone, owner_title, max_vehicles, max_users,
+            contract_start_date, default_payment_frequency, 
+            payment_cycle_start_day, payment_day, 
+            default_factoring_percentage, default_dispatching_percentage, 
+            default_leasing_percentage, load_assignment_criteria,
+            created_at, updated_at
+          `)
           .eq('id', companyId)
           .single();
 
@@ -152,7 +196,17 @@ export const useCompanyFinancialData = (companyId?: string) => {
       } else {
         const { data, error } = await supabase
           .from('companies')
-          .select('*')
+          .select(`
+            id, name, street_address, state_id, zip_code, city, 
+            phone, email, logo_url, status, plan_type, 
+            ein, mc_number, dot_number, owner_name, owner_email, 
+            owner_phone, owner_title, max_vehicles, max_users,
+            contract_start_date, default_payment_frequency, 
+            payment_cycle_start_day, payment_day, 
+            default_factoring_percentage, default_dispatching_percentage, 
+            default_leasing_percentage, load_assignment_criteria,
+            created_at, updated_at
+          `)
           .order('created_at', { ascending: false });
 
         if (error) throw error;

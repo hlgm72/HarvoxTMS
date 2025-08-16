@@ -3057,6 +3057,10 @@ export type Database = {
         Args: { load_id_param: string }
         Returns: boolean
       }
+      can_access_sensitive_company_data: {
+        Args: { company_id_param: string }
+        Returns: boolean
+      }
       can_close_payment_period: {
         Args: { period_id: string }
         Returns: Json
@@ -3463,6 +3467,10 @@ export type Database = {
           storage_status_param?: boolean
         }
         Returns: Json
+      }
+      log_sensitive_company_access: {
+        Args: { access_type_param?: string; company_id_param: string }
+        Returns: undefined
       }
       maintenance_cleanup: {
         Args: Record<PropertyKey, never>
