@@ -245,20 +245,16 @@ export function LoadDocumentsSection({
 
       let result;
       if (isReplacement && existingDocId) {
-        // Update existing record
-        result = await supabase
-          .from('load_documents')
-          .update(documentData)
-          .eq('id', existingDocId)
-          .select()
-          .single();
+        // Update existing record using the secure function
+        result = await supabase.rpc('create_or_update_load_document_with_validation', {
+          document_data: documentData,
+          existing_doc_id: existingDocId
+        });
       } else {
-        // Insert new record
-        result = await supabase
-          .from('load_documents')
-          .insert(documentData)
-          .select()
-          .single();
+        // Insert new record using the secure function
+        result = await supabase.rpc('create_or_update_load_document_with_validation', {
+          document_data: documentData
+        });
       }
 
       if (result.error) {
@@ -275,14 +271,17 @@ export function LoadDocumentsSection({
 
       console.log('✅ LoadDocumentsSection - Document saved to database:', result.data);
 
+      // Extract document data from function response
+      const documentResult = result.data.document;
+
       const newDocument: LoadDocument = {
-        id: result.data.id,
+        id: documentResult.id,
         type: documentType,
         name: documentTypes.find(dt => dt.type === documentType)?.label || documentType,
-        fileName: result.data.file_name,
-        fileSize: result.data.file_size,
-        uploadedAt: result.data.created_at,
-        url: result.data.file_url
+        fileName: documentResult.file_name,
+        fileSize: documentResult.file_size,
+        uploadedAt: documentResult.created_at,
+        url: documentResult.file_url
       };
 
       // Update documents list

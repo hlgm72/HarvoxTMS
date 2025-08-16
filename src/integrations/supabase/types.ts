@@ -3071,6 +3071,10 @@ export type Database = {
         Args: { expense_data: Json; expense_id?: string }
         Returns: Json
       }
+      create_or_update_load_document_with_validation: {
+        Args: { document_data: Json; existing_doc_id?: string }
+        Returns: Json
+      }
       create_or_update_load_with_validation: {
         Args: { load_data: Json; load_id?: string; stops_data: Json }
         Returns: Json
