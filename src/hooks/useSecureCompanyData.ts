@@ -74,33 +74,23 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
         if (error) throw error;
         
         if (companyId) {
-          return data && data.length > 0 ? data[0] : null;
+          return data as unknown as CompanyFinancial || null;
         } else {
-          return data || [];
+          return (data as unknown as CompanyFinancial[]) || [];
         }
       } else {
-        // Use secure RPC function for basic data
+        // Use basic data RPC function for non-financial access
         const { data, error } = await supabase
-          .rpc('get_companies_basic_info');
+          .rpc('get_companies_basic_info', { 
+            company_id_param: companyId || null 
+          });
 
         if (error) throw error;
         
-        // Parse the JSON response
-        const companies = Array.isArray(data) ? data as unknown as CompanyPublic[] : [];
-        
-        // Log basic company data access for security audit
-        if (companies.length > 0 && companyId) {
-          supabase.rpc('log_company_data_access', {
-            company_id_param: companies[0].id,
-            access_type_param: 'basic_company_info',
-            action_param: 'view'
-          });
-        }
-        
         if (companyId) {
-          return companies.length > 0 ? companies[0] : null;
+          return data as unknown as CompanyPublic || null;
         } else {
-          return companies;
+          return (data as unknown as CompanyPublic[]) || [];
         }
       }
     },
@@ -147,9 +137,9 @@ export const useCompanyFinancialData = (companyId?: string) => {
       if (error) throw error;
       
       if (companyId) {
-        return data && data.length > 0 ? data[0] as CompanyFinancial : null;
+        return data as unknown as CompanyFinancial || null;
       } else {
-        return data as CompanyFinancial[] || [];
+        return (data as unknown as CompanyFinancial[]) || [];
       }
     },
     enabled: !roleLoading && !!selectedCompany && canAccessFinancialData,
@@ -166,20 +156,18 @@ export const useCompanyPublicData = (companyId?: string) => {
   return useQuery({
     queryKey: ['company_public_data', companyId, selectedCompany?.role],
     queryFn: async () => {
-      // Use secure RPC function for basic data
+      // Use basic data RPC function
       const { data, error } = await supabase
-        .rpc('get_companies_basic_info');
+        .rpc('get_companies_basic_info', { 
+          company_id_param: companyId || null 
+        });
 
       if (error) throw error;
       
-      // Parse the JSON response  
-      const companies = Array.isArray(data) ? data as unknown as CompanyPublic[] : [];
-      
       if (companyId) {
-        const company = companies.find((c: any) => c.id === companyId);
-        return company || null;
+        return data as unknown as CompanyPublic || null;
       } else {
-        return companies;
+        return (data as unknown as CompanyPublic[]) || [];
       }
     },
     enabled: !roleLoading && !!selectedCompany,
