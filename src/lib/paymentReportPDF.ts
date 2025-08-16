@@ -443,7 +443,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const formattedTotal = formatCurrency(totalAmount);
   
   addText(`Completed Loads (Count: ${loadCount}, Total: ${formattedTotal})`, margin, currentY, {
-    fontSize: 12,
+    fontSize: 11,
     fontStyle: 'bold',
     color: colors.darkGray
   });
@@ -475,12 +475,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(10);
       addText(loadPrefix, margin, currentY, {
-        fontSize: 10,
+        fontSize: 9,
         fontStyle: 'bold',
         color: colors.darkGray
       });
       addText(`: ${load.load_number}`, colonPosition, currentY, {
-        fontSize: 10,
+        fontSize: 9,
         fontStyle: 'bold',
         color: colors.darkGray
       });
@@ -493,9 +493,9 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         const loadTextWidth = doc.getTextWidth(`${loadPrefix}: ${load.load_number}`);
         
         addText(` (PO: ${load.po_number})`, margin + loadTextWidth, currentY, {
-          fontSize: 10,
+          fontSize: 9,
           fontStyle: 'normal',
-          color: colors.darkGray
+          color: colors.text
         });
       }
       
@@ -508,7 +508,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       const rightText = percentages.join(' ') + ` ${formatCurrency(load.total_amount)}`;
       addText(rightText, pageWidth - margin, currentY, {
-        fontSize: 10,
+        fontSize: 9,
         fontStyle: 'bold',
         color: colors.darkGray,
         align: 'right'
