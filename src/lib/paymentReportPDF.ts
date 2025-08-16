@@ -499,28 +499,20 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       if (load.dispatching_percentage) percentages.push(`D.${load.dispatching_percentage}%: (-$${(load.total_amount * load.dispatching_percentage / 100).toFixed(2)})`);
       if (load.leasing_percentage) percentages.push(`L.${load.leasing_percentage}%: (-$${(load.total_amount * load.leasing_percentage / 100).toFixed(2)})`);
       
-      // Mostrar porcentajes con fuente más pequeña y color rojo para montos negativos
+      // Mostrar el monto total primero con fuente más grande
+      addText(formatCurrency(load.total_amount), pageWidth - margin, currentY, {
+        fontSize: 9,
+        fontStyle: 'bold',
+        color: colors.darkGray,
+        align: 'right'
+      });
+      
+      // Mostrar porcentajes debajo con fuente más pequeña y color rojo para montos negativos
       if (percentages.length > 0) {
-        addText(percentages.join(' '), pageWidth - margin, currentY, {
+        addText(percentages.join(' '), pageWidth - margin, currentY + 3, {
           fontSize: 7, // Fuente más pequeña para porcentajes
           fontStyle: 'normal',
           color: colors.danger, // Color rojo para los montos negativos
-          align: 'right'
-        });
-        
-        // Mostrar el monto total en una línea separada con fuente más grande
-        addText(formatCurrency(load.total_amount), pageWidth - margin, currentY + 3, {
-          fontSize: 9,
-          fontStyle: 'bold',
-          color: colors.darkGray,
-          align: 'right'
-        });
-      } else {
-        // Si no hay porcentajes, solo mostrar el monto
-        addText(formatCurrency(load.total_amount), pageWidth - margin, currentY, {
-          fontSize: 9,
-          fontStyle: 'bold',
-          color: colors.darkGray,
           align: 'right'
         });
       }
