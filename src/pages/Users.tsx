@@ -59,6 +59,7 @@ import { PageToolbar } from "@/components/layout/PageToolbar";
 import { UsersFloatingActions } from "@/components/users/UsersFloatingActions";
 import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
 import { formatDateAuto } from '@/lib/dateFormatting';
+import { UserDetailsContent } from "@/components/users/UserDetailsContent";
 
 type UserRole = Database["public"]["Enums"]["user_role"];
 
@@ -1137,75 +1138,37 @@ export default function Users() {
 
       {/* Dialog para ver detalles del usuario */}
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Detalles del Usuario</DialogTitle>
+            <DialogTitle className="flex items-center gap-3">
+              {selectedUser?.avatar_url ? (
+                <div className="w-12 h-12 flex-shrink-0">
+                  <img 
+                    src={selectedUser.avatar_url} 
+                    alt={`${selectedUser.first_name} ${selectedUser.last_name}`}
+                    className="w-full h-full rounded-full object-cover object-center border-2 border-border"
+                  />
+                </div>
+              ) : (
+                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white text-xl font-medium flex-shrink-0">
+                  {selectedUser?.first_name && selectedUser.last_name 
+                    ? `${selectedUser.first_name[0]}${selectedUser.last_name[0]}` 
+                    : selectedUser?.email.slice(0, 2).toUpperCase()}
+                </div>
+              )}
+              <div>
+                <h2 className="text-xl font-semibold">
+                  {selectedUser?.first_name && selectedUser.last_name
+                    ? `${selectedUser.first_name} ${selectedUser.last_name}`
+                    : 'Sin nombre'}
+                </h2>
+                <p className="text-muted-foreground">{selectedUser?.email}</p>
+              </div>
+            </DialogTitle>
           </DialogHeader>
+          
           {selectedUser && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                 {selectedUser.avatar_url ? (
-                   <div className="w-16 h-16 flex-shrink-0">
-                     <img 
-                       src={selectedUser.avatar_url} 
-                       alt={`${selectedUser.first_name} ${selectedUser.last_name}`}
-                       className="w-full h-full rounded-full object-cover object-center border-2 border-border"
-                     />
-                   </div>
-                ) : (
-                   <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white text-xl font-medium flex-shrink-0">
-                     {selectedUser.first_name && selectedUser.last_name 
-                       ? `${selectedUser.first_name[0]}${selectedUser.last_name[0]}` 
-                       : selectedUser.email.slice(0, 2).toUpperCase()}
-                   </div>
-                )}
-                <div>
-                  <h3 className="text-lg font-semibold">
-                    {selectedUser.first_name && selectedUser.last_name
-                      ? `${selectedUser.first_name} ${selectedUser.last_name}`
-                      : 'Sin nombre'}
-                  </h3>
-                  <p className="text-muted-foreground">{selectedUser.email}</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Rol</Label>
-                  <div className="mt-1">
-                    {selectedUser.role.split(', ').map((roleLabel, index) => {
-                      // Convertir el label de vuelta al rol original para obtener el badge correcto
-                      const originalRole = Object.entries({
-                        'superadmin': '🔧 Super Admin',
-                        'company_owner': '👑 Company Owner',
-                        'company_admin': '👨‍💼 Company Admin',
-                        'dispatcher': '📋 Dispatcher',
-                        'driver': '🚛 Driver',
-                        'multi_company_dispatcher': '🏢 Multi-Company Dispatcher'
-                      }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
-                     
-                     return (
-                       <span key={index} className="inline-flex items-center mr-1">
-                         {getRoleBadge(originalRole)}
-                         {index < selectedUser.role.split(', ').length - 1 && <span className="mx-1">•</span>}
-                       </span>
-                     );
-                   })}
-                  </div>
-                </div>
-                <div>
-                  <Label>Estado</Label>
-                  <div className="mt-1">{getStatusBadge(selectedUser.status)}</div>
-                </div>
-                <div>
-                  <Label>Teléfono</Label>
-                  <p>{selectedUser.phone || 'No especificado'}</p>
-                </div>
-                <div>
-                  <Label>Fecha de Registro</Label>
-                  <p>{formatDateAuto(selectedUser.created_at)}</p>
-                </div>
-              </div>
-            </div>
+            <UserDetailsContent user={selectedUser} />
           )}
         </DialogContent>
       </Dialog>
