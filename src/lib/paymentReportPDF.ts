@@ -611,7 +611,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         });
       }
 
-      currentY += stopOffset + 7; // Ajustar currentY basado en el número de paradas
+      currentY += stopOffset + 5; // Reducido de 7 a 5 para menos separación entre cargas
     });
   }
 
