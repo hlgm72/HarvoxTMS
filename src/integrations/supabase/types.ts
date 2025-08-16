@@ -3020,7 +3020,9 @@ export type Database = {
         }[]
       }
       calculate_payment_date: {
-        Args: { payment_day: string; period_end_date: string }
+        Args:
+          | { company_id_param: string; target_date?: string }
+          | { payment_day: string; period_end_date: string }
         Returns: string
       }
       can_access_load: {
