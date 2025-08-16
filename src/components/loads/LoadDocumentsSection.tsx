@@ -235,6 +235,14 @@ export function LoadDocumentsSection({
         uploaded_by: user.id
       };
 
+      console.log('📝 LoadDocumentsSection - About to insert document data:', {
+        documentData,
+        userId: user.id,
+        loadId,
+        isReplacement,
+        existingDocId
+      });
+
       let result;
       if (isReplacement && existingDocId) {
         // Update existing record
