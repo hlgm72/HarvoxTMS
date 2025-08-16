@@ -405,20 +405,133 @@ export function PaymentReportDialog({
         throw new Error('No se pudieron obtener los datos del reporte');
       }
 
-      // Generar PDF usando la función existente - necesitamos una versión que retorne el doc
-      const { generatePaymentReportPDF } = await import('@/lib/paymentReportPDF');
-      
-      // Usar jsPDF directamente para generar el PDF y obtener los bytes
+      // Generar PDF completo usando jsPDF
       const jsPDF = (await import('jspdf')).default;
       const doc = new jsPDF('p', 'mm', 'letter');
-      
-      // Generar contenido básico del PDF
-      doc.setFontSize(20);
-      doc.text('Payment Report', 105, 20, { align: 'center' });
+      const pageWidth = doc.internal.pageSize.width;
+      const margin = 15;
+      let currentY = margin;
+
+      // Header del reporte
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text('PAYMENT REPORT', pageWidth / 2, currentY, { align: 'center' });
+      currentY += 15;
+
+      // Información de la empresa
       doc.setFontSize(12);
-      doc.text(`Driver: ${reportData.driver.name}`, 20, 40);
-      doc.text(`Period: ${reportData.period.start_date} - ${reportData.period.end_date}`, 20, 50);
-      doc.text(`Net Payment: $${reportData.period.net_payment.toFixed(2)}`, 20, 60);
+      doc.setFont('helvetica', 'normal');
+      doc.text(company?.name || 'Company Name', pageWidth / 2, currentY, { align: 'center' });
+      currentY += 6;
+      if (company?.street_address) {
+        doc.text(company.street_address, pageWidth / 2, currentY, { align: 'center' });
+        currentY += 6;
+      }
+      currentY += 10;
+
+      // Información del conductor
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('DRIVER INFORMATION', margin, currentY);
+      currentY += 8;
+
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Driver: ${reportData.driver.name}`, margin, currentY);
+      currentY += 6;
+      doc.text(`Period: ${reportData.period.start_date} to ${reportData.period.end_date}`, margin, currentY);
+      currentY += 6;
+      if (reportData.period.payment_date) {
+        doc.text(`Payment Date: ${reportData.period.payment_date}`, margin, currentY);
+        currentY += 6;
+      }
+      currentY += 10;
+
+      // Resumen financiero
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('PAYMENT SUMMARY', margin, currentY);
+      currentY += 8;
+
+      // Tabla de resumen
+      const summaryData = [
+        ['Gross Earnings', `$${reportData.period.gross_earnings.toFixed(2)}`],
+        ['Other Income', `$${reportData.period.other_income.toFixed(2)}`],
+        ['Total Income', `$${(reportData.period.gross_earnings + reportData.period.other_income).toFixed(2)}`],
+        ['', ''],
+        ['Total Deductions', `-$${reportData.period.total_deductions.toFixed(2)}`],
+        ['Fuel Expenses', `-$${reportData.period.fuel_expenses.toFixed(2)}`],
+        ['Total Expenses', `-$${(reportData.period.total_deductions + reportData.period.fuel_expenses).toFixed(2)}`],
+        ['', ''],
+        ['NET PAYMENT', `$${reportData.period.net_payment.toFixed(2)}`]
+      ];
+
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'normal');
+
+      summaryData.forEach((row, index) => {
+        const isTotal = row[0] === 'NET PAYMENT';
+        const isSubtotal = row[0] === 'Total Income' || row[0] === 'Total Expenses';
+        const isEmpty = row[0] === '';
+
+        if (isEmpty) {
+          currentY += 3;
+          return;
+        }
+
+        if (isTotal) {
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(12);
+          // Línea horizontal
+          doc.line(margin, currentY - 2, pageWidth - margin, currentY - 2);
+          currentY += 2;
+        } else if (isSubtotal) {
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(11);
+        } else {
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(11);
+        }
+
+        doc.text(row[0], margin, currentY);
+        doc.text(row[1], pageWidth - margin, currentY, { align: 'right' });
+        currentY += 7;
+
+        if (isTotal) {
+          // Línea horizontal doble
+          doc.line(margin, currentY - 2, pageWidth - margin, currentY - 2);
+        }
+      });
+
+      currentY += 10;
+
+      // Información de cargas si hay
+      if (loads && loads.length > 0) {
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('LOADS SUMMARY', margin, currentY);
+        currentY += 8;
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        loads.slice(0, 10).forEach((load) => { // Limitar a 10 cargas para no exceder el espacio
+          doc.text(`Load #${load.load_number}`, margin, currentY);
+          doc.text(`$${load.total_amount.toFixed(2)}`, pageWidth - margin, currentY, { align: 'right' });
+          currentY += 5;
+          
+          if (currentY > 250) { // Si llegamos al final de la página
+            doc.addPage();
+            currentY = margin;
+          }
+        });
+      }
+
+      // Footer
+      const footerY = doc.internal.pageSize.height - 20;
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.text('This is an automatically generated report. For questions, contact your dispatcher.', 
+               pageWidth / 2, footerY, { align: 'center' });
 
       const pdfBlob = doc.output('blob');
       const pdfBuffer = await pdfBlob.arrayBuffer();
