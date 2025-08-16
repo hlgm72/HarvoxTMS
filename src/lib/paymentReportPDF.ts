@@ -965,29 +965,20 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     // Contenedor del pie de página con mismo estilo que la cabecera
     addRoundedBox(margin - 5, footerY - 7, pageWidth - margin*2 + 10, footerHeight, colors.lightGray, 2, colors.border);
     
-    // Número de página (izquierda)
-    if (totalPages > 1) {
-      addText(`Page ${pageNumber} of ${totalPages}`, margin, footerY - 1, {
-        fontSize: 8,
-        color: colors.gray
-      });
-    }
+    // Privacy Notice (izquierda)
+    addText('Confidential Employment Record | Unauthorized sharing prohibited', margin, footerY - 1, {
+      fontSize: 8,
+      color: colors.gray
+    });
     
-    // Fecha de generación (centro)
-    const reportDate = new Date();
-    addText(`Generated on ${reportDate.toLocaleDateString('en-US')} at ${reportDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`, 
-      pageWidth / 2, footerY - 1, {
+    // Número de página (derecha)
+    if (totalPages > 1) {
+      addText(`Page ${pageNumber} of ${totalPages}`, pageWidth - margin, footerY - 1, {
         fontSize: 8,
         color: colors.gray,
-        align: 'center'
+        align: 'right'
       });
-    
-    // Información de contacto (derecha)
-    addText(`${data.company.phone || 'Contact: ' + (data.company.email || 'N/A')}`, pageWidth - margin, footerY - 1, {
-      fontSize: 8,
-      color: colors.gray,
-      align: 'right'
-    });
+    }
   };
 
   // Contar páginas totales del documento
