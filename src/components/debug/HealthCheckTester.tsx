@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { formatDateTime } from '@/lib/dateFormatting';
 import { AlertCircle, CheckCircle, Clock, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -122,7 +123,7 @@ export const HealthCheckTester = () => {
                   Puntuación: {result.healthScore} ({result.healthPercentage}%)
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Última verificación: {new Date(result.checks.timestamp).toLocaleString()}
+                  Última verificación: {formatDateTime(result.checks.timestamp)}
                 </div>
               </div>
 

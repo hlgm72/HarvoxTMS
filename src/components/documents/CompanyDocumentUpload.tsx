@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatDateAuto, formatDateTimeAuto } from '@/lib/dateFormatting';
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -459,7 +459,7 @@ export function CompanyDocumentUpload({
             </DialogTitle>
             <DialogDescription>
               Ya tienes un documento de tipo "{allPredefinedTypes.find(t => t.value === documentType)?.label || documentType}" 
-              subido {existingDocument && new Date(existingDocument.created_at).toLocaleDateString()}.
+              subido {existingDocument && formatDateAuto(existingDocument.created_at)}.
             </DialogDescription>
           </DialogHeader>
 
@@ -470,7 +470,7 @@ export function CompanyDocumentUpload({
                 <span className="font-medium">{existingDocument?.file_name}</span>
               </div>
               <div className="text-xs text-muted-foreground mt-1">
-                Subido el {existingDocument && new Date(existingDocument.created_at).toLocaleString()}
+                Subido el {existingDocument && formatDateTimeAuto(existingDocument.created_at)}
               </div>
             </div>
 

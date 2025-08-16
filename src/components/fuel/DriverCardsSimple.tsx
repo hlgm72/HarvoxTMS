@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { formatDateOnly } from '@/lib/dateFormatting';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -120,7 +121,7 @@ export function DriverCardsSimple() {
                 <div>
                   <span className="font-medium">Asignada:</span>
                   <p className="text-sm text-muted-foreground">
-                    {new Date(card.assigned_date).toLocaleDateString()}
+                    {formatDateOnly(card.assigned_date)}
                   </p>
                 </div>
                 {card.card_identifier && (

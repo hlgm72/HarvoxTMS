@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatDateAuto } from '@/lib/dateFormatting';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableStopItem';
@@ -163,7 +164,7 @@ export function LoadStopsManager({ onStopsChange, showValidation = false, initia
               ✅ Configuración de paradas válida. 
               {pickupDate && deliveryDate && (
                 <>
-                  {' '}Pickup: {pickupDate.toLocaleDateString()}, Delivery: {deliveryDate.toLocaleDateString()}
+                  {' '}Pickup: {formatDateAuto(pickupDate)}, Delivery: {formatDateAuto(deliveryDate)}
                 </>
               )}
             </AlertDescription>

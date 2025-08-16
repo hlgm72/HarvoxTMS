@@ -191,3 +191,33 @@ const formatDateOnlyWithLocale = (dateInput: string | Date | null | undefined, l
     return language === 'es' ? 'Fecha inválida' : 'Invalid date';
   }
 };
+
+// Función global para detectar idioma automáticamente desde i18n
+export const getGlobalLanguage = (): string => {
+  try {
+    // Intentar acceder al idioma actual desde i18n global
+    const i18n = (window as any).i18n;
+    return i18n?.language || 'en';
+  } catch {
+    return 'en'; // fallback por defecto
+  }
+};
+
+// Funciones de formateo que detectan idioma automáticamente
+export const formatDateAuto = (dateInput: string | Date | null | undefined): string => {
+  const language = getGlobalLanguage();
+  return formatDateOnlyWithLocale(dateInput, language);
+};
+
+export const formatDateTimeAuto = (dateInput: string | Date | null | undefined): string => {
+  const language = getGlobalLanguage();
+  const locale = language === 'es' ? es : enUS;
+  const pattern = language === 'es' ? 'dd/MM/yyyy HH:mm' : 'MM/dd/yyyy HH:mm';
+  
+  try {
+    return formatDateSafe(dateInput, pattern, { locale });
+  } catch (error) {
+    console.error('Error formatting datetime auto:', error);
+    return language === 'es' ? 'Fecha inválida' : 'Invalid date';
+  }
+};

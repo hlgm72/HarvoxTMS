@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { formatDateAuto } from '@/lib/dateFormatting';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -150,7 +151,7 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                             <Calendar className="h-4 w-4" />
                             <div className={nextExpiry.isExpiring ? "text-destructive font-medium" : "text-muted-foreground"}>
                               <p className="text-xs font-medium">{nextExpiry.type}</p>
-                              <p className="text-sm">{new Date(nextExpiry.date!).toLocaleDateString()}</p>
+                              <p className="text-sm">{formatDateAuto(nextExpiry.date!)}</p>
                               {nextExpiry.isExpiring && <p className="text-xs text-destructive">⚠️ Próximo a vencer</p>}
                             </div>
                           </div>

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { formatDateOnly } from '@/lib/dateFormatting';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -72,7 +73,7 @@ export function CompanyActions({
         company.plan_type || 'basic',
         company.status || 'unknown',
         company.owner_name || '',
-        new Date(company.created_at).toLocaleDateString()
+        formatDateOnly(company.created_at)
       ].join(','))
     ].join('\n');
 

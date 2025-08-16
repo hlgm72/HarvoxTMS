@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { formatDateOnly } from '@/lib/dateFormatting';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -163,7 +164,7 @@ export function CompanyTableView({
             </TableCell>
             <TableCell>
               <div className="text-sm">
-                {new Date(company.created_at).toLocaleDateString()}
+                {formatDateOnly(company.created_at)}
               </div>
             </TableCell>
             <TableCell>

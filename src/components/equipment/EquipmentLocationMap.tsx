@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { formatDateTimeAuto } from '@/lib/dateFormatting';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -179,7 +180,7 @@ export function EquipmentLocationMap() {
                           </p>
                           <p className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
-                            {lastUpdate?.toLocaleString()}
+                            {formatDateTimeAuto(lastUpdate)}
                           </p>
                         </>
                       )}
@@ -290,7 +291,7 @@ export function EquipmentLocationMap() {
                   <div className="space-y-1 text-sm">
                     <p><strong>Velocidad:</strong> {Math.round(selectedEquipment.geotab_vehicle.latest_position.speed || 0)} km/h</p>
                     <p><strong>Coordenadas:</strong> {selectedEquipment.geotab_vehicle.latest_position.latitude.toFixed(4)}, {selectedEquipment.geotab_vehicle.latest_position.longitude.toFixed(4)}</p>
-                    <p><strong>Última actualización:</strong> {new Date(selectedEquipment.geotab_vehicle.latest_position.date_time).toLocaleString()}</p>
+                    <p><strong>Última actualización:</strong> {formatDateTimeAuto(selectedEquipment.geotab_vehicle.latest_position.date_time)}</p>
                   </div>
                 </div>
               )}
