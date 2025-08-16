@@ -36,7 +36,10 @@ Deno.serve(async (req) => {
   }
 
   try {
+    console.log('Starting send-payment-report function');
+    
     const { driver_user_id, period_id, company_name }: PaymentReportRequest = await req.json();
+    console.log('Request data:', { driver_user_id, period_id, company_name });
 
     // Obtener información del conductor
     const { data: profile, error: profileError } = await supabase
@@ -45,7 +48,10 @@ Deno.serve(async (req) => {
       .eq('user_id', driver_user_id)
       .single();
 
+    console.log('Profile query result:', { profile, profileError });
+
     if (profileError || !profile) {
+      console.error('Profile error:', profileError);
       throw new Error('Driver profile not found');
     }
 
