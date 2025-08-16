@@ -7,12 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PageToolbar } from "@/components/layout/PageToolbar";
-import { Calendar, FileText, Search, Filter, Plus, DollarSign, Clock, Calculator, Banknote, CalendarDays, Timer, BarChart3, Users, Wallet, ClockIcon } from "lucide-react";
+import { Calendar, Download, FileText, Search, Filter, Plus, DollarSign, Clock, Calculator, Banknote, CalendarDays, Timer, BarChart3, Users, Wallet, ClockIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { formatPaymentPeriod, formatDateAuto, formatCurrency } from "@/lib/dateFormatting";
 import { useFleetNotifications } from "@/components/notifications";
 import { StatsCard } from "@/components/dashboard/StatsCard";
-
+import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
 import { PaymentReportDialog } from "@/components/payments/PaymentReportDialog";
 import { MarkDriverPaidDialog } from "@/components/payments/MarkDriverPaidDialog";
 import { useDriverPaymentActions } from "@/hooks/useDriverPaymentActions";
@@ -88,6 +88,39 @@ export default function PaymentReports() {
   const totalDrivers = new Set(filteredCalculations.map(calc => calc.driver_user_id)).size;
   const pendingReports = filteredCalculations.filter(calc => !calc.calculated_at).length;
 
+  const handleGenerateReport = async (calculation: any) => {
+    setIsGenerating(true);
+    try {
+      const driver = drivers.find(d => d.user_id === calculation.driver_user_id);
+      const reportData = {
+        driver: {
+          name: `${driver?.first_name || ''} ${driver?.last_name || ''}`,
+          user_id: calculation.driver_user_id
+        },
+        period: {
+          start_date: calculation.company_payment_periods.period_start_date,
+          end_date: calculation.company_payment_periods.period_end_date,
+          gross_earnings: calculation.gross_earnings,
+          fuel_expenses: calculation.fuel_expenses,
+          total_deductions: calculation.total_deductions,
+          other_income: calculation.other_income,
+          net_payment: calculateNetPayment(calculation),
+          payment_date: calculation.company_payment_periods.payment_date
+        },
+        company: {
+          name: 'Tu Empresa'
+        }
+      };
+
+      await generatePaymentReportPDF(reportData);
+      showSuccess("Reporte Generado", "El reporte PDF ha sido generado y descargado exitosamente");
+    } catch (error: any) {
+      console.error('Error generating report:', error);
+      showError("Error", "No se pudo generar el reporte PDF");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const handleViewReport = (calculationId: string) => {
     setSelectedCalculationId(calculationId);
@@ -286,6 +319,15 @@ export default function PaymentReports() {
                             Marcar Pagado
                           </Button>
                         )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleGenerateReport(calculation)}
+                          disabled={isGenerating}
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          {isGenerating ? "Generando..." : "PDF"}
+                        </Button>
                         <Button
                           variant="outline"
                           size="sm"
