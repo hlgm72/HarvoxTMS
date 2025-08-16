@@ -178,7 +178,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     
     // Valor
     addText(value, x + width/2, y + height*0.72, {
-      fontSize: 14,
+      fontSize: 12,
       fontStyle: 'bold',
       color: textColor,
       align: 'center'
