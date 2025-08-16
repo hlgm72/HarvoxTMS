@@ -519,7 +519,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         addText(percentageText, pageWidth - margin - amountWidth - 3, currentY, {
           fontSize: 6, // Fuente pequeña para porcentajes
           fontStyle: 'normal',
-          color: colors.danger, // Color rojo para los montos negativos
+          color: '#ff7a00', // Color naranja para los porcentajes
           align: 'right'
         });
       }
