@@ -3271,22 +3271,8 @@ export type Database = {
         Returns: Json
       }
       get_companies_basic_info: {
-        Args: { company_id_param?: string }
-        Returns: {
-          city: string
-          created_at: string
-          email: string
-          id: string
-          logo_url: string
-          name: string
-          phone: string
-          plan_type: string
-          state_id: string
-          status: string
-          street_address: string
-          updated_at: string
-          zip_code: string
-        }[]
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       get_companies_financial_data: {
         Args: { company_id_param?: string }

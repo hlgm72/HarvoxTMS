@@ -79,27 +79,28 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
           return data || [];
         }
       } else {
-        // Use RPC function for basic data
+        // Use secure RPC function for basic data
         const { data, error } = await supabase
-          .rpc('get_companies_basic_info', { 
-            company_id_param: companyId || null 
-          });
+          .rpc('get_companies_basic_info');
 
         if (error) throw error;
         
+        // Parse the JSON response
+        const companies = Array.isArray(data) ? data as unknown as CompanyPublic[] : [];
+        
         // Log basic company data access for security audit
-        if (data && data.length > 0 && companyId) {
+        if (companies.length > 0 && companyId) {
           supabase.rpc('log_company_data_access', {
-            company_id_param: data[0].id,
+            company_id_param: companies[0].id,
             access_type_param: 'basic_company_info',
             action_param: 'view'
           });
         }
         
         if (companyId) {
-          return data && data.length > 0 ? data[0] : null;
+          return companies.length > 0 ? companies[0] : null;
         } else {
-          return data || [];
+          return companies;
         }
       }
     },
@@ -165,18 +166,20 @@ export const useCompanyPublicData = (companyId?: string) => {
   return useQuery({
     queryKey: ['company_public_data', companyId, selectedCompany?.role],
     queryFn: async () => {
-      // Use RPC function for basic data
+      // Use secure RPC function for basic data
       const { data, error } = await supabase
-        .rpc('get_companies_basic_info', { 
-          company_id_param: companyId || null 
-        });
+        .rpc('get_companies_basic_info');
 
       if (error) throw error;
       
+      // Parse the JSON response  
+      const companies = Array.isArray(data) ? data as unknown as CompanyPublic[] : [];
+      
       if (companyId) {
-        return data && data.length > 0 ? data[0] as CompanyPublic : null;
+        const company = companies.find((c: any) => c.id === companyId);
+        return company || null;
       } else {
-        return data as CompanyPublic[] || [];
+        return companies;
       }
     },
     enabled: !roleLoading && !!selectedCompany,
