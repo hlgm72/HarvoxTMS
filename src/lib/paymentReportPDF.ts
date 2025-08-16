@@ -493,23 +493,36 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       }
       
 
-      // Porcentajes y monto (derecha) - en la misma línea
+      // Porcentajes y monto (derecha) - en la misma línea con estilos diferentes
       const percentages = [];
       if (load.factoring_percentage) percentages.push(`F.${load.factoring_percentage}%: (-$${(load.total_amount * load.factoring_percentage / 100).toFixed(2)})`);
       if (load.dispatching_percentage) percentages.push(`D.${load.dispatching_percentage}%: (-$${(load.total_amount * load.dispatching_percentage / 100).toFixed(2)})`);
       if (load.leasing_percentage) percentages.push(`L.${load.leasing_percentage}%: (-$${(load.total_amount * load.leasing_percentage / 100).toFixed(2)})`);
       
-      // Construir el texto completo: porcentajes + monto
-      const rightText = percentages.length > 0 
-        ? `${percentages.join(' ')} ${formatCurrency(load.total_amount)}`
-        : formatCurrency(load.total_amount);
-      
-      addText(rightText, pageWidth - margin, currentY, {
+      // Primero mostrar el monto total (alineado a la derecha)
+      addText(formatCurrency(load.total_amount), pageWidth - margin, currentY, {
         fontSize: 9,
         fontStyle: 'bold',
         color: colors.darkGray,
         align: 'right'
       });
+      
+      // Si hay porcentajes, mostrarlos delante del monto con su estilo propio
+      if (percentages.length > 0) {
+        const percentageText = percentages.join(' ');
+        
+        // Calcular el ancho del monto para posicionar los porcentajes delante
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        const amountWidth = doc.getTextWidth(formatCurrency(load.total_amount));
+        
+        addText(percentageText, pageWidth - margin - amountWidth - 3, currentY, {
+          fontSize: 6, // Fuente pequeña para porcentajes
+          fontStyle: 'normal',
+          color: colors.danger, // Color rojo para los montos negativos
+          align: 'right'
+        });
+      }
 
       // Todas las paradas ordenadas por stop_number
       const allStops = load.load_stops ? [...load.load_stops].sort((a, b) => (a.stop_number || 0) - (b.stop_number || 0)) : [];
