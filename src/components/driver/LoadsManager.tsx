@@ -22,6 +22,7 @@ import { useLoads } from "@/hooks/useLoads";
 import { useUpdateLoadStatus } from "@/hooks/useUpdateLoadStatus";
 import { useFleetNotifications } from "@/components/notifications";
 import { LoadActionButton } from './LoadActionButton';
+import { formatDateSafe } from '@/lib/dateFormatting';
 
 interface Load {
   id: string;
@@ -81,25 +82,36 @@ export function LoadsManager({ className }: LoadsManagerProps) {
     
     return loadsData
       .filter(load => load.driver_user_id === user.id)
-      .map(load => ({
-        id: load.id,
-        load_number: load.load_number,
-        client_name: load.broker_name || 'Sin cliente',
-        origin_city: load.pickup_city || 'Sin origen',
-        origin_state: '',
-        destination_city: load.delivery_city || 'Sin destino', 
-        destination_state: '',
-        pickup_date: new Date().toISOString(), // TODO: Add pickup dates from stops
-        delivery_date: new Date(Date.now() + 86400000).toISOString(), // TODO: Add delivery dates from stops
-        status: load.status,
-        total_amount: load.total_amount,
-        progress: calculateProgress(load.status),
-        stops: (load.stops || []).map(stop => ({
-          ...stop,
-          id: stop.id || crypto.randomUUID(),
-          address: stop.address || ''
-        }))
-      }));
+      .map(load => {
+        const stops = (load.stops || []).sort((a, b) => a.stop_number - b.stop_number);
+        
+        // Get actual pickup and delivery dates from stops
+        const pickupStops = stops.filter(stop => stop.stop_type === 'pickup');
+        const deliveryStops = stops.filter(stop => stop.stop_type === 'delivery');
+        
+        const earliestPickup = pickupStops.find(stop => stop.scheduled_date);
+        const latestDelivery = deliveryStops.find(stop => stop.scheduled_date);
+        
+        return {
+          id: load.id,
+          load_number: load.load_number,
+          client_name: load.broker_name || 'Sin cliente',
+          origin_city: load.pickup_city || 'Sin origen',
+          origin_state: '',
+          destination_city: load.delivery_city || 'Sin destino', 
+          destination_state: '',
+          pickup_date: earliestPickup?.scheduled_date || '',
+          delivery_date: latestDelivery?.scheduled_date || '',
+          status: load.status,
+          total_amount: load.total_amount,
+          progress: calculateProgress(load.status),
+          stops: stops.map(stop => ({
+            ...stop,
+            id: stop.id || crypto.randomUUID(),
+            address: stop.address || ''
+          }))
+        };
+      });
   }, [loadsData, user?.id]);
 
   const getStatusColor = (status: string): string => {
@@ -215,32 +227,73 @@ export function LoadsManager({ className }: LoadsManagerProps) {
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                  {/* Route Info */}
+                  {/* Route Info - Enhanced for multiple stops */}
                   <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <div className="flex flex-col items-center">
-                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                        <div className="w-0.5 h-8 bg-border"></div>
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    {load.stops && load.stops.length > 0 ? (
+                      // Show detailed stops if available
+                      <div className="space-y-2">
+                        {load.stops.map((stop, index) => (
+                          <div key={stop.id} className="flex items-start gap-3">
+                            <div className="flex flex-col items-center">
+                              <div className={`w-3 h-3 rounded-full ${
+                                stop.stop_type === 'pickup' ? 'bg-blue-500' : 'bg-green-500'
+                              }`}></div>
+                              {index < load.stops!.length - 1 && (
+                                <div className="w-0.5 h-6 bg-border"></div>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Badge variant="outline" className="text-xs">
+                                  {stop.stop_type === 'pickup' ? 'Recogida' : 'Entrega'} #{stop.stop_number}
+                                </Badge>
+                              </div>
+                              <p className="font-medium text-sm">
+                                {stop.company_name || `${stop.city}, ${stop.state}`}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {stop.scheduled_date ? formatDateSafe(stop.scheduled_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
+                                {stop.scheduled_time && ` - ${stop.scheduled_time}`}
+                              </p>
+                              {stop.address && (
+                                <p className="text-xs text-muted-foreground">{stop.address}</p>
+                              )}
+                            </div>
+                            {index === 0 && (
+                              <div className="text-right">
+                                <p className="font-bold text-green-600">${load.total_amount.toLocaleString()}</p>
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                      <div className="flex-1 space-y-2">
-                        <div>
-                          <p className="font-medium text-sm">{load.origin_city}, {load.origin_state}</p>
-                          <p className="text-xs text-muted-foreground">
-                            Recogida: {new Date(load.pickup_date).toLocaleDateString()}
-                          </p>
+                    ) : (
+                      // Fallback to simple origin/destination view
+                      <div className="flex items-start gap-3">
+                        <div className="flex flex-col items-center">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                          <div className="w-0.5 h-8 bg-border"></div>
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                         </div>
-                        <div>
-                          <p className="font-medium text-sm">{load.destination_city}, {load.destination_state}</p>
-                          <p className="text-xs text-muted-foreground">
-                            Entrega: {new Date(load.delivery_date).toLocaleDateString()}
-                          </p>
+                        <div className="flex-1 space-y-2">
+                          <div>
+                            <p className="font-medium text-sm">{load.origin_city}, {load.origin_state}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Recogida: {load.pickup_date ? formatDateSafe(load.pickup_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">{load.destination_city}, {load.destination_state}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Entrega: {load.delivery_date ? formatDateSafe(load.delivery_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-green-600">${load.total_amount.toLocaleString()}</p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold text-green-600">${load.total_amount.toLocaleString()}</p>
-                      </div>
-                    </div>
+                    )}
                   </div>
 
                   {/* Progress */}
@@ -302,7 +355,7 @@ export function LoadsManager({ className }: LoadsManagerProps) {
                     <div className="text-sm">
                       <p>{load.origin_city} → {load.destination_city}</p>
                       <p className="text-muted-foreground">
-                        {new Date(load.delivery_date).toLocaleDateString()}
+                        {load.delivery_date ? formatDateSafe(load.delivery_date, 'dd/MM/yyyy') : 'Sin fecha'}
                       </p>
                     </div>
                     <p className="font-bold text-green-600">${load.total_amount.toLocaleString()}</p>
