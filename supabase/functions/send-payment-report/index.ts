@@ -11,6 +11,11 @@ const supabase = createClient(
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string);
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
 interface PaymentReportRequest {
   driver_user_id: string;
   period_id: string;
@@ -18,8 +23,16 @@ interface PaymentReportRequest {
 }
 
 Deno.serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
+    return new Response('Method not allowed', { 
+      status: 405,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
   }
 
   try {
@@ -105,7 +118,7 @@ Deno.serve(async (req) => {
       sent_to: profile.email
     }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error: any) {
@@ -115,7 +128,7 @@ Deno.serve(async (req) => {
       error: error.message 
     }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
