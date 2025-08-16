@@ -1014,21 +1014,30 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const fileName = `PayReport_${year}_${weekNumber}_${driverName}.pdf`;
   
   if (isPreview) {
-    // Abrir PDF en nueva pestaña para vista previa
+    // Crear un blob con el nombre correcto para vista previa
     const pdfBlob = doc.output('blob');
-    const pdfUrl = URL.createObjectURL(new Blob([pdfBlob], { type: 'application/pdf' }));
-    const newWindow = window.open('', '_blank');
+    const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+    const pdfUrl = URL.createObjectURL(pdfFile);
     
-    if (newWindow) {
-      newWindow.location.href = pdfUrl;
-      // Limpiar URL después de un tiempo para liberar memoria
-      setTimeout(() => {
-        URL.revokeObjectURL(pdfUrl);
-      }, 10000);
-    } else {
-      console.warn('Popup bloqueado. Intentando download fallback.');
-      doc.save(fileName);
+    // Crear un enlace temporal para abrir con el nombre correcto
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    
+    // Para navegadores que soportan, esto ayuda con el nombre del archivo
+    if ('download' in link) {
+      link.download = fileName;
     }
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Limpiar URL después de un tiempo para liberar memoria
+    setTimeout(() => {
+      URL.revokeObjectURL(pdfUrl);
+    }, 10000);
   } else {
     // Descargar PDF
     doc.save(fileName);
