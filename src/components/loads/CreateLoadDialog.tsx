@@ -622,7 +622,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
         {/* Desktop steps */}
         <div className="hidden sm:flex items-center justify-between mb-6 px-4 overflow-x-auto">
-          <div className="flex items-center gap-4 min-w-max">
+          <div className="flex items-center gap-4 min-w-max py-1">
             {phases.map((phase, index) => (
               <div key={phase.id} className="flex items-center">
                 <div className="flex flex-col items-center">
