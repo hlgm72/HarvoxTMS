@@ -469,7 +469,10 @@ export function PaymentReportDialog({
           {/* Resumen Financiero */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base sm:text-lg">Resumen Financiero</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <TrendingUp className="h-5 w-5 text-emerald-600" />
+                Resumen Financiero
+              </CardTitle>
               {calculation.has_negative_balance && (
                 <div className="flex items-center gap-2 text-destructive">
                   <AlertTriangle className="h-4 w-4" />
@@ -533,7 +536,7 @@ export function PaymentReportDialog({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Package className="h-5 w-5" />
+                  <Package className="h-5 w-5 text-blue-600" />
                   Cargas del Período ({loads.length})
                 </CardTitle>
               </CardHeader>
@@ -606,7 +609,7 @@ export function PaymentReportDialog({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Fuel className="h-5 w-5" />
+                  <Fuel className="h-5 w-5 text-orange-600" />
                   Gastos de Combustible ({fuelExpenses.length})
                 </CardTitle>
               </CardHeader>
@@ -635,7 +638,7 @@ export function PaymentReportDialog({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Receipt className="h-5 w-5" />
+                  <Receipt className="h-5 w-5 text-red-600" />
                   Deducciones ({deductions.length})
                 </CardTitle>
               </CardHeader>
