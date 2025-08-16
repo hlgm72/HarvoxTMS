@@ -15,9 +15,6 @@ export default function Loads() {
   const { t } = useTranslation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   
-  // Hook para obtener estadísticas en tiempo real
-  const { data: loadsStats, isLoading: statsLoading } = useLoadsStats();
-  
   // Inicializar con período actual simple (sin fechas pre-calculadas)
   const getCurrentPeriodWithDates = (): PeriodFilterValue => {
     return {
@@ -26,6 +23,9 @@ export default function Loads() {
   };
   
   const [periodFilter, setPeriodFilter] = useState<PeriodFilterValue>(getCurrentPeriodWithDates());
+  
+  // Hook para obtener estadísticas en tiempo real
+  const { data: loadsStats, isLoading: statsLoading } = useLoadsStats({ periodFilter });
   const [filters, setFilters] = useState({
     status: "all",
     driver: "all", 
