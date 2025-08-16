@@ -814,7 +814,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     currentY = margin;
   }
 
-  currentY += 8;
+  currentY += 15;
 
   // === TWO COLUMN LAYOUT ===
   const columnWidth = (pageWidth - margin*3) / 2; // Ancho de cada columna
