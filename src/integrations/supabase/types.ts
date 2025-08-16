@@ -3389,6 +3389,10 @@ export type Database = {
           | { payment_day: string; period_end_date: string }
         Returns: string
       }
+      can_access_financial_data: {
+        Args: { company_id_param: string }
+        Returns: boolean
+      }
       can_access_load: {
         Args: { load_id_param: string }
         Returns: boolean
