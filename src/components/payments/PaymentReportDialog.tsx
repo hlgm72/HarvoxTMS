@@ -434,8 +434,8 @@ export function PaymentReportDialog({
         <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f6f9;">
           <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
             <!-- Header -->
-            <div style="background: hsl(210 100% 15%); padding: 30px; text-align: center;">
-              <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+            <div style="background: #002652; padding: 30px; text-align: center;">
+              <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
                 <img src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/fleetnest/logo_64x64.png" 
                      alt="FleetNest Logo" 
                      style="width: 40px; height: 40px; object-fit: contain;">
