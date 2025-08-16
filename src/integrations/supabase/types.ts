@@ -3093,28 +3093,28 @@ export type Database = {
         }
         Insert: {
           city?: string | null
-          contract_start_date?: string | null
+          contract_start_date?: never
           created_at?: string | null
-          default_dispatching_percentage?: number | null
-          default_factoring_percentage?: number | null
-          default_leasing_percentage?: number | null
-          default_payment_frequency?: string | null
-          dot_number?: string | null
-          ein?: string | null
+          default_dispatching_percentage?: never
+          default_factoring_percentage?: never
+          default_leasing_percentage?: never
+          default_payment_frequency?: never
+          dot_number?: never
+          ein?: never
           email?: string | null
           id?: string | null
-          load_assignment_criteria?: string | null
+          load_assignment_criteria?: never
           logo_url?: string | null
-          max_users?: number | null
-          max_vehicles?: number | null
-          mc_number?: string | null
+          max_users?: never
+          max_vehicles?: never
+          mc_number?: never
           name?: string | null
-          owner_email?: string | null
-          owner_name?: string | null
-          owner_phone?: string | null
-          owner_title?: string | null
-          payment_cycle_start_day?: number | null
-          payment_day?: string | null
+          owner_email?: never
+          owner_name?: never
+          owner_phone?: never
+          owner_title?: never
+          payment_cycle_start_day?: never
+          payment_day?: never
           phone?: string | null
           plan_type?: string | null
           state_id?: string | null
@@ -3125,28 +3125,28 @@ export type Database = {
         }
         Update: {
           city?: string | null
-          contract_start_date?: string | null
+          contract_start_date?: never
           created_at?: string | null
-          default_dispatching_percentage?: number | null
-          default_factoring_percentage?: number | null
-          default_leasing_percentage?: number | null
-          default_payment_frequency?: string | null
-          dot_number?: string | null
-          ein?: string | null
+          default_dispatching_percentage?: never
+          default_factoring_percentage?: never
+          default_leasing_percentage?: never
+          default_payment_frequency?: never
+          dot_number?: never
+          ein?: never
           email?: string | null
           id?: string | null
-          load_assignment_criteria?: string | null
+          load_assignment_criteria?: never
           logo_url?: string | null
-          max_users?: number | null
-          max_vehicles?: number | null
-          mc_number?: string | null
+          max_users?: never
+          max_vehicles?: never
+          mc_number?: never
           name?: string | null
-          owner_email?: string | null
-          owner_name?: string | null
-          owner_phone?: string | null
-          owner_title?: string | null
-          payment_cycle_start_day?: number | null
-          payment_day?: string | null
+          owner_email?: never
+          owner_name?: never
+          owner_phone?: never
+          owner_title?: never
+          payment_cycle_start_day?: never
+          payment_day?: never
           phone?: string | null
           plan_type?: string | null
           state_id?: string | null
@@ -3979,6 +3979,10 @@ export type Database = {
         Returns: Json
       }
       user_belongs_to_company: {
+        Args: { company_id_param: string }
+        Returns: boolean
+      }
+      user_can_access_financial_data: {
         Args: { company_id_param: string }
         Returns: boolean
       }
