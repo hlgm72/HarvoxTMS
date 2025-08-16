@@ -1171,7 +1171,26 @@ export default function Users() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Rol</Label>
-                  <p>{selectedUser.role}</p>
+                  <div className="mt-1">
+                    {selectedUser.role.split(', ').map((roleLabel, index) => {
+                      // Convertir el label de vuelta al rol original para obtener el badge correcto
+                      const originalRole = Object.entries({
+                        'superadmin': '🔧 Super Admin',
+                        'company_owner': '👑 Company Owner',
+                        'company_admin': '👨‍💼 Company Admin',
+                        'dispatcher': '📋 Dispatcher',
+                        'driver': '🚛 Driver',
+                        'multi_company_dispatcher': '🏢 Multi-Company Dispatcher'
+                      }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+                     
+                     return (
+                       <span key={index} className="inline-flex items-center mr-1">
+                         {getRoleBadge(originalRole)}
+                         {index < selectedUser.role.split(', ').length - 1 && <span className="mx-1">•</span>}
+                       </span>
+                     );
+                   })}
+                  </div>
                 </div>
                 <div>
                   <Label>Estado</Label>
