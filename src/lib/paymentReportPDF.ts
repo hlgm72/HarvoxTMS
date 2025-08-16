@@ -935,7 +935,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   });
 
   // Usar addRoundedBox para Net Pay destacado
-  addRoundedBox(rightColumnX, rightY, 85, 10, colors.lightBlue, 2, colors.lightBlue);
+  addRoundedBox(rightColumnX, rightY, 85, 10, colors.lightBlue, 2, colors.primary);
   
   addText('Net Pay', rightColumnX + 2, rightY + 6, {
     fontSize: 12,
