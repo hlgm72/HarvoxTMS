@@ -398,7 +398,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       });
     }
 
-    currentY += 30; // Reducido de 35 a 30 para usar currentY directamente
+    currentY += 25; // Reducido de 30 a 25 para menos espaciado
   };
 
   // === HEADER EN TRES COLUMNAS ===
