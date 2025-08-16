@@ -8,6 +8,8 @@ import { Progress } from "@/components/ui/progress";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { useFleetNotifications } from '@/components/notifications';
 import { useUserCompanies } from '@/hooks/useUserCompanies';
+import { LoadsManager } from '@/components/driver/LoadsManager';
+import { FinancialSummary } from '@/components/driver/FinancialSummary';
 import { MapPin, Clock, DollarSign, Fuel, Phone, MessageSquare, FileText, AlertTriangle } from "lucide-react";
 
 export default function DriverDashboard() {
@@ -38,98 +40,13 @@ export default function DriverDashboard() {
       />
       <div className="p-2 md:p-4 space-y-6">
 
-      {/* Driver Status & Current Load */}
+      {/* Main Driver Focus Areas */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-blue-600" />
-              Carga Actual
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="font-medium">Carga #LD-001</span>
-                <Badge className="bg-green-50 text-green-700 border-green-200">
-                  En ruta
-                </Badge>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Origen:</span>
-                  <span className="font-medium">Houston, TX</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Destino:</span>
-                  <span className="font-medium">Dallas, TX</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Entrega estimada:</span>
-                  <span className="font-medium">Hoy 2:30 PM</span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Progreso del viaje</span>
-                  <span className="font-medium">68%</span>
-                </div>
-                <Progress value={68} className="h-2" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Button size="sm" className="w-full">
-                  <Phone className="h-4 w-4 mr-2" />
-                  Llamar Dispatch
-                </Button>
-                <Button size="sm" variant="outline" className="w-full">
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Mensaje
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-green-600" />
-              Resumen Financiero
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-green-700">Ingresos esta semana</span>
-                  <span className="font-bold text-green-800">$2,450.00</span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Millas recorridas:</span>
-                  <span className="font-medium">1,250 mi</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Cargas completadas:</span>
-                  <span className="font-medium">6</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Próximo pago:</span>
-                  <span className="font-medium">Viernes 15</span>
-                </div>
-              </div>
-
-              <Button className="w-full" variant="outline" size="sm">
-                Ver Detalle de Pagos
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Load Management - Primary Focus */}
+        <LoadsManager className="lg:col-span-1" />
+        
+        {/* Financial Summary - Daily Focus */}
+        <FinancialSummary className="lg:col-span-1" />
       </div>
 
       {/* Quick Actions & Vehicle Status */}

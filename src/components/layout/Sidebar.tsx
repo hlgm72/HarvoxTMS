@@ -308,42 +308,60 @@ const getDispatcherNavigationItems = (driversCount: number) => [
   },
 ];
 
-// Navegación para Driver
-const getDriverNavigationItems = () => [
-  // Panel Personal
+// Navegación para Driver - Optimizada para móviles
+const getDriverNavigationItems = (loadsCount: number) => [
+  // Panel Principal
   { 
     title: "Mi Dashboard", 
     url: "/dashboard/driver", 
     icon: Home, 
-    description: "Panel personal",
-    section: "dashboard"
+    badge: "Live",
+    badgeVariant: "live" as const,
+    description: "Panel principal",
+    section: "main"
   },
   
-  // Mis Tareas
+  // Gestión de Cargas - Prioridad #1
   { 
     title: "Mis Cargas", 
     url: "/my-loads", 
     icon: Package, 
-    badge: "3",
+    badge: loadsCount.toString(),
     badgeVariant: "count" as const,
-    description: "Cargas asignadas",
-    section: "tasks"
+    description: "Gestionar cargas activas",
+    section: "loads"
+  },
+  
+  // Información Financiera - Prioridad #2
+  { 
+    title: "Mis Pagos", 
+    url: "/payments", 
+    icon: DollarSign,
+    description: "Estado financiero diario",
+    section: "financial"
   },
   { 
-    title: "Mis Documentos", 
+    title: "Combustible", 
+    url: "/fuel-card", 
+    icon: Fuel,
+    description: "Tarjeta y gastos",
+    section: "financial"
+  },
+  
+  // Documentos y Soporte
+  { 
+    title: "Documentos", 
     url: "/my-documents", 
     icon: FileText,
     description: "Documentos personales",
-    section: "tasks"
+    section: "documents"
   },
-  
-  // Financiero
   { 
-    title: "Pagos", 
-    url: "/payments", 
-    icon: CreditCard,
-    description: "Historial de pagos",
-    section: "financial"
+    title: "Móvil App", 
+    url: "/driver-mobile", 
+    icon: Navigation,
+    description: "App móvil de tracking",
+    section: "tools"
   },
 ];
 
@@ -483,10 +501,10 @@ export function AppSidebar() {
     if (isCompanyOwner) return getCompanyOwnerNavigationItems(driversCount, equipmentCount, loadsCount, t);
     if (isOperationsManager) return getOperationsManagerNavigationItems(driversCount, equipmentCount, loadsCount);
     if (isDispatcher) return getDispatcherNavigationItems(driversCount);
-    if (isDriver) return getDriverNavigationItems();
+    if (isDriver) return getDriverNavigationItems(loadsCount);
     
     // Fallback para usuarios sin rol específico
-    return getDispatcherNavigationItems(driversCount);
+    return getDriverNavigationItems(loadsCount);
   };
   
   const navigationItems = getNavigationItems();
@@ -495,6 +513,15 @@ export function AppSidebar() {
 
   // Función para obtener mapeo de secciones según el rol
   const getSectionLabels = () => {
+    if (isDriver) {
+      return {
+        main: "Principal",
+        loads: "Gestión de Cargas",
+        financial: "Financiero Diario",
+        documents: "Documentos",
+        tools: "Herramientas"
+      };
+    }
     if (isCompanyOwner) {
       return {
         dashboard: t('company.sidebar.sections.dashboard'),
