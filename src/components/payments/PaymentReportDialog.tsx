@@ -29,6 +29,7 @@ import { formatPaymentPeriod, formatDateAuto, formatCurrency } from "@/lib/dateF
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
 import { useFleetNotifications } from "@/components/notifications";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
+import { EmailConfirmationDialog } from "./EmailConfirmationDialog";
 
 interface PaymentReportDialogProps {
   open: boolean;
@@ -44,6 +45,7 @@ export function PaymentReportDialog({
   const { showSuccess, showError } = useFleetNotifications();
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [showEmailConfirm, setShowEmailConfirm] = useState(false);
 
   // Obtener datos completos del cálculo
   const { data: calculation, isLoading } = useQuery({
@@ -386,22 +388,28 @@ export function PaymentReportDialog({
     }
   };
 
-  const handleSendEmail = async () => {
+  const handleEmailButtonClick = () => {
+    setShowEmailConfirm(true);
+  };
+
+  const handleConfirmSendEmail = async () => {
     if (!calculation || !driver) return;
     
     setIsSendingEmail(true);
+    setShowEmailConfirm(false);
+    
     try {
       const { data, error } = await supabase.functions.invoke('send-payment-report', {
         body: {
           driver_user_id: calculation.driver_user_id,
           period_id: calculation.id,
-          company_name: 'Tu Empresa'
+          company_name: company?.name || 'Tu Empresa'
         }
       });
 
       if (error) throw error;
 
-      showSuccess("Email Enviado", "Reporte enviado exitosamente");
+      showSuccess("Email Enviado", `Reporte enviado exitosamente a ${driver.display_email}`);
     } catch (error: any) {
       console.error('Error sending email:', error);
       showError("Error", "No se pudo enviar el email");
@@ -678,7 +686,7 @@ export function PaymentReportDialog({
             </Button>
             <Button 
               variant="outline"
-              onClick={handleSendEmail}
+              onClick={handleEmailButtonClick}
               disabled={isSendingEmail}
               size="sm"
               className="w-full sm:flex-1"
@@ -689,6 +697,15 @@ export function PaymentReportDialog({
           </div>
         </div>
       </DialogContent>
+      
+      <EmailConfirmationDialog
+        open={showEmailConfirm}
+        onOpenChange={setShowEmailConfirm}
+        onConfirm={handleConfirmSendEmail}
+        recipientEmail={driver?.display_email || ''}
+        driverName={driver?.display_name || `${driver?.first_name} ${driver?.last_name}`}
+        isSending={isSendingEmail}
+      />
     </Dialog>
   );
 }
