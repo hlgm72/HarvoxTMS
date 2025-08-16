@@ -611,7 +611,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         });
       }
 
-      currentY += stopOffset + 5; // Reducido de 7 a 5 para menos separación entre cargas
+      currentY += stopOffset + 4; // Reducido de 5 a 4 para menos separación entre cargas
     });
   }
 
