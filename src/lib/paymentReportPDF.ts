@@ -478,12 +478,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(10);
       addText(loadPrefix, margin, currentY, {
-        fontSize: 9,
+        fontSize: 10,
         fontStyle: 'bold',
         color: '#003366'
       });
       addText(`: ${load.load_number}`, colonPosition, currentY, {
-        fontSize: 9,
+        fontSize: 10,
         fontStyle: 'bold',
         color: '#003366'
       });
@@ -496,7 +496,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         const loadTextWidth = doc.getTextWidth(`${loadPrefix}: ${load.load_number}`);
         
         addText(` (PO: ${load.po_number})`, margin + loadTextWidth, currentY, {
-          fontSize: 9,
+          fontSize: 10,
           fontStyle: 'normal',
           color: '#003366'
         });
