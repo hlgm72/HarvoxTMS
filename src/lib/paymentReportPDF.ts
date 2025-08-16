@@ -435,12 +435,22 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const totalAmount = data.loads?.reduce((sum, load) => sum + (load.total_amount || 0), 0) || 0;
   const formattedTotal = formatCurrency(totalAmount);
   
-  addText(`Completed Loads (Count: ${loadCount}, Total: ${formattedTotal})`, margin, currentY, {
+  // Usar mismo estilo que la sección Other Earnings (fondo azul #003366 con texto blanco)
+  const loadsRgb = hexToRgb('#003366');
+  doc.setFillColor(loadsRgb[0], loadsRgb[1], loadsRgb[2]);
+  doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'F');
+  
+  // Agregar borde fino con el mismo color
+  doc.setDrawColor(loadsRgb[0], loadsRgb[1], loadsRgb[2]);
+  doc.setLineWidth(0.2);
+  doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'S');
+  
+  addText(`Completed Loads (Count: ${loadCount}, Total: ${formattedTotal})`, margin + 2, currentY, {
     fontSize: 11,
     fontStyle: 'bold',
-    color: '#003366'
+    color: '#ffffff' // Texto blanco para contraste con fondo azul
   });
-  currentY += 10;
+  currentY += 15;
 
   if (data.loads && data.loads.length > 0) {
     data.loads.forEach((load, index) => {
@@ -839,7 +849,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   addText('Driver Information', leftColumnX, currentY, {
     fontSize: 12,
     fontStyle: 'bold',
-    color: colors.darkGray
+    color: '#003366' // Color de fuente #003366
   });
   
   let leftY = currentY + 8;
@@ -848,14 +858,14 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   addText(`Driver Name: ${data.driver.name}`, leftColumnX, leftY, {
     fontSize: 9,
     fontStyle: 'bold',
-    color: colors.darkGray
+    color: '#003366' // Color de fuente #003366
   });
   leftY += 4;
   
   if (data.driver.email) {
     addText(`Email: ${data.driver.email}`, leftColumnX, leftY, {
       fontSize: 9,
-      color: colors.darkGray
+      color: '#003366' // Color de fuente #003366
     });
     leftY += 4;
   }
@@ -865,7 +875,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   addText('Signature:', leftColumnX, leftY, {
     fontSize: 10,
     fontStyle: 'bold',
-    color: colors.darkGray
+    color: '#003366' // Color de fuente #003366
   });
   
   leftY += 6;
@@ -882,27 +892,27 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     year: 'numeric'
   })}`, leftColumnX, leftY, {
     fontSize: 9,
-    color: colors.darkGray
+    color: '#003366' // Color de fuente #003366
   });
   
   // Mensaje de agradecimiento
   leftY += 8;
   addText('If you have any questions, please contact us by phone', leftColumnX, leftY, {
     fontSize: 8,
-    color: colors.gray
+    color: '#003366' // Color de fuente #003366
   });
   
   leftY += 4;
   addText(`or email at ${data.company.email || 'hgtransport16@gmail.com'}`, leftColumnX, leftY, {
     fontSize: 8,
-    color: colors.gray
+    color: '#003366' // Color de fuente #003366
   });
   
   leftY += 6;
   addText('Thank you for your business - We really appreciate it.', leftColumnX, leftY, {
     fontSize: 8,
     fontStyle: 'bold',
-    color: colors.darkGray
+    color: '#003366' // Color de fuente #003366
   });
   
   // === COLUMNA DERECHA: RESUMEN ===
@@ -913,7 +923,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   addText('Period Summary', rightColumnX, currentY, {
     fontSize: 12,
     fontStyle: 'bold',
-    color: colors.darkGray
+    color: '#003366' // Color de fuente #003366
   });
   
   let rightY = currentY + 12;
@@ -928,11 +938,14 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   summaryData.forEach(item => {
     addText(item.label, rightColumnX, rightY, {
       fontSize: 10,
-      color: colors.darkGray
+      color: '#003366' // Color de fuente #003366
     });
     
-    // Color rojo para montos negativos, color normal para positivos
-    const amountColor = item.amount < 0 ? colors.danger : colors.darkGray;
+    // Color específico para deducción y combustible (#ff7a00), normal para otros
+    let amountColor = '#003366'; // Color por defecto
+    if (item.label === 'Total Deductions' || item.label === 'Fuel Expenses') {
+      amountColor = '#ff7a00'; // Color naranja para deducción y combustible
+    }
     
     addText(formatCurrency(item.amount), rightColumnX + 80, rightY, {
       fontSize: 10,
