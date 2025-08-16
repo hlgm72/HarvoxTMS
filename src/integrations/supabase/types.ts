@@ -1787,13 +1787,6 @@ export type Database = {
             foreignKeyName: "load_documents_load_id_fkey"
             columns: ["load_id"]
             isOneToOne: false
-            referencedRelation: "load_details_with_dates"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "load_documents_load_id_fkey"
-            columns: ["load_id"]
-            isOneToOne: false
             referencedRelation: "loads"
             referencedColumns: ["id"]
           },
@@ -1864,13 +1857,6 @@ export type Database = {
           zip_code?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "load_stops_load_id_fkey"
-            columns: ["load_id"]
-            isOneToOne: false
-            referencedRelation: "load_details_with_dates"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "load_stops_load_id_fkey"
             columns: ["load_id"]
@@ -3197,6 +3183,7 @@ export type Database = {
           id: string | null
           inspection_status: string | null
           insurance_expiry_date: string | null
+          insurance_status: string | null
           license_plate: string | null
           license_plate_expiry_date: string | null
           license_status: string | null
@@ -3213,6 +3200,74 @@ export type Database = {
           vin_number: string | null
           year: number | null
         }
+        Insert: {
+          annual_inspection_expiry_date?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          current_mileage?: number | null
+          equipment_number?: string | null
+          equipment_type?: string | null
+          fuel_type?: string | null
+          geotab_vehicle_id?: string | null
+          has_form_2290?: never
+          has_inspection?: never
+          has_registration?: never
+          has_title?: never
+          id?: string | null
+          inspection_status?: never
+          insurance_expiry_date?: string | null
+          insurance_status?: never
+          license_plate?: string | null
+          license_plate_expiry_date?: string | null
+          license_status?: never
+          make?: string | null
+          model?: string | null
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          registration_expiry_date?: string | null
+          registration_status?: never
+          status?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          vin_number?: string | null
+          year?: number | null
+        }
+        Update: {
+          annual_inspection_expiry_date?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          current_mileage?: number | null
+          equipment_number?: string | null
+          equipment_type?: string | null
+          fuel_type?: string | null
+          geotab_vehicle_id?: string | null
+          has_form_2290?: never
+          has_inspection?: never
+          has_registration?: never
+          has_title?: never
+          id?: string | null
+          inspection_status?: never
+          insurance_expiry_date?: string | null
+          insurance_status?: never
+          license_plate?: string | null
+          license_plate_expiry_date?: string | null
+          license_status?: never
+          make?: string | null
+          model?: string | null
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          registration_expiry_date?: string | null
+          registration_status?: never
+          status?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          vin_number?: string | null
+          year?: number | null
+        }
         Relationships: [
           {
             foreignKeyName: "fk_company_equipment_company"
@@ -3257,70 +3312,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      load_details_with_dates: {
-        Row: {
-          actual_delivery_date: string | null
-          actual_pickup_date: string | null
-          broker_id: string | null
-          calculated_delivery_date: string | null
-          calculated_pickup_date: string | null
-          commodity: string | null
-          created_at: string | null
-          created_by: string | null
-          currency: string | null
-          customer_name: string | null
-          dispatching_percentage: number | null
-          driver_user_id: string | null
-          factoring_percentage: number | null
-          id: string | null
-          leasing_percentage: number | null
-          load_number: string | null
-          notes: string | null
-          payment_period_id: string | null
-          status: string | null
-          total_amount: number | null
-          updated_at: string | null
-          weight_lbs: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "loads_payment_period_id_fkey"
-            columns: ["payment_period_id"]
-            isOneToOne: false
-            referencedRelation: "company_payment_periods"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      loads_complete: {
-        Row: {
-          client_contact_id: string | null
-          client_id: string | null
-          commodity: string | null
-          created_at: string | null
-          created_by: string | null
-          currency: string | null
-          customer_name: string | null
-          data_source: string | null
-          delivery_date: string | null
-          dispatching_percentage: number | null
-          driver_user_id: string | null
-          factoring_percentage: number | null
-          id: string | null
-          internal_dispatcher_id: string | null
-          leasing_percentage: number | null
-          load_number: string | null
-          notes: string | null
-          payment_period_id: string | null
-          pickup_date: string | null
-          po_number: string | null
-          status: string | null
-          total_amount: number | null
-          updated_at: string | null
-          weight_lbs: number | null
-        }
-        Relationships: []
       }
     }
     Functions: {
@@ -3968,6 +3959,10 @@ export type Database = {
         Returns: Json
       }
       user_belongs_to_company: {
+        Args: { company_id_param: string }
+        Returns: boolean
+      }
+      user_has_company_access: {
         Args: { company_id_param: string }
         Returns: boolean
       }

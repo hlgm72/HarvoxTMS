@@ -102,26 +102,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserRoles = useCallback(async (userId: string) => {
     try {
-      // console.log('🔍 Fetching roles for user:', userId);
+      console.log('🔍 Fetching roles for user:', userId);
+      console.log('🔍 Current session user ID from auth:', userId);
+      
       const { data: roles, error } = await supabase
         .from('user_company_roles')
         .select('*')
         .eq('user_id', userId)
         .eq('is_active', true);
 
-      // console.log('📋 Raw roles data:', { roles, error });
-      // console.log('📋 Roles count from DB:', (roles || []).length);
-      // console.log('📋 User ID used in query:', userId);
+      console.log('📋 Raw roles data:', { roles, error });
+      console.log('📋 Roles count from DB:', (roles || []).length);
+      console.log('📋 User ID used in query:', userId);
+      console.log('📋 Error details:', error);
 
       if (error) {
         console.error('❌ Error fetching user roles:', error);
+        console.error('❌ Error code:', error.code);
+        console.error('❌ Error message:', error.message);
+        console.error('❌ Error details:', error.details);
         
         // If this is an auth error, clean up and sign out
         if (error.message?.includes('refresh token') || 
             error.message?.includes('JWT') || 
             error.message?.includes('Invalid') ||
-            error.code === 'PGRST301') {
-          console.log('🚨 Auth error detected in fetchUserRoles, cleaning up');
+            error.code === 'PGRST116' ||
+            error.code === '42501') {
+          console.log('🚨 Auth/RLS error detected in fetchUserRoles, cleaning up');
           enhancedCleanupAuthState();
           window.location.href = '/auth';
           return [];
