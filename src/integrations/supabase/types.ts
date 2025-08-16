@@ -268,24 +268,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "company_brokers_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public_secure"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "fk_company_clients_company_id"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_company_clients_company_id"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public_secure"
             referencedColumns: ["id"]
           },
         ]
@@ -383,13 +369,6 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "company_documents_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public_secure"
-            referencedColumns: ["id"]
-          },
         ]
       }
       company_equipment: {
@@ -480,24 +459,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "fk_company_equipment_company"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public_secure"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "fk_company_equipment_company_id"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_company_equipment_company_id"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public_secure"
             referencedColumns: ["id"]
           },
         ]
@@ -554,13 +519,6 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: true
             referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "company_financial_settings_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: true
-            referencedRelation: "companies_public_secure"
             referencedColumns: ["id"]
           },
         ]
@@ -2346,13 +2304,6 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "payment_methods_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public_secure"
-            referencedColumns: ["id"]
-          },
         ]
       }
       payment_reports: {
@@ -2800,24 +2751,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "fk_user_company_roles_company_id"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public_secure"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "user_company_roles_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_company_roles_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public_secure"
             referencedColumns: ["id"]
           },
         ]
@@ -2888,13 +2825,6 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "user_invitations_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public_secure"
-            referencedColumns: ["id"]
-          },
         ]
       }
       user_onboarding_progress: {
@@ -2932,62 +2862,6 @@ export type Database = {
       }
     }
     Views: {
-      companies_public_secure: {
-        Row: {
-          city: string | null
-          created_at: string | null
-          email: string | null
-          id: string | null
-          logo_url: string | null
-          name: string | null
-          phone: string | null
-          plan_type: string | null
-          state_id: string | null
-          status: string | null
-          street_address: string | null
-          updated_at: string | null
-          zip_code: string | null
-        }
-        Insert: {
-          city?: string | null
-          created_at?: string | null
-          email?: string | null
-          id?: string | null
-          logo_url?: string | null
-          name?: string | null
-          phone?: string | null
-          plan_type?: string | null
-          state_id?: string | null
-          status?: string | null
-          street_address?: string | null
-          updated_at?: string | null
-          zip_code?: string | null
-        }
-        Update: {
-          city?: string | null
-          created_at?: string | null
-          email?: string | null
-          id?: string | null
-          logo_url?: string | null
-          name?: string | null
-          phone?: string | null
-          plan_type?: string | null
-          state_id?: string | null
-          status?: string | null
-          street_address?: string | null
-          updated_at?: string | null
-          zip_code?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "companies_state_id_fkey"
-            columns: ["state_id"]
-            isOneToOne: false
-            referencedRelation: "states"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       equipment_status_summary: {
         Row: {
           annual_inspection_expiry_date: string | null
@@ -3100,24 +2974,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "fk_company_equipment_company"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public_secure"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "fk_company_equipment_company_id"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_company_equipment_company_id"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public_secure"
             referencedColumns: ["id"]
           },
         ]
