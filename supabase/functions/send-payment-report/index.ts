@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
     // Obtener información del conductor
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('first_name, last_name, email')
+      .select('first_name, last_name')
       .eq('user_id', driver_user_id)
       .single();
 
@@ -55,7 +55,14 @@ Deno.serve(async (req) => {
       throw new Error('Driver profile not found');
     }
 
-    if (!profile.email) {
+    // Obtener email del usuario usando función RPC
+    const { data: email, error: emailError } = await supabase
+      .rpc('get_user_email_by_id', { user_id_param: driver_user_id });
+
+    console.log('Email query result:', { email, emailError });
+
+    if (emailError || !email) {
+      console.error('Email error:', emailError);
       throw new Error('Driver email not found');
     }
 
@@ -121,7 +128,7 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ 
       success: true, 
       message: 'Payment report sent successfully',
-      sent_to: profile.email
+      sent_to: email
     }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
