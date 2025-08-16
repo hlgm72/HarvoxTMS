@@ -636,6 +636,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   doc.setFillColor(lightBlueRgb[0], lightBlueRgb[1], lightBlueRgb[2]);
   doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'F');
   
+  // Agregar borde fino
+  const primaryRgb = hexToRgb(colors.primary);
+  doc.setDrawColor(primaryRgb[0], primaryRgb[1], primaryRgb[2]);
+  doc.setLineWidth(0.2);
+  doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'S');
+  
   addText(`Other Earnings (Count: ${otherIncomeCount}, Total: ${formatCurrency(totalOtherIncome)})`, margin + 2, currentY, {
     fontSize: 11,
     fontStyle: 'bold',
@@ -687,6 +693,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const redRgb = hexToRgb(colors.lightRed);
   doc.setFillColor(redRgb[0], redRgb[1], redRgb[2]);
   doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'F');
+  
+  // Agregar borde fino
+  const dangerRgb = hexToRgb(colors.danger);
+  doc.setDrawColor(dangerRgb[0], dangerRgb[1], dangerRgb[2]);
+  doc.setLineWidth(0.2);
+  doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'S');
   
   const totalDeductions = data.deductions?.reduce((sum, d) => sum + d.amount, 0) || 0;
   addText(`Period Deductions (Count: ${deductionsCount}, Total: ${formatCurrency(totalDeductions)})`, margin + 2, currentY, {
@@ -740,6 +752,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const orangeRgb = hexToRgb(colors.lightOrange);
   doc.setFillColor(orangeRgb[0], orangeRgb[1], orangeRgb[2]);
   doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'F');
+  
+  // Agregar borde fino
+  const warningRgb = hexToRgb(colors.warning);
+  doc.setDrawColor(warningRgb[0], warningRgb[1], warningRgb[2]);
+  doc.setLineWidth(0.2);
+  doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'S');
   
   addText(`Fuel Expenses (Count: ${fuelCount}, Total: ${formatCurrency(data.period.fuel_expenses)})`, margin + 2, currentY, {
     fontSize: 11,
