@@ -23,7 +23,7 @@ import {
   SortDesc
 } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatShortDate, formatMediumDate, formatCurrency } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 
 const statusOptions = [
@@ -275,11 +275,11 @@ export function LoadsActionSheet({ filters, onFiltersChange }: LoadsActionSheetP
                       {filters.dateRange.from ? (
                         filters.dateRange.to ? (
                           <>
-                            {format(filters.dateRange.from, "dd/MM/yy", { locale: es })} -{" "}
-                            {format(filters.dateRange.to, "dd/MM/yy", { locale: es })}
+                            {formatShortDate(filters.dateRange.from)} -{" "}
+                            {formatShortDate(filters.dateRange.to)}
                           </>
                         ) : (
-                          format(filters.dateRange.from, "dd/MM/yyyy", { locale: es })
+                          formatMediumDate(filters.dateRange.from)
                         )
                       ) : (
                         "Seleccionar fechas"
@@ -444,7 +444,7 @@ export function LoadsActionSheet({ filters, onFiltersChange }: LoadsActionSheetP
                   <div className="text-xs text-muted-foreground">Total Cargas</div>
                 </div>
                 <div className="bg-muted rounded-lg p-3">
-                  <div className="text-2xl font-bold text-green-600">${mockStats.totalValue.toLocaleString()}</div>
+                  <div className="text-2xl font-bold text-green-600">${formatCurrency(mockStats.totalValue)}</div>
                   <div className="text-xs text-muted-foreground">Valor Total</div>
                 </div>
                 <div className="bg-muted rounded-lg p-3">
@@ -489,7 +489,7 @@ export function LoadsActionSheet({ filters, onFiltersChange }: LoadsActionSheetP
             <div>
               <h3 className="text-sm font-medium mb-3">Promedio por Carga</h3>
               <div className="bg-muted rounded-lg p-3">
-                <div className="text-xl font-bold text-primary">${mockStats.averageValue.toLocaleString()}</div>
+                <div className="text-xl font-bold text-primary">${formatCurrency(mockStats.averageValue)}</div>
                 <div className="text-xs text-muted-foreground">Valor promedio por carga</div>
               </div>
             </div>

@@ -143,11 +143,11 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
               {filters.dateRange.from ? (
                 filters.dateRange.to ? (
                   <>
-                    {format(filters.dateRange.from, "LLL dd, y")} -{" "}
-                    {format(filters.dateRange.to, "LLL dd, y")}
+                    {formatShortDate(filters.dateRange.from)} -{" "}
+                    {formatShortDate(filters.dateRange.to)}
                   </>
                 ) : (
-                  format(filters.dateRange.from, "LLL dd, y")
+                  formatMediumDate(filters.dateRange.from)
                 )
               ) : (
                 <span>Seleccionar rango</span>

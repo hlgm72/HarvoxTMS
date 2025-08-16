@@ -10,7 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ExpenseTemplateDialog } from "./ExpenseTemplateDialog";
 import { CreateEventualDeductionDialog } from "./CreateEventualDeductionDialog";
 import { EventualDeductionsList } from "./EventualDeductionsList";
-import { formatDateOnly } from '@/lib/dateFormatting';
+import { formatDateOnly, formatCurrency } from '@/lib/dateFormatting';
 import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle, Repeat, Clock, Archive, History } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 
@@ -392,7 +392,7 @@ export function DeductionsManager({
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <p className={`font-semibold text-lg ${isInactive ? 'text-muted-foreground' : ''}`}>
-                        ${parseFloat(template.amount || 0).toLocaleString('es-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        ${formatCurrency(parseFloat(template.amount || 0))}
                       </p>
                       <Badge variant={isInactive ? "secondary" : "outline"}>
                         {isInactive && 'Inactiva • '}

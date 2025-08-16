@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertTriangle, Calculator, DollarSign, Lock, Play, Users, Fuel, TrendingUp, Receipt, CreditCard, CreditCard as PaymentIcon } from "lucide-react";
-import { formatPaymentPeriod } from '@/lib/dateFormatting';
+import { formatPaymentPeriod, formatCurrency } from '@/lib/dateFormatting';
 import { useFleetNotifications } from "@/components/notifications";
 import { useClosePaymentPeriod } from "@/hooks/useClosePaymentPeriod";
 import { useMarkMultipleDriversPaid } from "@/hooks/useMarkMultipleDriversPaid";
@@ -257,7 +257,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
               </div>
               <div className="space-y-1">
                 <p className="text-2xl font-bold tracking-tight">
-                  ${totalGrossEarnings.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  ${formatCurrency(totalGrossEarnings)}
                 </p>
               </div>
             </div>
@@ -273,7 +273,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
               </div>
               <div className="space-y-1">
                 <p className="text-2xl font-bold tracking-tight text-success">
-                  ${totalOtherIncome.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  ${formatCurrency(totalOtherIncome)}
                 </p>
               </div>
             </div>
@@ -289,7 +289,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
               </div>
               <div className="space-y-1">
                 <p className="text-2xl font-bold tracking-tight text-destructive">
-                  -${totalDeductions.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  -${formatCurrency(totalDeductions)}
                 </p>
               </div>
             </div>
@@ -305,7 +305,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
               </div>
               <div className="space-y-1">
                 <p className="text-2xl font-bold tracking-tight text-warning">
-                  -${totalFuelExpenses.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  -${formatCurrency(totalFuelExpenses)}
                 </p>
               </div>
             </div>
@@ -321,7 +321,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
               </div>
               <div className="space-y-2">
                 <p className="text-2xl font-bold tracking-tight">
-                  ${totalNetPayment.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                  ${formatCurrency(totalNetPayment)}
                 </p>
                 <div className="flex flex-col space-y-1">
                   <span className="text-xs text-muted-foreground">
@@ -462,31 +462,31 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                   <div>
                     <p className="text-muted-foreground">{t('summary.gross_income')}</p>
                     <p className="font-semibold">
-                      ${(calc.gross_earnings || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                      ${formatCurrency(calc.gross_earnings || 0)}
                     </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t('summary.other_income')}</p>
                     <p className="font-semibold text-success">
-                      ${(calc.other_income || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                      ${formatCurrency(calc.other_income || 0)}
                     </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Deducciones</p>
                     <p className="font-semibold text-destructive">
-                      -${(calc.total_deductions || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                      -${formatCurrency(calc.total_deductions || 0)}
                     </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t('tabs.fuel_expenses')}</p>
                     <p className="font-semibold text-warning">
-                      -${(calc.fuel_expenses || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                      -${formatCurrency(calc.fuel_expenses || 0)}
                     </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Pago Neto</p>
                     <p className={`font-semibold ${calculateNetPayment(calc) < 0 ? 'text-destructive' : ''}`}>
-                      ${calculateNetPayment(calc).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                      ${formatCurrency(calculateNetPayment(calc))}
                     </p>
                   </div>
                 </div>

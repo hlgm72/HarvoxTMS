@@ -323,7 +323,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                               )}
                             >
                               {field.value ? (
-                                format(field.value, "PPP", { locale: es })
+                                formatPrettyDate(field.value)
                               ) : (
                                 <span>Seleccionar fecha</span>
                               )}
@@ -336,7 +336,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                             {/* Selectores de mes y año */}
                             <div className="grid grid-cols-2 gap-2">
                               <Select
-                                value={field.value ? format(field.value, 'MMMM', { locale: es }) : ""}
+                                value={field.value ? format(field.value, 'MMMM') : ""}
                                 onValueChange={(monthName) => {
                                   const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
                                                     'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']

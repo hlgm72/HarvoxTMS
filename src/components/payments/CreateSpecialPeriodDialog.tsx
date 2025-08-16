@@ -9,7 +9,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatPrettyDate } from '@/lib/dateFormatting';
+import { useTranslation } from 'react-i18next';
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
@@ -91,7 +92,7 @@ export function CreateSpecialPeriodDialog({ onClose, onSuccess }: CreateSpecialP
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {startDate ? format(startDate, "PPP", { locale: es }) : "Seleccionar fecha"}
+                {startDate ? formatPrettyDate(startDate) : "Seleccionar fecha"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -118,7 +119,7 @@ export function CreateSpecialPeriodDialog({ onClose, onSuccess }: CreateSpecialP
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {endDate ? format(endDate, "PPP", { locale: es }) : "Seleccionar fecha"}
+                {endDate ? formatPrettyDate(endDate) : "Seleccionar fecha"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">

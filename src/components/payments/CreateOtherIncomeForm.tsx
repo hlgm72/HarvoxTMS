@@ -13,7 +13,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatPrettyDate } from '@/lib/dateFormatting';
+import { useTranslation } from 'react-i18next';
 import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
 
 export function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
@@ -126,7 +127,7 @@ export function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {formData.income_date ? format(formData.income_date, "PPP", { locale: es }) : "Seleccionar fecha"}
+                {formData.income_date ? formatPrettyDate(formData.income_date) : "Seleccionar fecha"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { formatPrettyDate, formatMonthName } from '@/lib/dateFormatting';
 import { CalendarIcon, MapPin, Clock, User, Phone, Building, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -142,7 +142,7 @@ export function StopEditModal({
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.scheduled_date ? format(formData.scheduled_date, "PPP", { locale: es }) : "Seleccionar fecha"}
+                      {formData.scheduled_date ? formatPrettyDate(formData.scheduled_date) : "Seleccionar fecha"}
                     </Button>
                   </PopoverTrigger>
                    <PopoverContent className="w-auto p-0 bg-background border-border">
@@ -163,7 +163,7 @@ export function StopEditModal({
                           <SelectContent>
                             {Array.from({ length: 12 }, (_, i) => (
                               <SelectItem key={i} value={i.toString()}>
-                                {format(new Date(2024, i, 1), 'MMMM', { locale: es })}
+                                {formatMonthName(new Date(2024, i, 1))}
                               </SelectItem>
                             ))}
                           </SelectContent>

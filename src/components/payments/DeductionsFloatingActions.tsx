@@ -22,7 +22,7 @@ import {
   Plus
 } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatMediumDate, formatCurrency } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 
 const statusOptions = [
@@ -260,11 +260,11 @@ export function DeductionsFloatingActions({
                           {filters.dateRange.from ? (
                             filters.dateRange.to ? (
                               <>
-                                {format(filters.dateRange.from, "dd/MM/yyyy", { locale: es })} -{" "}
-                                {format(filters.dateRange.to, "dd/MM/yyyy", { locale: es })}
+                                {formatMediumDate(filters.dateRange.from)} -{" "}
+                                {formatMediumDate(filters.dateRange.to)}
                               </>
                             ) : (
-                              format(filters.dateRange.from, "dd/MM/yyyy", { locale: es })
+                              formatMediumDate(filters.dateRange.from)
                             )
                           ) : (
                             "Seleccionar fechas"
@@ -500,7 +500,7 @@ export function DeductionsFloatingActions({
                       <div className="text-xs text-muted-foreground">Total Deducciones</div>
                     </div>
                     <div className="bg-muted rounded-lg p-3">
-                      <div className="text-2xl font-bold text-green-600">${mockStats.totalAmount.toLocaleString()}</div>
+                      <div className="text-2xl font-bold text-green-600">${formatCurrency(mockStats.totalAmount)}</div>
                       <div className="text-xs text-muted-foreground">Monto Total</div>
                     </div>
                     <div className="bg-muted rounded-lg p-3">

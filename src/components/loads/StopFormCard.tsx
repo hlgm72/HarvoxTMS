@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { formatPrettyDate, formatMonthName } from '@/lib/dateFormatting';
 import { CalendarIcon, Grip, Trash2, MapPin, Clock, User, Phone } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -224,7 +224,7 @@ export function StopFormCard({
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {stop.scheduled_date ? format(stop.scheduled_date, "PPP", { locale: es }) : "Seleccionar fecha"}
+                  {stop.scheduled_date ? formatPrettyDate(stop.scheduled_date) : "Seleccionar fecha"}
                 </Button>
               </PopoverTrigger>
                <PopoverContent className="w-auto p-0 bg-background border-border">
@@ -245,7 +245,7 @@ export function StopFormCard({
                       <SelectContent>
                         {Array.from({ length: 12 }, (_, i) => (
                           <SelectItem key={i} value={i.toString()}>
-                            {format(new Date(2024, i, 1), 'MMMM', { locale: es })}
+                            {formatMonthName(new Date(2024, i, 1))}
                           </SelectItem>
                         ))}
                       </SelectContent>

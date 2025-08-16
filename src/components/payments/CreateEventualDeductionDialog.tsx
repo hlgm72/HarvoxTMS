@@ -14,7 +14,7 @@ import { Check, ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { CalendarIcon } from "lucide-react";
 import { parseISO, isWithinInterval, isBefore, isAfter, format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatPrettyDate, formatMonthName } from '@/lib/dateFormatting';
 import { formatDateOnly, formatDateInUserTimeZone } from "@/utils/dateUtils";
 import { useATMInput } from "@/hooks/useATMInput";
 import { cn } from "@/lib/utils";
@@ -392,7 +392,7 @@ export function CreateEventualDeductionDialog({
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {expenseDate ? format(expenseDate, "PPP", { locale: es }) : "Seleccionar fecha"}
+                  {expenseDate ? formatPrettyDate(expenseDate) : "Seleccionar fecha"}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -400,7 +400,7 @@ export function CreateEventualDeductionDialog({
                   {/* Selectores de mes y año */}
                   <div className="grid grid-cols-2 gap-2">
                     <Select
-                      value={expenseDate ? format(expenseDate, 'MMMM', { locale: es }) : ""}
+                      value={expenseDate ? formatMonthName(expenseDate) : ""}
                       onValueChange={(monthName) => {
                         const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
                                           'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
@@ -479,7 +479,7 @@ export function CreateEventualDeductionDialog({
             {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length === 0 && (
               <div className="p-3 border border-orange-200 bg-orange-50 rounded-md">
                 <p className="text-sm text-orange-800">
-                  No hay un período de pago abierto para la fecha {format(expenseDate, "PPP", { locale: es })}.
+                  No hay un período de pago abierto para la fecha {formatPrettyDate(expenseDate)}.
                 </p>
                 <p className="text-xs text-orange-600 mt-1">
                   Selecciona una fecha que esté dentro de un período de pago abierto.
