@@ -408,7 +408,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const totalBoxesWidth = pageWidth - margin*2 + 10; // Mismo ancho que la cabecera
   const boxesStartX = margin - 5; // Misma posición X que la cabecera
   const boxWidth = (totalBoxesWidth - 15) / 4; // 4 cajas con espacios
-  const boxHeight = 13;
+  const boxHeight = 11;
   
   // Gross Earnings (Verde)
   addColoredBox(boxesStartX, currentY, boxWidth, boxHeight, colors.lightGreen, colors.darkGray,
@@ -430,7 +430,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   // Net Pay (Caja grande azul)
   const netPayWidth = totalBoxesWidth; // Mismo ancho que la cabecera
-  addColoredBox(boxesStartX, currentY, netPayWidth, 13, colors.lightBlue, colors.primary,
+  addColoredBox(boxesStartX, currentY, netPayWidth, 11, colors.lightBlue, colors.primary,
     'Net Pay', formatCurrency(data.period.net_payment));
 
   currentY += 25; // Aumentado de 15 a 25 para mejor espaciado
