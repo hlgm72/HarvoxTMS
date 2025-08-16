@@ -24,11 +24,11 @@ export const useUpdateLoadStatus = () => {
         throw new Error('Usuario no autenticado');
       }
 
-      // Primero actualizar el estado de la carga
+      // Primero actualizar el estado de la carga - especificamos solo los parámetros necesarios
       const { data, error } = await supabase.rpc('update_load_status_with_validation', {
         load_id_param: params.loadId,
         new_status: params.newStatus
-      });
+      } as { load_id_param: string; new_status: string });
 
       if (error) {
         console.error('❌ useUpdateLoadStatus - Error:', error);
