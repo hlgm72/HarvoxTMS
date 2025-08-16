@@ -1676,7 +1676,7 @@ export type Database = {
           id: string
           load_id: string
           updated_at: string | null
-          uploaded_by: string | null
+          uploaded_by: string
         }
         Insert: {
           archived_at?: string | null
@@ -1690,7 +1690,7 @@ export type Database = {
           id?: string
           load_id: string
           updated_at?: string | null
-          uploaded_by?: string | null
+          uploaded_by?: string
         }
         Update: {
           archived_at?: string | null
@@ -1704,7 +1704,7 @@ export type Database = {
           id?: string
           load_id?: string
           updated_at?: string | null
-          uploaded_by?: string | null
+          uploaded_by?: string
         }
         Relationships: [
           {
