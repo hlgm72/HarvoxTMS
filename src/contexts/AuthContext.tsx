@@ -93,6 +93,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isOperationsManager = userRole?.role === 'operations_manager';
   const isDispatcher = userRole?.role === 'dispatcher';
   const isDriver = userRole?.role === 'driver';
+  
+  // Debug logging for role checks
+  console.log('🎭 Role Debug - Current userRole:', userRole);
+  console.log('🎭 Role Debug - Is Company Owner?', isCompanyOwner);
+  console.log('🎭 Role Debug - Current role string:', currentRole);
+  console.log('🎭 Role Debug - Available roles:', userRoles?.map(r => r.role));
 
   const fetchUserRoles = useCallback(async (userId: string) => {
     try {
@@ -125,6 +131,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       console.log('📋 User roles found:', roles);
+      console.log('📋 Company owner found?', roles?.some(r => r.role === 'company_owner'));
+      console.log('📋 All role types found:', roles?.map(r => r.role));
       return roles || [];
     } catch (error) {
       console.error('Error in fetchUserRoles:', error);
