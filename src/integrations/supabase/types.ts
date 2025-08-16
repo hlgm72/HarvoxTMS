@@ -3175,7 +3175,7 @@ export type Database = {
         Returns: Json
       }
       get_companies_basic_info: {
-        Args: Record<PropertyKey, never> | { company_id_param?: string }
+        Args: Record<PropertyKey, never> | { company_id_filter?: string }
         Returns: {
           city: string
           created_at: string
@@ -3183,6 +3183,37 @@ export type Database = {
           id: string
           logo_url: string
           name: string
+          phone: string
+          plan_type: string
+          state_id: string
+          status: string
+          street_address: string
+          updated_at: string
+          zip_code: string
+        }[]
+      }
+      get_companies_financial_data: {
+        Args: { company_id_filter?: string }
+        Returns: {
+          city: string
+          contract_start_date: string
+          created_at: string
+          default_dispatching_percentage: number
+          default_factoring_percentage: number
+          default_leasing_percentage: number
+          default_payment_frequency: string
+          dot_number: string
+          ein: string
+          email: string
+          id: string
+          load_assignment_criteria: string
+          logo_url: string
+          max_users: number
+          max_vehicles: number
+          mc_number: string
+          name: string
+          payment_cycle_start_day: number
+          payment_day: string
           phone: string
           plan_type: string
           state_id: string
