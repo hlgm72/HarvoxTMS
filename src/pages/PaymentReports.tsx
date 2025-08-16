@@ -298,10 +298,10 @@ export default function PaymentReports() {
                             <DollarSign className="h-4 w-4" />
                             Neto: ${formatCurrency(calculateNetPayment(calculation))}
                           </span>
-                          {calculation.calculated_at && (
+                          {calculation.company_payment_periods.payment_date && (
                             <span className="flex items-center gap-1">
                               <Clock className="h-4 w-4" />
-                              {formatDateAuto(calculation.calculated_at)}
+                              Pago: {formatDateAuto(calculation.company_payment_periods.payment_date)}
                             </span>
                           )}
                         </div>
