@@ -60,6 +60,9 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
         // Determinar el período objetivo basado en el filtro
         if (periodFilter?.type === 'specific' && periodFilter.periodId) {
           targetPeriodId = periodFilter.periodId;
+        } else if (periodFilter?.periodId) {
+          // Para períodos como 'previous', 'next' que tienen periodId específico
+          targetPeriodId = periodFilter.periodId;
         } else if (periodFilter?.type === 'current' || !periodFilter?.type) {
           // Obtener el período actual de la compañía
           const today = getTodayInUserTimeZone();
@@ -83,7 +86,7 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
           // Para 'all', no filtrar por período específico
           targetPeriodId = 'all';
         } else {
-          // Para otros tipos (previous, next, custom, etc.), retornar 0s por ahora
+          // Para tipos no implementados, retornar 0s
           return {
             totalActive: 0,
             totalInTransit: 0,
