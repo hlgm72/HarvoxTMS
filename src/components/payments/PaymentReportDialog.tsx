@@ -436,7 +436,7 @@ export function PaymentReportDialog({
             <!-- Header -->
             <div style="background: hsl(210 100% 15%); padding: 30px; text-align: center;">
               <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
-                <img src="/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png" 
+                <img src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/fleetnest/logo_64x64.png" 
                      alt="FleetNest Logo" 
                      style="width: 40px; height: 40px; object-fit: contain;">
                 <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">FleetNest TMS</h1>
