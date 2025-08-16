@@ -522,7 +522,7 @@ export function PaymentReportDialog({
 
       const { data, error } = await supabase.functions.invoke('send-payment-report', {
         body: {
-          to: 'hlgm72@gmail.com',
+          to: driver.display_email,
           subject: interpolateText(translations.subject, variables),
           html: emailHTML,
           pdf_data: pdfArray,
@@ -532,7 +532,7 @@ export function PaymentReportDialog({
 
       if (error) throw error;
 
-      showSuccess("Email Enviado", `Reporte enviado exitosamente a hlgm72@gmail.com`);
+      showSuccess("Email Enviado", `Reporte enviado exitosamente a ${driver.display_email}`);
     } catch (error: any) {
       console.error('Error sending email:', error);
       showError("Error", "No se pudo enviar el email");
