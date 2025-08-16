@@ -20,6 +20,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency, calculateNetPayment, calculateTotalIncome } from "@/lib/paymentCalculations";
+import { FinancialCharts } from "./FinancialCharts";
 
 interface FinancialData {
   currentPeriod: {
@@ -177,6 +178,12 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
 
   return (
     <div className={className}>
+      {/* Financial Charts Section */}
+      <FinancialCharts 
+        currentPeriodData={currentPeriod}
+        className="mb-6"
+      />
+      
       <Tabs defaultValue="summary" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="summary">Resumen</TabsTrigger>
