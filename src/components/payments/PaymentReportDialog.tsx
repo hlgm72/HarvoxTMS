@@ -402,7 +402,7 @@ export function PaymentReportDialog({
       const { data, error } = await supabase.functions.invoke('send-payment-report', {
         body: {
           driver_user_id: calculation.driver_user_id,
-          period_id: calculation.id,
+          period_id: calculation.company_payment_period_id,
           company_name: company?.name || 'Tu Empresa'
         }
       });
