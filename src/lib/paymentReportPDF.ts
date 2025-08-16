@@ -931,9 +931,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       color: colors.darkGray
     });
     
+    // Color rojo para montos negativos, color normal para positivos
+    const amountColor = item.amount < 0 ? colors.danger : colors.darkGray;
+    
     addText(formatCurrency(item.amount), rightColumnX + 80, rightY, {
       fontSize: 10,
-      color: colors.darkGray,
+      color: amountColor,
       align: 'right'
     });
     
