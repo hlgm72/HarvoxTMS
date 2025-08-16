@@ -235,7 +235,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     currentY = 12;
     
     // Agregar fondo gris claro con esquinas redondeadas y borde para la cabecera
-    const headerHeight = 28;
+    const headerHeight = 25;
     addRoundedBox(margin - 5, currentY - 7, pageWidth - margin*2 + 10, headerHeight, colors.lightGray, 2, colors.border);
     
     // Definir columnas
