@@ -989,24 +989,23 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     addRoundedBox(margin - 5, footerY - 7, pageWidth - margin*2 + 10, footerHeight, colors.lightGray, 2, colors.border);
     
     // Logo y textos de FleetNest TMS (izquierda)
-    // Intentar cargar logo de la app
+    // Logo de la app FleetNest TMS
     const logoSize = 8; // Tamaño pequeño para el pie de página
     let logoWidth = 0;
     
     try {
-      // Usar el mismo logo de la compañía como logo de la app
-      if (data.company.logo_url) {
-        const logoData = await loadImageFromUrl(data.company.logo_url);
-        if (logoData) {
-          doc.addImage(logoData, 'PNG', margin, footerY - 5, logoSize, logoSize);
-          logoWidth = logoSize + 2;
-        }
+      // URL del logo de FleetNest TMS (puedes cambiar esta URL por la del logo real de la app)
+      const fleetNestLogoUrl = '/placeholder.svg'; // Cambia por la URL real del logo de FleetNest TMS
+      const logoData = await loadImageFromUrl(fleetNestLogoUrl);
+      if (logoData) {
+        doc.addImage(logoData, 'PNG', margin, footerY - 5, logoSize, logoSize);
+        logoWidth = logoSize + 2;
       }
     } catch (error) {
-      console.error('Error loading app logo in footer:', error);
+      console.error('Error loading FleetNest TMS logo in footer:', error);
     }
     
-    // Si no hay logo, usar iniciales como fallback
+    // Si no hay logo, usar iniciales "FN" para FleetNest
     if (logoWidth === 0) {
       addText('FN', margin, footerY - 1, {
         fontSize: 10,
