@@ -133,7 +133,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     gray: '#6b7280',        
     darkGray: '#1f2937',    
     lightGray: '#fafafa',   // Gris más suave
-    border: '#f1f5f9',      // Borde más suave
+    border: '#d1d5db',      // Borde más intenso para cabecera, pie y Period Summary
     text: '#374151',        
     textLight: '#9ca3af'    
   };
