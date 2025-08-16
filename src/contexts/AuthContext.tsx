@@ -93,17 +93,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isOperationsManager = userRole?.role === 'operations_manager';
   const isDispatcher = userRole?.role === 'dispatcher';
   const isDriver = userRole?.role === 'driver';
-  
-  // Debug logging for role checks
-  console.log('🎭 Role Debug - Current userRole:', userRole);
-  console.log('🎭 Role Debug - Is Company Owner?', isCompanyOwner);
-  console.log('🎭 Role Debug - Current role string:', currentRole);
-  console.log('🎭 Role Debug - Available roles:', userRoles?.map(r => r.role));
 
   const fetchUserRoles = useCallback(async (userId: string) => {
     try {
       console.log('🔍 Fetching roles for user:', userId);
-      console.log('🔍 Current session user ID from auth:', userId);
       
       const { data: roles, error } = await supabase
         .from('user_company_roles')
@@ -111,24 +104,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('user_id', userId)
         .eq('is_active', true);
 
-      console.log('📋 Raw roles data:', { roles, error });
-      console.log('📋 Roles count from DB:', (roles || []).length);
-      console.log('📋 User ID used in query:', userId);
-      console.log('📋 Error details:', error);
+      console.log('📋 Raw roles query result:', { roles, error, userId });
 
       if (error) {
         console.error('❌ Error fetching user roles:', error);
         console.error('❌ Error code:', error.code);
         console.error('❌ Error message:', error.message);
-        console.error('❌ Error details:', error.details);
         
-        // If this is an auth error, clean up and sign out
+        // If this is an auth/RLS error, try to sign out gracefully
         if (error.message?.includes('refresh token') || 
             error.message?.includes('JWT') || 
             error.message?.includes('Invalid') ||
             error.code === 'PGRST116' ||
             error.code === '42501') {
-          console.log('🚨 Auth/RLS error detected in fetchUserRoles, cleaning up');
+          console.log('🚨 Auth/RLS error detected, signing out...');
           enhancedCleanupAuthState();
           window.location.href = '/auth';
           return [];
@@ -137,12 +126,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return [];
       }
 
-      console.log('📋 User roles found:', roles);
-      console.log('📋 Company owner found?', roles?.some(r => r.role === 'company_owner'));
-      console.log('📋 All role types found:', roles?.map(r => r.role));
+      console.log('✅ Roles fetched successfully:', roles);
       return roles || [];
     } catch (error) {
-      console.error('Error in fetchUserRoles:', error);
+      console.error('💥 Exception in fetchUserRoles:', error);
       return [];
     }
   }, []);
