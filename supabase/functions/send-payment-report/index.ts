@@ -81,6 +81,7 @@ Deno.serve(async (req) => {
       .single();
 
     if (calcError || !calculation) {
+      console.error('Calculation error:', calcError);
       throw new Error('Payment period calculation not found');
     }
 
@@ -99,9 +100,13 @@ Deno.serve(async (req) => {
       reportUrl: `${Deno.env.get('SITE_URL')}/payment-reports?period=${period_id}`
     };
 
+    console.log('Generating email with data:', emailData);
+
     const html = await renderAsync(
       React.createElement(PaymentReportEmail, emailData)
     );
+
+    console.log('Email HTML generated successfully');
 
     // Enviar email - TEMPORAL: enviando a email de prueba
     const { error: emailError } = await resend.emails.send({
@@ -112,18 +117,11 @@ Deno.serve(async (req) => {
     });
 
     if (emailError) {
+      console.error('Resend error:', emailError);
       throw emailError;
     }
 
-    // Registrar el envío (opcional)
-    // await supabase
-    //   .from('payment_report_logs')
-    //   .insert({
-    //     driver_user_id,
-    //     period_id,
-    //     sent_at: new Date().toISOString(),
-    //     sent_to: profile.email
-    //   });
+    console.log('Email sent successfully');
 
     return new Response(JSON.stringify({ 
       success: true, 
