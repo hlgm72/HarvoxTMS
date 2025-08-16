@@ -956,19 +956,26 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     rightY += 8;
   });
 
-  // Usar addRoundedBox para Net Pay destacado
-  addRoundedBox(rightColumnX, rightY, 85, 10, colors.lightBlue, 2, colors.primary);
+  // Usar mismo estilo que la sección Completed Loads (fondo azul #003366 con texto blanco)
+  const netPayRgb = hexToRgb('#003366');
+  doc.setFillColor(netPayRgb[0], netPayRgb[1], netPayRgb[2]);
+  doc.roundedRect(rightColumnX, rightY, 85, 10, 2, 2, 'F');
+  
+  // Agregar borde fino con el mismo color
+  doc.setDrawColor(netPayRgb[0], netPayRgb[1], netPayRgb[2]);
+  doc.setLineWidth(0.2);
+  doc.roundedRect(rightColumnX, rightY, 85, 10, 2, 2, 'S');
   
   addText('Net Pay', rightColumnX + 2, rightY + 6, {
     fontSize: 12,
     fontStyle: 'bold',
-    color: colors.primary
+    color: '#ffffff' // Texto blanco para contraste con fondo azul
   });
   
   addText(formatCurrency(data.period.net_payment), rightColumnX + 78, rightY + 6, {
     fontSize: 12,
     fontStyle: 'bold',
-    color: colors.primary,
+    color: '#ffffff', // Texto blanco para contraste con fondo azul
     align: 'right'
   });
 
