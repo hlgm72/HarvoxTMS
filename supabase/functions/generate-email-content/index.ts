@@ -26,7 +26,13 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Processing email content generation request...')
     const data: EmailContentRequest = await req.json();
+    console.log('Request data:', JSON.stringify(data, null, 2))
+
+    if (!openAIApiKey) {
+      throw new Error('OpenAI API key not configured');
+    }
 
     const prompt = `Generate a professional, well-formatted HTML email for a truck driver payment report with the following details:
 
@@ -53,6 +59,7 @@ Requirements:
 
 The email should feel premium and professional, representing a modern fleet management company.`;
 
+    console.log('Calling OpenAI API...')
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -64,7 +71,7 @@ The email should feel premium and professional, representing a modern fleet mana
         messages: [
           { 
             role: 'system', 
-            content: 'You are an expert email designer who creates professional, visually appealing HTML emails for business communications. Always include complete HTML structure with inline CSS for maximum compatibility.' 
+            content: 'You are an expert email designer who creates professional, visually appealing HTML emails for business communications. Always include complete HTML structure with inline CSS for maximum compatibility. Respond ONLY with the HTML code, no additional text or explanation.' 
           },
           { role: 'user', content: prompt }
         ],
@@ -72,12 +79,26 @@ The email should feel premium and professional, representing a modern fleet mana
       }),
     });
 
+    console.log('OpenAI API response status:', response.status)
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
+      const errorText = await response.text()
+      console.error('OpenAI API error response:', errorText)
+      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
     }
 
     const apiData = await response.json();
+    console.log('OpenAI API response received, choices length:', apiData.choices?.length || 0)
+    
+    if (!apiData.choices || apiData.choices.length === 0) {
+      throw new Error('No choices returned from OpenAI API');
+    }
+    
     const generatedHTML = apiData.choices[0].message.content;
+    console.log('Generated HTML length:', generatedHTML?.length || 0)
+    
+    if (!generatedHTML || generatedHTML.trim().length === 0) {
+      throw new Error('Empty HTML content generated');
+    }
 
     return new Response(JSON.stringify({ html: generatedHTML }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
