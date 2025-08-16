@@ -40,7 +40,7 @@ interface CompanyFinancial extends CompanyPublic {
 
 /**
  * Hook to securely access company data based on user role
- * Automatically chooses appropriate view and data level
+ * Uses proper field-level security to prevent data theft
  */
 export const useSecureCompanyData = (companyId?: string, requireFinancialAccess = false) => {
   const { selectedCompany, loading: roleLoading } = useUserCompanies();
@@ -76,7 +76,7 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
           return data;
         }
       } else {
-        // Use main companies table for basic data
+        // Use main companies table for basic data (non-sensitive fields only)
         if (companyId) {
           const { data, error } = await supabase
             .from('companies')
@@ -89,6 +89,16 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
             .single();
 
           if (error) throw error;
+          
+          // Log basic company data access for security audit
+          if (data) {
+            supabase.rpc('log_company_data_access', {
+              company_id_param: data.id,
+              access_type_param: 'basic_company_info',
+              action_param: 'view'
+            });
+          }
+          
           return data;
         } else {
           const { data, error } = await supabase
