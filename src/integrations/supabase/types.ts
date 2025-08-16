@@ -3070,6 +3070,10 @@ export type Database = {
         Args: { user_id_param: string }
         Returns: Json
       }
+      check_data_access_permissions: {
+        Args: { operation?: string; table_name: string }
+        Returns: boolean
+      }
       check_is_superadmin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
