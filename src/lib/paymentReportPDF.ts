@@ -808,10 +808,14 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     currentY += 4;
   }
 
-  // Verificar si necesitamos una nueva página antes del Summary
-  if (currentY > pageHeight - footerSpace) {
+  // Calcular el espacio necesario para toda la sección de dos columnas
+  const twoColumnSectionHeight = 15 + 12 + 60 + 20; // Espaciado inicial + títulos + contenido + margen extra
+  
+  // Verificar si toda la sección de dos columnas cabe en la página actual
+  if (currentY + twoColumnSectionHeight > pageHeight - footerSpace) {
     doc.addPage();
-    currentY = margin;
+    await addPageHeader();
+    currentY += 5; // Agregar espaciado consistente con otras páginas
   }
 
   currentY += 15;
