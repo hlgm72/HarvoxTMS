@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -574,6 +574,13 @@ export function PaymentReportDialog({
                           )}
                         </div>
                       )}
+                      
+                      {/* Debug: Force show percentages for testing */}
+                      <div className="flex flex-wrap gap-2 mt-1 p-2 bg-gray-100 rounded text-xs">
+                        <span>Debug - Despacho: {load.dispatching_percentage || 'null'}</span>
+                        <span>Factoring: {load.factoring_percentage || 'null'}</span>
+                        <span>Leasing: {load.leasing_percentage || 'null'}</span>
+                      </div>
                     </div>
                   ))}
                 </div>
