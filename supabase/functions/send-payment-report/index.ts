@@ -90,10 +90,10 @@ Deno.serve(async (req) => {
       React.createElement(PaymentReportEmail, emailData)
     );
 
-    // Enviar email
+    // Enviar email - TEMPORAL: enviando a email de prueba
     const { error: emailError } = await resend.emails.send({
       from: 'Reportes de Pago <noreply@tuempresa.com>',
-      to: [profile.email],
+      to: ['hlgm72@gmail.com'], // EMAIL TEMPORAL PARA PRUEBAS
       subject: `Reporte de Pago - ${emailData.periodStart} al ${emailData.periodEnd}`,
       html,
     });
