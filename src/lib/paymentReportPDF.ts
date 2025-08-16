@@ -120,20 +120,20 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     ] : [0, 0, 0];
   };
 
-  // Colores del diseño mejorados
+  // Colores del diseño mejorados - Tonos más suaves y pasteles
   const colors = {
-    primary: '#1e40af',     // Azul principal
-    success: '#16a34a',     // Verde
-    warning: '#ea580c',     // Naranja
-    danger: '#dc2626',      // Rojo
-    lightBlue: '#dbeafe',   
-    lightGreen: '#dcfce7',  
-    lightOrange: '#fed7aa', 
-    lightRed: '#fecaca',    
+    primary: '#3b82f6',     // Azul principal más suave
+    success: '#22c55e',     // Verde más suave
+    warning: '#f59e0b',     // Naranja más suave
+    danger: '#ef4444',      // Rojo más suave
+    lightBlue: '#eff6ff',   // Azul pastel más suave
+    lightGreen: '#f0fdf4',  // Verde pastel más suave
+    lightOrange: '#fef3e2', // Naranja pastel más suave
+    lightRed: '#fef2f2',    // Rojo pastel más suave
     gray: '#6b7280',        
     darkGray: '#1f2937',    
-    lightGray: '#f9fafb',   
-    border: '#e5e7eb',      
+    lightGray: '#fafafa',   // Gris más suave
+    border: '#f1f5f9',      // Borde más suave
     text: '#374151',        
     textLight: '#9ca3af'    
   };
@@ -152,7 +152,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const addBorder = (x: number, y: number, width: number, height: number, color: string = colors.border) => {
     const borderRgb = hexToRgb(color);
     doc.setDrawColor(borderRgb[0], borderRgb[1], borderRgb[2]);
-    doc.setLineWidth(0.5);
+    doc.setLineWidth(0.2); // Línea más fina para bordes más suaves
     doc.rect(x, y, width, height);
   };
 
@@ -162,11 +162,11 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     doc.setFillColor(bgRgb[0], bgRgb[1], bgRgb[2]);
     doc.roundedRect(x, y, width, height, 2, 2, 'F');
     
-    // Borde con color específico o el color de fondo más intenso
-    const border = borderColor || bgColor;
+    // Borde con color específico o más suave
+    const border = borderColor || colors.border;
     const borderRgb = hexToRgb(border);
     doc.setDrawColor(borderRgb[0], borderRgb[1], borderRgb[2]);
-    doc.setLineWidth(0.2);
+    doc.setLineWidth(0.1); // Línea aún más fina para bordes de cajas
     doc.roundedRect(x, y, width, height, 2, 2, 'S');
     
     // Título
@@ -197,7 +197,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     if (borderColor) {
       const borderRgb = hexToRgb(borderColor);
       doc.setDrawColor(borderRgb[0], borderRgb[1], borderRgb[2]);
-      doc.setLineWidth(0.3);
+      doc.setLineWidth(0.1); // Línea más fina para bordes suaves
       doc.roundedRect(x, y, width, height, radius, radius, 'S');
     }
   };
