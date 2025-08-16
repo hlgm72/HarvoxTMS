@@ -249,7 +249,10 @@ export function LoadsManager({ className }: LoadsManagerProps) {
                                 </Badge>
                               </div>
                               <p className="font-medium text-sm">
-                                {stop.company_name || `${stop.city}, ${stop.state}`}
+                                {stop.company_name && (
+                                  <span className="block">{stop.company_name}</span>
+                                )}
+                                <span className="text-muted-foreground">{stop.city}, {stop.state}</span>
                               </p>
                               <p className="text-xs text-muted-foreground">
                                 {stop.scheduled_date ? formatDateSafe(stop.scheduled_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
