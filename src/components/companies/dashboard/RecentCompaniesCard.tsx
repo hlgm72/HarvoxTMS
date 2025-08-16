@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Company } from "@/types/company";
 import { PlanBadge } from "../PlanBadge";
 import { useTranslation } from 'react-i18next';
+import { formatDateOnly } from '@/lib/dateFormatting';
 
 interface RecentCompaniesCardProps {
   companies: Company[];
@@ -24,7 +25,7 @@ export function RecentCompaniesCard({ companies }: RecentCompaniesCardProps) {
                 <div>
                   <div className="font-medium">{company.name}</div>
                   <div className="text-sm text-muted-foreground">
-                    {new Date(company.created_at).toLocaleDateString('es-ES')}
+                    {formatDateOnly(company.created_at)}
                   </div>
                 </div>
               </div>

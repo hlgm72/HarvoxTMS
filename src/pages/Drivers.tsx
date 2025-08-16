@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
 import { useDriverEquipment } from "@/hooks/useDriverEquipment";
-import { getExpiryInfo } from '@/lib/dateFormatting';
+import { getExpiryInfo, formatDateOnly } from '@/lib/dateFormatting';
 import { useState, useCallback } from "react";
 import { InviteDriverDialog } from "@/components/drivers/InviteDriverDialog";
 import { EquipmentAssignmentDialog } from "@/components/equipment/EquipmentAssignmentDialog";
