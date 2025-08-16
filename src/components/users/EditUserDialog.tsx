@@ -308,20 +308,91 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
             <div className="space-y-2">
               <Label>Roles Actuales</Label>
               <div className="flex flex-wrap gap-2">
-                {userRoles.map((role) => (
-                  <Badge key={role} variant="secondary" className="flex items-center gap-2">
-                    {getRoleLabel(role)}
-                    {userRoles.length > 1 && (
-                      <button
-                        onClick={() => handleRemoveRole(role)}
-                        disabled={loading}
-                        className="ml-1 text-xs hover:text-destructive"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    )}
-                  </Badge>
-                ))}
+                {userRoles.map((role) => {
+                  const getRoleBadgeWithColors = (role: string) => {
+                    const roleConfig: Record<string, { label: string; variant: string; className: string }> = {
+                      'superadmin': { 
+                        label: '🔧 Super Admin', 
+                        variant: 'default',
+                        className: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-700'
+                      },
+                      'company_owner': { 
+                        label: '👑 Company Owner', 
+                        variant: 'default',
+                        className: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700'
+                      },
+                      'company_admin': { 
+                        label: '👨‍💼 Company Admin', 
+                        variant: 'default',
+                        className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
+                      },
+                      'operations_manager': { 
+                        label: '👨‍💼 Operations Manager', 
+                        variant: 'default',
+                        className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
+                      },
+                      'general_manager': { 
+                        label: '👨‍💼 General Manager', 
+                        variant: 'default',
+                        className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
+                      },
+                      'safety_manager': { 
+                        label: '⚠️ Safety Manager', 
+                        variant: 'default',
+                        className: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-700'
+                      },
+                      'senior_dispatcher': { 
+                        label: '📋 Senior Dispatcher', 
+                        variant: 'default',
+                        className: 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-700'
+                      },
+                      'dispatcher': { 
+                        label: '📋 Dispatcher', 
+                        variant: 'default',
+                        className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
+                      },
+                      'driver': { 
+                        label: '🚛 Driver', 
+                        variant: 'default',
+                        className: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-700'
+                      },
+                      'multi_company_dispatcher': { 
+                        label: '🏢 Multi-Company Dispatcher', 
+                        variant: 'default',
+                        className: 'bg-cyan-100 text-cyan-800 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-300 dark:border-cyan-700'
+                      },
+                    };
+
+                    const config = roleConfig[role] || { 
+                      label: role, 
+                      variant: 'outline',
+                      className: 'bg-gray-50 text-gray-600 border-gray-300'
+                    };
+
+                    return config;
+                  };
+
+                  const roleConfig = getRoleBadgeWithColors(role);
+                  
+                  return (
+                    <Badge 
+                      key={role} 
+                      variant={roleConfig.variant as any} 
+                      className={`flex items-center gap-2 ${roleConfig.className}`}
+                    >
+                      {roleConfig.label}
+                      {userRoles.length > 1 && (
+                        <button
+                          onClick={() => handleRemoveRole(role)}
+                          disabled={loading}
+                          className="ml-1 text-xs hover:text-destructive"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
+                    </Badge>
+                  );
+                })}
                 {userRoles.length === 0 && (
                   <p className="text-sm text-muted-foreground">Sin roles asignados</p>
                 )}
