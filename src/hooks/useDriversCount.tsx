@@ -14,41 +14,51 @@ export const useDriversCount = () => {
     return ['drivers-count', user?.id, userCompany?.company_id];
   }, [user?.id, userCompany?.company_id]);
 
-  // Configurar escucha en tiempo real
+  // Configurar escucha en tiempo real - solo para cambios críticos y con debouncing
   useEffect(() => {
     if (!userCompany?.company_id) return;
 
+    let debounceTimeout: NodeJS.Timeout;
+    
+    const debouncedInvalidate = () => {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey });
+      }, 2000); // Esperar 2 segundos antes de invalidar
+    };
+
     const channel = supabase
-      .channel('drivers-count-updates')
+      .channel(`drivers-count-${userCompany.company_id}`)
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'user_company_roles',
-          filter: `company_id=eq.${userCompany.company_id}`
+          filter: `company_id=eq.${userCompany.company_id},role=eq.driver`
         },
         () => {
-          console.log('🔄 Roles actualizados, invalidando contador de conductores');
-          queryClient.invalidateQueries({ queryKey });
+          console.log('🔄 Driver role added, invalidando contador de conductores');
+          debouncedInvalidate();
         }
       )
       .on(
         'postgres_changes',
         {
-          event: '*',
-          schema: 'public', 
-          table: 'user_invitations',
-          filter: `company_id=eq.${userCompany.company_id}`
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'user_company_roles',
+          filter: `company_id=eq.${userCompany.company_id},role=eq.driver`
         },
         () => {
-          console.log('🔄 Invitaciones actualizadas, invalidando contador de conductores');
-          queryClient.invalidateQueries({ queryKey });
+          console.log('🔄 Driver role updated, invalidando contador de conductores');
+          debouncedInvalidate();
         }
       )
       .subscribe();
 
     return () => {
+      clearTimeout(debounceTimeout);
       supabase.removeChannel(channel);
     };
   }, [userCompany?.company_id, queryClient, queryKey]);

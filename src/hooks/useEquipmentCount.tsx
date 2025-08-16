@@ -55,24 +55,49 @@ export const useEquipmentCount = () => {
     if (user?.id) {
       fetchEquipmentCount();
 
-      // Set up real-time subscription for company_equipment changes
+      // Only listen for equipment changes with company filtering and debouncing
+      let debounceTimeout: NodeJS.Timeout;
+      
+      const debouncedRefresh = () => {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+          fetchEquipmentCount();
+        }, 1500); // Wait 1.5 seconds before refreshing
+      };
+
       const channel = supabase
-        .channel('equipment-count-changes')
+        .channel(`equipment-count-${user.id}`)
         .on(
           'postgres_changes',
           {
-            event: '*', // Listen to all changes (INSERT, UPDATE, DELETE)
+            event: 'INSERT',
             schema: 'public',
             table: 'company_equipment'
           },
-          () => {
-            // Refresh count when there are changes to equipment
-            fetchEquipmentCount();
-          }
+          debouncedRefresh
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'company_equipment'
+          },
+          debouncedRefresh
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: 'DELETE',
+            schema: 'public',
+            table: 'company_equipment'
+          },
+          debouncedRefresh
         )
         .subscribe();
 
       return () => {
+        clearTimeout(debounceTimeout);
         supabase.removeChannel(channel);
       };
     } else {

@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,32 +29,56 @@ export function RealtimeDriverPayments() {
   const { t } = useTranslation('dashboard');
   const [payments, setPayments] = useState<DriverPayment[]>([]);
   const [loading, setLoading] = useState(true);
+  const updateTimeoutRef = useRef<NodeJS.Timeout>();
+
+  // Debounced update function to reduce excessive API calls
+  const debouncedUpdate = useCallback(() => {
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current);
+    }
+    updateTimeoutRef.current = setTimeout(() => {
+      fetchDriverPayments();
+    }, 2000); // Wait 2 seconds before updating
+  }, []);
 
   useEffect(() => {
     if (userRole?.company_id) {
       fetchDriverPayments();
       
-      // Set up real-time subscription
+      // Use a more targeted realtime subscription with less frequent updates
       const channel = supabase
-        .channel('driver_payments_updates')
+        .channel(`driver_payments_${userRole.company_id}`)
         .on(
           'postgres_changes',
           {
-            event: '*',
+            event: 'UPDATE',
             schema: 'public',
-            table: 'company_payment_periods'
+            table: 'driver_period_calculations',
+            // Only listen for payment status changes
+            filter: `payment_status=neq.calculated`
           },
-          () => {
-            fetchDriverPayments();
-          }
+          debouncedUpdate
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'company_payment_periods',
+            filter: `company_id=eq.${userRole.company_id}`
+          },
+          debouncedUpdate
         )
         .subscribe();
 
       return () => {
+        if (updateTimeoutRef.current) {
+          clearTimeout(updateTimeoutRef.current);
+        }
         supabase.removeChannel(channel);
       };
     }
-  }, [userRole?.company_id]);
+  }, [userRole?.company_id, debouncedUpdate]);
 
   const fetchDriverPayments = async () => {
     if (!userRole?.company_id) return;
