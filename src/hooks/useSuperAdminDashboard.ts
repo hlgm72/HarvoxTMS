@@ -60,14 +60,15 @@ export const useSuperAdminDashboard = () => {
   }, []);
 
   // Optimized companies fetching with selective fields
+  // Note: Using companies_financial view for superadmin access to sensitive data
   const fetchCompanies = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('companies')
+        .from('companies_financial')
         .select(`
-          id, name, email, phone, 
+          id, name, 
           owner_name, owner_email, owner_phone, owner_title,
-          plan_type, max_vehicles, max_users, status, 
+          plan_type, max_vehicles, max_users, 
           contract_start_date, created_at
         `)
         .order('created_at', { ascending: false })

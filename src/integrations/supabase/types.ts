@@ -268,10 +268,38 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "company_brokers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_financial"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_brokers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fk_company_clients_company_id"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_company_clients_company_id"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_financial"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_company_clients_company_id"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
             referencedColumns: ["id"]
           },
         ]
@@ -369,6 +397,20 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "company_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_financial"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       company_equipment: {
@@ -459,10 +501,38 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "fk_company_equipment_company"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_financial"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_company_equipment_company"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fk_company_equipment_company_id"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_company_equipment_company_id"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_financial"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_company_equipment_company_id"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
             referencedColumns: ["id"]
           },
         ]
@@ -521,6 +591,20 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "company_financial_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies_financial"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_financial_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       company_payment_periods: {
@@ -568,6 +652,39 @@ export type Database = {
           period_type?: string
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      company_sensitive_data_access_log: {
+        Row: {
+          access_type: string
+          accessed_at: string | null
+          accessed_by: string
+          company_id: string
+          id: string
+          ip_address: unknown | null
+          user_agent: string | null
+          user_role: Database["public"]["Enums"]["user_role"] | null
+        }
+        Insert: {
+          access_type: string
+          accessed_at?: string | null
+          accessed_by: string
+          company_id: string
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+          user_role?: Database["public"]["Enums"]["user_role"] | null
+        }
+        Update: {
+          access_type?: string
+          accessed_at?: string | null
+          accessed_by?: string
+          company_id?: string
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+          user_role?: Database["public"]["Enums"]["user_role"] | null
         }
         Relationships: []
       }
@@ -2285,6 +2402,20 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "payment_methods_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_financial"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_methods_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       payment_reports: {
@@ -2732,10 +2863,38 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "fk_user_company_roles_company_id"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_financial"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_user_company_roles_company_id"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "user_company_roles_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_company_roles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_financial"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_company_roles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
             referencedColumns: ["id"]
           },
         ]
@@ -2806,6 +2965,20 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_invitations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_financial"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_invitations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_onboarding_progress: {
@@ -2843,6 +3016,134 @@ export type Database = {
       }
     }
     Views: {
+      companies_financial: {
+        Row: {
+          contract_start_date: string | null
+          created_at: string | null
+          default_dispatching_percentage: number | null
+          default_factoring_percentage: number | null
+          default_leasing_percentage: number | null
+          default_payment_frequency: string | null
+          dot_number: string | null
+          ein: string | null
+          id: string | null
+          load_assignment_criteria: string | null
+          max_users: number | null
+          max_vehicles: number | null
+          mc_number: string | null
+          name: string | null
+          owner_email: string | null
+          owner_name: string | null
+          owner_phone: string | null
+          owner_title: string | null
+          payment_cycle_start_day: number | null
+          payment_day: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          contract_start_date?: string | null
+          created_at?: string | null
+          default_dispatching_percentage?: number | null
+          default_factoring_percentage?: number | null
+          default_leasing_percentage?: number | null
+          default_payment_frequency?: string | null
+          dot_number?: string | null
+          ein?: string | null
+          id?: string | null
+          load_assignment_criteria?: string | null
+          max_users?: number | null
+          max_vehicles?: number | null
+          mc_number?: string | null
+          name?: string | null
+          owner_email?: string | null
+          owner_name?: string | null
+          owner_phone?: string | null
+          owner_title?: string | null
+          payment_cycle_start_day?: number | null
+          payment_day?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          contract_start_date?: string | null
+          created_at?: string | null
+          default_dispatching_percentage?: number | null
+          default_factoring_percentage?: number | null
+          default_leasing_percentage?: number | null
+          default_payment_frequency?: string | null
+          dot_number?: string | null
+          ein?: string | null
+          id?: string | null
+          load_assignment_criteria?: string | null
+          max_users?: number | null
+          max_vehicles?: number | null
+          mc_number?: string | null
+          name?: string | null
+          owner_email?: string | null
+          owner_name?: string | null
+          owner_phone?: string | null
+          owner_title?: string | null
+          payment_cycle_start_day?: number | null
+          payment_day?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      companies_public: {
+        Row: {
+          city: string | null
+          created_at: string | null
+          email: string | null
+          id: string | null
+          logo_url: string | null
+          name: string | null
+          phone: string | null
+          plan_type: string | null
+          state_id: string | null
+          status: string | null
+          street_address: string | null
+          updated_at: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string | null
+          logo_url?: string | null
+          name?: string | null
+          phone?: string | null
+          plan_type?: string | null
+          state_id?: string | null
+          status?: string | null
+          street_address?: string | null
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          city?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string | null
+          logo_url?: string | null
+          name?: string | null
+          phone?: string | null
+          plan_type?: string | null
+          state_id?: string | null
+          status?: string | null
+          street_address?: string | null
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "companies_state_id_fkey"
+            columns: ["state_id"]
+            isOneToOne: false
+            referencedRelation: "states"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       equipment_status_summary: {
         Row: {
           annual_inspection_expiry_date: string | null
@@ -2886,10 +3187,38 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "fk_company_equipment_company"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_financial"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_company_equipment_company"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fk_company_equipment_company_id"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_company_equipment_company_id"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_financial"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_company_equipment_company_id"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
             referencedColumns: ["id"]
           },
         ]
@@ -3024,6 +3353,10 @@ export type Database = {
           | { company_id_param: string; target_date?: string }
           | { payment_day: string; period_end_date: string }
         Returns: string
+      }
+      can_access_company_financial_data: {
+        Args: { company_id_param: string }
+        Returns: boolean
       }
       can_access_load: {
         Args: { load_id_param: string }
@@ -3314,6 +3647,10 @@ export type Database = {
           email: string
           user_id: string
         }[]
+      }
+      get_user_role_in_company: {
+        Args: { company_id_param: string }
+        Returns: Database["public"]["Enums"]["user_role"]
       }
       has_role: {
         Args: {
