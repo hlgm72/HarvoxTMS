@@ -64,21 +64,11 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
           });
         }
         
-        // Use companies table but with explicit field selection for financial data
+        // Use companies_financial_data view for secure access to sensitive data
         if (companyId) {
           const { data, error } = await supabase
-            .from('companies')
-            .select(`
-              id, name, street_address, state_id, zip_code, city, 
-              phone, email, logo_url, status, plan_type, 
-              ein, mc_number, dot_number, owner_name, owner_email, 
-              owner_phone, owner_title, max_vehicles, max_users,
-              contract_start_date, default_payment_frequency, 
-              payment_cycle_start_day, payment_day, 
-              default_factoring_percentage, default_dispatching_percentage, 
-              default_leasing_percentage, load_assignment_criteria,
-              created_at, updated_at
-            `)
+            .from('companies_financial_data')
+            .select('*')
             .eq('id', companyId)
             .single();
 
@@ -86,33 +76,19 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
           return data;
         } else {
           const { data, error } = await supabase
-            .from('companies')
-            .select(`
-              id, name, street_address, state_id, zip_code, city, 
-              phone, email, logo_url, status, plan_type, 
-              ein, mc_number, dot_number, owner_name, owner_email, 
-              owner_phone, owner_title, max_vehicles, max_users,
-              contract_start_date, default_payment_frequency, 
-              payment_cycle_start_day, payment_day, 
-              default_factoring_percentage, default_dispatching_percentage, 
-              default_leasing_percentage, load_assignment_criteria,
-              created_at, updated_at
-            `)
+            .from('companies_financial_data')
+            .select('*')
             .order('created_at', { ascending: false });
 
           if (error) throw error;
           return data;
         }
       } else {
-        // Use main companies table for basic data (non-sensitive fields only)
+        // Use companies_basic_info view for non-sensitive data
         if (companyId) {
           const { data, error } = await supabase
-            .from('companies')
-            .select(`
-              id, name, street_address, state_id, zip_code, city, 
-              phone, email, logo_url, status, plan_type, 
-              created_at, updated_at
-            `)
+            .from('companies_basic_info')
+            .select('*')
             .eq('id', companyId)
             .single();
 
@@ -130,12 +106,8 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
           return data;
         } else {
           const { data, error } = await supabase
-            .from('companies')
-            .select(`
-              id, name, street_address, state_id, zip_code, city, 
-              phone, email, logo_url, status, plan_type, 
-              created_at, updated_at
-            `)
+            .from('companies_basic_info')
+            .select('*')
             .order('created_at', { ascending: false });
 
           if (error) throw error;
@@ -176,18 +148,8 @@ export const useCompanyFinancialData = (companyId?: string) => {
         });
         
         const { data, error } = await supabase
-          .from('companies')
-          .select(`
-            id, name, street_address, state_id, zip_code, city, 
-            phone, email, logo_url, status, plan_type, 
-            ein, mc_number, dot_number, owner_name, owner_email, 
-            owner_phone, owner_title, max_vehicles, max_users,
-            contract_start_date, default_payment_frequency, 
-            payment_cycle_start_day, payment_day, 
-            default_factoring_percentage, default_dispatching_percentage, 
-            default_leasing_percentage, load_assignment_criteria,
-            created_at, updated_at
-          `)
+          .from('companies_financial_data')
+          .select('*')
           .eq('id', companyId)
           .single();
 
@@ -195,18 +157,8 @@ export const useCompanyFinancialData = (companyId?: string) => {
         return data as CompanyFinancial;
       } else {
         const { data, error } = await supabase
-          .from('companies')
-          .select(`
-            id, name, street_address, state_id, zip_code, city, 
-            phone, email, logo_url, status, plan_type, 
-            ein, mc_number, dot_number, owner_name, owner_email, 
-            owner_phone, owner_title, max_vehicles, max_users,
-            contract_start_date, default_payment_frequency, 
-            payment_cycle_start_day, payment_day, 
-            default_factoring_percentage, default_dispatching_percentage, 
-            default_leasing_percentage, load_assignment_criteria,
-            created_at, updated_at
-          `)
+          .from('companies_financial_data')
+          .select('*')
           .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -229,12 +181,8 @@ export const useCompanyPublicData = (companyId?: string) => {
     queryFn: async () => {
       if (companyId) {
         const { data, error } = await supabase
-          .from('companies')
-          .select(`
-            id, name, street_address, state_id, zip_code, city, 
-            phone, email, logo_url, status, plan_type, 
-            created_at, updated_at
-          `)
+          .from('companies_basic_info')
+          .select('*')
           .eq('id', companyId)
           .single();
 
@@ -242,12 +190,8 @@ export const useCompanyPublicData = (companyId?: string) => {
         return data as CompanyPublic;
       } else {
         const { data, error } = await supabase
-          .from('companies')
-          .select(`
-            id, name, street_address, state_id, zip_code, city, 
-            phone, email, logo_url, status, plan_type, 
-            created_at, updated_at
-          `)
+          .from('companies_basic_info')
+          .select('*')
           .order('created_at', { ascending: false });
 
         if (error) throw error;
