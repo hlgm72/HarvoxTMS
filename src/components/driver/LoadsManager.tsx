@@ -291,44 +291,61 @@ export function LoadsManager({ className }: LoadsManagerProps) {
                     {load.stops && load.stops.length > 0 ? (
                       // Show detailed stops if available
                       <div className="space-y-2">
-                        {load.stops.map((stop, index) => (
-                          <div key={stop.id} className="flex items-start gap-3">
-                            <div className="flex flex-col items-center">
-                              <div className={`w-3 h-3 rounded-full ${
-                                stop.stop_type === 'pickup' ? 'bg-green-500' : 'bg-red-500'
-                              }`}></div>
-                              {index < load.stops!.length - 1 && (
-                                <div className="w-0.5 h-6 bg-border"></div>
+                        {load.stops.map((stop, index) => {
+                          // Encontrar todas las entregas para determinar la última
+                          const deliveryStops = load.stops!.filter(s => s.stop_type === 'delivery');
+                          const lastDeliveryIndex = deliveryStops.length > 0 ? 
+                            load.stops!.lastIndexOf(deliveryStops[deliveryStops.length - 1]) : -1;
+                          const isLastDelivery = stop.stop_type === 'delivery' && index === lastDeliveryIndex;
+                          
+                          let stopColor = '';
+                          if (stop.stop_type === 'pickup') {
+                            stopColor = 'bg-green-500'; // Verde para recogidas
+                          } else if (stop.stop_type === 'delivery') {
+                            if (load.stops!.length > 2 && !isLastDelivery) {
+                              stopColor = 'bg-blue-500'; // Azul para entregas intermedias
+                            } else {
+                              stopColor = 'bg-red-500'; // Rojo para la última entrega o cargas simples
+                            }
+                          }
+                          
+                          return (
+                            <div key={stop.id} className="flex items-start gap-3">
+                              <div className="flex flex-col items-center">
+                                <div className={`w-3 h-3 rounded-full ${stopColor}`}></div>
+                                {index < load.stops!.length - 1 && (
+                                  <div className="w-0.5 h-6 bg-border"></div>
+                                )}
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <Badge variant="outline" className="text-xs">
+                                    {stop.stop_type === 'pickup' ? 'Recogida' : 'Entrega'} #{stop.stop_number}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground">
+                                    {stop.scheduled_date ? formatDateSafe(stop.scheduled_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
+                                    {stop.scheduled_time && ` - ${stop.scheduled_time}`}
+                                  </span>
+                                </div>
+                                <p className="font-medium text-sm">
+                                  {stop.company_name}
+                                </p>
+                                <button
+                                  onClick={() => handleNavigateToStop(stop)}
+                                  disabled={isNavigating}
+                                  className="text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer text-left underline decoration-dashed underline-offset-2 hover:decoration-solid"
+                                >
+                                  {[stop.address, stop.city, stop.state, stop.zip_code].filter(Boolean).join(', ')}
+                                </button>
+                              </div>
+                              {index === 0 && (
+                                <div className="text-right">
+                                  <p className="font-bold text-green-600">${load.total_amount.toLocaleString()}</p>
+                                </div>
                               )}
                             </div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Badge variant="outline" className="text-xs">
-                                  {stop.stop_type === 'pickup' ? 'Recogida' : 'Entrega'} #{stop.stop_number}
-                                </Badge>
-                                <span className="text-xs text-muted-foreground">
-                                  {stop.scheduled_date ? formatDateSafe(stop.scheduled_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
-                                  {stop.scheduled_time && ` - ${stop.scheduled_time}`}
-                                </span>
-                              </div>
-                              <p className="font-medium text-sm">
-                                {stop.company_name}
-                              </p>
-                              <button
-                                onClick={() => handleNavigateToStop(stop)}
-                                disabled={isNavigating}
-                                className="text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer text-left underline decoration-dashed underline-offset-2 hover:decoration-solid"
-                              >
-                                {[stop.address, stop.city, stop.state, stop.zip_code].filter(Boolean).join(', ')}
-                              </button>
-                            </div>
-                            {index === 0 && (
-                              <div className="text-right">
-                                <p className="font-bold text-green-600">${load.total_amount.toLocaleString()}</p>
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     ) : (
                       // Fallback to simple origin/destination view
