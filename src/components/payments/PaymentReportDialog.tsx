@@ -559,28 +559,21 @@ export function PaymentReportDialog({
                         <div className="flex flex-wrap gap-2 mt-1">
                           {load.dispatching_percentage > 0 && (
                             <Badge variant="outline" className="text-xs">
-                              Despacho: {load.dispatching_percentage}%
+                              Despacho: {load.dispatching_percentage}% (${formatCurrency((load.total_amount * load.dispatching_percentage) / 100)})
                             </Badge>
                           )}
                           {load.factoring_percentage > 0 && (
                             <Badge variant="outline" className="text-xs">
-                              Factoring: {load.factoring_percentage}%
+                              Factoring: {load.factoring_percentage}% (${formatCurrency((load.total_amount * load.factoring_percentage) / 100)})
                             </Badge>
                           )}
                           {load.leasing_percentage > 0 && (
                             <Badge variant="outline" className="text-xs">
-                              Leasing: {load.leasing_percentage}%
+                              Leasing: {load.leasing_percentage}% (${formatCurrency((load.total_amount * load.leasing_percentage) / 100)})
                             </Badge>
                           )}
                         </div>
                       )}
-                      
-                      {/* Debug: Force show percentages for testing */}
-                      <div className="flex flex-wrap gap-2 mt-1 p-2 bg-gray-100 rounded text-xs">
-                        <span>Debug - Despacho: {load.dispatching_percentage || 'null'}</span>
-                        <span>Factoring: {load.factoring_percentage || 'null'}</span>
-                        <span>Leasing: {load.leasing_percentage || 'null'}</span>
-                      </div>
                     </div>
                   ))}
                 </div>
