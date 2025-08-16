@@ -21,9 +21,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLoads } from "@/hooks/useLoads";
 import { useUpdateLoadStatus } from "@/hooks/useUpdateLoadStatus";
 import { useFleetNotifications } from "@/components/notifications";
-import { LoadActionButton } from './LoadActionButton';
+import { StatusUpdateModal } from './StatusUpdateModal';
 import { formatDateSafe } from '@/lib/dateFormatting';
 import { useNavigationMaps } from '@/hooks/useNavigationMaps';
+import { Loader2 } from 'lucide-react';
 
 interface Load {
   id: string;
@@ -61,6 +62,21 @@ export function LoadsManager({ className }: LoadsManagerProps) {
   const { showSuccess } = useFleetNotifications();
   const updateLoadStatus = useUpdateLoadStatus();
   const { openInMaps, isNavigating } = useNavigationMaps();
+  const [statusModal, setStatusModal] = useState<{
+    isOpen: boolean;
+    loadId: string;
+    newStatus: string;
+    actionText: string;
+    stopId?: string;
+    stopInfo?: any;
+  }>({
+    isOpen: false,
+    loadId: '',
+    newStatus: '',
+    actionText: '',
+    stopId: undefined,
+    stopInfo: undefined
+  });
 
   const calculateProgress = (status: string): number => {
     switch (status) {
@@ -142,10 +158,30 @@ export function LoadsManager({ className }: LoadsManagerProps) {
     }
   };
 
-  const handleUpdateStatus = async (loadId: string, newStatus: string) => {
+  // Función para abrir el modal de actualización de estado
+  const openStatusModal = (loadId: string, newStatus: string, actionText: string, stopId?: string, stopInfo?: any) => {
+    setStatusModal({
+      isOpen: true,
+      loadId,
+      newStatus,
+      actionText,
+      stopId,
+      stopInfo
+    });
+  };
+
+  // Función para confirmar la actualización de estado con ETA y notas
+  const handleStatusConfirm = async (eta: Date | null, notes: string) => {
     try {
-      await updateLoadStatus.mutateAsync({ loadId, newStatus });
+      await updateLoadStatus.mutateAsync({
+        loadId: statusModal.loadId,
+        newStatus: statusModal.newStatus,
+        eta,
+        notes,
+        stopId: statusModal.stopId
+      });
       await refetch();
+      setStatusModal({ ...statusModal, isOpen: false });
     } catch (error) {
       console.error('Error updating status:', error);
     }
@@ -163,6 +199,17 @@ export function LoadsManager({ className }: LoadsManagerProps) {
     return statusFlow[currentStatus as keyof typeof statusFlow] || null;
   };
 
+  const getNextActionText = (currentStatus: string): string => {
+    switch (currentStatus) {
+      case 'assigned': return 'Ir a Parada 1 (Recogida)';
+      case 'en_route_pickup': return 'Llegar a Recogida';
+      case 'at_pickup': return 'Marcar como Cargado';
+      case 'loaded': return 'Ir a Entrega';
+      case 'en_route_delivery': return 'Llegar a Entrega';
+      case 'at_delivery': return 'Marcar como Entregado';
+      default: return 'Actualizar Estado';
+    }
+  };
   
   const handleNavigateToStop = async (stop: any) => {
     await openInMaps({
@@ -325,7 +372,51 @@ export function LoadsManager({ className }: LoadsManagerProps) {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    <LoadActionButton load={load} onUpdateStatus={handleUpdateStatus} isPending={updateLoadStatus.isPending} />
+                    {(() => {
+                      const nextStatus = getNextStatus(load.status);
+                      const nextActionText = getNextActionText(load.status);
+                      
+                      if (!nextStatus) return null;
+                      
+                      // Encontrar la parada actual según el estado
+                      const currentStop = load.stops?.find(stop => {
+                        if (load.status === 'assigned' || load.status === 'en_route_pickup') {
+                          return stop.stop_type === 'pickup';
+                        } else if (load.status === 'at_pickup' || load.status === 'loaded' || load.status === 'en_route_delivery') {
+                          return stop.stop_type === 'delivery';
+                        }
+                        return false;
+                      });
+                      
+                      return (
+                        <Button
+                          onClick={() => {
+                            openStatusModal(
+                              load.id, 
+                              nextStatus, 
+                              nextActionText,
+                              currentStop?.id,
+                              currentStop
+                            );
+                          }}
+                          disabled={updateLoadStatus.isPending}
+                          size="sm"
+                          className="flex-1"
+                        >
+                          {updateLoadStatus.isPending ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Actualizando...
+                            </>
+                          ) : (
+                            <>
+                              <MapPin className="mr-2 h-4 w-4" />
+                              {nextActionText}
+                            </>
+                          )}
+                        </Button>
+                      );
+                    })()}
                     <Button size="sm" variant="outline">
                       <Phone className="h-4 w-4" />
                     </Button>
@@ -382,6 +473,16 @@ export function LoadsManager({ className }: LoadsManagerProps) {
           )}
         </TabsContent>
       </Tabs>
+      
+      {/* Modal de actualización de estado con ETA y notas */}
+      <StatusUpdateModal
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal({ ...statusModal, isOpen: false })}
+        onConfirm={handleStatusConfirm}
+        actionText={statusModal.actionText}
+        stopInfo={statusModal.stopInfo}
+        isLoading={updateLoadStatus.isPending}
+      />
     </div>
   );
 }

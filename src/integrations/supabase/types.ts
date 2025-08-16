@@ -1726,6 +1726,8 @@ export type Database = {
           contact_name: string | null
           contact_phone: string | null
           created_at: string
+          driver_notes: string | null
+          estimated_arrival_time: string | null
           id: string
           load_id: string
           reference_number: string | null
@@ -1733,6 +1735,8 @@ export type Database = {
           scheduled_time: string | null
           special_instructions: string | null
           state: string
+          status_updated_at: string | null
+          status_updated_by: string | null
           stop_number: number
           stop_type: string
           updated_at: string
@@ -1747,6 +1751,8 @@ export type Database = {
           contact_name?: string | null
           contact_phone?: string | null
           created_at?: string
+          driver_notes?: string | null
+          estimated_arrival_time?: string | null
           id?: string
           load_id: string
           reference_number?: string | null
@@ -1754,6 +1760,8 @@ export type Database = {
           scheduled_time?: string | null
           special_instructions?: string | null
           state: string
+          status_updated_at?: string | null
+          status_updated_by?: string | null
           stop_number: number
           stop_type: string
           updated_at?: string
@@ -1768,6 +1776,8 @@ export type Database = {
           contact_name?: string | null
           contact_phone?: string | null
           created_at?: string
+          driver_notes?: string | null
+          estimated_arrival_time?: string | null
           id?: string
           load_id?: string
           reference_number?: string | null
@@ -1775,6 +1785,8 @@ export type Database = {
           scheduled_time?: string | null
           special_instructions?: string | null
           state?: string
+          status_updated_at?: string | null
+          status_updated_by?: string | null
           stop_number?: number
           stop_type?: string
           updated_at?: string
