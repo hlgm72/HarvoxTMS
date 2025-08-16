@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PageToolbar } from "@/components/layout/PageToolbar";
-import { Calendar, Download, FileText, Search, Filter, Plus, DollarSign, Clock, Calculator, Banknote, CalendarDays, Timer } from "lucide-react";
+import { Calendar, Download, FileText, Search, Filter, Plus, DollarSign, Clock, Calculator, Banknote, CalendarDays, Timer, BarChart3, Users, Wallet, ClockIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { formatPaymentPeriod, formatDateAuto, formatCurrency } from "@/lib/dateFormatting";
 import { useFleetNotifications } from "@/components/notifications";
@@ -179,25 +179,25 @@ export default function PaymentReports() {
           <StatsCard
             title="Total Reportes"
             value={totalReports}
-            icon="📊"
+            icon={<BarChart3 className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />}
             variant="default"
           />
           <StatsCard
             title="Conductores"
             value={totalDrivers}
-            icon="👥"
+            icon={<Users className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />}
             variant="default"
           />
           <StatsCard
             title="Pago Neto Total"
             value={`$${formatCurrency(totalEarnings)}`}
-            icon="💰"
+            icon={<Wallet className="h-5 w-5 md:h-6 md:w-6 text-green-600" />}
             variant="success"
           />
           <StatsCard
             title="Pendientes"
             value={pendingReports}
-            icon="⏳"
+            icon={<ClockIcon className="h-5 w-5 md:h-6 md:w-6 text-orange-600" />}
             variant={pendingReports > 0 ? "warning" : "default"}
           />
         </div>

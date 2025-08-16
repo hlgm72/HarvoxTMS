@@ -1,10 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { ReactNode } from "react";
 
 interface StatsCardProps {
   title: string;
   value: string | number;
-  icon: string;
+  icon: ReactNode;
   trend?: {
     value: number;
     isPositive: boolean;
@@ -30,7 +31,7 @@ export function StatsCard({
         <CardTitle className="text-xs md:text-sm font-body font-medium text-muted-foreground leading-tight">
           {title}
         </CardTitle>
-        <span className="text-lg md:text-2xl flex-shrink-0">{icon}</span>
+        <div className="flex-shrink-0">{icon}</div>
       </CardHeader>
       <CardContent className="space-y-1">
         <div className="text-xl md:text-2xl font-heading font-bold text-foreground">
