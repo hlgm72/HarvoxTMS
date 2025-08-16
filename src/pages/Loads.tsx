@@ -90,8 +90,12 @@ export default function Loads() {
   
   // Crear el subtitle dinámico con las estadísticas
   const getSubtitle = () => {
+    console.log('🎯 getSubtitle called - statsLoading:', statsLoading, 'loadsStats:', loadsStats);
+    
     if (statsLoading || !loadsStats) {
-      return `Cargando estadísticas...${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`;
+      const loadingText = `Cargando estadísticas...${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`;
+      console.log('📝 Showing loading text:', loadingText);
+      return loadingText;
     }
     
     const stats = [
@@ -100,7 +104,11 @@ export default function Loads() {
       `${loadsStats.pendingAssignment} pendientes asignación`
     ].join(' • ');
     
-    return `${stats}${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`;
+    const finalSubtitle = `${stats}${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`;
+    console.log('📝 Final subtitle:', finalSubtitle);
+    console.log('📊 Stats used:', loadsStats);
+    
+    return finalSubtitle;
   };
   
   // console.log('🎯 Final values:', { periodDateRange, periodDescription, periodFilter });
