@@ -25,7 +25,7 @@ import {
   FileText,
   Eye
 } from "lucide-react";
-import { formatPaymentPeriod, formatDateOnly, formatCurrency } from "@/lib/dateFormatting";
+import { formatPaymentPeriod, formatDateAuto, formatCurrency } from "@/lib/dateFormatting";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
 import { useFleetNotifications } from "@/components/notifications";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
@@ -448,7 +448,7 @@ export function PaymentReportDialog({
               )}
               {calculation.company_payment_periods.payment_date && (
                 <span className="block text-primary font-medium mt-1">
-                  Fecha de Pago: {formatDateOnly(calculation.company_payment_periods.payment_date)}
+                  Fecha de Pago: {formatDateAuto(calculation.company_payment_periods.payment_date)}
                 </span>
               )}
             </DialogDescription>
@@ -537,7 +537,7 @@ export function PaymentReportDialog({
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-2 mb-2">
                         <div className="space-y-1 min-w-0 flex-1">
                           <div className="font-medium text-sm sm:text-base">
-                            {load.load_number} • {formatDateOnly(load.pickup_date)} • {(() => {
+                            {load.load_number} • {formatDateAuto(load.pickup_date)} • {(() => {
                               const clientData = clients.find(c => c.id === load.client_id);
                               let clientName = 'Sin cliente';
                               
@@ -609,7 +609,7 @@ export function PaymentReportDialog({
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="font-medium truncate text-sm sm:text-base">{expense.station_name}</div>
                         <div className="text-xs sm:text-sm text-muted-foreground">
-                          {expense.gallons_purchased} gal • {formatDateOnly(expense.transaction_date)}
+                          {expense.gallons_purchased} gal • {formatDateAuto(expense.transaction_date)}
                         </div>
                       </div>
                       <div className="font-semibold text-warning sm:text-right shrink-0 text-sm sm:text-base">
@@ -638,7 +638,7 @@ export function PaymentReportDialog({
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="font-medium truncate text-sm sm:text-base">{deduction.description}</div>
                         <div className="text-xs sm:text-sm text-muted-foreground">
-                          {formatDateOnly(deduction.expense_date)} • {deduction.status === 'planned' ? 'Planificado' : 'Aplicado'}
+                          {formatDateAuto(deduction.expense_date)} • {deduction.status === 'planned' ? 'Planificado' : 'Aplicado'}
                         </div>
                       </div>
                       <div className="font-semibold text-destructive sm:text-right shrink-0 text-sm sm:text-base">
