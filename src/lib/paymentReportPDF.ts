@@ -511,7 +511,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       // Primero mostrar el monto total (alineado a la derecha)
       addText(formatCurrency(load.total_amount), pageWidth - margin, currentY, {
-        fontSize: 9,
+        fontSize: 11,
         fontStyle: 'bold',
         color: '#003366',
         align: 'right'
@@ -527,7 +527,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         const amountWidth = doc.getTextWidth(formatCurrency(load.total_amount));
         
         addText(percentageText, pageWidth - margin - amountWidth - 3, currentY, {
-          fontSize: 6, // Fuente pequeña para porcentajes
+          fontSize: 8, // Fuente pequeña para porcentajes
           fontStyle: 'normal',
           color: '#ff7a00', // Color naranja para los porcentajes
           align: 'right'
