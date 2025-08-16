@@ -91,32 +91,14 @@ export default function PaymentReports() {
   const handleGenerateReport = async (calculation: any) => {
     setIsGenerating(true);
     try {
-      const driver = drivers.find(d => d.user_id === calculation.driver_user_id);
-      const reportData = {
-        driver: {
-          name: `${driver?.first_name || ''} ${driver?.last_name || ''}`,
-          user_id: calculation.driver_user_id
-        },
-        period: {
-          start_date: calculation.company_payment_periods.period_start_date,
-          end_date: calculation.company_payment_periods.period_end_date,
-          gross_earnings: calculation.gross_earnings,
-          fuel_expenses: calculation.fuel_expenses,
-          total_deductions: calculation.total_deductions,
-          other_income: calculation.other_income,
-          net_payment: calculateNetPayment(calculation),
-          payment_date: calculation.company_payment_periods.payment_date
-        },
-        company: {
-          name: 'Tu Empresa'
-        }
-      };
-
-      await generatePaymentReportPDF(reportData);
-      showSuccess("Reporte Generado", "El reporte PDF ha sido generado y descargado exitosamente");
+      // Abrir el diálogo de reporte que contiene todos los datos completos
+      setSelectedCalculationId(calculation.id);
+      setReportDialogOpen(true);
+      
+      showSuccess("Diálogo Abierto", "Usa 'Descargar PDF' desde el diálogo para obtener el reporte completo");
     } catch (error: any) {
-      console.error('Error generating report:', error);
-      showError("Error", "No se pudo generar el reporte PDF");
+      console.error('Error opening report dialog:', error);
+      showError("Error", "No se pudo abrir el diálogo de reporte");
     } finally {
       setIsGenerating(false);
     }
