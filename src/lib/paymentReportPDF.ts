@@ -77,7 +77,7 @@ interface PaymentReportData {
   }>;
 }
 
-export async function generatePaymentReportPDF(data: PaymentReportData, isPreview: boolean = false) {
+export async function generatePaymentReportPDF(data: PaymentReportData, isPreview: boolean = false): Promise<jsPDF | void> {
   console.log('🔍 PDF Generation - Data received:', data);
   console.log('🔍 PDF Generation - Deductions data:', data.deductions);
   console.log('🔍 PDF Generation - Deductions length:', data.deductions?.length || 0);
@@ -1029,6 +1029,9 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       console.warn('Popup bloqueado. Intentando download fallback.');
       doc.save(fileName);
     }
+  } else if (isPreview === false) {
+    // Si isPreview es explícitamente false, retornar el documento
+    return doc;
   } else {
     // Descargar PDF con nombre personalizado
     doc.save(fileName);
