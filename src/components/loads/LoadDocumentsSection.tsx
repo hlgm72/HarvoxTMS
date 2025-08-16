@@ -231,7 +231,8 @@ export function LoadDocumentsSection({
         document_type: documentType,
         file_name: file.name,
         file_size: file.size,
-        file_url: publicUrl
+        file_url: publicUrl,
+        uploaded_by: user.id
       };
 
       let result;
