@@ -64,21 +64,16 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
           });
         }
         
-        // Use companies_financial_data view for secure access to sensitive data
+        // Use secure function to get financial data with proper access control
         if (companyId) {
-          const { data, error } = await supabase
-            .from('companies_financial_data')
-            .select('*')
-            .eq('id', companyId)
-            .single();
+          const { data, error } = await supabase.rpc('get_company_financial_data', {
+            company_id_param: companyId
+          });
 
           if (error) throw error;
-          return data;
+          return data?.[0] || null;
         } else {
-          const { data, error } = await supabase
-            .from('companies_financial_data')
-            .select('*')
-            .order('created_at', { ascending: false });
+          const { data, error } = await supabase.rpc('get_company_financial_data');
 
           if (error) throw error;
           return data;
@@ -147,19 +142,14 @@ export const useCompanyFinancialData = (companyId?: string) => {
           access_type_param: 'financial_data_direct'
         });
         
-        const { data, error } = await supabase
-          .from('companies_financial_data')
-          .select('*')
-          .eq('id', companyId)
-          .single();
+        const { data, error } = await supabase.rpc('get_company_financial_data', {
+          company_id_param: companyId
+        });
 
         if (error) throw error;
-        return data as CompanyFinancial;
+        return (data?.[0] || null) as CompanyFinancial;
       } else {
-        const { data, error } = await supabase
-          .from('companies_financial_data')
-          .select('*')
-          .order('created_at', { ascending: false });
+        const { data, error } = await supabase.rpc('get_company_financial_data');
 
         if (error) throw error;
         return data as CompanyFinancial[];
