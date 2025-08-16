@@ -47,6 +47,19 @@ export function LoadsManager({ className }: LoadsManagerProps) {
   const { showSuccess } = useFleetNotifications();
   const updateLoadStatus = useUpdateLoadStatus();
 
+  const calculateProgress = (status: string): number => {
+    switch (status) {
+      case 'assigned': return 10;
+      case 'en_route_pickup': return 25;
+      case 'at_pickup': return 50;
+      case 'loaded': return 65;
+      case 'en_route_delivery': return 80;
+      case 'at_delivery': return 95;
+      case 'delivered': return 100;
+      default: return 0;
+    }
+  };
+
   // Fetch driver's loads using the real hook
   const { data: loadsData = [], isLoading, refetch } = useLoads();
   
@@ -65,19 +78,6 @@ export function LoadsManager({ className }: LoadsManagerProps) {
     total_amount: load.total_amount,
     progress: calculateProgress(load.status)
   }));
-
-  const calculateProgress = (status: string): number => {
-    switch (status) {
-      case 'assigned': return 10;
-      case 'en_route_pickup': return 25;
-      case 'at_pickup': return 50;
-      case 'loaded': return 65;
-      case 'en_route_delivery': return 80;
-      case 'at_delivery': return 95;
-      case 'delivered': return 100;
-      default: return 0;
-    }
-  };
 
   const getStatusColor = (status: string): string => {
     switch (status) {
