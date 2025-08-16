@@ -1,5 +1,8 @@
 project_id = "htaotttcnjxqzpsrqwll"
 
+[functions.send-payment-report]
+verify_jwt = false
+
 [functions.geotab-sync]
 verify_jwt = false
 
