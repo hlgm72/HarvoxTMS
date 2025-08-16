@@ -282,7 +282,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     addText(data.company.name || 'Transport LLC', col1X + logoWidth, currentY, {
       fontSize: 10,
       fontStyle: 'bold',
-      color: colors.darkGray
+      color: '#003366'
     });
     
     // Posicionar toda la información debajo del nombre de la compañía
@@ -294,7 +294,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       addressLines.forEach((line, index) => {
         addText(line.trim(), col1X + logoWidth, companyInfoY + (index * 4), {
           fontSize: 9,
-          color: colors.text
+          color: '#003366'
         });
       });
       
@@ -304,7 +304,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     if (data.company.phone) {
       addText(data.company.phone, col1X + logoWidth, companyInfoY, {
         fontSize: 9,
-        color: colors.text
+        color: '#003366'
       });
       companyInfoY += 4;
     }
@@ -312,7 +312,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     if (data.company.email) {
       addText(data.company.email, col1X + logoWidth, companyInfoY, {
         fontSize: 9,
-        color: colors.text
+        color: '#003366'
       });
     }
 
@@ -321,26 +321,26 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     addText('Driver Pay Report', col2X + colWidth/2, currentY, {
       fontSize: 12,
       fontStyle: 'bold',
-      color: colors.darkGray,
+      color: '#003366',
       align: 'center'
     });
     
     addText(weekInfo.week, col2X + colWidth/2, currentY + 4, {
       fontSize: 11,
       fontStyle: 'bold',
-      color: colors.text,
+      color: '#003366',
       align: 'center'
     });
     
     addText(weekInfo.dateRange, col2X + colWidth/2, currentY + 8, {
       fontSize: 9,
-      color: colors.text,
+      color: '#003366',
       align: 'center'
     });
     
     addText(weekInfo.paymentDate, col2X + colWidth/2, currentY + 12, {
       fontSize: 9,
-      color: colors.text,
+      color: '#003366',
       align: 'center'
     });
 
@@ -348,7 +348,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     addText(data.driver.name, col3X + colWidth, currentY, {
       fontSize: 10,
       fontStyle: 'bold',
-      color: colors.darkGray,
+      color: '#003366',
       align: 'right'
     });
     
@@ -362,7 +362,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       addText(licenseText, col3X + colWidth, driverInfoY, {
         fontSize: 9,
-        color: colors.text,
+        color: '#003366',
         align: 'right'
       });
       driverInfoY += 4;
@@ -374,7 +374,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       addressLines.forEach((line, index) => {
         addText(line.trim(), col3X + colWidth, driverInfoY + (index * 4), {
           fontSize: 9,
-          color: colors.text,
+          color: '#003366',
           align: 'right'
         });
       });
@@ -385,7 +385,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     if (data.driver.phone) {
       addText(data.driver.phone, col3X + colWidth, driverInfoY, {
         fontSize: 9,
-        color: colors.text,
+        color: '#003366',
         align: 'right'
       });
       driverInfoY += 4;
@@ -438,7 +438,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   addText(`Completed Loads (Count: ${loadCount}, Total: ${formattedTotal})`, margin, currentY, {
     fontSize: 11,
     fontStyle: 'bold',
-    color: colors.darkGray
+    color: '#003366'
   });
   currentY += 10;
 
@@ -470,12 +470,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       addText(loadPrefix, margin, currentY, {
         fontSize: 9,
         fontStyle: 'bold',
-        color: colors.darkGray
+        color: '#003366'
       });
       addText(`: ${load.load_number}`, colonPosition, currentY, {
         fontSize: 9,
         fontStyle: 'bold',
-        color: colors.darkGray
+        color: '#003366'
       });
       
       // PO number (sin negrita, al lado del load number)
@@ -488,7 +488,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         addText(` (PO: ${load.po_number})`, margin + loadTextWidth, currentY, {
           fontSize: 9,
           fontStyle: 'normal',
-          color: colors.text
+          color: '#003366'
         });
       }
       
@@ -503,7 +503,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       addText(formatCurrency(load.total_amount), pageWidth - margin, currentY, {
         fontSize: 9,
         fontStyle: 'bold',
-        color: colors.darkGray,
+        color: '#003366',
         align: 'right'
       });
       
@@ -540,17 +540,17 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
           addText('PUP', stopPosition, currentY + stopOffset, {
             fontSize: 9,
             fontStyle: 'bold',
-            color: colors.darkGray
+            color: '#003366'
           });
           addText(':', colonPosition, currentY + stopOffset, {
             fontSize: 9,
             fontStyle: 'bold',
-            color: colors.darkGray
+            color: '#003366'
           });
           addText(` ${pupDate} ${pupLocation}`, colonPosition + 3, currentY + stopOffset, {
             fontSize: 9,
             fontStyle: 'normal',
-            color: colors.darkGray
+            color: '#003366'
           });
           
           stopOffset += 4;
@@ -565,17 +565,17 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
           addText('DEL', stopPosition, currentY + stopOffset, {
             fontSize: 9,
             fontStyle: 'bold',
-            color: colors.darkGray
+            color: '#003366'
           });
           addText(':', colonPosition, currentY + stopOffset, {
             fontSize: 9,
             fontStyle: 'bold',
-            color: colors.darkGray
+            color: '#003366'
           });
           addText(` ${delDate} ${delLocation}`, colonPosition + 3, currentY + stopOffset, {
             fontSize: 9,
             fontStyle: 'normal',
-            color: colors.darkGray
+            color: '#003366'
           });
           
           stopOffset += 4;
@@ -604,17 +604,17 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
           addText(stopPrefix, stopPosition, currentY + stopOffset, {
             fontSize: 9,
             fontStyle: 'bold',
-            color: colors.darkGray
+            color: '#003366'
           });
           addText(':', colonPosition, currentY + stopOffset, {
             fontSize: 9,
             fontStyle: 'bold',
-            color: colors.darkGray
+            color: '#003366'
           });
           addText(` ${stopDate} ${stopCompany} (${stopLocation})`, colonPosition + 3, currentY + stopOffset, {
             fontSize: 9,
             fontStyle: 'normal',
-            color: colors.darkGray
+            color: '#003366'
           });
           
           stopOffset += 4; // Incrementar offset para la siguiente parada
