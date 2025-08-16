@@ -1,7 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3"
 import { Resend } from "npm:resend@2.0.0"
-import jsPDF from "npm:jspdf@2.5.1"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -35,54 +34,6 @@ function formatDateSafe(dateStr: string): string {
   } catch {
     return dateStr;
   }
-}
-
-// Función para generar PDF simplificada
-function generatePaymentReportPDF(data: any): Uint8Array {
-  const doc = new jsPDF('p', 'mm', 'letter');
-  const pageWidth = doc.internal.pageSize.width;
-  const margin = 12;
-  let currentY = margin;
-
-  // Header del reporte
-  doc.setFontSize(20);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Payment Report', pageWidth / 2, currentY, { align: 'center' });
-  currentY += 15;
-
-  // Información del conductor
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`Driver: ${data.driver.name}`, margin, currentY);
-  currentY += 8;
-  
-  // Período
-  doc.text(`Period: ${formatDateSafe(data.period.start_date)} - ${formatDateSafe(data.period.end_date)}`, margin, currentY);
-  currentY += 8;
-
-  // Compañía
-  doc.text(`Company: ${data.company.name}`, margin, currentY);
-  currentY += 15;
-
-  // Resumen financiero
-  doc.setFont('helvetica', 'bold');
-  doc.text('Payment Summary:', margin, currentY);
-  currentY += 8;
-
-  doc.setFont('helvetica', 'normal');
-  doc.text(`Gross Earnings: $${data.period.gross_earnings.toFixed(2)}`, margin, currentY);
-  currentY += 6;
-  doc.text(`Other Income: $${data.period.other_income.toFixed(2)}`, margin, currentY);
-  currentY += 6;
-  doc.text(`Total Deductions: $${data.period.total_deductions.toFixed(2)}`, margin, currentY);
-  currentY += 6;
-  doc.text(`Fuel Expenses: $${data.period.fuel_expenses.toFixed(2)}`, margin, currentY);
-  currentY += 8;
-
-  doc.setFont('helvetica', 'bold');
-  doc.text(`Net Payment: $${data.period.net_payment.toFixed(2)}`, margin, currentY);
-
-  return doc.output('arraybuffer');
 }
 
 serve(async (req) => {
@@ -124,8 +75,10 @@ serve(async (req) => {
 
     if (calcError || !calculation) {
       console.error('Error fetching calculation:', calcError)
-      throw new Error('No se pudo obtener el cálculo del período')
+      throw new Error(`No se pudo obtener el cálculo del período: ${calcError?.message || 'No data found'}`)
     }
+
+    console.log('Calculation found:', JSON.stringify(calculation))
 
     // Obtener información del conductor
     console.log('Fetching driver profile...')
@@ -135,19 +88,22 @@ serve(async (req) => {
       .eq('user_id', driver_user_id)
       .single()
 
+    console.log('Driver profile:', JSON.stringify(driverData))
+
     // Obtener email del conductor
     console.log('Fetching driver email...')
-    const { data: emailData } = await supabase
-      .rpc('get_user_email_by_id', { user_id_param: driver_user_id })
-
-    const driverEmail = emailData || 'hlgm72@gmail.com'
+    const driverEmail = await supabase.rpc('get_user_email_by_id', { 
+      user_id_param: driver_user_id 
+    })
     
-    // Preparar datos para el PDF
+    console.log('Driver email result:', driverEmail)
+
+    // Preparar datos para el reporte
     const reportData = {
       driver: {
         name: driverData?.driver_id || 'Unknown Driver',
         user_id: driver_user_id,
-        email: driverEmail
+        email: driverEmail.data || 'hlgm72@gmail.com'
       },
       period: {
         start_date: calculation.company_payment_periods.period_start_date,
@@ -164,29 +120,48 @@ serve(async (req) => {
       }
     }
 
-    console.log('Generating PDF...')
-    const pdfBuffer = generatePaymentReportPDF(reportData)
+    console.log('Report data prepared:', JSON.stringify(reportData))
 
-    console.log('Sending email with PDF attachment...')
+    // Crear contenido HTML simple para el email
+    const htmlContent = `
+      <h2>Payment Report</h2>
+      <p>Dear ${reportData.driver.name},</p>
+      <p>Your payment report for the period from ${formatDateSafe(reportData.period.start_date)} to ${formatDateSafe(reportData.period.end_date)}:</p>
+      
+      <table style="border-collapse: collapse; width: 100%; margin: 20px 0;">
+        <tr style="background-color: #f2f2f2;">
+          <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Gross Earnings</td>
+          <td style="border: 1px solid #ddd; padding: 8px;">$${reportData.period.gross_earnings.toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Other Income</td>
+          <td style="border: 1px solid #ddd; padding: 8px;">$${reportData.period.other_income.toFixed(2)}</td>
+        </tr>
+        <tr style="background-color: #f2f2f2;">
+          <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Total Deductions</td>
+          <td style="border: 1px solid #ddd; padding: 8px;">-$${reportData.period.total_deductions.toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Fuel Expenses</td>
+          <td style="border: 1px solid #ddd; padding: 8px;">-$${reportData.period.fuel_expenses.toFixed(2)}</td>
+        </tr>
+        <tr style="background-color: #e6f3ff; font-weight: bold;">
+          <td style="border: 1px solid #ddd; padding: 8px;">Net Payment</td>
+          <td style="border: 1px solid #ddd; padding: 8px;">$${reportData.period.net_payment.toFixed(2)}</td>
+        </tr>
+      </table>
+      
+      <p>If you have any questions, please contact your dispatcher.</p>
+      <br>
+      <p>Best regards,<br>${company_name}</p>
+    `;
+
+    console.log('Sending email...')
     const emailResult = await resend.emails.send({
       from: "FleetNest <noreply@fleetnest.app>",
       to: ["hlgm72@gmail.com"],
       subject: `Payment Report - ${reportData.driver.name} - ${formatDateSafe(reportData.period.start_date)}`,
-      html: `
-        <h2>Payment Report</h2>
-        <p>Dear ${reportData.driver.name},</p>
-        <p>Please find attached your payment report for the period from ${formatDateSafe(reportData.period.start_date)} to ${formatDateSafe(reportData.period.end_date)}.</p>
-        <p><strong>Net Payment: $${reportData.period.net_payment.toFixed(2)}</strong></p>
-        <p>If you have any questions, please contact your dispatcher.</p>
-        <br>
-        <p>Best regards,<br>${company_name}</p>
-      `,
-      attachments: [
-        {
-          filename: `PaymentReport_${reportData.driver.name.replace(/\s+/g, '_')}_${formatDateSafe(reportData.period.start_date).replace(/\//g, '-')}.pdf`,
-          content: Array.from(new Uint8Array(pdfBuffer))
-        }
-      ]
+      html: htmlContent
     })
 
     if (emailResult.error) {
