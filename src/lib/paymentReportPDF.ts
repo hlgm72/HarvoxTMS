@@ -404,27 +404,27 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const boxWidth = (totalBoxesWidth - 9) / 4; // 4 cajas con espacios reducidos
   const boxHeight = 11;
   
-  // Gross Earnings (Azul primario)
-  addColoredBox(boxesStartX, currentY, boxWidth, boxHeight, colors.primary, '#ffffff',
-    'Gross Earnings', formatCurrency(data.period.gross_earnings), colors.primary);
+  // Gross Earnings (Azul #003366)
+  addColoredBox(boxesStartX, currentY, boxWidth, boxHeight, '#003366', '#ffffff',
+    'Gross Earnings', formatCurrency(data.period.gross_earnings), '#003366');
   
-  // Other Earnings (Azul primario)
-  addColoredBox(boxesStartX + boxWidth + 3, currentY, boxWidth, boxHeight, colors.primary, '#ffffff',
-    'Other Earnings', formatCurrency(data.period.other_income), colors.primary);
+  // Other Earnings (Azul #003366)
+  addColoredBox(boxesStartX + boxWidth + 3, currentY, boxWidth, boxHeight, '#003366', '#ffffff',
+    'Other Earnings', formatCurrency(data.period.other_income), '#003366');
   
-  // Period Deductions (Naranja secundario)
-  addColoredBox(boxesStartX + (boxWidth + 3) * 2, currentY, boxWidth, boxHeight, colors.warning, '#ffffff',
-    'Period Deductions', formatCurrency(-data.period.total_deductions), colors.warning);
+  // Period Deductions (Naranja #ff7a00)
+  addColoredBox(boxesStartX + (boxWidth + 3) * 2, currentY, boxWidth, boxHeight, '#ff7a00', '#ffffff',
+    'Period Deductions', formatCurrency(-data.period.total_deductions), '#ff7a00');
   
-  // Fuel Expenses (Naranja secundario)
-  addColoredBox(boxesStartX + (boxWidth + 3) * 3, currentY, boxWidth, boxHeight, colors.warning, '#ffffff',
-    'Fuel Expenses', formatCurrency(-data.period.fuel_expenses), colors.warning);
+  // Fuel Expenses (Naranja #ff7a00)
+  addColoredBox(boxesStartX + (boxWidth + 3) * 3, currentY, boxWidth, boxHeight, '#ff7a00', '#ffffff',
+    'Fuel Expenses', formatCurrency(-data.period.fuel_expenses), '#ff7a00');
 
   currentY += boxHeight + 3;
 
-  // Net Pay (Gris como la cabecera con texto azul primario)
+  // Net Pay (Gris como la cabecera con texto azul #003366)
   const netPayWidth = totalBoxesWidth; // Mismo ancho que la cabecera
-  addColoredBox(boxesStartX, currentY, netPayWidth, 11, colors.lightGray, colors.primary,
+  addColoredBox(boxesStartX, currentY, netPayWidth, 11, colors.lightGray, '#003366',
     'Net Pay', formatCurrency(data.period.net_payment), colors.border);
 
   currentY += 23; // Reducido de 25 a 23 para menos espaciado
