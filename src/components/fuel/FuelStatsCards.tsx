@@ -34,9 +34,6 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
     );
   }
 
-   const formatCurrency = (amount: number) => {
-     return formatCurrency(amount);
-   };
 
   const formatGallons = (gallons: number) => {
     return `${gallons.toFixed(1)} gal`;
