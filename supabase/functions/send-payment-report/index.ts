@@ -118,7 +118,7 @@ serve(async (req) => {
           company_id
         )
       `)
-      .eq('id', period_id)
+      .eq('company_payment_period_id', period_id)
       .eq('driver_user_id', driver_user_id)
       .single()
 
