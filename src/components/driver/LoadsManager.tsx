@@ -243,20 +243,20 @@ export function LoadsManager({ className }: LoadsManagerProps) {
                               )}
                             </div>
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
+                              <div className="flex items-center justify-between mb-1">
                                 <Badge variant="outline" className="text-xs">
                                   {stop.stop_type === 'pickup' ? 'Recogida' : 'Entrega'} #{stop.stop_number}
                                 </Badge>
+                                <span className="text-xs text-muted-foreground">
+                                  {stop.scheduled_date ? formatDateSafe(stop.scheduled_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
+                                  {stop.scheduled_time && ` - ${stop.scheduled_time}`}
+                                </span>
                               </div>
                               <p className="font-medium text-sm">
                                 {stop.company_name}
                               </p>
                               <p className="text-xs text-muted-foreground">
                                 {[stop.address, stop.city, stop.state, stop.zip_code].filter(Boolean).join(', ')}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {stop.scheduled_date ? formatDateSafe(stop.scheduled_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
-                                {stop.scheduled_time && ` - ${stop.scheduled_time}`}
                               </p>
                             </div>
                             {index === 0 && (
