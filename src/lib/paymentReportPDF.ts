@@ -615,7 +615,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     });
   }
 
-  currentY += 8;
+  currentY += 6;
 
   // === OTHER EARNINGS ===
   // Calcular el conteo y total de other earnings
@@ -674,7 +674,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     currentY += 4;
   }
 
-  currentY += 8;
+  currentY += 6;
 
   // Sección única de deducciones
   // Calcular el espacio necesario para toda la sección de deducciones
@@ -733,7 +733,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     currentY += 4;
   }
 
-  currentY += 8;
+  currentY += 6;
 
   // === FUEL PURCHASES ===
   // Calcular el espacio necesario para toda la sección de combustible
