@@ -80,7 +80,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
       // Get loads stats for current period
       const { data: loadsStats, error: loadsError } = await supabase
         .from('loads')
-        .select('rate_per_mile')
+        .select('total_amount')
         .eq('driver_user_id', user.id)
         .eq('status', 'delivered')
         .gte('delivery_date', currentCalculation?.company_payment_periods?.period_start_date || new Date().toISOString())
