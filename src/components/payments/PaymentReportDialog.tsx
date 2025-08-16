@@ -796,10 +796,23 @@ export function PaymentReportDialog({
               onClick={handleEmailButtonClick}
               disabled={isSendingEmail}
               size="sm"
-              className="w-full sm:flex-1"
+              className={`w-full sm:flex-1 transition-all duration-200 ${
+                isSendingEmail 
+                  ? 'bg-blue-50 border-blue-200 text-blue-700 cursor-not-allowed' 
+                  : 'hover:bg-blue-50 hover:border-blue-200'
+              }`}
             >
-              <Mail className="h-4 w-4 mr-2" />
-              <span className="truncate">{isSendingEmail ? 'Enviando...' : 'Enviar por Email'}</span>
+              {isSendingEmail ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-300 border-t-blue-600 mr-2"></div>
+                  <span className="truncate">Enviando Email...</span>
+                </>
+              ) : (
+                <>
+                  <Mail className="h-4 w-4 mr-2" />
+                  <span className="truncate">Enviar por Email</span>
+                </>
+              )}
             </Button>
           </div>
         </div>
