@@ -3584,6 +3584,10 @@ export type Database = {
         }
         Returns: Json
       }
+      log_business_data_access: {
+        Args: { access_action?: string; entity_id: string; entity_type: string }
+        Returns: undefined
+      }
       log_company_data_access: {
         Args: {
           access_type_param: string
@@ -3811,6 +3815,14 @@ export type Database = {
       }
       user_is_admin_in_company: {
         Args: { company_id_param: string; user_id_param: string }
+        Returns: boolean
+      }
+      validate_business_data_access: {
+        Args: {
+          company_id_param: string
+          entity_type: string
+          required_role?: string
+        }
         Returns: boolean
       }
       validate_invitation_token: {
