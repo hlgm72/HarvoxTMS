@@ -2,8 +2,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { StateCombobox } from '@/components/ui/StateCombobox';
 import { CityCombobox } from '@/components/ui/CityCombobox';
+import { CompanyAddressAutocomplete } from '@/components/ui/CompanyAddressAutocomplete';
 import { createTextHandlers } from '@/lib/textUtils';
+import { useZipCodeLookup } from '@/hooks/useZipCodeLookup';
 import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
 
 interface AddressFormProps {
   streetAddress: string;
@@ -20,6 +23,14 @@ interface AddressFormProps {
   stateLabel?: string;
   cityLabel?: string;
   zipCodeLabel?: string;
+  showCompanyAutocomplete?: boolean;
+  onCompanySelect?: (company: {
+    name: string;
+    streetAddress: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+  }) => void;
 }
 
 export function AddressForm({
@@ -36,9 +47,13 @@ export function AddressForm({
   streetAddressLabel,
   stateLabel,
   cityLabel,
-  zipCodeLabel
+  zipCodeLabel,
+  showCompanyAutocomplete = false,
+  onCompanySelect
 }: AddressFormProps) {
   const { t, i18n } = useTranslation('common');
+  const { lookupZipCode, isLoading: isZipLoading, error: zipError } = useZipCodeLookup();
+  
   // Create handlers for street address with proper text control
   const streetAddressHandlers = createTextHandlers(onStreetAddressChange);
   
@@ -50,9 +65,18 @@ export function AddressForm({
   };
   
   const zipCodeHandlers = {
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
       const formattedValue = handleZipCodeInput(e.target.value);
       onZipCodeChange(formattedValue);
+      
+      // Auto-lookup city and state when ZIP is complete
+      if (formattedValue.length === 5) {
+        const zipData = await lookupZipCode(formattedValue);
+        if (zipData) {
+          onStateChange(zipData.stateId);
+          onCityChange(zipData.city);
+        }
+      }
     },
     onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => {
       // Allow only numbers, backspace, delete, arrows
@@ -65,8 +89,29 @@ export function AddressForm({
     }
   };
 
+  const handleCompanySelect = (company: {
+    name: string;
+    streetAddress: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+  }) => {
+    onStreetAddressChange(company.streetAddress);
+    if (company.zipCode) onZipCodeChange(company.zipCode);
+    if (company.state) onStateChange(company.state);
+    if (company.city) onCityChange(company.city);
+    if (onCompanySelect) onCompanySelect(company);
+  };
+
   return (
     <div className="grid grid-cols-1 gap-4">
+      {showCompanyAutocomplete && (
+        <CompanyAddressAutocomplete
+          onSelectCompany={handleCompanySelect}
+          placeholder={t('address.company_placeholder', i18n.language === 'es' ? 'Buscar empresa registrada...' : 'Search registered company...')}
+          label={t('address.company', i18n.language === 'es' ? 'Empresa (Opcional)' : 'Company (Optional)')}
+        />
+      )}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="street-address">
@@ -94,9 +139,17 @@ export function AddressForm({
             onChange={zipCodeHandlers.onChange}
             onKeyPress={zipCodeHandlers.onKeyPress}
             placeholder={t('address.zip_code_placeholder', '12345')}
-            disabled={disabled}
+            disabled={disabled || isZipLoading}
             maxLength={5}
           />
+          {isZipLoading && (
+            <p className="text-sm text-muted-foreground">
+              {t('address.looking_up_zip', i18n.language === 'es' ? 'Buscando información...' : 'Looking up...')}
+            </p>
+          )}
+          {zipError && (
+            <p className="text-sm text-destructive">{zipError}</p>
+          )}
         </div>
       </div>
 
