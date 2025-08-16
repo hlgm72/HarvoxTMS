@@ -3200,6 +3200,74 @@ export type Database = {
           vin_number: string | null
           year: number | null
         }
+        Insert: {
+          annual_inspection_expiry_date?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          current_mileage?: number | null
+          equipment_number?: string | null
+          equipment_type?: string | null
+          fuel_type?: string | null
+          geotab_vehicle_id?: string | null
+          has_form_2290?: never
+          has_inspection?: never
+          has_registration?: never
+          has_title?: never
+          id?: string | null
+          inspection_status?: never
+          insurance_expiry_date?: string | null
+          insurance_status?: never
+          license_plate?: string | null
+          license_plate_expiry_date?: string | null
+          license_status?: never
+          make?: string | null
+          model?: string | null
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          registration_expiry_date?: string | null
+          registration_status?: never
+          status?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          vin_number?: string | null
+          year?: number | null
+        }
+        Update: {
+          annual_inspection_expiry_date?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          current_mileage?: number | null
+          equipment_number?: string | null
+          equipment_type?: string | null
+          fuel_type?: string | null
+          geotab_vehicle_id?: string | null
+          has_form_2290?: never
+          has_inspection?: never
+          has_registration?: never
+          has_title?: never
+          id?: string | null
+          inspection_status?: never
+          insurance_expiry_date?: string | null
+          insurance_status?: never
+          license_plate?: string | null
+          license_plate_expiry_date?: string | null
+          license_status?: never
+          make?: string | null
+          model?: string | null
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          registration_expiry_date?: string | null
+          registration_status?: never
+          status?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          vin_number?: string | null
+          year?: number | null
+        }
         Relationships: [
           {
             foreignKeyName: "fk_company_equipment_company"
