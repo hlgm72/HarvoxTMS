@@ -60,7 +60,11 @@ export function StopListItem({
   };
 
   const getStopTypeColor = () => {
-    return stop.stop_type === 'pickup' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
+    if (stop.stop_type === 'pickup') {
+      return 'bg-green-100 text-green-800';
+    }
+    // For delivery stops: blue for intermediate, red for final
+    return isLast ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800';
   };
 
   // Format the address properly, ensuring city is displayed correctly
