@@ -1018,11 +1018,11 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     
     addText('Powered by FleetNest TMS', margin + logoWidth, footerY - 3, {
       fontSize: 8,
-      color: colors.gray
+      color: '#003366' // Color de fuente #003366
     });
     addText('Unauthorized sharing prohibited', margin + logoWidth, footerY + 1, {
       fontSize: 8,
-      color: colors.gray
+      color: '#003366' // Color de fuente #003366
     });
     
     // Fecha de generación (centro)
@@ -1030,7 +1030,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     addText(`Generated on ${reportDate.toLocaleDateString('en-US')} at ${reportDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`, 
       pageWidth / 2, footerY - 1, {
         fontSize: 8,
-        color: colors.gray,
+        color: '#003366', // Color de fuente #003366
         align: 'center'
       });
     
@@ -1038,7 +1038,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     if (totalPages > 1) {
       addText(`Page ${pageNumber} of ${totalPages}`, pageWidth - margin, footerY - 1, {
         fontSize: 8,
-        color: colors.gray,
+        color: '#003366', // Color de fuente #003366
         align: 'right'
       });
     }
