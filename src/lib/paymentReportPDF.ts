@@ -285,7 +285,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     });
     
     // Posicionar toda la información debajo del nombre de la compañía
-    let companyInfoY = currentY + 3;
+    let companyInfoY = currentY + 4;
     
     if (data.company.address) {
       const addressLines = data.company.address.split('\n');
@@ -352,7 +352,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     });
     
     // Posicionar toda la información debajo del nombre del conductor
-    let driverInfoY = currentY + 3;
+    let driverInfoY = currentY + 4;
     
     if (data.driver.license) {
       const licenseText = data.driver.license_state 
