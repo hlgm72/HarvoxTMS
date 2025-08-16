@@ -68,7 +68,7 @@ export default function Settings() {
     
     try {
       const { data, error } = await supabase
-        .from('companies')
+        .from('companies_financial')
         .select('*')
         .eq('id', userRole.company_id)
         .single();

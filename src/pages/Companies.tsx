@@ -155,7 +155,7 @@ export default function Companies() {
   const fetchCompanies = async () => {
     try {
       const { data, error } = await supabase
-        .from('companies')
+        .from('companies_financial')
         .select('*')
         .order('created_at', { ascending: false });
 
