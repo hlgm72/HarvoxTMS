@@ -20,6 +20,7 @@ import { useDriverCards } from "@/hooks/useDriverCards";
 import { useOwnerOperator } from "@/hooks/useOwnerOperator";
 import { getExpiryInfo, formatDateOnly } from '@/lib/dateFormatting';
 import { capitalizeWords } from '@/lib/textUtils';
+import { getRoleConfig } from "@/lib/roleUtils";
 import type { ConsolidatedDriver } from "@/hooks/useConsolidatedDrivers";
 import { EditDriverDialog } from "./EditDriverDialog";
 
@@ -198,6 +199,12 @@ export function DriverDetailsModal({ isOpen, onClose, driver, onDriverUpdated }:
               <div>
                 <h2 className="text-xl font-semibold">{fullName || 'No name'}</h2>
                 <div className="flex items-center gap-2">
+                  <Badge 
+                    variant="default" 
+                    className={getRoleConfig('driver').className}
+                  >
+                    {getRoleConfig('driver').emoji} {getRoleConfig('driver').label}
+                  </Badge>
                   <Badge variant={getStatusColor(driver.current_status) as any}>
                     {getStatusText(driver.current_status)}
                   </Badge>
