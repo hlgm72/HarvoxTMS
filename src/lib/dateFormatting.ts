@@ -183,7 +183,9 @@ const formatDateOnlyWithLocale = (dateInput: string | Date | null | undefined, l
   
   try {
     const locale = language === 'es' ? es : enUS;
-    return formatDateSafe(dateInput, 'dd/MM/yyyy', { locale });
+    // Usar diferentes patrones según el idioma
+    const pattern = language === 'es' ? 'dd/MM/yyyy' : 'MM/dd/yyyy';
+    return formatDateSafe(dateInput, pattern, { locale });
   } catch (error) {
     console.error('Error formatting date with locale:', error);
     return language === 'es' ? 'Fecha inválida' : 'Invalid date';
