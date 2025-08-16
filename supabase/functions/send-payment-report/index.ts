@@ -1,8 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.3';
 import { Resend } from 'npm:resend@4.6.0';
-import { renderAsync } from 'npm:@react-email/components@0.0.22';
-import React from 'npm:react@18.3.1';
-import { PaymentReportEmail } from './_templates/payment-report-email.tsx';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
@@ -85,40 +82,49 @@ Deno.serve(async (req) => {
       throw new Error('Payment period calculation not found');
     }
 
-    // Generar contenido del email
-    const emailData = {
-      driverName: `${profile.first_name} ${profile.last_name}`,
-      companyName: company_name || 'Tu Empresa',
-      periodStart: calculation.company_payment_periods.period_start_date,
-      periodEnd: calculation.company_payment_periods.period_end_date,
-      grossEarnings: calculation.gross_earnings,
-      fuelExpenses: calculation.fuel_expenses,
-      totalDeductions: calculation.total_deductions,
-      otherIncome: calculation.other_income,
-      netPayment: calculation.net_payment,
-      hasNegativeBalance: calculation.has_negative_balance,
-      reportUrl: `${Deno.env.get('SITE_URL')}/payment-reports?period=${period_id}`
-    };
+    console.log('Calculation found:', calculation);
 
-    console.log('Generating email with data:', emailData);
+    // Crear HTML simple para el email
+    const emailHtml = `
+      <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h1 style="color: #2563eb;">Reporte de Pago</h1>
+            <h2>Conductor: ${profile.first_name} ${profile.last_name}</h2>
+            <h3>Empresa: ${company_name || 'Tu Empresa'}</h3>
+            <p><strong>Período:</strong> ${calculation.company_payment_periods.period_start_date} al ${calculation.company_payment_periods.period_end_date}</p>
+            
+            <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+              <h3>Resumen Financiero</h3>
+              <p><strong>Ingresos Brutos:</strong> $${calculation.gross_earnings}</p>
+              <p><strong>Gastos de Combustible:</strong> $${calculation.fuel_expenses}</p>
+              <p><strong>Otros Ingresos:</strong> $${calculation.other_income}</p>
+              <p><strong>Total Deducciones:</strong> $${calculation.total_deductions}</p>
+              <hr style="margin: 15px 0;">
+              <p style="font-size: 18px;"><strong>Pago Neto:</strong> $${calculation.net_payment}</p>
+            </div>
+            
+            <p style="color: #666; font-size: 14px;">
+              Este es un reporte automatizado del sistema de gestión de flotillas.
+            </p>
+          </div>
+        </body>
+      </html>
+    `;
 
-    const html = await renderAsync(
-      React.createElement(PaymentReportEmail, emailData)
-    );
-
-    console.log('Email HTML generated successfully');
+    console.log('Sending email to hlgm72@gmail.com');
 
     // Enviar email - TEMPORAL: enviando a email de prueba
-    const { error: emailError } = await resend.emails.send({
+    const { error: emailSendError } = await resend.emails.send({
       from: 'Reportes de Pago <noreply@tuempresa.com>',
       to: ['hlgm72@gmail.com'], // EMAIL TEMPORAL PARA PRUEBAS
-      subject: `Reporte de Pago - ${emailData.periodStart} al ${emailData.periodEnd}`,
-      html,
+      subject: `Reporte de Pago - ${calculation.company_payment_periods.period_start_date} al ${calculation.company_payment_periods.period_end_date}`,
+      html: emailHtml,
     });
 
-    if (emailError) {
-      console.error('Resend error:', emailError);
-      throw emailError;
+    if (emailSendError) {
+      console.error('Resend error:', emailSendError);
+      throw emailSendError;
     }
 
     console.log('Email sent successfully');
@@ -126,7 +132,7 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ 
       success: true, 
       message: 'Payment report sent successfully',
-      sent_to: email
+      sent_to: 'hlgm72@gmail.com'
     }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
