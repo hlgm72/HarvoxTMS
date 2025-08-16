@@ -391,13 +391,6 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       driverInfoY += 4;
     }
     
-    if (data.driver.email) {
-      addText(data.driver.email, col3X + colWidth, driverInfoY, {
-        fontSize: 9,
-        color: colors.text,
-        align: 'right'
-      });
-    }
 
     currentY += 25; // Reducido de 30 a 25 para menos espaciado
   };
@@ -842,16 +835,8 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   });
   leftY += 4;
   
-  if (data.driver.license) {
-    addText(`License: ${data.driver.license}${data.driver.license_state ? ` (${data.driver.license_state})` : ''}`, leftColumnX, leftY, {
-      fontSize: 9,
-      color: colors.darkGray
-    });
-    leftY += 4;
-  }
-  
-  if (data.driver.address) {
-    addText(`Address: ${data.driver.address}`, leftColumnX, leftY, {
+  if (data.driver.email) {
+    addText(`Email: ${data.driver.email}`, leftColumnX, leftY, {
       fontSize: 9,
       color: colors.darkGray
     });
