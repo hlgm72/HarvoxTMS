@@ -532,7 +532,7 @@ export function PaymentReportDialog({
           {loads.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-sm">
+                <CardTitle className="flex items-center gap-2 text-base">
                   <Package className="h-4 w-4" />
                   Cargas del Período ({loads.length})
                 </CardTitle>
@@ -605,7 +605,7 @@ export function PaymentReportDialog({
           {fuelExpenses.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-sm">
+                <CardTitle className="flex items-center gap-2 text-base">
                   <Fuel className="h-4 w-4" />
                   Gastos de Combustible ({fuelExpenses.length})
                 </CardTitle>
@@ -634,7 +634,7 @@ export function PaymentReportDialog({
           {deductions.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-sm">
+                <CardTitle className="flex items-center gap-2 text-base">
                   <Receipt className="h-4 w-4" />
                   Deducciones ({deductions.length})
                 </CardTitle>
