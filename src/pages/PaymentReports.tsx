@@ -322,15 +322,6 @@ export default function PaymentReports() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleGenerateReport(calculation)}
-                          disabled={isGenerating}
-                        >
-                          <Download className="h-4 w-4 mr-2" />
-                          {isGenerating ? "Generando..." : "PDF"}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
                           onClick={() => handleViewReport(calculation.id)}
                         >
                           <FileText className="h-4 w-4 mr-2" />
