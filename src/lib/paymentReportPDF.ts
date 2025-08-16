@@ -972,7 +972,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     color: '#ffffff' // Texto blanco para contraste con fondo azul
   });
   
-  addText(formatCurrency(data.period.net_payment), rightColumnX + 83, rightY + 6, {
+  addText(formatCurrency(data.period.net_payment), rightColumnX + 78, rightY + 6, {
     fontSize: 12,
     fontStyle: 'bold',
     color: '#ffffff', // Texto blanco para contraste con fondo azul
@@ -998,7 +998,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const fleetNestLogoUrl = '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png'; // Logo real de FleetNest TMS
       const logoData = await loadImageFromUrl(fleetNestLogoUrl);
       if (logoData) {
-        doc.addImage(logoData, 'PNG', margin, footerY - 2, logoSize, logoSize);
+        doc.addImage(logoData, 'PNG', margin, footerY - 5, logoSize, logoSize);
         logoWidth = logoSize + 2;
       }
     } catch (error) {
@@ -1007,7 +1007,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     
     // Si no hay logo, usar iniciales "FN" para FleetNest
     if (logoWidth === 0) {
-      addText('FN', margin, footerY + 2, {
+      addText('FN', margin, footerY - 1, {
         fontSize: 10,
         fontStyle: 'bold',
         color: colors.primary
@@ -1015,11 +1015,11 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       logoWidth = 12;
     }
     
-    addText('Powered by FleetNest TMS', margin + logoWidth, footerY, {
+    addText('Powered by FleetNest TMS', margin + logoWidth, footerY - 3, {
       fontSize: 8,
       color: '#003366' // Color de fuente #003366
     });
-    addText('Unauthorized sharing prohibited', margin + logoWidth, footerY + 4, {
+    addText('Unauthorized sharing prohibited', margin + logoWidth, footerY + 1, {
       fontSize: 8,
       color: '#003366' // Color de fuente #003366
     });
@@ -1027,7 +1027,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     // Fecha de generación (centro)
     const reportDate = new Date();
     addText(`Generated on ${reportDate.toLocaleDateString('en-US')} at ${reportDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`, 
-      pageWidth / 2, footerY + 2, {
+      pageWidth / 2, footerY - 1, {
         fontSize: 8,
         color: '#003366', // Color de fuente #003366
         align: 'center'
@@ -1035,7 +1035,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     
     // Número de página (derecha)
     if (totalPages > 1) {
-      addText(`Page ${pageNumber} of ${totalPages}`, pageWidth - margin, footerY + 2, {
+      addText(`Page ${pageNumber} of ${totalPages}`, pageWidth - margin, footerY - 1, {
         fontSize: 8,
         color: '#003366', // Color de fuente #003366
         align: 'right'
