@@ -60,6 +60,8 @@ const headerSection = {
 const headerContainer = {
   maxWidth: '580px',
   margin: '0 auto',
+  textAlign: 'center' as const,
+  width: '100%',
 };
 
 const logoSection = {
@@ -69,6 +71,7 @@ const logoSection = {
   alignItems: 'center',
   justifyContent: 'center',
   gap: '20px',
+  width: '100%',
 };
 
 const logoStyle = {
