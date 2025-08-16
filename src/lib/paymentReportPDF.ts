@@ -972,7 +972,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     color: '#ffffff' // Texto blanco para contraste con fondo azul
   });
   
-  addText(formatCurrency(data.period.net_payment), rightColumnX + 78, rightY + 6, {
+  addText(formatCurrency(data.period.net_payment), rightColumnX + 80, rightY + 6, {
     fontSize: 12,
     fontStyle: 'bold',
     color: '#ffffff', // Texto blanco para contraste con fondo azul
