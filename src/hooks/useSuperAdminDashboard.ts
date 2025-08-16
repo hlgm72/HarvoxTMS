@@ -59,26 +59,45 @@ export const useSuperAdminDashboard = () => {
     }
   }, []);
 
-  // Optimized companies fetching with selective fields
-  // Note: Using companies_financial view for superadmin access to sensitive data
+  // Optimized companies fetching using secure RPC function
   const fetchCompanies = useCallback(async () => {
     try {
+      // Use the secure RPC function for financial data access
       const { data, error } = await supabase
-        .from('companies_with_owner_info')
-        .select(`
-          id, name, street_address, state_id, zip_code, city, phone, email,
-          ein, dot_number, mc_number,
-          owner_name, owner_email, owner_phone, owner_title,
-          plan_type, max_vehicles, max_users, status,
-          contract_start_date, created_at
-        `)
-        .order('created_at', { ascending: false })
-        .limit(10);
+        .rpc('get_companies_financial_data' as any);
 
       if (error) throw error;
-      setCompanies(data || []);
+      
+      // Transform the data to match the expected format
+      const companiesData = Array.isArray(data) ? data.map((company: any) => ({
+        id: company.id,
+        name: company.name,
+        street_address: company.street_address,
+        state_id: company.state_id,
+        zip_code: company.zip_code,
+        city: company.city,
+        phone: company.phone,
+        email: company.email,
+        ein: company.ein,
+        dot_number: company.dot_number,
+        mc_number: company.mc_number,
+        plan_type: company.plan_type,
+        max_vehicles: company.max_vehicles,
+        max_users: company.max_users,
+        status: company.status,
+        contract_start_date: company.contract_start_date,
+        created_at: company.created_at,
+        // For superadmin dashboard, we'll fetch owner details separately if needed
+        owner_name: 'Protected',
+        owner_email: 'Protected', 
+        owner_phone: 'Protected',
+        owner_title: 'Protected'
+      })) : [];
+      
+      setCompanies(companiesData.slice(0, 10)); // Limit to 10 for dashboard
     } catch (error) {
       console.error('Error fetching companies:', error);
+      setCompanies([]);
     } finally {
       setLoadingData(false);
     }

@@ -68,7 +68,7 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
         
         // Use RPC function for financial data
         const { data, error } = await supabase
-          .rpc('get_companies_financial_data', { 
+          .rpc('get_companies_financial_data' as any, { 
             company_id_param: companyId || null 
           });
 
@@ -82,7 +82,7 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
       } else {
         // Use basic data RPC function for non-financial access
         const { data, error } = await supabase
-          .rpc('get_companies_basic_info', { 
+          .rpc('get_companies_basic_info' as any, { 
             company_id_param: companyId || null 
           });
 
@@ -131,7 +131,7 @@ export const useCompanyFinancialData = (companyId?: string) => {
       
       // Use RPC function for financial data
       const { data, error } = await supabase
-        .rpc('get_companies_financial_data', { 
+        .rpc('get_companies_financial_data' as any, { 
           company_id_param: companyId || null 
         });
 
@@ -159,7 +159,7 @@ export const useCompanyPublicData = (companyId?: string) => {
     queryFn: async () => {
       // Use basic data RPC function
       const { data, error } = await supabase
-        .rpc('get_companies_basic_info', { 
+        .rpc('get_companies_basic_info' as any, { 
           company_id_param: companyId || null 
         });
 
