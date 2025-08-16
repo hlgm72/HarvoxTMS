@@ -1009,8 +1009,9 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // Descargar o ver el PDF
   const weekInfo = formatWeekInfo();
   const driverName = data.driver.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
-  const weekNumber = weekInfo.week.replace('Week ', '').replace(' / ', '_');
-  const fileName = `Pago_Semanal_${driverName}_Semana_${weekNumber}.pdf`;
+  const year = new Date(data.period.start_date + 'T12:00:00').getFullYear();
+  const weekNumber = weekInfo.week.replace('Week ', 'W').replace(` / ${year}`, '');
+  const fileName = `PayReport_${year}_${weekNumber}_${driverName}.pdf`;
   
   if (isPreview) {
     // Abrir PDF en nueva pestaña para vista previa
