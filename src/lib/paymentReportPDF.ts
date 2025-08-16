@@ -825,7 +825,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     color: colors.darkGray
   });
   
-  let leftY = currentY + 12;
+  let leftY = currentY + 8;
   
   // Información del conductor
   addText(`Driver Name: ${data.driver.name}`, leftColumnX, leftY, {
