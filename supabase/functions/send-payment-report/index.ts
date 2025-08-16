@@ -1,58 +1,41 @@
-console.log('=== Starting function definition ===');
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+}
 
-console.log('=== CORS headers defined ===');
-
-Deno.serve(async (req) => {
-  console.log('=== Function called ===', req.method);
+serve(async (req) => {
+  console.log('Function invoked with method:', req.method)
   
   if (req.method === 'OPTIONS') {
-    console.log('=== OPTIONS handled ===');
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  if (req.method !== 'POST') {
-    console.log('=== Non-POST method ===');
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
-      status: 405,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    });
+    return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    console.log('=== Starting POST processing ===');
-    const body = await req.json();
-    console.log('=== Body parsed ===', body);
+    const body = await req.json()
+    console.log('Received body:', JSON.stringify(body))
 
-    console.log('=== About to return success ===');
-    return new Response(JSON.stringify({ 
-      success: true, 
-      message: 'Ultra basic test successful',
-      timestamp: new Date().toISOString(),
-      received: body
-    }), {
-      status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-
+    return new Response(
+      JSON.stringify({ 
+        success: true, 
+        message: 'Function is working',
+        timestamp: new Date().toISOString(),
+        received: body
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      },
+    )
   } catch (error) {
-    console.error('=== ERROR CAUGHT ===');
-    console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
-    
-    return new Response(JSON.stringify({ 
-      success: false, 
-      error: error.message,
-      stack: error.stack
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error('Error:', error)
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      },
+    )
   }
-});
-
-console.log('=== Function definition complete ===');
+})
