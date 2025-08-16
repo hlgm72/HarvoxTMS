@@ -422,31 +422,79 @@ export function PaymentReportDialog({
 
       const { formatDateSafe } = await import('@/lib/dateFormatting');
 
-      // Generar contenido profesional del email usando IA
-      const emailContentResponse = await supabase.functions.invoke('generate-email-content', {
-        body: {
-          driverName: reportData.driver.name,
-          companyName: company?.name || 'FleetNest TMS',
-          periodStart: formatDateSafe(reportData.period.start_date),
-          periodEnd: formatDateSafe(reportData.period.end_date),
-          netPayment: reportData.period.net_payment,
-          totalLoads: loads.length || 0,
-          totalMiles: loads.reduce((sum, load) => {
-            // Calcular millas aproximadas basadas en las paradas
-            const stops = load.load_stops || [];
-            if (stops.length < 2) return sum;
-            return sum + 500; // Estimación por ahora
-          }, 0),
-          totalRevenue: reportData.period.gross_earnings + reportData.period.other_income,
-          totalExpenses: reportData.period.fuel_expenses + reportData.period.total_deductions,
-        }
-      });
-
-      if (emailContentResponse.error) {
-        throw new Error('Error generando contenido del email');
-      }
-
-      const emailHTML = emailContentResponse.data.html;
+      // Crear HTML profesional directamente (más confiable que OpenAI)
+      const emailHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Payment Report - ${reportData.driver.name}</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f6f9;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #2563eb, #059669); padding: 30px; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">FleetNest TMS</h1>
+              <p style="color: #e5e7eb; margin: 10px 0 0 0; font-size: 16px;">Reporte de Pago del Conductor</p>
+            </div>
+            
+            <!-- Content -->
+            <div style="padding: 30px;">
+              <h2 style="color: #1f2937; margin-bottom: 20px;">Estimado ${reportData.driver.name},</h2>
+              
+              <p style="color: #4b5563; line-height: 1.6; margin-bottom: 25px;">
+                Adjunto encontrará su reporte de pago detallado para el período del 
+                <strong>${formatDateSafe(reportData.period.start_date)}</strong> al 
+                <strong>${formatDateSafe(reportData.period.end_date)}</strong>.
+              </p>
+              
+              <!-- Summary Table -->
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 1px solid #e5e7eb;">
+                <tr style="background-color: #f9fafb;">
+                  <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Total de Cargas:</td>
+                  <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; color: #1f2937; text-align: right;">${loads.length}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Ingresos Brutos:</td>
+                  <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; color: #059669; text-align: right; font-weight: bold;">$${(reportData.period.gross_earnings + reportData.period.other_income).toFixed(2)}</td>
+                </tr>
+                <tr style="background-color: #f9fafb;">
+                  <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Total Gastos:</td>
+                  <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; color: #dc2626; text-align: right;">$${(reportData.period.fuel_expenses + reportData.period.total_deductions).toFixed(2)}</td>
+                </tr>
+                <tr style="background-color: #2563eb; color: white;">
+                  <td style="padding: 20px; font-weight: bold; font-size: 18px;">PAGO NETO:</td>
+                  <td style="padding: 20px; text-align: right; font-weight: bold; font-size: 20px;">$${reportData.period.net_payment.toFixed(2)}</td>
+                </tr>
+              </table>
+              
+              <div style="background-color: #f0f9ff; border-left: 4px solid #2563eb; padding: 20px; margin-bottom: 25px;">
+                <p style="margin: 0; color: #1e40af; font-weight: 500;">
+                  📎 El reporte detallado en PDF está adjunto a este correo con información completa de cargas, gastos y deducciones.
+                </p>
+              </div>
+              
+              <p style="color: #4b5563; line-height: 1.6; margin-bottom: 20px;">
+                Si tiene alguna pregunta sobre este reporte, no dude en contactarnos.
+              </p>
+              
+              <p style="color: #4b5563; line-height: 1.6;">
+                Cordialmente,<br>
+                <strong>${company?.name || 'FleetNest TMS'}</strong>
+              </p>
+            </div>
+            
+            <!-- Footer -->
+            <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="color: #6b7280; font-size: 14px; margin: 0;">
+                Este es un correo automático generado por FleetNest TMS
+              </p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
 
       const { data, error } = await supabase.functions.invoke('send-payment-report', {
         body: {
