@@ -84,10 +84,6 @@ export default function Loads() {
     return '';
   };
 
-  // Formatear el monto para mostrarlo en el subtitle
-   const formatCurrency = (amount: number) => {
-     return formatCurrency(amount);
-   };
 
   const periodDateRange = getPeriodDateRange();
   const periodDescription = getPeriodDescription();
