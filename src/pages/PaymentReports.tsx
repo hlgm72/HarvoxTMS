@@ -7,12 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PageToolbar } from "@/components/layout/PageToolbar";
-import { Calendar, Download, FileText, Search, Filter, Plus, DollarSign, Clock, Calculator, Banknote, CalendarDays, Timer, BarChart3, Users, Wallet, ClockIcon } from "lucide-react";
+import { Calendar, FileText, Search, Filter, Plus, DollarSign, Clock, Calculator, Banknote, CalendarDays, Timer, BarChart3, Users, Wallet, ClockIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { formatPaymentPeriod, formatDateAuto, formatCurrency } from "@/lib/dateFormatting";
 import { useFleetNotifications } from "@/components/notifications";
 import { StatsCard } from "@/components/dashboard/StatsCard";
-import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
+
 import { PaymentReportDialog } from "@/components/payments/PaymentReportDialog";
 import { MarkDriverPaidDialog } from "@/components/payments/MarkDriverPaidDialog";
 import { useDriverPaymentActions } from "@/hooks/useDriverPaymentActions";
@@ -88,21 +88,6 @@ export default function PaymentReports() {
   const totalDrivers = new Set(filteredCalculations.map(calc => calc.driver_user_id)).size;
   const pendingReports = filteredCalculations.filter(calc => !calc.calculated_at).length;
 
-  const handleGenerateReport = async (calculation: any) => {
-    setIsGenerating(true);
-    try {
-      // Abrir el diálogo de reporte que contiene todos los datos completos
-      setSelectedCalculationId(calculation.id);
-      setReportDialogOpen(true);
-      
-      showSuccess("Diálogo Abierto", "Usa 'Descargar PDF' desde el diálogo para obtener el reporte completo");
-    } catch (error: any) {
-      console.error('Error opening report dialog:', error);
-      showError("Error", "No se pudo abrir el diálogo de reporte");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
 
   const handleViewReport = (calculationId: string) => {
     setSelectedCalculationId(calculationId);
@@ -301,15 +286,6 @@ export default function PaymentReports() {
                             Marcar Pagado
                           </Button>
                         )}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleGenerateReport(calculation)}
-                          disabled={isGenerating}
-                        >
-                          <Download className="h-4 w-4 mr-2" />
-                          {isGenerating ? "Generando..." : "PDF"}
-                        </Button>
                         <Button
                           variant="outline"
                           size="sm"
