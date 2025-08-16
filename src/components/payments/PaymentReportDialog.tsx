@@ -393,23 +393,58 @@ export function PaymentReportDialog({
   };
 
   const handleConfirmSendEmail = async () => {
-    if (!calculation || !driver) return;
+    if (!calculation || !driver || !company) return;
     
     setIsSendingEmail(true);
     setShowEmailConfirm(false);
-    
+
     try {
+      // Usar los datos que ya tenemos
+      const reportData = getReportData();
+      if (!reportData) {
+        throw new Error('No se pudieron obtener los datos del reporte');
+      }
+
+      // Generar PDF usando la función existente - necesitamos una versión que retorne el doc
+      const { generatePaymentReportPDF } = await import('@/lib/paymentReportPDF');
+      
+      // Usar jsPDF directamente para generar el PDF y obtener los bytes
+      const jsPDF = (await import('jspdf')).default;
+      const doc = new jsPDF('p', 'mm', 'letter');
+      
+      // Generar contenido básico del PDF
+      doc.setFontSize(20);
+      doc.text('Payment Report', 105, 20, { align: 'center' });
+      doc.setFontSize(12);
+      doc.text(`Driver: ${reportData.driver.name}`, 20, 40);
+      doc.text(`Period: ${reportData.period.start_date} - ${reportData.period.end_date}`, 20, 50);
+      doc.text(`Net Payment: $${reportData.period.net_payment.toFixed(2)}`, 20, 60);
+
+      const pdfBlob = doc.output('blob');
+      const pdfBuffer = await pdfBlob.arrayBuffer();
+      const pdfArray = Array.from(new Uint8Array(pdfBuffer));
+
+      const { formatDateSafe } = await import('@/lib/dateFormatting');
+
       const { data, error } = await supabase.functions.invoke('send-payment-report', {
         body: {
-          driver_user_id: calculation.driver_user_id,
-          period_id: calculation.company_payment_period_id,
-          company_name: company?.name || 'Tu Empresa'
+          to: 'hlgm72@gmail.com',
+          subject: `Payment Report - ${reportData.driver.name} - ${formatDateSafe(reportData.period.start_date)}`,
+          html: `
+            <h2>Payment Report</h2>
+            <p>Dear ${reportData.driver.name},</p>
+            <p>Please find attached your payment report for the period from ${formatDateSafe(reportData.period.start_date)} to ${formatDateSafe(reportData.period.end_date)}.</p>
+            <p><strong>Net Payment: $${reportData.period.net_payment.toFixed(2)}</strong></p>
+            <p>Best regards,<br>${company?.name || 'Tu Empresa'}</p>
+          `,
+          pdf_data: pdfArray,
+          pdf_filename: `PaymentReport_${reportData.driver.name.replace(/\s+/g, '_')}_${formatDateSafe(reportData.period.start_date).replace(/\//g, '-')}.pdf`
         }
       });
 
       if (error) throw error;
 
-      showSuccess("Email Enviado", `Reporte enviado exitosamente a ${driver.display_email}`);
+      showSuccess("Email Enviado", `Reporte enviado exitosamente a hlgm72@gmail.com`);
     } catch (error: any) {
       console.error('Error sending email:', error);
       showError("Error", "No se pudo enviar el email");
