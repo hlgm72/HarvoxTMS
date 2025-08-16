@@ -58,60 +58,48 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
       if (requireFinancialAccess && canAccessFinancialData) {
         // Log access to sensitive financial data
         if (companyId) {
-          await supabase.rpc('log_sensitive_company_access', {
+          await supabase.rpc('log_company_data_access', {
             company_id_param: companyId,
-            access_type_param: 'financial_data_view'
+            access_type_param: 'financial_data_view',
+            action_param: 'view'
           });
         }
         
-        // Use companies_financial_data view with SECURITY INVOKER
+        // Use RPC function for financial data
+        const { data, error } = await supabase
+          .rpc('get_companies_financial_data', { 
+            company_id_param: companyId || null 
+          });
+
+        if (error) throw error;
+        
         if (companyId) {
-          const { data, error } = await supabase
-            .from('companies_financial_data')
-            .select('*')
-            .eq('id', companyId)
-            .maybeSingle();
-
-          if (error) throw error;
-          return data;
+          return data && data.length > 0 ? data[0] : null;
         } else {
-          const { data, error } = await supabase
-            .from('companies_financial_data')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-          if (error) throw error;
-          return data;
+          return data || [];
         }
       } else {
-        // Use companies_basic_info view for non-sensitive data
+        // Use RPC function for basic data
+        const { data, error } = await supabase
+          .rpc('get_companies_basic_info', { 
+            company_id_param: companyId || null 
+          });
+
+        if (error) throw error;
+        
+        // Log basic company data access for security audit
+        if (data && data.length > 0 && companyId) {
+          supabase.rpc('log_company_data_access', {
+            company_id_param: data[0].id,
+            access_type_param: 'basic_company_info',
+            action_param: 'view'
+          });
+        }
+        
         if (companyId) {
-          const { data, error } = await supabase
-            .from('companies_basic_info')
-            .select('*')
-            .eq('id', companyId)
-            .single();
-
-          if (error) throw error;
-          
-          // Log basic company data access for security audit
-          if (data) {
-            supabase.rpc('log_company_data_access', {
-              company_id_param: data.id,
-              access_type_param: 'basic_company_info',
-              action_param: 'view'
-            });
-          }
-          
-          return data;
+          return data && data.length > 0 ? data[0] : null;
         } else {
-          const { data, error } = await supabase
-            .from('companies_basic_info')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-          if (error) throw error;
-          return data;
+          return data || [];
         }
       }
     },
@@ -142,27 +130,25 @@ export const useCompanyFinancialData = (companyId?: string) => {
 
       // Log access to sensitive financial data
       if (companyId) {
-        await supabase.rpc('log_sensitive_company_access', {
+        await supabase.rpc('log_company_data_access', {
           company_id_param: companyId,
-          access_type_param: 'financial_data_direct'
+          access_type_param: 'financial_data_direct',
+          action_param: 'view'
         });
-        
-        const { data, error } = await supabase
-          .from('companies_financial_data')
-          .select('*')
-          .eq('id', companyId)
-          .maybeSingle();
+      }
+      
+      // Use RPC function for financial data
+      const { data, error } = await supabase
+        .rpc('get_companies_financial_data', { 
+          company_id_param: companyId || null 
+        });
 
-        if (error) throw error;
-        return data as CompanyFinancial;
+      if (error) throw error;
+      
+      if (companyId) {
+        return data && data.length > 0 ? data[0] as CompanyFinancial : null;
       } else {
-        const { data, error } = await supabase
-          .from('companies_financial_data')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        return data as CompanyFinancial[];
+        return data as CompanyFinancial[] || [];
       }
     },
     enabled: !roleLoading && !!selectedCompany && canAccessFinancialData,
@@ -179,23 +165,18 @@ export const useCompanyPublicData = (companyId?: string) => {
   return useQuery({
     queryKey: ['company_public_data', companyId, selectedCompany?.role],
     queryFn: async () => {
+      // Use RPC function for basic data
+      const { data, error } = await supabase
+        .rpc('get_companies_basic_info', { 
+          company_id_param: companyId || null 
+        });
+
+      if (error) throw error;
+      
       if (companyId) {
-        const { data, error } = await supabase
-          .from('companies_basic_info')
-          .select('*')
-          .eq('id', companyId)
-          .single();
-
-        if (error) throw error;
-        return data as CompanyPublic;
+        return data && data.length > 0 ? data[0] as CompanyPublic : null;
       } else {
-        const { data, error } = await supabase
-          .from('companies_basic_info')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        return data as CompanyPublic[];
+        return data as CompanyPublic[] || [];
       }
     },
     enabled: !roleLoading && !!selectedCompany,
