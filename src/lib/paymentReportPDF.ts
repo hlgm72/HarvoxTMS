@@ -233,7 +233,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   // Función para generar la cabecera (reutilizable en cada página)
   const addPageHeader = async () => {
-    currentY = 12;
+    currentY = 14;
     
     // Agregar fondo gris claro con esquinas redondeadas y borde para la cabecera
     const headerHeight = 26;
@@ -450,7 +450,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     fontStyle: 'bold',
     color: '#ffffff' // Texto blanco para contraste con fondo azul
   });
-  currentY += 15;
+  currentY += 10;
 
   if (data.loads && data.loads.length > 0) {
     data.loads.forEach((load, index) => {
