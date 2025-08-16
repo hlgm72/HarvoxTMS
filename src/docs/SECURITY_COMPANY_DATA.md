@@ -59,8 +59,12 @@ This document describes the security implementation for protecting sensitive com
 ```typescript
 // For dashboards, lists, basic company info
 const { data } = await supabase
-  .from('companies_public')
-  .select('*');
+  .from('companies')
+  .select(`
+    id, name, street_address, state_id, zip_code, city, 
+    phone, email, logo_url, status, plan_type, 
+    created_at, updated_at
+  `);
 ```
 
 #### Financial/Administrative Data

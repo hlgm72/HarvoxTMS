@@ -45,7 +45,7 @@ export const useUserCompanies = () => {
         // Get company information for all companies
         const companyIds = userRoles.map(role => role.company_id);
         const { data: companiesData, error: companiesError } = await supabase
-          .from('companies_public')
+          .from('companies')
           .select('id, name, logo_url')
           .in('id', companyIds);
 

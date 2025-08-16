@@ -52,33 +52,57 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
     'superadmin'
   ].includes(selectedCompany.role);
 
-  // Choose appropriate view based on access level needed and user permissions
-  const viewName = requireFinancialAccess && canAccessFinancialData 
-    ? 'companies_financial' 
-    : 'companies_public';
-
   return useQuery({
-    queryKey: ['secure_company_data', companyId, viewName, selectedCompany?.role],
+    queryKey: ['secure_company_data', companyId, requireFinancialAccess, selectedCompany?.role],
     queryFn: async () => {
-      if (companyId) {
-        // Single company query
-        const { data, error } = await supabase
-          .from(viewName)
-          .select('*')
-          .eq('id', companyId)
-          .single();
+      if (requireFinancialAccess && canAccessFinancialData) {
+        // Use financial view for sensitive data
+        if (companyId) {
+          const { data, error } = await supabase
+            .from('companies_financial')
+            .select('*')
+            .eq('id', companyId)
+            .single();
 
-        if (error) throw error;
-        return data;
+          if (error) throw error;
+          return data;
+        } else {
+          const { data, error } = await supabase
+            .from('companies_financial')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (error) throw error;
+          return data;
+        }
       } else {
-        // All companies query
-        const { data, error } = await supabase
-          .from(viewName)
-          .select('*')
-          .order('created_at', { ascending: false });
+        // Use main companies table for basic data
+        if (companyId) {
+          const { data, error } = await supabase
+            .from('companies')
+            .select(`
+              id, name, street_address, state_id, zip_code, city, 
+              phone, email, logo_url, status, plan_type, 
+              created_at, updated_at
+            `)
+            .eq('id', companyId)
+            .single();
 
-        if (error) throw error;
-        return data;
+          if (error) throw error;
+          return data;
+        } else {
+          const { data, error } = await supabase
+            .from('companies')
+            .select(`
+              id, name, street_address, state_id, zip_code, city, 
+              phone, email, logo_url, status, plan_type, 
+              created_at, updated_at
+            `)
+            .order('created_at', { ascending: false });
+
+          if (error) throw error;
+          return data;
+        }
       }
     },
     enabled: !roleLoading && !!selectedCompany,
@@ -141,8 +165,12 @@ export const useCompanyPublicData = (companyId?: string) => {
     queryFn: async () => {
       if (companyId) {
         const { data, error } = await supabase
-          .from('companies_public')
-          .select('*')
+          .from('companies')
+          .select(`
+            id, name, street_address, state_id, zip_code, city, 
+            phone, email, logo_url, status, plan_type, 
+            created_at, updated_at
+          `)
           .eq('id', companyId)
           .single();
 
@@ -150,8 +178,12 @@ export const useCompanyPublicData = (companyId?: string) => {
         return data as CompanyPublic;
       } else {
         const { data, error } = await supabase
-          .from('companies_public')
-          .select('*')
+          .from('companies')
+          .select(`
+            id, name, street_address, state_id, zip_code, city, 
+            phone, email, logo_url, status, plan_type, 
+            created_at, updated_at
+          `)
           .order('created_at', { ascending: false });
 
         if (error) throw error;
