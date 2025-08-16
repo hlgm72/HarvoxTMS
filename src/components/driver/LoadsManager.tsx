@@ -295,7 +295,7 @@ export function LoadsManager({ className }: LoadsManagerProps) {
                           <div key={stop.id} className="flex items-start gap-3">
                             <div className="flex flex-col items-center">
                               <div className={`w-3 h-3 rounded-full ${
-                                stop.stop_type === 'pickup' ? 'bg-blue-500' : 'bg-green-500'
+                                stop.stop_type === 'pickup' ? 'bg-green-500' : 'bg-red-500'
                               }`}></div>
                               {index < load.stops!.length - 1 && (
                                 <div className="w-0.5 h-6 bg-border"></div>
@@ -334,9 +334,9 @@ export function LoadsManager({ className }: LoadsManagerProps) {
                       // Fallback to simple origin/destination view
                       <div className="flex items-start gap-3">
                         <div className="flex flex-col items-center">
-                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                          <div className="w-0.5 h-8 bg-border"></div>
                           <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                          <div className="w-0.5 h-8 bg-border"></div>
+                          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                         </div>
                         <div className="flex-1 space-y-2">
                           <div>
