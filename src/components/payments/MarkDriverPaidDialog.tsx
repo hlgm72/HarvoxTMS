@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from "@/integrations/supabase/client";
+import { formatCurrency } from '@/lib/dateFormatting';
 import { DollarSign, CreditCard, Building, Check } from "lucide-react";
 
 interface MarkDriverPaidDialogProps {
@@ -99,7 +100,7 @@ export function MarkDriverPaidDialog({
           <div className="bg-muted/50 p-3 rounded-lg">
             <p className="font-medium">{driverName}</p>
             <p className="text-lg font-bold text-green-600">
-              ${netPayment.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+              ${formatCurrency(netPayment)}
             </p>
           </div>
 

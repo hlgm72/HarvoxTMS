@@ -7,7 +7,7 @@ import { Calendar, CalendarDays, ChevronDown, Clock, X, TrendingUp, FileText, Lo
 import { usePaymentPeriods, useCurrentPaymentPeriod, usePreviousPaymentPeriod, useNextPaymentPeriod } from '@/hooks/usePaymentPeriods';
 import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { formatPaymentPeriod, formatPaymentPeriodCompact, formatPaymentPeriodBadge, formatDateOnly } from '@/lib/dateFormatting';
+import { formatPaymentPeriod, formatPaymentPeriodCompact, formatPaymentPeriodBadge, formatDateOnly, formatMonthName } from '@/lib/dateFormatting';
 
 export interface PeriodFilterValue {
   type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
@@ -293,7 +293,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <TrendingUp className="h-4 w-4 mr-2" />
                 Este mes
                 <Badge variant="secondary" className="ml-auto text-xs">
-                  {format(new Date(), 'MMM', { locale: es })}
+                  {formatMonthName(new Date())}
                 </Badge>
               </Button>
 
@@ -305,7 +305,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <TrendingUp className="h-4 w-4 mr-2" />
                 Mes pasado
                 <Badge variant="secondary" className="ml-auto text-xs">
-                  {format(subMonths(new Date(), 1), 'MMM', { locale: es })}
+                  {formatMonthName(subMonths(new Date(), 1))}
                 </Badge>
               </Button>
 

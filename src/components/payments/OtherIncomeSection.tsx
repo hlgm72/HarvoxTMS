@@ -19,7 +19,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatCurrency, formatPrettyDate, formatMonthName } from '@/lib/dateFormatting';
 import { 
   Plus, 
   DollarSign, 
@@ -182,7 +182,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">Aprobados</p>
-                <p className="text-lg sm:text-xl font-semibold">${totalApproved.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
+                <p className="text-lg sm:text-xl font-semibold">${formatCurrency(totalApproved)}</p>
               </div>
             </div>
           </CardContent>
@@ -196,7 +196,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">Pendientes</p>
-                <p className="text-lg sm:text-xl font-semibold">${totalPending.toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
+                <p className="text-lg sm:text-xl font-semibold">${formatCurrency(totalPending)}</p>
               </div>
             </div>
           </CardContent>
@@ -210,7 +210,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">Total</p>
-                <p className="text-lg sm:text-xl font-semibold">${(totalApproved + totalPending).toLocaleString('es-US', { minimumFractionDigits: 2 })}</p>
+                <p className="text-lg sm:text-xl font-semibold">${formatCurrency(totalApproved + totalPending)}</p>
               </div>
             </div>
           </CardContent>
@@ -263,9 +263,9 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                       Otros Ingresos - {roleName}
                     </CardTitle>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>Aprobados: ${roleStats.approved.toLocaleString('es-US', { minimumFractionDigits: 2 })}</span>
-                      <span>Pendientes: ${roleStats.pending.toLocaleString('es-US', { minimumFractionDigits: 2 })}</span>
-                      <span className="font-medium">Total: ${roleStats.total.toLocaleString('es-US', { minimumFractionDigits: 2 })}</span>
+                      <span>Aprobados: ${formatCurrency(roleStats.approved)}</span>
+                      <span>Pendientes: ${formatCurrency(roleStats.pending)}</span>
+                      <span className="font-medium">Total: ${formatCurrency(roleStats.total)}</span>
                     </div>
                   </div>
                 </div>
@@ -288,7 +288,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                       <TableRow key={item.id}>
                         <TableCell className="font-medium">{item.description}</TableCell>
                         <TableCell>{getIncomeTypeLabel(item.income_type)}</TableCell>
-                        <TableCell className="font-semibold">${item.amount.toLocaleString('es-US', { minimumFractionDigits: 2 })}</TableCell>
+                        <TableCell className="font-semibold">${formatCurrency(item.amount)}</TableCell>
                         <TableCell>{formatDateOnly(item.income_date)}</TableCell>
                         {!isDriver && <TableCell>{getUserName(item.user_id, item.applied_to_role)}</TableCell>}
                         <TableCell>{getStatusBadge(item.status)}</TableCell>
@@ -354,7 +354,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Monto</Label>
-                  <p className="text-sm font-semibold text-green-600">${selectedItem.amount.toLocaleString()}</p>
+                  <p className="text-sm font-semibold text-green-600">${formatCurrency(selectedItem.amount)}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Fecha</Label>
@@ -418,7 +418,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
             <AlertDialogTitle>¿Eliminar ingreso adicional?</AlertDialogTitle>
             <AlertDialogDescription>
               Esta acción eliminará permanentemente el ingreso "{itemToDelete?.description}" 
-              por ${itemToDelete?.amount.toLocaleString()}. El período del conductor será 
+              por ${formatCurrency(itemToDelete?.amount || 0)}. El período del conductor será 
               recalculado automáticamente.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -556,7 +556,7 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
                 )}
               >
                 {formData.income_date ? (
-                  format(formData.income_date, "PPP", { locale: es })
+                  formatPrettyDate(formData.income_date)
                 ) : (
                   <span>Seleccionar fecha</span>
                 )}
@@ -568,7 +568,7 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
                 {/* Selectores de mes y año */}
                 <div className="grid grid-cols-2 gap-2">
                   <Select
-                    value={formData.income_date ? format(formData.income_date, 'MMMM', { locale: es }) : format(new Date(), 'MMMM', { locale: es })}
+                    value={formData.income_date ? formatMonthName(formData.income_date) : formatMonthName(new Date())}
                     onValueChange={(monthName) => {
                       const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
                                         'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']

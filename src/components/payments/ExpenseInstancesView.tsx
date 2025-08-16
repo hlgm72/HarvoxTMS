@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, CheckCircle2, Clock, DollarSign } from "lucide-react";
-import { formatDateOnly, formatDateTime } from '@/lib/dateFormatting';
+import { formatDateOnly, formatDateTime, formatCurrency } from '@/lib/dateFormatting';
 
 export function ExpenseInstancesView() {
   const { user } = useAuth();
@@ -111,7 +111,7 @@ export function ExpenseInstancesView() {
           <CardContent>
             <div className="text-2xl font-bold">{appliedInstances.length}</div>
             <p className="text-xs text-muted-foreground">
-              ${totalAppliedAmount.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+              ${formatCurrency(totalAppliedAmount)}
             </p>
           </CardContent>
         </Card>
@@ -124,7 +124,7 @@ export function ExpenseInstancesView() {
           <CardContent>
             <div className="text-2xl font-bold">{deferredInstances.length}</div>
             <p className="text-xs text-muted-foreground">
-              ${totalDeferredAmount.toLocaleString('es-US', { minimumFractionDigits: 2 })}
+              ${formatCurrency(totalDeferredAmount)}
             </p>
           </CardContent>
         </Card>
@@ -167,7 +167,7 @@ export function ExpenseInstancesView() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary">
-                    ${(instance.amount || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                    ${formatCurrency(instance.amount || 0)}
                   </Badge>
                   <Badge variant={getStatusBadgeVariant(instance.status)}>
                     {getStatusLabel(instance.status)}

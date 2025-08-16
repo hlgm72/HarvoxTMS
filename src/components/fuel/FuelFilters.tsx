@@ -7,7 +7,7 @@ import { CalendarIcon, Filter, X, User, Clock, Car, Fuel } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { formatShortDate, formatMediumDate } from '@/lib/dateFormatting';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { useGeotabVehicles } from '@/hooks/useGeotabVehicles';
 import { cn } from '@/lib/utils';
@@ -296,11 +296,11 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
                   {filters.dateRange.from ? (
                     filters.dateRange.to ? (
                       <>
-                        {format(filters.dateRange.from, "dd MMM", { locale: es })} -{" "}
-                        {format(filters.dateRange.to, "dd MMM", { locale: es })}
+                        {formatShortDate(filters.dateRange.from)} -{" "}
+                        {formatShortDate(filters.dateRange.to)}
                       </>
                     ) : (
-                      format(filters.dateRange.from, "dd MMM yyyy", { locale: es })
+                      formatMediumDate(filters.dateRange.from)
                     )
                   ) : (
                     "Seleccionar fechas"
@@ -323,7 +323,6 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
                     });
                   }}
                   numberOfMonths={2}
-                  locale={es}
                   className={cn("p-3 pointer-events-auto")}
                 />
               </PopoverContent>
@@ -376,8 +375,8 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
             {(filters.dateRange.from || filters.dateRange.to) && (
               <Badge variant="outline" className="gap-1">
                 <CalendarIcon className="h-3 w-3" />
-                Fechas: {filters.dateRange.from && format(filters.dateRange.from, "dd/MM", { locale: es })}
-                {filters.dateRange.to && ` - ${format(filters.dateRange.to, "dd/MM", { locale: es })}`}
+                Fechas: {filters.dateRange.from && formatShortDate(filters.dateRange.from)}
+                {filters.dateRange.to && ` - ${formatShortDate(filters.dateRange.to)}`}
                 <button
                   onClick={() => handleFilterChange('dateRange', { from: undefined, to: undefined })}
                   className="ml-1 hover:bg-muted rounded-sm"

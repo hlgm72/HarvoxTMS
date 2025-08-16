@@ -5,7 +5,7 @@ import { MapPin, Edit, Calendar, Clock, Building, Phone, FileText } from 'lucide
 import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { formatMediumDate } from '@/lib/dateFormatting';
 import { supabase } from '@/integrations/supabase/client';
 
 interface StopListItemProps {
@@ -149,7 +149,7 @@ export function StopListItem({
             {stop.scheduled_date && (
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                <span>{format(stop.scheduled_date, 'dd MMM yyyy', { locale: es })}</span>
+                <span>{formatMediumDate(stop.scheduled_date)}</span>
               </div>
             )}
             {stop.scheduled_time && (

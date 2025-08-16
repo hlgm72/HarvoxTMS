@@ -6,7 +6,7 @@ import { CalendarIcon, FilterX } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatShortDate, formatMediumDate } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 
 const statusOptions = [
@@ -143,11 +143,11 @@ export function LoadFilters({ filters, onFiltersChange }: LoadFiltersProps) {
                   {filters.dateRange.from ? (
                     filters.dateRange.to ? (
                       <>
-                        {format(filters.dateRange.from, "dd/MM/yy", { locale: es })} -{" "}
-                        {format(filters.dateRange.to, "dd/MM/yy", { locale: es })}
+                        {formatShortDate(filters.dateRange.from)} -{" "}
+                        {formatShortDate(filters.dateRange.to)}
                       </>
                     ) : (
-                      format(filters.dateRange.from, "dd/MM/yyyy", { locale: es })
+                      formatMediumDate(filters.dateRange.from)
                     )
                   ) : (
                     "Seleccionar fechas"

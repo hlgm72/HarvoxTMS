@@ -3,6 +3,7 @@
  * Este archivo centraliza todas las funciones de formateo de fechas para asegurar consistencia
  */
 
+import { format } from 'date-fns';
 import { es, enUS } from 'date-fns/locale';
 import { 
   formatDateSafe,
@@ -207,6 +208,68 @@ export const getGlobalLanguage = (): string => {
 export const formatDateAuto = (dateInput: string | Date | null | undefined): string => {
   const language = getGlobalLanguage();
   return formatDateOnlyWithLocale(dateInput, language);
+};
+
+// Funciones de formateo mejoradas con date-fns que respetan internacionalización
+export const formatInternationalized = (date: Date, pattern: string): string => {
+  const language = getGlobalLanguage();
+  const locale = language === 'es' ? es : enUS;
+  
+  try {
+    return format(date, pattern, { locale });
+  } catch (error) {
+    console.error('Error formatting date with pattern:', pattern, error);
+    return language === 'es' ? 'Fecha inválida' : 'Invalid date';
+  }
+};
+
+// Función para formatear fechas PPP (Pretty Print)
+export const formatPrettyDate = (date: Date | null | undefined): string => {
+  if (!date) return getGlobalLanguage() === 'es' ? 'Seleccionar fecha' : 'Select date';
+  return formatInternationalized(date, 'PPP');
+};
+
+// Función para formatear fechas cortas
+export const formatShortDate = (date: Date | null | undefined): string => {
+  if (!date) return '';
+  const language = getGlobalLanguage();
+  const pattern = language === 'es' ? 'dd/MM/yy' : 'MM/dd/yy';
+  return formatInternationalized(date, pattern);
+};
+
+// Función para formatear fechas medianas
+export const formatMediumDate = (date: Date | null | undefined): string => {
+  if (!date) return '';
+  const language = getGlobalLanguage();
+  const pattern = language === 'es' ? 'dd MMM yyyy' : 'MMM dd, yyyy';
+  return formatInternationalized(date, pattern);
+};
+
+// Función para nombres de meses
+export const formatMonthName = (date: Date): string => {
+  return formatInternationalized(date, 'MMMM');
+};
+
+// Función para formatear dinero respetando idioma
+export const formatCurrency = (amount: number): string => {
+  const language = getGlobalLanguage();
+  
+  try {
+    if (language === 'es') {
+      return amount.toLocaleString('es-US', { 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 2 
+      });
+    } else {
+      return amount.toLocaleString('en-US', { 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 2 
+      });
+    }
+  } catch (error) {
+    console.error('Error formatting currency:', error);
+    return amount.toFixed(2);
+  }
 };
 
 export const formatDateTimeAuto = (dateInput: string | Date | null | undefined): string => {
