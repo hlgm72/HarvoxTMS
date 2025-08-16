@@ -531,6 +531,7 @@ export type Database = {
           is_locked: boolean
           locked_at: string | null
           locked_by: string | null
+          payment_date: string | null
           period_end_date: string
           period_frequency: string
           period_start_date: string
@@ -545,6 +546,7 @@ export type Database = {
           is_locked?: boolean
           locked_at?: string | null
           locked_by?: string | null
+          payment_date?: string | null
           period_end_date: string
           period_frequency: string
           period_start_date: string
@@ -559,6 +561,7 @@ export type Database = {
           is_locked?: boolean
           locked_at?: string | null
           locked_by?: string | null
+          payment_date?: string | null
           period_end_date?: string
           period_frequency?: string
           period_start_date?: string
@@ -3015,6 +3018,10 @@ export type Database = {
           total_gallons: number
           transaction_count: number
         }[]
+      }
+      calculate_payment_date: {
+        Args: { payment_day: string; period_end_date: string }
+        Returns: string
       }
       can_access_load: {
         Args: { load_id_param: string }

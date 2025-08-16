@@ -227,7 +227,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       dateRange: `${startFormatted} - ${endFormatted}`,
       paymentDate: data.period.payment_date ? 
         `Payment Date: ${formatDateSafe(data.period.payment_date, 'MM/dd/yyyy')}` :
-        `Payment Date: ${formatDateSafe(new Date().toISOString(), 'MM/dd/yyyy')}`
+        'Payment Date: Not Set'
     };
   };
 

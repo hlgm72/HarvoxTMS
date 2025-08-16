@@ -43,7 +43,8 @@ export default function PaymentReports() {
           company_payment_periods!inner(
             period_start_date,
             period_end_date,
-            company_id
+            company_id,
+            payment_date
           )
         `)
         .order('created_at', { ascending: false });
@@ -103,7 +104,8 @@ export default function PaymentReports() {
           fuel_expenses: calculation.fuel_expenses,
           total_deductions: calculation.total_deductions,
           other_income: calculation.other_income,
-          net_payment: calculateNetPayment(calculation)
+          net_payment: calculateNetPayment(calculation),
+          payment_date: calculation.company_payment_periods.payment_date
         },
         company: {
           name: 'Tu Empresa'
