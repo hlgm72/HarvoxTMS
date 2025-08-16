@@ -343,7 +343,19 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     </span>
                     <span className="flex items-center gap-1">
                       <DollarSign className="h-3 w-3" />
-                      {formatCurrency(load.total_amount)}
+                      <span>
+                        {formatCurrency(load.total_amount)}
+                        <span className="text-xs text-muted-foreground ml-1">
+                          ({[
+                            load.leasing_percentage && load.leasing_percentage > 0 ? 
+                              `L${load.leasing_percentage}%-${formatCurrency((load.total_amount || 0) * (load.leasing_percentage || 0) / 100)}` : null,
+                            load.factoring_percentage && load.factoring_percentage > 0 ? 
+                              `F${load.factoring_percentage}%-${formatCurrency((load.total_amount || 0) * (load.factoring_percentage || 0) / 100)}` : null,
+                            load.dispatching_percentage && load.dispatching_percentage > 0 ? 
+                              `D${load.dispatching_percentage}%-${formatCurrency((load.total_amount || 0) * (load.dispatching_percentage || 0) / 100)}` : null
+                          ].filter(Boolean).join(', ')})
+                        </span>
+                      </span>
                     </span>
                   </div>
                 </div>
