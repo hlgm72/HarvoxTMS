@@ -22,6 +22,7 @@ import { useEquipment } from '@/hooks/useEquipment';
 import { useDriverEquipment } from '@/hooks/useDriverEquipment';
 import { useFuelExpenseACID } from '@/hooks/useFuelExpenseACID';
 import { useDriverCards } from '@/hooks/useDriverCards';
+import { formatPrettyDate } from '@/lib/dateFormatting';
 import { StateCombobox } from '@/components/ui/StateCombobox';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';

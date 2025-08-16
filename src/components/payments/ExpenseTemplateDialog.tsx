@@ -14,7 +14,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CalendarIcon, AlertTriangle, Check, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { formatPrettyDate, formatMonthName } from '@/lib/dateFormatting';
+import { useTranslation } from 'react-i18next';
 import { cn } from "@/lib/utils";
 import { useFleetNotifications } from "@/components/notifications";
 import { useATMInput } from "@/hooks/useATMInput";
@@ -533,7 +534,7 @@ export function ExpenseTemplateDialog({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {effectiveFrom ? format(effectiveFrom, "PPP", { locale: es }) : "Seleccionar fecha"}
+                    {effectiveFrom ? formatPrettyDate(effectiveFrom) : "Seleccionar fecha"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -541,7 +542,7 @@ export function ExpenseTemplateDialog({
                     {/* Selectores de mes y año */}
                     <div className="grid grid-cols-2 gap-2">
                       <Select
-                        value={effectiveFrom ? format(effectiveFrom, 'MMMM', { locale: es }) : ""}
+                        value={effectiveFrom ? formatMonthName(effectiveFrom) : ""}
                         onValueChange={(monthName) => {
                           const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
                                             'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
@@ -629,7 +630,7 @@ export function ExpenseTemplateDialog({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {effectiveUntil ? format(effectiveUntil, "PPP", { locale: es }) : "Indefinido"}
+                    {effectiveUntil ? formatPrettyDate(effectiveUntil) : "Indefinido"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -637,7 +638,7 @@ export function ExpenseTemplateDialog({
                     {/* Selectores de mes y año */}
                     <div className="grid grid-cols-2 gap-2">
                       <Select
-                        value={effectiveUntil ? format(effectiveUntil, 'MMMM', { locale: es }) : ""}
+                        value={effectiveUntil ? formatMonthName(effectiveUntil) : ""}
                         onValueChange={(monthName) => {
                           const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
                                             'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']

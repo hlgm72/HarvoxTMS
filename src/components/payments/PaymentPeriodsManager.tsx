@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Calendar, DollarSign, Users, Plus, TrendingUp, Fuel, Receipt } from "lucide-react";
-import { formatPaymentPeriod } from '@/lib/dateFormatting';
+import { formatPaymentPeriod, formatCurrency } from '@/lib/dateFormatting';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CreateSpecialPeriodDialog } from "./CreateSpecialPeriodDialog";
 import { PaymentPeriodDetails } from "./PaymentPeriodDetails";
@@ -202,7 +202,7 @@ export function PaymentPeriodsManager() {
                       <div>
                         <p className="text-xs text-muted-foreground">{t('summary.gross_income')}</p>
                         <p className="text-sm font-medium">
-                          ${(summary.gross_earnings || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                          ${formatCurrency(summary.gross_earnings || 0)}
                         </p>
                       </div>
                     </div>
@@ -215,7 +215,7 @@ export function PaymentPeriodsManager() {
                       <div>
                         <p className="text-xs text-muted-foreground">{t('summary.other_income')}</p>
                         <p className="text-sm font-medium text-success">
-                          ${(summary.other_income || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                          ${formatCurrency(summary.other_income || 0)}
                         </p>
                       </div>
                     </div>
@@ -228,7 +228,7 @@ export function PaymentPeriodsManager() {
                       <div>
                         <p className="text-xs text-muted-foreground">{t('summary.total_deductions')}</p>
                         <p className="text-sm font-medium text-destructive">
-                          -${(summary.deductions || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                          -${formatCurrency(summary.deductions || 0)}
                         </p>
                       </div>
                     </div>
@@ -241,7 +241,7 @@ export function PaymentPeriodsManager() {
                       <div>
                         <p className="text-xs text-muted-foreground">{t('tabs.fuel_expenses')}</p>
                         <p className="text-sm font-medium text-warning">
-                          -${(summary.fuel_expenses || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                          -${formatCurrency(summary.fuel_expenses || 0)}
                         </p>
                       </div>
                     </div>
@@ -257,7 +257,7 @@ export function PaymentPeriodsManager() {
                           <p className={`text-sm font-medium ${
                             (summary.net_payment || 0) < 0 ? 'text-destructive' : ''
                           }`}>
-                            ${(summary.net_payment || 0).toLocaleString('es-US', { minimumFractionDigits: 2 })}
+                            ${formatCurrency(summary.net_payment || 0)}
                           </p>
                           {summary.drivers_with_negative_balance > 0 && (
                             <AlertTriangle className="h-3 w-3 text-destructive" />
