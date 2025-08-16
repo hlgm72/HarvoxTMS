@@ -69,7 +69,7 @@ export function AddressForm({
       const formattedValue = handleZipCodeInput(e.target.value);
       onZipCodeChange(formattedValue);
       
-      // Auto-lookup city and state when ZIP is complete
+      // Auto-lookup city and state when ZIP is complete (always enabled)
       if (formattedValue.length === 5) {
         const zipData = await lookupZipCode(formattedValue);
         if (zipData) {

@@ -13,6 +13,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { StateCombobox } from '@/components/ui/StateCombobox';
 import { CityCombobox } from '@/components/ui/CityCombobox';
+import { CompanyAddressAutocomplete } from '@/components/ui/CompanyAddressAutocomplete';
+import { useZipCodeLookup } from '@/hooks/useZipCodeLookup';
 import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
 import { createTextHandlers, createPhoneHandlers } from '@/lib/textUtils';
@@ -47,6 +49,7 @@ export function StopFormCard({
 }: StopFormCardProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isDateOpen, setIsDateOpen] = useState(false);
+  const { lookupZipCode, isLoading: isZipLoading, error: zipError } = useZipCodeLookup();
 
   const companyNameHandlers = createTextHandlers(
     (value) => onUpdate({ company_name: value }),
@@ -73,10 +76,35 @@ export function StopFormCard({
     'text'
   );
 
-  const zipHandlers = createTextHandlers(
-    (value) => onUpdate({ zip_code: value.replace(/\D/g, '') }),
-    'text'
-  );
+  const handleZipCodeInput = (value: string): string => {
+    // Remove all non-numeric characters and limit to 5 digits
+    const numbers = value.replace(/\D/g, '');
+    return numbers.slice(0, 5);
+  };
+  
+  const zipCodeHandlers = {
+    onChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const formattedValue = handleZipCodeInput(e.target.value);
+      onUpdate({ zip_code: formattedValue });
+      
+      // Auto-lookup city and state when ZIP is complete
+      if (formattedValue.length === 5) {
+        const zipData = await lookupZipCode(formattedValue);
+        if (zipData) {
+          onUpdate({ state: zipData.stateId, city: zipData.city });
+        }
+      }
+    },
+    onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => {
+      // Allow only numbers, backspace, delete, arrows
+      const allowedKeys = /[0-9]/;
+      const specialKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
+      
+      if (!allowedKeys.test(e.key) && !specialKeys.includes(e.key)) {
+        e.preventDefault();
+      }
+    }
+  };
 
   const getStopTypeLabel = () => {
     if (isFirst) return 'Recogida (Pickup)';
@@ -86,6 +114,22 @@ export function StopFormCard({
 
   const getStopTypeColor = () => {
     return stop.stop_type === 'pickup' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
+  };
+
+  const handleCompanySelect = (company: {
+    name: string;
+    streetAddress: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+  }) => {
+    onUpdate({
+      company_name: company.name,
+      address: company.streetAddress,
+      city: company.city || '',
+      state: company.state || '',
+      zip_code: company.zipCode || ''
+    });
   };
 
   return (
@@ -136,16 +180,20 @@ export function StopFormCard({
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* Company Name */}
+        {/* Company Name with Autocomplete */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor={`company-${stop.id}`}>Empresa *</Label>
+            <CompanyAddressAutocomplete
+              onSelectCompany={handleCompanySelect}
+              placeholder="Buscar empresa registrada..."
+              label="Empresa *"
+            />
             <Input
-              id={`company-${stop.id}`}
-              placeholder="Nombre de la empresa"
+              placeholder="O escribir nombre manualmente"
               value={stop.company_name}
               onChange={companyNameHandlers.onChange}
               onBlur={companyNameHandlers.onBlur}
+              className="text-sm"
             />
           </div>
 
@@ -203,10 +251,19 @@ export function StopFormCard({
               id={`zip-${stop.id}`}
               placeholder="12345"
               value={stop.zip_code || ''}
-              onChange={zipHandlers.onChange}
-              onBlur={zipHandlers.onBlur}
+              onChange={zipCodeHandlers.onChange}
+              onKeyPress={zipCodeHandlers.onKeyPress}
+              disabled={isZipLoading}
               maxLength={5}
             />
+            {isZipLoading && (
+              <p className="text-sm text-muted-foreground">
+                Buscando información...
+              </p>
+            )}
+            {zipError && (
+              <p className="text-sm text-destructive">{zipError}</p>
+            )}
           </div>
         </div>
 

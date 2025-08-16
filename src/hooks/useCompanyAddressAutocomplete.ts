@@ -28,15 +28,31 @@ export function useCompanyAddressAutocomplete() {
 
       if (error) throw error;
 
-      return (data || []).map(company => ({
-        id: company.id,
-        name: company.name,
-        address: company.address || '',
-        // Parse address if it contains city, state, zip
-        city: '',
-        state: '',
-        zipCode: ''
-      }));
+      return (data || []).map(company => {
+        // Try to parse address for city, state, zip if it's in a standard format
+        const address = company.address || '';
+        let city = '', state = '', zipCode = '';
+        
+        // Look for patterns like "City, ST 12345" at the end of address
+        const addressMatch = address.match(/^(.+),\s*([A-Z]{2})\s+(\d{5})(?:-\d{4})?$/);
+        if (addressMatch) {
+          const parts = addressMatch[1].split(',');
+          if (parts.length >= 2) {
+            city = parts[parts.length - 1].trim();
+            state = addressMatch[2];
+            zipCode = addressMatch[3];
+          }
+        }
+        
+        return {
+          id: company.id,
+          name: company.name,
+          address: address,
+          city,
+          state,
+          zipCode
+        };
+      });
     },
     enabled: searchTerm.length >= 2,
     staleTime: 5 * 60 * 1000, // 5 minutes
