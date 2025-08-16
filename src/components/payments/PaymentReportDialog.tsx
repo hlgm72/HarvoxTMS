@@ -400,6 +400,15 @@ export function PaymentReportDialog({
     setShowEmailConfirm(false);
 
     try {
+      // Consultar el idioma preferido del conductor
+      const { data: driverProfile } = await supabase
+        .from('profiles')
+        .select('preferred_language')
+        .eq('user_id', calculation.driver_user_id)
+        .single();
+
+      const driverLanguage = driverProfile?.preferred_language || 'en';
+
       // Usar los datos que ya tenemos
       const reportData = getReportData();
       if (!reportData) {
@@ -421,8 +430,20 @@ export function PaymentReportDialog({
       const pdfArray = Array.from(new Uint8Array(pdfBuffer));
 
       const { formatDateSafe } = await import('@/lib/dateFormatting');
+      const { getEmailTranslations, interpolateText } = await import('@/lib/emailTranslations');
 
-      // Crear HTML profesional directamente (más confiable que OpenAI)
+      // Obtener traducciones según el idioma del conductor
+      const translations = getEmailTranslations(driverLanguage);
+      
+      // Variables para interpolación
+      const variables = {
+        driverName: reportData.driver.name,
+        startDate: formatDateSafe(reportData.period.start_date),
+        endDate: formatDateSafe(reportData.period.end_date),
+        period: format(new Date(reportData.period.end_date), "yyyy/'W'ww")
+      };
+
+      // Crear HTML profesional con traducciones dinámicas
       const emailHTML = `
         <!DOCTYPE html>
         <html>
@@ -439,53 +460,51 @@ export function PaymentReportDialog({
                 <img src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/fleetnest/logo_64x64.png" 
                      alt="FleetNest Logo" 
                      style="width: 40px; height: 40px; object-fit: contain;">
-                <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">FleetNest TMS</h1>
+                <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">${translations.header.title}</h1>
               </div>
-              <p style="color: #e5e7eb; margin: 10px 0 0 0; font-size: 16px;">Reporte de Pago del Conductor</p>
+              <p style="color: #e5e7eb; margin: 10px 0 0 0; font-size: 16px;">${translations.header.subtitle}</p>
             </div>
             
             <!-- Content -->
             <div style="padding: 30px;">
-              <h2 style="color: #1f2937; margin-bottom: 20px;">Estimado ${reportData.driver.name},</h2>
+              <h2 style="color: #1f2937; margin-bottom: 20px;">${interpolateText(translations.greeting, variables)}</h2>
               
               <p style="color: #4b5563; line-height: 1.6; margin-bottom: 25px;">
-                Adjunto encontrará su reporte de pago detallado para el período del 
-                <strong>${formatDateSafe(reportData.period.start_date)}</strong> al 
-                <strong>${formatDateSafe(reportData.period.end_date)}</strong>.
+                ${interpolateText(translations.content.attachmentMessage, variables)}
               </p>
               
               <!-- Summary Table -->
               <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 1px solid #e5e7eb;">
                 <tr style="background-color: #f9fafb;">
-                  <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Total de Cargas:</td>
+                  <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">${translations.content.totalLoads}</td>
                   <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; color: #1f2937; text-align: right;">${loads.length}</td>
                 </tr>
                 <tr>
-                  <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Ingresos Brutos:</td>
+                  <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">${translations.content.grossEarnings}</td>
                   <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; color: #059669; text-align: right; font-weight: bold;">$${(reportData.period.gross_earnings + reportData.period.other_income).toFixed(2)}</td>
                 </tr>
                 <tr style="background-color: #f9fafb;">
-                  <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Total Gastos:</td>
+                  <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">${translations.content.totalExpenses}</td>
                   <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; color: #dc2626; text-align: right;">$${(reportData.period.fuel_expenses + reportData.period.total_deductions).toFixed(2)}</td>
                 </tr>
                 <tr style="background-color: #2563eb; color: white;">
-                  <td style="padding: 20px; font-weight: bold; font-size: 18px;">PAGO NETO:</td>
+                  <td style="padding: 20px; font-weight: bold; font-size: 18px;">${translations.content.netPayment}</td>
                   <td style="padding: 20px; text-align: right; font-weight: bold; font-size: 20px;">$${reportData.period.net_payment.toFixed(2)}</td>
                 </tr>
               </table>
               
               <div style="background-color: #f0f9ff; border-left: 4px solid #2563eb; padding: 20px; margin-bottom: 25px;">
                 <p style="margin: 0; color: #1e40af; font-weight: 500;">
-                  📎 El reporte detallado en PDF está adjunto a este correo con información completa de cargas, gastos y deducciones.
+                  ${translations.content.attachmentNote}
                 </p>
               </div>
               
               <p style="color: #4b5563; line-height: 1.6; margin-bottom: 20px;">
-                Si tiene alguna pregunta sobre este reporte, no dude en contactarnos.
+                ${translations.content.questionContact}
               </p>
               
               <p style="color: #4b5563; line-height: 1.6;">
-                Cordialmente,<br>
+                ${translations.content.closing}<br>
                 <strong>${company?.name || 'FleetNest TMS'}</strong>
               </p>
             </div>
@@ -493,7 +512,7 @@ export function PaymentReportDialog({
             <!-- Footer -->
             <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
               <p style="color: #6b7280; font-size: 14px; margin: 0;">
-                Este es un correo automático generado por FleetNest TMS
+                ${translations.content.automaticEmail}
               </p>
             </div>
           </div>
@@ -504,7 +523,7 @@ export function PaymentReportDialog({
       const { data, error } = await supabase.functions.invoke('send-payment-report', {
         body: {
           to: 'hlgm72@gmail.com',
-          subject: `Payment Report - ${reportData.driver.name} - ${format(new Date(reportData.period.end_date), "yyyy/'W'ww")}`,
+          subject: interpolateText(translations.subject, variables),
           html: emailHTML,
           pdf_data: pdfArray,
           pdf_filename: `PaymentReport_${reportData.driver.name.replace(/\s+/g, '_')}_${format(new Date(reportData.period.end_date), "yyyy/'W'ww").replace(/\//g, '-')}.pdf`
