@@ -255,8 +255,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
-                    <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-semibold text-lg">${deduction.amount}</span>
+                    <span className="font-semibold text-lg">${Number(deduction.amount).toFixed(2)}</span>
                   </div>
                   <div className="text-sm">
                     <span className="text-muted-foreground">Tipo:</span> <span className="font-medium">{deduction.expense_types?.name}</span>
