@@ -422,19 +422,39 @@ export function PaymentReportDialog({
 
       const { formatDateSafe } = await import('@/lib/dateFormatting');
 
+      // Generar contenido profesional del email usando IA
+      const emailContentResponse = await supabase.functions.invoke('generate-email-content', {
+        body: {
+          driverName: reportData.driver.name,
+          companyName: company?.name || 'FleetNest TMS',
+          periodStart: formatDateSafe(reportData.period.start_date),
+          periodEnd: formatDateSafe(reportData.period.end_date),
+          netPayment: reportData.period.net_payment,
+          totalLoads: loads.length || 0,
+          totalMiles: loads.reduce((sum, load) => {
+            // Calcular millas aproximadas basadas en las paradas
+            const stops = load.load_stops || [];
+            if (stops.length < 2) return sum;
+            return sum + 500; // Estimación por ahora
+          }, 0),
+          totalRevenue: reportData.period.gross_earnings + reportData.period.other_income,
+          totalExpenses: reportData.period.fuel_expenses + reportData.period.total_deductions,
+        }
+      });
+
+      if (emailContentResponse.error) {
+        throw new Error('Error generando contenido del email');
+      }
+
+      const emailHTML = emailContentResponse.data.html;
+
       const { data, error } = await supabase.functions.invoke('send-payment-report', {
         body: {
           to: 'hlgm72@gmail.com',
           subject: `Payment Report - ${reportData.driver.name} - ${format(new Date(reportData.period.end_date), "yyyy/'W'ww")}`,
-          html: `
-            <h2>Payment Report</h2>
-            <p>Dear ${reportData.driver.name},</p>
-            <p>Please find attached your payment report for the period from ${formatDateSafe(reportData.period.start_date)} to ${formatDateSafe(reportData.period.end_date)}.</p>
-            <p><strong>Net Payment: $${reportData.period.net_payment.toFixed(2)}</strong></p>
-            <p>Best regards,<br>${company?.name || 'Tu Empresa'}</p>
-          `,
+          html: emailHTML,
           pdf_data: pdfArray,
-          pdf_filename: `PaymentReport_${reportData.driver.name.replace(/\s+/g, '_')}_${formatDateSafe(reportData.period.start_date).replace(/\//g, '-')}.pdf`
+          pdf_filename: `PaymentReport_${reportData.driver.name.replace(/\s+/g, '_')}_${format(new Date(reportData.period.end_date), "yyyy/'W'ww").replace(/\//g, '-')}.pdf`
         }
       });
 
