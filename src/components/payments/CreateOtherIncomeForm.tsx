@@ -13,7 +13,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { formatPrettyDate } from '@/lib/dateFormatting';
+import { formatPrettyDate, formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { useTranslation } from 'react-i18next';
 import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
 
@@ -51,7 +51,7 @@ export function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
         description: formData.description,
         amount: atmInput.numericValue,
         income_type: formData.income_type,
-        income_date: formData.income_date.toISOString().split('T')[0], // Convert to YYYY-MM-DD
+        income_date: formatDateInUserTimeZone(formData.income_date), // Convert to YYYY-MM-DD
         reference_number: formData.reference_number || undefined,
         notes: formData.notes || undefined,
         applied_to_role: 'driver',

@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
+import { formatDateAuto } from '@/lib/dateFormatting';
 
 interface CompanySettingsFormProps {
   company: Company;
@@ -580,9 +581,9 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                           <Badge variant="outline">
                             Período {index + 1}
                           </Badge>
-                          <span className="text-sm">
-                            {format(period.start, 'dd/MM/yyyy', { locale: es })} - {format(period.end, 'dd/MM/yyyy', { locale: es })}
-                          </span>
+                           <span className="text-sm">
+                             {formatDateAuto(period.start)} - {formatDateAuto(period.end)}
+                           </span>
                         </div>
                         <Badge variant="secondary">
                           {(formData.default_payment_frequency || 'weekly') === 'weekly' && '7 días'}

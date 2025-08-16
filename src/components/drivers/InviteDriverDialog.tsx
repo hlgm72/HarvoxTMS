@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from 'date-fns/locale';
-import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatMonthName } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -201,11 +201,11 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Array.from({ length: 12 }, (_, i) => (
-                          <SelectItem key={i} value={i.toString()}>
-                            {format(new Date(2024, i, 1), 'MMMM', { locale: es })}
-                          </SelectItem>
-                        ))}
+                         {Array.from({ length: 12 }, (_, i) => (
+                           <SelectItem key={i} value={i.toString()}>
+                             {formatMonthName(new Date(2024, i, 1))}
+                           </SelectItem>
+                         ))}
                       </SelectContent>
                     </Select>
                     

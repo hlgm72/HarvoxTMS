@@ -19,7 +19,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { formatCurrency, formatPrettyDate, formatMonthName } from '@/lib/dateFormatting';
+import { formatCurrency, formatPrettyDate, formatMonthName, formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { 
   Plus, 
   DollarSign, 
@@ -480,7 +480,7 @@ function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
         description: formData.description,
         amount: atmInput.numericValue,
         income_type: formData.income_type,
-        income_date: formData.income_date.toISOString().split('T')[0], // Convert to YYYY-MM-DD
+        income_date: formatDateInUserTimeZone(formData.income_date), // Convert to YYYY-MM-DD
         reference_number: formData.reference_number || undefined,
         notes: formData.notes || undefined,
         status: 'pending',

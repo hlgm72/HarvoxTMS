@@ -9,6 +9,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { useCreateOtherIncome, useUpdateOtherIncome } from "@/hooks/useOtherIncome";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
@@ -72,7 +73,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           description,
           amount: atmInput.numericValue,
           income_type: incomeType,
-          income_date: date.toISOString().split('T')[0],
+           income_date: formatDateInUserTimeZone(date),
           reference_number: referenceNumber || null, // Usar null en lugar de undefined
           // No incluir user_id ni applied_to_role en la actualización ya que pueden causar conflictos RLS
         };
@@ -85,7 +86,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           description,
           amount: atmInput.numericValue,
           income_type: incomeType,
-          income_date: date.toISOString().split('T')[0],
+          income_date: formatDateInUserTimeZone(date),
           reference_number: referenceNumber || undefined,
           applied_to_role: userType,
           status: 'pending'
