@@ -23,6 +23,7 @@ import { useUpdateLoadStatus } from "@/hooks/useUpdateLoadStatus";
 import { useFleetNotifications } from "@/components/notifications";
 import { LoadActionButton } from './LoadActionButton';
 import { formatDateSafe } from '@/lib/dateFormatting';
+import { useNavigationMaps } from '@/hooks/useNavigationMaps';
 
 interface Load {
   id: string;
@@ -59,6 +60,7 @@ export function LoadsManager({ className }: LoadsManagerProps) {
   const { user } = useAuth();
   const { showSuccess } = useFleetNotifications();
   const updateLoadStatus = useUpdateLoadStatus();
+  const { openInMaps, isNavigating } = useNavigationMaps();
 
   const calculateProgress = (status: string): number => {
     switch (status) {
@@ -161,6 +163,16 @@ export function LoadsManager({ className }: LoadsManagerProps) {
     return statusFlow[currentStatus as keyof typeof statusFlow] || null;
   };
 
+  
+  const handleNavigateToStop = async (stop: any) => {
+    await openInMaps({
+      address: stop.address,
+      city: stop.city,
+      state: stop.state,
+      zipCode: stop.zip_code
+    });
+  };
+
   const activeLoads = loads.filter(load => !['delivered', 'cancelled'].includes(load.status));
   const completedLoads = loads.filter(load => ['delivered'].includes(load.status));
 
@@ -255,9 +267,13 @@ export function LoadsManager({ className }: LoadsManagerProps) {
                               <p className="font-medium text-sm">
                                 {stop.company_name}
                               </p>
-                              <p className="text-xs text-muted-foreground">
+                              <button
+                                onClick={() => handleNavigateToStop(stop)}
+                                disabled={isNavigating}
+                                className="text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer text-left underline decoration-dashed underline-offset-2 hover:decoration-solid"
+                              >
                                 {[stop.address, stop.city, stop.state, stop.zip_code].filter(Boolean).join(', ')}
-                              </p>
+                              </button>
                             </div>
                             {index === 0 && (
                               <div className="text-right">
