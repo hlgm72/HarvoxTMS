@@ -3734,6 +3734,10 @@ export type Database = {
         Args: { company_id_param: string; user_id_param: string }
         Returns: boolean
       }
+      is_user_authorized_for_company: {
+        Args: { company_id_param: string }
+        Returns: boolean
+      }
       is_user_company_owner: {
         Args: { company_id_param: string; user_id_param: string }
         Returns: boolean
