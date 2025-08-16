@@ -5,6 +5,24 @@ import { useMemo } from 'react';
 import { useCompanyCache } from './useCompanyCache';
 import { getTodayInUserTimeZone, createDateInUserTimeZone } from '@/utils/dateUtils';
 
+export interface LoadStop {
+  id?: string;
+  load_id: string;
+  stop_number: number;
+  stop_type: 'pickup' | 'delivery';
+  company_name?: string;
+  address?: string;
+  city: string;
+  state: string;
+  zip_code?: string;
+  contact_name?: string;
+  contact_phone?: string;
+  reference_number?: string;
+  scheduled_date?: string;
+  scheduled_time?: string;
+  special_instructions?: string;
+}
+
 export interface Load {
   id: string;
   load_number: string;
@@ -40,6 +58,7 @@ export interface Load {
   period_end_date?: string;
   period_frequency?: string;
   period_status?: string;
+  stops?: LoadStop[];
 }
 
 interface LoadsFilters {
@@ -282,9 +301,9 @@ export const useLoads = (filters?: LoadsFilters) => {
         const stopsResult = loadIds.length > 0 
           ? await supabase
               .from('load_stops')
-              .select('load_id, stop_type, stop_number, city, state')
+              .select('id, load_id, stop_type, stop_number, company_name, address, city, state, zip_code, contact_name, contact_phone, reference_number, scheduled_date, scheduled_time, special_instructions')
               .in('load_id', loadIds)
-              .in('stop_type', ['pickup', 'delivery'])
+              .order('stop_number', { ascending: true })
           : { data: [], error: null };
 
         if (stopsResult.error) {
@@ -402,6 +421,23 @@ export const useLoads = (filters?: LoadsFilters) => {
           // Priorizar alias sobre nombre para el broker
           const brokerDisplayName = broker ? (broker.alias && broker.alias.trim() ? broker.alias : broker.name) : 'Sin cliente';
 
+          // Procesar paradas para esta carga específica
+          const processedStops = loadStops.map(stop => {
+            // Si es un UUID, buscar en la tabla de ciudades
+            let cityDisplay = stop.city;
+            if (stop.city && stop.city.length === 36 && stop.city.includes('-')) {
+              const cityFromDB = cities.find(c => c.id === stop.city);
+              if (cityFromDB) {
+                cityDisplay = cityFromDB.name;
+              }
+            }
+            
+            return {
+              ...stop,
+              city: cityDisplay
+            };
+          });
+
           return {
             ...load,
             broker_id: load.client_id, // Compatibility field
@@ -417,7 +453,8 @@ export const useLoads = (filters?: LoadsFilters) => {
             period_start_date: period?.period_start_date,
             period_end_date: period?.period_end_date,
             period_frequency: period?.period_frequency,
-            period_status: period?.status
+            period_status: period?.status,
+            stops: processedStops
           };
         });
 

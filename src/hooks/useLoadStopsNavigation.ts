@@ -1,0 +1,139 @@
+import { useMemo } from 'react';
+
+export interface LoadStop {
+  id?: string;
+  load_id?: string;
+  stop_number: number;
+  stop_type: 'pickup' | 'delivery';
+  company_name?: string;
+  address?: string;
+  city: string;
+  state: string;
+  zip_code?: string;
+  contact_name?: string;
+  contact_phone?: string;
+  reference_number?: string;
+  scheduled_date?: string;
+  scheduled_time?: string;
+  special_instructions?: string;
+}
+
+export interface LoadWithStops {
+  id: string;
+  status: string;
+  stops?: LoadStop[];
+}
+
+interface NextStopInfo {
+  stop: LoadStop;
+  actionText: string;
+  nextStatus: string;
+}
+
+export function useLoadStopsNavigation(load: LoadWithStops) {
+  const nextStopInfo = useMemo((): NextStopInfo | null => {
+    if (!load.stops || load.stops.length === 0) {
+      return null;
+    }
+
+    // Ordenar paradas por número
+    const sortedStops = [...load.stops].sort((a, b) => a.stop_number - b.stop_number);
+    
+    // Determinar la próxima parada basada en el estado actual
+    let nextStop: LoadStop | null = null;
+    let actionText = '';
+    let nextStatus = '';
+
+    switch (load.status) {
+      case 'assigned':
+        // Ir a la primera parada (primer pickup)
+        nextStop = sortedStops.find(stop => stop.stop_type === 'pickup') || sortedStops[0];
+        actionText = `Ir a Parada ${nextStop?.stop_number} (${nextStop?.stop_type === 'pickup' ? 'Recogida' : 'Entrega'})`;
+        nextStatus = 'en_route_pickup';
+        break;
+
+      case 'en_route_pickup':
+        // Llegar a la parada de recogida actual
+        nextStop = sortedStops.find(stop => stop.stop_type === 'pickup') || sortedStops[0];
+        actionText = `Llegar a Parada ${nextStop?.stop_number} (Recogida)`;
+        nextStatus = 'at_pickup';
+        break;
+
+      case 'at_pickup':
+        // Cargar mercancía y continuar
+        nextStop = sortedStops.find(stop => stop.stop_type === 'pickup') || sortedStops[0];
+        actionText = 'Cargado';
+        nextStatus = 'loaded';
+        break;
+
+      case 'loaded':
+        // Ir a la próxima parada (siguiente pickup o primera delivery)
+        const currentPickupIndex = sortedStops.findIndex(stop => stop.stop_type === 'pickup');
+        const nextPickup = sortedStops.slice(currentPickupIndex + 1).find(stop => stop.stop_type === 'pickup');
+        
+        if (nextPickup) {
+          nextStop = nextPickup;
+          actionText = `Ir a Parada ${nextStop.stop_number} (Recogida)`;
+          nextStatus = 'en_route_pickup';
+        } else {
+          // No hay más pickups, ir a primera entrega
+          nextStop = sortedStops.find(stop => stop.stop_type === 'delivery');
+          if (nextStop) {
+            actionText = `Ir a Parada ${nextStop.stop_number} (Entrega)`;
+            nextStatus = 'en_route_delivery';
+          }
+        }
+        break;
+
+      case 'en_route_delivery':
+        // Llegar a la parada de entrega actual
+        nextStop = sortedStops.find(stop => stop.stop_type === 'delivery');
+        if (nextStop) {
+          actionText = `Llegar a Parada ${nextStop.stop_number} (Entrega)`;
+          nextStatus = 'at_delivery';
+        }
+        break;
+
+      case 'at_delivery':
+        // Entregar mercancía
+        const currentDeliveryStop = sortedStops.find(stop => stop.stop_type === 'delivery');
+        if (currentDeliveryStop) {
+          // Verificar si hay más entregas pendientes
+          const currentDeliveryIndex = sortedStops.findIndex(stop => 
+            stop.stop_type === 'delivery' && stop.stop_number === currentDeliveryStop.stop_number
+          );
+          const nextDelivery = sortedStops.slice(currentDeliveryIndex + 1).find(stop => stop.stop_type === 'delivery');
+          
+          if (nextDelivery) {
+            nextStop = nextDelivery;
+            actionText = `Ir a Parada ${nextStop.stop_number} (Entrega)`;
+            nextStatus = 'en_route_delivery';
+          } else {
+            // Última entrega
+            nextStop = currentDeliveryStop;
+            actionText = 'Entregado';
+            nextStatus = 'delivered';
+          }
+        }
+        break;
+
+      default:
+        return null;
+    }
+
+    if (!nextStop) {
+      return null;
+    }
+
+    return {
+      stop: nextStop,
+      actionText,
+      nextStatus
+    };
+  }, [load.status, load.stops]);
+
+  return {
+    nextStopInfo,
+    hasNextAction: !!nextStopInfo
+  };
+}

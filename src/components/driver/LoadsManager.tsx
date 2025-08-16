@@ -21,6 +21,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLoads } from "@/hooks/useLoads";
 import { useUpdateLoadStatus } from "@/hooks/useUpdateLoadStatus";
 import { useFleetNotifications } from "@/components/notifications";
+import { LoadActionButton } from './LoadActionButton';
 
 interface Load {
   id: string;
@@ -35,6 +36,17 @@ interface Load {
   status: string;
   total_amount: number;
   progress?: number;
+  stops?: Array<{
+    id: string;
+    stop_number: number;
+    stop_type: 'pickup' | 'delivery';
+    company_name?: string;
+    address: string;
+    city: string;
+    state: string;
+    scheduled_date?: string;
+    scheduled_time?: string;
+  }>;
 }
 
 interface LoadsManagerProps {
@@ -81,7 +93,12 @@ export function LoadsManager({ className }: LoadsManagerProps) {
         delivery_date: new Date(Date.now() + 86400000).toISOString(), // TODO: Add delivery dates from stops
         status: load.status,
         total_amount: load.total_amount,
-        progress: calculateProgress(load.status)
+        progress: calculateProgress(load.status),
+        stops: (load.stops || []).map(stop => ({
+          ...stop,
+          id: stop.id || crypto.randomUUID(),
+          address: stop.address || ''
+        }))
       }));
   }, [loadsData, user?.id]);
 
@@ -239,22 +256,7 @@ export function LoadsManager({ className }: LoadsManagerProps) {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    {getNextStatus(load.status) && (
-                      <Button 
-                        size="sm" 
-                        className="flex-1"
-                        onClick={() => handleUpdateStatus(load.id, getNextStatus(load.status)!)}
-                        disabled={updateLoadStatus.isPending}
-                      >
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        {getNextStatus(load.status) === 'en_route_pickup' && 'Ir al origen'}
-                        {getNextStatus(load.status) === 'at_pickup' && 'En origen'}
-                        {getNextStatus(load.status) === 'loaded' && 'Cargado'}
-                        {getNextStatus(load.status) === 'en_route_delivery' && 'Ir al destino'}
-                        {getNextStatus(load.status) === 'at_delivery' && 'En destino'}
-                        {getNextStatus(load.status) === 'delivered' && 'Entregado'}
-                      </Button>
-                    )}
+                    <LoadActionButton load={load} onUpdateStatus={handleUpdateStatus} isPending={updateLoadStatus.isPending} />
                     <Button size="sm" variant="outline">
                       <Phone className="h-4 w-4" />
                     </Button>
