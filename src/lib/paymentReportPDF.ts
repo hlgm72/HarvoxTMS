@@ -510,7 +510,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       // Mostrar porcentajes debajo con fuente más pequeña y color rojo para montos negativos
       if (percentages.length > 0) {
         addText(percentages.join(' '), pageWidth - margin, currentY + 3, {
-          fontSize: 7, // Fuente más pequeña para porcentajes
+          fontSize: 6, // Fuente aún más pequeña para evitar solapamientos
           fontStyle: 'normal',
           color: colors.danger, // Color rojo para los montos negativos
           align: 'right'
