@@ -425,7 +425,7 @@ export function PaymentReportDialog({
       const { data, error } = await supabase.functions.invoke('send-payment-report', {
         body: {
           to: 'hlgm72@gmail.com',
-          subject: `Payment Report - ${reportData.driver.name} - ${format(new Date(reportData.period.end_date), 'yyyy/\\WW')}`,
+          subject: `Payment Report - ${reportData.driver.name} - ${format(new Date(reportData.period.end_date), "yyyy/'W'ww")}`,
           html: `
             <h2>Payment Report</h2>
             <p>Dear ${reportData.driver.name},</p>
