@@ -120,11 +120,10 @@ export function LoadDocumentsSection({
     try {
       console.log('🔄 LoadDocumentsSection - Loading documents for load:', loadId);
       
-      const { data: loadDocuments, error } = await supabase
-        .from('load_documents')
-        .select('*')
-        .eq('load_id', loadId)
-        .order('created_at', { ascending: false });
+      // Use the secure function to load documents
+      const { data: loadDocuments, error } = await supabase.rpc('get_load_documents_with_validation', {
+        target_load_id: loadId
+      });
 
       if (error) {
         console.error('❌ LoadDocumentsSection - Error loading documents:', error);
@@ -132,6 +131,7 @@ export function LoadDocumentsSection({
       }
 
       console.log('✅ LoadDocumentsSection - Documents loaded:', loadDocuments?.length || 0);
+      console.log('📄 LoadDocumentsSection - Document details:', loadDocuments);
 
       const formattedDocuments: LoadDocument[] = (loadDocuments || []).map(doc => ({
         id: doc.id,
@@ -143,6 +143,7 @@ export function LoadDocumentsSection({
         url: doc.file_url
       }));
 
+      console.log('📋 LoadDocumentsSection - Formatted documents:', formattedDocuments);
       setDocuments(formattedDocuments);
       onDocumentsChange?.(formattedDocuments);
     } catch (error) {

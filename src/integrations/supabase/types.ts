@@ -3308,6 +3308,23 @@ export type Database = {
           year: number
         }[]
       }
+      get_load_documents_with_validation: {
+        Args: { target_load_id: string }
+        Returns: {
+          archived_at: string
+          archived_by: string
+          content_type: string
+          created_at: string
+          document_type: string
+          file_name: string
+          file_size: number
+          file_url: string
+          id: string
+          load_id: string
+          updated_at: string
+          uploaded_by: string
+        }[]
+      }
       get_payment_period_elements: {
         Args: { period_id_param: string }
         Returns: Json
