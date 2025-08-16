@@ -22,6 +22,7 @@ interface CompanyFinancial extends CompanyPublic {
   ein?: string;
   mc_number?: string;
   dot_number?: string;
+  // Owner data (only available to owners/superadmins)
   owner_name?: string;
   owner_email?: string;
   owner_phone?: string;

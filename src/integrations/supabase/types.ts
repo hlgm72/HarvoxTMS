@@ -72,10 +72,6 @@ export type Database = {
           max_vehicles: number | null
           mc_number: string | null
           name: string
-          owner_email: string | null
-          owner_name: string | null
-          owner_phone: string | null
-          owner_title: string | null
           payment_cycle_start_day: number | null
           payment_day: string
           phone: string | null
@@ -104,10 +100,6 @@ export type Database = {
           max_vehicles?: number | null
           mc_number?: string | null
           name: string
-          owner_email?: string | null
-          owner_name?: string | null
-          owner_phone?: string | null
-          owner_title?: string | null
           payment_cycle_start_day?: number | null
           payment_day?: string
           phone?: string | null
@@ -136,10 +128,6 @@ export type Database = {
           max_vehicles?: number | null
           mc_number?: string | null
           name?: string
-          owner_email?: string | null
-          owner_name?: string | null
-          owner_phone?: string | null
-          owner_title?: string | null
           payment_cycle_start_day?: number | null
           payment_day?: string
           phone?: string | null
@@ -282,6 +270,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "company_brokers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_with_owner_info"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fk_company_clients_company_id"
             columns: ["company_id"]
             isOneToOne: false
@@ -300,6 +295,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies_secure"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_company_clients_company_id"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_with_owner_info"
             referencedColumns: ["id"]
           },
         ]
@@ -411,6 +413,13 @@ export type Database = {
             referencedRelation: "companies_secure"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "company_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_with_owner_info"
+            referencedColumns: ["id"]
+          },
         ]
       }
       company_equipment: {
@@ -515,6 +524,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "fk_company_equipment_company"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_with_owner_info"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fk_company_equipment_company_id"
             columns: ["company_id"]
             isOneToOne: false
@@ -533,6 +549,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies_secure"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_company_equipment_company_id"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_with_owner_info"
             referencedColumns: ["id"]
           },
         ]
@@ -605,6 +628,13 @@ export type Database = {
             referencedRelation: "companies_secure"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "company_financial_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies_with_owner_info"
+            referencedColumns: ["id"]
+          },
         ]
       }
       company_owner_details: {
@@ -658,6 +688,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: true
             referencedRelation: "companies_secure"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_owner_details_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies_with_owner_info"
             referencedColumns: ["id"]
           },
         ]
@@ -2436,6 +2473,13 @@ export type Database = {
             referencedRelation: "companies_secure"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "payment_methods_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_with_owner_info"
+            referencedColumns: ["id"]
+          },
         ]
       }
       payment_reports: {
@@ -2897,6 +2941,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "fk_user_company_roles_company_id"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_with_owner_info"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "user_company_roles_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -2915,6 +2966,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies_secure"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_company_roles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_with_owner_info"
             referencedColumns: ["id"]
           },
         ]
@@ -2997,6 +3055,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies_secure"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_invitations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_with_owner_info"
             referencedColumns: ["id"]
           },
         ]
@@ -3176,6 +3241,49 @@ export type Database = {
           street_address?: string | null
           updated_at?: string | null
           zip_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "companies_state_id_fkey"
+            columns: ["state_id"]
+            isOneToOne: false
+            referencedRelation: "states"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      companies_with_owner_info: {
+        Row: {
+          city: string | null
+          contract_start_date: string | null
+          created_at: string | null
+          default_dispatching_percentage: number | null
+          default_factoring_percentage: number | null
+          default_leasing_percentage: number | null
+          default_payment_frequency: string | null
+          dot_number: string | null
+          ein: string | null
+          email: string | null
+          id: string | null
+          load_assignment_criteria: string | null
+          logo_url: string | null
+          max_users: number | null
+          max_vehicles: number | null
+          mc_number: string | null
+          name: string | null
+          owner_email: string | null
+          owner_name: string | null
+          owner_phone: string | null
+          owner_title: string | null
+          payment_cycle_start_day: number | null
+          payment_day: string | null
+          phone: string | null
+          plan_type: string | null
+          state_id: string | null
+          status: string | null
+          street_address: string | null
+          updated_at: string | null
+          zip_code: string | null
         }
         Relationships: [
           {

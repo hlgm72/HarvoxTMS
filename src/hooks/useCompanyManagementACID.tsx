@@ -15,6 +15,7 @@ interface CompanyData {
   dot_number?: string;
   mc_number?: string;
   ein?: string;
+  // Owner data (handled separately for security)
   owner_name?: string;
   owner_email?: string;
   owner_phone?: string;

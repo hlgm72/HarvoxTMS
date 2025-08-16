@@ -64,9 +64,10 @@ export const useSuperAdminDashboard = () => {
   const fetchCompanies = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('companies')
+        .from('companies_with_owner_info')
         .select(`
-          id, name, street_address, state_id, zip_code, phone, email,
+          id, name, street_address, state_id, zip_code, city, phone, email,
+          ein, dot_number, mc_number,
           owner_name, owner_email, owner_phone, owner_title,
           plan_type, max_vehicles, max_users, status,
           contract_start_date, created_at
