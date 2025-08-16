@@ -995,7 +995,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     
     try {
       // URL del logo de FleetNest TMS (puedes cambiar esta URL por la del logo real de la app)
-      const fleetNestLogoUrl = '/placeholder.svg'; // Cambia por la URL real del logo de FleetNest TMS
+      const fleetNestLogoUrl = '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png'; // Logo real de FleetNest TMS
       const logoData = await loadImageFromUrl(fleetNestLogoUrl);
       if (logoData) {
         doc.addImage(logoData, 'PNG', margin, footerY - 5, logoSize, logoSize);
