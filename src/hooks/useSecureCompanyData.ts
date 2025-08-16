@@ -59,7 +59,7 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
         // Use financial view for sensitive data
         if (companyId) {
           const { data, error } = await supabase
-            .from('companies_financial')
+            .from('companies')
             .select('*')
             .eq('id', companyId)
             .single();
@@ -68,7 +68,7 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
           return data;
         } else {
           const { data, error } = await supabase
-            .from('companies_financial')
+            .from('companies')
             .select('*')
             .order('created_at', { ascending: false });
 
@@ -142,7 +142,7 @@ export const useCompanyFinancialData = (companyId?: string) => {
 
       if (companyId) {
         const { data, error } = await supabase
-          .from('companies_financial')
+          .from('companies')
           .select('*')
           .eq('id', companyId)
           .single();
@@ -151,7 +151,7 @@ export const useCompanyFinancialData = (companyId?: string) => {
         return data as CompanyFinancial;
       } else {
         const { data, error } = await supabase
-          .from('companies_financial')
+          .from('companies')
           .select('*')
           .order('created_at', { ascending: false });
 

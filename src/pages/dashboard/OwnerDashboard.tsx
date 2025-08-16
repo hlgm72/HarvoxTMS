@@ -117,7 +117,7 @@ export default function OwnerDashboard() {
     
     try {
       const { data, error } = await supabase
-        .from('companies_financial')
+        .from('companies')
         .select('*')
         .eq('id', userRole.company_id)
         .single();
