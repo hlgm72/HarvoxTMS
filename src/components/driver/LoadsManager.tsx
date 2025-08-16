@@ -18,8 +18,7 @@ import {
   Route
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useLoads } from "@/hooks/useLoads";
 import { useUpdateLoadStatus } from "@/hooks/useUpdateLoadStatus";
 import { useFleetNotifications } from "@/components/notifications";
 
@@ -48,32 +47,24 @@ export function LoadsManager({ className }: LoadsManagerProps) {
   const { showSuccess } = useFleetNotifications();
   const updateLoadStatus = useUpdateLoadStatus();
 
-  // Fetch driver's loads
-  const { data: loads = [], isLoading, refetch } = useQuery({
-    queryKey: ['driver-loads', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-      
-      // Mock data for now - would come from real loads API
-      return [
-        {
-          id: '1',
-          load_number: 'LD-001',
-          client_name: 'Cliente Principal',
-          origin_city: 'Houston',
-          origin_state: 'TX',
-          destination_city: 'Dallas',
-          destination_state: 'TX',
-          pickup_date: new Date().toISOString(),
-          delivery_date: new Date(Date.now() + 86400000).toISOString(),
-          status: 'assigned',
-          total_amount: 2500,
-          progress: calculateProgress('assigned')
-        }
-      ];
-    },
-    enabled: !!user?.id
-  });
+  // Fetch driver's loads using the real hook
+  const { data: loadsData = [], isLoading, refetch } = useLoads();
+  
+  // Transform data for LoadsManager component
+  const loads = loadsData.filter(load => load.driver_user_id === user?.id).map(load => ({
+    id: load.id,
+    load_number: load.load_number,
+    client_name: load.broker_name || 'Sin cliente',
+    origin_city: load.pickup_city || 'Sin origen',
+    origin_state: '',
+    destination_city: load.delivery_city || 'Sin destino', 
+    destination_state: '',
+    pickup_date: new Date().toISOString(), // TODO: Add pickup dates from stops
+    delivery_date: new Date(Date.now() + 86400000).toISOString(), // TODO: Add delivery dates from stops
+    status: load.status,
+    total_amount: load.total_amount,
+    progress: calculateProgress(load.status)
+  }));
 
   const calculateProgress = (status: string): number => {
     switch (status) {
