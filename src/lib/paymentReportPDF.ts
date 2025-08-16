@@ -253,9 +253,11 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       try {
         const logoData = await loadImageFromUrl(data.company.logo_url);
         if (logoData) {
-          // Agregar imagen del logo
+          // Agregar imagen del logo centrado verticalmente
           const logoSize = 15; // Tamaño del logo en mm
-          doc.addImage(logoData, 'PNG', col1X, currentY - 5, logoSize, logoSize);
+          const headerHeight = 26;
+          const logoY = currentY - 7 + (headerHeight - logoSize) / 2; // Centrar verticalmente en el header
+          doc.addImage(logoData, 'PNG', col1X, logoY, logoSize, logoSize);
           logoWidth = logoSize + 3; // Espacio para el logo + margen reducido
         }
       } catch (error) {
