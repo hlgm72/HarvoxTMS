@@ -642,20 +642,20 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     currentY += 5; // Agregar espaciado consistente con la primera página
   }
   
-  const lightBlueRgb = hexToRgb(colors.lightBlue);
-  doc.setFillColor(lightBlueRgb[0], lightBlueRgb[1], lightBlueRgb[2]);
+  // Usar mismo color que la tarjeta del contador "Other Earnings" (azul #003366)
+  const otherEarningsRgb = hexToRgb('#003366');
+  doc.setFillColor(otherEarningsRgb[0], otherEarningsRgb[1], otherEarningsRgb[2]);
   doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'F');
   
-  // Agregar borde fino
-  const primaryRgb = hexToRgb(colors.primary);
-  doc.setDrawColor(primaryRgb[0], primaryRgb[1], primaryRgb[2]);
+  // Agregar borde fino con el mismo color
+  doc.setDrawColor(otherEarningsRgb[0], otherEarningsRgb[1], otherEarningsRgb[2]);
   doc.setLineWidth(0.2);
   doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'S');
   
   addText(`Other Earnings (Count: ${otherIncomeCount}, Total: ${formatCurrency(totalOtherIncome)})`, margin + 2, currentY, {
     fontSize: 11,
     fontStyle: 'bold',
-    color: colors.darkGray
+    color: '#ffffff' // Texto blanco para contraste con fondo azul
   });
   
   currentY += 10;
@@ -664,7 +664,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     data.otherIncome.forEach(income => {
       addText(`• ${income.description}`, margin + 2, currentY, {
         fontSize: 9,
-        color: colors.darkGray
+        color: '#003366' // Color de fuente #003366
       });
       
       addText(formatCurrency(income.amount), pageWidth - margin - 2, currentY, {
@@ -679,7 +679,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     addText('No other earnings for this period', margin + 2, currentY, {
       fontSize: 9,
       fontStyle: 'italic',
-      color: colors.darkGray
+      color: '#003366' // Color de fuente #003366
     });
     currentY += 4;
   }
@@ -700,13 +700,13 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // Agregar espaciado consistente con la primera página
   currentY += 5;
   
-  const redRgb = hexToRgb(colors.lightRed);
-  doc.setFillColor(redRgb[0], redRgb[1], redRgb[2]);
+  // Usar mismo color que la tarjeta del contador "Period Deductions" (naranja #ff7a00)
+  const deductionsRgb = hexToRgb('#ff7a00');
+  doc.setFillColor(deductionsRgb[0], deductionsRgb[1], deductionsRgb[2]);
   doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'F');
   
-  // Agregar borde fino
-  const dangerRgb = hexToRgb(colors.danger);
-  doc.setDrawColor(dangerRgb[0], dangerRgb[1], dangerRgb[2]);
+  // Agregar borde fino con el mismo color
+  doc.setDrawColor(deductionsRgb[0], deductionsRgb[1], deductionsRgb[2]);
   doc.setLineWidth(0.2);
   doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'S');
   
@@ -714,7 +714,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   addText(`Period Deductions (Count: ${deductionsCount}, Total: ${formatCurrency(totalDeductions)})`, margin + 2, currentY, {
     fontSize: 11,
     fontStyle: 'bold',
-    color: colors.darkGray
+    color: '#ffffff' // Texto blanco para contraste con fondo naranja
   });
   
   currentY += 10;
@@ -723,12 +723,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     data.deductions.forEach(deduction => {
       addText(deduction.description, margin + 2, currentY, {
         fontSize: 9,
-        color: colors.darkGray
+        color: '#003366' // Color de fuente #003366
       });
       
       addText(formatCurrency(-deduction.amount), pageWidth - margin - 2, currentY, {
         fontSize: 9,
-        color: colors.danger,
+        color: '#ff7a00', // Color naranja #ff7a00 para los montos
         align: 'right'
       });
       
@@ -738,7 +738,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     addText('No deductions for this period', margin + 2, currentY, {
       fontSize: 9,
       fontStyle: 'italic',
-      color: colors.darkGray
+      color: '#003366' // Color de fuente #003366
     });
     currentY += 4;
   }
@@ -759,20 +759,20 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   // Agregar espaciado consistente con la primera página
   currentY += 5;
   
-  const orangeRgb = hexToRgb(colors.lightOrange);
-  doc.setFillColor(orangeRgb[0], orangeRgb[1], orangeRgb[2]);
+  // Usar mismo color que la tarjeta del contador "Fuel Expenses" (naranja #ff7a00)
+  const fuelRgb = hexToRgb('#ff7a00');
+  doc.setFillColor(fuelRgb[0], fuelRgb[1], fuelRgb[2]);
   doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'F');
   
-  // Agregar borde fino
-  const warningRgb = hexToRgb(colors.warning);
-  doc.setDrawColor(warningRgb[0], warningRgb[1], warningRgb[2]);
+  // Agregar borde fino con el mismo color
+  doc.setDrawColor(fuelRgb[0], fuelRgb[1], fuelRgb[2]);
   doc.setLineWidth(0.2);
   doc.roundedRect(margin, currentY - 5, pageWidth - margin*2, 8, 2, 2, 'S');
   
   addText(`Fuel Expenses (Count: ${fuelCount}, Total: ${formatCurrency(data.period.fuel_expenses)})`, margin + 2, currentY, {
     fontSize: 11,
     fontStyle: 'bold',
-    color: colors.darkGray
+    color: '#ffffff' // Texto blanco para contraste con fondo naranja
   });
   
   currentY += 10;
@@ -783,27 +783,27 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       addText(dateStr, margin + 2, currentY, {
         fontSize: 9,
-        color: colors.darkGray
+        color: '#003366' // Color de fuente #003366
       });
       
       addText(fuel.station_name, margin + 30, currentY, {
         fontSize: 9,
-        color: colors.darkGray
+        color: '#003366' // Color de fuente #003366
       });
       
       addText(`${(fuel.gallons_purchased || 0).toFixed(2)} gal`, margin + 100, currentY, {
         fontSize: 9,
-        color: colors.darkGray
+        color: '#003366' // Color de fuente #003366
       });
       
       addText(`$${(fuel.price_per_gallon || 0).toFixed(3)}`, margin + 140, currentY, {
         fontSize: 9,
-        color: colors.darkGray
+        color: '#003366' // Color de fuente #003366
       });
       
       addText(formatCurrency(-fuel.total_amount), pageWidth - margin - 2, currentY, {
         fontSize: 9,
-        color: colors.danger,
+        color: '#ff7a00', // Color naranja #ff7a00 para los montos
         align: 'right'
       });
       
@@ -813,7 +813,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     addText('No fuel expenses for this period', margin + 2, currentY, {
       fontSize: 9,
       fontStyle: 'italic',
-      color: colors.darkGray
+      color: '#003366' // Color de fuente #003366
     });
     currentY += 4;
   }
