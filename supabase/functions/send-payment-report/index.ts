@@ -27,7 +27,7 @@ serve(async (req) => {
     const { to, subject, html, pdf_data, pdf_filename }: EmailRequest = await req.json()
     
     const emailOptions: any = {
-      from: "FleetNest <noreply@fleetnest.app>",
+      from: "FleetNest TMS <noreply@fleetnest.app>",
       to: [to],
       subject,
       html

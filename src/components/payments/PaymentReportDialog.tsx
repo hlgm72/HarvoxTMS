@@ -26,6 +26,7 @@ import {
   Eye
 } from "lucide-react";
 import { formatPaymentPeriod, formatDateAuto, formatCurrency } from "@/lib/dateFormatting";
+import { format } from "date-fns";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
 import { useFleetNotifications } from "@/components/notifications";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
@@ -424,7 +425,7 @@ export function PaymentReportDialog({
       const { data, error } = await supabase.functions.invoke('send-payment-report', {
         body: {
           to: 'hlgm72@gmail.com',
-          subject: `Payment Report - ${reportData.driver.name} - ${formatDateSafe(reportData.period.start_date)}`,
+          subject: `Payment Report - ${reportData.driver.name} - ${format(new Date(reportData.period.end_date), 'yyyy/\\WW')}`,
           html: `
             <h2>Payment Report</h2>
             <p>Dear ${reportData.driver.name},</p>
