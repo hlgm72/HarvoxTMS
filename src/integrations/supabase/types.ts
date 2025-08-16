@@ -2933,6 +2933,10 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: Json
       }
+      can_manage_company_roles: {
+        Args: { target_company_id: string }
+        Returns: boolean
+      }
       can_user_be_permanently_deleted: {
         Args: { user_id_param: string }
         Returns: Json
