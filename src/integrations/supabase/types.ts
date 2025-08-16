@@ -3389,10 +3389,6 @@ export type Database = {
           | { payment_day: string; period_end_date: string }
         Returns: string
       }
-      can_access_company_financial_data: {
-        Args: { company_id_param: string }
-        Returns: boolean
-      }
       can_access_load: {
         Args: { load_id_param: string }
         Returns: boolean
@@ -3682,10 +3678,6 @@ export type Database = {
           email: string
           user_id: string
         }[]
-      }
-      get_user_role_in_company: {
-        Args: { company_id_param: string }
-        Returns: Database["public"]["Enums"]["user_role"]
       }
       has_role: {
         Args: {
