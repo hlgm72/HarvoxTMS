@@ -243,7 +243,7 @@ export function LoadsManager({ className }: LoadsManagerProps) {
                               )}
                             </div>
                             <div className="flex-1">
-                              <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2 mb-1">
                                 <Badge variant="outline" className="text-xs">
                                   {stop.stop_type === 'pickup' ? 'Recogida' : 'Entrega'} #{stop.stop_number}
                                 </Badge>
