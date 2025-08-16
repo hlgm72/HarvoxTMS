@@ -68,14 +68,9 @@ serve(async (req) => {
       throw new Error('Driver profile not found');
     }
 
-    // Get driver email
-    const { data: emailData, error: emailError } = await supabase
-      .rpc('get_user_email_by_id', { user_id_param: driver_user_id });
-
-    if (emailError || !emailData) {
-      console.error('Error fetching driver email:', emailError);
-      throw new Error('Driver email not found');
-    }
+    // For now, send email to hlgm72@gmail.com for testing
+    const emailData = 'hlgm72@gmail.com';
+    console.log('Email will be sent to:', emailData);
 
     // Get company info
     const { data: company, error: companyError } = await supabase
@@ -318,6 +313,12 @@ serve(async (req) => {
       </html>
     `;
 
+    console.log('Preparing to send email via Resend...');
+    console.log('From:', "FleetNest <noreply@fleetnest.app>");
+    console.log('To:', emailData);
+    console.log('Subject:', `Payment Report - ${periodStart} to ${periodEnd} - ${company.name}`);
+    console.log('RESEND_API_KEY exists:', !!Deno.env.get("RESEND_API_KEY"));
+
     // Send email via Resend
     const emailResult = await resend.emails.send({
       from: "FleetNest <noreply@fleetnest.app>",
@@ -326,19 +327,23 @@ serve(async (req) => {
       html: emailHTML,
     });
 
+    console.log('Resend response:', JSON.stringify(emailResult, null, 2));
+
     if (emailResult.error) {
-      console.error('Resend error:', emailResult.error);
-      throw new Error(`Failed to send email: ${emailResult.error.message}`);
+      console.error('Resend error details:', JSON.stringify(emailResult.error, null, 2));
+      throw new Error(`Failed to send email: ${JSON.stringify(emailResult.error)}`);
     }
 
-    console.log('Email sent successfully:', emailResult.data);
+    console.log('Email sent successfully to:', emailData);
+    console.log('Email ID:', emailResult.data?.id);
 
     return new Response(JSON.stringify({ 
       success: true, 
       message: 'Payment report email sent successfully',
       email_id: emailResult.data?.id,
       recipient: emailData,
-      calculation_id: period_id
+      calculation_id: period_id,
+      resend_response: emailResult.data
     }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
