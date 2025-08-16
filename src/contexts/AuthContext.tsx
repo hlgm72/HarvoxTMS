@@ -94,6 +94,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isDispatcher = userRole?.role === 'dispatcher';
   const isDriver = userRole?.role === 'driver';
 
+  // Debug logging for role checks
+  console.log('🎭 AuthContext Debug - userRole:', userRole);
+  console.log('🎭 AuthContext Debug - currentRole:', currentRole);
+  console.log('🎭 AuthContext Debug - userRoles:', userRoles);
+  console.log('🎭 AuthContext Debug - isCompanyOwner:', isCompanyOwner);
+  console.log('🎭 AuthContext Debug - availableRoles:', availableRoles);
+
   const fetchUserRoles = useCallback(async (userId: string) => {
     try {
       console.log('🔍 Fetching roles for user:', userId);
