@@ -166,7 +166,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     const border = borderColor || bgColor;
     const borderRgb = hexToRgb(border);
     doc.setDrawColor(borderRgb[0], borderRgb[1], borderRgb[2]);
-    doc.setLineWidth(0.5);
+    doc.setLineWidth(0.2);
     doc.roundedRect(x, y, width, height, 2, 2, 'S');
     
     // Título
