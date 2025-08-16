@@ -3,15 +3,16 @@
  * Este archivo centraliza todas las funciones de formateo de fechas para asegurar consistencia
  */
 
+import { es, enUS } from 'date-fns/locale';
 import { 
   formatDateSafe,
-  formatDatabaseDate,
   formatDateTime,
   formatDateOnly,
-  getYearSafe,
-  formatDateInUserTimeZone,
-  getUserTimeZone,
+  formatDatabaseDate,
   getTodayInUserTimeZone,
+  formatDateInUserTimeZone,
+  getYearSafe,
+  getUserTimeZone,
   createDateInUserTimeZone
 } from '@/utils/dateUtils';
 
@@ -118,12 +119,26 @@ export const formatExpiryDate = (date: string | null | undefined): string => {
 /**
  * Función para obtener información de vencimiento con advertencias
  */
-export const getExpiryInfo = (date: string | null | undefined): { 
+export const getExpiryInfo = (date: string | null | undefined, currentLanguage?: string): { 
   text: string; 
   isExpiring: boolean; 
   isExpired: boolean; 
 } => {
-  if (!date) return { text: 'Sin vencimiento', isExpiring: false, isExpired: false };
+  // Detectar idioma actual desde i18n si no se proporciona
+  let detectedLanguage = currentLanguage;
+  if (!detectedLanguage) {
+    try {
+      // Intentar acceder al idioma actual desde i18n global
+      const i18n = (window as any).i18n;
+      detectedLanguage = i18n?.language || 'en';
+    } catch {
+      detectedLanguage = 'en'; // fallback por defecto
+    }
+  }
+  
+  const noExpiryText = detectedLanguage === 'es' ? 'Sin vencimiento' : 'No expiry';
+  
+  if (!date) return { text: noExpiryText, isExpiring: false, isExpired: false };
   
   try {
     // Parsear fecha de forma segura evitando problemas de zona horaria
@@ -137,7 +152,7 @@ export const getExpiryInfo = (date: string | null | undefined): {
       // Formato solo fecha: YYYY-MM-DD
       [year, month, day] = date.split('-').map(Number);
     } else {
-      return { text: formatDateOnly(date), isExpiring: false, isExpired: false };
+      return { text: formatDateOnlyWithLocale(date, detectedLanguage), isExpiring: false, isExpired: false };
     }
     
     // Crear fechas locales evitando zona horaria UTC
@@ -152,12 +167,25 @@ export const getExpiryInfo = (date: string | null | undefined): {
     const isExpiring = diffDays >= 0 && diffDays <= 90; // Menos de 3 meses (90 días)
     
     return {
-      text: formatDateOnly(date),
+      text: formatDateOnlyWithLocale(date, detectedLanguage),
       isExpiring,
       isExpired
     };
   } catch (error) {
     console.error('Error processing expiry date:', error);
-    return { text: formatDateOnly(date), isExpiring: false, isExpired: false };
+    return { text: formatDateOnlyWithLocale(date, detectedLanguage), isExpiring: false, isExpired: false };
+  }
+};
+
+// Nueva función para formatear fechas según el idioma
+const formatDateOnlyWithLocale = (dateInput: string | Date | null | undefined, language: string = 'en'): string => {
+  if (!dateInput) return language === 'es' ? 'No definida' : 'Not defined';
+  
+  try {
+    const locale = language === 'es' ? es : enUS;
+    return formatDateSafe(dateInput, 'dd/MM/yyyy', { locale });
+  } catch (error) {
+    console.error('Error formatting date with locale:', error);
+    return language === 'es' ? 'Fecha inválida' : 'Invalid date';
   }
 };

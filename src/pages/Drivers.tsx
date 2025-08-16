@@ -150,7 +150,7 @@ const DriverSkeleton = () => (
 );
 
 export default function Drivers() {
-  const { t } = useTranslation(['fleet', 'common']);
+  const { t, i18n } = useTranslation(['fleet', 'common']);
   const { userRole } = useAuth();
   const { userCompany } = useCompanyCache();
   const { drivers, loading, refetch } = useCompanyDrivers();
@@ -405,15 +405,15 @@ export default function Drivers() {
                            <div className="flex items-center gap-2">
                              <span>📋</span>
                              <div className="text-sm flex flex-col">
-                               {driver.license_expiry_date ? (
-                                 <>
-                                    <span>{t('fleet:drivers.info.license_expiry', { date: getExpiryInfo(driver.license_expiry_date).text })}</span>
-                                    {getExpiryInfo(driver.license_expiry_date).isExpired && (
-                                      <span className="text-red-600 font-semibold text-xs">⚠️ {t('fleet:drivers.info.expired')}</span>
-                                    )}
-                                     {getExpiryInfo(driver.license_expiry_date).isExpiring && !getExpiryInfo(driver.license_expiry_date).isExpired && (
-                                       <span className="text-orange-600 font-semibold text-xs">⚠️ {t('common:status.expiring_soon')}</span>
+                                {driver.license_expiry_date ? (
+                                  <>
+                                     <span>{t('fleet:drivers.info.license_expiry', { date: getExpiryInfo(driver.license_expiry_date, i18n.language).text })}</span>
+                                     {getExpiryInfo(driver.license_expiry_date, i18n.language).isExpired && (
+                                       <span className="text-red-600 font-semibold text-xs">⚠️ {t('fleet:drivers.info.expired')}</span>
                                      )}
+                                      {getExpiryInfo(driver.license_expiry_date, i18n.language).isExpiring && !getExpiryInfo(driver.license_expiry_date, i18n.language).isExpired && (
+                                        <span className="text-orange-600 font-semibold text-xs">⚠️ {t('common:status.expiring_soon')}</span>
+                                      )}
                                   </>
                                  ) : (
                                    <span>{t('fleet:drivers.info.license_expiry', { date: t('fleet:drivers.info.not_specified') })}</span>
