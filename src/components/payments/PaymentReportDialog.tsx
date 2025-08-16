@@ -58,7 +58,8 @@ export function PaymentReportDialog({
           company_payment_periods!inner(
             period_start_date,
             period_end_date,
-            company_id
+            company_id,
+            payment_date
           )
         `)
         .eq('id', calculationId)
@@ -296,7 +297,8 @@ export function PaymentReportDialog({
         fuel_expenses: calculation.fuel_expenses,
         total_deductions: calculation.total_deductions,
         other_income: calculation.other_income,
-        net_payment: calculateNetPayment(calculation)
+        net_payment: calculateNetPayment(calculation),
+        payment_date: calculation.company_payment_periods.payment_date
       },
       company: {
         name: company.name || 'Tu Empresa',
@@ -443,6 +445,11 @@ export function PaymentReportDialog({
               Período: {formatPaymentPeriod(
                 calculation.company_payment_periods.period_start_date,
                 calculation.company_payment_periods.period_end_date
+              )}
+              {calculation.company_payment_periods.payment_date && (
+                <span className="block text-primary font-medium mt-1">
+                  Fecha de Pago: {formatDateOnly(calculation.company_payment_periods.payment_date)}
+                </span>
               )}
             </DialogDescription>
           </DialogHeader>
