@@ -21,17 +21,27 @@ import { cn } from "@/lib/utils";
 import { useFleetNotifications } from '@/components/notifications';
 import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
 
-interface CreateEventualDeductionDialogProps {
+interface EventualDeductionDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  editingDeduction?: {
+    id: string;
+    user_id: string;
+    expense_type_id: string;
+    amount: number;
+    description: string;
+    expense_date: string;
+    applied_to_role: string;
+  } | null;
 }
 
-export function CreateEventualDeductionDialog({ 
+export function EventualDeductionDialog({ 
   isOpen, 
   onClose, 
-  onSuccess 
-}: CreateEventualDeductionDialogProps) {
+  onSuccess,
+  editingDeduction = null
+}: EventualDeductionDialogProps) {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
@@ -57,21 +67,34 @@ export function CreateEventualDeductionDialog({
     }
   });
 
-  // Reset form when dialog opens - SIN incluir atmInput en dependencias
+  // Reset form when dialog opens or populate if editing
   useEffect(() => {
     if (isOpen) {
-      setSelectedRole("driver");
-      setFormData({
-        user_id: '',
-        expense_type_id: '',
-        amount: '',
-        description: ''
-      });
-      setExpenseDate(undefined);
-      // Reset ATM usando setValue que convierte correctamente
-      atmInput.setValue(0);
+      if (editingDeduction) {
+        // Populate form for editing
+        setSelectedRole(editingDeduction.applied_to_role as "driver" | "dispatcher");
+        setFormData({
+          user_id: editingDeduction.user_id,
+          expense_type_id: editingDeduction.expense_type_id,
+          amount: editingDeduction.amount.toString(),
+          description: editingDeduction.description
+        });
+        setExpenseDate(parseISO(editingDeduction.expense_date));
+        atmInput.setValue(editingDeduction.amount);
+      } else {
+        // Reset form for creating
+        setSelectedRole("driver");
+        setFormData({
+          user_id: '',
+          expense_type_id: '',
+          amount: '',
+          description: ''
+        });
+        setExpenseDate(undefined);
+        atmInput.setValue(0);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, editingDeduction]);
 
   // Obtener usuarios por rol seleccionado
   const { data: users = [] } = useQuery({
@@ -247,25 +270,43 @@ export function CreateEventualDeductionDialog({
         throw new Error('La fecha del gasto es requerida');
       }
 
-      const { error } = await supabase
-        .from('expense_instances')
-        .insert({
-          payment_period_id: paymentPeriods[0]?.id, // Use the first (and likely only) period for the selected date
-          user_id: formData.user_id,
-          expense_type_id: formData.expense_type_id,
-          amount: parseFloat(formData.amount),
-          description: formData.description,
-          expense_date: formatDateInUserTimeZone(expenseDate),
-          status: 'planned',
-          is_critical: false,
-          priority: 5,
-          applied_to_role: selectedRole,
-          created_by: user?.id
-        });
+      if (editingDeduction) {
+        // Update existing deduction
+        const { error } = await supabase
+          .from('expense_instances')
+          .update({
+            user_id: formData.user_id,
+            expense_type_id: formData.expense_type_id,
+            amount: parseFloat(formData.amount),
+            description: formData.description,
+            expense_date: formatDateInUserTimeZone(expenseDate),
+            applied_to_role: selectedRole
+          })
+          .eq('id', editingDeduction.id);
 
-      if (error) throw error;
+        if (error) throw error;
+        showSuccess("Éxito", "Deducción eventual actualizada exitosamente");
+      } else {
+        // Create new deduction
+        const { error } = await supabase
+          .from('expense_instances')
+          .insert({
+            payment_period_id: paymentPeriods[0]?.id,
+            user_id: formData.user_id,
+            expense_type_id: formData.expense_type_id,
+            amount: parseFloat(formData.amount),
+            description: formData.description,
+            expense_date: formatDateInUserTimeZone(expenseDate),
+            status: 'planned',
+            is_critical: false,
+            priority: 5,
+            applied_to_role: selectedRole,
+            created_by: user?.id
+          });
 
-      showSuccess("Éxito", "Deducción eventual creada exitosamente");
+        if (error) throw error;
+        showSuccess("Éxito", "Deducción eventual creada exitosamente");
+      }
 
       onSuccess();
       onClose();
@@ -314,9 +355,14 @@ export function CreateEventualDeductionDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
-          <DialogTitle>Crear Deducción Eventual</DialogTitle>
+          <DialogTitle>
+            {editingDeduction ? "Editar Deducción Eventual" : "Crear Deducción Eventual"}
+          </DialogTitle>
           <DialogDescription>
-            Crea una deducción única para un conductor específico en un período de pago determinado.
+            {editingDeduction 
+              ? "Modifica la deducción eventual seleccionada."
+              : "Crea una deducción única para un conductor específico en un período de pago determinado."
+            }
           </DialogDescription>
         </DialogHeader>
 
@@ -558,7 +604,10 @@ export function CreateEventualDeductionDialog({
               disabled={isLoading || !isFormValid} 
               className="flex-1"
             >
-              {isLoading ? "Creando..." : "Crear Deducción Eventual"}
+              {isLoading 
+                ? (editingDeduction ? "Actualizando..." : "Creando...") 
+                : (editingDeduction ? "Actualizar Deducción" : "Crear Deducción Eventual")
+              }
             </Button>
           </div>
         </form>

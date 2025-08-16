@@ -6,7 +6,7 @@ import { DollarSign, Repeat, Clock } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { DeductionsManager } from "@/components/payments/DeductionsManager";
 import { ExpenseTemplateDialog } from "@/components/payments/ExpenseTemplateDialog";
-import { CreateEventualDeductionDialog } from "@/components/payments/CreateEventualDeductionDialog";
+import { EventualDeductionDialog } from "@/components/payments/EventualDeductionDialog";
 import { DeductionsFloatingActions } from "@/components/payments/DeductionsFloatingActions";
 import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 import { useExpenseTypes } from "@/hooks/useExpenseTypes";
@@ -106,7 +106,7 @@ export default function Deductions() {
         mode="create"
       />
 
-      <CreateEventualDeductionDialog
+      <EventualDeductionDialog
         isOpen={isEventualDialogOpen}
         onClose={() => setIsEventualDialogOpen(false)}
         onSuccess={handleEventualSuccess}

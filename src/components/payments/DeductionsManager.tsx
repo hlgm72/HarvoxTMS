@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { ExpenseTemplateDialog } from "./ExpenseTemplateDialog";
-import { CreateEventualDeductionDialog } from "./CreateEventualDeductionDialog";
+import { EventualDeductionDialog } from "./EventualDeductionDialog";
 import { EventualDeductionsList } from "./EventualDeductionsList";
 import { formatDateOnly, formatCurrency } from '@/lib/dateFormatting';
 import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle, Repeat, Clock, Archive, History } from "lucide-react";
@@ -575,7 +575,7 @@ export function DeductionsManager({
       )}
 
       {/* Dialog para crear deducción eventual */}
-      <CreateEventualDeductionDialog
+      <EventualDeductionDialog
         isOpen={isEventualDialogOpen}
         onClose={() => setIsEventualDialogOpen(false)}
         onSuccess={handleEventualSuccess}
