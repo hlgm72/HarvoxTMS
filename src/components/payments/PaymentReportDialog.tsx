@@ -525,13 +525,12 @@ export function PaymentReportDialog({
               <CardContent>
                 <div className="space-y-2">
                   {loads.map((load) => (
-                    <div key={load.id} className="flex flex-col gap-2 py-3 border-b">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div key={load.id} className="py-3 border-b">
+                      {/* Primera línea: Número de carga + fecha + cliente */}
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-2 mb-2">
                         <div className="space-y-1 min-w-0 flex-1">
-                          <div className="font-medium truncate text-sm sm:text-base">{load.load_number}</div>
-                          <div className="text-xs sm:text-sm text-muted-foreground">
-                            {/* Priorizar alias, pero usar nombre completo si no hay alias */}
-                            {(() => {
+                          <div className="font-medium text-sm sm:text-base">
+                            {load.load_number} • {formatDateOnly(load.pickup_date)} • {(() => {
                               const clientData = clients.find(c => c.id === load.client_id);
                               let clientName = 'Sin cliente';
                               
@@ -546,34 +545,40 @@ export function PaymentReportDialog({
                               }
                               
                               return clientName;
-                            })()} • {formatDateOnly(load.pickup_date)}
+                            })()}
                           </div>
+                        </div>
+                      </div>
+                      
+                      {/* Segunda línea: Porcentajes + Monto */}
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div className="flex flex-wrap gap-2">
+                          {(load.dispatching_percentage > 0 || load.factoring_percentage > 0 || load.leasing_percentage > 0) ? (
+                            <>
+                              {load.dispatching_percentage > 0 && (
+                                <Badge variant="outline" className="text-xs">
+                                  Despacho: {load.dispatching_percentage}% (${formatCurrency((load.total_amount * load.dispatching_percentage) / 100)})
+                                </Badge>
+                              )}
+                              {load.factoring_percentage > 0 && (
+                                <Badge variant="outline" className="text-xs">
+                                  Factoring: {load.factoring_percentage}% (${formatCurrency((load.total_amount * load.factoring_percentage) / 100)})
+                                </Badge>
+                              )}
+                              {load.leasing_percentage > 0 && (
+                                <Badge variant="outline" className="text-xs">
+                                  Leasing: {load.leasing_percentage}% (${formatCurrency((load.total_amount * load.leasing_percentage) / 100)})
+                                </Badge>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">Sin porcentajes aplicados</span>
+                          )}
                         </div>
                         <div className="font-semibold sm:text-right shrink-0 text-sm sm:text-base">
                           ${formatCurrency(load.total_amount)}
                         </div>
                       </div>
-                      
-                      {/* Mostrar porcentajes si alguno es mayor que 0 */}
-                      {(load.dispatching_percentage > 0 || load.factoring_percentage > 0 || load.leasing_percentage > 0) && (
-                        <div className="flex flex-wrap gap-2 mt-1">
-                          {load.dispatching_percentage > 0 && (
-                            <Badge variant="outline" className="text-xs">
-                              Despacho: {load.dispatching_percentage}% (${formatCurrency((load.total_amount * load.dispatching_percentage) / 100)})
-                            </Badge>
-                          )}
-                          {load.factoring_percentage > 0 && (
-                            <Badge variant="outline" className="text-xs">
-                              Factoring: {load.factoring_percentage}% (${formatCurrency((load.total_amount * load.factoring_percentage) / 100)})
-                            </Badge>
-                          )}
-                          {load.leasing_percentage > 0 && (
-                            <Badge variant="outline" className="text-xs">
-                              Leasing: {load.leasing_percentage}% (${formatCurrency((load.total_amount * load.leasing_percentage) / 100)})
-                            </Badge>
-                          )}
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>
