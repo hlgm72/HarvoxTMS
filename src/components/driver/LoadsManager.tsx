@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -64,20 +64,26 @@ export function LoadsManager({ className }: LoadsManagerProps) {
   const { data: loadsData = [], isLoading, refetch } = useLoads();
   
   // Transform data for LoadsManager component
-  const loads = loadsData.filter(load => load.driver_user_id === user?.id).map(load => ({
-    id: load.id,
-    load_number: load.load_number,
-    client_name: load.broker_name || 'Sin cliente',
-    origin_city: load.pickup_city || 'Sin origen',
-    origin_state: '',
-    destination_city: load.delivery_city || 'Sin destino', 
-    destination_state: '',
-    pickup_date: new Date().toISOString(), // TODO: Add pickup dates from stops
-    delivery_date: new Date(Date.now() + 86400000).toISOString(), // TODO: Add delivery dates from stops
-    status: load.status,
-    total_amount: load.total_amount,
-    progress: calculateProgress(load.status)
-  }));
+  const loads = useMemo(() => {
+    if (!loadsData || !user?.id) return [];
+    
+    return loadsData
+      .filter(load => load.driver_user_id === user.id)
+      .map(load => ({
+        id: load.id,
+        load_number: load.load_number,
+        client_name: load.broker_name || 'Sin cliente',
+        origin_city: load.pickup_city || 'Sin origen',
+        origin_state: '',
+        destination_city: load.delivery_city || 'Sin destino', 
+        destination_state: '',
+        pickup_date: new Date().toISOString(), // TODO: Add pickup dates from stops
+        delivery_date: new Date(Date.now() + 86400000).toISOString(), // TODO: Add delivery dates from stops
+        status: load.status,
+        total_amount: load.total_amount,
+        progress: calculateProgress(load.status)
+      }));
+  }, [loadsData, user?.id]);
 
   const getStatusColor = (status: string): string => {
     switch (status) {
