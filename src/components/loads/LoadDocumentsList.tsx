@@ -80,11 +80,10 @@ export function LoadDocumentsList({
         if (mounted) {
           setIsLoading(true);
         }
-        const { data, error } = await supabase
-          .from('load_documents')
-          .select('*')
-          .eq('load_id', loadId)
-          .order('created_at', { ascending: false });
+        // Use the secure function to load documents (same as other components)
+        const { data, error } = await supabase.rpc('get_load_documents_with_validation', {
+          target_load_id: loadId
+        });
 
         if (error) throw error;
         
