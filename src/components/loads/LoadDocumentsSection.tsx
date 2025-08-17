@@ -663,178 +663,136 @@ export function LoadDocumentsSection({
       const isRemoving = existingDoc ? removingDocuments.has(existingDoc.id) : false;
 
       return (
-        <div key={docType.type} className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-4 border rounded-lg">
-          <div className="flex items-center space-x-3">
+        <div key={docType.type} className="p-4 border rounded-lg space-y-3">
+          {/* Line 1: Document title and required badge */}
+          <div className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-muted-foreground" />
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-medium">{docType.label}</span>
-                {docType.required && <Badge variant="destructive" className="text-xs">Requerido</Badge>}
-                {docType.generated && <Badge variant="secondary" className="text-xs">Generado</Badge>}
-              </div>
-              <p className="text-sm text-muted-foreground">{docType.description}</p>
-            </div>
+            <span className="font-medium">{docType.label}</span>
+            {docType.required && <Badge variant="destructive" className="text-xs">Requerido</Badge>}
+            {docType.generated && <Badge variant="secondary" className="text-xs">Generado</Badge>}
           </div>
 
-                <div className="flex flex-wrap items-center gap-2 md:justify-end">
-                  {existingDoc ? (
-                    <>
-                      <div className="flex flex-col items-start md:items-end mr-0 md:mr-2 text-left md:text-right">
-                        <span className="text-sm font-medium">{existingDoc.fileName}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {existingDoc.fileSize ? `${(existingDoc.fileSize / 1024 / 1024).toFixed(2)} MB` : 'Tamaño desconocido'}
-                        </span>
-                      </div>
+          {/* Line 2: Document description */}
+          <p className="text-sm text-muted-foreground">{docType.description}</p>
+
+          {/* Line 3: File name and action buttons */}
+          <div className="flex items-center justify-between">
+            {existingDoc ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">{existingDoc.fileName}</span>
+                <Badge variant="outline" className="text-xs">Subido</Badge>
+              </div>
+            ) : (
+              <span className="text-sm text-muted-foreground">Sin documento</span>
+            )}
+
+            <div className="flex items-center gap-2">
+              {existingDoc ? (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      window.open(existingDoc.url, '_blank');
+                    }}
+                    disabled={isRemoving}
+                    title="Ver documento"
+                  >
+                    <Eye className="h-4 w-4 mr-1" />
+                    Ver
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch(existingDoc.url);
+                        const blob = await response.blob();
+                        const blobUrl = window.URL.createObjectURL(blob);
+                        
+                        const link = document.createElement('a');
+                        link.href = blobUrl;
+                        link.download = existingDoc.fileName;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        window.URL.revokeObjectURL(blobUrl);
+                        
+                        showSuccess("Descarga iniciada", `${existingDoc.fileName} se está descargando`);
+                      } catch (error) {
+                        console.error('Error downloading document:', error);
+                        showError("Error", "No se pudo descargar el documento");
+                      }
+                    }}
+                    disabled={isRemoving}
+                    title="Descargar documento"
+                  >
+                    <Download className="h-4 w-4 mr-1" />
+                    Descargar
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
                       <Button 
-                        variant="ghost" 
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => {
-                          if (!existingDoc.url) {
-                            showError("Error", "No se pudo encontrar la URL del documento");
-                            return;
-                          }
-                          window.open(existingDoc.url, '_blank');
-                        }}
-                        title="Ver documento"
+                        variant="outline" 
+                        size="sm"
+                        disabled={isRemoving}
+                        className="text-destructive hover:text-destructive"
+                        title="Eliminar documento"
                       >
-                        <Eye className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Eliminar
                       </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={async () => {
-                          if (!existingDoc.url) {
-                            showError("Error", "No se pudo encontrar la URL del documento para descargar");
-                            return;
-                          }
-                          
-                          try {
-                            const response = await fetch(existingDoc.url);
-                            if (!response.ok) {
-                              throw new Error(`HTTP error! status: ${response.status}`);
-                            }
-                            
-                            const blob = await response.blob();
-                            const blobUrl = window.URL.createObjectURL(blob);
-                            const link = document.createElement('a');
-                            link.href = blobUrl;
-                            link.download = existingDoc.fileName;
-                            link.style.display = 'none';
-                            
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            
-                            window.URL.revokeObjectURL(blobUrl);
-                            
-                            showSuccess("Descarga iniciada", `${existingDoc.fileName} se está descargando`);
-                          } catch (error) {
-                            console.error('Error downloading document:', error);
-                            showError("Error", "No se pudo descargar el documento");
-                          }
-                        }}
-                        title="Descargar documento"
-                      >
-                        <Download className="h-4 w-4" />
-                      </Button>
-                      
-                      {!docType.generated && (
-                        <>
-                          <label htmlFor={`replace-${docType.type}`}>
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              className="h-8 w-8"
-                              disabled={isUploading}
-                              title="Reemplazar documento"
-                              asChild
-                            >
-                              <span>
-                                <RotateCcw className="h-4 w-4" />
-                              </span>
-                            </Button>
-                          </label>
-                          <input
-                            id={`replace-${docType.type}`}
-                            type="file"
-                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                            onChange={(e) => handleReplaceDocument(e, docType.type)}
-                            className="hidden"
-                          />
-                          
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button 
-                                variant="ghost" 
-                                size="icon"
-                                className="h-8 w-8 text-destructive hover:text-destructive"
-                                disabled={isRemoving}
-                                title="Eliminar documento"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>¿Eliminar documento?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Esta acción eliminará permanentemente "{existingDoc.fileName}". 
-                                  No se puede deshacer.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleRemoveDocument(existingDoc.id)}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                >
-                                  Eliminar
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      {docType.generated && docType.type === 'load_order' ? (
-                        <Button 
-                          onClick={() => setShowGenerateLoadOrder(true)}
-                          disabled={hasLoadOrder || !canGenerate}
-                          className="flex items-center gap-2"
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>¿Eliminar documento?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Esta acción eliminará permanentemente "{existingDoc.fileName}". 
+                          No se puede deshacer.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleRemoveDocument(existingDoc.id)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
-                          <Plus className="h-4 w-4" />
-                          Generar Load Order
-                        </Button>
-                      ) : (
-                        <>
-                          <label htmlFor={`upload-${docType.type}`}>
-                            <Button 
-                              variant="outline" 
-                              disabled={isUploading}
-                              className="flex items-center gap-2"
-                              asChild
-                            >
-                              <span>
-                                <Upload className="h-4 w-4" />
-                                {isUploading ? 'Subiendo...' : 'Subir'}
-                              </span>
-                            </Button>
-                          </label>
-                          <input
-                            id={`upload-${docType.type}`}
-                            type="file"
-                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                            onChange={(e) => handleFileSelect(e, docType.type)}
-                            className="hidden"
-                          />
-                        </>
-                      )}
-                    </>
-                  )}
+                          Eliminar
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </>
+              ) : docType.generated ? (
+                <Button
+                  onClick={() => setShowGenerateLoadOrder(true)}
+                  disabled={isUploading}
+                  size="sm"
+                >
+                  <FileText className="h-4 w-4 mr-1" />
+                  Generar Load Order
+                </Button>
+              ) : (
+                <>
+                  <input
+                    type="file"
+                    onChange={(e) => handleFileSelect(e, docType.type)}
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    className="hidden"
+                    id={`upload-${docType.type}`}
+                  />
+                  <Button
+                    onClick={() => document.getElementById(`upload-${docType.type}`)?.click()}
+                    disabled={isUploading}
+                    size="sm"
+                  >
+                    <Upload className="h-4 w-4 mr-1" />
+                    {isUploading ? 'Subiendo...' : 'Subir'}
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       );
@@ -857,113 +815,48 @@ export function LoadDocumentsSection({
           {row3Docs.map(renderDocumentCard)}
         </div>
 
-        {/* Summary */}
-        <div className="pt-4 border-t">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-sm">
-            <span className="text-muted-foreground">
-              Documentos subidos: {allDocuments.length} de {documentTypes.length}
-            </span>
-            <div className="flex items-center gap-2">
-              {allDocuments.filter(doc => 
-                documentTypes.find(dt => dt.type === doc.type)?.required
-              ).length > 0 && (
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  <FileCheck className="h-3 w-3" />
-                  Documentos requeridos completados
-                </Badge>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Additional Documents Section */}
-        <div className="space-y-4">
-          <h4 className="font-medium">Documentos adicionales</h4>
-          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 md:p-6 text-center">
-            <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground mb-2">
-              Arrastra archivos aquí o haz clic para subir documentos adicionales
-            </p>
-            <label htmlFor="additional-upload">
-              <Button variant="outline" size="sm" asChild>
-                <span>Seleccionar archivos</span>
-              </Button>
-            </label>
-            <input
-              id="additional-upload"
-              type="file"
-              multiple
-              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-              onChange={(e) => {
-                const files = Array.from(e.target.files || []);
-                files.forEach(file => {
-                  // For additional documents, we'll use a generic type
-                  // You might want to add a new document type for this
-                  handleFileUpload(file, 'driver_instructions'); // Using driver_instructions as fallback
-                });
-                e.target.value = '';
-              }}
-              className="hidden"
-            />
-          </div>
-        </div>
-
-        {/* Additional uploaded documents */}
-        {allDocuments.filter(doc => !documentTypes.some(dt => dt.type === doc.type)).length > 0 && (
-          <div className="space-y-2">
-            <h5 className="font-medium text-sm">Documentos adicionales subidos</h5>
-            {allDocuments
-              .filter(doc => !documentTypes.some(dt => dt.type === doc.type))
-              .map(doc => (
-                <div key={doc.id} className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 p-3 bg-muted/50 rounded-lg">
+        {/* Row 4: Additional Documents */}
+        {additionalDocs.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Documentos Adicionales</h3>
+            <div className="grid gap-4">
+              {additionalDocs.map((doc) => (
+                <div key={doc.id} className="p-4 border rounded-lg space-y-3">
+                  {/* Line 1: Document name and type badge */}
                   <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <span className="text-sm font-medium">{doc.fileName}</span>
-                      <div className="text-xs text-muted-foreground">
-                        {doc.fileSize ? `${(doc.fileSize / 1024 / 1024).toFixed(2)} MB` : 'Tamaño desconocido'}
-                      </div>
-                    </div>
+                    <FileText className="h-5 w-5 text-muted-foreground" />
+                    <span className="font-medium">{doc.name}</span>
+                    <Badge variant="outline" className="text-xs">Adicional</Badge>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      className="h-6 w-6"
+
+                  {/* Line 2: File name */}
+                  <p className="text-sm text-muted-foreground">{doc.fileName}</p>
+
+                  {/* Line 3: Action buttons */}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => {
-                        if (!doc.url) {
-                          showError("Error", "No se pudo encontrar la URL del documento");
-                          return;
-                        }
                         window.open(doc.url, '_blank');
                       }}
                       title="Ver documento"
                     >
-                      <Eye className="h-3 w-3" />
+                      <Eye className="h-4 w-4 mr-1" />
+                      Ver
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      className="h-6 w-6"
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={async () => {
-                        if (!doc.url) {
-                          showError("Error", "No se pudo encontrar la URL del documento para descargar");
-                          return;
-                        }
-                        
                         try {
                           const response = await fetch(doc.url);
-                          if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                          }
-                          
                           const blob = await response.blob();
                           const blobUrl = window.URL.createObjectURL(blob);
+                          
                           const link = document.createElement('a');
                           link.href = blobUrl;
                           link.download = doc.fileName;
-                          link.style.display = 'none';
-                          
                           document.body.appendChild(link);
                           link.click();
                           document.body.removeChild(link);
@@ -978,17 +871,19 @@ export function LoadDocumentsSection({
                       }}
                       title="Descargar documento"
                     >
-                      <Download className="h-3 w-3" />
+                      <Download className="h-4 w-4 mr-1" />
+                      Descargar
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-6 w-6 text-destructive hover:text-destructive"
+                          variant="outline" 
+                          size="sm"
+                          className="text-destructive hover:text-destructive"
                           title="Eliminar documento"
                         >
-                          <Trash2 className="h-3 w-3" />
+                          <Trash2 className="h-4 w-4 mr-1" />
+                          Eliminar
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -1013,8 +908,41 @@ export function LoadDocumentsSection({
                   </div>
                 </div>
               ))}
+            </div>
           </div>
         )}
+
+        {/* Upload additional documents section */}
+        <div className="p-4 border-2 border-dashed rounded-lg">
+          <div className="text-center">
+            <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
+            <h3 className="text-lg font-medium mb-2">Subir Documento Adicional</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Sube cualquier documento adicional relacionado con esta carga
+            </p>
+            <input
+              type="file"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  handleFileUpload(file, 'bol', false);
+                }
+                e.target.value = '';
+              }}
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              className="hidden"
+              id="additional-upload"
+            />
+            <Button
+              onClick={() => document.getElementById('additional-upload')?.click()}
+              disabled={uploading === 'additional'}
+              variant="outline"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              {uploading === 'additional' ? 'Subiendo...' : 'Seleccionar Archivo'}
+            </Button>
+          </div>
+        </div>
       </div>
     );
   };
