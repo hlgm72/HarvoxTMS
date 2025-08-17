@@ -37,10 +37,14 @@ export const useLoadDocumentValidation = (loadId: string) => {
 
       // Define required documents
       const requiredDocuments = ['rate_confirmation', 'pod'];
-      const existingDocumentTypes = documents?.map(doc => doc.document_type) || [];
+      
+      // Only consider non-archived documents for validation
+      const activeDocumentTypes = documents
+        ?.filter(doc => doc.archived_at === null)
+        ?.map(doc => doc.document_type) || [];
       
       const missingRequiredDocuments = requiredDocuments.filter(
-        reqDoc => !existingDocumentTypes.includes(reqDoc)
+        reqDoc => !activeDocumentTypes.includes(reqDoc)
       );
 
       const canMarkAsDelivered = hasRateConfirmation && hasPOD;
