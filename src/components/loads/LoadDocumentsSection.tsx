@@ -859,22 +859,7 @@ export function LoadDocumentsSection({
 
           {/* Preview and Content Area */}
           <div className="flex gap-3">
-            {/* Preview Section */}
-            <div className="flex-shrink-0">
-              {existingDoc ? (
-                <DocumentPreview
-                  documentUrl={existingDoc.url}
-                  fileName={existingDoc.fileName}
-                  className="w-24 h-20"
-                />
-              ) : (
-                <div className="w-24 h-20 border border-dashed border-border/40 rounded flex items-center justify-center bg-muted/20">
-                  <FileText className="h-6 w-6 text-muted-foreground" />
-                </div>
-              )}
-            </div>
-
-            {/* Content and Actions */}
+            {/* Content and Actions - now on the left */}
             <div className="flex-1 space-y-2">
               {/* File name */}
               <div className="min-h-[16px]">
@@ -884,8 +869,6 @@ export function LoadDocumentsSection({
                   <span className="text-xs text-muted-foreground italic">Sin documento</span>
                 )}
               </div>
-
-              {/* Action buttons */}
               <div className="flex items-center gap-1 pt-1">
                 {existingDoc ? (
                   <>
@@ -1135,8 +1118,23 @@ export function LoadDocumentsSection({
                   </>
                 )}
               </div>
+
+            {/* Preview Section - now on the right and larger */}
+            <div className="flex-shrink-0">
+              {existingDoc ? (
+                <DocumentPreview
+                  documentUrl={existingDoc.url}
+                  fileName={existingDoc.fileName}
+                  className="w-32 h-24"
+                />
+              ) : (
+                <div className="w-32 h-24 border border-dashed border-border/40 rounded flex items-center justify-center bg-muted/20">
+                  <FileText className="h-8 w-8 text-muted-foreground" />
+                </div>
+              )}
             </div>
           </div>
+        </div>
         </div>
       );
     };
