@@ -285,17 +285,17 @@ export function LoadDocumentsSection({
         }
       }
 
-      // Upload file to Supabase Storage
+      // Upload file to Supabase Storage with upsert to handle existing files
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('load-documents')
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: false
+          upsert: true  // Allow overwriting existing files
         });
 
       if (uploadError) {
         console.error('❌ LoadDocumentsSection - Storage upload error:', uploadError);
-        throw uploadError;
+        throw new Error(`Error subiendo archivo: ${uploadError.message}`);
       }
 
       console.log('✅ LoadDocumentsSection - File uploaded to storage:', uploadData.path);
