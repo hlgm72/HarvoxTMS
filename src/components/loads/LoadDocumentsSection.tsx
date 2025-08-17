@@ -349,12 +349,10 @@ export function LoadDocumentsSection({
       });
 
       let result;
-      // Use the new ACID function with proper parameters
+      // Use the correct function with the new parameter signature
       result = await supabase.rpc('create_or_update_load_document_with_validation', {
-        load_id_param: loadId,
         document_data: documentData,
-        document_id_param: isReplacement && existingDocId ? existingDocId : null,
-        replace_existing: isReplacement && !existingDocId
+        document_id: isReplacement && existingDocId ? existingDocId : null
       });
 
       if (result.error) {
