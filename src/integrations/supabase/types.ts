@@ -2882,80 +2882,7 @@ export type Database = {
       }
     }
     Views: {
-      driver_basic_info: {
-        Row: {
-          cdl_class: string | null
-          created_at: string | null
-          is_active: boolean | null
-          license_expiry_date: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          cdl_class?: string | null
-          created_at?: string | null
-          is_active?: boolean | null
-          license_expiry_date?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          cdl_class?: string | null
-          created_at?: string | null
-          is_active?: boolean | null
-          license_expiry_date?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      driver_sensitive_info: {
-        Row: {
-          cdl_class: string | null
-          cdl_endorsements: string | null
-          driver_id: string | null
-          emergency_contact_name: string | null
-          emergency_contact_phone: string | null
-          license_expiry_date: string | null
-          license_issue_date: string | null
-          license_number: string | null
-          license_state: string | null
-          user_id: string | null
-        }
-        Insert: {
-          cdl_class?: string | null
-          cdl_endorsements?: string | null
-          driver_id?: string | null
-          emergency_contact_name?: string | null
-          emergency_contact_phone?: string | null
-          license_expiry_date?: string | null
-          license_issue_date?: string | null
-          license_number?: string | null
-          license_state?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          cdl_class?: string | null
-          cdl_endorsements?: string | null
-          driver_id?: string | null
-          emergency_contact_name?: string | null
-          emergency_contact_phone?: string | null
-          license_expiry_date?: string | null
-          license_issue_date?: string | null
-          license_number?: string | null
-          license_state?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "driver_profiles_license_state_fkey"
-            columns: ["license_state"]
-            isOneToOne: false
-            referencedRelation: "states"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       archive_company_document: {
@@ -3382,17 +3309,6 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
-      get_driver_basic_data_secure: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          cdl_class: string
-          created_at: string
-          is_active: boolean
-          license_expiry_date: string
-          updated_at: string
-          user_id: string
-        }[]
-      }
       get_driver_basic_info: {
         Args: { target_user_id: string }
         Returns: {
@@ -3402,19 +3318,14 @@ export type Database = {
           user_id: string
         }[]
       }
-      get_driver_sensitive_data_secure: {
+      get_driver_data_security_summary: {
         Args: Record<PropertyKey, never>
         Returns: {
-          cdl_class: string
-          cdl_endorsements: string
-          driver_id: string
-          emergency_contact_name: string
-          emergency_contact_phone: string
-          license_expiry_date: string
-          license_issue_date: string
-          license_number: string
-          license_state: string
-          user_id: string
+          access_method: string
+          audit_logging: boolean
+          permitted_roles: string[]
+          pii_exposure_level: string
+          security_level: string
         }[]
       }
       get_driver_sensitive_info: {
@@ -3896,10 +3807,6 @@ export type Database = {
           entity_type: string
           required_role?: string
         }
-        Returns: boolean
-      }
-      validate_driver_view_access: {
-        Args: { view_type: string }
         Returns: boolean
       }
       validate_invitation_token: {
