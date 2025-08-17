@@ -3089,13 +3089,13 @@ export type Database = {
       }
       create_or_update_load_document_with_validation: {
         Args:
+          | { document_data: Json; document_id?: string }
           | {
               document_data: Json
               document_id_param?: string
               load_id_param: string
               replace_existing?: boolean
             }
-          | { document_data: Json; existing_doc_id?: string }
         Returns: Json
       }
       create_or_update_load_with_validation: {
@@ -3834,6 +3834,16 @@ export type Database = {
       }
     }
     Enums: {
+      document_type:
+        | "rate_confirmation"
+        | "load_order"
+        | "bol"
+        | "pod"
+        | "invoice"
+        | "receipt"
+        | "fuel_receipt"
+        | "scale_ticket"
+        | "other"
       user_role:
         | "superadmin"
         | "company_owner"
@@ -3968,6 +3978,17 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      document_type: [
+        "rate_confirmation",
+        "load_order",
+        "bol",
+        "pod",
+        "invoice",
+        "receipt",
+        "fuel_receipt",
+        "scale_ticket",
+        "other",
+      ],
       user_role: [
         "superadmin",
         "company_owner",
