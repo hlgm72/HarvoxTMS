@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -38,11 +38,48 @@ export function LoadPhotosSection({
   const [uploading, setUploading] = useState<string | null>(null);
   const [removing, setRemoving] = useState<Set<string>>(new Set());
   const [selectedCategory, setSelectedCategory] = useState<'pickup' | 'delivery'>('pickup');
+  const [photoUrls, setPhotoUrls] = useState<Map<string, string>>(new Map());
   const { showSuccess, showError } = useFleetNotifications();
 
   // Count photos by category
   const pickupPhotos = loadPhotos.filter(photo => photo.category === 'pickup');
   const deliveryPhotos = loadPhotos.filter(photo => photo.category === 'delivery');
+
+  // Generate signed URLs for photo previews
+  useEffect(() => {
+    const generateSignedUrls = async () => {
+      const newPhotoUrls = new Map();
+      
+      for (const photo of loadPhotos) {
+        if (photo.url && !photo.url.startsWith('blob:')) {
+          try {
+            let storageFilePath = photo.url;
+            if (photo.url.includes('/load-documents/')) {
+              storageFilePath = photo.url.split('/load-documents/')[1];
+            }
+            
+            const { data: signedUrlData, error } = await supabase.storage
+              .from('load-documents')
+              .createSignedUrl(storageFilePath, 3600);
+            
+            if (!error && signedUrlData?.signedUrl) {
+              newPhotoUrls.set(photo.id, signedUrlData.signedUrl);
+            }
+          } catch (error) {
+            console.error('Error generating signed URL for photo:', photo.id, error);
+          }
+        } else if (photo.url?.startsWith('blob:')) {
+          newPhotoUrls.set(photo.id, photo.url);
+        }
+      }
+      
+      setPhotoUrls(newPhotoUrls);
+    };
+    
+    if (loadPhotos.length > 0) {
+      generateSignedUrls();
+    }
+  }, [loadPhotos]);
 
   const canUploadMorePhotos = (category: 'pickup' | 'delivery') => {
     const currentCount = category === 'pickup' ? pickupPhotos.length : deliveryPhotos.length;
@@ -248,16 +285,29 @@ export function LoadPhotosSection({
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {photos.map((photo) => (
-            <div key={photo.id} className="relative group">
-              <div className="aspect-square border rounded-lg overflow-hidden bg-muted/20">
-                <img
-                  src={photo.url.startsWith('blob:') ? photo.url : `${supabase.storage.from('load-documents').getPublicUrl(photo.url.includes('/load-documents/') ? photo.url.split('/load-documents/')[1] : photo.url).data.publicUrl}`}
-                  alt={photo.fileName}
-                  className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                  onClick={() => handleViewPhoto(photo)}
-                />
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+          {photos.map((photo) => {
+            const photoUrl = photoUrls.get(photo.id);
+            
+            return (
+              <div key={photo.id} className="relative group">
+                <div className="aspect-square border rounded-lg overflow-hidden bg-muted/20">
+                  {photoUrl ? (
+                    <img
+                      src={photoUrl}
+                      alt={photo.fileName}
+                      className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => handleViewPhoto(photo)}
+                      onError={(e) => {
+                        console.error('Error loading image:', photo.fileName);
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    </div>
+                   )}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
                   <Button
                     size="sm"
                     variant="secondary"
@@ -297,13 +347,14 @@ export function LoadPhotosSection({
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
+                  </div>
                 </div>
+                <p className="text-xs text-muted-foreground mt-1 truncate">
+                  {photo.fileName}
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground mt-1 truncate">
-                {photo.fileName}
-              </p>
-            </div>
-          ))}
+            );
+          })}
           
           {/* Empty slots */}
           {Array.from({ length: 4 - photos.length }).map((_, index) => (
