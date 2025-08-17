@@ -15,6 +15,7 @@ import { useFleetNotifications } from "@/components/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 interface LoadDocument {
   id: string;
@@ -176,6 +177,16 @@ export function LoadDocumentsSection({
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const { notifyDocumentChange } = useLoadDocuments();
+  
+  // Get current user
+  const { data: user } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) throw error;
+      return user;
+    }
+  });
 
   // Check if Load Order exists
   useEffect(() => {
@@ -235,7 +246,116 @@ export function LoadDocumentsSection({
     }
   };
 
-  // The rest of the handlers (handleFileUpload, handleTemporaryFileUpload, handleRemoveTemporaryDocument, handleRemoveDocument, handleLoadOrderGenerated, handleFileSelect, handleReplaceDocument) are omitted here for brevity but should be included exactly as in the original file.
+  const handleFileUpload = async (file: File, documentType: string) => {
+    setUploading(documentType);
+    setUploadingDocuments(prev => new Set([...prev, documentType]));
+    
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${loadData.load_number}_${documentType}_${Date.now()}.${fileExt}`;
+      const filePath = `${loadData.id}/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('load-documents')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        console.error('Error uploading file:', error);
+        showError("Error", "No se pudo subir el archivo");
+        return;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('load-documents')
+        .getPublicUrl(filePath);
+
+      const documentData = {
+        load_id: loadData.id,
+        document_type: documentType,
+        file_name: file.name,
+        file_url: publicUrl,
+        uploaded_by: user?.id || '',
+      };
+
+      const { error: dbError } = await supabase
+        .from('load_documents')
+        .insert(documentData);
+
+      if (dbError) {
+        console.error('Error saving document to database:', dbError);
+        await supabase.storage.from('load-documents').remove([filePath]);
+        showError("Error", "No se pudo guardar la información del documento");
+        return;
+      }
+
+      await loadDocuments();
+      showSuccess("Documento subido", `${file.name} se subió correctamente`);
+    } catch (error) {
+      console.error('Error uploading document:', error);
+      showError("Error", "Error inesperado al subir el documento");
+    } finally {
+      setUploading(null);
+      setUploadingDocuments(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(documentType);
+        return newSet;
+      });
+    }
+  };
+
+  const handleFileSelect = (file: File, documentType: string) => {
+    handleFileUpload(file, documentType);
+  };
+
+  const handleRemoveDocument = async (documentId: string) => {
+    setRemovingDocuments(prev => new Set([...prev, documentId]));
+    
+    try {
+      const document = documents.find(doc => doc.id === documentId);
+      if (!document) return;
+
+      const { error: dbError } = await supabase
+        .from('load_documents')
+        .delete()
+        .eq('id', documentId);
+
+      if (dbError) {
+        console.error('Error removing document from database:', dbError);
+        showError("Error", "No se pudo eliminar el documento");
+        return;
+      }
+
+      if (document.url && !document.url.startsWith('blob:')) {
+        let storageFilePath = document.url;
+        if (document.url.includes('/load-documents/')) {
+          storageFilePath = document.url.split('/load-documents/')[1];
+        }
+        
+        const { error: storageError } = await supabase.storage
+          .from('load-documents')
+          .remove([storageFilePath]);
+
+        if (storageError) {
+          console.warn('Warning: Could not remove file from storage:', storageError);
+        }
+      }
+
+      await loadDocuments();
+      showSuccess("Documento eliminado", `${document.fileName} se eliminó correctamente`);
+    } catch (error) {
+      console.error('Error removing document:', error);
+      showError("Error", "Error inesperado al eliminar el documento");
+    } finally {
+      setRemovingDocuments(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(documentId);
+        return newSet;
+      });
+    }
+  };
 
   // For brevity, we focus on the renderDocumentCard and renderDocumentManagement functions with the requested layout changes:
 
@@ -372,7 +492,7 @@ export function LoadDocumentsSection({
                     type="file"
                     onChange={(e) => {
                       if (e.target.files?.[0]) {
-                        // Use the existing handleFileSelect or handleFileUpload with replacement true
+                        handleFileSelect(e.target.files[0], docType.type);
                       }
                       e.target.value = '';
                     }}
@@ -409,7 +529,7 @@ export function LoadDocumentsSection({
                         <AlertDialogCancel>Cancelar</AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => {
-                            // Use existing handleRemoveDocument
+                            handleRemoveDocument(existingDoc.id);
                           }}
                           className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
@@ -436,7 +556,7 @@ export function LoadDocumentsSection({
                     type="file"
                     onChange={(e) => {
                       if (e.target.files?.[0]) {
-                        // Use existing handleFileSelect
+                        handleFileSelect(e.target.files[0], docType.type);
                       }
                       e.target.value = '';
                     }}
