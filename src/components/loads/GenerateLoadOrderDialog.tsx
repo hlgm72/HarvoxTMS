@@ -31,7 +31,7 @@ interface GenerateLoadOrderDialogProps {
     company_phone?: string;
     company_email?: string;
   };
-  onLoadOrderGenerated: (loadOrderData: { url: string; amount: number }) => void;
+  onLoadOrderGenerated: (loadOrderData: { blob: Blob; amount: number }) => void;
 }
 
 export function GenerateLoadOrderDialog({ 
@@ -91,17 +91,17 @@ export function GenerateLoadOrderDialog({
         customAmount: values.customAmount
       });
       
-      const pdfUrl = await generateLoadOrderPDF({
+      const pdfBlob = await generateLoadOrderPDF({
         ...loadData,
         customAmount: values.customAmount
       });
 
-      console.log('✅ GenerateLoadOrderDialog - PDF generated successfully, URL:', pdfUrl);
+      console.log('✅ GenerateLoadOrderDialog - PDF generated successfully');
 
       // Notificar que se generó el Load Order
       console.log('📢 GenerateLoadOrderDialog - Calling onLoadOrderGenerated...');
       onLoadOrderGenerated({
-        url: pdfUrl,
+        blob: pdfBlob,
         amount: values.customAmount
       });
 

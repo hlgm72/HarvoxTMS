@@ -16,7 +16,7 @@ interface LoadOrderData {
   company_email?: string;
 }
 
-export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string> {
+export async function generateLoadOrderPDF(data: LoadOrderData): Promise<Blob> {
   console.log('📄 generateLoadOrderPDF - Starting with data:', data);
   
   // Función para agregar imágenes de drop pins con calidad optimizada
@@ -447,13 +447,12 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<string>
       { align: "center" }
     );
 
-  // Convertir a blob y crear URL
-  console.log('🔗 generateLoadOrderPDF - Creating blob and URL...');
+  // Convertir a blob y retornar directamente el blob
+  console.log('🔗 generateLoadOrderPDF - Creating blob...');
   const pdfBlob = doc.output('blob');
-  const url = URL.createObjectURL(pdfBlob);
   
-  console.log('✅ generateLoadOrderPDF - PDF generated successfully, URL:', url);
-  return url;
+  console.log('✅ generateLoadOrderPDF - PDF generated successfully');
+  return pdfBlob;
   } catch (error) {
     console.error('❌ generateLoadOrderPDF - Error generating PDF:', error);
     throw error;
