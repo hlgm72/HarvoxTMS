@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FileText, Upload, Eye, Download, Trash2, RotateCcw, Plus, Loader2, Check } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { FileText, Upload, Eye, Download, Trash2, RotateCcw, Plus, Loader2, Check, ChevronDown } from 'lucide-react';
 import DocumentPreview from './DocumentPreview';
 import { LoadDocumentValidationIndicator } from './LoadDocumentValidationIndicator';
 import { GenerateLoadOrderDialog } from './GenerateLoadOrderDialog';
@@ -206,6 +207,7 @@ export function LoadDocumentsSection({
   const [hasLoadOrder, setHasLoadOrder] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string>('');
+  const [showUploadDropdown, setShowUploadDropdown] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const { notifyDocumentChange } = useLoadDocuments();
@@ -383,6 +385,26 @@ export function LoadDocumentsSection({
 
   const handleFileSelect = (file: File, documentType: string) => {
     handleFileUpload(file, documentType);
+  };
+
+  // Get available document types (not uploaded yet)
+  const getAvailableDocumentTypes = () => {
+    const uploadedTypes = [...documents, ...temporaryDocuments].map(doc => doc.type);
+    return uploadableDocumentTypes.filter(docType => !uploadedTypes.includes(docType.type));
+  };
+
+  const handleUploadClick = (documentType: string) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,.doc,.docx,.jpg,.jpeg,.png,.gif';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        handleFileSelect(file, documentType);
+      }
+    };
+    input.click();
+    setShowUploadDropdown(false);
   };
 
   const handleRemoveDocument = async (documentId: string) => {
@@ -719,56 +741,57 @@ export function LoadDocumentsSection({
         {/* Upload Controls */}
         <div className="flex flex-col sm:flex-row gap-3 p-4 bg-muted/30 rounded-lg">
           <div className="flex-1">
-            <Select value={selectedDocumentType} onValueChange={setSelectedDocumentType}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecciona el tipo de documento a subir" />
-              </SelectTrigger>
-              <SelectContent>
-                {uploadableDocumentTypes.map(docType => (
-                  <SelectItem key={docType.type} value={docType.type}>
-                    {docType.label}
-                  </SelectItem>
+            <DropdownMenu open={showUploadDropdown} onOpenChange={setShowUploadDropdown}>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="default" 
+                  className="w-full justify-between"
+                  disabled={getAvailableDocumentTypes().length === 0}
+                >
+                  <div className="flex items-center gap-2">
+                    <Upload className="h-4 w-4" />
+                    {getAvailableDocumentTypes().length === 0 
+                      ? 'Todos los documentos han sido subidos' 
+                      : 'Subir documento'
+                    }
+                  </div>
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-80">
+                {getAvailableDocumentTypes().map((docType) => (
+                  <DropdownMenuItem 
+                    key={docType.type}
+                    onClick={() => handleUploadClick(docType.type)}
+                    className="cursor-pointer flex items-center justify-between"
+                  >
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{docType.label}</span>
+                        {docType.required && (
+                          <Badge variant="destructive" className="text-[10px] h-4 px-1">
+                            Requerido
+                          </Badge>
+                        )}
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {docType.description}
+                      </span>
+                    </div>
+                    <Upload className="h-4 w-4" />
+                  </DropdownMenuItem>
                 ))}
-              </SelectContent>
-            </Select>
+                {getAvailableDocumentTypes().length === 0 && (
+                  <DropdownMenuItem disabled>
+                    <span className="text-muted-foreground">
+                      No hay documentos disponibles para subir
+                    </span>
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <div className="flex gap-2">
-            <input
-              type="file"
-              onChange={(e) => {
-                if (e.target.files?.[0] && selectedDocumentType) {
-                  handleFileSelect(e.target.files[0], selectedDocumentType);
-                  setSelectedDocumentType(''); // Reset selection after upload
-                }
-                e.target.value = '';
-              }}
-              accept=".pdf"
-              className="hidden"
-              id="document-upload"
-            />
-            <Button
-              onClick={() => {
-                if (!selectedDocumentType) {
-                  showError("Error", "Selecciona un tipo de documento primero");
-                  return;
-                }
-                window.document.getElementById('document-upload')?.click();
-              }}
-              disabled={!selectedDocumentType || uploading !== null}
-              className="min-w-[100px]"
-            >
-              {uploading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Subiendo...
-                </>
-              ) : (
-                <>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Subir
-                </>
-              )}
-            </Button>
             <Button
               onClick={() => {
                 console.log('🔄 Load Order button clicked');
