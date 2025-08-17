@@ -3248,10 +3248,6 @@ export type Database = {
           max_vehicles: number
           mc_number: string
           name: string
-          owner_email: string
-          owner_name: string
-          owner_phone: string
-          owner_title: string
           payment_cycle_start_day: number
           payment_day: string
           phone: string
@@ -3266,6 +3262,16 @@ export type Database = {
       get_company_current_payment_period: {
         Args: { company_id_param: string; target_date?: string }
         Returns: string
+      }
+      get_company_owner_details: {
+        Args: { target_company_id: string }
+        Returns: {
+          company_id: string
+          owner_email: string
+          owner_name: string
+          owner_phone: string
+          owner_title: string
+        }[]
       }
       get_current_payment_period: {
         Args: { driver_user_id_param: string; target_date?: string }
