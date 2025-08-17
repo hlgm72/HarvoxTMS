@@ -1675,6 +1675,7 @@ export type Database = {
           file_url: string
           id: string
           load_id: string
+          metadata: Json | null
           updated_at: string | null
           uploaded_by: string
         }
@@ -1689,6 +1690,7 @@ export type Database = {
           file_url: string
           id?: string
           load_id: string
+          metadata?: Json | null
           updated_at?: string | null
           uploaded_by?: string
         }
@@ -1703,6 +1705,7 @@ export type Database = {
           file_url?: string
           id?: string
           load_id?: string
+          metadata?: Json | null
           updated_at?: string | null
           uploaded_by?: string
         }
