@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { FileText, Upload, Download, Trash2, FileCheck, Plus, Eye, RotateCcw } from "lucide-react";
-import { GenerateLoadOrderDialog } from "./GenerateLoadOrderDialog";
-import { LoadDocumentValidationIndicator } from "./LoadDocumentValidationIndicator";
-import { supabase } from "@/integrations/supabase/client";
+import React, { useState, useEffect, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { FileText, Upload, Eye, Download, Trash2, RotateCcw, Plus, Loader2, Check } from 'lucide-react';
+import DocumentPreview from './DocumentPreview';
 import { useFleetNotifications } from "@/components/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
@@ -658,14 +658,13 @@ export function LoadDocumentsSection({
           console.log('🔄 LoadDocumentsSection - Trying with ACID function...');
           try {
             const acidResult = await supabase.rpc('create_or_update_load_document_with_validation', {
-              load_id_param: loadId,
               document_data: {
+                load_id: loadId,
                 document_type: 'load_order',
                 file_name: loadOrderData.fileName,
                 file_size: blob.size,
                 file_url: storagePath, // Store the storage path instead of public URL
-              },
-              replace_existing: true
+              }
             });
             
             if (acidResult.error) {
@@ -839,280 +838,300 @@ export function LoadDocumentsSection({
 
       return (
         <div key={docType.type} className="p-3 border rounded-lg bg-white space-y-2">
-          {/* Line 1: Document title and required badge */}
-          <div className="flex items-center gap-2">
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium text-sm">{docType.label}</span>
-            {docType.required && <Badge variant="destructive" className="text-xs h-5">Requerido</Badge>}
-            {docType.generated && existingDoc && <Badge variant="secondary" className="text-xs h-5">Generado</Badge>}
+          {/* Header: Document title and required badge */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <FileText className="h-4 w-4 text-muted-foreground" />
+              <span className="font-medium text-sm">{docType.label}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              {docType.required && <Badge variant="destructive" className="text-xs h-5">Requerido</Badge>}
+              {docType.generated && existingDoc && <Badge variant="secondary" className="text-xs h-5">Generado</Badge>}
+            </div>
           </div>
 
-          {/* Line 2: Document description */}
+          {/* Document description */}
           <p className="text-xs text-muted-foreground leading-tight">{docType.description}</p>
 
-          {/* Line 3: File name */}
-          <div className="min-h-[16px]">
-            {existingDoc ? (
-              <span className="text-xs font-medium text-foreground">{existingDoc.fileName}</span>
-            ) : (
-              <span className="text-xs text-muted-foreground italic">Sin documento</span>
-            )}
-          </div>
-
-          {/* Line 4: Action buttons */}
-          <div className="flex items-center gap-2 pt-1">
-            {existingDoc ? (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={async () => {
-                    try {
-                      // Check if this is a blob URL (temporary document)
-                      if (existingDoc.url.startsWith('blob:')) {
-                        window.open(existingDoc.url, '_blank');
-                        return;
-                      }
-
-                      console.log('🔍 LoadDocumentsSection - Processing URL:', existingDoc.url);
-
-                      // Check if it's already a public URL that we can open directly
-                      if (existingDoc.url.includes('supabase.co/storage/v1/object/public/')) {
-                        console.log('✅ LoadDocumentsSection - Opening public URL directly:', existingDoc.url);
-                        window.open(existingDoc.url, '_blank');
-                        return;
-                      }
-
-                      // Extract storage path from URL if it's a full Supabase URL
-                      let storageFilePath = existingDoc.url;
-                      if (existingDoc.url.includes('supabase.co/storage/v1/object/')) {
-                        const parts = existingDoc.url.split('/load-documents/');
-                        if (parts.length > 1) {
-                          storageFilePath = parts[1];
-                        }
-                      }
-                      
-                      console.log('🔍 LoadDocumentsSection - Storage path for signing:', storageFilePath);
-
-                      // Generate signed URL for private bucket
-                      const { data: signedUrlData, error: urlError } = await supabase.storage
-                        .from('load-documents')
-                        .createSignedUrl(storageFilePath, 3600); // 1 hour expiry
-
-                      if (urlError) {
-                        console.error('Error generating signed URL:', urlError);
-                        showError("Error", "No se pudo generar el enlace para ver el documento");
-                        return;
-                      }
-
-                      if (signedUrlData?.signedUrl) {
-                        console.log('✅ LoadDocumentsSection - Opening signed URL:', signedUrlData.signedUrl);
-                        window.open(signedUrlData.signedUrl, '_blank');
-                      }
-                    } catch (error) {
-                      console.error('Error opening document:', error);
-                      showError("Error", "No se pudo abrir el documento");
-                    }
-                  }}
-                  disabled={isRemoving}
-                  className="h-7 text-xs"
-                  title="Ver documento"
-                >
-                  <Eye className="h-3 w-3 md:mr-0 mr-1" />
-                  <span className="md:hidden">Ver</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={async () => {
-                    try {
-                      // Check if this is a blob URL (temporary document)
-                      if (existingDoc.url.startsWith('blob:')) {
-                        const response = await fetch(existingDoc.url);
-                        const blob = await response.blob();
-                        const blobUrl = window.URL.createObjectURL(blob);
-                        
-                        const link = document.createElement('a');
-                        link.href = blobUrl;
-                        link.download = existingDoc.fileName;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        
-                        window.URL.revokeObjectURL(blobUrl);
-                        showSuccess("Descarga iniciada", `${existingDoc.fileName} se está descargando`);
-                        return;
-                      }
-
-                      // For storage documents, use the stored path directly
-                      // Handle both storage paths and full URLs for backwards compatibility
-                       let downloadStoragePath = existingDoc.url;
-                       console.log('🔍 LoadDocumentsSection - Original download URL:', existingDoc.url);
-                       
-                       if (existingDoc.url.includes('/load-documents/')) {
-                         // Extract storage path from full URL
-                         downloadStoragePath = existingDoc.url.split('/load-documents/')[1];
-                         console.log('🔍 LoadDocumentsSection - Extracted download storage path:', downloadStoragePath);
-                       }
-                       
-                       console.log('🔍 LoadDocumentsSection - Final download storage path to use:', downloadStoragePath);
-
-                      // Generate signed URL for private bucket
-                      const { data: signedUrlData, error: urlError } = await supabase.storage
-                        .from('load-documents')
-                        .createSignedUrl(downloadStoragePath, 3600); // 1 hour expiry
-
-                      if (urlError) {
-                        console.error('Error generating signed URL for download:', urlError);
-                        showError("Error", "No se pudo generar el enlace de descarga");
-                        return;
-                      }
-
-                      if (!signedUrlData?.signedUrl) {
-                        showError("Error", "No se pudo obtener la URL firmada");
-                        return;
-                      }
-
-                       const response = await fetch(signedUrlData.signedUrl);
-                      if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                      }
-                      
-                      const blob = await response.blob();
-                      const blobUrl = window.URL.createObjectURL(blob);
-                      
-                      const link = document.createElement('a');
-                      link.href = blobUrl;
-                      link.download = existingDoc.fileName;
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                      
-                      window.URL.revokeObjectURL(blobUrl);
-                      
-                      showSuccess("Descarga iniciada", `${existingDoc.fileName} se está descargando`);
-                    } catch (error) {
-                      console.error('Error downloading document:', error);
-                      showError("Error", "No se pudo descargar el documento");
-                    }
-                  }}
-                  disabled={isRemoving}
-                  className="h-7 text-xs"
-                  title="Descargar documento"
-                >
-                  <Download className="h-3 w-3 md:mr-0 mr-1" />
-                  <span className="md:hidden">Descargar</span>
-                </Button>
-                <input
-                  type="file"
-                  onChange={(e) => {
-                    if (e.target.files?.[0]) {
-                      handleFileSelect(e, docType.type);
-                    }
-                    e.target.value = '';
-                  }}
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                  className="hidden"
-                  id={`replace-${docType.type}`}
+          {/* Preview and Content Area */}
+          <div className="flex gap-3">
+            {/* Preview Section */}
+            <div className="flex-shrink-0">
+              {existingDoc ? (
+                <DocumentPreview
+                  documentUrl={existingDoc.url}
+                  fileName={existingDoc.fileName}
+                  className="w-24 h-20"
                 />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={async () => {
-                    try {
-                      // Check if file exists in storage first
-                      const urlPath = new URL(existingDoc.url).pathname;
-                      const filePath = urlPath.split('/load-documents/')[1];
-                      if (filePath) {
-                        const { data: fileList, error: listError } = await supabase.storage
-                          .from('load-documents')
-                          .list(filePath.split('/').slice(0, -1).join('/') || '', {
-                            search: filePath.split('/').pop()
-                          });
+              ) : (
+                <div className="w-24 h-20 border border-dashed border-border/40 rounded flex items-center justify-center bg-muted/20">
+                  <FileText className="h-6 w-6 text-muted-foreground" />
+                </div>
+              )}
+            </div>
 
-                        if (listError || !fileList || fileList.length === 0) {
-                          showError("Error", "El archivo original ya no existe. Se procederá con el reemplazo.");
-                        }
-                      }
-                      
-                      document.getElementById(`replace-${docType.type}`)?.click();
-                    } catch (error) {
-                      console.error('Error checking file existence for replacement:', error);
-                      // Proceed with replacement anyway
-                      document.getElementById(`replace-${docType.type}`)?.click();
-                    }
-                  }}
-                  disabled={isUploading || isRemoving}
-                  className="h-7 text-xs"
-                  title="Reemplazar documento"
-                >
-                  <RotateCcw className="h-3 w-3 mr-1" />
-                  Reemplazar
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button 
-                      variant="outline" 
+            {/* Content and Actions */}
+            <div className="flex-1 space-y-2">
+              {/* File name */}
+              <div className="min-h-[16px]">
+                {existingDoc ? (
+                  <span className="text-xs font-medium text-foreground">{existingDoc.fileName}</span>
+                ) : (
+                  <span className="text-xs text-muted-foreground italic">Sin documento</span>
+                )}
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex items-center gap-1 pt-1">
+                {existingDoc ? (
+                  <>
+                    <Button
+                      variant="outline"
                       size="sm"
+                      onClick={async () => {
+                        try {
+                          // Check if this is a blob URL (temporary document)
+                          if (existingDoc.url.startsWith('blob:')) {
+                            window.open(existingDoc.url, '_blank');
+                            return;
+                          }
+
+                          console.log('🔍 LoadDocumentsSection - Processing URL:', existingDoc.url);
+
+                          // Check if it's already a public URL that we can open directly
+                          if (existingDoc.url.includes('supabase.co/storage/v1/object/public/')) {
+                            console.log('✅ LoadDocumentsSection - Opening public URL directly:', existingDoc.url);
+                            window.open(existingDoc.url, '_blank');
+                            return;
+                          }
+
+                          // Extract storage path from URL if it's a full Supabase URL
+                          let storageFilePath = existingDoc.url;
+                          if (existingDoc.url.includes('supabase.co/storage/v1/object/')) {
+                            const parts = existingDoc.url.split('/load-documents/');
+                            if (parts.length > 1) {
+                              storageFilePath = parts[1];
+                            }
+                          }
+                          
+                          console.log('🔍 LoadDocumentsSection - Storage path for signing:', storageFilePath);
+
+                          // Generate signed URL for private bucket
+                          const { data: signedUrlData, error: urlError } = await supabase.storage
+                            .from('load-documents')
+                            .createSignedUrl(storageFilePath, 3600); // 1 hour expiry
+
+                          if (urlError) {
+                            console.error('Error generating signed URL:', urlError);
+                            showError("Error", "No se pudo generar el enlace para ver el documento");
+                            return;
+                          }
+
+                          if (signedUrlData?.signedUrl) {
+                            console.log('✅ LoadDocumentsSection - Opening signed URL:', signedUrlData.signedUrl);
+                            window.open(signedUrlData.signedUrl, '_blank');
+                          }
+                        } catch (error) {
+                          console.error('Error opening document:', error);
+                          showError("Error", "No se pudo abrir el documento");
+                        }
+                      }}
                       disabled={isRemoving}
-                      className="text-destructive hover:text-destructive h-7 text-xs"
-                      title="Eliminar documento"
+                      className="h-7 w-7 p-0"
+                      title="Ver documento"
                     >
-                      <Trash2 className="h-3 w-3 mr-1" />
-                      Eliminar
+                      <Eye className="h-3 w-3" />
                     </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>¿Eliminar documento?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Esta acción eliminará permanentemente "{existingDoc.fileName}". 
-                        No se puede deshacer.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleRemoveDocument(existingDoc.id)}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      >
-                        Eliminar
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </>
-            ) : docType.generated ? (
-              <Button
-                onClick={() => setShowGenerateLoadOrder(true)}
-                disabled={isUploading || !canGenerateLoadOrder(loadData)}
-                size="sm"
-                className="h-7 text-xs"
-                title={canGenerateLoadOrder(loadData) ? "Generar Load Order" : "Faltan datos de la carga o paradas para generar el Load Order"}
-              >
-                <FileText className="h-3 w-3 mr-1" />
-                Generar Load Order
-              </Button>
-            ) : (
-              <>
-                <input
-                  type="file"
-                  onChange={(e) => handleFileSelect(e, docType.type)}
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                  className="hidden"
-                  id={`upload-${docType.type}`}
-                />
-                <Button
-                  onClick={() => document.getElementById(`upload-${docType.type}`)?.click()}
-                  disabled={isUploading}
-                  size="sm"
-                  className="h-7 text-xs"
-                >
-                  <Upload className="h-3 w-3 mr-1" />
-                  {isUploading ? 'Subiendo...' : 'Subir'}
-                </Button>
-              </>
-            )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          // Check if this is a blob URL (temporary document)
+                          if (existingDoc.url.startsWith('blob:')) {
+                            const response = await fetch(existingDoc.url);
+                            const blob = await response.blob();
+                            const blobUrl = window.URL.createObjectURL(blob);
+                            
+                            const link = document.createElement('a');
+                            link.href = blobUrl;
+                            link.download = existingDoc.fileName;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            
+                            window.URL.revokeObjectURL(blobUrl);
+                            showSuccess("Descarga iniciada", `${existingDoc.fileName} se está descargando`);
+                            return;
+                          }
+
+                          // For storage documents, use the stored path directly
+                          let downloadStoragePath = existingDoc.url;
+                          console.log('🔍 LoadDocumentsSection - Original download URL:', existingDoc.url);
+                          
+                          if (existingDoc.url.includes('/load-documents/')) {
+                            // Extract storage path from full URL
+                            downloadStoragePath = existingDoc.url.split('/load-documents/')[1];
+                            console.log('🔍 LoadDocumentsSection - Extracted download storage path:', downloadStoragePath);
+                          }
+                          
+                          console.log('🔍 LoadDocumentsSection - Final download storage path to use:', downloadStoragePath);
+
+                          // Generate signed URL for private bucket
+                          const { data: signedUrlData, error: urlError } = await supabase.storage
+                            .from('load-documents')
+                            .createSignedUrl(downloadStoragePath, 3600); // 1 hour expiry
+
+                          if (urlError) {
+                            console.error('Error generating signed URL for download:', urlError);
+                            showError("Error", "No se pudo generar el enlace de descarga");
+                            return;
+                          }
+
+                          if (!signedUrlData?.signedUrl) {
+                            showError("Error", "No se pudo obtener la URL firmada");
+                            return;
+                          }
+
+                           const response = await fetch(signedUrlData.signedUrl);
+                          if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                          }
+                          
+                          const blob = await response.blob();
+                          const blobUrl = window.URL.createObjectURL(blob);
+                          
+                          const link = document.createElement('a');
+                          link.href = blobUrl;
+                          link.download = existingDoc.fileName;
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                          
+                          window.URL.revokeObjectURL(blobUrl);
+                          
+                          showSuccess("Descarga iniciada", `${existingDoc.fileName} se está descargando`);
+                        } catch (error) {
+                          console.error('Error downloading document:', error);
+                          showError("Error", "No se pudo descargar el documento");
+                        }
+                      }}
+                      disabled={isRemoving}
+                      className="h-7 w-7 p-0"
+                      title="Descargar documento"
+                    >
+                      <Download className="h-3 w-3" />
+                    </Button>
+                    <input
+                      type="file"
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) {
+                          handleFileSelect(e, docType.type);
+                        }
+                        e.target.value = '';
+                      }}
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                      className="hidden"
+                      id={`replace-${docType.type}`}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          // Check if file exists in storage first
+                          const urlPath = new URL(existingDoc.url).pathname;
+                          const filePath = urlPath.split('/load-documents/')[1];
+                          if (filePath) {
+                            const { data: fileList, error: listError } = await supabase.storage
+                              .from('load-documents')
+                              .list(filePath.split('/').slice(0, -1).join('/') || '', {
+                                search: filePath.split('/').pop()
+                              });
+
+                            if (listError || !fileList || fileList.length === 0) {
+                              showError("Error", "El archivo original ya no existe. Se procederá con el reemplazo.");
+                            }
+                          }
+                          
+                          document.getElementById(`replace-${docType.type}`)?.click();
+                        } catch (error) {
+                          console.error('Error checking file existence for replacement:', error);
+                          // Proceed with replacement anyway
+                          document.getElementById(`replace-${docType.type}`)?.click();
+                        }
+                      }}
+                      disabled={isUploading || isRemoving}
+                      className="h-7 w-7 p-0"
+                      title="Reemplazar documento"
+                    >
+                      <RotateCcw className="h-3 w-3" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          disabled={isRemoving}
+                          className="text-destructive hover:text-destructive h-7 w-7 p-0"
+                          title="Eliminar documento"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>¿Eliminar documento?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta acción eliminará permanentemente "{existingDoc.fileName}". 
+                            No se puede deshacer.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleRemoveDocument(existingDoc.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Eliminar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </>
+                ) : docType.generated ? (
+                  <Button
+                    onClick={() => setShowGenerateLoadOrder(true)}
+                    disabled={isUploading || !canGenerateLoadOrder(loadData)}
+                    size="sm"
+                    className="h-7 text-xs"
+                    title={canGenerateLoadOrder(loadData) ? "Generar Load Order" : "Faltan datos de la carga o paradas para generar el Load Order"}
+                  >
+                    <FileText className="h-3 w-3 mr-1" />
+                    Generar Load Order
+                  </Button>
+                ) : (
+                  <>
+                    <input
+                      type="file"
+                      onChange={(e) => handleFileSelect(e, docType.type)}
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                      className="hidden"
+                      id={`upload-${docType.type}`}
+                    />
+                    <Button
+                      onClick={() => document.getElementById(`upload-${docType.type}`)?.click()}
+                      disabled={isUploading}
+                      size="sm"
+                      className="h-7 text-xs"
+                    >
+                      <Upload className="h-3 w-3 mr-1" />
+                      {isUploading ? 'Subiendo...' : 'Subir'}
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       );
