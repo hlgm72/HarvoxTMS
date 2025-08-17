@@ -3684,6 +3684,10 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: boolean
       }
+      user_can_access_company: {
+        Args: { target_company_id: string }
+        Returns: boolean
+      }
       user_can_access_financial_data: {
         Args: { company_id_param: string }
         Returns: boolean
@@ -3698,6 +3702,14 @@ export type Database = {
       }
       user_is_admin_in_company: {
         Args: { company_id_param: string; user_id_param: string }
+        Returns: boolean
+      }
+      user_is_company_owner: {
+        Args: { target_company_id: string }
+        Returns: boolean
+      }
+      user_is_superadmin: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       validate_business_data_access: {
