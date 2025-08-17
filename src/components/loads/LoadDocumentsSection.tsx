@@ -462,6 +462,9 @@ export function LoadDocumentsSection({
     }
 
     setRemovingDocuments(prev => new Set([...prev, documentId]));
+    
+    console.log('🚀 LoadDocumentsSection - Starting document removal process for:', documentId);
+    console.log('🚀 LoadDocumentsSection - Current loadId:', loadId);
 
     try {
       console.log('🔄 LoadDocumentsSection - Removing document:', documentId);
