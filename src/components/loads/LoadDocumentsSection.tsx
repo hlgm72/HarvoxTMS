@@ -519,6 +519,7 @@ export function LoadDocumentsSection({
       }
 
       // Remove from database
+      console.log('🗑️ LoadDocumentsSection - Removing document from database:', documentId);
       const { error: dbError } = await supabase
         .from('load_documents')
         .delete()
@@ -529,10 +530,11 @@ export function LoadDocumentsSection({
         throw dbError;
       }
 
-      console.log('✅ LoadDocumentsSection - Document removed successfully');
+      console.log('✅ LoadDocumentsSection - Document removed successfully from database');
 
-      // Update local state
+      // Update local state immediately
       const updatedDocuments = documents.filter(doc => doc.id !== documentId);
+      console.log('📝 LoadDocumentsSection - Updating local state. Before:', documents.length, 'After:', updatedDocuments.length);
       setDocuments(updatedDocuments);
       onDocumentsChange?.(updatedDocuments);
 
@@ -540,8 +542,9 @@ export function LoadDocumentsSection({
       queryClient.invalidateQueries({ queryKey: ['load-documents', loadId] });
       notifyDocumentChange();
 
-      // Reload documents to ensure sync
-      setTimeout(() => loadDocuments(), 100);
+      // Force reload from database to ensure consistency
+      console.log('🔄 LoadDocumentsSection - Reloading documents from database...');
+      await loadDocuments();
 
       showSuccess("Éxito", "Documento eliminado correctamente");
 
