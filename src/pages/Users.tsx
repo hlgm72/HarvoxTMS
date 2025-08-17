@@ -384,12 +384,12 @@ export default function Users() {
         // Convertir roles del usuario a sus valores originales
         const userRoles = user.role.split(', ').map((roleLabel) => {
           return Object.entries({
-            'superadmin': '🔧 Super Admin',
-            'company_owner': '👑 Company Owner',
-            'company_admin': '👨‍💼 Company Admin',
-            'dispatcher': '📋 Dispatcher',
-            'driver': '🚛 Driver',
-            'multi_company_dispatcher': '🏢 Multi-Company Dispatcher'
+            'superadmin': getRoleLabel('superadmin'),
+            'company_owner': getRoleLabel('company_owner'),
+            'company_admin': getRoleLabel('company_admin'),
+            'dispatcher': getRoleLabel('dispatcher'),
+            'driver': getRoleLabel('driver'),
+            'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
           }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
         });
         return userRoles.includes(roleFilter);
@@ -463,12 +463,12 @@ export default function Users() {
         userRoles.forEach(roleLabel => {
           // Obtener el rol original desde el label
           const originalRole = Object.entries({
-            'superadmin': '🔧 Super Admin',
-            'company_owner': '👑 Company Owner',
-            'company_admin': '👨‍💼 Company Admin',
-            'dispatcher': '📋 Dispatcher',
-            'driver': '🚛 Driver',
-            'multi_company_dispatcher': '🏢 Multi-Company Dispatcher'
+            'superadmin': getRoleLabel('superadmin'),
+            'company_owner': getRoleLabel('company_owner'),
+            'company_admin': getRoleLabel('company_admin'),
+            'dispatcher': getRoleLabel('dispatcher'),
+            'driver': getRoleLabel('driver'),
+            'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
           }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
           
           usersByRole[originalRole] = (usersByRole[originalRole] || 0) + 1;
@@ -620,17 +620,17 @@ export default function Users() {
   const getRoleBadge = (role: string) => {
     const roleConfig: Record<string, { label: string; variant: string; className: string }> = {
       'superadmin': { 
-        label: '🔧 Super Admin', 
+        label: getRoleLabel('superadmin'), 
         variant: 'default',
         className: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-700'
       },
       'company_owner': { 
-        label: '👑 Company Owner', 
+        label: getRoleLabel('company_owner'), 
         variant: 'default',
         className: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700'
       },
       'company_admin': { 
-        label: '👨‍💼 Company Admin', 
+        label: getRoleLabel('company_admin'), 
         variant: 'default',
         className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
       },
@@ -655,17 +655,17 @@ export default function Users() {
         className: 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-700'
       },
       'dispatcher': { 
-        label: '📋 Dispatcher', 
+        label: getRoleLabel('dispatcher'), 
         variant: 'default',
         className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
       },
       'driver': { 
-        label: '🚛 Driver', 
+        label: getRoleLabel('driver'), 
         variant: 'default',
         className: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-700'
       },
       'multi_company_dispatcher': { 
-        label: '🏢 Multi-Company Dispatcher', 
+        label: getRoleLabel('multi_company_dispatcher'), 
         variant: 'default',
         className: 'bg-cyan-100 text-cyan-800 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-300 dark:border-cyan-700'
       },
@@ -867,13 +867,13 @@ export default function Users() {
                          <TableCell>
                            {user.role.split(', ').map((roleLabel, index) => {
                               // Convertir el label de vuelta al rol original para obtener el badge correcto
-                              const originalRole = Object.entries({
-                                'superadmin': '🔧 Super Admin',
-                                'company_owner': '👑 Company Owner',
-                                'company_admin': '👨‍💼 Company Admin',
-                                'dispatcher': '📋 Dispatcher',
-                                'driver': '🚛 Driver',
-                                'multi_company_dispatcher': '🏢 Multi-Company Dispatcher'
+                             const originalRole = Object.entries({
+                                'superadmin': getRoleLabel('superadmin'),
+                                'company_owner': getRoleLabel('company_owner'),
+                                'company_admin': getRoleLabel('company_admin'),
+                                'dispatcher': getRoleLabel('dispatcher'),
+                                'driver': getRoleLabel('driver'),
+                                'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
                               }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
                              
                              return (
@@ -981,13 +981,13 @@ export default function Users() {
                                  {user.role.split(', ').map((roleLabel, index) => {
                                    // Convertir el label de vuelta al rol original para obtener el badge correcto
                                    const originalRole = Object.entries({
-                                     'superadmin': '🔧 Super Admin',
-                                     'company_owner': '👑 Company Owner',
-                                     'company_admin': '👨‍💼 Company Admin',
-                                     'dispatcher': '📋 Dispatcher',
-                                     'driver': '🚛 Driver',
-                                     'multi_company_dispatcher': '🏢 Multi-Company Dispatcher'
-                                   }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+                                      'superadmin': getRoleLabel('superadmin'),
+                                      'company_owner': getRoleLabel('company_owner'),
+                                      'company_admin': getRoleLabel('company_admin'),
+                                      'dispatcher': getRoleLabel('dispatcher'),
+                                      'driver': getRoleLabel('driver'),
+                                      'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
+                                    }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
                                    
                                    return getRoleBadge(originalRole);
                                  })}
