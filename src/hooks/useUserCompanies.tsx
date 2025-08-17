@@ -45,11 +45,7 @@ export const useUserCompanies = () => {
         // Get company information for all companies using secure RPC
         const companyIds = userRoles.map(role => role.company_id);
         const { data: companiesData, error: companiesError } = await supabase
-          .rpc('get_companies_basic_info')
-          .then(result => ({
-            data: result.data?.filter(company => companyIds.includes(company.id)),
-            error: result.error
-          }));
+          .rpc('get_companies_basic_info');
 
         if (companiesError) throw companiesError;
 
@@ -60,8 +56,12 @@ export const useUserCompanies = () => {
           return;
         }
 
+        // The RPC function already filters by user access, so we just need to filter by the user's roles
+        const userCompanyIds = userRoles.map(role => role.company_id);
+        const filteredCompanies = companiesData?.filter(company => userCompanyIds.includes(company.id)) || [];
+
         // Create a map of companies for quick lookup
-        const companiesMap = new Map(companiesData.map(company => [company.id, company]));
+        const companiesMap = new Map(filteredCompanies.map(company => [company.id, company]));
 
         // Define role hierarchy (higher number = higher priority)
         const roleHierarchy: { [key: string]: number } = {

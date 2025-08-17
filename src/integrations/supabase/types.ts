@@ -3210,10 +3210,11 @@ export type Database = {
         Returns: Json
       }
       get_companies_basic_info: {
-        Args: Record<PropertyKey, never> | { target_company_id?: string }
+        Args: { target_company_id?: string }
         Returns: {
           city: string
           created_at: string
+          default_payment_frequency: string
           email: string
           id: string
           logo_url: string
@@ -3247,6 +3248,10 @@ export type Database = {
           max_vehicles: number
           mc_number: string
           name: string
+          owner_email: string
+          owner_name: string
+          owner_phone: string
+          owner_title: string
           payment_cycle_start_day: number
           payment_day: string
           phone: string
