@@ -258,8 +258,8 @@ export function LoadDocumentsSection({
                 <span className="font-medium text-sm">{docType.label}</span>
               </div>
               <div className="flex items-center gap-1">
-                {docType.required && <Badge variant="destructive" className="text-xs h-4 px-1.5">Req.</Badge>}
-                {docType.generated && existingDoc && <Badge variant="secondary" className="text-xs h-4 px-1.5">Gen.</Badge>}
+                {docType.required && <Badge variant="destructive" className="text-[10px] h-4 px-1">Requerido</Badge>}
+                {docType.generated && existingDoc && <Badge variant="secondary" className="text-[10px] h-4 px-1">Generado</Badge>}
               </div>
             </div>
 
