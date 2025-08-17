@@ -357,7 +357,17 @@ export function LoadDocumentsSection({
     }
   };
 
-  // For brevity, we focus on the renderDocumentCard and renderDocumentManagement functions with the requested layout changes:
+  const handleLoadOrderGenerated = async (data: { url: string; amount: number }) => {
+    try {
+      // Reload documents to show the new Load Order
+      await loadDocuments();
+      setHasLoadOrder(true);
+      showSuccess("Load Order generado", "El Load Order se ha generado y guardado exitosamente");
+    } catch (error) {
+      console.error('Error after Load Order generation:', error);
+      showError("Error", "Error al actualizar la lista de documentos");
+    }
+  };
 
   const renderDocumentCard = (docType: typeof documentTypes[0]) => {
     const allDocuments = [...documents, ...temporaryDocuments];
@@ -654,9 +664,7 @@ export function LoadDocumentsSection({
           isOpen={showGenerateLoadOrder}
           onClose={() => setShowGenerateLoadOrder(false)}
           loadData={loadData}
-          onLoadOrderGenerated={(data) => {
-            // Use existing handleLoadOrderGenerated or similar
-          }}
+          onLoadOrderGenerated={handleLoadOrderGenerated}
         />
       </>
     );
@@ -690,9 +698,7 @@ export function LoadDocumentsSection({
         isOpen={showGenerateLoadOrder}
         onClose={() => setShowGenerateLoadOrder(false)}
         loadData={loadData}
-        onLoadOrderGenerated={(data) => {
-          // Use existing handleLoadOrderGenerated or similar
-        }}
+        onLoadOrderGenerated={handleLoadOrderGenerated}
       />
     </>
   );
