@@ -75,7 +75,7 @@ const documentTypes = [
   },
   {
     type: 'pod' as const,
-    label: 'POD (Proof of Delivery)',
+    label: 'Proof of Delivery (POD)',
     shortLabel: 'POD',
     description: 'Prueba de entrega',
     required: true,
