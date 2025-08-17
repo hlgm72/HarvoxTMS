@@ -168,28 +168,35 @@ export function LoadDocumentsList({
   };
 
   const handleView = async (document: LoadDocument) => {
+    console.log('🎯 LoadDocumentsList - handleView called with document:', document);
     try {
       // Use the same logic as download - file_url is stored as a storage path
       let filePath = document.file_url;
-      console.log('🔍 LoadDocumentsList - Original file_url:', document.file_url);
+      console.log('🔍 LoadDocumentsList - Original file_url for view:', document.file_url);
       
       // Generate signed URL for private bucket (same as download)
       const { data: signedUrlData, error: urlError } = await supabase.storage
         .from('load-documents')
         .createSignedUrl(filePath, 3600); // 1 hour expiry
 
+      console.log('🔗 LoadDocumentsList - Generated signed URL:', signedUrlData?.signedUrl);
+
       if (urlError) {
-        console.error('Error generating signed URL:', urlError);
+        console.error('❌ LoadDocumentsList - Error generating signed URL:', urlError);
         showError("Error", "No se pudo generar el enlace para ver el documento");
         return;
       }
 
       if (signedUrlData?.signedUrl) {
+        console.log('✅ LoadDocumentsList - Opening URL in new tab:', signedUrlData.signedUrl);
         // Open in new tab instead of downloading
         window.open(signedUrlData.signedUrl, '_blank');
+      } else {
+        console.error('❌ LoadDocumentsList - No signed URL returned');
+        showError("Error", "No se pudo generar el enlace para ver el documento");
       }
     } catch (error) {
-      console.error('Error viewing document:', error);
+      console.error('❌ LoadDocumentsList - Error viewing document:', error);
       showError("Error", "No se pudo abrir el documento");
     }
   };
