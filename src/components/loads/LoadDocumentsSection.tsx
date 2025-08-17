@@ -371,14 +371,79 @@ export function LoadDocumentsSection({
   };
 
   const handleLoadOrderGenerated = async (data: { url: string; amount: number }) => {
+    console.log('🔄 handleLoadOrderGenerated - Starting with data:', data);
+    
     try {
+      // Convert blob URL to file
+      const response = await fetch(data.url);
+      const blob = await response.blob();
+      
+      // Create file from blob
+      const fileName = `load-order-${loadData.load_number}-${Date.now()}.pdf`;
+      const file = new File([blob], fileName, { type: 'application/pdf' });
+      
+      console.log('📄 handleLoadOrderGenerated - Created file:', { fileName, size: file.size });
+      
+      // Upload to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('load-documents')
+        .upload(`load-orders/${fileName}`, file, {
+          contentType: 'application/pdf',
+          upsert: false
+        });
+
+      if (uploadError) {
+        console.error('❌ handleLoadOrderGenerated - Upload error:', uploadError);
+        throw uploadError;
+      }
+
+      console.log('✅ handleLoadOrderGenerated - File uploaded:', uploadData);
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('load-documents')
+        .getPublicUrl(uploadData.path);
+
+      console.log('🔗 handleLoadOrderGenerated - Public URL:', publicUrl);
+
+      // Save document record in database
+      const { error: dbError } = await supabase
+        .from('load_documents')
+        .insert({
+          load_id: loadData.id,
+          document_type: 'load_order',
+          document_name: `Load Order - ${loadData.load_number}`,
+          file_name: fileName,
+          file_url: publicUrl,
+          file_size: file.size,
+          content_type: 'application/pdf',
+          uploaded_by: (await supabase.auth.getUser()).data.user?.id
+        });
+
+      if (dbError) {
+        console.error('❌ handleLoadOrderGenerated - Database error:', dbError);
+        // Try to cleanup uploaded file
+        await supabase.storage.from('load-documents').remove([uploadData.path]);
+        throw dbError;
+      }
+
+      console.log('✅ handleLoadOrderGenerated - Document record saved');
+
+      // Clean up blob URL
+      URL.revokeObjectURL(data.url);
+
       // Reload documents to show the new Load Order
       await loadDocuments();
       setHasLoadOrder(true);
       showSuccess("Load Order generado", "El Load Order se ha generado y guardado exitosamente");
+      
+      console.log('🎉 handleLoadOrderGenerated - Process completed successfully');
     } catch (error) {
-      console.error('Error after Load Order generation:', error);
-      showError("Error", "Error al actualizar la lista de documentos");
+      console.error('❌ handleLoadOrderGenerated - Error:', error);
+      showError("Error", "Error al generar o guardar el Load Order. Intenta nuevamente.");
+      
+      // Clean up blob URL in case of error
+      URL.revokeObjectURL(data.url);
     }
   };
 
