@@ -170,11 +170,27 @@ export function LoadDocumentsList({
   const handleView = async (document: LoadDocument) => {
     console.log('🎯 LoadDocumentsList - handleView called with document:', document);
     try {
-      // Use the same logic as download - file_url is stored as a storage path
+      console.log('🔍 LoadDocumentsList - Processing URL:', document.file_url);
+
+      // Check if it's already a public URL that we can open directly
+      if (document.file_url.includes('supabase.co/storage/v1/object/public/')) {
+        console.log('✅ LoadDocumentsList - Opening public URL directly:', document.file_url);
+        window.open(document.file_url, '_blank');
+        return;
+      }
+
+      // Extract storage path from URL if it's a full Supabase URL
       let filePath = document.file_url;
-      console.log('🔍 LoadDocumentsList - Original file_url for view:', document.file_url);
+      if (document.file_url.includes('supabase.co/storage/v1/object/')) {
+        const parts = document.file_url.split('/load-documents/');
+        if (parts.length > 1) {
+          filePath = parts[1];
+        }
+      }
       
-      // Generate signed URL for private bucket (same as download)
+      console.log('🔍 LoadDocumentsList - Storage path for signing:', filePath);
+
+      // Generate signed URL for private bucket
       const { data: signedUrlData, error: urlError } = await supabase.storage
         .from('load-documents')
         .createSignedUrl(filePath, 3600); // 1 hour expiry
@@ -189,7 +205,6 @@ export function LoadDocumentsList({
 
       if (signedUrlData?.signedUrl) {
         console.log('✅ LoadDocumentsList - Opening URL in new tab:', signedUrlData.signedUrl);
-        // Open in new tab instead of downloading
         window.open(signedUrlData.signedUrl, '_blank');
       } else {
         console.error('❌ LoadDocumentsList - No signed URL returned');

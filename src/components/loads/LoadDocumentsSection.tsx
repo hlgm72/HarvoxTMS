@@ -881,9 +881,25 @@ export function LoadDocumentsSection({
                         return;
                       }
 
-                      // The existingDoc.url is already a storage path, use it directly
+                      console.log('🔍 LoadDocumentsSection - Processing URL:', existingDoc.url);
+
+                      // Check if it's already a public URL that we can open directly
+                      if (existingDoc.url.includes('supabase.co/storage/v1/object/public/')) {
+                        console.log('✅ LoadDocumentsSection - Opening public URL directly:', existingDoc.url);
+                        window.open(existingDoc.url, '_blank');
+                        return;
+                      }
+
+                      // Extract storage path from URL if it's a full Supabase URL
                       let storageFilePath = existingDoc.url;
-                      console.log('🔍 LoadDocumentsSection - Original storage path:', existingDoc.url);
+                      if (existingDoc.url.includes('supabase.co/storage/v1/object/')) {
+                        const parts = existingDoc.url.split('/load-documents/');
+                        if (parts.length > 1) {
+                          storageFilePath = parts[1];
+                        }
+                      }
+                      
+                      console.log('🔍 LoadDocumentsSection - Storage path for signing:', storageFilePath);
 
                       // Generate signed URL for private bucket
                       const { data: signedUrlData, error: urlError } = await supabase.storage
