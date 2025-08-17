@@ -967,7 +967,9 @@ export function LoadDocumentsSection({
         }}>
           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Documentos de la Carga</DialogTitle>
+              <DialogTitle>
+                Documentos de la Carga {loadData?.load_number ? `#${loadData.load_number}` : ''}
+              </DialogTitle>
             </DialogHeader>
             {renderDocumentManagement()}
           </DialogContent>
