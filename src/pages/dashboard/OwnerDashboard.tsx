@@ -116,11 +116,15 @@ export default function OwnerDashboard() {
     if (!userRole?.company_id) return;
     
     try {
+      // Use secure RPC function for company financial data (owner has access)
       const { data, error } = await supabase
-        .from('companies')
-        .select('*')
-        .eq('id', userRole.company_id)
-        .single();
+        .rpc('get_companies_financial_data', {
+          target_company_id: userRole.company_id
+        })
+        .then(result => ({
+          data: result.data?.[0] || null,
+          error: result.error
+        }));
 
       if (error) throw error;
       setCompanyInfo(data);

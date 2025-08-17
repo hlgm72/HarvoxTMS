@@ -42,12 +42,14 @@ export const useUserCompanies = () => {
           return;
         }
 
-        // Get company information for all companies
+        // Get company information for all companies using secure RPC
         const companyIds = userRoles.map(role => role.company_id);
         const { data: companiesData, error: companiesError } = await supabase
-          .from('companies')
-          .select('id, name, logo_url')
-          .in('id', companyIds);
+          .rpc('get_companies_basic_info')
+          .then(result => ({
+            data: result.data?.filter(company => companyIds.includes(company.id)),
+            error: result.error
+          }));
 
         if (companiesError) throw companiesError;
 
