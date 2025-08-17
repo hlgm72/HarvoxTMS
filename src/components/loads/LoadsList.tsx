@@ -329,6 +329,11 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                       <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Documentos:
                       </span>
+                      <LoadDocumentValidationIndicator 
+                        loadId={load.id} 
+                        loadStatus={load.status}
+                        compact={true}
+                      />
                       <LoadDocumentsList 
                         loadId={load.id} 
                         maxItems={3}
@@ -368,11 +373,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   >
                     {statusLabels[load.status as keyof typeof statusLabels]}
                   </Badge>
-                  <LoadDocumentValidationIndicator 
-                    loadId={load.id} 
-                    loadStatus={load.status}
-                    compact={true}
-                  />
                 </div>
               </div>
             </CardHeader>
