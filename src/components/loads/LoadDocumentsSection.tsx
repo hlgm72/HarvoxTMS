@@ -382,6 +382,7 @@ export function LoadDocumentsSection({
 
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ['load-documents', loadId] });
+      queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadId] });
       
       // Notify context about the change
       notifyDocumentChange();
