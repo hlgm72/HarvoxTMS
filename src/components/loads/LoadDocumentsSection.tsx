@@ -748,7 +748,27 @@ export function LoadDocumentsSection({
                   size="sm"
                   onClick={async () => {
                     try {
+                      // Check if file exists in storage first
+                      const urlPath = new URL(existingDoc.url).pathname;
+                      const filePath = urlPath.split('/load-documents/')[1];
+                      if (filePath) {
+                        const { data: fileList, error: listError } = await supabase.storage
+                          .from('load-documents')
+                          .list(filePath.split('/').slice(0, -1).join('/') || '', {
+                            search: filePath.split('/').pop()
+                          });
+
+                        if (listError || !fileList || fileList.length === 0) {
+                          showError("Error", "El archivo ya no existe en el servidor. No se puede descargar.");
+                          return;
+                        }
+                      }
+
                       const response = await fetch(existingDoc.url);
+                      if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                      }
+                      
                       const blob = await response.blob();
                       const blobUrl = window.URL.createObjectURL(blob);
                       
@@ -789,7 +809,30 @@ export function LoadDocumentsSection({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => document.getElementById(`replace-${docType.type}`)?.click()}
+                  onClick={async () => {
+                    try {
+                      // Check if file exists in storage first
+                      const urlPath = new URL(existingDoc.url).pathname;
+                      const filePath = urlPath.split('/load-documents/')[1];
+                      if (filePath) {
+                        const { data: fileList, error: listError } = await supabase.storage
+                          .from('load-documents')
+                          .list(filePath.split('/').slice(0, -1).join('/') || '', {
+                            search: filePath.split('/').pop()
+                          });
+
+                        if (listError || !fileList || fileList.length === 0) {
+                          showError("Error", "El archivo original ya no existe. Se procederá con el reemplazo.");
+                        }
+                      }
+                      
+                      document.getElementById(`replace-${docType.type}`)?.click();
+                    } catch (error) {
+                      console.error('Error checking file existence for replacement:', error);
+                      // Proceed with replacement anyway
+                      document.getElementById(`replace-${docType.type}`)?.click();
+                    }
+                  }}
                   disabled={isUploading || isRemoving}
                   className="h-7 text-xs"
                   title="Reemplazar documento"
