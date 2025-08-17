@@ -698,8 +698,8 @@ export function LoadDocumentsSection({
                   className="h-7 text-xs"
                   title="Ver documento"
                 >
-                  <Eye className="h-3 w-3 mr-1" />
-                  Ver
+                  <Eye className="h-3 w-3 md:mr-0 mr-1" />
+                  <span className="md:hidden">Ver</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -729,8 +729,8 @@ export function LoadDocumentsSection({
                   className="h-7 text-xs"
                   title="Descargar documento"
                 >
-                  <Download className="h-3 w-3 mr-1" />
-                  Descargar
+                  <Download className="h-3 w-3 md:mr-0 mr-1" />
+                  <span className="md:hidden">Descargar</span>
                 </Button>
                 <input
                   type="file"
@@ -873,8 +873,8 @@ export function LoadDocumentsSection({
                       className="h-7 text-xs"
                       title="Ver documento"
                     >
-                      <Eye className="h-3 w-3 mr-1" />
-                      Ver
+                      <Eye className="h-3 w-3 md:mr-0 mr-1" />
+                      <span className="md:hidden">Ver</span>
                     </Button>
                     <Button
                       variant="outline"
@@ -903,8 +903,8 @@ export function LoadDocumentsSection({
                       className="h-7 text-xs"
                       title="Descargar documento"
                     >
-                      <Download className="h-3 w-3 mr-1" />
-                      Descargar
+                      <Download className="h-3 w-3 md:mr-0 mr-1" />
+                      <span className="md:hidden">Descargar</span>
                     </Button>
                     <input
                       type="file"
