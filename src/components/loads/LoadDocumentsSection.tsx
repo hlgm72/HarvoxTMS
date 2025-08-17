@@ -907,7 +907,23 @@ export function LoadDocumentsSection({
                         }
                       }
 
-                      const response = await fetch(existingDoc.url);
+                       // Generate signed URL for private bucket
+                       const { data: signedUrlData, error: urlError } = await supabase.storage
+                         .from('load-documents')
+                         .createSignedUrl(filePath, 3600); // 1 hour expiry
+
+                       if (urlError) {
+                         console.error('Error generating signed URL for download:', urlError);
+                         showError("Error", "No se pudo generar el enlace de descarga");
+                         return;
+                       }
+
+                       if (!signedUrlData?.signedUrl) {
+                         showError("Error", "No se pudo obtener la URL firmada");
+                         return;
+                       }
+
+                       const response = await fetch(signedUrlData.signedUrl);
                       if (!response.ok) {
                         throw new Error('Network response was not ok');
                       }
@@ -1096,8 +1112,35 @@ export function LoadDocumentsSection({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {
-                        window.open(doc.url, '_blank');
+                      onClick={async () => {
+                        try {
+                          // Extract file path from URL for private bucket
+                          const urlPath = new URL(doc.url).pathname;
+                          const filePath = urlPath.split('/load-documents/')[1];
+                          
+                          if (!filePath) {
+                            showError("Error", "No se pudo determinar la ruta del archivo");
+                            return;
+                          }
+
+                          // Generate signed URL for private bucket
+                          const { data: signedUrlData, error: urlError } = await supabase.storage
+                            .from('load-documents')
+                            .createSignedUrl(filePath, 3600); // 1 hour expiry
+
+                          if (urlError) {
+                            console.error('Error generating signed URL:', urlError);
+                            showError("Error", "No se pudo generar el enlace para ver el documento");
+                            return;
+                          }
+
+                          if (signedUrlData?.signedUrl) {
+                            window.open(signedUrlData.signedUrl, '_blank');
+                          }
+                        } catch (error) {
+                          console.error('Error viewing document:', error);
+                          showError("Error", "No se pudo abrir el documento");
+                        }
                       }}
                       className="h-7 text-xs"
                       title="Ver documento"
@@ -1110,7 +1153,32 @@ export function LoadDocumentsSection({
                       size="sm"
                       onClick={async () => {
                         try {
-                          const response = await fetch(doc.url);
+                          // Extract file path from URL for private bucket
+                          const urlPath = new URL(doc.url).pathname;
+                          const filePath = urlPath.split('/load-documents/')[1];
+                          
+                          if (!filePath) {
+                            showError("Error", "No se pudo determinar la ruta del archivo");
+                            return;
+                          }
+
+                          // Generate signed URL for private bucket
+                          const { data: signedUrlData, error: urlError } = await supabase.storage
+                            .from('load-documents')
+                            .createSignedUrl(filePath, 3600); // 1 hour expiry
+
+                          if (urlError) {
+                            console.error('Error generating signed URL for download:', urlError);
+                            showError("Error", "No se pudo generar el enlace de descarga");
+                            return;
+                          }
+
+                          if (!signedUrlData?.signedUrl) {
+                            showError("Error", "No se pudo obtener la URL firmada");
+                            return;
+                          }
+
+                          const response = await fetch(signedUrlData.signedUrl);
                           const blob = await response.blob();
                           const blobUrl = window.URL.createObjectURL(blob);
                           
