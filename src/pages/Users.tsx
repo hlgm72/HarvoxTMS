@@ -531,12 +531,15 @@ export default function Users() {
     setLoading(true);
     
     try {
-      // Obtener información de la empresa
+      // Obtener información de la empresa usando RPC seguro
       const { data: companyData, error: companyError } = await supabase
-        .from('companies')
-        .select('name')
-        .eq('id', userRole.company_id)
-        .single();
+        .rpc('get_companies_basic_info', {
+          target_company_id: userRole.company_id
+        })
+        .then(result => ({
+          data: result.data?.[0] || null,
+          error: result.error
+        }));
 
       if (companyError) throw companyError;
 

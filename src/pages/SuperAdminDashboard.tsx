@@ -161,18 +161,23 @@ export default function SuperAdminDashboard() {
     setIsCreatingCompany(true);
     try {
       const { data, error } = await supabase
-        .from('companies')
-        .insert([{
-          ...newCompany,
-          // Campos obligatorios temporales para que funcione la inserción
-          street_address: '',
-          state_id: 'TX',
-          zip_code: '',
-          status: 'active',
-          contract_start_date: getTodayInUserTimeZone(),
-        }])
-        .select()
-        .single();
+        .rpc('create_or_update_company_with_validation', {
+          company_data: {
+            ...newCompany,
+            // Campos obligatorios temporales para que funcione la inserción
+            street_address: '',
+            state_id: 'TX',
+            zip_code: '',
+            status: 'active',
+            contract_start_date: getTodayInUserTimeZone(),
+          }
+        })
+        .then(result => ({
+          data: typeof result.data === 'object' && result.data && 'company' in result.data 
+            ? result.data.company 
+            : result.data,
+          error: result.error
+        }));
 
       if (error) throw error;
 
@@ -264,24 +269,25 @@ export default function SuperAdminDashboard() {
     setIsUpdatingCompany(true);
     try {
       const { error } = await supabase
-        .from('companies')
-        .update({
-          name: companyToEdit.name,
-          email: companyToEdit.email,
-          phone: companyToEdit.phone,
-          street_address: companyToEdit.street_address || '',
-          state_id: companyToEdit.state_id || 'TX',
-          zip_code: companyToEdit.zip_code || '',
-          owner_name: companyToEdit.owner_name,
-          owner_email: companyToEdit.owner_email,
-          owner_phone: companyToEdit.owner_phone,
-          owner_title: companyToEdit.owner_title,
-          plan_type: companyToEdit.plan_type,
-          max_vehicles: companyToEdit.max_vehicles,
-          max_users: companyToEdit.max_users,
-          status: companyToEdit.status,
-        })
-        .eq('id', companyToEdit.id);
+        .rpc('create_or_update_company_with_validation', {
+          company_data: {
+            name: companyToEdit.name,
+            email: companyToEdit.email,
+            phone: companyToEdit.phone,
+            street_address: companyToEdit.street_address || '',
+            state_id: companyToEdit.state_id || 'TX',
+            zip_code: companyToEdit.zip_code || '',
+            owner_name: companyToEdit.owner_name,
+            owner_email: companyToEdit.owner_email,
+            owner_phone: companyToEdit.owner_phone,
+            owner_title: companyToEdit.owner_title,
+            plan_type: companyToEdit.plan_type,
+            max_vehicles: companyToEdit.max_vehicles,
+            max_users: companyToEdit.max_users,
+            status: companyToEdit.status,
+          },
+          company_id: companyToEdit.id
+        });
 
       if (error) throw error;
 

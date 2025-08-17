@@ -152,10 +152,13 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       const fetchCompanyData = async () => {
         try {
           const { data, error } = await supabase
-            .from('companies')
-            .select('name, phone, email')
-            .eq('id', selectedCompany.id)
-            .single();
+            .rpc('get_companies_basic_info', {
+              target_company_id: selectedCompany.id
+            })
+            .then(result => ({
+              data: result.data?.[0] || null,
+              error: result.error
+            }));
           
           if (error) throw error;
           setCompanyData(data);

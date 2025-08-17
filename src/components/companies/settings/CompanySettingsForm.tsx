@@ -128,41 +128,50 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('companies')
-        .update({
-          name: formData.name,
-          ein: formData.ein,
-          mc_number: formData.mc_number,
-          dot_number: formData.dot_number,
-          street_address: formData.street_address,
-          state_id: formData.state_id,
-          city: formData.city,
-          zip_code: formData.zip_code,
-          phone: formData.phone,
-          email: formData.email,
-          owner_name: formData.owner_name,
-          owner_email: formData.owner_email,
-          owner_phone: formData.owner_phone,
-          owner_title: formData.owner_title,
-          payment_day: formData.payment_day,
-          default_payment_frequency: formData.default_payment_frequency,
-          payment_cycle_start_day: formData.payment_cycle_start_day,
-          max_users: formData.max_users,
-          max_vehicles: formData.max_vehicles,
-          logo_url: formData.logo_url,
-          default_factoring_percentage: formData.default_factoring_percentage,
-          default_dispatching_percentage: formData.default_dispatching_percentage,
-          default_leasing_percentage: formData.default_leasing_percentage,
-          load_assignment_criteria: formData.load_assignment_criteria,
-          updated_at: new Date().toISOString()
+        .rpc('create_or_update_company_with_validation', {
+          company_data: {
+            name: formData.name,
+            ein: formData.ein,
+            mc_number: formData.mc_number,
+            dot_number: formData.dot_number,
+            street_address: formData.street_address,
+            state_id: formData.state_id,
+            city: formData.city,
+            zip_code: formData.zip_code,
+            phone: formData.phone,
+            email: formData.email,
+            owner_name: formData.owner_name,
+            owner_email: formData.owner_email,
+            owner_phone: formData.owner_phone,
+            owner_title: formData.owner_title,
+            payment_day: formData.payment_day,
+            default_payment_frequency: formData.default_payment_frequency,
+            payment_cycle_start_day: formData.payment_cycle_start_day,
+            max_users: formData.max_users,
+            max_vehicles: formData.max_vehicles,
+            logo_url: formData.logo_url,
+            default_factoring_percentage: formData.default_factoring_percentage,
+            default_dispatching_percentage: formData.default_dispatching_percentage,
+            default_leasing_percentage: formData.default_leasing_percentage,
+            load_assignment_criteria: formData.load_assignment_criteria
+          },
+          company_id: company.id
         })
-        .eq('id', company.id)
-        .select()
-        .single();
+        .then(result => {
+          if (result.error) return { data: null, error: result.error };
+          
+          // Extract company data from RPC response
+          const responseData = result.data as any;
+          if (responseData && typeof responseData === 'object' && 'company' in responseData) {
+            return { data: responseData.company, error: null };
+          }
+          return { data: null, error: new Error('Invalid response format') };
+        });
 
       if (error) throw error;
+      if (!data) throw new Error('No data returned from update');
 
-      onUpdate(data);
+      onUpdate(data as Company);
       showSuccess(
         t('company.settings.messages.updated'),
         t('company.settings.messages.updated_desc')

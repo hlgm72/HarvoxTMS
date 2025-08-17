@@ -75,11 +75,12 @@ export function CompanyLogoUpload({
         .from('company-logos')
         .getPublicUrl(fileName);
 
-      // Update company with new logo URL
+      // Update company with new logo URL using secure validation function
       const { error: updateError } = await supabase
-        .from('companies')
-        .update({ logo_url: publicUrl })
-        .eq('id', companyId);
+        .rpc('create_or_update_company_with_validation', {
+          company_data: { logo_url: publicUrl },
+          company_id: companyId
+        });
 
       if (updateError) throw updateError;
 
@@ -117,11 +118,12 @@ export function CompanyLogoUpload({
         }
       }
 
-      // Update company to remove logo URL
+      // Update company to remove logo URL using secure validation function
       const { error } = await supabase
-        .from('companies')
-        .update({ logo_url: null })
-        .eq('id', companyId);
+        .rpc('create_or_update_company_with_validation', {
+          company_data: { logo_url: null },
+          company_id: companyId
+        });
 
       if (error) throw error;
 

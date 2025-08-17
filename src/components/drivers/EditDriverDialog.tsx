@@ -340,10 +340,13 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
           const companyId = userRoles[0].company_id;
           
           const { data: companyData, error: companyError } = await supabase
-            .from('companies')
-            .select('default_dispatching_percentage, default_factoring_percentage, default_leasing_percentage')
-            .eq('id', companyId)
-            .single();
+            .rpc('get_companies_financial_data', {
+              target_company_id: companyId
+            })
+            .then(result => ({
+              data: result.data?.[0] || null,
+              error: result.error
+            }));
 
           if (companyError) {
             console.warn('Error al cargar datos de la compañía:', companyError);

@@ -155,9 +155,11 @@ export default function Companies() {
   const fetchCompanies = async () => {
     try {
       const { data, error } = await supabase
-        .from('companies')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .rpc('get_companies_financial_data')
+        .then(result => ({
+          data: result.data || [],
+          error: result.error
+        }));
 
       if (error) throw error;
       setCompanies(data || []);
@@ -175,8 +177,9 @@ export default function Companies() {
   const handleCreateCompany = async () => {
     try {
       const { error } = await supabase
-        .from('companies')
-        .insert([formData]);
+        .rpc('create_or_update_company_with_validation', {
+          company_data: formData as any
+        });
 
       if (error) throw error;
 
@@ -202,9 +205,10 @@ export default function Companies() {
 
     try {
       const { error } = await supabase
-        .from('companies')
-        .update(formData)
-        .eq('id', companyToEdit.id);
+        .rpc('create_or_update_company_with_validation', {
+          company_data: formData as any,
+          company_id: companyToEdit.id
+        });
 
       if (error) throw error;
 
@@ -266,12 +270,20 @@ export default function Companies() {
 
   const handleBulkStatusChange = async (newStatus: string) => {
     try {
-      const { error } = await supabase
-        .from('companies')
-        .update({ status: newStatus })
-        .in('id', selectedCompanies);
-
-      if (error) throw error;
+      // Use RPC to update company status for each selected company
+      const updatePromises = selectedCompanies.map(companyId =>
+        supabase.rpc('create_or_update_company_with_validation', {
+          company_data: { status: newStatus },
+          company_id: companyId
+        })
+      );
+      
+      const results = await Promise.all(updatePromises);
+      const errors = results.filter(result => result.error);
+      
+      if (errors.length > 0) {
+        throw new Error(`Failed to update ${errors.length} companies`);
+      }
 
       showSuccess(
         t('admin:common.success', { defaultValue: "Success" }),

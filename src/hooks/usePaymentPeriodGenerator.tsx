@@ -45,12 +45,15 @@ export const usePaymentPeriodGenerator = () => {
 
       console.log('📅 No existing period found, generating new ones...');
 
-      // Obtener configuración de la empresa para determinar el rango
+      // Obtener configuración de la empresa para determinar el rango usando RPC seguro
       const { data: companyData, error: companyError } = await supabase
-        .from('companies')
-        .select('default_payment_frequency')
-        .eq('id', companyId)
-        .single();
+        .rpc('get_companies_basic_info', {
+          target_company_id: companyId
+        })
+        .then(result => ({
+          data: result.data?.[0] || null,
+          error: result.error
+        }));
 
       if (companyError) {
         console.error('❌ Error getting company data:', companyError);
@@ -59,7 +62,8 @@ export const usePaymentPeriodGenerator = () => {
 
       // Determinar rango basado en frecuencia de pago - incluir período anterior, actual y siguiente
       let rangeDays = 7; // default para weekly
-      switch (companyData.default_payment_frequency) {
+      const frequency = (companyData as any)?.default_payment_frequency || 'weekly';
+      switch (frequency) {
         case 'weekly':
           rangeDays = 21; // ±3 semanas (anterior, actual, siguiente)
           break;
@@ -73,7 +77,7 @@ export const usePaymentPeriodGenerator = () => {
           rangeDays = 21;
       }
 
-      console.log(`📅 Using range of ±${rangeDays} days for ${companyData.default_payment_frequency} frequency to include previous, current, and next periods`);
+      console.log(`📅 Using range of ±${rangeDays} days for ${frequency} frequency to include previous, current, and next periods`);
 
       // Generar períodos en el rango ampliado para incluir período anterior
       const fromDate = formatDateInUserTimeZone(new Date(Date.parse(targetDate) - rangeDays * 24 * 60 * 60 * 1000));
