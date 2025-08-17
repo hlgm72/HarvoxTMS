@@ -277,11 +277,36 @@ export function LoadDocumentsSection({
         const existingDoc = documents.find(doc => doc.type === documentType);
         if (existingDoc) {
           existingDocId = existingDoc.id;
+          
+          // Extract storage path from URL correctly
+          let oldFilePath = existingDoc.url;
+          console.log('🗑️ LoadDocumentsSection - Original URL to delete:', existingDoc.url);
+          
+          // Handle different URL formats
+          if (existingDoc.url.includes('supabase.co/storage/v1/object/public/load-documents/')) {
+            // Extract everything after the bucket name for public URLs
+            const parts = existingDoc.url.split('/load-documents/');
+            if (parts.length > 1) {
+              oldFilePath = parts[1];
+            }
+          } else if (existingDoc.url.includes('/')) {
+            // If it's already a storage path, use it as is
+            oldFilePath = existingDoc.url;
+          }
+          
+          console.log('🗑️ LoadDocumentsSection - Storage path to delete:', oldFilePath);
+          
           // Remove old file from storage
-          const oldFilePath = existingDoc.url.split('/').slice(-4).join('/');
-          await supabase.storage
+          const { error: deleteError } = await supabase.storage
             .from('load-documents')
             .remove([oldFilePath]);
+            
+          if (deleteError) {
+            console.error('❌ LoadDocumentsSection - Error deleting old file from storage:', deleteError);
+            // Don't throw error here, continue with upload even if delete fails
+          } else {
+            console.log('✅ LoadDocumentsSection - Successfully deleted old file from storage');
+          }
         }
       }
 
