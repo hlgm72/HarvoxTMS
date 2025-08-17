@@ -95,6 +95,7 @@ export const useDriverSensitiveInfo = (driverUserId: string) => {
 /**
  * Secure mutation for updating driver profiles
  * Only allows updates by the driver themselves or authorized company admins
+ * Enhanced with audit logging for security compliance
  */
 export const useUpdateDriverProfile = () => {
   const queryClient = useQueryClient();
@@ -110,6 +111,8 @@ export const useUpdateDriverProfile = () => {
     }) => {
       if (!user) throw new Error('User not authenticated');
 
+      // Enhanced security: Direct table access is now restricted by ultra-restrictive RLS
+      // Only company owners/superadmins and the driver themselves can update profiles
       const { data, error } = await supabase
         .from('driver_profiles')
         .update(updates)
@@ -118,6 +121,14 @@ export const useUpdateDriverProfile = () => {
         .single();
 
       if (error) throw error;
+      
+      // Log the update for audit purposes with detailed field tracking
+      await supabase.rpc('log_driver_data_access_detailed', {
+        target_user_id: driverUserId,
+        access_type: 'driver_profile_update',
+        fields_accessed: Object.keys(updates)
+      });
+      
       return data;
     },
     onSuccess: (_, { driverUserId }) => {
@@ -132,6 +143,7 @@ export const useUpdateDriverProfile = () => {
 /**
  * Secure mutation for creating driver profiles
  * Only allows creation by authorized company admins or the driver themselves
+ * Enhanced with audit logging for security compliance
  */
 export const useCreateDriverProfile = () => {
   const queryClient = useQueryClient();
@@ -147,6 +159,8 @@ export const useCreateDriverProfile = () => {
     }) => {
       if (!user) throw new Error('User not authenticated');
 
+      // Enhanced security: Direct table access is now restricted by ultra-restrictive RLS
+      // Only company owners/superadmins can create driver profiles (not operations managers)
       const { data, error } = await supabase
         .from('driver_profiles')
         .insert({
@@ -157,6 +171,14 @@ export const useCreateDriverProfile = () => {
         .single();
 
       if (error) throw error;
+      
+      // Log the creation for audit purposes with detailed field tracking
+      await supabase.rpc('log_driver_data_access_detailed', {
+        target_user_id: driverUserId,
+        access_type: 'driver_profile_create',
+        fields_accessed: Object.keys(profileData)
+      });
+      
       return data;
     },
     onSuccess: (_, { driverUserId }) => {
@@ -170,6 +192,7 @@ export const useCreateDriverProfile = () => {
 
 /**
  * Hook to check if current user can access sensitive driver data
+ * Updated to match the new ultra-restrictive security model
  */
 export const useCanAccessDriverSensitiveData = (driverUserId: string) => {
   const { user, userRoles } = useAuth();
@@ -179,8 +202,28 @@ export const useCanAccessDriverSensitiveData = (driverUserId: string) => {
   // Driver can access their own data
   if (user.id === driverUserId) return true;
 
-  // Company owners and superadmins can access data within their company
+  // ONLY company owners and superadmins can access sensitive PII (NOT operations managers)
   return userRoles?.some(role => 
     role.role === 'company_owner' || role.role === 'superadmin'
+  ) || false;
+};
+
+/**
+ * Hook to check if current user can access basic operational driver data
+ * Allows operations managers to access non-sensitive information
+ */
+export const useCanAccessDriverOperationalData = (driverUserId: string) => {
+  const { user, userRoles } = useAuth();
+
+  if (!user || !driverUserId) return false;
+
+  // Driver can access their own data
+  if (user.id === driverUserId) return true;
+
+  // Operations managers, company owners and superadmins can access basic operational data
+  return userRoles?.some(role => 
+    role.role === 'operations_manager' || 
+    role.role === 'company_owner' || 
+    role.role === 'superadmin'
   ) || false;
 };
