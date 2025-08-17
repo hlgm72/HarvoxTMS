@@ -872,8 +872,20 @@ export function LoadDocumentsSection({
                         return;
                       }
 
-                      // For storage documents, use the stored path directly
-                      const storageFilePath = existingDoc.url; // URL is now the storage path
+                      // Extract storage path from URL with robust parsing
+                      let storageFilePath = existingDoc.url;
+                      console.log('🔍 LoadDocumentsSection - Original URL:', existingDoc.url);
+                      
+                      // Handle different URL formats
+                      if (existingDoc.url.includes('supabase.co/storage/v1/object/')) {
+                        // Extract everything after the bucket name
+                        const parts = existingDoc.url.split('/load-documents/');
+                        if (parts.length > 1) {
+                          storageFilePath = parts[1];
+                        }
+                      }
+                      
+                      console.log('🔍 LoadDocumentsSection - Final storage path to use:', storageFilePath);
 
                       // Generate signed URL for private bucket
                       const { data: signedUrlData, error: urlError } = await supabase.storage
