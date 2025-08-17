@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Image as ImageIcon } from 'lucide-react';
+import { FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -102,7 +102,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     if (isLoading) {
       return (
         <div className="flex items-center justify-center h-full bg-muted/20">
-          <div className="text-xs text-muted-foreground">Cargando...</div>
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
       );
     }
