@@ -131,7 +131,12 @@ const generateDocumentFileName = (loadNumber: string, documentType: string, orig
 
 // Helper function to check if load order can be generated
 const canGenerateLoadOrder = (loadData: any): boolean => {
-  if (!loadData) return false;
+  console.log('🔍 canGenerateLoadOrder - Checking loadData:', loadData);
+  
+  if (!loadData) {
+    console.log('❌ canGenerateLoadOrder - No loadData provided');
+    return false;
+  }
   
   const hasBasicInfo = !!(
     loadData.load_number &&
@@ -149,6 +154,14 @@ const canGenerateLoadOrder = (loadData: any): boolean => {
     stop.city && 
     stop.state
   );
+  
+  console.log('🔍 canGenerateLoadOrder - Results:', {
+    hasBasicInfo,
+    hasStops,
+    stopsHaveInfo,
+    stopsCount: loadData.stops?.length || 0,
+    finalResult: hasBasicInfo && hasStops && stopsHaveInfo
+  });
   
   return hasBasicInfo && hasStops && stopsHaveInfo;
 };
@@ -551,7 +564,12 @@ export function LoadDocumentsSection({
                 </>
               ) : docType.generated ? (
                 <Button
-                  onClick={() => setShowGenerateLoadOrder(true)}
+                  onClick={() => {
+                    console.log('🔄 Load Order button clicked');
+                    console.log('📄 Load data:', loadData);
+                    console.log('✅ Can generate:', canGenerateLoadOrder(loadData));
+                    setShowGenerateLoadOrder(true);
+                  }}
                   disabled={isUploading || !canGenerateLoadOrder(loadData)}
                   size="sm"
                   className="h-7 text-xs"
