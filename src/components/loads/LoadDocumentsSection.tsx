@@ -1,16 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { FileText, Upload, Eye, Download, Trash2, RotateCcw, Plus, Loader2, Check } from 'lucide-react';
 import DocumentPreview from './DocumentPreview';
+import { LoadDocumentValidationIndicator } from './LoadDocumentValidationIndicator';
+import { GenerateLoadOrderDialog } from './GenerateLoadOrderDialog';
 import { useFleetNotifications } from "@/components/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
+import { supabase } from '@/integrations/supabase/client';
 
 interface LoadDocument {
   id: string;
