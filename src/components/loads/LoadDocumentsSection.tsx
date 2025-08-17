@@ -462,21 +462,14 @@ export function LoadDocumentsSection({
     }
 
     setRemovingDocuments(prev => new Set([...prev, documentId]));
-    
-    console.log('🚀 LoadDocumentsSection - Starting document removal process for:', documentId);
-    console.log('🚀 LoadDocumentsSection - Current loadId:', loadId);
 
     try {
-      console.log('🔄 LoadDocumentsSection - Removing document:', documentId);
-
       // Get document info using the secure function (bypasses RLS)
-      console.log('🔍 LoadDocumentsSection - Fetching documents using secure function for deletion...');
       const { data: allDocuments, error: fetchError } = await supabase.rpc('get_load_documents_with_validation', {
         target_load_id: loadId
       });
 
       if (fetchError) {
-        console.error('❌ LoadDocumentsSection - Error fetching documents for removal:', fetchError);
         throw fetchError;
       }
 
@@ -484,12 +477,8 @@ export function LoadDocumentsSection({
       const documentData = allDocuments?.find(doc => doc.id === documentId);
 
       if (!documentData) {
-        console.warn('⚠️ LoadDocumentsSection - Document not found in database (orphaned record):', documentId);
-        console.log('🧹 LoadDocumentsSection - Cleaning up orphaned record from local state');
-        
         // Remove orphaned record from local state
         const updatedDocuments = documents.filter(doc => doc.id !== documentId);
-        console.log('📝 LoadDocumentsSection - Removing orphaned record. Before:', documents.length, 'After:', updatedDocuments.length);
         setDocuments(updatedDocuments);
         onDocumentsChange?.(updatedDocuments);
 
@@ -508,32 +497,24 @@ export function LoadDocumentsSection({
           const filePath = urlPath.split('/load-documents/')[1]; // Extract the path after /load-documents/
           if (filePath) {
             // Check if file exists in storage by trying to download it (more reliable than list)
-            console.log('🔍 LoadDocumentsSection - Checking if file exists in storage:', filePath);
             const { data: fileData, error: downloadError } = await supabase.storage
               .from('load-documents')
               .download(filePath);
 
             if (!downloadError && fileData) {
               // File exists, remove it
-              console.log('🗑️ LoadDocumentsSection - Removing file from storage:', filePath);
               const { error: storageError } = await supabase.storage
                 .from('load-documents')
                 .remove([filePath]);
 
               if (storageError) {
-                console.error('❌ LoadDocumentsSection - Error removing from storage:', storageError);
                 // Continue with database removal even if storage fails
-              } else {
-                console.log('✅ LoadDocumentsSection - File removed successfully from storage');
               }
             } else {
-              console.warn('⚠️ LoadDocumentsSection - File not found in storage, proceeding to remove DB record:', filePath);
-              console.warn('Download error:', downloadError);
               showSuccess("Información", "El archivo ya no existe en el almacenamiento, eliminando solo el registro de la base de datos");
             }
           }
         } catch (urlError) {
-          console.error('❌ LoadDocumentsSection - Error parsing URL for storage removal:', urlError);
           // Continue with database removal even if storage fails
         }
       }
