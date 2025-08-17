@@ -3217,8 +3217,6 @@ export type Database = {
           email: string
           id: string
           logo_url: string
-          max_users: number
-          max_vehicles: number
           name: string
           phone: string
           plan_type: string
@@ -3230,7 +3228,7 @@ export type Database = {
         }[]
       }
       get_companies_financial_data: {
-        Args: { target_company_id: string }
+        Args: { target_company_id?: string }
         Returns: {
           city: string
           contract_start_date: string
@@ -3504,6 +3502,14 @@ export type Database = {
       }
       log_business_data_access: {
         Args: { access_action?: string; entity_id: string; entity_type: string }
+        Returns: undefined
+      }
+      log_company_access_audit: {
+        Args: {
+          access_type_param: string
+          company_id_param: string
+          fields_accessed_param: string[]
+        }
         Returns: undefined
       }
       log_company_data_access: {
