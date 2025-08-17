@@ -84,7 +84,9 @@ export function LoadDocumentValidationIndicator({
 
   const warningMessage = isDeliveryBlocked 
     ? "No se puede marcar como entregada sin documentos requeridos"
-    : `Faltan documentos requeridos: ${abbreviatedMissingDocs}`;
+    : validation.missingRequiredDocuments.length === 1 
+      ? `Falta documento requerido: ${abbreviatedMissingDocs}`
+      : `Faltan documentos requeridos: ${abbreviatedMissingDocs}`;
 
   // Determinar el ícono según los documentos faltantes
   const getIcon = () => {
