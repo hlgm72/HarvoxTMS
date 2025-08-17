@@ -2963,7 +2963,7 @@ export type Database = {
         Returns: boolean
       }
       can_access_driver_sensitive_data: {
-        Args: { driver_user_id_param: string }
+        Args: { target_user_id: string }
         Returns: boolean
       }
       can_access_load: {
@@ -3292,6 +3292,29 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_driver_basic_info: {
+        Args: { target_user_id: string }
+        Returns: {
+          cdl_class: string
+          is_active: boolean
+          license_expiry_date: string
+          user_id: string
+        }[]
+      }
+      get_driver_sensitive_info: {
+        Args: { target_user_id: string }
+        Returns: {
+          cdl_class: string
+          cdl_endorsements: string
+          emergency_contact_name: string
+          emergency_contact_phone: string
+          license_expiry_date: string
+          license_issue_date: string
+          license_number: string
+          license_state: string
+          user_id: string
+        }[]
+      }
       get_equipment_status_summary: {
         Args: { company_id_param?: string }
         Returns: {
@@ -3505,6 +3528,10 @@ export type Database = {
       }
       log_driver_data_access: {
         Args: { access_type_param: string; driver_user_id_param: string }
+        Returns: undefined
+      }
+      log_driver_sensitive_access: {
+        Args: { access_type: string; target_user_id: string }
         Returns: undefined
       }
       log_health_check: {
