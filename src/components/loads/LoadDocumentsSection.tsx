@@ -402,11 +402,17 @@ export function LoadDocumentsSection({
         .from('load_documents')
         .select('file_url')
         .eq('id', documentId)
-        .single();
+        .maybeSingle();
 
       if (fetchError) {
         console.error('❌ LoadDocumentsSection - Error fetching document for removal:', fetchError);
         throw fetchError;
+      }
+
+      if (!documentData) {
+        console.warn('⚠️ LoadDocumentsSection - Document not found for removal:', documentId);
+        showError("Error", "El documento ya no existe o fue eliminado");
+        return;
       }
 
       // Remove from storage by extracting path from URL
