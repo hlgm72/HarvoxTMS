@@ -378,14 +378,20 @@ export function LoadDocumentsSection({
       console.log('✅ handleRemoveDocument - Successfully deleted from database');
 
       // Remove file from storage if it exists
+      console.log('🗂️ handleRemoveDocument - Checking storage deletion. Document URL:', document.url);
       if (document.url && !document.url.startsWith('blob:')) {
+        console.log('📦 handleRemoveDocument - Attempting storage deletion...');
         let storageFilePath = document.url;
         
         // Extract the file path from the public URL
         if (document.url.includes('/storage/v1/object/public/load-documents/')) {
           storageFilePath = document.url.split('/storage/v1/object/public/load-documents/')[1];
+          console.log('🔗 handleRemoveDocument - Extracted path from public URL:', storageFilePath);
         } else if (document.url.includes('/load-documents/')) {
           storageFilePath = document.url.split('/load-documents/')[1];
+          console.log('🔗 handleRemoveDocument - Extracted path from load-documents URL:', storageFilePath);
+        } else {
+          console.log('🔗 handleRemoveDocument - Using original URL as path:', storageFilePath);
         }
         
         const { error: storageError } = await supabase.storage
@@ -393,11 +399,17 @@ export function LoadDocumentsSection({
           .remove([storageFilePath]);
 
         if (storageError) {
-          console.warn('Warning: Could not remove file from storage:', storageError);
+          console.error('❌ handleRemoveDocument - Storage error:', storageError);
+        } else {
+          console.log('✅ handleRemoveDocument - Successfully deleted from storage');
         }
+      } else {
+        console.log('⏭️ handleRemoveDocument - Skipping storage deletion (no valid URL)');
       }
 
+      console.log('🔄 handleRemoveDocument - Reloading documents...');
       await loadDocuments();
+      console.log('🎉 handleRemoveDocument - Process completed');
       showSuccess("Documento eliminado", `${document.fileName} se eliminó correctamente`);
     } catch (error) {
       console.error('Error removing document:', error);
