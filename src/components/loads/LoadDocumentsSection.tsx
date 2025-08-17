@@ -371,6 +371,7 @@ export function LoadDocumentsSection({
   };
 
   const handleLoadOrderGenerated = async (data: { url: string; amount: number }) => {
+    console.log('🔥 handleLoadOrderGenerated - FUNCTION CALLED WITH DATA:', data);
     try {
       // Convert blob URL to file
       const response = await fetch(data.url);
