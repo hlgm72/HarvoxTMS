@@ -546,6 +546,7 @@ export function LoadDocumentsSection({
 
       // Invalidate queries and notify context
       queryClient.invalidateQueries({ queryKey: ['load-documents', loadId] });
+      queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadId] });
       notifyDocumentChange();
 
       showSuccess("Éxito", "Documento eliminado correctamente del Storage y base de datos");
