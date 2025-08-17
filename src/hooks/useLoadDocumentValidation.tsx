@@ -29,18 +29,25 @@ export const useLoadDocumentValidation = (loadId: string) => {
         doc.archived_at === null
       ) || false;
 
+      // Check if POD exists
+      const hasPOD = documents?.some(doc => 
+        doc.document_type === 'pod' && 
+        doc.archived_at === null
+      ) || false;
+
       // Define required documents
-      const requiredDocuments = ['rate_confirmation'];
+      const requiredDocuments = ['rate_confirmation', 'pod'];
       const existingDocumentTypes = documents?.map(doc => doc.document_type) || [];
       
       const missingRequiredDocuments = requiredDocuments.filter(
         reqDoc => !existingDocumentTypes.includes(reqDoc)
       );
 
-      const canMarkAsDelivered = hasRateConfirmation;
+      const canMarkAsDelivered = hasRateConfirmation && hasPOD;
 
       console.log('📋 Document validation result:', {
         hasRateConfirmation,
+        hasPOD,
         missingRequiredDocuments,
         canMarkAsDelivered,
         totalDocuments: documents?.length || 0

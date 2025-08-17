@@ -13,7 +13,7 @@ import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
 
 interface LoadDocument {
   id: string;
-  type: 'rate_confirmation' | 'driver_instructions' | 'bol' | 'load_order';
+  type: 'rate_confirmation' | 'driver_instructions' | 'bol' | 'load_order' | 'pod';
   name: string;
   fileName: string;
   fileSize?: number;
@@ -44,28 +44,40 @@ const documentTypes = [
     label: 'Rate Confirmation',
     description: 'Confirmación de tarifa del broker',
     required: true,
-    generated: false
+    generated: false,
+    gridPosition: 'row1-col1'
   },
   {
     type: 'driver_instructions' as const,
     label: 'Driver Instructions',
     description: 'Instrucciones específicas para el conductor',
     required: false,
-    generated: false
+    generated: false,
+    gridPosition: 'row1-col2'
   },
   {
     type: 'bol' as const,
     label: 'Bill of Lading',
     description: 'Documento de embarque',
     required: false,
-    generated: false
+    generated: false,
+    gridPosition: 'row2-col1'
+  },
+  {
+    type: 'pod' as const,
+    label: 'POD (Proof of Delivery)',
+    description: 'Prueba de entrega',
+    required: true,
+    generated: false,
+    gridPosition: 'row2-col2'
   },
   {
     type: 'load_order' as const,
     label: 'Load Order',
     description: 'Orden de carga generada automáticamente',
     required: false,
-    generated: true
+    generated: true,
+    gridPosition: 'row3-full'
   }
 ];
 
@@ -639,27 +651,30 @@ export function LoadDocumentsSection({
   const renderDocumentManagement = () => {
     const allDocuments = [...documents, ...temporaryDocuments];
     
-    return (
-      <div className="space-y-6">
-        <div className="grid gap-4">
-          {documentTypes.map((docType) => {
-            const existingDoc = allDocuments.find(doc => doc.type === docType.type);
-            const isUploading = uploadingDocuments.has(docType.type) || uploading === docType.type;
-            const isRemoving = existingDoc ? removingDocuments.has(existingDoc.id) : false;
+    // Group documents by grid position
+    const row1Docs = documentTypes.filter(doc => doc.gridPosition?.startsWith('row1'));
+    const row2Docs = documentTypes.filter(doc => doc.gridPosition?.startsWith('row2'));
+    const row3Docs = documentTypes.filter(doc => doc.gridPosition === 'row3-full');
+    const additionalDocs = allDocuments.filter(doc => !documentTypes.some(dt => dt.type === doc.type));
+    
+    const renderDocumentCard = (docType: typeof documentTypes[0]) => {
+      const existingDoc = allDocuments.find(doc => doc.type === docType.type);
+      const isUploading = uploadingDocuments.has(docType.type) || uploading === docType.type;
+      const isRemoving = existingDoc ? removingDocuments.has(existingDoc.id) : false;
 
-            return (
-              <div key={docType.type} className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-4 border rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <FileText className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{docType.label}</span>
-                      {docType.required && <Badge variant="destructive" className="text-xs">Requerido</Badge>}
-                      {docType.generated && <Badge variant="secondary" className="text-xs">Generado</Badge>}
-                    </div>
-                    <p className="text-sm text-muted-foreground">{docType.description}</p>
-                  </div>
-                </div>
+      return (
+        <div key={docType.type} className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-4 border rounded-lg">
+          <div className="flex items-center space-x-3">
+            <FileText className="h-5 w-5 text-muted-foreground" />
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">{docType.label}</span>
+                {docType.required && <Badge variant="destructive" className="text-xs">Requerido</Badge>}
+                {docType.generated && <Badge variant="secondary" className="text-xs">Generado</Badge>}
+              </div>
+              <p className="text-sm text-muted-foreground">{docType.description}</p>
+            </div>
+          </div>
 
                 <div className="flex flex-wrap items-center gap-2 md:justify-end">
                   {existingDoc ? (
@@ -820,10 +835,26 @@ export function LoadDocumentsSection({
                       )}
                     </>
                   )}
-                </div>
-              </div>
-            );
-          })}
+          </div>
+        </div>
+      );
+    };
+    
+    return (
+      <div className="space-y-6">
+        {/* Row 1: Rate Confirmation y Driver Instructions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {row1Docs.map(renderDocumentCard)}
+        </div>
+
+        {/* Row 2: BOL y POD */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {row2Docs.map(renderDocumentCard)}
+        </div>
+
+        {/* Row 3: Load Order (full width) */}
+        <div className="grid grid-cols-1 gap-4">
+          {row3Docs.map(renderDocumentCard)}
         </div>
 
         {/* Summary */}
