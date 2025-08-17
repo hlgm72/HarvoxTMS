@@ -253,7 +253,7 @@ export function LoadDocumentsSection({
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${loadData.load_number}_${documentType}_${Date.now()}.${fileExt}`;
-      const filePath = `${loadData.id}/${fileName}`;
+      const filePath = `${user?.id}/${loadData.id}/${fileName}`;
 
       const { data, error } = await supabase.storage
         .from('load-documents')
@@ -276,7 +276,7 @@ export function LoadDocumentsSection({
         load_id: loadData.id,
         document_type: documentType,
         file_name: file.name,
-        file_url: publicUrl,
+        file_url: filePath, // Save the file path, not the public URL
         uploaded_by: user?.id || '',
       };
 
