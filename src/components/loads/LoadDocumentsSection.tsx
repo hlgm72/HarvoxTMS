@@ -731,7 +731,7 @@ export function LoadDocumentsSection({
             <FileText className="h-4 w-4 text-muted-foreground" />
             <span className="font-medium text-sm">{docType.label}</span>
             {docType.required && <Badge variant="destructive" className="text-xs h-5">Requerido</Badge>}
-            {docType.generated && <Badge variant="secondary" className="text-xs h-5">Generado</Badge>}
+            {docType.generated && existingDoc && <Badge variant="secondary" className="text-xs h-5">Generado</Badge>}
           </div>
 
           {/* Line 2: Document description */}
