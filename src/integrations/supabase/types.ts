@@ -3072,7 +3072,14 @@ export type Database = {
         Returns: Json
       }
       create_or_update_load_document_with_validation: {
-        Args: { document_data: Json; existing_doc_id?: string }
+        Args:
+          | {
+              document_data: Json
+              document_id_param?: string
+              load_id_param: string
+              replace_existing?: boolean
+            }
+          | { document_data: Json; existing_doc_id?: string }
         Returns: Json
       }
       create_or_update_load_with_validation: {

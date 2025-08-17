@@ -349,18 +349,13 @@ export function LoadDocumentsSection({
       });
 
       let result;
-      if (isReplacement && existingDocId) {
-        // Update existing record using the secure function
-        result = await supabase.rpc('create_or_update_load_document_with_validation', {
-          document_data: documentData,
-          existing_doc_id: existingDocId
-        });
-      } else {
-        // Insert new record using the secure function
-        result = await supabase.rpc('create_or_update_load_document_with_validation', {
-          document_data: documentData
-        });
-      }
+      // Use the new ACID function with proper parameters
+      result = await supabase.rpc('create_or_update_load_document_with_validation', {
+        load_id_param: loadId,
+        document_data: documentData,
+        document_id_param: isReplacement && existingDocId ? existingDocId : null,
+        replace_existing: isReplacement && !existingDocId
+      });
 
       if (result.error) {
         console.error('❌ LoadDocumentsSection - Database insert error:', {
@@ -665,14 +660,14 @@ export function LoadDocumentsSection({
           console.log('🔄 LoadDocumentsSection - Trying with ACID function...');
           try {
             const acidResult = await supabase.rpc('create_or_update_load_document_with_validation', {
+              load_id_param: loadId,
               document_data: {
-                load_id: loadId,
                 document_type: 'load_order',
                 file_name: loadOrderData.fileName,
                 file_size: blob.size,
                 file_url: storagePath, // Store the storage path instead of public URL
-                uploaded_by: user.id
-              }
+              },
+              replace_existing: true
             });
             
             if (acidResult.error) {
