@@ -144,7 +144,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
           >
             <Page
               pageNumber={1}
-              width={200}
+              width={128}
               height={128}
               renderTextLayer={false}
               renderAnnotationLayer={false}

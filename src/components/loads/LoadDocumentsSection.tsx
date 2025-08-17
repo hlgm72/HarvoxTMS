@@ -594,10 +594,10 @@ export function LoadDocumentsSection({
               <DocumentPreview
                 documentUrl={existingDoc.url}
                 fileName={existingDoc.fileName}
-                className="w-32 h-24"
+                className="w-32 h-32"
               />
             ) : (
-              <div className="w-32 h-24 border border-dashed border-border/40 rounded flex items-center justify-center bg-muted/20">
+              <div className="w-32 h-32 border border-dashed border-border/40 rounded flex items-center justify-center bg-muted/20">
                 <FileText className="h-8 w-8 text-muted-foreground" />
               </div>
             )}
