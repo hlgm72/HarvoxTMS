@@ -134,20 +134,9 @@ export function LoadDocumentsList({
 
   const handleDownload = async (doc: LoadDocument) => {
     try {
-      // Extract storage path from URL with robust parsing
+      // The file_url is stored as a storage path, not a full URL
       let filePath = doc.file_url;
-      console.log('🔍 LoadDocumentsList - Original URL:', doc.file_url);
-      
-      // Handle different URL formats
-      if (doc.file_url.includes('supabase.co/storage/v1/object/')) {
-        // Extract everything after the bucket name
-        const parts = doc.file_url.split('/load-documents/');
-        if (parts.length > 1) {
-          filePath = parts[1];
-        }
-      }
-      
-      console.log('🔍 LoadDocumentsList - Final storage path to use:', filePath);
+      console.log('🔍 LoadDocumentsList - Original file_url:', doc.file_url);
       
       // Generate signed URL for private bucket
       const { data: signedUrlData, error: urlError } = await supabase.storage
@@ -180,25 +169,9 @@ export function LoadDocumentsList({
 
   const handleView = async (document: LoadDocument) => {
     try {
-      // Extract storage path from URL with robust parsing
+      // The file_url is stored as a storage path, not a full URL
       let filePath = document.file_url;
-      console.log('🔍 LoadDocumentsList - Original view URL:', document.file_url);
-      
-      // Handle different URL formats
-      if (document.file_url.includes('supabase.co/storage/v1/object/')) {
-        // Extract everything after the bucket name
-        const parts = document.file_url.split('/load-documents/');
-        if (parts.length > 1) {
-          filePath = parts[1];
-        }
-      } else if (document.file_url.startsWith('https://')) {
-        // If it's already a full signed URL, use it directly
-        window.open(document.file_url, '_blank');
-        return;
-      }
-      // If it's already a storage path (without https), use it as is
-      
-      console.log('🔍 LoadDocumentsList - Final view storage path to use:', filePath);
+      console.log('🔍 LoadDocumentsList - Original file_url:', document.file_url);
       
       // Generate signed URL for private bucket
       const { data: signedUrlData, error: urlError } = await supabase.storage
