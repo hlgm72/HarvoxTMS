@@ -469,17 +469,19 @@ export function LoadDocumentsSection({
     try {
       console.log('🔄 LoadDocumentsSection - Removing document:', documentId);
 
-      // Get document info first
-      const { data: documentData, error: fetchError } = await supabase
-        .from('load_documents')
-        .select('file_url')
-        .eq('id', documentId)
-        .maybeSingle();
+      // Get document info using the secure function (bypasses RLS)
+      console.log('🔍 LoadDocumentsSection - Fetching documents using secure function for deletion...');
+      const { data: allDocuments, error: fetchError } = await supabase.rpc('get_load_documents_with_validation', {
+        target_load_id: loadId
+      });
 
       if (fetchError) {
-        console.error('❌ LoadDocumentsSection - Error fetching document for removal:', fetchError);
+        console.error('❌ LoadDocumentsSection - Error fetching documents for removal:', fetchError);
         throw fetchError;
       }
+
+      // Find the specific document to remove
+      const documentData = allDocuments?.find(doc => doc.id === documentId);
 
       if (!documentData) {
         console.warn('⚠️ LoadDocumentsSection - Document not found in database (orphaned record):', documentId);
