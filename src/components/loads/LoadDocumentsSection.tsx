@@ -312,7 +312,7 @@ export function LoadDocumentsSection({
       const documentData = {
         load_id: loadId,
         document_type: documentType,
-        file_name: file.name,
+        file_name: standardFileName, // Use the standardized file name instead of original
         file_size: file.size,
         file_url: publicUrl,
         uploaded_by: user.id
