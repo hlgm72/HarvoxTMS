@@ -191,7 +191,12 @@ export function LoadDocumentsList({
         if (parts.length > 1) {
           filePath = parts[1];
         }
+      } else if (document.file_url.startsWith('https://')) {
+        // If it's already a full signed URL, use it directly
+        window.open(document.file_url, '_blank');
+        return;
       }
+      // If it's already a storage path (without https), use it as is
       
       console.log('🔍 LoadDocumentsList - Final view storage path to use:', filePath);
       
