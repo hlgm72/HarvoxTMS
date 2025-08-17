@@ -132,18 +132,6 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     }
 
     if (fileType === 'pdf') {
-      // Temporarily disable PDF preview to avoid worker issues
-      return (
-        <div className="flex flex-col items-center justify-center h-full bg-muted/20">
-          <FileText className="h-8 w-8 text-muted-foreground mb-1" />
-          <div className="text-xs text-muted-foreground text-center">
-            Vista previa PDF temporalmente deshabilitada
-          </div>
-        </div>
-      );
-      
-      /* 
-      // Re-enable this when PDF worker is fixed
       return (
         <div className="w-full h-full bg-white rounded overflow-hidden">
           <Document
@@ -164,7 +152,6 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
           </Document>
         </div>
       );
-      */
     }
 
     return (
