@@ -60,9 +60,22 @@ export function LoadDocumentValidationIndicator({
     );
   }
 
+  // Mapeo de nombres de documentos a abreviaciones
+  const documentAbbreviations: Record<string, string> = {
+    'rate_confirmation': 'RC',
+    'pod': 'POD',
+    'bol': 'BOL',
+    'driver_instructions': 'DI',
+    'load_order': 'LO'
+  };
+
+  const abbreviatedMissingDocs = validation.missingRequiredDocuments
+    .map(doc => documentAbbreviations[doc] || doc.toUpperCase())
+    .join(', ');
+
   const warningMessage = isDeliveryBlocked 
-    ? "No se puede marcar como entregada sin Rate Confirmation"
-    : `Faltan documentos requeridos: ${validation.missingRequiredDocuments.join(', ')}`;
+    ? "No se puede marcar como entregada sin documentos requeridos"
+    : `Faltan documentos requeridos: ${abbreviatedMissingDocs}`;
 
   if (compact) {
     return (
