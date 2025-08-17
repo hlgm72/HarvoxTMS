@@ -589,11 +589,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
               const loadNumber = currentLoadNumber?.trim();
               
               if (mode === 'edit') {
-                return loadNumber ? `Editar Carga ${loadNumber}` : 'Editar Carga';
+                return loadNumber ? `Editar Carga #${loadNumber}` : 'Editar Carga';
               } else if (mode === 'duplicate') {
-                return loadNumber ? `Duplicar Carga ${loadNumber}` : 'Duplicar Carga';
+                return loadNumber ? `Duplicar Carga #${loadNumber}` : 'Duplicar Carga';
               } else {
-                return loadNumber ? `Crear Carga ${loadNumber}` : 'Nueva Carga';
+                return loadNumber ? `Crear Carga #${loadNumber}` : 'Nueva Carga';
               }
             })()}
           </DialogTitle>
