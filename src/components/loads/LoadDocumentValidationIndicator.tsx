@@ -34,6 +34,15 @@ export function LoadDocumentValidationIndicator({
   const hasWarnings = validation.missingRequiredDocuments.length > 0;
   const isDeliveryBlocked = !validation.canMarkAsDelivered && ['in_transit', 'in_progress'].includes(loadStatus);
 
+  console.log('🔍 LoadDocumentValidationIndicator Debug:', {
+    loadId,
+    loadStatus,
+    hasWarnings,
+    isDeliveryBlocked,
+    missingDocs: validation.missingRequiredDocuments,
+    canMarkAsDelivered: validation.canMarkAsDelivered
+  });
+
   if (!hasWarnings) {
     if (compact) {
       return (
