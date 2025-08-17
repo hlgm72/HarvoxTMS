@@ -134,14 +134,29 @@ export function LoadDocumentsList({
 
   const handleDownload = async (doc: LoadDocument) => {
     try {
-      // Crear un enlace temporal para descargar
-      const link = window.document.createElement('a');
-      link.href = doc.file_url;
-      link.download = doc.file_name;
-      link.target = '_blank';
-      window.document.body.appendChild(link);
-      link.click();
-      window.document.body.removeChild(link);
+      // Extract file path from URL for private bucket
+      const filePath = doc.file_url.replace(/^.*\/load-documents\//, '');
+      
+      // Generate signed URL for private bucket
+      const { data: signedUrlData, error: urlError } = await supabase.storage
+        .from('load-documents')
+        .createSignedUrl(filePath, 3600); // 1 hour expiry
+
+      if (urlError) {
+        console.error('Error generating signed URL for download:', urlError);
+        showError("Error", "No se pudo generar el enlace de descarga");
+        return;
+      }
+
+      if (signedUrlData?.signedUrl) {
+        const link = window.document.createElement('a');
+        link.href = signedUrlData.signedUrl;
+        link.download = doc.file_name;
+        link.target = '_blank';
+        window.document.body.appendChild(link);
+        link.click();
+        window.document.body.removeChild(link);
+      }
     } catch (error) {
       console.error('Error downloading document:', error);
       showError(
@@ -151,8 +166,29 @@ export function LoadDocumentsList({
     }
   };
 
-  const handleView = (document: LoadDocument) => {
-    window.open(document.file_url, '_blank');
+  const handleView = async (document: LoadDocument) => {
+    try {
+      // Extract file path from URL for private bucket
+      const filePath = document.file_url.replace(/^.*\/load-documents\//, '');
+      
+      // Generate signed URL for private bucket
+      const { data: signedUrlData, error: urlError } = await supabase.storage
+        .from('load-documents')
+        .createSignedUrl(filePath, 3600); // 1 hour expiry
+
+      if (urlError) {
+        console.error('Error generating signed URL:', urlError);
+        showError("Error", "No se pudo generar el enlace para ver el documento");
+        return;
+      }
+
+      if (signedUrlData?.signedUrl) {
+        window.open(signedUrlData.signedUrl, '_blank');
+      }
+    } catch (error) {
+      console.error('Error viewing document:', error);
+      showError("Error", "No se pudo abrir el documento");
+    }
   };
 
   const formatFileSize = (bytes: number) => {
