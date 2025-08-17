@@ -134,8 +134,12 @@ export function LoadDocumentsList({
 
   const handleDownload = async (doc: LoadDocument) => {
     try {
-      // Extract file path from URL for private bucket
-      const filePath = doc.file_url.replace(/^.*\/load-documents\//, '');
+      // Handle both storage paths and full URLs for backwards compatibility
+      let filePath = doc.file_url;
+      if (doc.file_url.includes('/load-documents/')) {
+        // Extract storage path from full URL
+        filePath = doc.file_url.split('/load-documents/')[1];
+      }
       
       // Generate signed URL for private bucket
       const { data: signedUrlData, error: urlError } = await supabase.storage
@@ -168,8 +172,12 @@ export function LoadDocumentsList({
 
   const handleView = async (document: LoadDocument) => {
     try {
-      // Extract file path from URL for private bucket
-      const filePath = document.file_url.replace(/^.*\/load-documents\//, '');
+      // Handle both storage paths and full URLs for backwards compatibility
+      let filePath = document.file_url;
+      if (document.file_url.includes('/load-documents/')) {
+        // Extract storage path from full URL
+        filePath = document.file_url.split('/load-documents/')[1];
+      }
       
       // Generate signed URL for private bucket
       const { data: signedUrlData, error: urlError } = await supabase.storage

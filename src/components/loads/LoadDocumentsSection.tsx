@@ -926,12 +926,17 @@ export function LoadDocumentsSection({
                       }
 
                       // For storage documents, use the stored path directly
-                      const downloadFilePath = existingDoc.url; // URL is now the storage path
+                      // Handle both storage paths and full URLs for backwards compatibility
+                      let downloadStoragePath = existingDoc.url;
+                      if (existingDoc.url.includes('/load-documents/')) {
+                        // Extract storage path from full URL
+                        downloadStoragePath = existingDoc.url.split('/load-documents/')[1];
+                      }
 
                       // Generate signed URL for private bucket
                       const { data: signedUrlData, error: urlError } = await supabase.storage
                         .from('load-documents')
-                        .createSignedUrl(downloadFilePath, 3600); // 1 hour expiry
+                        .createSignedUrl(downloadStoragePath, 3600); // 1 hour expiry
 
                       if (urlError) {
                         console.error('Error generating signed URL for download:', urlError);
@@ -1143,7 +1148,12 @@ export function LoadDocumentsSection({
                           }
                           
                           // For storage documents, generate signed URL using the stored path
-                          const filePath = doc.url; // doc.url is now the storage path, not a full URL
+                          // Handle both storage paths and full URLs for backwards compatibility
+                          let filePath = doc.url;
+                          if (doc.url.includes('/load-documents/')) {
+                            // Extract storage path from full URL
+                            filePath = doc.url.split('/load-documents/')[1];
+                          }
                           
                           // Generate signed URL for private bucket
                           const { data: signedUrlData, error: urlError } = await supabase.storage
@@ -1195,12 +1205,17 @@ export function LoadDocumentsSection({
                           }
                           
                           // For storage documents, generate signed URL using the stored path
-                          const filePath = doc.url; // doc.url is now the storage path, not a full URL
+                          // Handle both storage paths and full URLs for backwards compatibility
+                          let downloadFilePath = doc.url;
+                          if (doc.url.includes('/load-documents/')) {
+                            // Extract storage path from full URL
+                            downloadFilePath = doc.url.split('/load-documents/')[1];
+                          }
                           
                           // Generate signed URL for private bucket
                           const { data: signedUrlData, error: urlError } = await supabase.storage
                             .from('load-documents')
-                            .createSignedUrl(filePath, 3600); // 1 hour expiry
+                            .createSignedUrl(downloadFilePath, 3600); // 1 hour expiry
 
                           if (urlError) {
                             console.error('Error generating signed URL for download:', urlError);
