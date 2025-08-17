@@ -407,7 +407,6 @@ export function LoadDocumentsSection({
         .insert({
           load_id: loadData.id,
           document_type: 'load_order',
-          document_name: `Load Order - ${loadData.load_number}`,
           file_name: fileName,
           file_url: publicUrl,
           file_size: file.size,
