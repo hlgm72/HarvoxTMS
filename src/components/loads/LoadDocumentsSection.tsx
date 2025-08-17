@@ -371,8 +371,6 @@ export function LoadDocumentsSection({
   };
 
   const handleLoadOrderGenerated = async (data: { url: string; amount: number }) => {
-    console.log('🔄 handleLoadOrderGenerated - Starting with data:', data);
-    
     try {
       // Convert blob URL to file
       const response = await fetch(data.url);
@@ -382,12 +380,8 @@ export function LoadDocumentsSection({
       const fileName = `load-order-${loadData.load_number}-${Date.now()}.pdf`;
       const file = new File([blob], fileName, { type: 'application/pdf' });
       
-      console.log('📄 handleLoadOrderGenerated - Created file:', { fileName, size: file.size });
-      
       // Create proper file path following the same structure as other documents
       const filePath = `${user?.id}/${loadData.id}/${fileName}`;
-      
-      console.log('📁 handleLoadOrderGenerated - Using file path:', filePath);
       
       // Upload to Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
@@ -398,18 +392,13 @@ export function LoadDocumentsSection({
         });
 
       if (uploadError) {
-        console.error('❌ handleLoadOrderGenerated - Upload error:', uploadError);
         throw uploadError;
       }
-
-      console.log('✅ handleLoadOrderGenerated - File uploaded:', uploadData);
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('load-documents')
         .getPublicUrl(uploadData.path);
-
-      console.log('🔗 handleLoadOrderGenerated - Public URL:', publicUrl);
 
       // Save document record in database
       const { error: dbError } = await supabase
