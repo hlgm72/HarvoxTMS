@@ -136,7 +136,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
               setError('Error loading PDF');
             }}
             loading={
-              <div className="flex items-center justify-center h-full">
+              <div className="flex items-center justify-center w-full h-32 bg-muted/20">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
             }
