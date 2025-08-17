@@ -265,7 +265,33 @@ export function LoadDocumentsSection({
     
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${loadData.load_number}_${documentType}_${Date.now()}.${fileExt}`;
+      
+      // Generate proper filename based on document type
+      let docTypeName = '';
+      switch (documentType) {
+        case 'rate_confirmation':
+          docTypeName = 'Rate_Confirmation';
+          break;
+        case 'driver_instructions':
+          docTypeName = 'Driver_Instructions';
+          break;
+        case 'bol':
+          docTypeName = 'Bill_of_Lading';
+          break;
+        case 'pod':
+          docTypeName = 'Proof_of_Delivery';
+          break;
+        case 'load_invoice':
+          docTypeName = 'Load_Invoice';
+          break;
+        case 'load_order':
+          docTypeName = 'Load_Order';
+          break;
+        default:
+          docTypeName = documentType;
+      }
+      
+      const fileName = `${loadData.load_number}_${docTypeName}.${fileExt}`;
       const filePath = `${user?.id}/${loadData.id}/${fileName}`;
 
       const { data, error } = await supabase.storage
@@ -288,7 +314,7 @@ export function LoadDocumentsSection({
       const documentData = {
         load_id: loadData.id,
         document_type: documentType,
-        file_name: file.name,
+        file_name: fileName,
         file_url: filePath, // Save the file path, not the public URL
         uploaded_by: user?.id || '',
       };
