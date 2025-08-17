@@ -521,7 +521,8 @@ export function LoadDocumentsSection({
                 // Continue with database removal even if storage fails
               }
             } else {
-              console.warn('⚠️ LoadDocumentsSection - File not found in storage, removing orphaned DB record:', filePath);
+              console.warn('⚠️ LoadDocumentsSection - File not found in storage, proceeding to remove DB record:', filePath);
+              showSuccess("Información", "El archivo ya no existe en el almacenamiento, eliminando solo el registro de la base de datos");
             }
           }
         } catch (urlError) {
@@ -553,10 +554,6 @@ export function LoadDocumentsSection({
       // Invalidate queries and notify context
       queryClient.invalidateQueries({ queryKey: ['load-documents', loadId] });
       notifyDocumentChange();
-
-      // Force reload from database to ensure consistency
-      console.log('🔄 LoadDocumentsSection - Reloading documents from database...');
-      await loadDocuments();
 
       showSuccess("Éxito", "Documento eliminado correctamente");
 
