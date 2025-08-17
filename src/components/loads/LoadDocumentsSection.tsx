@@ -14,7 +14,7 @@ import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
 
 interface LoadDocument {
   id: string;
-  type: 'rate_confirmation' | 'driver_instructions' | 'bol' | 'load_order' | 'pod';
+  type: 'rate_confirmation' | 'driver_instructions' | 'bol' | 'load_order' | 'pod' | 'load_invoice';
   name: string;
   fileName: string;
   fileSize?: number;
@@ -78,9 +78,52 @@ const documentTypes = [
     description: 'Orden de carga generada automáticamente',
     required: false,
     generated: true,
-    gridPosition: 'row3-full'
+    gridPosition: 'row3-col1'
+  },
+  {
+    type: 'load_invoice' as const,
+    label: 'Load Invoice',
+    description: 'Factura de la carga',
+    required: false,
+    generated: false,
+    gridPosition: 'row3-col2'
   }
 ];
+
+// Helper function to generate standardized file names
+const generateDocumentFileName = (loadNumber: string, documentType: string, originalFileName: string, otherDocCount?: number): string => {
+  const cleanLoadNumber = loadNumber.replace('#', '').replace('-', '-');
+  let docTypeName = '';
+  
+  switch (documentType) {
+    case 'rate_confirmation':
+      docTypeName = 'Rate_Confirmation';
+      break;
+    case 'driver_instructions':
+      docTypeName = 'Driver_Instructions';
+      break;
+    case 'bol':
+      docTypeName = 'Bill_of_Lading';
+      break;
+    case 'pod':
+      docTypeName = 'Proof_of_Delivery';
+      break;
+    case 'load_order':
+      docTypeName = 'Load_Order';
+      break;
+    case 'load_invoice':
+      docTypeName = 'Load_Invoice';
+      break;
+    default:
+      // For other documents, use a counter system
+      const counter = otherDocCount ? otherDocCount + 1 : 1;
+      docTypeName = `Other_Document_${counter}`;
+      break;
+  }
+  
+  const fileExtension = originalFileName.split('.').pop();
+  return `${cleanLoadNumber}_${docTypeName}.${fileExtension}`;
+};
 
 export function LoadDocumentsSection({
   loadId,
@@ -194,11 +237,10 @@ export function LoadDocumentsSection({
         throw new Error('Usuario no autenticado');
       }
 
-      // Create unique file name with timestamp
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const fileExtension = file.name.split('.').pop();
-      const fileName = `${documentType}_${loadData?.load_number || loadId}_${timestamp}.${fileExtension}`;
-      const filePath = `${user.id}/${loadId}/${fileName}`;
+      // Generate standardized file name based on load number and document type
+      const loadNumber = loadData?.load_number || loadId;
+      const standardFileName = generateDocumentFileName(loadNumber, documentType, file.name);
+      const filePath = `${user.id}/${loadId}/${standardFileName}`;
 
       console.log('📁 LoadDocumentsSection - Upload path:', filePath);
 
@@ -505,10 +547,10 @@ export function LoadDocumentsSection({
           throw new Error('Usuario no autenticado');
         }
 
-        // Create file path
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const fileName = `load_order_${loadData?.load_number || loadId}_${timestamp}.pdf`;
-        const filePath = `${user.id}/${loadId}/${fileName}`;
+        // Generate standardized file name for Load Order
+        const loadNumber = loadData?.load_number || loadId;
+        const standardFileName = generateDocumentFileName(loadNumber, 'load_order', 'load_order.pdf');
+        const filePath = `${user.id}/${loadId}/${standardFileName}`;
 
         console.log('📁 LoadDocumentsSection - Upload path for Load Order:', filePath);
 
@@ -920,9 +962,9 @@ export function LoadDocumentsSection({
           {row2Docs.map(renderDocumentCard)}
         </div>
 
-        {/* Row 3: Load Order (full width) */}
-        <div className="grid grid-cols-1 gap-4">
-          {row3Docs.map(renderDocumentCard)}
+        {/* Row 3: Load Order y Load Invoice */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {documentTypes.filter(doc => doc.gridPosition?.startsWith('row3')).map(renderDocumentCard)}
         </div>
 
         {/* Row 4: Additional Documents */}
