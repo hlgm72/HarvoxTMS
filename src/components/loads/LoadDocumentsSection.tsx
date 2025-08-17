@@ -607,7 +607,16 @@ export function LoadDocumentsSection({
 
         const publicUrl = urlData.publicUrl;
 
-        // Save to database
+        // Save to database with detailed logging
+        console.log('📝 LoadDocumentsSection - About to insert Load Order to database:', {
+          load_id: loadId,
+          document_type: 'load_order',
+          file_name: loadOrderData.fileName,
+          file_size: blob.size,
+          file_url: publicUrl,
+          user_id: user.id
+        });
+
         const { data: dbData, error: dbError } = await supabase
           .from('load_documents')
           .insert({
@@ -615,13 +624,72 @@ export function LoadDocumentsSection({
             document_type: 'load_order',
             file_name: loadOrderData.fileName,
             file_size: blob.size,
-            file_url: publicUrl
+            file_url: publicUrl,
+            uploaded_by: user.id
           })
           .select()
           .single();
 
         if (dbError) {
-          console.error('❌ LoadDocumentsSection - Database insert error for Load Order:', dbError);
+          console.error('❌ LoadDocumentsSection - Database insert error for Load Order:', {
+            error: dbError,
+            load_id: loadId,
+            user_id: user.id,
+            document_type: 'load_order',
+            code: dbError.code,
+            message: dbError.message,
+            details: dbError.details,
+            hint: dbError.hint
+          });
+          
+          // Try using the ACID function instead
+          console.log('🔄 LoadDocumentsSection - Trying with ACID function...');
+          try {
+            const acidResult = await supabase.rpc('create_or_update_load_document_with_validation', {
+              document_data: {
+                load_id: loadId,
+                document_type: 'load_order',
+                file_name: loadOrderData.fileName,
+                file_size: blob.size,
+                file_url: publicUrl,
+                uploaded_by: user.id
+              }
+            });
+            
+            if (acidResult.error) {
+              console.error('❌ LoadDocumentsSection - ACID function also failed:', acidResult.error);
+            } else {
+              console.log('✅ LoadDocumentsSection - ACID function succeeded:', acidResult.data);
+              // Use the ACID result instead - parse the JSON response
+              const responseData = typeof acidResult.data === 'string' ? JSON.parse(acidResult.data) : acidResult.data;
+              const dbData = responseData.document;
+              const newDocument: LoadDocument = {
+                id: dbData.id,
+                type: 'load_order',
+                name: 'Load Order',
+                fileName: dbData.file_name,
+                fileSize: dbData.file_size,
+                uploadedAt: dbData.created_at,
+                url: dbData.file_url
+              };
+
+              const updatedDocuments = [...documents, newDocument];
+              setDocuments(updatedDocuments);
+              setHasLoadOrder(true);
+              onDocumentsChange?.(updatedDocuments);
+
+              // Invalidate queries and notify context
+              queryClient.invalidateQueries({ queryKey: ['load-documents', loadId] });
+              notifyDocumentChange();
+              
+              showSuccess("Load Order guardado", "El Load Order se ha guardado exitosamente usando función ACID");
+              URL.revokeObjectURL(loadOrderData.url);
+              return; // Exit successfully
+            }
+          } catch (acidError) {
+            console.error('❌ LoadDocumentsSection - ACID function also failed:', acidError);
+          }
+          
           throw dbError;
         }
 
