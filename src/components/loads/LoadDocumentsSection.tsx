@@ -716,6 +716,37 @@ export function LoadDocumentsSection({
                 documentUrl={existingDoc.url}
                 fileName={existingDoc.fileName}
                 className="w-32 h-32"
+                onClick={async () => {
+                  try {
+                    if (existingDoc.url.startsWith('blob:')) {
+                      window.open(existingDoc.url, '_blank');
+                      return;
+                    }
+                    if (existingDoc.url.includes('supabase.co/storage/v1/object/public/')) {
+                      window.open(existingDoc.url, '_blank');
+                      return;
+                    }
+
+                    let storageFilePath = existingDoc.url;
+                    if (existingDoc.url.includes('/load-documents/')) {
+                      storageFilePath = existingDoc.url.split('/load-documents/')[1];
+                    }
+
+                    const { data: signedUrlData, error: urlError } = await supabase.storage
+                      .from('load-documents')
+                      .createSignedUrl(storageFilePath, 3600);
+                    if (urlError) {
+                      showError("Error", "No se pudo generar el enlace para ver el documento");
+                      return;
+                    }
+                    if (signedUrlData?.signedUrl) {
+                      window.open(signedUrlData.signedUrl, '_blank');
+                    }
+                  } catch (error) {
+                    console.error('Error opening document:', error);
+                    showError("Error", "Error inesperado al abrir el documento");
+                  }
+                }}
               />
             ) : (
               <div className="w-32 h-32 border border-dashed border-border/40 rounded flex items-center justify-center bg-muted/20">

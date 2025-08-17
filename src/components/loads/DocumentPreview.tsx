@@ -24,12 +24,14 @@ interface DocumentPreviewProps {
   documentUrl: string;
   fileName: string;
   className?: string;
+  onClick?: () => void;
 }
 
 const DocumentPreview: React.FC<DocumentPreviewProps> = ({ 
   documentUrl, 
   fileName, 
-  className = "w-full h-32" 
+  className = "w-full h-32",
+  onClick 
 }) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fileType, setFileType] = useState<'image' | 'pdf' | 'other'>('other');
@@ -164,7 +166,13 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   };
 
   return (
-    <div className={`${className} border border-border/40 rounded overflow-hidden bg-background`}>
+    <div 
+      className={`${className} border border-border/40 rounded overflow-hidden bg-background ${
+        onClick ? 'cursor-pointer hover:border-primary/50 hover:shadow-md transition-all duration-200' : ''
+      }`}
+      onClick={onClick}
+      title={onClick ? 'Click para ver el documento' : undefined}
+    >
       {renderPreview()}
     </div>
   );
