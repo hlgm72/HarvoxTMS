@@ -125,6 +125,33 @@ const generateDocumentFileName = (loadNumber: string, documentType: string, orig
   return `${cleanLoadNumber}_${docTypeName}.${fileExtension}`;
 };
 
+// Helper function to check if load order can be generated
+const canGenerateLoadOrder = (loadData: any): boolean => {
+  if (!loadData) return false;
+  
+  // Check basic load information
+  const hasBasicInfo = !!(
+    loadData.load_number &&
+    loadData.commodity &&
+    loadData.total_amount &&
+    loadData.pickup_date &&
+    loadData.delivery_date
+  );
+  
+  // Check if load has stops (should have at least pickup and delivery)
+  const hasStops = loadData.stops && loadData.stops.length >= 2;
+  
+  // Check if stops have required information
+  const stopsHaveInfo = hasStops && loadData.stops.every((stop: any) => 
+    stop.company_name && 
+    stop.address && 
+    stop.city && 
+    stop.state
+  );
+  
+  return hasBasicInfo && hasStops && stopsHaveInfo;
+};
+
 export function LoadDocumentsSection({
   loadId,
   loadData,
@@ -918,9 +945,10 @@ export function LoadDocumentsSection({
             ) : docType.generated ? (
               <Button
                 onClick={() => setShowGenerateLoadOrder(true)}
-                disabled={isUploading}
+                disabled={isUploading || !canGenerateLoadOrder(loadData)}
                 size="sm"
                 className="h-7 text-xs"
+                title={canGenerateLoadOrder(loadData) ? "Generar Load Order" : "Faltan datos de la carga o paradas para generar el Load Order"}
               >
                 <FileText className="h-3 w-3 mr-1" />
                 Generar Load Order
