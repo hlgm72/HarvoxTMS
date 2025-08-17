@@ -301,12 +301,9 @@ export function LoadDocumentsSection({
       console.log('✅ LoadDocumentsSection - File uploaded to storage:', uploadData.path);
 
       // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('load-documents')
-        .getPublicUrl(uploadData.path);
-
-      const publicUrl = urlData.publicUrl;
-      console.log('🔗 LoadDocumentsSection - Public URL generated:', publicUrl);
+      // Use the storage path instead of public URL for private bucket
+      const storagePath = uploadData.path;
+      console.log('🔗 LoadDocumentsSection - Storage path:', storagePath);
 
       // Save document info to database
       const documentData = {
@@ -314,7 +311,7 @@ export function LoadDocumentsSection({
         document_type: documentType,
         file_name: standardFileName, // Use the standardized file name instead of original
         file_size: file.size,
-        file_url: publicUrl,
+        file_url: storagePath, // Store the storage path instead of public URL
         uploaded_by: user.id
       };
 
@@ -601,11 +598,8 @@ export function LoadDocumentsSection({
         }
 
         // Get public URL
-        const { data: urlData } = supabase.storage
-          .from('load-documents')
-          .getPublicUrl(uploadData.path);
-
-        const publicUrl = urlData.publicUrl;
+        // Use the storage path instead of public URL for private bucket
+        const storagePath = uploadData.path;
 
         // Save to database with detailed logging
         console.log('📝 LoadDocumentsSection - About to insert Load Order to database:', {
@@ -613,7 +607,7 @@ export function LoadDocumentsSection({
           document_type: 'load_order',
           file_name: loadOrderData.fileName,
           file_size: blob.size,
-          file_url: publicUrl,
+          file_url: storagePath, // Store the storage path instead of public URL
           user_id: user.id
         });
 
@@ -624,7 +618,7 @@ export function LoadDocumentsSection({
             document_type: 'load_order',
             file_name: loadOrderData.fileName,
             file_size: blob.size,
-            file_url: publicUrl,
+            file_url: storagePath, // Store the storage path instead of public URL
             uploaded_by: user.id
           })
           .select()
@@ -651,7 +645,7 @@ export function LoadDocumentsSection({
                 document_type: 'load_order',
                 file_name: loadOrderData.fileName,
                 file_size: blob.size,
-                file_url: publicUrl,
+                file_url: storagePath, // Store the storage path instead of public URL
                 uploaded_by: user.id
               }
             });
@@ -872,7 +866,29 @@ export function LoadDocumentsSection({
                         }
                       }
                       
-                      window.open(existingDoc.url, '_blank');
+                      // Check if this is a blob URL (temporary document)
+                      if (existingDoc.url.startsWith('blob:')) {
+                        window.open(existingDoc.url, '_blank');
+                        return;
+                      }
+
+                      // For storage documents, use the stored path directly
+                      const storageFilePath = existingDoc.url; // URL is now the storage path
+
+                      // Generate signed URL for private bucket
+                      const { data: signedUrlData, error: urlError } = await supabase.storage
+                        .from('load-documents')
+                        .createSignedUrl(storageFilePath, 3600); // 1 hour expiry
+
+                      if (urlError) {
+                        console.error('Error generating signed URL:', urlError);
+                        showError("Error", "No se pudo generar el enlace para ver el documento");
+                        return;
+                      }
+
+                      if (signedUrlData?.signedUrl) {
+                        window.open(signedUrlData.signedUrl, '_blank');
+                      }
                     } catch (error) {
                       console.error('Error checking file existence:', error);
                       // Fallback to opening URL anyway
@@ -891,37 +907,42 @@ export function LoadDocumentsSection({
                   size="sm"
                   onClick={async () => {
                     try {
-                      // Check if file exists in storage first
-                      const urlPath = new URL(existingDoc.url).pathname;
-                      const filePath = urlPath.split('/load-documents/')[1];
-                      if (filePath) {
-                        const { data: fileList, error: listError } = await supabase.storage
-                          .from('load-documents')
-                          .list(filePath.split('/').slice(0, -1).join('/') || '', {
-                            search: filePath.split('/').pop()
-                          });
-
-                        if (listError || !fileList || fileList.length === 0) {
-                          showError("Error", "El archivo ya no existe en el servidor. No se puede descargar.");
-                          return;
-                        }
+                      // Check if this is a blob URL (temporary document)
+                      if (existingDoc.url.startsWith('blob:')) {
+                        const response = await fetch(existingDoc.url);
+                        const blob = await response.blob();
+                        const blobUrl = window.URL.createObjectURL(blob);
+                        
+                        const link = document.createElement('a');
+                        link.href = blobUrl;
+                        link.download = existingDoc.fileName;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        window.URL.revokeObjectURL(blobUrl);
+                        showSuccess("Descarga iniciada", `${existingDoc.fileName} se está descargando`);
+                        return;
                       }
 
-                       // Generate signed URL for private bucket
-                       const { data: signedUrlData, error: urlError } = await supabase.storage
-                         .from('load-documents')
-                         .createSignedUrl(filePath, 3600); // 1 hour expiry
+                      // For storage documents, use the stored path directly
+                      const downloadFilePath = existingDoc.url; // URL is now the storage path
 
-                       if (urlError) {
-                         console.error('Error generating signed URL for download:', urlError);
-                         showError("Error", "No se pudo generar el enlace de descarga");
-                         return;
-                       }
+                      // Generate signed URL for private bucket
+                      const { data: signedUrlData, error: urlError } = await supabase.storage
+                        .from('load-documents')
+                        .createSignedUrl(downloadFilePath, 3600); // 1 hour expiry
 
-                       if (!signedUrlData?.signedUrl) {
-                         showError("Error", "No se pudo obtener la URL firmada");
-                         return;
-                       }
+                      if (urlError) {
+                        console.error('Error generating signed URL for download:', urlError);
+                        showError("Error", "No se pudo generar el enlace de descarga");
+                        return;
+                      }
+
+                      if (!signedUrlData?.signedUrl) {
+                        showError("Error", "No se pudo obtener la URL firmada");
+                        return;
+                      }
 
                        const response = await fetch(signedUrlData.signedUrl);
                       if (!response.ok) {
@@ -1121,15 +1142,9 @@ export function LoadDocumentsSection({
                             return;
                           }
                           
-                          // For storage documents, use signed URL
-                          const urlPath = new URL(doc.url).pathname;
-                          const filePath = urlPath.split('/load-documents/')[1];
+                          // For storage documents, generate signed URL using the stored path
+                          const filePath = doc.url; // doc.url is now the storage path, not a full URL
                           
-                          if (!filePath) {
-                            showError("Error", "No se pudo determinar la ruta del archivo");
-                            return;
-                          }
-
                           // Generate signed URL for private bucket
                           const { data: signedUrlData, error: urlError } = await supabase.storage
                             .from('load-documents')
@@ -1179,15 +1194,9 @@ export function LoadDocumentsSection({
                             return;
                           }
                           
-                          // For storage documents, use signed URL
-                          const urlPath = new URL(doc.url).pathname;
-                          const filePath = urlPath.split('/load-documents/')[1];
+                          // For storage documents, generate signed URL using the stored path
+                          const filePath = doc.url; // doc.url is now the storage path, not a full URL
                           
-                          if (!filePath) {
-                            showError("Error", "No se pudo determinar la ruta del archivo");
-                            return;
-                          }
-
                           // Generate signed URL for private bucket
                           const { data: signedUrlData, error: urlError } = await supabase.storage
                             .from('load-documents')
