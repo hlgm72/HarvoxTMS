@@ -169,11 +169,11 @@ export function LoadDocumentsList({
 
   const handleView = async (document: LoadDocument) => {
     try {
-      // The file_url is stored as a storage path, not a full URL
+      // Use the same logic as download - file_url is stored as a storage path
       let filePath = document.file_url;
       console.log('🔍 LoadDocumentsList - Original file_url:', document.file_url);
       
-      // Generate signed URL for private bucket
+      // Generate signed URL for private bucket (same as download)
       const { data: signedUrlData, error: urlError } = await supabase.storage
         .from('load-documents')
         .createSignedUrl(filePath, 3600); // 1 hour expiry
@@ -185,6 +185,7 @@ export function LoadDocumentsList({
       }
 
       if (signedUrlData?.signedUrl) {
+        // Open in new tab instead of downloading
         window.open(signedUrlData.signedUrl, '_blank');
       }
     } catch (error) {
