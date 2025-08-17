@@ -114,12 +114,11 @@ export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>
       if (!user) return;
 
       try {
-        // Obtener datos específicos del conductor
-        const { data, error } = await supabase
-          .from('driver_profiles')
-          .select('emergency_contact_name, emergency_contact_phone, license_number, license_state, license_issue_date, license_expiry_date, cdl_class, cdl_endorsements')
-          .eq('user_id', user.id)
-          .maybeSingle();
+        // Obtener datos específicos del conductor usando función segura
+        const { data, error } = await supabase.rpc('get_driver_sensitive_info', {
+          target_user_id: user.id
+        });
+        const driverData = data?.[0] || null;
 
         if (error && error.code !== 'PGRST116') {
           console.error('Error fetching driver profile:', error);
@@ -129,33 +128,33 @@ export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>
         // Set driver profile state
         const combinedProfile = {
           date_of_birth: null,
-          emergency_contact_name: data?.emergency_contact_name || null,
-          emergency_contact_phone: data?.emergency_contact_phone || null,
-          license_number: data?.license_number || null,
-          license_state: data?.license_state || null,
-          license_issue_date: data?.license_issue_date || null,
-          license_expiry_date: data?.license_expiry_date || null,
-          cdl_class: data?.cdl_class || null,
-          cdl_endorsements: data?.cdl_endorsements || null
+          emergency_contact_name: driverData?.emergency_contact_name || null,
+          emergency_contact_phone: driverData?.emergency_contact_phone || null,
+          license_number: driverData?.license_number || null,
+          license_state: driverData?.license_state || null,
+          license_issue_date: driverData?.license_issue_date || null,
+          license_expiry_date: driverData?.license_expiry_date || null,
+          cdl_class: driverData?.cdl_class || null,
+          cdl_endorsements: driverData?.cdl_endorsements || null
         };
 
         setDriverProfile(combinedProfile);
 
         // Update form with profile data
         driverInfoForm.reset({
-          emergency_contact_name: data?.emergency_contact_name || '',
-          emergency_contact_phone: data?.emergency_contact_phone || '',
+          emergency_contact_name: driverData?.emergency_contact_name || '',
+          emergency_contact_phone: driverData?.emergency_contact_phone || '',
         });
 
         // Update license data separately
-        if (data) {
+        if (driverData) {
           setLicenseData({
-            license_number: data.license_number || '',
-            license_state: data.license_state || '',
-            license_issue_date: parseDateFromDatabase(data.license_issue_date),
-            license_expiry_date: parseDateFromDatabase(data.license_expiry_date),
-            cdl_class: data.cdl_class || '',
-            cdl_endorsements: data.cdl_endorsements || '',
+            license_number: driverData.license_number || '',
+            license_state: driverData.license_state || '',
+            license_issue_date: parseDateFromDatabase(driverData.license_issue_date),
+            license_expiry_date: parseDateFromDatabase(driverData.license_expiry_date),
+            cdl_class: driverData.cdl_class || '',
+            cdl_endorsements: driverData.cdl_endorsements || '',
           });
         }
       } catch (error) {

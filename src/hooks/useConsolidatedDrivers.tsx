@@ -120,20 +120,20 @@ export const useConsolidatedDrivers = () => {
             .select('user_id, first_name, last_name, phone, avatar_url, hire_date')
             .in('user_id', allDriverUserIds),
           
-          supabase
-            .from('driver_profiles')
-            .select(`
-              user_id,
-              license_number,
-              license_expiry_date,
-              license_state,
-              cdl_class,
-              license_issue_date,
-              is_active,
-              emergency_contact_name,
-              emergency_contact_phone
-            `)
-            .in('user_id', allDriverUserIds),
+          // Use basic driver info for consolidated view (non-sensitive data)
+          Promise.all(
+            allDriverUserIds.map(async (userId) => {
+              try {
+                const { data } = await supabase.rpc('get_driver_basic_info', {
+                  target_user_id: userId
+                });
+                return data?.[0] || null;
+              } catch (error) {
+                console.warn(`Failed to fetch driver data for ${userId}:`, error);
+                return null;
+              }
+            })
+          ).then(results => ({ data: results.filter(Boolean), error: null })),
           
           supabase
             .from('loads')
@@ -203,17 +203,17 @@ export const useConsolidatedDrivers = () => {
             last_name: profile.last_name || '',
             phone: profile.phone,
             avatar_url: profile.avatar_url,
-            license_number: driverProfile?.license_number || null,
+            license_number: null, // Hidden in consolidated view for security
             license_expiry_date: driverProfile?.license_expiry_date || null,
-            license_state: driverProfile?.license_state || null,
+            license_state: null, // Hidden in consolidated view for security
             cdl_class: driverProfile?.cdl_class || null,
-            license_issue_date: driverProfile?.license_issue_date || null,
+            license_issue_date: null, // Hidden in consolidated view for security
             hire_date: profile.hire_date || null,
             termination_date: driverRole?.termination_date || null,
             termination_reason: driverRole?.termination_reason || null,
             is_active: driverRole?.is_active ?? true,
-            emergency_contact_name: driverProfile?.emergency_contact_name || null,
-            emergency_contact_phone: driverProfile?.emergency_contact_phone || null,
+            emergency_contact_name: null, // Hidden in consolidated view for security
+            emergency_contact_phone: null, // Hidden in consolidated view for security
             current_status: currentStatus,
             active_loads_count: activeLoadsCount,
             is_pre_registered: isPreRegistered,
