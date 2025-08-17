@@ -927,11 +927,16 @@ export function LoadDocumentsSection({
 
                       // For storage documents, use the stored path directly
                       // Handle both storage paths and full URLs for backwards compatibility
-                      let downloadStoragePath = existingDoc.url;
-                      if (existingDoc.url.includes('/load-documents/')) {
-                        // Extract storage path from full URL
-                        downloadStoragePath = existingDoc.url.split('/load-documents/')[1];
-                      }
+                       let downloadStoragePath = existingDoc.url;
+                       console.log('🔍 LoadDocumentsSection - Original download URL:', existingDoc.url);
+                       
+                       if (existingDoc.url.includes('/load-documents/')) {
+                         // Extract storage path from full URL
+                         downloadStoragePath = existingDoc.url.split('/load-documents/')[1];
+                         console.log('🔍 LoadDocumentsSection - Extracted download storage path:', downloadStoragePath);
+                       }
+                       
+                       console.log('🔍 LoadDocumentsSection - Final download storage path to use:', downloadStoragePath);
 
                       // Generate signed URL for private bucket
                       const { data: signedUrlData, error: urlError } = await supabase.storage
@@ -1149,11 +1154,16 @@ export function LoadDocumentsSection({
                           
                           // For storage documents, generate signed URL using the stored path
                           // Handle both storage paths and full URLs for backwards compatibility
-                          let filePath = doc.url;
-                          if (doc.url.includes('/load-documents/')) {
-                            // Extract storage path from full URL
-                            filePath = doc.url.split('/load-documents/')[1];
-                          }
+                           let filePath = doc.url;
+                           console.log('🔍 LoadDocumentsSection - Original view URL:', doc.url);
+                           
+                           if (doc.url.includes('/load-documents/')) {
+                             // Extract storage path from full URL
+                             filePath = doc.url.split('/load-documents/')[1];
+                             console.log('🔍 LoadDocumentsSection - Extracted view storage path:', filePath);
+                           }
+                           
+                           console.log('🔍 LoadDocumentsSection - Final view storage path to use:', filePath);
                           
                           // Generate signed URL for private bucket
                           const { data: signedUrlData, error: urlError } = await supabase.storage
