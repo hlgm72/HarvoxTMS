@@ -42,7 +42,8 @@ export const useSuperAdminDashboard = () => {
   const fetchSystemStats = useCallback(async () => {
     try {
       const [companiesResult, usersResult, vehiclesResult, driversResult] = await Promise.all([
-        supabase.from('companies').select('*', { count: 'exact', head: true }),
+        // Use secure RPC for companies data access
+        supabase.rpc('get_companies_basic_info').then(result => ({ count: result.data?.length || 0, error: result.error })),
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('geotab_vehicles').select('*', { count: 'exact', head: true }),
         supabase.from('geotab_drivers').select('*', { count: 'exact', head: true })
