@@ -341,9 +341,14 @@ export function LoadDocumentsSection({
         return;
       }
 
+      // Remove file from storage if it exists
       if (document.url && !document.url.startsWith('blob:')) {
         let storageFilePath = document.url;
-        if (document.url.includes('/load-documents/')) {
+        
+        // Extract the file path from the public URL
+        if (document.url.includes('/storage/v1/object/public/load-documents/')) {
+          storageFilePath = document.url.split('/storage/v1/object/public/load-documents/')[1];
+        } else if (document.url.includes('/load-documents/')) {
           storageFilePath = document.url.split('/load-documents/')[1];
         }
         
