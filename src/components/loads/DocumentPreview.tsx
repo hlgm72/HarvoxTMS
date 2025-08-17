@@ -100,11 +100,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
 
   const renderPreview = () => {
     if (isLoading) {
-      return (
-        <div className="flex items-center justify-center h-full bg-muted/20">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
-      );
+      return null;
     }
 
     if (error || !previewUrl) {
