@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FileText, Upload, Eye, Download, Trash2, RotateCcw, Plus, Loader2, Check } from 'lucide-react';
 import DocumentPreview from './DocumentPreview';
 import { LoadDocumentValidationIndicator } from './LoadDocumentValidationIndicator';
@@ -49,65 +50,68 @@ interface LoadDocumentsSectionProps {
 const documentTypes = [
   {
     type: 'rate_confirmation' as const,
-    label: 'Rate Confirmation',
+    label: 'Rate Confirmation (RC)',
+    shortLabel: 'RC',
     description: 'Confirmación de tarifa del broker',
     required: true,
     generated: false,
-    gridPosition: 'row1-col1'
   },
   {
     type: 'driver_instructions' as const,
-    label: 'Driver Instructions',
+    label: 'Driver Instructions (DI)',
+    shortLabel: 'DI',
     description: 'Instrucciones específicas para el conductor',
     required: false,
     generated: false,
-    gridPosition: 'row1-col2'
   },
   {
     type: 'bol' as const,
-    label: 'Bill of Lading',
+    label: 'Bill of Lading (BOL)',
+    shortLabel: 'BOL',
     description: 'Documento de embarque',
     required: false,
     generated: false,
-    gridPosition: 'row2-col1'
   },
   {
     type: 'pod' as const,
     label: 'POD (Proof of Delivery)',
+    shortLabel: 'POD',
     description: 'Prueba de entrega',
     required: true,
     generated: false,
-    gridPosition: 'row2-col2'
+  },
+  {
+    type: 'load_invoice' as const,
+    label: 'Load Invoice (LI)',
+    shortLabel: 'LI',
+    description: 'Factura de la carga',
+    required: false,
+    generated: false,
   },
   {
     type: 'load_order' as const,
     label: 'Load Order',
+    shortLabel: 'Load Order',
     description: 'Orden de carga generada automáticamente',
     required: false,
     generated: true,
-    gridPosition: 'row3-col1'
-  },
-  {
-    type: 'load_invoice' as const,
-    label: 'Load Invoice',
-    description: 'Factura de la carga',
-    required: false,
-    generated: false,
-    gridPosition: 'row3-col2'
   },
   {
     type: 'load_photos' as const,
     label: 'Fotos de la Carga',
+    shortLabel: 'Fotos',
     description: 'Fotografías del pickup y delivery (máx. 4 por categoría)',
     required: false,
     generated: false,
-    gridPosition: 'row4-col1',
     allowMultiple: true,
     maxFiles: 8,
     acceptedTypes: ['image/jpeg', 'image/png', 'image/webp'],
     categories: ['pickup', 'delivery']
   }
 ];
+
+// Filtrar documentos disponibles para subir (excluyendo load_photos que tiene su propia sección)
+const uploadableDocumentTypes = documentTypes.filter(doc => doc.type !== 'load_photos' && !doc.generated);
 
 // Helper function to generate standardized file names
 const generateDocumentFileName = (loadNumber: string, documentType: string, originalFileName: string, otherDocCount?: number): string => {
@@ -201,6 +205,7 @@ export function LoadDocumentsSection({
   const [showGenerateLoadOrder, setShowGenerateLoadOrder] = useState(false);
   const [hasLoadOrder, setHasLoadOrder] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
+  const [selectedDocumentType, setSelectedDocumentType] = useState<string>('');
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const { notifyDocumentChange } = useLoadDocuments();
@@ -516,14 +521,12 @@ export function LoadDocumentsSection({
     }
   };
 
-  const renderDocumentCard = (docType: typeof documentTypes[0]) => {
-    const allDocuments = [...documents, ...temporaryDocuments];
-    const existingDoc = allDocuments.find(doc => doc.type === docType.type);
+  const renderDocumentCard = (docType: typeof documentTypes[0], document: LoadDocument) => {
     const isUploading = uploadingDocuments.has(docType.type) || uploading === docType.type;
-    const isRemoving = existingDoc ? removingDocuments.has(existingDoc.id) : false;
+    const isRemoving = removingDocuments.has(document.id);
 
     return (
-      <div key={docType.type} className="p-3 border rounded-lg bg-white">
+      <div className="p-3 border rounded-lg bg-white">
         {/* Main flex container: left content, right preview */}
         <div className="flex gap-3">
           {/* Left column: All content and actions */}
@@ -536,7 +539,7 @@ export function LoadDocumentsSection({
               </div>
               <div className="flex items-center gap-1">
                 {docType.required && <Badge variant="destructive" className="text-[10px] h-4 px-1">Requerido</Badge>}
-                {docType.generated && existingDoc && <Badge variant="secondary" className="text-[10px] h-4 px-1">Generado</Badge>}
+                {docType.generated && <Badge variant="secondary" className="text-[10px] h-4 px-1">Generado</Badge>}
               </div>
             </div>
 
@@ -545,224 +548,34 @@ export function LoadDocumentsSection({
 
             {/* File name */}
             <div className="min-h-[16px]">
-              {existingDoc ? (
-                <span className="text-xs font-medium text-foreground">{existingDoc.fileName}</span>
-              ) : (
-                <span className="text-xs text-muted-foreground italic">Sin documento</span>
-              )}
+              <span className="text-xs font-medium text-foreground">{document.fileName}</span>
             </div>
 
             {/* Action buttons */}
             <div className="flex items-center gap-1 pt-1 flex-wrap">
-              {existingDoc ? (
-                <>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    disabled={isRemoving} 
-                    title="Ver documento" 
-                    className="h-7 text-xs"
-                    onClick={async () => {
-                      try {
-                        if (existingDoc.url.startsWith('blob:')) {
-                          window.open(existingDoc.url, '_blank');
-                          return;
-                        }
-                        if (existingDoc.url.includes('supabase.co/storage/v1/object/public/')) {
-                          window.open(existingDoc.url, '_blank');
-                          return;
-                        }
-                        let storageFilePath = existingDoc.url;
-                        if (existingDoc.url.includes('supabase.co/storage/v1/object/')) {
-                          const parts = existingDoc.url.split('/load-documents/');
-                          if (parts.length > 1) {
-                            storageFilePath = parts[1];
-                          }
-                        }
-                        const { data: signedUrlData, error: urlError } = await supabase.storage
-                          .from('load-documents')
-                          .createSignedUrl(storageFilePath, 3600);
-                        if (urlError) {
-                          showError("Error", "No se pudo generar el enlace para ver el documento");
-                          return;
-                        }
-                        if (signedUrlData?.signedUrl) {
-                          window.open(signedUrlData.signedUrl, '_blank');
-                        }
-                      } catch (error) {
-                        showError("Error", "No se pudo abrir el documento");
-                      }
-                    }}
-                  >
-                    <Eye className="h-3 w-3" />
-                  </Button>
-                  <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={async () => {
-                    try {
-                      if (existingDoc.url.startsWith('blob:')) {
-                        const response = await fetch(existingDoc.url);
-                        const blob = await response.blob();
-                        const blobUrl = window.URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        link.href = blobUrl;
-                        link.download = existingDoc.fileName;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        window.URL.revokeObjectURL(blobUrl);
-                        showSuccess("Descarga iniciada", `${existingDoc.fileName} se está descargando`);
-                        return;
-                      }
-                      let downloadStoragePath = existingDoc.url;
-                      if (existingDoc.url.includes('/load-documents/')) {
-                        downloadStoragePath = existingDoc.url.split('/load-documents/')[1];
-                      }
-                      const { data: signedUrlData, error: urlError } = await supabase.storage
-                        .from('load-documents')
-                        .createSignedUrl(downloadStoragePath, 3600);
-                      if (urlError) {
-                        showError("Error", "No se pudo generar el enlace de descarga");
-                        return;
-                      }
-                      if (!signedUrlData?.signedUrl) {
-                        showError("Error", "No se pudo obtener la URL firmada");
-                        return;
-                      }
-                      const response = await fetch(signedUrlData.signedUrl);
-                      if (!response.ok) throw new Error('Network response was not ok');
-                      const blob = await response.blob();
-                      const blobUrl = window.URL.createObjectURL(blob);
-                      const link = document.createElement('a');
-                      link.href = blobUrl;
-                      link.download = existingDoc.fileName;
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                      window.URL.revokeObjectURL(blobUrl);
-                      showSuccess("Descarga iniciada", `${existingDoc.fileName} se está descargando`);
-                    } catch (error) {
-                      showError("Error", "No se pudo descargar el documento");
-                    }
-                  }} disabled={isRemoving} title="Descargar documento">
-                    <Download className="h-3 w-3" />
-                  </Button>
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      if (e.target.files?.[0]) {
-                        handleFileSelect(e.target.files[0], docType.type);
-                      }
-                      e.target.value = '';
-                    }}
-                    accept=".pdf"
-                    className="hidden"
-                    id={`replace-${docType.type}`}
-                  />
-                  <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={() => {
-                    document.getElementById(`replace-${docType.type}`)?.click();
-                  }} disabled={isUploading || isRemoving} title="Reemplazar documento">
-                    <RotateCcw className="h-3 w-3" />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        disabled={isRemoving}
-                        className="text-destructive hover:text-destructive h-7 w-7 p-0"
-                        title="Eliminar documento"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>¿Eliminar documento?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Esta acción eliminará permanentemente "{existingDoc.fileName}". 
-                          No se puede deshacer.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => {
-                            handleRemoveDocument(existingDoc.id);
-                          }}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          Eliminar
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </>
-              ) : docType.generated ? (
-                <Button
-                  onClick={() => {
-                    console.log('🔄 Load Order button clicked');
-                    console.log('📄 Load data:', loadData);
-                    console.log('✅ Can generate:', canGenerateLoadOrder(loadData));
-                    setShowGenerateLoadOrder(true);
-                  }}
-                  disabled={isUploading || !canGenerateLoadOrder(loadData)}
-                  size="sm"
-                  className="h-7 text-xs"
-                  title={canGenerateLoadOrder(loadData) ? "Generar Load Order" : "Faltan datos de la carga o paradas para generar el Load Order"}
-                >
-                  <FileText className="h-3 w-3 mr-1" />
-                  Generar Load Order
-                </Button>
-              ) : (
-                <>
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      if (e.target.files?.[0]) {
-                        handleFileSelect(e.target.files[0], docType.type);
-                      }
-                      e.target.value = '';
-                    }}
-                    accept=".pdf"
-                    className="hidden"
-                    id={`upload-${docType.type}`}
-                  />
-                  <Button
-                    onClick={() => document.getElementById(`upload-${docType.type}`)?.click()}
-                    disabled={isUploading}
-                    size="sm"
-                    className="h-7 text-xs"
-                  >
-                    <Upload className="h-3 w-3 mr-1" />
-                    {isUploading ? 'Subiendo...' : 'Subir'}
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Right column: Preview Section */}
-          <div className="flex-shrink-0">
-            {existingDoc ? (
-              <DocumentPreview
-                documentUrl={existingDoc.url}
-                fileName={existingDoc.fileName}
-                className="w-32 h-32"
+              <Button 
+                variant="outline" 
+                size="sm" 
+                disabled={isRemoving} 
+                title="Ver documento" 
+                className="h-7 text-xs"
                 onClick={async () => {
                   try {
-                    if (existingDoc.url.startsWith('blob:')) {
-                      window.open(existingDoc.url, '_blank');
+                    if (document.url.startsWith('blob:')) {
+                      window.open(document.url, '_blank');
                       return;
                     }
-                    if (existingDoc.url.includes('supabase.co/storage/v1/object/public/')) {
-                      window.open(existingDoc.url, '_blank');
+                    if (document.url.includes('supabase.co/storage/v1/object/public/')) {
+                      window.open(document.url, '_blank');
                       return;
                     }
-
-                    let storageFilePath = existingDoc.url;
-                    if (existingDoc.url.includes('/load-documents/')) {
-                      storageFilePath = existingDoc.url.split('/load-documents/')[1];
+                    let storageFilePath = document.url;
+                    if (document.url.includes('supabase.co/storage/v1/object/')) {
+                      const parts = document.url.split('/load-documents/');
+                      if (parts.length > 1) {
+                        storageFilePath = parts[1];
+                      }
                     }
-
                     const { data: signedUrlData, error: urlError } = await supabase.storage
                       .from('load-documents')
                       .createSignedUrl(storageFilePath, 3600);
@@ -774,16 +587,156 @@ export function LoadDocumentsSection({
                       window.open(signedUrlData.signedUrl, '_blank');
                     }
                   } catch (error) {
-                    console.error('Error opening document:', error);
-                    showError("Error", "Error inesperado al abrir el documento");
+                    showError("Error", "No se pudo abrir el documento");
                   }
                 }}
+              >
+                <Eye className="h-3 w-3" />
+              </Button>
+              <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={async () => {
+                try {
+                  if (document.url.startsWith('blob:')) {
+                    const response = await fetch(document.url);
+                    const blob = await response.blob();
+                    const blobUrl = window.URL.createObjectURL(blob);
+                    const link = window.document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = document.fileName;
+                    window.document.body.appendChild(link);
+                    link.click();
+                    window.document.body.removeChild(link);
+                    window.URL.revokeObjectURL(blobUrl);
+                    showSuccess("Descarga iniciada", `${document.fileName} se está descargando`);
+                    return;
+                  }
+                  let downloadStoragePath = document.url;
+                  if (document.url.includes('/load-documents/')) {
+                    downloadStoragePath = document.url.split('/load-documents/')[1];
+                  }
+                  const { data: signedUrlData, error: urlError } = await supabase.storage
+                    .from('load-documents')
+                    .createSignedUrl(downloadStoragePath, 3600);
+                  if (urlError) {
+                    showError("Error", "No se pudo generar el enlace de descarga");
+                    return;
+                  }
+                  if (!signedUrlData?.signedUrl) {
+                    showError("Error", "No se pudo obtener la URL firmada");
+                    return;
+                  }
+                  const response = await fetch(signedUrlData.signedUrl);
+                  if (!response.ok) throw new Error('Network response was not ok');
+                  const blob = await response.blob();
+                  const blobUrl = window.URL.createObjectURL(blob);
+                  const link = window.document.createElement('a');
+                  link.href = blobUrl;
+                  link.download = document.fileName;
+                  window.document.body.appendChild(link);
+                  link.click();
+                  window.document.body.removeChild(link);
+                  window.URL.revokeObjectURL(blobUrl);
+                  showSuccess("Descarga iniciada", `${document.fileName} se está descargando`);
+                } catch (error) {
+                  showError("Error", "No se pudo descargar el documento");
+                }
+              }} disabled={isRemoving} title="Descargar documento">
+                <Download className="h-3 w-3" />
+              </Button>
+              <input
+                type="file"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    handleFileSelect(e.target.files[0], docType.type);
+                  }
+                  e.target.value = '';
+                }}
+                accept=".pdf"
+                className="hidden"
+                id={`replace-${document.id}`}
               />
-            ) : (
-              <div className="w-32 h-32 border border-dashed border-border/40 rounded flex items-center justify-center bg-muted/20">
-                <FileText className="h-8 w-8 text-muted-foreground" />
-              </div>
-            )}
+              <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={() => {
+                window.document.getElementById(`replace-${document.id}`)?.click();
+              }} disabled={isUploading || isRemoving} title="Reemplazar documento">
+                <RotateCcw className="h-3 w-3" />
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    disabled={isRemoving}
+                    className="text-destructive hover:text-destructive h-7 w-7 p-0"
+                    title="Eliminar documento"
+                  >
+                    {isRemoving ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-3 w-3" />
+                    )}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>¿Eliminar documento?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta acción eliminará permanentemente "{document.fileName}". 
+                      No se puede deshacer.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        handleRemoveDocument(document.id);
+                      }}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Eliminar
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </div>
+
+          {/* Right column: Preview Section */}
+          <div className="flex-shrink-0">
+            <DocumentPreview
+              documentUrl={document.url}
+              fileName={document.fileName}
+              className="w-32 h-32"
+              onClick={async () => {
+                try {
+                  if (document.url.startsWith('blob:')) {
+                    window.open(document.url, '_blank');
+                    return;
+                  }
+                  if (document.url.includes('supabase.co/storage/v1/object/public/')) {
+                    window.open(document.url, '_blank');
+                    return;
+                  }
+
+                  let storageFilePath = document.url;
+                  if (document.url.includes('/load-documents/')) {
+                    storageFilePath = document.url.split('/load-documents/')[1];
+                  }
+
+                  const { data: signedUrlData, error: urlError } = await supabase.storage
+                    .from('load-documents')
+                    .createSignedUrl(storageFilePath, 3600);
+                  if (urlError) {
+                    showError("Error", "No se pudo generar el enlace para ver el documento");
+                    return;
+                  }
+                  if (signedUrlData?.signedUrl) {
+                    window.open(signedUrlData.signedUrl, '_blank');
+                  }
+                } catch (error) {
+                  console.error('Error opening document:', error);
+                  showError("Error", "Error inesperado al abrir el documento");
+                }
+              }}
+            />
           </div>
         </div>
       </div>
@@ -791,32 +744,122 @@ export function LoadDocumentsSection({
   };
 
   const renderDocumentManagement = () => {
-    const row1Docs = documentTypes.filter(doc => doc.gridPosition?.startsWith('row1'));
-    const row2Docs = documentTypes.filter(doc => doc.gridPosition?.startsWith('row2'));
-    const row3Docs = documentTypes.filter(doc => doc.gridPosition?.startsWith('row3'));
-    
-    // Separate load photos from regular documents
+    // Get all documents except load_photos which has its own section
     const allDocuments = [...documents, ...temporaryDocuments];
+    const regularDocuments = allDocuments.filter(doc => doc.type !== 'load_photos');
     const loadPhotos = allDocuments.filter(doc => doc.type === 'load_photos') as Array<LoadDocument & { type: 'load_photos' }>;
+
+    // Group documents by type to handle duplicates
+    const documentGroups = regularDocuments.reduce((groups, doc) => {
+      if (!groups[doc.type]) {
+        groups[doc.type] = [];
+      }
+      groups[doc.type].push(doc);
+      return groups;
+    }, {} as Record<string, LoadDocument[]>);
+
+    // Sort document types for consistent display order
+    const sortedDocumentTypes = Object.keys(documentGroups).sort((a, b) => {
+      const aIndex = documentTypes.findIndex(dt => dt.type === a);
+      const bIndex = documentTypes.findIndex(dt => dt.type === b);
+      return aIndex - bIndex;
+    });
 
     return (
       <div className="space-y-6">
-        {/* Row 1: Rate Confirmation y Driver Instructions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {row1Docs.map(renderDocumentCard)}
+        {/* Upload Controls */}
+        <div className="flex flex-col sm:flex-row gap-3 p-4 bg-muted/30 rounded-lg">
+          <div className="flex-1">
+            <Select value={selectedDocumentType} onValueChange={setSelectedDocumentType}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona el tipo de documento a subir" />
+              </SelectTrigger>
+              <SelectContent>
+                {uploadableDocumentTypes.map(docType => (
+                  <SelectItem key={docType.type} value={docType.type}>
+                    {docType.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="file"
+              onChange={(e) => {
+                if (e.target.files?.[0] && selectedDocumentType) {
+                  handleFileSelect(e.target.files[0], selectedDocumentType);
+                  setSelectedDocumentType(''); // Reset selection after upload
+                }
+                e.target.value = '';
+              }}
+              accept=".pdf"
+              className="hidden"
+              id="document-upload"
+            />
+            <Button
+              onClick={() => {
+                if (!selectedDocumentType) {
+                  showError("Error", "Selecciona un tipo de documento primero");
+                  return;
+                }
+                window.document.getElementById('document-upload')?.click();
+              }}
+              disabled={!selectedDocumentType || uploading !== null}
+              className="min-w-[100px]"
+            >
+              {uploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Subiendo...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Subir
+                </>
+              )}
+            </Button>
+            <Button
+              onClick={() => {
+                console.log('🔄 Load Order button clicked');
+                console.log('📄 Load data:', loadData);
+                console.log('✅ Can generate:', canGenerateLoadOrder(loadData));
+                setShowGenerateLoadOrder(true);
+              }}
+              disabled={uploading !== null || !canGenerateLoadOrder(loadData)}
+              variant="outline"
+              title={canGenerateLoadOrder(loadData) ? "Generar Load Order" : "Faltan datos de la carga o paradas para generar el Load Order"}
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Generar Load Order
+            </Button>
+          </div>
         </div>
 
-        {/* Row 2: BOL y POD */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {row2Docs.map(renderDocumentCard)}
-        </div>
+        {/* Dynamic Document Containers */}
+        {sortedDocumentTypes.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {sortedDocumentTypes.map(docType => {
+              const docs = documentGroups[docType];
+              const documentTypeDef = documentTypes.find(dt => dt.type === docType);
+              
+              return docs.map((doc, index) => (
+                <div key={`${docType}-${index}`}>
+                  {renderDocumentCard(documentTypeDef!, doc)}
+                </div>
+              ));
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>No hay documentos subidos aún</p>
+            <p className="text-sm">Usa el selector arriba para subir documentos</p>
+          </div>
+        )}
 
-        {/* Row 3: Load Order y Load Invoice */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {row3Docs.map(renderDocumentCard)}
-        </div>
-
-        {/* Row 4: Load Photos */}
+        {/* Load Photos Section */}
         <LoadPhotosSection
           loadId={loadId}
           loadData={loadData}
