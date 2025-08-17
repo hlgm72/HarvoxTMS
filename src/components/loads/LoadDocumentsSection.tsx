@@ -415,19 +415,32 @@ export function LoadDocumentsSection({
         return;
       }
 
-      // Remove from storage by extracting path from URL
+      // Check if file exists in storage before attempting removal
       if (documentData.file_url) {
         try {
           const urlPath = new URL(documentData.file_url).pathname;
           const filePath = urlPath.split('/load-documents/')[1]; // Extract the path after /load-documents/
           if (filePath) {
-            const { error: storageError } = await supabase.storage
+            // Check if file exists in storage
+            const { data: fileList, error: listError } = await supabase.storage
               .from('load-documents')
-              .remove([filePath]);
+              .list(filePath.split('/').slice(0, -1).join('/') || '', {
+                search: filePath.split('/').pop()
+              });
 
-            if (storageError) {
-              console.error('❌ LoadDocumentsSection - Error removing from storage:', storageError);
-              // Continue with database removal even if storage fails
+            if (!listError && fileList && fileList.length > 0) {
+              // File exists, remove it
+              console.log('🗑️ LoadDocumentsSection - Removing file from storage:', filePath);
+              const { error: storageError } = await supabase.storage
+                .from('load-documents')
+                .remove([filePath]);
+
+              if (storageError) {
+                console.error('❌ LoadDocumentsSection - Error removing from storage:', storageError);
+                // Continue with database removal even if storage fails
+              }
+            } else {
+              console.warn('⚠️ LoadDocumentsSection - File not found in storage, removing orphaned DB record:', filePath);
             }
           }
         } catch (urlError) {
@@ -698,8 +711,30 @@ export function LoadDocumentsSection({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => {
-                    window.open(existingDoc.url, '_blank');
+                  onClick={async () => {
+                    try {
+                      // Check if file exists in storage first
+                      const urlPath = new URL(existingDoc.url).pathname;
+                      const filePath = urlPath.split('/load-documents/')[1];
+                      if (filePath) {
+                        const { data: fileList, error: listError } = await supabase.storage
+                          .from('load-documents')
+                          .list(filePath.split('/').slice(0, -1).join('/') || '', {
+                            search: filePath.split('/').pop()
+                          });
+
+                        if (listError || !fileList || fileList.length === 0) {
+                          showError("Error", "El archivo ya no existe en el servidor. Considera eliminar este registro.");
+                          return;
+                        }
+                      }
+                      
+                      window.open(existingDoc.url, '_blank');
+                    } catch (error) {
+                      console.error('Error checking file existence:', error);
+                      // Fallback to opening URL anyway
+                      window.open(existingDoc.url, '_blank');
+                    }
                   }}
                   disabled={isRemoving}
                   className="h-7 text-xs"
