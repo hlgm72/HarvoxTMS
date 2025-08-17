@@ -730,7 +730,7 @@ export function LoadDocumentsSection({
           id: crypto.randomUUID(),
           type: 'load_order',
           name: 'Load Order',
-          fileName: `Load_Order_${loadData?.load_number || 'unknown'}.pdf`,
+          fileName: `${loadData?.load_number || 'unknown'}_Load_Order.pdf`,
           fileSize: blob.size,
           uploadedAt: new Date(),
           url: loadOrderData.url
@@ -757,7 +757,7 @@ export function LoadDocumentsSection({
           id: crypto.randomUUID(),
           type: 'load_order',
           name: 'Load Order',
-          fileName: `Load_Order_${loadData?.load_number || 'unknown'}.pdf`,
+          fileName: `${loadData?.load_number || 'unknown'}_Load_Order.pdf`,
           uploadedAt: new Date(),
           url: loadOrderData.url
         };
@@ -1405,7 +1405,7 @@ export function LoadDocumentsSection({
           loadData={loadData}
           onLoadOrderGenerated={(data) => handleLoadOrderGenerated({ 
             url: data.url, 
-            fileName: `Load_Order_${loadData?.load_number || 'unknown'}.pdf` 
+            fileName: `${loadData?.load_number || 'unknown'}_Load_Order.pdf` 
           })}
         />
       </>
@@ -1435,7 +1435,7 @@ export function LoadDocumentsSection({
         loadData={loadData}
         onLoadOrderGenerated={(data) => handleLoadOrderGenerated({ 
           url: data.url, 
-          fileName: `Load_Order_${loadData?.load_number || 'unknown'}.pdf` 
+          fileName: `${loadData?.load_number || 'unknown'}_Load_Order.pdf` 
         })}
       />
     </>
