@@ -11,6 +11,7 @@ import { FileText, Upload, Eye, Download, Trash2, RotateCcw, Plus, Loader2, Chec
 import DocumentPreview from './DocumentPreview';
 import { LoadDocumentValidationIndicator } from './LoadDocumentValidationIndicator';
 import { GenerateLoadOrderDialog } from './GenerateLoadOrderDialog';
+import { LoadPhotosSection } from './LoadPhotosSection';
 import { useFleetNotifications } from "@/components/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
@@ -19,12 +20,13 @@ import { useQuery } from '@tanstack/react-query';
 
 interface LoadDocument {
   id: string;
-  type: 'rate_confirmation' | 'driver_instructions' | 'bol' | 'load_order' | 'pod' | 'load_invoice';
+  type: 'rate_confirmation' | 'driver_instructions' | 'bol' | 'load_order' | 'pod' | 'load_invoice' | 'load_photos';
   name: string;
   fileName: string;
   fileSize?: number;
   uploadedAt: Date | string;
   url: string;
+  category?: 'pickup' | 'delivery';
 }
 
 interface LoadDocumentsSectionProps {
@@ -92,6 +94,18 @@ const documentTypes = [
     required: false,
     generated: false,
     gridPosition: 'row3-col2'
+  },
+  {
+    type: 'load_photos' as const,
+    label: 'Fotos de la Carga',
+    description: 'Fotografías del pickup y delivery (máx. 4 por categoría)',
+    required: false,
+    generated: false,
+    gridPosition: 'row4-col1',
+    allowMultiple: true,
+    maxFiles: 8,
+    acceptedTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    categories: ['pickup', 'delivery']
   }
 ];
 
@@ -240,15 +254,29 @@ export function LoadDocumentsSection({
       console.log('✅ LoadDocumentsSection - Documents loaded:', loadDocuments?.length || 0);
       console.log('📄 LoadDocumentsSection - Document details:', loadDocuments);
 
-      const formattedDocuments: LoadDocument[] = (loadDocuments || []).map(doc => ({
-        id: doc.id,
-        type: doc.document_type as LoadDocument['type'],
-        name: documentTypes.find(dt => dt.type === doc.document_type)?.label || doc.document_type,
-        fileName: doc.file_name,
-        fileSize: doc.file_size || undefined,
-        uploadedAt: doc.created_at,
-        url: doc.file_url
-      }));
+      const formattedDocuments: LoadDocument[] = (loadDocuments || []).map(doc => {
+        let category: 'pickup' | 'delivery' | undefined = undefined;
+        
+        // Extract category from file name for load_photos
+        if (doc.document_type === 'load_photos' && doc.file_name) {
+          if (doc.file_name.includes('_pickup_')) {
+            category = 'pickup';
+          } else if (doc.file_name.includes('_delivery_')) {
+            category = 'delivery';
+          }
+        }
+        
+        return {
+          id: doc.id,
+          type: doc.document_type as LoadDocument['type'],
+          name: documentTypes.find(dt => dt.type === doc.document_type)?.label || doc.document_type,
+          fileName: doc.file_name,
+          fileSize: doc.file_size || undefined,
+          uploadedAt: doc.created_at,
+          url: doc.file_url,
+          category
+        };
+      });
 
       console.log('📋 LoadDocumentsSection - Formatted documents:', formattedDocuments);
       setDocuments(formattedDocuments);
@@ -286,6 +314,9 @@ export function LoadDocumentsSection({
           break;
         case 'load_order':
           docTypeName = 'Load_Order';
+          break;
+        case 'load_photos':
+          docTypeName = 'Load_Photos';
           break;
         default:
           docTypeName = documentType;
@@ -763,6 +794,10 @@ export function LoadDocumentsSection({
     const row1Docs = documentTypes.filter(doc => doc.gridPosition?.startsWith('row1'));
     const row2Docs = documentTypes.filter(doc => doc.gridPosition?.startsWith('row2'));
     const row3Docs = documentTypes.filter(doc => doc.gridPosition?.startsWith('row3'));
+    
+    // Separate load photos from regular documents
+    const allDocuments = [...documents, ...temporaryDocuments];
+    const loadPhotos = allDocuments.filter(doc => doc.type === 'load_photos') as Array<LoadDocument & { type: 'load_photos' }>;
 
     return (
       <div className="space-y-6">
@@ -780,6 +815,16 @@ export function LoadDocumentsSection({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {row3Docs.map(renderDocumentCard)}
         </div>
+
+        {/* Row 4: Load Photos */}
+        <LoadPhotosSection
+          loadId={loadId}
+          loadData={loadData}
+          loadPhotos={loadPhotos}
+          onPhotosChange={onDocumentsChange}
+          user={user}
+          onReloadDocuments={loadDocuments}
+        />
       </div>
     );
   };
