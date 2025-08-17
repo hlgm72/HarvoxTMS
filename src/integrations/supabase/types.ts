@@ -3119,6 +3119,10 @@ export type Database = {
         Args: { expense_id: string }
         Returns: Json
       }
+      delete_load_document_with_validation: {
+        Args: { document_id_param: string }
+        Returns: Json
+      }
       delete_load_with_validation: {
         Args: { load_id_param: string }
         Returns: Json

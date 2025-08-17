@@ -519,19 +519,23 @@ export function LoadDocumentsSection({
         }
       }
 
-      // Remove from database
-      console.log('🗑️ LoadDocumentsSection - Removing document from database:', documentId);
-      const { error: dbError } = await supabase
-        .from('load_documents')
-        .delete()
-        .eq('id', documentId);
+      // Remove from database using ACID function (bypasses RLS)
+      console.log('🗑️ LoadDocumentsSection - Removing document from database using ACID function:', documentId);
+      const { data: deleteResult, error: dbError } = await supabase.rpc(
+        'delete_load_document_with_validation',
+        { document_id_param: documentId }
+      );
 
       if (dbError) {
-        console.error('❌ LoadDocumentsSection - Error removing from database:', dbError);
+        console.error('❌ LoadDocumentsSection - ACID deletion failed:', dbError);
         throw dbError;
       }
 
-      console.log('✅ LoadDocumentsSection - Document removed successfully from database');
+      if (!deleteResult || typeof deleteResult !== 'object' || !('success' in deleteResult) || !(deleteResult as any).success) {
+        throw new Error('La operación de eliminación ACID no fue exitosa');
+      }
+
+      console.log('✅ LoadDocumentsSection - Document removed successfully from database using ACID function');
 
       // Update local state immediately
       const updatedDocuments = documents.filter(doc => doc.id !== documentId);
@@ -543,7 +547,7 @@ export function LoadDocumentsSection({
       queryClient.invalidateQueries({ queryKey: ['load-documents', loadId] });
       notifyDocumentChange();
 
-      showSuccess("Éxito", "Documento eliminado correctamente");
+      showSuccess("Éxito", "Documento eliminado correctamente del Storage y base de datos");
 
     } catch (error) {
       console.error('Error removing document:', error);
