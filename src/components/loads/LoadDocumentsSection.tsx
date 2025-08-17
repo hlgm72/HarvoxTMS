@@ -384,10 +384,15 @@ export function LoadDocumentsSection({
       
       console.log('📄 handleLoadOrderGenerated - Created file:', { fileName, size: file.size });
       
+      // Create proper file path following the same structure as other documents
+      const filePath = `${user?.id}/${loadData.id}/${fileName}`;
+      
+      console.log('📁 handleLoadOrderGenerated - Using file path:', filePath);
+      
       // Upload to Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('load-documents')
-        .upload(`load-orders/${fileName}`, file, {
+        .upload(filePath, file, {
           contentType: 'application/pdf',
           upsert: false
         });
