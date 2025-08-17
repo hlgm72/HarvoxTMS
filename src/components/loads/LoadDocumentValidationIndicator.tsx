@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle, AlertCircle, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle, AlertCircle, XCircle, FileText, Receipt } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useLoadDocumentValidation } from "@/hooks/useLoadDocumentValidation";
@@ -86,19 +86,58 @@ export function LoadDocumentValidationIndicator({
     ? "No se puede marcar como entregada sin documentos requeridos"
     : `Faltan documentos requeridos: ${abbreviatedMissingDocs}`;
 
+  // Determinar el ícono específico según los documentos faltantes
+  const getIcon = () => {
+    if (isDeliveryBlocked) {
+      return <XCircle className="h-4 w-4 text-red-600" />;
+    }
+    
+    const missingDocs = validation.missingRequiredDocuments;
+    
+    // Si falta solo RC
+    if (missingDocs.length === 1 && missingDocs.includes('rate_confirmation')) {
+      return <Receipt className="h-4 w-4 text-orange-600" />;
+    }
+    
+    // Si falta solo POD
+    if (missingDocs.length === 1 && missingDocs.includes('pod')) {
+      return <FileText className="h-4 w-4 text-orange-600" />;
+    }
+    
+    // Si faltan múltiples documentos, usar ícono genérico
+    return <AlertCircle className="h-4 w-4 text-orange-600" />;
+  };
+
+  const getIconBadge = () => {
+    if (isDeliveryBlocked) {
+      return <XCircle className="h-3 w-3 mr-1" />;
+    }
+    
+    const missingDocs = validation.missingRequiredDocuments;
+    
+    // Si falta solo RC
+    if (missingDocs.length === 1 && missingDocs.includes('rate_confirmation')) {
+      return <Receipt className="h-3 w-3 mr-1" />;
+    }
+    
+    // Si falta solo POD
+    if (missingDocs.length === 1 && missingDocs.includes('pod')) {
+      return <FileText className="h-3 w-3 mr-1" />;
+    }
+    
+    // Si faltan múltiples documentos, usar ícono genérico
+    return <AlertCircle className="h-3 w-3 mr-1" />;
+  };
+
   if (compact) {
     return (
       <TooltipProvider delayDuration={300}>
         <Tooltip>
-          <TooltipTrigger asChild>
-               <span className="inline-flex">
-                 {isDeliveryBlocked ? (
-                   <XCircle className="h-4 w-4 text-red-600" />
-                 ) : (
-                   <AlertCircle className="h-4 w-4 text-orange-600" />
-                 )}
-               </span>
-          </TooltipTrigger>
+            <TooltipTrigger asChild>
+              <span className="inline-flex">
+                {getIcon()}
+              </span>
+            </TooltipTrigger>
           <TooltipContent side="bottom" align="center" className="z-50 max-w-xs">
             <p>{warningMessage}</p>
           </TooltipContent>
@@ -116,11 +155,7 @@ export function LoadDocumentValidationIndicator({
           : "bg-orange-50 text-orange-700 border-orange-200"
       }
     >
-       {isDeliveryBlocked ? (
-         <XCircle className="h-3 w-3 mr-1" />
-       ) : (
-         <AlertCircle className="h-3 w-3 mr-1" />
-       )}
+      {getIconBadge()}
       {isDeliveryBlocked ? "Entrega bloqueada" : "Docs. pendientes"}
     </Badge>
   );
