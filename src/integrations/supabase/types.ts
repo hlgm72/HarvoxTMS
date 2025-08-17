@@ -2962,8 +2962,16 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: boolean
       }
+      can_access_driver_sensitive_data: {
+        Args: { driver_user_id_param: string }
+        Returns: boolean
+      }
       can_access_load: {
         Args: { load_id_param: string }
+        Returns: boolean
+      }
+      can_access_owner_details: {
+        Args: { company_id_param: string }
         Returns: boolean
       }
       can_access_sensitive_company_data: {
@@ -3202,13 +3210,15 @@ export type Database = {
         Returns: Json
       }
       get_companies_basic_info: {
-        Args: Record<PropertyKey, never> | { company_id_filter?: string }
+        Args: Record<PropertyKey, never> | { target_company_id?: string }
         Returns: {
           city: string
           created_at: string
           email: string
           id: string
           logo_url: string
+          max_users: number
+          max_vehicles: number
           name: string
           phone: string
           plan_type: string
@@ -3220,7 +3230,7 @@ export type Database = {
         }[]
       }
       get_companies_financial_data: {
-        Args: { company_id_filter?: string }
+        Args: { target_company_id: string }
         Returns: {
           city: string
           contract_start_date: string
@@ -3493,6 +3503,10 @@ export type Database = {
         }
         Returns: Json
       }
+      log_driver_data_access: {
+        Args: { access_type_param: string; driver_user_id_param: string }
+        Returns: undefined
+      }
       log_health_check: {
         Args: {
           acid_functions_status_param?: boolean
@@ -3506,6 +3520,10 @@ export type Database = {
           storage_status_param?: boolean
         }
         Returns: Json
+      }
+      log_owner_data_access: {
+        Args: { access_type_param: string; company_id_param: string }
+        Returns: undefined
       }
       log_sensitive_company_access: {
         Args: { access_type_param: string; company_id_param: string }

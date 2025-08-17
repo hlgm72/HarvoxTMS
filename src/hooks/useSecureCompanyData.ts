@@ -57,41 +57,32 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
     queryKey: ['secure_company_data', companyId, requireFinancialAccess, selectedCompany?.role],
     queryFn: async () => {
       if (requireFinancialAccess && canAccessFinancialData) {
-        // Log access to sensitive financial data
-        if (companyId) {
-          await supabase.rpc('log_company_data_access', {
-            company_id_param: companyId,
-            access_type_param: 'financial_data_view',
-            action_param: 'view'
-          });
-        }
-        
-        // Use RPC function for financial data
+        // Use new secure RPC function for financial data with enhanced logging
         const { data, error } = await supabase
           .rpc('get_companies_financial_data', { 
-            company_id_filter: companyId || null 
+            target_company_id: companyId || null 
           });
 
         if (error) throw error;
         
         if (companyId) {
-          return data as unknown as CompanyFinancial || null;
+          return data?.[0] as CompanyFinancial || null;
         } else {
-          return (data as unknown as CompanyFinancial[]) || [];
+          return (data as CompanyFinancial[]) || [];
         }
       } else {
-        // Use basic data RPC function for non-financial access
+        // Use new secure RPC function for basic data with enhanced access control
         const { data, error } = await supabase
           .rpc('get_companies_basic_info', { 
-            company_id_filter: companyId || null 
+            target_company_id: companyId || null 
           });
 
         if (error) throw error;
         
         if (companyId) {
-          return data as unknown as CompanyPublic || null;
+          return data?.[0] as CompanyPublic || null;
         } else {
-          return (data as unknown as CompanyPublic[]) || [];
+          return (data as CompanyPublic[]) || [];
         }
       }
     },
@@ -120,27 +111,18 @@ export const useCompanyFinancialData = (companyId?: string) => {
         throw new Error('Insufficient permissions to access financial data');
       }
 
-      // Log access to sensitive financial data
-      if (companyId) {
-        await supabase.rpc('log_company_data_access', {
-          company_id_param: companyId,
-          access_type_param: 'financial_data_direct',
-          action_param: 'view'
-        });
-      }
-      
-      // Use RPC function for financial data
+      // Use new secure RPC function for financial data with enhanced logging and permission checks
       const { data, error } = await supabase
         .rpc('get_companies_financial_data', { 
-          company_id_filter: companyId || null 
+          target_company_id: companyId || null 
         });
 
       if (error) throw error;
       
       if (companyId) {
-        return data as unknown as CompanyFinancial || null;
+        return data?.[0] as CompanyFinancial || null;
       } else {
-        return (data as unknown as CompanyFinancial[]) || [];
+        return (data as CompanyFinancial[]) || [];
       }
     },
     enabled: !roleLoading && !!selectedCompany && canAccessFinancialData,
@@ -157,18 +139,18 @@ export const useCompanyPublicData = (companyId?: string) => {
   return useQuery({
     queryKey: ['company_public_data', companyId, selectedCompany?.role],
     queryFn: async () => {
-      // Use basic data RPC function
+      // Use new secure RPC function for basic data with enhanced access control
       const { data, error } = await supabase
         .rpc('get_companies_basic_info', { 
-          company_id_filter: companyId || null 
+          target_company_id: companyId || null 
         });
 
       if (error) throw error;
       
       if (companyId) {
-        return data as unknown as CompanyPublic || null;
+        return data?.[0] as CompanyPublic || null;
       } else {
-        return (data as unknown as CompanyPublic[]) || [];
+        return (data as CompanyPublic[]) || [];
       }
     },
     enabled: !roleLoading && !!selectedCompany,
