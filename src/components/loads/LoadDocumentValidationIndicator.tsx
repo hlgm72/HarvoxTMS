@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useLoadDocumentValidation } from "@/hooks/useLoadDocumentValidation";
@@ -91,9 +91,13 @@ export function LoadDocumentValidationIndicator({
       <TooltipProvider delayDuration={300}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className="inline-flex">
-              <AlertTriangle className={`h-4 w-4 ${isDeliveryBlocked ? 'text-red-600' : 'text-orange-600'}`} />
-            </span>
+               <span className="inline-flex">
+                 {isDeliveryBlocked ? (
+                   <XCircle className="h-4 w-4 text-red-600" />
+                 ) : (
+                   <AlertCircle className="h-4 w-4 text-orange-600" />
+                 )}
+               </span>
           </TooltipTrigger>
           <TooltipContent side="bottom" align="center" className="z-50 max-w-xs">
             <p>{warningMessage}</p>
@@ -112,7 +116,11 @@ export function LoadDocumentValidationIndicator({
           : "bg-orange-50 text-orange-700 border-orange-200"
       }
     >
-      <AlertTriangle className="h-3 w-3 mr-1" />
+       {isDeliveryBlocked ? (
+         <XCircle className="h-3 w-3 mr-1" />
+       ) : (
+         <AlertCircle className="h-3 w-3 mr-1" />
+       )}
       {isDeliveryBlocked ? "Entrega bloqueada" : "Docs. pendientes"}
     </Badge>
   );
