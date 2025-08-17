@@ -350,22 +350,32 @@ export function LoadDocumentsSection({
   };
 
   const handleRemoveDocument = async (documentId: string) => {
+    console.log('🗑️ handleRemoveDocument - Starting deletion for document ID:', documentId);
     setRemovingDocuments(prev => new Set([...prev, documentId]));
     
     try {
       const document = documents.find(doc => doc.id === documentId);
-      if (!document) return;
+      if (!document) {
+        console.log('❌ handleRemoveDocument - Document not found in local state');
+        return;
+      }
 
+      console.log('📄 handleRemoveDocument - Found document:', document);
+
+      // First, delete from database
+      console.log('🗃️ handleRemoveDocument - Attempting to delete from database...');
       const { error: dbError } = await supabase
         .from('load_documents')
         .delete()
         .eq('id', documentId);
 
       if (dbError) {
-        console.error('Error removing document from database:', dbError);
+        console.error('❌ handleRemoveDocument - Database error:', dbError);
         showError("Error", "No se pudo eliminar el documento");
         return;
       }
+
+      console.log('✅ handleRemoveDocument - Successfully deleted from database');
 
       // Remove file from storage if it exists
       if (document.url && !document.url.startsWith('blob:')) {
