@@ -279,37 +279,44 @@ export function LoadDocumentsSection({
             <div className="flex items-center gap-1 pt-1 flex-wrap">
               {existingDoc ? (
                 <>
-                  <Button variant="outline" size="sm" className="h-7 text-xs" onClick={async () => {
-                    try {
-                      if (existingDoc.url.startsWith('blob:')) {
-                        window.open(existingDoc.url, '_blank');
-                        return;
-                      }
-                      if (existingDoc.url.includes('supabase.co/storage/v1/object/public/')) {
-                        window.open(existingDoc.url, '_blank');
-                        return;
-                      }
-                      let storageFilePath = existingDoc.url;
-                      if (existingDoc.url.includes('supabase.co/storage/v1/object/')) {
-                        const parts = existingDoc.url.split('/load-documents/');
-                        if (parts.length > 1) {
-                          storageFilePath = parts[1];
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    disabled={isRemoving} 
+                    title="Ver documento" 
+                    className="h-7 text-xs"
+                    onClick={async () => {
+                      try {
+                        if (existingDoc.url.startsWith('blob:')) {
+                          window.open(existingDoc.url, '_blank');
+                          return;
                         }
+                        if (existingDoc.url.includes('supabase.co/storage/v1/object/public/')) {
+                          window.open(existingDoc.url, '_blank');
+                          return;
+                        }
+                        let storageFilePath = existingDoc.url;
+                        if (existingDoc.url.includes('supabase.co/storage/v1/object/')) {
+                          const parts = existingDoc.url.split('/load-documents/');
+                          if (parts.length > 1) {
+                            storageFilePath = parts[1];
+                          }
+                        }
+                        const { data: signedUrlData, error: urlError } = await supabase.storage
+                          .from('load-documents')
+                          .createSignedUrl(storageFilePath, 3600);
+                        if (urlError) {
+                          showError("Error", "No se pudo generar el enlace para ver el documento");
+                          return;
+                        }
+                        if (signedUrlData?.signedUrl) {
+                          window.open(signedUrlData.signedUrl, '_blank');
+                        }
+                      } catch (error) {
+                        showError("Error", "No se pudo abrir el documento");
                       }
-                      const { data: signedUrlData, error: urlError } = await supabase.storage
-                        .from('load-documents')
-                        .createSignedUrl(storageFilePath, 3600);
-                      if (urlError) {
-                        showError("Error", "No se pudo generar el enlace para ver el documento");
-                        return;
-                      }
-                      if (signedUrlData?.signedUrl) {
-                        window.open(signedUrlData.signedUrl, '_blank');
-                      }
-                    } catch (error) {
-                      showError("Error", "No se pudo abrir el documento");
-                    }
-                  }} disabled={isRemoving} title="Ver documento" className="h-7 w-7 p-0">
+                    }}
+                  >
                     <Eye className="h-3 w-3" />
                   </Button>
                   <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={async () => {
