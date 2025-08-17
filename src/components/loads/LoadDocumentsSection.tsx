@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { FileText, Upload, Download, Trash2, FileCheck, Plus, Eye, RotateCcw } from "lucide-react";
 import { GenerateLoadOrderDialog } from "./GenerateLoadOrderDialog";
+import { LoadDocumentValidationIndicator } from "./LoadDocumentValidationIndicator";
 import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
 import { useQueryClient } from "@tanstack/react-query";
@@ -1013,8 +1014,17 @@ export function LoadDocumentsSection({
         }}>
           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>
-                Documentos de la Carga {loadData?.load_number ? `#${loadData.load_number}` : ''}
+              <DialogTitle className="flex items-center gap-2">
+                <span>
+                  Documentos de la Carga {loadData?.load_number ? `#${loadData.load_number}` : ''}
+                </span>
+                {loadData?.id && (
+                  <LoadDocumentValidationIndicator 
+                    loadId={loadData.id} 
+                    loadStatus={loadData.status || 'pending'}
+                    compact={true}
+                  />
+                )}
               </DialogTitle>
             </DialogHeader>
             {renderDocumentManagement()}
