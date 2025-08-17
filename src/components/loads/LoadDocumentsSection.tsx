@@ -378,7 +378,7 @@ export function LoadDocumentsSection({
       const blob = await response.blob();
       
       // Create file from blob
-      const fileName = `load-order-${loadData.load_number}-${Date.now()}.pdf`;
+      const fileName = `${loadData.load_number}_Load_Order.pdf`;
       const file = new File([blob], fileName, { type: 'application/pdf' });
       
       // Create proper file path following the same structure as other documents
