@@ -3,11 +3,22 @@ import { FileText, Image as ImageIcon } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '@/integrations/supabase/client';
 
-// Configure PDF.js worker using the recommended approach for react-pdf v10+
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
-).toString();
+// Configure PDF.js worker using multiple approaches to ensure it works
+console.log('🔧 DocumentPreview: Configuring PDF.js worker');
+
+// Method 1: Use the recommended approach for react-pdf v10+
+try {
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.mjs',
+    import.meta.url,
+  ).toString();
+  console.log('✅ DocumentPreview: Worker configured with .mjs file:', pdfjs.GlobalWorkerOptions.workerSrc);
+} catch (error) {
+  console.warn('⚠️ DocumentPreview: Failed to configure .mjs worker, trying fallback:', error);
+  // Fallback to CDN approach
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
+  console.log('✅ DocumentPreview: Fallback worker configured:', pdfjs.GlobalWorkerOptions.workerSrc);
+}
 
 interface DocumentPreviewProps {
   documentUrl: string;
@@ -121,6 +132,18 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     }
 
     if (fileType === 'pdf') {
+      // Temporarily disable PDF preview to avoid worker issues
+      return (
+        <div className="flex flex-col items-center justify-center h-full bg-muted/20">
+          <FileText className="h-8 w-8 text-muted-foreground mb-1" />
+          <div className="text-xs text-muted-foreground text-center">
+            Vista previa PDF temporalmente deshabilitada
+          </div>
+        </div>
+      );
+      
+      /* 
+      // Re-enable this when PDF worker is fixed
       return (
         <div className="w-full h-full bg-white rounded overflow-hidden">
           <Document
@@ -141,6 +164,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
           </Document>
         </div>
       );
+      */
     }
 
     return (
