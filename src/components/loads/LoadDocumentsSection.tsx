@@ -875,42 +875,15 @@ export function LoadDocumentsSection({
                   size="sm"
                   onClick={async () => {
                     try {
-                      // Check if file exists in storage first
-                      const urlPath = new URL(existingDoc.url).pathname;
-                      const filePath = urlPath.split('/load-documents/')[1];
-                      if (filePath) {
-                        const { data: fileList, error: listError } = await supabase.storage
-                          .from('load-documents')
-                          .list(filePath.split('/').slice(0, -1).join('/') || '', {
-                            search: filePath.split('/').pop()
-                          });
-
-                        if (listError || !fileList || fileList.length === 0) {
-                          showError("Error", "El archivo ya no existe en el servidor. Considera eliminar este registro.");
-                          return;
-                        }
-                      }
-                      
                       // Check if this is a blob URL (temporary document)
                       if (existingDoc.url.startsWith('blob:')) {
                         window.open(existingDoc.url, '_blank');
                         return;
                       }
 
-                      // Extract storage path from URL with robust parsing
+                      // The existingDoc.url is already a storage path, use it directly
                       let storageFilePath = existingDoc.url;
-                      console.log('🔍 LoadDocumentsSection - Original URL:', existingDoc.url);
-                      
-                      // Handle different URL formats
-                      if (existingDoc.url.includes('supabase.co/storage/v1/object/')) {
-                        // Extract everything after the bucket name
-                        const parts = existingDoc.url.split('/load-documents/');
-                        if (parts.length > 1) {
-                          storageFilePath = parts[1];
-                        }
-                      }
-                      
-                      console.log('🔍 LoadDocumentsSection - Final storage path to use:', storageFilePath);
+                      console.log('🔍 LoadDocumentsSection - Original storage path:', existingDoc.url);
 
                       // Generate signed URL for private bucket
                       const { data: signedUrlData, error: urlError } = await supabase.storage
@@ -924,12 +897,12 @@ export function LoadDocumentsSection({
                       }
 
                       if (signedUrlData?.signedUrl) {
+                        console.log('✅ LoadDocumentsSection - Opening signed URL:', signedUrlData.signedUrl);
                         window.open(signedUrlData.signedUrl, '_blank');
                       }
                     } catch (error) {
-                      console.error('Error checking file existence:', error);
-                      // Fallback to opening URL anyway
-                      window.open(existingDoc.url, '_blank');
+                      console.error('Error opening document:', error);
+                      showError("Error", "No se pudo abrir el documento");
                     }
                   }}
                   disabled={isRemoving}
