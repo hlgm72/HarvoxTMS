@@ -1114,7 +1114,14 @@ export function LoadDocumentsSection({
                       size="sm"
                       onClick={async () => {
                         try {
-                          // Extract file path from URL for private bucket
+                          // Check if this is a temporary document (blob URL)
+                          if (doc.url.startsWith('blob:')) {
+                            // For temporary documents, open the blob URL directly
+                            window.open(doc.url, '_blank');
+                            return;
+                          }
+                          
+                          // For storage documents, use signed URL
                           const urlPath = new URL(doc.url).pathname;
                           const filePath = urlPath.split('/load-documents/')[1];
                           
@@ -1153,7 +1160,26 @@ export function LoadDocumentsSection({
                       size="sm"
                       onClick={async () => {
                         try {
-                          // Extract file path from URL for private bucket
+                          // Check if this is a temporary document (blob URL)
+                          if (doc.url.startsWith('blob:')) {
+                            // For temporary documents, download the blob directly
+                            const response = await fetch(doc.url);
+                            const blob = await response.blob();
+                            const blobUrl = window.URL.createObjectURL(blob);
+                            
+                            const link = document.createElement('a');
+                            link.href = blobUrl;
+                            link.download = doc.fileName;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            
+                            window.URL.revokeObjectURL(blobUrl);
+                            showSuccess("Descarga iniciada", `${doc.fileName} se está descargando`);
+                            return;
+                          }
+                          
+                          // For storage documents, use signed URL
                           const urlPath = new URL(doc.url).pathname;
                           const filePath = urlPath.split('/load-documents/')[1];
                           
