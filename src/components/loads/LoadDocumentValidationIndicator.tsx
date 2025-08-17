@@ -37,10 +37,12 @@ export function LoadDocumentValidationIndicator({
   if (!hasWarnings) {
     if (compact) {
       return (
-        <TooltipProvider>
+        <TooltipProvider delayDuration={300}>
           <Tooltip>
-            <TooltipTrigger>
-              <CheckCircle className="h-4 w-4 text-green-600" />
+            <TooltipTrigger asChild>
+              <span className="inline-flex">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+              </span>
             </TooltipTrigger>
             <TooltipContent side="bottom" align="center" className="z-50">
               <p>Todos los documentos requeridos están presentes</p>
@@ -64,10 +66,12 @@ export function LoadDocumentValidationIndicator({
 
   if (compact) {
     return (
-      <TooltipProvider>
+      <TooltipProvider delayDuration={300}>
         <Tooltip>
-          <TooltipTrigger>
-            <AlertTriangle className={`h-4 w-4 ${isDeliveryBlocked ? 'text-red-600' : 'text-orange-600'}`} />
+          <TooltipTrigger asChild>
+            <span className="inline-flex">
+              <AlertTriangle className={`h-4 w-4 ${isDeliveryBlocked ? 'text-red-600' : 'text-orange-600'}`} />
+            </span>
           </TooltipTrigger>
           <TooltipContent side="bottom" align="center" className="z-50 max-w-xs">
             <p>{warningMessage}</p>
