@@ -13,7 +13,7 @@ export const ROLE_CONFIGS: Record<string, RoleConfig> = {
     className: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-700'
   },
   'company_owner': {
-    label: 'Company Owner',
+    label: 'Owner',
     emoji: '👑',
     className: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700'
   },
