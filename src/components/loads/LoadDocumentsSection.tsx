@@ -732,6 +732,29 @@ export function LoadDocumentsSection({
                   <Download className="h-3 w-3 mr-1" />
                   Descargar
                 </Button>
+                <input
+                  type="file"
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) {
+                      handleFileSelect(e, docType.type);
+                    }
+                    e.target.value = '';
+                  }}
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  className="hidden"
+                  id={`replace-${docType.type}`}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById(`replace-${docType.type}`)?.click()}
+                  disabled={isUploading || isRemoving}
+                  className="h-7 text-xs"
+                  title="Reemplazar documento"
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  Reemplazar
+                </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button 
@@ -882,6 +905,29 @@ export function LoadDocumentsSection({
                     >
                       <Download className="h-3 w-3 mr-1" />
                       Descargar
+                    </Button>
+                    <input
+                      type="file"
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) {
+                          // For additional docs, we'll handle replacement similarly
+                          handleFileSelect(e, 'bol'); // Using 'bol' as fallback type
+                        }
+                        e.target.value = '';
+                      }}
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                      className="hidden"
+                      id={`replace-additional-${doc.id}`}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => document.getElementById(`replace-additional-${doc.id}`)?.click()}
+                      className="h-7 text-xs"
+                      title="Reemplazar documento"
+                    >
+                      <RotateCcw className="h-3 w-3 mr-1" />
+                      Reemplazar
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
