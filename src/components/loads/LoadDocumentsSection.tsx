@@ -479,8 +479,20 @@ export function LoadDocumentsSection({
       }
 
       if (!documentData) {
-        console.warn('⚠️ LoadDocumentsSection - Document not found for removal:', documentId);
-        showError("Error", "El documento ya no existe o fue eliminado");
+        console.warn('⚠️ LoadDocumentsSection - Document not found in database (orphaned record):', documentId);
+        console.log('🧹 LoadDocumentsSection - Cleaning up orphaned record from local state');
+        
+        // Remove orphaned record from local state
+        const updatedDocuments = documents.filter(doc => doc.id !== documentId);
+        console.log('📝 LoadDocumentsSection - Removing orphaned record. Before:', documents.length, 'After:', updatedDocuments.length);
+        setDocuments(updatedDocuments);
+        onDocumentsChange?.(updatedDocuments);
+
+        // Invalidate queries and notify context
+        queryClient.invalidateQueries({ queryKey: ['load-documents', loadId] });
+        notifyDocumentChange();
+
+        showSuccess("Registro eliminado", "El registro huérfano ha sido eliminado de la lista");
         return;
       }
 
