@@ -11,7 +11,8 @@ import { formatCurrency } from "@/lib/utils";
 import { formatDateTime } from '@/lib/dateFormatting';
 import { useLoads } from "@/hooks/useLoads";
 import { useDeleteLoad } from "@/hooks/useDeleteLoad";
-import { useUpdateLoadStatus } from "@/hooks/useUpdateLoadStatus";
+import { useUpdateLoadStatusWithValidation } from "@/hooks/useUpdateLoadStatusWithValidation";
+import { useLoadDocumentValidation } from "@/hooks/useLoadDocumentValidation";
 import { PeriodFilterValue } from "./PeriodFilter";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
 import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
@@ -21,6 +22,7 @@ import { CreateLoadDialog } from "./CreateLoadDialog";
 import { LoadViewDialog } from "./LoadViewDialog";
 import { LoadDocumentsList } from "./LoadDocumentsList";
 import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
+import { LoadDocumentValidationIndicator } from "./LoadDocumentValidationIndicator";
 
 // Componente de skeleton para cargas
 const LoadSkeleton = () => (
@@ -179,7 +181,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
   //   error: error?.message || 'No error' 
   // });
   const deleteLoadMutation = useDeleteLoad();
-  const updateStatusMutation = useUpdateLoadStatus();
+  const updateStatusMutation = useUpdateLoadStatusWithValidation();
   
   const [reassignmentDialog, setReassignmentDialog] = useState<{
     isOpen: boolean;
@@ -231,8 +233,8 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
     }
   };
 
-  const getStatusActions = (currentStatus: string) => {
-    const actions: { status: string; label: string; icon: React.ReactNode; disabled?: boolean }[] = [];
+  const getStatusActions = (currentStatus: string, loadId: string) => {
+    const actions: { status: string; label: string; icon: React.ReactNode; disabled?: boolean; warning?: string }[] = [];
     
     switch (currentStatus) {
       case 'draft':
@@ -366,6 +368,11 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   >
                     {statusLabels[load.status as keyof typeof statusLabels]}
                   </Badge>
+                  <LoadDocumentValidationIndicator 
+                    loadId={load.id} 
+                    loadStatus={load.status}
+                    compact={true}
+                  />
                 </div>
               </div>
             </CardHeader>
@@ -489,7 +496,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="bg-background border shadow-lg z-40">
                       {/* Opciones de cambio de estado */}
-                      {getStatusActions(load.status).map((action) => (
+                      {getStatusActions(load.status, load.id).map((action) => (
                         <DropdownMenuItem
                           key={action.status}
                           onClick={() => handleUpdateStatus(load.id, action.status)}
@@ -500,7 +507,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                         </DropdownMenuItem>
                       ))}
                       
-                      {getStatusActions(load.status).length > 0 && (
+                      {getStatusActions(load.status, load.id).length > 0 && (
                         <div className="border-t my-1" />
                       )}
 

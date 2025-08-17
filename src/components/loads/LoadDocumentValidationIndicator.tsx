@@ -1,0 +1,93 @@
+import { AlertTriangle, CheckCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useLoadDocumentValidation } from "@/hooks/useLoadDocumentValidation";
+
+interface LoadDocumentValidationIndicatorProps {
+  loadId: string;
+  loadStatus: string;
+  compact?: boolean;
+}
+
+export function LoadDocumentValidationIndicator({ 
+  loadId, 
+  loadStatus,
+  compact = false 
+}: LoadDocumentValidationIndicatorProps) {
+  const { data: validation, isLoading } = useLoadDocumentValidation(loadId);
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (!validation) {
+    return null;
+  }
+
+  // Solo mostrar validación para cargas que están en progreso o pueden ser marcadas como entregadas
+  const shouldShowValidation = ['assigned', 'in_transit', 'in_progress'].includes(loadStatus);
+  
+  if (!shouldShowValidation) {
+    return null;
+  }
+
+  const hasWarnings = validation.missingRequiredDocuments.length > 0;
+  const isDeliveryBlocked = !validation.canMarkAsDelivered && ['in_transit', 'in_progress'].includes(loadStatus);
+
+  if (!hasWarnings) {
+    if (compact) {
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <CheckCircle className="h-4 w-4 text-green-600" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Todos los documentos requeridos están presentes</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+    
+    return (
+      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+        <CheckCircle className="h-3 w-3 mr-1" />
+        Documentos OK
+      </Badge>
+    );
+  }
+
+  const warningMessage = isDeliveryBlocked 
+    ? "No se puede marcar como entregada sin Rate Confirmation"
+    : `Faltan documentos requeridos: ${validation.missingRequiredDocuments.join(', ')}`;
+
+  if (compact) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <AlertTriangle className={`h-4 w-4 ${isDeliveryBlocked ? 'text-red-600' : 'text-orange-600'}`} />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{warningMessage}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return (
+    <Badge 
+      variant="outline" 
+      className={
+        isDeliveryBlocked 
+          ? "bg-red-50 text-red-700 border-red-200"
+          : "bg-orange-50 text-orange-700 border-orange-200"
+      }
+    >
+      <AlertTriangle className="h-3 w-3 mr-1" />
+      {isDeliveryBlocked ? "Entrega bloqueada" : "Docs. pendientes"}
+    </Badge>
+  );
+}
