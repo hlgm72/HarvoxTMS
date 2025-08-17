@@ -800,7 +800,7 @@ export function LoadDocumentsSection({
                 setShowGenerateLoadOrder(true);
               }}
               disabled={uploading !== null || !canGenerateLoadOrder(loadData)}
-              variant="outline"
+              className="bg-orange-500 hover:bg-orange-600 text-white border-orange-500 hover:border-orange-600"
               title={canGenerateLoadOrder(loadData) ? "Generar Load Order" : "Faltan datos de la carga o paradas para generar el Load Order"}
             >
               <FileText className="h-4 w-4 mr-2" />
