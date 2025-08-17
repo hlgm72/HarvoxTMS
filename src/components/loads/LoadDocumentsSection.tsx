@@ -622,7 +622,7 @@ export function LoadDocumentsSection({
                       }
                       e.target.value = '';
                     }}
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    accept=".pdf"
                     className="hidden"
                     id={`replace-${docType.type}`}
                   />
@@ -691,7 +691,7 @@ export function LoadDocumentsSection({
                       }
                       e.target.value = '';
                     }}
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    accept=".pdf"
                     className="hidden"
                     id={`upload-${docType.type}`}
                   />
