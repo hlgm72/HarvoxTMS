@@ -134,14 +134,17 @@ export function LoadDocumentsList({
 
   const handleDownload = async (doc: LoadDocument) => {
     try {
-      // Handle both storage paths and full URLs for backwards compatibility
+      // Extract storage path from URL with robust parsing
       let filePath = doc.file_url;
       console.log('🔍 LoadDocumentsList - Original URL:', doc.file_url);
       
-      if (doc.file_url.includes('/load-documents/')) {
-        // Extract storage path from full URL
-        filePath = doc.file_url.split('/load-documents/')[1];
-        console.log('🔍 LoadDocumentsList - Extracted storage path:', filePath);
+      // Handle different URL formats
+      if (doc.file_url.includes('supabase.co/storage/v1/object/')) {
+        // Extract everything after the bucket name
+        const parts = doc.file_url.split('/load-documents/');
+        if (parts.length > 1) {
+          filePath = parts[1];
+        }
       }
       
       console.log('🔍 LoadDocumentsList - Final storage path to use:', filePath);
@@ -177,12 +180,20 @@ export function LoadDocumentsList({
 
   const handleView = async (document: LoadDocument) => {
     try {
-      // Handle both storage paths and full URLs for backwards compatibility
+      // Extract storage path from URL with robust parsing
       let filePath = document.file_url;
-      if (document.file_url.includes('/load-documents/')) {
-        // Extract storage path from full URL
-        filePath = document.file_url.split('/load-documents/')[1];
+      console.log('🔍 LoadDocumentsList - Original view URL:', document.file_url);
+      
+      // Handle different URL formats
+      if (document.file_url.includes('supabase.co/storage/v1/object/')) {
+        // Extract everything after the bucket name
+        const parts = document.file_url.split('/load-documents/');
+        if (parts.length > 1) {
+          filePath = parts[1];
+        }
       }
+      
+      console.log('🔍 LoadDocumentsList - Final view storage path to use:', filePath);
       
       // Generate signed URL for private bucket
       const { data: signedUrlData, error: urlError } = await supabase.storage
