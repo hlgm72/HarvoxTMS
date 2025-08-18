@@ -617,7 +617,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                                const stopTypeText = currentStop.stop_type === 'pickup' ? 
                                  t('dashboard:loads.stop_types.pickup') : 
                                  t('dashboard:loads.stop_types.delivery');
-                               return ` (${t('common:stop', { defaultValue: 'Parada' })} ${currentStop.stop_number} (${stopTypeText}))`;
+                               return ` (${stopTypeText} #${currentStop.stop_number})`;
                              }
                            }
                            return '';
