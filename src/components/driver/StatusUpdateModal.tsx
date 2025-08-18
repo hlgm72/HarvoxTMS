@@ -51,7 +51,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
 }) => {
   const { t } = useTranslation(['dashboard']);
   const [etaDate, setEtaDate] = useState('');
-  const [etaTime, setEtaTime] = useState('');
+  const [etaTime, setEtaTime] = useState<string | undefined>(undefined);
   const [notes, setNotes] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [companyId, setCompanyId] = useState<string | null>(null);
@@ -107,7 +107,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     
     // Reset form
     setEtaDate('');
-    setEtaTime('');
+    setEtaTime(undefined);
     setNotes('');
     setSelectedFile(null);
   };
@@ -115,7 +115,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   const handleClose = () => {
     // Reset form
     setEtaDate('');
-    setEtaTime('');
+    setEtaTime(undefined);
     setNotes('');
     setSelectedFile(null);
     onClose();
