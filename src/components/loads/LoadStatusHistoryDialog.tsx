@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Clock, User, MessageSquare, MapPin, AlertCircle } from "lucide-react";
+import { Clock, User, MessageSquare, AlertCircle } from "lucide-react";
 import { useLoadStatusHistory } from "@/hooks/useLoadStatusHistory";
 import { formatDateTimeAuto } from "@/lib/dateFormatting";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -107,6 +107,11 @@ export function LoadStatusHistoryDialog({
                             className={statusColors[entry.new_status] || "bg-muted"}
                           >
                             {statusLabels[entry.new_status] || entry.new_status}
+                            {entry.eta_provided && (
+                              <span className="ml-1 font-normal">
+                                ({entry.new_status.includes('en_route') ? 'ETA: ' : ''}{formatDateTimeAuto(entry.eta_provided)})
+                              </span>
+                            )}
                           </Badge>
                           {index === 0 && (
                             <Badge variant="secondary" className="text-xs">
@@ -137,13 +142,6 @@ export function LoadStatusHistoryDialog({
                           </div>
                         )}
 
-                        {/* ETA Information */}
-                        {entry.eta_provided && (
-                          <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                            <MapPin className="h-3 w-3" />
-                            ETA: {formatDateTimeAuto(entry.eta_provided)}
-                          </div>
-                        )}
                       </div>
                     </div>
                   </CardContent>
