@@ -318,7 +318,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
           <TabsTrigger value="completed">
             Completadas
             {completedLoads.length > 0 && (
-              <Badge variant="outline" className="ml-2 h-5 w-5 rounded-full p-0 text-xs">
+              <Badge variant="outline" className="ml-2 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center">
                 {completedLoads.length}
               </Badge>
             )}
