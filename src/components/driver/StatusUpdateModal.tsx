@@ -51,7 +51,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
 }) => {
   const { t } = useTranslation(['dashboard']);
   const [etaDate, setEtaDate] = useState('');
-  const [etaTime, setEtaTime] = useState<string | undefined>(undefined);
+  const [etaTime, setEtaTime] = useState('');
   const [notes, setNotes] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [companyId, setCompanyId] = useState<string | null>(null);
@@ -107,7 +107,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     
     // Reset form
     setEtaDate('');
-    setEtaTime(undefined);
+    setEtaTime('');
     setNotes('');
     setSelectedFile(null);
   };
@@ -115,7 +115,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   const handleClose = () => {
     // Reset form
     setEtaDate('');
-    setEtaTime(undefined);
+    setEtaTime('');
     setNotes('');
     setSelectedFile(null);
     onClose();
@@ -206,15 +206,10 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
       const now = new Date();
       setEtaDate(format(now, 'yyyy-MM-dd'));
       
-      // Si no es ETA, establecer la hora actual por defecto
-      if (timeFieldInfo.defaultToNow && !etaTime) {
-        const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        setEtaTime(`${hours}:${minutes}`);
-      }
+      // Para ETA, no establecer hora por defecto para mostrar placeholder
+      // Para actual time, no auto-llenar para permitir que el usuario vea el placeholder primero
     }
-  }, [isOpen, etaDate, etaTime, timeFieldInfo.defaultToNow]);
+  }, [isOpen, etaDate]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -262,10 +257,10 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                 <Label htmlFor="eta-time" className="text-xs text-muted-foreground">
                   {t('dashboard:loads.status_update_modal.time_label')}
                 </Label>
-                <Select
-                  value={etaTime}
-                  onValueChange={setEtaTime}
-                >
+                 <Select
+                   value={etaTime || ""}
+                   onValueChange={setEtaTime}
+                 >
                   <SelectTrigger className="text-sm">
                     <SelectValue placeholder={t('dashboard:loads.status_update_modal.time_placeholder')} />
                   </SelectTrigger>
