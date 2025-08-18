@@ -25,7 +25,7 @@ import { useLoads } from "@/hooks/useLoads";
 import { useUpdateLoadStatus } from "@/hooks/useUpdateLoadStatus";
 import { useFleetNotifications } from "@/components/notifications";
 import { StatusUpdateModal } from './StatusUpdateModal';
-import { formatDateSafe, getGlobalLanguage, formatInternationalized } from '@/lib/dateFormatting';
+import { formatDateSafe, formatInternationalized } from '@/lib/dateFormatting';
 import { useNavigationMaps } from '@/hooks/useNavigationMaps';
 import { useLoadStopsNavigation } from '@/hooks/useLoadStopsNavigation';
 import { Loader2 } from 'lucide-react';
@@ -158,7 +158,7 @@ function CurrentStopInfo({ load }: { load: Load }) {
 }
 
 export function LoadsManager({ className, dashboardMode = false }: LoadsManagerProps) {
-  const { t } = useTranslation(['common', 'fleet', 'dashboard']);
+  const { t, i18n } = useTranslation(['common', 'fleet', 'dashboard']);
   const { user } = useAuth();
   const { showSuccess } = useFleetNotifications();
   const updateLoadStatus = useUpdateLoadStatus();
@@ -482,8 +482,8 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                         <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
                           {(() => {
                             const firstStop = load.stops!.find(stop => stop.stop_type === 'pickup') || load.stops![0];
-                            if (firstStop?.scheduled_date) {
-                              const language = getGlobalLanguage();
+                             if (firstStop?.scheduled_date) {
+                               const language = i18n.language;
                               const date = new Date(firstStop.scheduled_date);
                               const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
                               const shortDate = formatInternationalized(date, pattern);
