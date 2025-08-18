@@ -78,7 +78,7 @@ export const useUpdateLoadStatusWithValidation = () => {
         if (params.eta) {
           // Separar fecha y hora para los nuevos campos
           const etaDate = params.eta.toISOString().split('T')[0];
-          const etaTime = params.eta.toTimeString().split(' ')[0];
+          const etaTime = params.eta.toTimeString().split(' ')[0].substring(0, 5); // Solo HH:mm
           
           stopUpdateData.eta_date = etaDate;
           stopUpdateData.eta_time = etaTime;
