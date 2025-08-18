@@ -30,6 +30,7 @@ import { useNavigationMaps } from '@/hooks/useNavigationMaps';
 import { useLoadStopsNavigation } from '@/hooks/useLoadStopsNavigation';
 import { Loader2 } from 'lucide-react';
 import { LoadDocumentStatusIndicator } from '@/components/loads/LoadDocumentStatusIndicator';
+import { LoadStatusHistoryButton } from '@/components/loads/LoadStatusHistoryButton';
 
 interface Load {
   id: string;
@@ -709,59 +710,66 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                   <Separator />
 
                   {/* Actions */}
-                  <div className="flex gap-2">
-                    {(() => {
-                      const nextStatus = getNextStatus(load.status);
-                      const nextActionText = getNextActionText(load.status);
-                      
-                      if (!nextStatus) return null;
-                      
-                      // Encontrar la parada actual según el estado
-                      const currentStop = load.stops?.find(stop => {
-                        if (load.status === 'assigned' || load.status === 'en_route_pickup') {
-                          return stop.stop_type === 'pickup';
-                        } else if (load.status === 'at_pickup' || load.status === 'loaded' || load.status === 'en_route_delivery') {
-                          return stop.stop_type === 'delivery';
-                        }
-                        return false;
-                      });
-                      
-                      return (
-                        <Button
-                          onClick={() => {
-                            openStatusModal(
-                              load.id, 
-                              nextStatus, 
-                              nextActionText,
-                              currentStop?.id,
-                              currentStop
-                            );
-                          }}
-                          disabled={updateLoadStatus.isPending}
-                          size="sm"
-                          className="flex-1"
-                        >
-                          {updateLoadStatus.isPending ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Actualizando...
-                            </>
-                          ) : (
-                            <>
-                              <MapPin className="mr-2 h-4 w-4" />
-                              {nextActionText}
-                            </>
-                          )}
-                        </Button>
-                      );
-                    })()}
-                    <Button size="sm" variant="outline">
-                      <Phone className="h-4 w-4" />
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      <Route className="h-4 w-4" />
-                    </Button>
-                  </div>
+                   <div className="flex gap-2">
+                     {(() => {
+                       const nextStatus = getNextStatus(load.status);
+                       const nextActionText = getNextActionText(load.status);
+                       
+                       if (!nextStatus) return null;
+                       
+                       // Encontrar la parada actual según el estado
+                       const currentStop = load.stops?.find(stop => {
+                         if (load.status === 'assigned' || load.status === 'en_route_pickup') {
+                           return stop.stop_type === 'pickup';
+                         } else if (load.status === 'at_pickup' || load.status === 'loaded' || load.status === 'en_route_delivery') {
+                           return stop.stop_type === 'delivery';
+                         }
+                         return false;
+                       });
+                       
+                       return (
+                         <Button
+                           onClick={() => {
+                             openStatusModal(
+                               load.id, 
+                               nextStatus, 
+                               nextActionText,
+                               currentStop?.id,
+                               currentStop
+                             );
+                           }}
+                           disabled={updateLoadStatus.isPending}
+                           size="sm"
+                           className="flex-1"
+                         >
+                           {updateLoadStatus.isPending ? (
+                             <>
+                               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                               Actualizando...
+                             </>
+                           ) : (
+                             <>
+                               <MapPin className="mr-2 h-4 w-4" />
+                               {nextActionText}
+                             </>
+                           )}
+                         </Button>
+                       );
+                     })()}
+                     <LoadStatusHistoryButton
+                       loadId={load.id}
+                       loadNumber={load.load_number}
+                       variant="outline"
+                       size="sm"
+                       showText={false}
+                     />
+                     <Button size="sm" variant="outline">
+                       <Phone className="h-4 w-4" />
+                     </Button>
+                     <Button size="sm" variant="outline">
+                       <Route className="h-4 w-4" />
+                     </Button>
+                   </div>
                 </CardContent>
               </Card>
             ))

@@ -24,6 +24,7 @@ import { LoadDocumentsList } from "./LoadDocumentsList";
 import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
 import { LoadDocumentValidationIndicator } from "./LoadDocumentValidationIndicator";
 import { LoadDocumentStatusIndicator } from "./LoadDocumentStatusIndicator";
+import { LoadStatusHistoryButton } from "./LoadStatusHistoryButton";
 
 // Componente de skeleton para cargas
 const LoadSkeleton = () => (
@@ -542,6 +543,23 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                       >
                         <FileText className="h-3 w-3 mr-2" />
                         Gestionar Documentos
+                      </DropdownMenuItem>
+                      
+                      <DropdownMenuItem 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          // The LoadStatusHistoryButton will handle the dialog
+                        }}
+                        className="p-0"
+                      >
+                        <LoadStatusHistoryButton
+                          loadId={load.id}
+                          loadNumber={load.load_number}
+                          variant="ghost"
+                          size="sm"
+                          showText={true}
+                        />
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         onClick={() => setDeleteDialog({ 
