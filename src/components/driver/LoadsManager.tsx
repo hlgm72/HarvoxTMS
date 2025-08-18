@@ -99,9 +99,24 @@ function CurrentStopInfo({ load }: { load: Load }) {
         scheduled_time: stop.scheduled_time,
         eta_date: stop.eta_date,
         eta_time: stop.eta_time,
-        actual_arrival_datetime: stop.actual_arrival_datetime
+        actual_arrival_datetime: stop.actual_arrival_datetime,
+        completion_datetime: stop.completion_datetime
       }
     });
+
+    // Priorizar tiempo de finalización si está disponible
+    if (stop.completion_datetime) {
+      const result = `🏁 Completada: ${formatDateSafe(stop.completion_datetime, 'dd/MM HH:mm')}`;
+      console.log('✅ Showing completion time:', result);
+      return result;
+    }
+
+    // Si hay llegada real, mostrarla
+    if (stop.actual_arrival_datetime) {
+      const result = `✅ Llegó: ${formatDateSafe(stop.actual_arrival_datetime, 'dd/MM HH:mm')}`;
+      console.log('✅ Showing actual arrival:', result);
+      return result;
+    }
 
     // Priorizar ETA si está disponible
     if (stop.eta_date) {
@@ -110,13 +125,6 @@ function CurrentStopInfo({ load }: { load: Load }) {
         result += ` ${stop.eta_time}`;
       }
       console.log('✅ Showing ETA:', result);
-      return result;
-    }
-
-    // Si hay llegada real, mostrarla
-    if (stop.actual_arrival_datetime) {
-      const result = `✅ Llegó: ${formatDateSafe(stop.actual_arrival_datetime, 'dd/MM HH:mm')}`;
-      console.log('✅ Showing actual arrival:', result);
       return result;
     }
 

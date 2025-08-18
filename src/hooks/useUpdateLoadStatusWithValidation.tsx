@@ -76,14 +76,23 @@ export const useUpdateLoadStatusWithValidation = () => {
         };
 
         if (params.eta) {
+          // Separar fecha y hora para los nuevos campos
           const etaDate = params.eta.toISOString().split('T')[0];
           const etaTime = params.eta.toTimeString().split(' ')[0];
+          
           stopUpdateData.eta_date = etaDate;
           stopUpdateData.eta_time = etaTime;
         }
 
         if (params.notes) {
           stopUpdateData.driver_notes = params.notes;
+        }
+
+        // Si el estado es 'delivered' o 'completed', registrar tiempo real
+        if (params.newStatus === 'delivered' || params.newStatus === 'completed') {
+          stopUpdateData.completion_datetime = new Date().toISOString();
+        } else if (params.newStatus === 'in_transit' || params.newStatus === 'arrived') {
+          stopUpdateData.actual_arrival_datetime = new Date().toISOString();
         }
 
         const { error: stopError } = await supabase
@@ -96,6 +105,24 @@ export const useUpdateLoadStatusWithValidation = () => {
           // No lanzamos error para no bloquear la actualización de estado principal
         } else {
           console.log('✅ useUpdateLoadStatusWithValidation - Parada actualizada con ETA/notas');
+        }
+
+        // Registrar en historial si hay cambio de estado específico de parada
+        if (params.newStatus && params.stopId) {
+          const { error: historyError } = await supabase
+            .from('load_status_history')
+            .insert({
+              load_id: params.loadId,
+              stop_id: params.stopId,
+              new_status: params.newStatus,
+              changed_by: user.id,
+              notes: params.notes || `ETA updated for stop`,
+              eta_provided: params.eta?.toISOString()
+            });
+
+          if (historyError) {
+            console.error('❌ Error registrando historial de parada:', historyError);
+          }
         }
       }
 
