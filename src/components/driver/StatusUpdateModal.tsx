@@ -4,9 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { CalendarIcon, Clock } from 'lucide-react';
+import { CalendarIcon, Clock, Upload } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useDocumentUploadFlowACID } from '@/hooks/useDocumentManagementACID';
+import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface StatusUpdateModalProps {
   isOpen: boolean;
@@ -20,6 +23,8 @@ interface StatusUpdateModalProps {
     street_address: string;
   };
   isLoading?: boolean;
+  loadId?: string;
+  isDeliveryStep?: boolean;
 }
 
 export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
@@ -28,11 +33,52 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   onConfirm,
   actionText,
   stopInfo,
-  isLoading = false
+  isLoading = false,
+  loadId,
+  isDeliveryStep = false
 }) => {
   const [etaDate, setEtaDate] = useState('');
   const [etaTime, setEtaTime] = useState('');
   const [notes, setNotes] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [companyId, setCompanyId] = useState<string | null>(null);
+
+  const { mutate: uploadDocument, isPending: isUploading } = useDocumentUploadFlowACID();
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  const handleUploadPOD = () => {
+    if (!selectedFile || !loadId || !companyId) {
+      toast.error('Faltan datos requeridos para subir el documento');
+      return;
+    }
+
+    uploadDocument({
+      file: selectedFile,
+      documentData: {
+        document_type: 'pod',
+        file_name: selectedFile.name,
+        file_size: selectedFile.size,
+        content_type: selectedFile.type,
+        company_id: companyId,
+        load_id: loadId
+      }
+    }, {
+      onSuccess: () => {
+        toast.success('POD subido exitosamente');
+        setSelectedFile(null);
+      },
+      onError: (error) => {
+        console.error('Error uploading POD:', error);
+        toast.error('Error al subir el POD');
+      }
+    });
+  };
 
   const handleConfirm = () => {
     let eta: Date | null = null;
@@ -47,6 +93,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     setEtaDate('');
     setEtaTime('');
     setNotes('');
+    setSelectedFile(null);
   };
 
   const handleClose = () => {
@@ -54,8 +101,39 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     setEtaDate('');
     setEtaTime('');
     setNotes('');
+    setSelectedFile(null);
     onClose();
   };
+
+  // Get company ID for current user
+  React.useEffect(() => {
+    const fetchCompanyId = async () => {
+      if (!isOpen) return;
+      
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data, error } = await supabase
+          .from('user_company_roles')
+          .select('company_id')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .single();
+
+        if (error) {
+          console.error('Error fetching company ID:', error);
+          return;
+        }
+
+        setCompanyId(data.company_id);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchCompanyId();
+  }, [isOpen]);
 
   // Set default date to today
   React.useEffect(() => {
@@ -121,6 +199,40 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
               </div>
             </div>
           </div>
+
+          {/* POD Upload - Only show for delivery step */}
+          {isDeliveryStep && (
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">
+                Subir POD (Proof of Delivery)
+              </Label>
+              <div className="flex items-center gap-3">
+                <Input
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={handleFileChange}
+                  className="text-sm"
+                />
+                {selectedFile && (
+                  <Button
+                    type="button"
+                    onClick={handleUploadPOD}
+                    disabled={isUploading}
+                    size="sm"
+                    className="shrink-0"
+                  >
+                    <Upload className="h-4 w-4 mr-1" />
+                    {isUploading ? "Subiendo..." : "Subir"}
+                  </Button>
+                )}
+              </div>
+              {selectedFile && (
+                <p className="text-xs text-muted-foreground">
+                  Archivo seleccionado: {selectedFile.name}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Notes */}
           <div className="space-y-2">
