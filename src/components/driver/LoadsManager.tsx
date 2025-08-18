@@ -300,7 +300,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
             <div className="flex items-center gap-2">
               <span>{dashboardMode ? "Carga Activa" : "Cargas Asignadas"}</span>
               {!dashboardMode && activeLoads.length > 0 && (
-                <Badge variant="secondary" className="h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center">
+                <Badge variant="outline" className="h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center bg-white text-orange-600 border-orange-200">
                   {activeLoads.length}
                 </Badge>
               )}
