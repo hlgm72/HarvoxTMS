@@ -133,7 +133,7 @@ const getFileExtension = (fileName: string): string => {
 };
 
 export const useCreateLoad = () => {
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
 
@@ -155,15 +155,8 @@ export const useCreateLoad = () => {
         return isNaN(num) ? null : num;
       };
 
-      // Get company_id from user's active role
-      const { data: userRoles } = await supabase
-        .from('user_company_roles')
-        .select('company_id')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .single();
-
-      if (!userRoles?.company_id) {
+      // Get company_id from user's current role
+      if (!userRole?.company_id) {
         throw new Error('No se pudo determinar la empresa del usuario');
       }
 
@@ -184,7 +177,7 @@ export const useCreateLoad = () => {
         factoring_percentage: toNumber(data.factoring_percentage),
         dispatching_percentage: toNumber(data.dispatching_percentage),
         leasing_percentage: toNumber(data.leasing_percentage),
-        company_id: userRoles.company_id
+        company_id: userRole.company_id
       };
 
       // Prepare stops data
