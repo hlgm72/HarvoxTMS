@@ -250,9 +250,14 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                 <Input
                   id="eta-time"
                   type="time"
+                  step="60"
                   value={etaTime}
                   onChange={(e) => setEtaTime(e.target.value)}
                   className="text-sm"
+                  style={{ 
+                    appearance: 'textfield',
+                    WebkitAppearance: 'textfield'
+                  }}
                 />
               </div>
             </div>
