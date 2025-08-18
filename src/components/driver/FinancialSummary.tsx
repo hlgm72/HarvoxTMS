@@ -185,7 +185,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
       />
       
       <Tabs defaultValue="summary" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-3 gap-1">
           <TabsTrigger value="summary">Resumen</TabsTrigger>
           <TabsTrigger value="period">Período</TabsTrigger>
           <TabsTrigger value="fuel">Combustible</TabsTrigger>

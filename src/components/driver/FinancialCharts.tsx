@@ -198,7 +198,7 @@ export function FinancialCharts({ currentPeriodData, className }: FinancialChart
   return (
     <div className={className}>
       <Tabs defaultValue="trend" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-3 gap-1">
           <TabsTrigger value="trend" className="text-xs">
             <TrendingUp className="h-4 w-4 mr-1" />
             Tendencia
