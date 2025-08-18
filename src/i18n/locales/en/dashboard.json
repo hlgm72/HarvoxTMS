@@ -80,10 +80,10 @@
       "delivered": "Delivered"
     },
     "actions": {
-      "assigned": "On my way to pickup",
+      "assigned": "Heading to pickup",
       "en_route_pickup": "Arrived at pickup",
       "at_pickup": "Pickup completed",
-      "loaded": "On my way to delivery",
+      "loaded": "Heading to delivery",
       "en_route_delivery": "Arrived at delivery",
       "at_delivery": "Delivery completed",
       "update_status": "Update Status"
