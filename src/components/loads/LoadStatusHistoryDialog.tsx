@@ -108,17 +108,6 @@ export function LoadStatusHistoryDialog({
                           >
                             {statusLabels[entry.new_status] || entry.new_status}
                           </Badge>
-                          {entry.previous_status && (
-                            <>
-                              <span className="text-muted-foreground text-xs">desde</span>
-                              <Badge 
-                                variant="outline"
-                                className="opacity-60"
-                              >
-                                {statusLabels[entry.previous_status] || entry.previous_status}
-                              </Badge>
-                            </>
-                          )}
                           {index === 0 && (
                             <Badge variant="secondary" className="text-xs">
                               Actual
