@@ -206,10 +206,15 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
       const now = new Date();
       setEtaDate(format(now, 'yyyy-MM-dd'));
       
-      // Para ETA, no establecer hora por defecto para mostrar placeholder
-      // Para actual time, no auto-llenar para permitir que el usuario vea el placeholder primero
+      // Si no es ETA, establecer la hora actual por defecto
+      if (timeFieldInfo.defaultToNow && !etaTime) {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        setEtaTime(`${hours}:${minutes}`);
+      }
     }
-  }, [isOpen, etaDate]);
+  }, [isOpen, etaDate, etaTime, timeFieldInfo.defaultToNow]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
