@@ -1,0 +1,210 @@
+import { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { FileText, Upload, Download, Eye, Trash2, AlertTriangle, CheckCircle, RefreshCw } from "lucide-react";
+import { useLoadDocumentValidation } from '@/hooks/useLoadDocumentValidation';
+import { useLoadWorkStatus } from '@/hooks/useLoadWorkStatus';
+import { LoadDocumentsList } from './LoadDocumentsList';
+import { LoadDocumentStatusIndicator } from './LoadDocumentStatusIndicator';
+import { validateDocumentAction, getDocumentStatusMessage } from '@/utils/loadDocumentValidation';
+
+interface LoadDocumentManagementProps {
+  loadId: string;
+  loadStatus: string;
+  onUploadDocument?: () => void;
+  onRegenerateLoadOrder?: () => void;
+}
+
+export function LoadDocumentManagement({ 
+  loadId, 
+  loadStatus,
+  onUploadDocument,
+  onRegenerateLoadOrder 
+}: LoadDocumentManagementProps) {
+  const { data: validation, isLoading: validationLoading } = useLoadDocumentValidation(loadId);
+  const { data: workStatus, isLoading: workStatusLoading } = useLoadWorkStatus(loadId);
+  
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    documentType?: string;
+  }>({ isOpen: false });
+
+  if (validationLoading || workStatusLoading) {
+    return (
+      <Card>
+        <CardContent className="py-6">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
+            <span className="ml-2">Cargando estado de documentos...</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!validation || !workStatus) {
+    return (
+      <Card>
+        <CardContent className="py-6 text-center text-muted-foreground">
+          No se pudo cargar la información de documentos
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const statusMessage = getDocumentStatusMessage(
+    validation.hasLoadOrder,
+    validation.hasRateConfirmation,
+    workStatus.isInProgress
+  );
+
+  const canUploadRC = true; // Siempre se puede subir RC
+  const canUploadLO = true; // Siempre se puede generar/subir LO
+  const canReplaceRC = workStatus.canReplaceRateConfirmation;
+  const canRegenerateLO = workStatus.canRegenerateLoadOrder;
+
+  return (
+    <div className="space-y-4">
+      {/* Document Status Overview */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Estado de Documentos
+            </CardTitle>
+            <LoadDocumentStatusIndicator loadId={loadId} showDetails={true} />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className={`p-3 rounded-lg border ${
+              statusMessage.type === 'success' ? 'bg-success/10 border-success/20 text-success' :
+              statusMessage.type === 'warning' ? 'bg-warning/10 border-warning/20 text-warning' :
+              'bg-destructive/10 border-destructive/20 text-destructive'
+            }`}>
+              <p className="text-sm font-medium">{statusMessage.message}</p>
+            </div>
+
+            {/* Document Rules Information */}
+            <div className="bg-muted/30 p-3 rounded-lg">
+              <h4 className="font-medium text-sm mb-2">Reglas de Documentos:</h4>
+              <ul className="text-xs text-muted-foreground space-y-1">
+                <li>• Se requiere Rate Confirmation (RC) o Load Order (LO) para comenzar</li>
+                <li>• Load Order tiene prioridad sobre Rate Confirmation</li>
+                <li>• Una vez iniciado el trabajo, los documentos se protegen</li>
+                <li>• RC se puede reemplazar, LO se puede regenerar</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Document Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Acciones de Documentos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Rate Confirmation Actions */}
+            <div className="space-y-2">
+              <h4 className="font-medium text-sm flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                Rate Confirmation
+                {validation.hasRateConfirmation && (
+                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700">
+                    Activo
+                  </Badge>
+                )}
+              </h4>
+              
+              <div className="space-y-2">
+                <Button
+                  variant={validation.hasRateConfirmation ? "outline" : "default"}
+                  size="sm"
+                  onClick={onUploadDocument}
+                  disabled={!canUploadRC}
+                  className="w-full"
+                >
+                  <Upload className="h-3 w-3 mr-2" />
+                  {validation.hasRateConfirmation ? 'Reemplazar RC' : 'Subir RC'}
+                </Button>
+                
+                {validation.hasRateConfirmation && workStatus.isInProgress && (
+                  <p className="text-xs text-muted-foreground">
+                    ℹ️ Puede reemplazar el RC incluso durante el trabajo
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Load Order Actions */}
+            <div className="space-y-2">
+              <h4 className="font-medium text-sm flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                Load Order
+                {validation.hasLoadOrder && (
+                  <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700">
+                    Activo (Prioridad)
+                  </Badge>
+                )}
+              </h4>
+              
+              <div className="space-y-2">
+                <Button
+                  variant={validation.hasLoadOrder ? "outline" : "default"}
+                  size="sm"
+                  onClick={onRegenerateLoadOrder}
+                  disabled={!canRegenerateLO}
+                  className="w-full"
+                >
+                  <RefreshCw className="h-3 w-3 mr-2" />
+                  {validation.hasLoadOrder ? 'Regenerar LO' : 'Generar LO'}
+                </Button>
+                
+                {validation.hasLoadOrder && workStatus.isInProgress && (
+                  <p className="text-xs text-muted-foreground">
+                    ℹ️ Puede regenerar el LO para actualizar datos
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Documents List */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Documentos Subidos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <LoadDocumentsList 
+            loadId={loadId}
+            maxItems={10}
+            showActions={true}
+            showDeleteButton={true}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Protection Warnings */}
+      {workStatus.isInProgress && (
+        <Card className="border-warning/20 bg-warning/5">
+          <CardContent className="py-4">
+            <div className="flex items-center gap-2 text-warning">
+              <AlertTriangle className="h-4 w-4" />
+              <span className="font-medium text-sm">Documentos Protegidos</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              El conductor ha comenzado a trabajar en esta carga. Los documentos principales están protegidos contra eliminación.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}

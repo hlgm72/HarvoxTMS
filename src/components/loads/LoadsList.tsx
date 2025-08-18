@@ -23,6 +23,7 @@ import { LoadViewDialog } from "./LoadViewDialog";
 import { LoadDocumentsList } from "./LoadDocumentsList";
 import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
 import { LoadDocumentValidationIndicator } from "./LoadDocumentValidationIndicator";
+import { LoadDocumentStatusIndicator } from "./LoadDocumentStatusIndicator";
 
 // Componente de skeleton para cargas
 const LoadSkeleton = () => (
@@ -339,6 +340,10 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                         maxItems={3}
                         showActions={false}
                         refreshTrigger={refreshTrigger}
+                      />
+                      <LoadDocumentStatusIndicator 
+                        loadId={load.id}
+                        showDetails={false}
                       />
                     </div>
                   </div>
