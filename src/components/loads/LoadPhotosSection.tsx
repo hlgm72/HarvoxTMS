@@ -238,6 +238,23 @@ export function LoadPhotosSection({
     }
   };
 
+  const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>, category: 'pickup' | 'delivery') => {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleFileUpload(file, category);
+    }
+    // Reset the input value so the same file can be selected again
+    event.target.value = '';
+  };
+
+  const triggerFileUpload = (category: 'pickup' | 'delivery') => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/jpeg,image/png,image/webp';
+    input.onchange = (e) => handleFileInputChange(e as any, category);
+    input.click();
+  };
+
   const renderPhotoGrid = (photos: LoadPhotoDocument[], category: 'pickup' | 'delivery') => {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -312,10 +329,18 @@ export function LoadPhotosSection({
           );
         })}
         
-        {/* Empty slots */}
+        {/* Empty slots with upload on hover */}
         {Array.from({ length: 4 - photos.length }).map((_, index) => (
-          <div key={`empty-${index}`} className="aspect-square border border-dashed border-border/40 rounded-lg flex items-center justify-center bg-muted/10">
-            <ImageIcon className="h-6 w-6 text-muted-foreground" />
+          <div 
+            key={`empty-${index}`} 
+            className="aspect-square border border-dashed border-border/40 rounded-lg flex items-center justify-center bg-muted/10 group cursor-pointer hover:bg-muted/20 transition-colors"
+            onClick={() => triggerFileUpload(category)}
+            title={`Subir foto de ${category === 'pickup' ? 'recogida' : 'entrega'}`}
+          >
+            <div className="flex items-center justify-center">
+              <ImageIcon className="h-6 w-6 text-muted-foreground group-hover:hidden" />
+              <Upload className="h-6 w-6 text-muted-foreground hidden group-hover:block" />
+            </div>
           </div>
         ))}
       </div>
