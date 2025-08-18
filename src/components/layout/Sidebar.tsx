@@ -573,6 +573,7 @@ export function AppSidebar() {
       return {
         dashboard: t('company.sidebar.sections.monitoring'),
         loads: t('company.sidebar.sections.loads'),
+        financial: t('company.sidebar.sections.financial'),
         resources: t('company.sidebar.sections.resources')
       };
     }
