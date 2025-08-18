@@ -29,6 +29,7 @@ import { formatDateSafe, formatInternationalized, formatDateTimeAuto } from '@/l
 import { useNavigationMaps } from '@/hooks/useNavigationMaps';
 import { useLoadStopsNavigation } from '@/hooks/useLoadStopsNavigation';
 import { Loader2 } from 'lucide-react';
+import { LoadDocumentStatusIndicator } from '@/components/loads/LoadDocumentStatusIndicator';
 
 interface Load {
   id: string;
@@ -468,6 +469,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                     <div className="flex items-center gap-2">
                       <Package className="h-5 w-5" />
                       <CardTitle className="text-base">{load.load_number}</CardTitle>
+                      <LoadDocumentStatusIndicator loadId={load.id} showDetails={true} />
                     </div>
                     <div className="text-right">
                       <Badge className={getStatusColor(load.status)}>

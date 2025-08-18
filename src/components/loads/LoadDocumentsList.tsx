@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { FileText, Download, Eye, Loader2 } from "lucide-react";
+import { FileText, Download, Eye, Loader2, Trash2 } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
+import { useLoadWorkStatus } from '@/hooks/useLoadWorkStatus';
+import { validateDocumentAction } from '@/utils/loadDocumentValidation';
 
 interface LoadDocument {
   id: string;
@@ -21,6 +23,7 @@ interface LoadDocumentsListProps {
   maxItems?: number;
   showActions?: boolean;
   refreshTrigger?: number;
+  showDeleteButton?: boolean;
 }
 
 const documentTypeLabels: Record<string, string> = {
@@ -58,12 +61,14 @@ export function LoadDocumentsList({
   loadId, 
   maxItems = 3, 
   showActions = false,
-  refreshTrigger = 0
+  refreshTrigger = 0,
+  showDeleteButton = false
 }: LoadDocumentsListProps) {
   const [documents, setDocuments] = useState<LoadDocument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [forceRefresh, setForceRefresh] = useState(0);
-  const { showError } = useFleetNotifications();
+  const { showError, showSuccess } = useFleetNotifications();
+  const { data: workStatus } = useLoadWorkStatus(loadId);
 
   useEffect(() => {
     let mounted = true;
@@ -164,6 +169,35 @@ export function LoadDocumentsList({
         "Error",
         "No se pudo descargar el documento"
       );
+    }
+  };
+
+  const handleDelete = async (document: LoadDocument) => {
+    if (!workStatus) return;
+    
+    const validation = validateDocumentAction(
+      document.document_type,
+      workStatus.currentStatus,
+      'delete'
+    );
+    
+    if (!validation.canDelete) {
+      showError("Acción no permitida", validation.reason || "No se puede eliminar este documento");
+      return;
+    }
+    
+    try {
+      const { error } = await supabase.rpc('delete_load_document_with_validation', {
+        document_id_param: document.id
+      });
+      
+      if (error) throw error;
+      
+      showSuccess("Documento eliminado exitosamente");
+      setForceRefresh(prev => prev + 1);
+    } catch (error) {
+      console.error('Error deleting document:', error);
+      showError("Error", "No se pudo eliminar el documento");
     }
   };
 
@@ -277,7 +311,7 @@ export function LoadDocumentsList({
                 <p>{document.file_name}</p>
               </TooltipContent>
             </Tooltip>
-          {showActions && (
+           {showActions && (
             <div className="flex gap-0.5">
               <Button
                 variant="ghost"
@@ -297,6 +331,22 @@ export function LoadDocumentsList({
               >
                 <Download className="h-2.5 w-2.5" />
               </Button>
+              {showDeleteButton && workStatus && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-5 w-5 p-0 text-destructive hover:text-destructive"
+                  onClick={() => handleDelete(document)}
+                  title={
+                    validateDocumentAction(document.document_type, workStatus.currentStatus, 'delete').canDelete
+                      ? "Eliminar documento"
+                      : validateDocumentAction(document.document_type, workStatus.currentStatus, 'delete').reason
+                  }
+                  disabled={!validateDocumentAction(document.document_type, workStatus.currentStatus, 'delete').canDelete}
+                >
+                  <Trash2 className="h-2.5 w-2.5" />
+                </Button>
+              )}
             </div>
           )}
           </div>
