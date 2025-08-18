@@ -493,7 +493,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                           })()}
                         </div>
                       )}
-                      <CurrentStopInfo load={load} />
+                      
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground">{load.client_name}</p>
@@ -599,10 +599,29 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
 
                   {/* Progress */}
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>{t('dashboard:loads.progress')}</span>
-                      <span className="font-medium">{load.progress}%</span>
-                    </div>
+                     <div className="flex justify-between text-sm">
+                       <span>
+                         {t('dashboard:loads.progress')}
+                         {(() => {
+                           // Obtener información de la parada actual
+                           const loadWithStops = {
+                             id: load.id,
+                             status: load.status,
+                             stops: load.stops
+                           };
+                           const { nextStopInfo } = useLoadStopsNavigation(loadWithStops);
+                           
+                           if (load.status !== 'assigned' && nextStopInfo) {
+                             const stopTypeText = nextStopInfo.stop.stop_type === 'pickup' ? 
+                               t('dashboard:loads.stop_types.pickup') : 
+                               t('dashboard:loads.stop_types.delivery');
+                             return ` (${t('common:stop', { defaultValue: 'Parada' })} ${nextStopInfo.stop.stop_number} (${stopTypeText}))`;
+                           }
+                           return '';
+                         })()}
+                       </span>
+                       <span className="font-medium">{load.progress}%</span>
+                     </div>
                     <Progress value={load.progress} className="h-2" />
                   </div>
 
