@@ -95,34 +95,22 @@ function CurrentStopInfo({ load }: { load: Load }) {
         id: stop.id,
         stop_number: stop.stop_number,
         stop_type: stop.stop_type,
-        eta_date: stop.eta_date,
-        eta_time: stop.eta_time,
-        actual_arrival_time: stop.actual_arrival_time,
         scheduled_date: stop.scheduled_date,
         scheduled_time: stop.scheduled_time
       }
     });
 
-    // Determinar si mostrar ETA o tiempo real según el estado
-    const isEnRoute = status.includes('en_route');
-    const isAtLocation = status.includes('at_');
-    const isCompleted = status === 'loaded' || status === 'delivered';
-
-    if (isEnRoute && stop.eta_date && stop.eta_time) {
-      const result = `ETA: ${formatDateSafe(stop.eta_date, 'dd/MM')} ${stop.eta_time}`;
-      console.log('✅ Showing ETA:', result);
-      return result;
-    } else if ((isAtLocation || isCompleted) && stop.actual_arrival_time) {
-      const result = `Llegada: ${formatDateSafe(stop.actual_arrival_time, 'dd/MM HH:mm')}`;
-      console.log('✅ Showing arrival time:', result);
-      return result;
-    } else if (stop.scheduled_date && stop.scheduled_time) {
-      const result = `Programado: ${formatDateSafe(stop.scheduled_date, 'dd/MM')} ${stop.scheduled_time}`;
+    // Por ahora solo mostrar la fecha programada disponible
+    if (stop.scheduled_date) {
+      let result = `📅 ${formatDateSafe(stop.scheduled_date, 'dd/MM')}`;
+      if (stop.scheduled_time) {
+        result += ` ${stop.scheduled_time}`;
+      }
       console.log('✅ Showing scheduled time:', result);
       return result;
     }
     
-    console.log('❌ No time display - missing data');
+    console.log('❌ No scheduled date available');
     return null;
   };
   
@@ -512,33 +500,26 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                                   {/* Time display for each stop */}
                                   <div className="text-xs text-primary font-medium mb-1">
                                     {(() => {
-                                      const getStopTimeDisplay = (status: string, stop: any) => {
+                                      const getStopTimeDisplay = (stop: any) => {
                                         console.log('🔍 Stop list Debug:', {
-                                          status,
                                           stopNumber: stop.stop_number,
                                           stopType: stop.stop_type,
-                                          eta_date: stop.eta_date,
-                                          eta_time: stop.eta_time,
-                                          actual_arrival_time: stop.actual_arrival_time,
                                           scheduled_date: stop.scheduled_date,
                                           scheduled_time: stop.scheduled_time
                                         });
 
-                                        const isEnRoute = status.includes('en_route');
-                                        const isAtLocation = status.includes('at_');
-                                        const isCompleted = status === 'loaded' || status === 'delivered';
-
-                                        if (isEnRoute && stop.eta_date && stop.eta_time) {
-                                          return `ETA: ${formatDateSafe(stop.eta_date, 'dd/MM')} ${stop.eta_time}`;
-                                        } else if ((isAtLocation || isCompleted) && stop.actual_arrival_time) {
-                                          return `Llegada: ${formatDateSafe(stop.actual_arrival_time, 'dd/MM HH:mm')}`;
-                                        } else if (stop.scheduled_date && stop.scheduled_time) {
-                                          return `Programado: ${formatDateSafe(stop.scheduled_date, 'dd/MM')} ${stop.scheduled_time}`;
+                                        // Mostrar fecha programada disponible
+                                        if (stop.scheduled_date) {
+                                          let result = `📅 ${formatDateSafe(stop.scheduled_date, 'dd/MM')}`;
+                                          if (stop.scheduled_time) {
+                                            result += ` ${stop.scheduled_time}`;
+                                          }
+                                          return result;
                                         }
                                         return null;
                                       };
                                       
-                                      const timeDisplay = getStopTimeDisplay(load.status, stop);
+                                      const timeDisplay = getStopTimeDisplay(stop);
                                       console.log('📺 Time display result:', timeDisplay);
                                       return timeDisplay || null;
                                     })()}
