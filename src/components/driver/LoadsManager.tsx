@@ -90,33 +90,14 @@ function CurrentStopInfo({ load }: { load: Load }) {
   };
 
   const getTimeDisplayText = (status: string, stop: any) => {
-    console.log('🔍 getTimeDisplayText Debug:', {
-      status,
-      stop: {
-        id: stop.id,
-        stop_number: stop.stop_number,
-        stop_type: stop.stop_type,
-        scheduled_date: stop.scheduled_date,
-        scheduled_time: stop.scheduled_time,
-        eta_date: stop.eta_date,
-        eta_time: stop.eta_time,
-        actual_arrival_datetime: stop.actual_arrival_datetime,
-        completion_datetime: stop.completion_datetime
-      }
-    });
-
     // Priorizar tiempo de finalización si está disponible
     if (stop.completion_datetime) {
-      const result = `🏁 Completada: ${formatDateSafe(stop.completion_datetime, 'dd/MM HH:mm')}`;
-      console.log('✅ Showing completion time:', result);
-      return result;
+      return `🏁 Completada: ${formatDateSafe(stop.completion_datetime, 'dd/MM HH:mm')}`;
     }
 
     // Si hay llegada real, mostrarla
     if (stop.actual_arrival_datetime) {
-      const result = `✅ Llegó: ${formatDateSafe(stop.actual_arrival_datetime, 'dd/MM HH:mm')}`;
-      console.log('✅ Showing actual arrival:', result);
-      return result;
+      return `✅ Llegó: ${formatDateSafe(stop.actual_arrival_datetime, 'dd/MM HH:mm')}`;
     }
 
     // Priorizar ETA si está disponible
@@ -125,7 +106,6 @@ function CurrentStopInfo({ load }: { load: Load }) {
       if (stop.eta_time) {
         result += ` ${stop.eta_time}`;
       }
-      console.log('✅ Showing ETA:', result);
       return result;
     }
 
@@ -135,11 +115,9 @@ function CurrentStopInfo({ load }: { load: Load }) {
       if (stop.scheduled_time) {
         result += ` ${stop.scheduled_time}`;
       }
-      console.log('✅ Showing scheduled time:', result);
       return result;
     }
     
-    console.log('❌ No time information available');
     return null;
   };
   
@@ -557,30 +535,21 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                                   </div>
                                   {/* Time display for each stop */}
                                   <div className="text-xs text-primary font-medium mb-1">
-                                    {(() => {
-                                      const getStopTimeDisplay = (stop: any) => {
-                                        console.log('🔍 Stop list Debug:', {
-                                          stopNumber: stop.stop_number,
-                                          stopType: stop.stop_type,
-                                          scheduled_date: stop.scheduled_date,
-                                          scheduled_time: stop.scheduled_time
-                                        });
-
-                                        // Mostrar fecha programada disponible
-                                        if (stop.scheduled_date) {
-                                          let result = `📅 ${formatDateSafe(stop.scheduled_date, 'dd/MM')}`;
-                                          if (stop.scheduled_time) {
-                                            result += ` ${stop.scheduled_time}`;
-                                          }
-                                          return result;
-                                        }
-                                        return null;
-                                      };
-                                      
-                                      const timeDisplay = getStopTimeDisplay(stop);
-                                      console.log('📺 Time display result:', timeDisplay);
-                                      return timeDisplay || null;
-                                    })()}
+                                     {(() => {
+                                       const getStopTimeDisplay = (stop: any) => {
+                                         // Mostrar fecha programada disponible
+                                         if (stop.scheduled_date) {
+                                           let result = `📅 ${formatDateSafe(stop.scheduled_date, 'dd/MM')}`;
+                                           if (stop.scheduled_time) {
+                                             result += ` ${stop.scheduled_time}`;
+                                           }
+                                           return result;
+                                         }
+                                         return null;
+                                       };
+                                       
+                                       return getStopTimeDisplay(stop) || null;
+                                     })()}
                                   </div>
                                 <p className="font-medium text-sm">
                                   {stop.company_name}
