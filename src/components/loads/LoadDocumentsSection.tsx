@@ -464,11 +464,13 @@ const [uploading, setUploading] = useState<string | null>(null);
       { 
         value: 'pickup', 
         label: `Recogida (${getPhotoCount('pickup')}/4)`,
+        description: 'Fotografías del punto de recogida',
         disabled: !isPhotoCategoryAvailable('pickup')
       },
       { 
         value: 'delivery', 
         label: `Entrega (${getPhotoCount('delivery')}/4)`,
+        description: 'Fotografías del punto de entrega',
         disabled: !isPhotoCategoryAvailable('delivery')
       }
     ].filter(category => !category.disabled);
@@ -908,15 +910,21 @@ const [uploading, setUploading] = useState<string | null>(null);
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent align="end" className="w-56">
                 {getAvailablePhotoCategories().map((category) => (
                   <DropdownMenuItem
                     key={category.value}
                     onClick={() => handlePhotoUploadClick(category.value as 'pickup' | 'delivery')}
                     disabled={category.disabled}
-                    className="flex items-center justify-between"
+                    className="cursor-pointer flex items-center justify-between"
                   >
-                    <span>{category.label}</span>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{category.label}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {category.description}
+                      </span>
+                    </div>
+                    <Upload className="h-4 w-4" />
                   </DropdownMenuItem>
                 ))}
                 {getAvailablePhotoCategories().length === 0 && (
