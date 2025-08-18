@@ -62,6 +62,7 @@ interface LoadsManagerProps {
 
 // Componente para mostrar información de la parada actual
 function CurrentStopInfo({ load }: { load: Load }) {
+  const { t } = useTranslation(['common', 'dashboard']);
   const loadWithStops = {
     id: load.id,
     status: load.status,
@@ -80,8 +81,10 @@ function CurrentStopInfo({ load }: { load: Load }) {
   }
   
   const getStopActionText = (status: string, stop: any) => {
-    const stopTypeText = stop.stop_type === 'pickup' ? 'Recoger' : 'Entregar';
-    return `Parada ${stop.stop_number} (${stopTypeText})`;
+    const stopTypeText = stop.stop_type === 'pickup' ? 
+      t('dashboard:owner.loads.stop_types.pickup') : 
+      t('dashboard:owner.loads.stop_types.delivery');
+    return `${t('common:stop', { defaultValue: 'Parada' })} ${stop.stop_number} (${stopTypeText})`;
   };
   
   return (
@@ -92,7 +95,7 @@ function CurrentStopInfo({ load }: { load: Load }) {
 }
 
 export function LoadsManager({ className, dashboardMode = false }: LoadsManagerProps) {
-  const { t } = useTranslation(['common', 'fleet']);
+  const { t } = useTranslation(['common', 'fleet', 'dashboard']);
   const { user } = useAuth();
   const { showSuccess } = useFleetNotifications();
   const updateLoadStatus = useUpdateLoadStatus();
@@ -232,16 +235,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
   };
 
   const getStatusText = (status: string): string => {
-    switch (status) {
-      case 'assigned': return 'Asignada';
-      case 'en_route_pickup': return 'En ruta al origen';
-      case 'at_pickup': return 'En lugar de carga';
-      case 'loaded': return 'Cargada';
-      case 'en_route_delivery': return 'En ruta al destino';
-      case 'at_delivery': return 'En lugar de entrega';
-      case 'delivered': return 'Entregada';
-      default: return status;
-    }
+    return t(`dashboard:owner.loads.status.${status}`, { defaultValue: status });
   };
 
   // Función para abrir el modal de actualización de estado
@@ -286,15 +280,9 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
   };
 
   const getNextActionText = (currentStatus: string): string => {
-    switch (currentStatus) {
-      case 'assigned': return 'Camino a recoger';
-      case 'en_route_pickup': return 'Llegué a recogida';
-      case 'at_pickup': return 'Recogida completada';
-      case 'loaded': return 'Camino a entregar';
-      case 'en_route_delivery': return 'Llegué a entrega';
-      case 'at_delivery': return 'Entrega completada';
-      default: return 'Actualizar Estado';
-    }
+    return t(`dashboard:owner.loads.actions.${currentStatus}`, { 
+      defaultValue: t('dashboard:owner.loads.actions.update_status') 
+    });
   };
   
   const handleNavigateToStop = async (stop: any) => {
@@ -351,7 +339,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Package className="h-5 w-5" />
-            Cargando cargas...
+            {t('dashboard:owner.loads.loading')}
           </CardTitle>
         </CardHeader>
       </Card>
@@ -364,7 +352,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         <TabsList className="grid w-full grid-cols-2 gap-1">
           <TabsTrigger value="active">
             <div className="flex items-center gap-2">
-              <span>{dashboardMode ? "Carga Activa" : "Cargas Asignadas"}</span>
+              <span>{dashboardMode ? t('dashboard:owner.loads.active_load') : t('dashboard:owner.loads.assigned_loads')}</span>
               {!dashboardMode && activeLoads.length > 0 && (
                 <Badge variant="outline" className="h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center bg-white text-orange-600 border-orange-200">
                   {activeLoads.length}
@@ -382,7 +370,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
             </div>
           </TabsTrigger>
           <TabsTrigger value="completed">
-            Completadas
+            {t('dashboard:owner.loads.completed')}
             {completedLoads.length > 0 && (
               <Badge variant="outline" className="ml-2 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center">
                 {completedLoads.length}
@@ -396,9 +384,9 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
             <Card className={dashboardMode ? "" : "lg:col-span-2"}>
               <CardContent className="py-8 text-center">
                 <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No hay cargas activas</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('dashboard:owner.loads.no_active_loads')}</h3>
                 <p className="text-muted-foreground">
-                  Actualmente no tienes cargas asignadas
+                  {t('dashboard:owner.loads.no_loads_description')}
                 </p>
               </CardContent>
             </Card>

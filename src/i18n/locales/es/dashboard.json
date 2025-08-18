@@ -60,6 +60,80 @@
         "paid": "Pagado",
         "pending": "Pendiente"
       }
+    },
+    "loads": {
+      "title": "Mi Dashboard",
+      "loading": "Cargando cargas...",
+      "no_active_loads": "No hay cargas activas",
+      "no_loads_description": "Actualmente no tienes cargas asignadas",
+      "active_load": "Carga Activa",
+      "assigned_loads": "Cargas Asignadas",
+      "completed": "Completadas",
+      "status": {
+        "assigned": "Asignada",
+        "en_route_pickup": "En ruta al origen",
+        "at_pickup": "En lugar de carga",
+        "loaded": "Cargada",
+        "en_route_delivery": "En ruta al destino",
+        "at_delivery": "En lugar de entrega",
+        "delivered": "Entregada"
+      },
+      "actions": {
+        "assigned": "Camino a recoger",
+        "en_route_pickup": "Llegué a recogida",
+        "at_pickup": "Recogida completada",
+        "loaded": "Camino a entregar",
+        "en_route_delivery": "Llegué a entrega",
+        "at_delivery": "Entrega completada",
+        "update_status": "Actualizar Estado"
+      },
+      "stop_types": {
+        "pickup": "Recoger",
+        "delivery": "Entregar"
+      }
+    },
+    "driver": {
+      "title": "Mi Dashboard",
+      "documents": {
+        "title": "Documentos",
+        "cdl_license": "Licencia CDL",
+        "medical_certificate": "Certificado Médico",
+        "hazmat_permit": "Permiso HazMat",
+        "valid": "Vigente",
+        "expires_soon": "Vence pronto",
+        "manage": "Gestionar Documentos"
+      },
+      "vehicle": {
+        "title": "Estado del Vehículo",
+        "fuel": "Combustible:",
+        "odometer": "Odómetro:",
+        "next_service": "Próximo servicio:",
+        "all_good": "Todo en orden",
+        "no_alerts": "Sin alertas mecánicas"
+      },
+      "hours": {
+        "title": "Horas de Servicio",
+        "driving_today": "Conducción hoy:",
+        "on_duty": "En servicio:",
+        "rest_required": "Descanso requerido en:",
+        "hrs": "hrs"
+      },
+      "activity": {
+        "title": "Actividad Reciente",
+        "load_delivered": "Carga entregada exitosamente",
+        "new_load_assigned": "Nueva carga asignada",
+        "dispatcher_message": "Mensaje del dispatcher",
+        "route_change": "Cambio de ruta por tráfico"
+      },
+      "notifications": {
+        "title": "Notificaciones Importantes",
+        "hazmat_expires": "Permiso HazMat vence en 30 días",
+        "renew_before": "Renovar antes del 15 de agosto",
+        "safety_training": "Entrenamiento de seguridad pendiente",
+        "complete_before": "Completar antes del 30 de julio",
+        "safety_bonus": "Bonus por seguridad aplicado",
+        "bonus_added": "$200 añadidos al próximo pago"
+      }
     }
   }
 }

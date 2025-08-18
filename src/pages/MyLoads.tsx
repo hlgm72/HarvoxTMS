@@ -7,7 +7,7 @@ import { useLoads } from "@/hooks/useLoads";
 import { useMemo } from "react";
 
 export default function MyLoads() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'dashboard']);
   const { user } = useAuth();
   const { data: loadsData = [], isLoading } = useLoads();
 
@@ -28,18 +28,18 @@ export default function MyLoads() {
 
   const getSubtitle = () => {
     if (isLoading) {
-      return "Cargando información de cargas...";
+      return t('dashboard:owner.loads.loading');
     }
     
     const parts = [];
     if (stats.active > 0) {
-      parts.push(`${stats.active} carga${stats.active !== 1 ? 's' : ''} activa${stats.active !== 1 ? 's' : ''}`);
+      parts.push(`${stats.active} ${t('common:load', { count: stats.active })} ${t('common:active', { count: stats.active })}`);
     }
     if (stats.completed > 0) {
-      parts.push(`${stats.completed} completada${stats.completed !== 1 ? 's' : ''}`);
+      parts.push(`${stats.completed} ${t('common:completed', { count: stats.completed })}`);
     }
     if (parts.length === 0) {
-      return "No hay cargas asignadas";
+      return t('dashboard:owner.loads.no_loads_description');
     }
     
     return parts.join(' • ');
@@ -49,7 +49,7 @@ export default function MyLoads() {
     <>
       <PageToolbar 
         icon={Package}
-        title="Mis Cargas"
+        title={t('common:my_loads', { defaultValue: 'Mis Cargas' })}
         subtitle={getSubtitle()}
       />
 

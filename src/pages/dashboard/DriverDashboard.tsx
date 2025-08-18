@@ -13,7 +13,7 @@ import { FinancialSummary } from '@/components/driver/FinancialSummary';
 import { MapPin, Clock, DollarSign, Fuel, Phone, MessageSquare, FileText, AlertTriangle } from "lucide-react";
 
 export default function DriverDashboard() {
-  const { t } = useTranslation(['common', 'fleet']);
+  const { t } = useTranslation(['common', 'fleet', 'dashboard']);
   const { showSuccess } = useFleetNotifications();
   const { companies } = useUserCompanies();
   const [searchParams] = useSearchParams();
@@ -36,7 +36,7 @@ export default function DriverDashboard() {
   return (
     <>
       <PageToolbar 
-        title="Mi Dashboard"
+        title={t('dashboard:driver.title')}
       />
       <div className="p-2 md:p-4 space-y-6">
 
@@ -55,31 +55,31 @@ export default function DriverDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-purple-600" />
-              Documentos
+              {t('dashboard:driver.documents.title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm">Licencia CDL</span>
+                <span className="text-sm">{t('dashboard:driver.documents.cdl_license')}</span>
                 <Badge variant="outline" className="bg-green-50 text-green-700">
-                  Vigente
+                  {t('dashboard:driver.documents.valid')}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">Certificado Médico</span>
+                <span className="text-sm">{t('dashboard:driver.documents.medical_certificate')}</span>
                 <Badge variant="outline" className="bg-green-50 text-green-700">
-                  Vigente
+                  {t('dashboard:driver.documents.valid')}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">Permiso HazMat</span>
+                <span className="text-sm">{t('dashboard:driver.documents.hazmat_permit')}</span>
                 <Badge variant="outline" className="bg-orange-50 text-orange-700">
-                  Vence pronto
+                  {t('dashboard:driver.documents.expires_soon')}
                 </Badge>
               </div>
               <Button className="w-full mt-4" variant="outline" size="sm">
-                Gestionar Documentos
+                {t('dashboard:driver.documents.manage')}
               </Button>
             </div>
           </CardContent>
@@ -89,30 +89,30 @@ export default function DriverDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Fuel className="h-5 w-5 text-orange-600" />
-              Estado del Vehículo
+              {t('dashboard:driver.vehicle.title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Combustible:</span>
+                <span className="text-muted-foreground">{t('dashboard:driver.vehicle.fuel')}</span>
                 <span className="font-medium">75%</span>
               </div>
               <Progress value={75} className="h-2" />
               
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Odómetro:</span>
+                <span className="text-muted-foreground">{t('dashboard:driver.vehicle.odometer')}</span>
                 <span className="font-medium">145,678 mi</span>
               </div>
               
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Próximo servicio:</span>
+                <span className="text-muted-foreground">{t('dashboard:driver.vehicle.next_service')}</span>
                 <span className="font-medium">2,300 mi</span>
               </div>
               
               <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                <p className="text-sm font-medium text-green-800">Todo en orden</p>
-                <p className="text-xs text-green-600">Sin alertas mecánicas</p>
+                <p className="text-sm font-medium text-green-800">{t('dashboard:driver.vehicle.all_good')}</p>
+                <p className="text-xs text-green-600">{t('dashboard:driver.vehicle.no_alerts')}</p>
               </div>
             </div>
           </CardContent>
@@ -122,26 +122,26 @@ export default function DriverDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-blue-600" />
-              Horas de Servicio
+              {t('dashboard:driver.hours.title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Conducción hoy:</span>
-                <span className="font-medium">6.5 / 11 hrs</span>
+                <span className="text-muted-foreground">{t('dashboard:driver.hours.driving_today')}</span>
+                <span className="font-medium">6.5 / 11 {t('dashboard:driver.hours.hrs')}</span>
               </div>
               <Progress value={59} className="h-2" />
               
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">En servicio:</span>
-                <span className="font-medium">8.2 / 14 hrs</span>
+                <span className="text-muted-foreground">{t('dashboard:driver.hours.on_duty')}</span>
+                <span className="font-medium">8.2 / 14 {t('dashboard:driver.hours.hrs')}</span>
               </div>
               <Progress value={58} className="h-2" />
               
               <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-sm font-medium text-blue-800">Descanso requerido en:</p>
-                <p className="text-xs text-blue-600">4 hrs 30 min</p>
+                <p className="text-sm font-medium text-blue-800">{t('dashboard:driver.hours.rest_required')}</p>
+                <p className="text-xs text-blue-600">4 {t('dashboard:driver.hours.hrs')} 30 min</p>
               </div>
             </div>
           </CardContent>
@@ -152,29 +152,29 @@ export default function DriverDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Actividad Reciente</CardTitle>
+            <CardTitle>{t('dashboard:driver.activity.title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
                 <div className="w-2 h-2 bg-green-600 rounded-full mt-2"></div>
                 <div>
-                  <p className="text-sm font-medium">Carga entregada exitosamente</p>
+                  <p className="text-sm font-medium">{t('dashboard:driver.activity.load_delivered')}</p>
                   <p className="text-xs text-muted-foreground">Hace 2 horas - Miami, FL</p>
                 </div>
               </div>
               <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
                 <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
                 <div>
-                  <p className="text-sm font-medium">Nueva carga asignada</p>
+                  <p className="text-sm font-medium">{t('dashboard:driver.activity.new_load_assigned')}</p>
                   <p className="text-xs text-muted-foreground">Hace 3 horas - Houston, TX → Dallas, TX</p>
                 </div>
               </div>
               <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg">
                 <div className="w-2 h-2 bg-orange-600 rounded-full mt-2"></div>
                 <div>
-                  <p className="text-sm font-medium">Mensaje del dispatcher</p>
-                  <p className="text-xs text-muted-foreground">Hace 4 horas - Cambio de ruta por tráfico</p>
+                  <p className="text-sm font-medium">{t('dashboard:driver.activity.dispatcher_message')}</p>
+                  <p className="text-xs text-muted-foreground">Hace 4 horas - {t('dashboard:driver.activity.route_change')}</p>
                 </div>
               </div>
             </div>
@@ -185,22 +185,22 @@ export default function DriverDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-orange-600" />
-              Notificaciones Importantes
+              {t('dashboard:driver.notifications.title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="p-3 bg-orange-50 rounded-lg border border-orange-200">
-                <p className="text-sm font-medium text-orange-800">Permiso HazMat vence en 30 días</p>
-                <p className="text-xs text-orange-600">Renovar antes del 15 de agosto</p>
+                <p className="text-sm font-medium text-orange-800">{t('dashboard:driver.notifications.hazmat_expires')}</p>
+                <p className="text-xs text-orange-600">{t('dashboard:driver.notifications.renew_before')}</p>
               </div>
               <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-sm font-medium text-blue-800">Entrenamiento de seguridad pendiente</p>
-                <p className="text-xs text-blue-600">Completar antes del 30 de julio</p>
+                <p className="text-sm font-medium text-blue-800">{t('dashboard:driver.notifications.safety_training')}</p>
+                <p className="text-xs text-blue-600">{t('dashboard:driver.notifications.complete_before')}</p>
               </div>
               <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                <p className="text-sm font-medium text-green-800">Bonus por seguridad aplicado</p>
-                <p className="text-xs text-green-600">$200 añadidos al próximo pago</p>
+                <p className="text-sm font-medium text-green-800">{t('dashboard:driver.notifications.safety_bonus')}</p>
+                <p className="text-xs text-green-600">{t('dashboard:driver.notifications.bonus_added')}</p>
               </div>
             </div>
           </CardContent>
