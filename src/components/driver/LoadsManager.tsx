@@ -458,13 +458,13 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                       </Badge>
                       {load.status === 'assigned' && load.stops && load.stops.length > 0 && (
                         <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                          {(() => {
-                            const firstStop = load.stops!.find(stop => stop.stop_type === 'pickup') || load.stops![0];
-                             if (firstStop?.scheduled_date) {
-                               const language = i18n.language;
-                              const date = new Date(firstStop.scheduled_date);
-                              const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
-                              const shortDate = formatInternationalized(date, pattern);
+                           {(() => {
+                             const firstStop = load.stops!.find(stop => stop.stop_type === 'pickup') || load.stops![0];
+                              if (firstStop?.scheduled_date) {
+                                const language = i18n.language;
+                               const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
+                               const shortDate = formatDateSafe(firstStop.scheduled_date, pattern);
+                               
                               
                               return (
                                 <>
@@ -533,10 +533,8 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                                          <Calendar className="h-3 w-3" />
                                          {(() => {
                                            const language = i18n.language;
-                                           const date = new Date(stop.scheduled_date);
                                            const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
-                                           const shortDate = formatInternationalized(date, pattern);
-                                           return shortDate;
+                                           return formatDateSafe(stop.scheduled_date, pattern);
                                          })()}
                                          {stop.scheduled_time && ` ${stop.scheduled_time}`}
                                        </span>
