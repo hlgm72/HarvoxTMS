@@ -4,7 +4,7 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '@/integrations/supabase/client';
 
 // Configure PDF.js worker using multiple approaches to ensure it works
-console.log('🔧 DocumentPreview: Configuring PDF.js worker');
+// console.log('🔧 DocumentPreview: Configuring PDF.js worker');
 
 // Method 1: Use the recommended approach for react-pdf v10+
 try {
@@ -12,7 +12,7 @@ try {
     'pdfjs-dist/build/pdf.worker.min.mjs',
     import.meta.url,
   ).toString();
-  console.log('✅ DocumentPreview: Worker configured with .mjs file:', pdfjs.GlobalWorkerOptions.workerSrc);
+  // console.log('✅ DocumentPreview: Worker configured with .mjs file:', pdfjs.GlobalWorkerOptions.workerSrc);
 } catch (error) {
   console.warn('⚠️ DocumentPreview: Failed to configure .mjs worker, trying fallback:', error);
   // Fallback to CDN approach

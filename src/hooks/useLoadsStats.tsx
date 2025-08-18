@@ -55,22 +55,22 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
       }
 
       try {
-        console.log('🔍 useLoadsStats - Input periodFilter:', periodFilter);
+        // console.log('🔍 useLoadsStats - Input periodFilter:', periodFilter);
         
         let targetPeriodId: string | null = null;
 
         // Determinar el período objetivo basado en el filtro
         if (periodFilter?.type === 'specific' && periodFilter.periodId) {
           targetPeriodId = periodFilter.periodId;
-          console.log('📅 Using specific period:', targetPeriodId);
+          // console.log('📅 Using specific period:', targetPeriodId);
         } else if (periodFilter?.periodId) {
           // Para períodos como 'previous', 'next' que tienen periodId específico
           targetPeriodId = periodFilter.periodId;
-          console.log('📅 Using period with periodId:', targetPeriodId, 'type:', periodFilter.type);
+          // console.log('📅 Using period with periodId:', targetPeriodId, 'type:', periodFilter.type);
         } else if (periodFilter?.type === 'current' || !periodFilter?.type) {
           // Obtener el período actual de la compañía
           const today = getTodayInUserTimeZone();
-          console.log('📅 Getting current period for today:', today);
+          // console.log('📅 Getting current period for today:', today);
           
           const { data: currentPeriod, error: periodError } = await supabase
             .from('company_payment_periods')
@@ -87,14 +87,14 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
           }
 
           targetPeriodId = currentPeriod?.id || null;
-          console.log('📅 Current period found:', targetPeriodId);
+          // console.log('📅 Current period found:', targetPeriodId);
         } else if (periodFilter?.type === 'all') {
           // Para 'all', no filtrar por período específico
           targetPeriodId = 'all';
-          console.log('📅 Using all periods');
+          // console.log('📅 Using all periods');
         } else {
           // Para tipos no implementados, retornar 0s
-          console.log('❌ Unsupported period type:', periodFilter?.type);
+          // console.log('❌ Unsupported period type:', periodFilter?.type);
           return {
             totalActive: 0,
             totalInTransit: 0,
@@ -105,7 +105,7 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
 
         // Si no hay período objetivo, retornar valores en 0
         if (!targetPeriodId) {
-          console.log('❌ No target period found, returning 0s');
+          // console.log('❌ No target period found, returning 0s');
           return {
             totalActive: 0,
             totalInTransit: 0,
@@ -114,8 +114,8 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
           };
         }
 
-        console.log('🚀 Building loads query with targetPeriodId:', targetPeriodId);
-        console.log('👥 Company users:', companyUsers);
+        // console.log('🚀 Building loads query with targetPeriodId:', targetPeriodId);
+        // console.log('👥 Company users:', companyUsers);
 
         // 2. Obtener todas las cargas del período objetivo
         let loadsQuery = supabase
@@ -126,12 +126,12 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
         // Aplicar filtro de período solo si no es 'all'
         if (targetPeriodId !== 'all') {
           loadsQuery = loadsQuery.eq('payment_period_id', targetPeriodId);
-          console.log('🎯 Added period filter for:', targetPeriodId);
+          // console.log('🎯 Added period filter for:', targetPeriodId);
         }
 
         const { data: loads, error: loadsError } = await loadsQuery;
 
-        console.log('📊 Loads query result:', { loads, loadsError });
+        // console.log('📊 Loads query result:', { loads, loadsError });
 
         if (loadsError) {
           console.error('Error obteniendo cargas:', loadsError);
@@ -139,7 +139,7 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
         }
 
         if (!loads) {
-          console.log('❌ No loads data returned');
+          // console.log('❌ No loads data returned');
           return {
             totalActive: 0,
             totalInTransit: 0,
@@ -148,17 +148,17 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
           };
         }
 
-        console.log(`📈 Found ${loads.length} loads, processing stats...`);
+        // console.log(`📈 Found ${loads.length} loads, processing stats...`);
 
         // 3. Calcular estadísticas
         const stats = loads.reduce((acc, load) => {
-          console.log('🔍 Processing load:', { 
-            load_number: load.load_number, 
-            status: load.status, 
-            driver_user_id: load.driver_user_id, 
-            payment_period_id: load.payment_period_id,
-            total_amount: load.total_amount 
-          });
+          // console.log('🔍 Processing load:', { 
+          //   load_number: load.load_number, 
+          //   status: load.status, 
+          //   driver_user_id: load.driver_user_id, 
+          //   payment_period_id: load.payment_period_id,
+          //   total_amount: load.total_amount 
+          // });
 
           // Contar cargas activas (cualquier estado que no sea completed o cancelled)
           if (load.status && !['completed', 'cancelled'].includes(load.status)) {

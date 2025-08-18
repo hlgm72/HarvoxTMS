@@ -52,7 +52,7 @@ export const RoleSwitcher = () => {
   };
 
   const handleRoleChange = (role: any) => {
-    // console.log('🔄 RoleSwitcher: Cambiando a rol:', role);
+    // Debug logs have been commented out for production
     
     // FIRST: Guardar el rol INMEDIATAMENTE y de forma síncrona ANTES de switchRole
     const roleString = JSON.stringify(role);

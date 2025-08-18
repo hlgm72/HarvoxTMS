@@ -49,13 +49,13 @@ export const useLoadDocumentValidation = (loadId: string) => {
 
       const canMarkAsDelivered = hasRateConfirmation && hasPOD;
 
-      console.log('📋 Document validation result:', {
-        hasRateConfirmation,
-        hasPOD,
-        missingRequiredDocuments,
-        canMarkAsDelivered,
-        totalDocuments: documents?.length || 0
-      });
+      // console.log('📋 Document validation result:', {
+      //   hasRateConfirmation,
+      //   hasPOD,
+      //   missingRequiredDocuments,
+      //   canMarkAsDelivered,
+      //   totalDocuments: documents?.length || 0
+      // });
 
       return {
         hasRateConfirmation,
