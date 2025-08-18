@@ -104,7 +104,9 @@ function CurrentStopInfo({ load }: { load: Load }) {
     if (stop.eta_date) {
       let result = `🎯 ETA: ${formatDateSafe(stop.eta_date, 'dd/MM')}`;
       if (stop.eta_time) {
-        result += ` ${stop.eta_time}`;
+        // Formatear hora para remover segundos si los tiene
+        const timeWithoutSeconds = stop.eta_time.length > 5 ? stop.eta_time.substring(0, 5) : stop.eta_time;
+        result += ` ${timeWithoutSeconds}`;
       }
       return result;
     }
@@ -113,7 +115,9 @@ function CurrentStopInfo({ load }: { load: Load }) {
     if (stop.scheduled_date) {
       let result = `📅 ${formatDateSafe(stop.scheduled_date, 'dd/MM')}`;
       if (stop.scheduled_time) {
-        result += ` ${stop.scheduled_time}`;
+        // Formatear hora para remover segundos si los tiene
+        const timeWithoutSeconds = stop.scheduled_time.length > 5 ? stop.scheduled_time.substring(0, 5) : stop.scheduled_time;
+        result += ` ${timeWithoutSeconds}`;
       }
       return result;
     }
@@ -472,12 +476,12 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                                     <Calendar className="h-3 w-3" />
                                     <span>{shortDate}</span>
                                   </div>
-                                  {firstStop.scheduled_time && (
-                                    <div className="flex items-center gap-1">
-                                      <Clock className="h-3 w-3" />
-                                      <span>{firstStop.scheduled_time}</span>
-                                    </div>
-                                  )}
+                                   {firstStop.scheduled_time && (
+                                     <div className="flex items-center gap-1">
+                                       <Clock className="h-3 w-3" />
+                                       <span>{firstStop.scheduled_time.length > 5 ? firstStop.scheduled_time.substring(0, 5) : firstStop.scheduled_time}</span>
+                                     </div>
+                                   )}
                                 </>
                               );
                             }
@@ -536,7 +540,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                                            const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
                                            return formatDateSafe(stop.scheduled_date, pattern);
                                          })()}
-                                         {stop.scheduled_time && ` ${stop.scheduled_time}`}
+                                         {stop.scheduled_time && ` ${stop.scheduled_time.length > 5 ? stop.scheduled_time.substring(0, 5) : stop.scheduled_time}`}
                                        </span>
                                      )}
                                    </div>
