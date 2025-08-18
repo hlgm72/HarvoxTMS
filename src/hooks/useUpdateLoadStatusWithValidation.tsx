@@ -40,14 +40,22 @@ export const useUpdateLoadStatusWithValidation = () => {
           throw new Error('Error verificando documentos requeridos');
         }
 
-        // Verificar si existe Rate Confirmation
+        // Verificar si existe Rate Confirmation o Load Order
         const hasRateConfirmation = documents?.some(doc => 
           doc.document_type === 'rate_confirmation' && 
           doc.archived_at === null
         ) || false;
 
-        if (!hasRateConfirmation) {
-          throw new Error('No se puede marcar como entregada: falta el documento Rate Confirmation requerido');
+        const hasLoadOrder = documents?.some(doc => 
+          doc.document_type === 'load_order' && 
+          doc.archived_at === null
+        ) || false;
+
+        const hasRequiredWorkDocument = hasLoadOrder || hasRateConfirmation;
+        const activeWorkDocument = hasLoadOrder ? 'Load Order' : 'Rate Confirmation';
+
+        if (!hasRequiredWorkDocument) {
+          throw new Error('No se puede marcar como entregada: falta el documento Rate Confirmation o Load Order requerido');
         }
 
         console.log('✅ Validación de documentos exitosa, procediendo con actualización de estado');
