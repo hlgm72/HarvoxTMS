@@ -141,7 +141,7 @@ export const useDriversCount = () => {
         }
 
         const totalCount = (rolesCount || 0) + (pendingCount || 0);
-        console.log(`🚛 Contador drivers: ${rolesCount || 0} en roles + ${pendingCount || 0} pendientes = ${totalCount}`);
+        // Driver count calculation complete
         
         return totalCount;
 

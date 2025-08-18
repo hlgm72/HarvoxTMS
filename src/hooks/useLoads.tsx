@@ -380,7 +380,7 @@ export const useLoads = (filters?: LoadsFilters) => {
           const period = periods.find(p => p.id === load.payment_period_id);
           
           const loadStops = stopsData.filter(s => s.load_id === load.id);
-          console.log(`🚛 Load ${load.load_number} - Found ${loadStops.length} stops:`, loadStops);
+          // Load stops processing
           
           const pickupStop = loadStops
             .filter(s => s.stop_type === 'pickup')
@@ -389,8 +389,7 @@ export const useLoads = (filters?: LoadsFilters) => {
             .filter(s => s.stop_type === 'delivery')
             .sort((a, b) => b.stop_number - a.stop_number)[0];
 
-          console.log(`🚛 Load ${load.load_number} - Pickup stop:`, pickupStop);
-          console.log(`🚛 Load ${load.load_number} - Delivery stop:`, deliveryStop);
+          // Processing pickup and delivery stops
 
           // Función auxiliar para obtener el display de la ciudad
           const getCityDisplay = (stop: any) => {
@@ -416,7 +415,7 @@ export const useLoads = (filters?: LoadsFilters) => {
           const pickupCityDisplay = getCityDisplay(pickupStop);
           const deliveryCityDisplay = getCityDisplay(deliveryStop);
 
-          console.log(`🚛 Load ${load.load_number} - Final display: ${pickupCityDisplay} → ${deliveryCityDisplay}`);
+          // Final display processing
 
           // Priorizar alias sobre nombre para el broker
           const brokerDisplayName = broker ? (broker.alias && broker.alias.trim() ? broker.alias : broker.name) : 'Sin cliente';

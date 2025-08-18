@@ -48,36 +48,29 @@ export default function Index() {
       // Esperar a que los roles se carguen completamente
       // Si userRoles es null, aún se están cargando
       if (userRoles === null) {
-        console.log('🏠 Roles still loading, waiting...');
+        // Roles still loading, waiting...
         return;
       }
       
       // Si el usuario está autenticado pero no tiene rol asignado
       if (userRoles.length === 0 || !userRole) {
-        console.log('🏠 No role assigned, redirecting to profile');
+        // No role assigned, redirecting to profile
         hasProcessedRedirect.current = true;
         navigate('/profile');
         return;
       }
       
-      console.log('🏠 User has role:', userRole.role, 'redirecting...');
-      
       // Redirigir según el rol activo del usuario (no por jerarquía)
       hasProcessedRedirect.current = true;
       if (isSuperAdmin) {
-        console.log('🏠 Redirecting to superadmin dashboard');
         navigate('/superadmin');
       } else if (userRole?.role === 'company_owner') {
-        console.log('🏠 Redirecting to owner dashboard');
         navigate('/dashboard/owner');
       } else if (userRole?.role === 'operations_manager') {
-        console.log('🏠 Redirecting to operations dashboard');
         navigate('/dashboard/operations');
       } else if (userRole?.role === 'dispatcher') {
-        console.log('🏠 Redirecting to dispatcher dashboard');
         navigate('/dashboard/dispatch');
       } else if (userRole?.role === 'driver') {
-        console.log('🏠 Redirecting to driver dashboard');
         navigate('/dashboard/driver');
       }
     } else if (!loading && !user) {
