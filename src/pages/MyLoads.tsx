@@ -33,10 +33,13 @@ export default function MyLoads() {
     
     const parts = [];
     if (stats.active > 0) {
-      parts.push(`${stats.active} ${t('common:load', { count: stats.active })} ${t('common:active', { count: stats.active })}`);
+      const loadText = stats.active === 1 ? t('common:loads.load') : t('common:loads.load_plural');
+      const activeText = stats.active === 1 ? t('common:active') : t('common:active_plural');
+      parts.push(`${stats.active} ${loadText} ${activeText}`);
     }
     if (stats.completed > 0) {
-      parts.push(`${stats.completed} ${t('common:completed', { count: stats.completed })}`);
+      const completedText = stats.completed === 1 ? t('common:completed') : t('common:completed_plural');
+      parts.push(`${stats.completed} ${completedText}`);
     }
     if (parts.length === 0) {
       return t('dashboard:owner.loads.no_loads_description');
@@ -49,7 +52,7 @@ export default function MyLoads() {
     <>
       <PageToolbar 
         icon={Package}
-        title={t('common:my_loads', { defaultValue: 'Mis Cargas' })}
+        title={t('common:loads.my_loads')}
         subtitle={getSubtitle()}
       />
 

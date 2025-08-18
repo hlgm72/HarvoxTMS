@@ -312,5 +312,15 @@
       "change_role": "Change Role",
       "active": "Active"
     }
-  }
+  },
+  "loads": {
+    "load": "load",
+    "load_plural": "loads",
+    "my_loads": "My Loads"
+  },
+  "stop": "Stop",
+  "active": "active",
+  "active_plural": "active",
+  "completed": "completed",
+  "completed_plural": "completed"
 }

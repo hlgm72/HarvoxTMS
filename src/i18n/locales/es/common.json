@@ -312,5 +312,15 @@
       "change_role": "Cambiar Rol",
       "active": "Activo"
     }
-  }
+  },
+  "loads": {
+    "load": "carga",
+    "load_plural": "cargas",
+    "my_loads": "Mis Cargas"
+  },
+  "stop": "Parada",
+  "active": "activa",
+  "active_plural": "activas", 
+  "completed": "completada",
+  "completed_plural": "completadas"
 }
