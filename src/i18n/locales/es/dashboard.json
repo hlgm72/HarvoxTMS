@@ -208,5 +208,35 @@
         "highest_expense": "Gasto Mayor"
       }
     }
+  },
+  "driver": {
+    "sidebar": {
+      "navigation": {
+        "my_dashboard": "Mi Dashboard",
+        "my_loads": "Mis Cargas",
+        "my_payments": "Mis Pagos",
+        "fuel": "Combustible",
+        "documents": "Documentos",
+        "mobile_app": "Móvil App"
+      },
+      "descriptions": {
+        "main_panel": "Panel principal",
+        "manage_active_loads": "Gestionar cargas activas",
+        "daily_financial_status": "Estado financiero diario",
+        "card_and_expenses": "Tarjeta y gastos",
+        "personal_documents": "Documentos personales",
+        "mobile_tracking_app": "App móvil de tracking"
+      },
+      "sections": {
+        "main": "Principal",
+        "loads": "Gestión de Cargas",
+        "financial": "Financiero Diario",
+        "documents": "Documentos",
+        "tools": "Herramientas"
+      },
+      "badges": {
+        "live": "Live"
+      }
+    }
   }
 }

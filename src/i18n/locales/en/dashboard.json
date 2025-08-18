@@ -208,5 +208,35 @@
         "highest_expense": "Highest Expense"
       }
     }
+  },
+  "driver": {
+    "sidebar": {
+      "navigation": {
+        "my_dashboard": "My Dashboard",
+        "my_loads": "My Loads",
+        "my_payments": "My Payments",
+        "fuel": "Fuel",
+        "documents": "Documents",
+        "mobile_app": "Mobile App"
+      },
+      "descriptions": {
+        "main_panel": "Main panel",
+        "manage_active_loads": "Manage active loads",
+        "daily_financial_status": "Daily financial status",
+        "card_and_expenses": "Card and expenses",
+        "personal_documents": "Personal documents",
+        "mobile_tracking_app": "Mobile tracking app"
+      },
+      "sections": {
+        "main": "Main",
+        "loads": "Load Management",
+        "financial": "Daily Financial",
+        "documents": "Documents",
+        "tools": "Tools"
+      },
+      "badges": {
+        "live": "Live"
+      }
+    }
   }
 }

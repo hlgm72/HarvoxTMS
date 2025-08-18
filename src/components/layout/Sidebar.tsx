@@ -373,58 +373,58 @@ const getDispatcherNavigationItems = (driversCount: number, equipmentCount: numb
 ];
 
 // Navegación para Driver - Optimizada para móviles
-const getDriverNavigationItems = (loadsCount: number) => [
+const getDriverNavigationItems = (loadsCount: number, t: any) => [
   // Panel Principal
   { 
-    title: "Mi Dashboard", 
+    title: t('dashboard:driver.sidebar.navigation.my_dashboard'), 
     url: "/dashboard/driver", 
     icon: Home, 
-    badge: "Live",
+    badge: t('dashboard:driver.sidebar.badges.live'),
     badgeVariant: "live" as const,
-    description: "Panel principal",
+    description: t('dashboard:driver.sidebar.descriptions.main_panel'),
     section: "main"
   },
   
   // Gestión de Cargas - Prioridad #1
   { 
-    title: "Mis Cargas", 
+    title: t('dashboard:driver.sidebar.navigation.my_loads'), 
     url: "/my-loads", 
     icon: Package, 
     badge: loadsCount.toString(),
     badgeVariant: "count" as const,
-    description: "Gestionar cargas activas",
+    description: t('dashboard:driver.sidebar.descriptions.manage_active_loads'),
     section: "loads"
   },
   
   // Información Financiera - Prioridad #2
   { 
-    title: "Mis Pagos", 
+    title: t('dashboard:driver.sidebar.navigation.my_payments'), 
     url: "/payments", 
     icon: DollarSign,
-    description: "Estado financiero diario",
+    description: t('dashboard:driver.sidebar.descriptions.daily_financial_status'),
     section: "financial"
   },
   { 
-    title: "Combustible", 
+    title: t('dashboard:driver.sidebar.navigation.fuel'), 
     url: "/fuel-card", 
     icon: Fuel,
-    description: "Tarjeta y gastos",
+    description: t('dashboard:driver.sidebar.descriptions.card_and_expenses'),
     section: "financial"
   },
   
   // Documentos y Soporte
   { 
-    title: "Documentos", 
+    title: t('dashboard:driver.sidebar.navigation.documents'), 
     url: "/my-documents", 
     icon: FileText,
-    description: "Documentos personales",
+    description: t('dashboard:driver.sidebar.descriptions.personal_documents'),
     section: "documents"
   },
   { 
-    title: "Móvil App", 
+    title: t('dashboard:driver.sidebar.navigation.mobile_app'), 
     url: "/driver-mobile", 
     icon: Navigation,
-    description: "App móvil de tracking",
+    description: t('dashboard:driver.sidebar.descriptions.mobile_tracking_app'),
     section: "tools"
   },
 ];
@@ -565,10 +565,10 @@ export function AppSidebar() {
     if (isCompanyOwner) return getCompanyOwnerNavigationItems(driversCount, equipmentCount, loadsCount, t);
     if (isOperationsManager) return getOperationsManagerNavigationItems(driversCount, equipmentCount, loadsCount);
     if (isDispatcher) return getDispatcherNavigationItems(driversCount, equipmentCount, loadsCount, t);
-    if (isDriver) return getDriverNavigationItems(loadsCount);
+    if (isDriver) return getDriverNavigationItems(loadsCount, t);
     
     // Fallback para usuarios sin rol específico
-    return getDriverNavigationItems(loadsCount);
+    return getDriverNavigationItems(loadsCount, t);
   };
   
   const navigationItems = getNavigationItems();
@@ -579,11 +579,11 @@ export function AppSidebar() {
   const getSectionLabels = () => {
     if (isDriver) {
       return {
-        main: "Principal",
-        loads: "Gestión de Cargas",
-        financial: "Financiero Diario",
-        documents: "Documentos",
-        tools: "Herramientas"
+        main: t('dashboard:driver.sidebar.sections.main'),
+        loads: t('dashboard:driver.sidebar.sections.loads'),
+        financial: t('dashboard:driver.sidebar.sections.financial'),
+        documents: t('dashboard:driver.sidebar.sections.documents'),
+        tools: t('dashboard:driver.sidebar.sections.tools')
       };
     }
     if (isCompanyOwner) {
@@ -611,13 +611,6 @@ export function AppSidebar() {
         financial: t('company.sidebar.sections.financial'),
         reports: t('company.sidebar.sections.reports'),
         resources: t('company.sidebar.sections.resources')
-      };
-    }
-    if (isDriver) {
-      return {
-        dashboard: t('company.sidebar.descriptions.personal_panel'),
-        tasks: t('company.sidebar.sections.tasks'),
-        financial: t('company.sidebar.sections.financial')
       };
     }
     return {};
