@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CalendarIcon, Clock, Upload } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -28,6 +29,14 @@ interface StatusUpdateModalProps {
   isDeliveryStep?: boolean;
   newStatus?: string; // Agregar el estado al que se está transicionando
 }
+
+const TIME_OPTIONS = Array.from({ length: 24 }, (_, hour) => {
+  const h = hour.toString().padStart(2, '0');
+  return [
+    `${h}:00`,
+    `${h}:30`
+  ];
+}).flat();
 
 export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   isOpen,
@@ -250,26 +259,21 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                 <Label htmlFor="eta-time" className="text-xs text-muted-foreground">
                   {t('dashboard:loads.status_update_modal.time_label')}
                 </Label>
-                <Input
-                  id="eta-time"
-                  type="text"
-                  placeholder="HH:mm"
-                  pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
+                <Select
                   value={etaTime}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    // Solo permitir números y :
-                    const formatted = value.replace(/[^\d:]/g, '');
-                    // Auto-formatear mientras escribe
-                    if (formatted.length === 2 && !formatted.includes(':')) {
-                      setEtaTime(formatted + ':');
-                    } else if (formatted.length <= 5) {
-                      setEtaTime(formatted);
-                    }
-                  }}
-                  className="text-sm font-mono"
-                  maxLength={5}
-                />
+                  onValueChange={setEtaTime}
+                >
+                  <SelectTrigger className="text-sm">
+                    <SelectValue placeholder="Seleccionar hora" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TIME_OPTIONS.map(time => (
+                      <SelectItem key={time} value={time}>
+                        {time}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
