@@ -137,16 +137,15 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     const pickupStops = sortedStops.filter(stop => stop.stop_type === 'pickup');
     const deliveryStops = sortedStops.filter(stop => stop.stop_type === 'delivery');
     
-    // Calcular total de estados posibles
-    // Para cada pickup: en_route_pickup, at_pickup, loaded
-    // Para cada delivery: en_route_delivery, at_delivery  
-    // Más delivered + closed
-    const totalStates = (pickupStops.length * 3) + (deliveryStops.length * 2) + 2;
+    // Calcular total de estados efectivos (excluyendo 'assigned')
+    // Para cada pickup: en_route_pickup, at_pickup, loaded (3 estados)
+    // Para cada delivery: en_route_delivery, at_delivery (2 estados)  
+    // Más delivered, closed (2 estados finales)
+    // Total efectivo = pickup_states + delivery_states + final_states
+    const effectiveStates = (pickupStops.length * 3) + (deliveryStops.length * 2) + 2;
     
-    // Estados efectivos (excluyendo 'assigned') 
-    const effectiveStates = totalStates - 1;
-    
-    // Para 2 paradas: 7 estados efectivos, entonces 100÷7 = 14.28% ≈ 14% por estado
+    // Para una carga de 2 paradas: 1*3 + 1*2 + 2 = 7 estados efectivos
+    // 100 ÷ 7 = 14.28... → Math.floor = 14% por estado
     const progressPerState = 100 / effectiveStates;
     
     // Casos especiales

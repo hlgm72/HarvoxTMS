@@ -77,7 +77,8 @@
       "loaded": "Loaded",
       "en_route_delivery": "En route to delivery",
       "at_delivery": "At delivery location",
-      "delivered": "Delivered"
+      "delivered": "Delivered",
+      "closed": "Closed"
     },
     "actions": {
       "assigned": "Heading to pickup",
@@ -86,6 +87,7 @@
       "loaded": "Heading to delivery",
       "en_route_delivery": "Arrived at delivery",
       "at_delivery": "Delivery completed",
+      "delivered": "Upload POD",
       "update_status": "Update Status"
     },
     "status_update_modal": {

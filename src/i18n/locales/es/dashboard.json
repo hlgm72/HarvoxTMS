@@ -77,7 +77,8 @@
       "loaded": "Cargada",
       "en_route_delivery": "En ruta al destino",
       "at_delivery": "En lugar de entrega",
-      "delivered": "Entregada"
+      "delivered": "Entregada",
+      "closed": "Cerrada"
     },
     "actions": {
       "assigned": "Camino a recoger",
@@ -86,6 +87,7 @@
       "loaded": "Camino a entregar",
       "en_route_delivery": "Llegué a entrega",
       "at_delivery": "Entrega completada",
+      "delivered": "Subir POD",
       "update_status": "Actualizar Estado"
     },
     "status_update_modal": {
