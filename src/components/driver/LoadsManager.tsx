@@ -507,28 +507,34 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                            {(() => {
                               // Priorizar información del historial de estado más reciente
                               if (load.latest_status_eta) {
-                                // Usar formatDateTimeAuto que maneja correctamente las zonas horarias
-                                const formattedETA = formatDateTimeAuto(load.latest_status_eta);
-                                // Extraer solo la parte de fecha y hora (dd/MM HH:mm)
-                                const parts = formattedETA.split(' ');
-                                if (parts.length >= 2) {
-                                  const datePart = parts[0]; // dd/MM/yyyy
-                                  const timePart = parts[1]; // HH:mm
-                                  const dateShort = datePart.substring(0, 5); // dd/MM
+                                // Para ETAs del historial, usar directamente la hora guardada sin conversión de zona horaria
+                                const etaString = load.latest_status_eta;
+                                if (etaString.includes('T')) {
+                                  // Formato ISO: extraer fecha y hora directamente
+                                  const [datePart, timePart] = etaString.split('T');
+                                  const [year, month, day] = datePart.split('-');
+                                  const [time] = timePart.split('+'); // Remover parte de zona horaria
+                                  const [hour, minute] = time.split(':');
+                                  
+                                  const language = i18n.language;
+                                  const dateShort = language === 'es' ? `${day}/${month}` : `${month}/${day}`;
+                                  const timeShort = `${hour}:${minute}`;
+                                  
                                   return (
                                     <>
                                       <Calendar className="h-3 w-3 inline mr-1" />
-                                      {dateShort} {timePart}
+                                      {dateShort} {timeShort}
                                     </>
                                   );
                                 }
+                                // Fallback para otros formatos
                                 return (
                                   <>
                                     <Calendar className="h-3 w-3 inline mr-1" />
-                                    {formattedETA}
+                                    {formatDateTimeAuto(load.latest_status_eta)}
                                   </>
-                                 );
-                               }
+                                );
+                              }
                               
                               // Fallback: mostrar fecha programada de la parada actual si no hay ETA del historial
                              const currentStop = load.stops?.find(stop => {
