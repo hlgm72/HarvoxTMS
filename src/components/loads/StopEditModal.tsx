@@ -72,7 +72,9 @@ export function StopEditModal({
   };
 
   const getStopTypeColor = () => {
-    return stop.stop_type === 'pickup' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
+    if (isFirst) return 'bg-green-100 text-green-800'; // Verde para pickup inicial
+    if (isLast) return 'bg-red-100 text-red-800'; // Rojo para entrega final
+    return 'bg-blue-100 text-blue-800'; // Azul para paradas intermedias
   };
 
   const companyNameHandlers = createTextHandlers(
