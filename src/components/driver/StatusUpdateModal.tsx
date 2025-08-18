@@ -38,6 +38,22 @@ const TIME_OPTIONS = Array.from({ length: 24 }, (_, hour) => {
   ];
 }).flat();
 
+// Función para redondear la hora actual al intervalo más cercano de 30 minutos
+const roundToNearestTimeSlot = (): string => {
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  
+  // Redondear al intervalo de 30 minutos más cercano
+  const roundedMinutes = minutes < 15 ? 0 : minutes < 45 ? 30 : 0;
+  const roundedHours = minutes >= 45 ? hours + 1 : hours;
+  
+  // Ajustar si se pasa de las 23:30
+  const finalHours = roundedHours >= 24 ? 0 : roundedHours;
+  
+  return `${finalHours.toString().padStart(2, '0')}:${roundedMinutes.toString().padStart(2, '0')}`;
+};
+
 export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   isOpen,
   onClose,
@@ -206,12 +222,10 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
       const now = new Date();
       setEtaDate(format(now, 'yyyy-MM-dd'));
       
-      // Si no es ETA, establecer la hora actual por defecto
+      // Si no es ETA, establecer la hora actual redondeada al intervalo más cercano
       if (timeFieldInfo.defaultToNow && !etaTime) {
-        const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        setEtaTime(`${hours}:${minutes}`);
+        const roundedTime = roundToNearestTimeSlot();
+        setEtaTime(roundedTime);
       }
     }
   }, [isOpen, etaDate, etaTime, timeFieldInfo.defaultToNow]);
