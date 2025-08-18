@@ -63,7 +63,7 @@ interface LoadsManagerProps {
 
 // Componente para mostrar información de la parada actual
 function CurrentStopInfo({ load }: { load: Load }) {
-  const { t } = useTranslation(['common', 'dashboard']);
+  const { t, i18n } = useTranslation(['common', 'dashboard']);
   const loadWithStops = {
     id: load.id,
     status: load.status,
@@ -102,7 +102,9 @@ function CurrentStopInfo({ load }: { load: Load }) {
 
     // Priorizar ETA si está disponible
     if (stop.eta_date) {
-      let result = `🎯 ETA: ${formatDateSafe(stop.eta_date, 'dd/MM')}`;
+      const language = i18n.language;
+      const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
+      let result = `🎯 ETA: ${formatDateSafe(stop.eta_date, pattern)}`;
       if (stop.eta_time) {
         // Formatear hora para remover segundos si los tiene
         const timeWithoutSeconds = stop.eta_time.length > 5 ? stop.eta_time.substring(0, 5) : stop.eta_time;
@@ -113,7 +115,9 @@ function CurrentStopInfo({ load }: { load: Load }) {
 
     // Mostrar fecha programada como fallback
     if (stop.scheduled_date) {
-      let result = `📅 ${formatDateSafe(stop.scheduled_date, 'dd/MM')}`;
+      const language = i18n.language;
+      const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
+      let result = `${formatDateSafe(stop.scheduled_date, pattern)}`;
       if (stop.scheduled_time) {
         // Formatear hora para remover segundos si los tiene
         const timeWithoutSeconds = stop.scheduled_time.length > 5 ? stop.scheduled_time.substring(0, 5) : stop.scheduled_time;
@@ -131,7 +135,8 @@ function CurrentStopInfo({ load }: { load: Load }) {
     <div className="text-xs text-muted-foreground mt-1">
       <div>{getStopActionText(load.status, nextStopInfo.stop)}</div>
       {timeDisplay && (
-        <div className="text-xs text-primary font-medium mt-0.5">
+        <div className="text-xs text-primary font-medium mt-0.5 flex items-center gap-1">
+          <Calendar className="h-3 w-3" />
           {timeDisplay}
         </div>
       )}

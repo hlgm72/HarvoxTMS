@@ -78,7 +78,10 @@ export const useUpdateLoadStatusWithValidation = () => {
         if (params.eta) {
           // Separar fecha y hora para los nuevos campos
           const etaDate = params.eta.toISOString().split('T')[0];
-          const etaTime = params.eta.toTimeString().split(' ')[0].substring(0, 5); // Solo HH:mm
+          // Usar la hora local del usuario en lugar de UTC
+          const hours = params.eta.getHours().toString().padStart(2, '0');
+          const minutes = params.eta.getMinutes().toString().padStart(2, '0');
+          const etaTime = `${hours}:${minutes}`;
           
           stopUpdateData.eta_date = etaDate;
           stopUpdateData.eta_time = etaTime;
