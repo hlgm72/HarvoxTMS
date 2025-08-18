@@ -1719,19 +1719,63 @@ export type Database = {
           },
         ]
       }
+      load_status_history: {
+        Row: {
+          changed_at: string
+          changed_by: string
+          created_at: string
+          eta_provided: string | null
+          id: string
+          load_id: string
+          new_status: string
+          notes: string | null
+          previous_status: string | null
+          stop_id: string | null
+        }
+        Insert: {
+          changed_at?: string
+          changed_by: string
+          created_at?: string
+          eta_provided?: string | null
+          id?: string
+          load_id: string
+          new_status: string
+          notes?: string | null
+          previous_status?: string | null
+          stop_id?: string | null
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string
+          created_at?: string
+          eta_provided?: string | null
+          id?: string
+          load_id?: string
+          new_status?: string
+          notes?: string | null
+          previous_status?: string | null
+          stop_id?: string | null
+        }
+        Relationships: []
+      }
       load_stops: {
         Row: {
+          actual_arrival_datetime: string | null
           actual_date: string | null
           actual_time: string | null
           address: string
           city: string
           company_name: string | null
+          completion_datetime: string | null
           contact_name: string | null
           contact_phone: string | null
           created_at: string
           driver_notes: string | null
           estimated_arrival_time: string | null
+          eta_date: string | null
+          eta_time: string | null
           id: string
+          last_status_update: string | null
           load_id: string
           reference_number: string | null
           scheduled_date: string | null
@@ -1746,17 +1790,22 @@ export type Database = {
           zip_code: string | null
         }
         Insert: {
+          actual_arrival_datetime?: string | null
           actual_date?: string | null
           actual_time?: string | null
           address: string
           city: string
           company_name?: string | null
+          completion_datetime?: string | null
           contact_name?: string | null
           contact_phone?: string | null
           created_at?: string
           driver_notes?: string | null
           estimated_arrival_time?: string | null
+          eta_date?: string | null
+          eta_time?: string | null
           id?: string
+          last_status_update?: string | null
           load_id: string
           reference_number?: string | null
           scheduled_date?: string | null
@@ -1771,17 +1820,22 @@ export type Database = {
           zip_code?: string | null
         }
         Update: {
+          actual_arrival_datetime?: string | null
           actual_date?: string | null
           actual_time?: string | null
           address?: string
           city?: string
           company_name?: string | null
+          completion_datetime?: string | null
           contact_name?: string | null
           contact_phone?: string | null
           created_at?: string
           driver_notes?: string | null
           estimated_arrival_time?: string | null
+          eta_date?: string | null
+          eta_time?: string | null
           id?: string
+          last_status_update?: string | null
           load_id?: string
           reference_number?: string | null
           scheduled_date?: string | null
