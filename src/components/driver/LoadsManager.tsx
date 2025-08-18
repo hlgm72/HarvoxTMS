@@ -295,7 +295,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
   return (
     <div className={className}>
       <Tabs defaultValue="active" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-2 gap-1">
           <TabsTrigger value="active">
             <div className="flex items-center gap-2">
               <span>{dashboardMode ? "Carga Activa" : "Cargas Asignadas"}</span>
