@@ -252,7 +252,7 @@ const getOperationsManagerNavigationItems = (driversCount: number, equipmentCoun
 ];
 
 // Navegación para Dispatcher
-const getDispatcherNavigationItems = (driversCount: number) => [
+const getDispatcherNavigationItems = (driversCount: number, t: any) => [
   // Dashboard y Seguimiento
   { 
     title: "Dashboard", 
@@ -287,6 +287,36 @@ const getDispatcherNavigationItems = (driversCount: number) => [
     icon: Navigation,
     description: "Asignación de cargas",
     section: "loads"
+  },
+  
+  // Gestión Financiera
+  { 
+    title: t('company.sidebar.navigation.additional_payments'), 
+    url: "/additional-payments", 
+    icon: Calculator,
+    description: t('company.sidebar.descriptions.additional_income'),
+    section: "financial"
+  },
+  { 
+    title: t('company.sidebar.navigation.deductions'), 
+    url: "/deductions", 
+    icon: Receipt,
+    description: t('company.sidebar.descriptions.recurring_expenses'),
+    section: "financial"
+  },
+  { 
+    title: t('company.sidebar.navigation.fuel_management'), 
+    url: "/fuel-management", 
+    icon: Fuel,
+    description: t('company.sidebar.descriptions.fuel_control'),
+    section: "financial"
+  },
+  { 
+    title: t('company.sidebar.navigation.driver_payments'), 
+    url: "/payments", 
+    icon: DollarSign,
+    description: t('company.sidebar.descriptions.payment_management'),
+    section: "financial"
   },
   
   // Recursos
@@ -500,7 +530,7 @@ export function AppSidebar() {
     if (isSuperAdmin) return getSuperAdminNavigationItems(t);
     if (isCompanyOwner) return getCompanyOwnerNavigationItems(driversCount, equipmentCount, loadsCount, t);
     if (isOperationsManager) return getOperationsManagerNavigationItems(driversCount, equipmentCount, loadsCount);
-    if (isDispatcher) return getDispatcherNavigationItems(driversCount);
+    if (isDispatcher) return getDispatcherNavigationItems(driversCount, t);
     if (isDriver) return getDriverNavigationItems(loadsCount);
     
     // Fallback para usuarios sin rol específico
