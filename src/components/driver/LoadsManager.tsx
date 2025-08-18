@@ -117,42 +117,32 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
   });
 
   const calculateProgress = (status: string, stopsData?: any[]): number => {
+    // Casos especiales
+    if (status === 'assigned') return 0;
+    if (status === 'closed') return 100;
+
     if (!stopsData || stopsData.length === 0) {
-      // Fallback para carga de 2 paradas (7 estados efectivos)
+      // Fallback para carga de 2 paradas: 2×3 + 1 = 7 estados totales
+      const totalStates = 7;
+      const progressPerState = Math.floor(100 / totalStates); // 14%
+      
       switch (status) {
-        case 'assigned': return 0;
-        case 'en_route_pickup': return 14;
-        case 'at_pickup': return 28;
-        case 'loaded': return 42;
-        case 'en_route_delivery': return 56;
-        case 'at_delivery': return 70;
-        case 'delivered': return 84;
-        case 'closed': return 100;
+        case 'en_route_pickup': return progressPerState; // 14%
+        case 'at_pickup': return progressPerState * 2; // 28%
+        case 'loaded': return progressPerState * 3; // 42%
+        case 'en_route_delivery': return progressPerState * 4; // 56%
+        case 'at_delivery': return progressPerState * 5; // 70%
+        case 'delivered': return progressPerState * 6; // 84%
         default: return 0;
       }
     }
 
-    // Cálculo dinámico basado en paradas
+    // Cálculo dinámico: número de paradas × 3 + 1 estado cerrar
     const sortedStops = [...stopsData].sort((a, b) => a.stop_number - b.stop_number);
-    const pickupStops = sortedStops.filter(stop => stop.stop_type === 'pickup');
-    const deliveryStops = sortedStops.filter(stop => stop.stop_type === 'delivery');
+    const totalStates = sortedStops.length * 3 + 1;
+    const progressPerState = Math.floor(100 / totalStates);
     
-    // Calcular total de estados efectivos (excluyendo 'assigned')
-    // Para cada pickup: en_route_pickup, at_pickup, loaded (3 estados)
-    // Para cada delivery: en_route_delivery, at_delivery (2 estados)  
-    // Más delivered, closed (2 estados finales)
-    // Total efectivo = pickup_states + delivery_states + final_states
-    const effectiveStates = (pickupStops.length * 3) + (deliveryStops.length * 2) + 2;
-    
-    // Para una carga de 2 paradas: 1*3 + 1*2 + 2 = 7 estados efectivos
-    // 100 ÷ 7 = 14.28... → Math.floor = 14% por estado
-    const progressPerState = 100 / effectiveStates;
-    
-    // Casos especiales
-    if (status === 'assigned') return 0;
-    if (status === 'closed') return 100;
-    
-    // Calcular progreso según el estado actual
+    // Calcular posición del estado actual
     let currentStatePosition = 0;
     
     switch (status) {
@@ -163,24 +153,22 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         currentStatePosition = 2;
         break;
       case 'loaded':
-        // Determinar cuántas recogidas han sido completadas
-        currentStatePosition = 3; // Por simplicidad, asumimos la primera recogida
+        currentStatePosition = 3;
         break;
       case 'en_route_delivery':
-        currentStatePosition = (pickupStops.length * 3) + 1;
+        currentStatePosition = 4;
         break;
       case 'at_delivery':
-        currentStatePosition = (pickupStops.length * 3) + 2;
+        currentStatePosition = 5;
         break;
       case 'delivered':
-        currentStatePosition = (pickupStops.length * 3) + (deliveryStops.length * 2) + 1;
+        currentStatePosition = 6;
         break;
       default:
         return 0;
     }
     
-    // Calcular el progreso final sin redondear la multiplicación
-    const finalProgress = Math.floor(progressPerState * currentStatePosition);
+    const finalProgress = progressPerState * currentStatePosition;
     return Math.min(finalProgress, 99);
   };
 
