@@ -88,6 +88,22 @@
       "at_delivery": "Entrega completada",
       "update_status": "Actualizar Estado"
     },
+    "status_update_modal": {
+      "title": "Actualizar Estado de Carga",
+      "eta_label": "Tiempo Estimado de Llegada (ETA)",
+      "date_label": "Fecha",
+      "time_label": "Hora",
+      "pod_label": "Subir POD (Proof of Delivery)",
+      "file_selected": "Archivo seleccionado:",
+      "notes_label": "Notas Adicionales (Opcional)",
+      "notes_placeholder": "Información adicional sobre el estado, condiciones del tráfico, problemas, etc...",
+      "uploading": "Subiendo...",
+      "upload": "Subir",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "updating": "Actualizando...",
+      "stop_info": "Parada {{number}}: {{company}}"
+    },
     "stop_types": {
       "pickup": "Recoger",
       "delivery": "Entregar"

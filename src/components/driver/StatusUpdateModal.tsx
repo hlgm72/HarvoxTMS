@@ -10,6 +10,7 @@ import { es } from 'date-fns/locale';
 import { useDocumentUploadFlowACID } from '@/hooks/useDocumentManagementACID';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
 
 interface StatusUpdateModalProps {
   isOpen: boolean;
@@ -37,6 +38,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   loadId,
   isDeliveryStep = false
 }) => {
+  const { t } = useTranslation(['dashboard']);
   const [etaDate, setEtaDate] = useState('');
   const [etaTime, setEtaTime] = useState('');
   const [notes, setNotes] = useState('');
@@ -152,7 +154,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
-            Actualizar Estado de Carga
+            {t('dashboard:loads.status_update_modal.title')}
           </DialogTitle>
         </DialogHeader>
         
@@ -162,7 +164,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
             <p className="font-medium text-sm">{actionText}</p>
             {stopInfo && (
               <div className="text-xs text-muted-foreground mt-1">
-                <p>Parada {stopInfo.stop_number}: {stopInfo.company_name}</p>
+                <p>{t('dashboard:loads.status_update_modal.stop_info', { number: stopInfo.stop_number, company: stopInfo.company_name })}</p>
                 <p>{stopInfo.street_address}</p>
               </div>
             )}
@@ -171,13 +173,13 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
           {/* ETA Fields */}
           <div className="space-y-3">
             <Label className="text-sm font-medium">
-              Tiempo Estimado de Llegada (ETA)
+              {t('dashboard:loads.status_update_modal.eta_label')}
             </Label>
             
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="eta-date" className="text-xs text-muted-foreground">
-                  Fecha
+                  {t('dashboard:loads.status_update_modal.date_label')}
                 </Label>
                 <Input
                   id="eta-date"
@@ -190,7 +192,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
               
               <div>
                 <Label htmlFor="eta-time" className="text-xs text-muted-foreground">
-                  Hora
+                  {t('dashboard:loads.status_update_modal.time_label')}
                 </Label>
                 <Input
                   id="eta-time"
@@ -207,7 +209,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
           {isDeliveryStep && (
             <div className="space-y-3">
               <Label className="text-sm font-medium">
-                Subir POD (Proof of Delivery)
+                {t('dashboard:loads.status_update_modal.pod_label')}
               </Label>
               <div className="flex items-center gap-3">
                 <Input
@@ -225,13 +227,13 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                     className="shrink-0"
                   >
                     <Upload className="h-4 w-4 mr-1" />
-                    {isUploading ? "Subiendo..." : "Subir"}
+                    {isUploading ? t('dashboard:loads.status_update_modal.uploading') : t('dashboard:loads.status_update_modal.upload')}
                   </Button>
                 )}
               </div>
               {selectedFile && (
                 <p className="text-xs text-muted-foreground">
-                  Archivo seleccionado: {selectedFile.name}
+                  {t('dashboard:loads.status_update_modal.file_selected')} {selectedFile.name}
                 </p>
               )}
             </div>
@@ -240,11 +242,11 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
           {/* Notes */}
           <div className="space-y-2">
             <Label htmlFor="notes" className="text-sm font-medium">
-              Notas Adicionales (Opcional)
+              {t('dashboard:loads.status_update_modal.notes_label')}
             </Label>
             <Textarea
               id="notes"
-              placeholder="Información adicional sobre el estado, condiciones del tráfico, problemas, etc..."
+              placeholder={t('dashboard:loads.status_update_modal.notes_placeholder')}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="text-sm min-h-[80px] resize-none"
@@ -262,14 +264,14 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
             onClick={handleClose}
             disabled={isLoading}
           >
-            Cancelar
+            {t('dashboard:loads.status_update_modal.cancel')}
           </Button>
           <Button
             onClick={handleConfirm}
             disabled={isLoading}
             className="min-w-[120px]"
           >
-            {isLoading ? "Actualizando..." : "Confirmar"}
+            {isLoading ? t('dashboard:loads.status_update_modal.updating') : t('dashboard:loads.status_update_modal.confirm')}
           </Button>
         </DialogFooter>
       </DialogContent>

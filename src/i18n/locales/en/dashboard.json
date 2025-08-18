@@ -88,6 +88,22 @@
       "at_delivery": "Delivery completed",
       "update_status": "Update Status"
     },
+    "status_update_modal": {
+      "title": "Update Load Status",
+      "eta_label": "Estimated Time of Arrival (ETA)",
+      "date_label": "Date",
+      "time_label": "Time",
+      "pod_label": "Upload POD (Proof of Delivery)",
+      "file_selected": "Selected file:",
+      "notes_label": "Additional Notes (Optional)",
+      "notes_placeholder": "Additional information about status, traffic conditions, issues, etc...",
+      "uploading": "Uploading...",
+      "upload": "Upload",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "updating": "Updating...",
+      "stop_info": "Stop {{number}}: {{company}}"
+    },
     "stop_types": {
       "pickup": "Pickup",
       "delivery": "Delivery"
