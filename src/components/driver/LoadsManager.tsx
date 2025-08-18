@@ -492,7 +492,35 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                             return null;
                           })()}
                         </div>
-                      )}
+                       )}
+                       {/* Mostrar solo fecha y hora debajo del badge */}
+                       {(() => {
+                         if (load.status !== 'assigned' && load.stops && load.stops.length > 0) {
+                           // Encontrar la parada actual según el estado
+                           let currentStop = null;
+                           if (load.status === 'en_route_pickup' || load.status === 'at_pickup') {
+                             currentStop = load.stops.find(stop => stop.stop_type === 'pickup');
+                           } else if (load.status === 'loaded' || load.status === 'en_route_delivery' || load.status === 'at_delivery') {
+                             currentStop = load.stops.find(stop => stop.stop_type === 'delivery');
+                           }
+                           
+                           if (currentStop?.scheduled_date) {
+                             const pattern = i18n.language === 'es' ? 'dd/MM' : 'MM/dd';
+                             let result = `${formatDateSafe(currentStop.scheduled_date, pattern)}`;
+                             if (currentStop.scheduled_time) {
+                               const timeWithoutSeconds = currentStop.scheduled_time.length > 5 ? currentStop.scheduled_time.substring(0, 5) : currentStop.scheduled_time;
+                               result += ` ${timeWithoutSeconds}`;
+                             }
+                             return (
+                               <div className="text-xs text-primary font-medium mt-0.5">
+                                 <Calendar className="h-3 w-3 inline mr-1" />
+                                 {result}
+                               </div>
+                             );
+                           }
+                         }
+                         return null;
+                       })()}
                       
                     </div>
                   </div>
