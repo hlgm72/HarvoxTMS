@@ -69,6 +69,7 @@
     "active_load": "Active Load",
     "assigned_loads": "Assigned Loads",
     "completed": "Completed",
+    "progress": "Progress",
     "status": {
       "assigned": "Assigned",
       "en_route_pickup": "En route to pickup",

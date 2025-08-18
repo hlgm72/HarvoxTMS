@@ -69,6 +69,7 @@
     "active_load": "Carga Activa",
     "assigned_loads": "Cargas Asignadas",
     "completed": "Completadas",
+    "progress": "Progreso",
     "status": {
       "assigned": "Asignada",
       "en_route_pickup": "En ruta al origen",

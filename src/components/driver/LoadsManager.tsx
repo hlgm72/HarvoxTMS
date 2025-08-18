@@ -504,7 +504,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                   {/* Progress */}
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>Progreso</span>
+                      <span>{t('dashboard:loads.progress')}</span>
                       <span className="font-medium">{load.progress}%</span>
                     </div>
                     <Progress value={load.progress} className="h-2" />
