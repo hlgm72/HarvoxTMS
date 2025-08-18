@@ -38,7 +38,7 @@ export const DATE_PATTERNS = {
   DATE_TIME: 'dd/MM/yyyy HH:mm',
   DATE_TIME_SECONDS: 'dd/MM/yyyy HH:mm:ss',
   ISO_DATE: 'yyyy-MM-dd',
-  ISO_DATETIME: 'yyyy-MM-dd\'T\'HH:mm:ss',
+  ISO_DATETIME: 'yyyy-MM-dd\'T\'HH:mm',
   DISPLAY_DATE: 'dd MMM yyyy',
   MONTH_YEAR: 'MMM yyyy',
   YEAR_ONLY: 'yyyy'
