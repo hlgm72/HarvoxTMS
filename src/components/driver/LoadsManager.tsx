@@ -118,15 +118,16 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
 
   const calculateProgress = (status: string, stopsData?: any[]): number => {
     if (!stopsData || stopsData.length === 0) {
-      // Fallback a porcentajes fijos si no hay paradas definidas
+      // Fallback para carga de 2 paradas (7 estados efectivos)
       switch (status) {
         case 'assigned': return 0;
-        case 'en_route_pickup': return 25;
-        case 'at_pickup': return 50;
-        case 'loaded': return 65;
-        case 'en_route_delivery': return 80;
-        case 'at_delivery': return 95;
-        case 'delivered': return 100;
+        case 'en_route_pickup': return 14;
+        case 'at_pickup': return 28;
+        case 'loaded': return 42;
+        case 'en_route_delivery': return 56;
+        case 'at_delivery': return 70;
+        case 'delivered': return 84;
+        case 'closed': return 100;
         default: return 0;
       }
     }
@@ -136,29 +137,48 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     const pickupStops = sortedStops.filter(stop => stop.stop_type === 'pickup');
     const deliveryStops = sortedStops.filter(stop => stop.stop_type === 'delivery');
     
-    // Calcular total de estados posibles (excluyendo 'assigned')
+    // Calcular total de estados posibles
     // Para cada pickup: en_route_pickup, at_pickup, loaded
-    // Para cada delivery: en_route_delivery, at_delivery
-    // Más el estado final: delivered
-    const totalStates = (pickupStops.length * 3) + (deliveryStops.length * 2) + 1;
-    const progressPerState = 100 / totalStates;
+    // Para cada delivery: en_route_delivery, at_delivery  
+    // Más delivered + closed
+    const totalStates = (pickupStops.length * 3) + (deliveryStops.length * 2) + 2;
+    
+    // Estados efectivos (excluyendo 'assigned')
+    const effectiveStates = totalStates - 1;
+    const progressPerState = Math.round(100 / effectiveStates);
+    
+    // Casos especiales
+    if (status === 'assigned') return 0;
+    if (status === 'closed') return 100;
+    
+    // Calcular progreso según el estado actual
+    let currentStatePosition = 0;
     
     switch (status) {
-      case 'assigned': return 0;
-      case 'en_route_pickup': return Math.round(progressPerState * 1);
-      case 'at_pickup': return Math.round(progressPerState * 2);
-      case 'loaded': return Math.round(progressPerState * 3);
-      case 'en_route_delivery': 
-        // Calcular basado en qué entrega es
-        const basePickupStates = pickupStops.length * 3;
-        return Math.round(progressPerState * (basePickupStates + 1));
+      case 'en_route_pickup':
+        currentStatePosition = 1;
+        break;
+      case 'at_pickup':
+        currentStatePosition = 2;
+        break;
+      case 'loaded':
+        // Determinar cuántas recogidas han sido completadas
+        currentStatePosition = 3; // Por simplicidad, asumimos la primera recogida
+        break;
+      case 'en_route_delivery':
+        currentStatePosition = (pickupStops.length * 3) + 1;
+        break;
       case 'at_delivery':
-        // Calcular basado en qué entrega es
-        const basePickupStates2 = pickupStops.length * 3;
-        return Math.round(progressPerState * (basePickupStates2 + 2));
-      case 'delivered': return 100;
-      default: return 0;
+        currentStatePosition = (pickupStops.length * 3) + 2;
+        break;
+      case 'delivered':
+        currentStatePosition = (pickupStops.length * 3) + (deliveryStops.length * 2) + 1;
+        break;
+      default:
+        return 0;
     }
+    
+    return Math.min(Math.round(progressPerState * currentStatePosition), 99);
   };
 
   // Fetch driver's loads using the real hook
