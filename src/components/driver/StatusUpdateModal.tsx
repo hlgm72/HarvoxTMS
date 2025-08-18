@@ -267,7 +267,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                   onValueChange={setEtaTime}
                 >
                   <SelectTrigger className="text-sm">
-                    <SelectValue placeholder="Seleccionar hora" />
+                    <SelectValue placeholder={t('dashboard:loads.status_update_modal.time_placeholder')} />
                   </SelectTrigger>
                   <SelectContent>
                     {TIME_OPTIONS.map(time => (
