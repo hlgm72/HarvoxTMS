@@ -453,7 +453,10 @@ export const useLoads = (filters?: LoadsFilters) => {
           // Obtener el historial de estado más reciente para esta carga
           const latestStatusHistory = statusHistoryData
             .filter(h => h.load_id === load.id)
+            .filter(h => h.eta_provided) // Solo considerar registros con ETA
             .sort((a, b) => new Date(b.changed_at).getTime() - new Date(a.changed_at).getTime())[0];
+
+          console.log(`📊 Load ${load.load_number} - Status: ${load.status}, Latest ETA:`, latestStatusHistory?.eta_provided);
 
           return {
             ...load,
