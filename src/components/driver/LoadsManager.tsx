@@ -531,7 +531,13 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                                      {stop.scheduled_date && (
                                        <span className="text-xs text-primary font-medium flex items-center gap-1">
                                          <Calendar className="h-3 w-3" />
-                                         {formatDateSafe(stop.scheduled_date, 'dd/MM')}
+                                         {(() => {
+                                           const language = i18n.language;
+                                           const date = new Date(stop.scheduled_date);
+                                           const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
+                                           const shortDate = formatInternationalized(date, pattern);
+                                           return shortDate;
+                                         })()}
                                          {stop.scheduled_time && ` ${stop.scheduled_time}`}
                                        </span>
                                      )}
