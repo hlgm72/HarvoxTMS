@@ -271,7 +271,50 @@ const getDispatcherNavigationItems = (driversCount: number, t: any) => [
     section: "dashboard"
   },
   
-  // Gestión de Cargas
+  // Gestión Operacional
+  { 
+    title: t('company.sidebar.navigation.drivers'), 
+    url: "/drivers", 
+    icon: Users, 
+    badge: driversCount.toString(),
+    badgeVariant: "count" as const,
+    description: t('company.sidebar.descriptions.driver_management'),
+    section: "operations"
+  },
+  { 
+    title: t('company.sidebar.navigation.fleet'), 
+    url: "/equipment", 
+    icon: Truck, 
+    description: t('company.sidebar.descriptions.vehicles_equipment'),
+    section: "operations"
+  },
+  { 
+    title: t('company.sidebar.navigation.loads'), 
+    url: "/loads", 
+    icon: Package, 
+    badge: "12",
+    badgeVariant: "count" as const,
+    description: t('company.sidebar.descriptions.load_management'),
+    section: "operations"
+  },
+  
+  // Gestión Comercial
+  { 
+    title: t('company.sidebar.navigation.clients'), 
+    url: "/clients", 
+    icon: Building2,
+    description: t('company.sidebar.descriptions.client_base'),
+    section: "commercial"
+  },
+  { 
+    title: t('company.sidebar.navigation.billing'), 
+    url: "/billing", 
+    icon: CreditCard,
+    description: t('company.sidebar.descriptions.billing_payments'),
+    section: "commercial"
+  },
+  
+  // Gestión de Cargas (Legacy - mantener por compatibilidad)
   { 
     title: "Cargas Activas", 
     url: "/loads/active", 
@@ -319,16 +362,23 @@ const getDispatcherNavigationItems = (driversCount: number, t: any) => [
     section: "financial"
   },
   
-  // Recursos
+  // Reportes y Análisis
   { 
-    title: "Conductores", 
-    url: "/drivers", 
-    icon: Users, 
-    badge: driversCount.toString(),
-    badgeVariant: "count" as const,
-    description: "Estado de conductores",
-    section: "resources"
+    title: t('company.sidebar.navigation.payment_reports'), 
+    url: "/payment-reports", 
+    icon: FileBarChart,
+    description: t('company.sidebar.descriptions.pdf_payment_reports'),
+    section: "reports"
   },
+  { 
+    title: t('company.sidebar.navigation.financial_reports'), 
+    url: "/reports/financial", 
+    icon: BarChart3,
+    description: t('company.sidebar.descriptions.financial_analysis'),
+    section: "reports"
+  },
+  
+  // Recursos
   { 
     title: "Documentos", 
     url: "/documents", 
@@ -572,8 +622,11 @@ export function AppSidebar() {
     if (isDispatcher) {
       return {
         dashboard: t('company.sidebar.sections.monitoring'),
+        operations: t('company.sidebar.sections.operations'), 
+        commercial: t('company.sidebar.sections.commercial'),
         loads: t('company.sidebar.sections.loads'),
         financial: t('company.sidebar.sections.financial'),
+        reports: t('company.sidebar.sections.reports'),
         resources: t('company.sidebar.sections.resources')
       };
     }
