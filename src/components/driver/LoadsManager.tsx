@@ -254,9 +254,9 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
           status: load.status,
           total_amount: load.total_amount,
           progress: calculateProgress(load.status, stops),
-          stops: stops.map(stop => ({
+          stops: stops.map((stop, index) => ({
             ...stop,
-            id: stop.id || crypto.randomUUID(),
+            id: stop.id || `${load.id}-stop-${index}`,
             address: stop.address || '',
             city: stop.city || '',
             state: stop.state || ''
