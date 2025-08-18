@@ -252,7 +252,7 @@ const getOperationsManagerNavigationItems = (driversCount: number, equipmentCoun
 ];
 
 // Navegación para Dispatcher
-const getDispatcherNavigationItems = (driversCount: number, t: any) => [
+const getDispatcherNavigationItems = (driversCount: number, equipmentCount: number, loadsCount: number, t: any) => [
   // Dashboard y Seguimiento
   { 
     title: "Dashboard", 
@@ -285,6 +285,8 @@ const getDispatcherNavigationItems = (driversCount: number, t: any) => [
     title: t('company.sidebar.navigation.fleet'), 
     url: "/equipment", 
     icon: Truck, 
+    badge: equipmentCount.toString(),
+    badgeVariant: "count" as const,
     description: t('company.sidebar.descriptions.vehicles_equipment'),
     section: "operations"
   },
@@ -292,7 +294,7 @@ const getDispatcherNavigationItems = (driversCount: number, t: any) => [
     title: t('company.sidebar.navigation.loads'), 
     url: "/loads", 
     icon: Package, 
-    badge: "12",
+    badge: loadsCount.toString(),
     badgeVariant: "count" as const,
     description: t('company.sidebar.descriptions.load_management'),
     section: "operations"
@@ -312,24 +314,6 @@ const getDispatcherNavigationItems = (driversCount: number, t: any) => [
     icon: CreditCard,
     description: t('company.sidebar.descriptions.billing_payments'),
     section: "commercial"
-  },
-  
-  // Gestión de Cargas (Legacy - mantener por compatibilidad)
-  { 
-    title: "Cargas Activas", 
-    url: "/loads/active", 
-    icon: Package, 
-    badge: "12",
-    badgeVariant: "count" as const,
-    description: "Cargas en progreso",
-    section: "loads"
-  },
-  { 
-    title: "Asignar Cargas", 
-    url: "/loads/assign", 
-    icon: Navigation,
-    description: "Asignación de cargas",
-    section: "loads"
   },
   
   // Gestión Financiera
@@ -580,7 +564,7 @@ export function AppSidebar() {
     if (isSuperAdmin) return getSuperAdminNavigationItems(t);
     if (isCompanyOwner) return getCompanyOwnerNavigationItems(driversCount, equipmentCount, loadsCount, t);
     if (isOperationsManager) return getOperationsManagerNavigationItems(driversCount, equipmentCount, loadsCount);
-    if (isDispatcher) return getDispatcherNavigationItems(driversCount, t);
+    if (isDispatcher) return getDispatcherNavigationItems(driversCount, equipmentCount, loadsCount, t);
     if (isDriver) return getDriverNavigationItems(loadsCount);
     
     // Fallback para usuarios sin rol específico
@@ -624,7 +608,6 @@ export function AppSidebar() {
         dashboard: t('company.sidebar.sections.monitoring'),
         operations: t('company.sidebar.sections.operations'), 
         commercial: t('company.sidebar.sections.commercial'),
-        loads: t('company.sidebar.sections.loads'),
         financial: t('company.sidebar.sections.financial'),
         reports: t('company.sidebar.sections.reports'),
         resources: t('company.sidebar.sections.resources')
