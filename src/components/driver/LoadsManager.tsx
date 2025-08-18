@@ -603,19 +603,22 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                        <span>
                          {t('dashboard:loads.progress')}
                          {(() => {
-                           // Obtener información de la parada actual
-                           const loadWithStops = {
-                             id: load.id,
-                             status: load.status,
-                             stops: load.stops
-                           };
-                           const { nextStopInfo } = useLoadStopsNavigation(loadWithStops);
-                           
-                           if (load.status !== 'assigned' && nextStopInfo) {
-                             const stopTypeText = nextStopInfo.stop.stop_type === 'pickup' ? 
-                               t('dashboard:loads.stop_types.pickup') : 
-                               t('dashboard:loads.stop_types.delivery');
-                             return ` (${t('common:stop', { defaultValue: 'Parada' })} ${nextStopInfo.stop.stop_number} (${stopTypeText}))`;
+                           // Calcular información de la parada directamente sin hook
+                           if (load.status !== 'assigned' && load.stops && load.stops.length > 0) {
+                             // Encontrar la parada actual según el estado
+                             let currentStop = null;
+                             if (load.status === 'en_route_pickup' || load.status === 'at_pickup') {
+                               currentStop = load.stops.find(stop => stop.stop_type === 'pickup');
+                             } else if (load.status === 'loaded' || load.status === 'en_route_delivery' || load.status === 'at_delivery') {
+                               currentStop = load.stops.find(stop => stop.stop_type === 'delivery');
+                             }
+                             
+                             if (currentStop) {
+                               const stopTypeText = currentStop.stop_type === 'pickup' ? 
+                                 t('dashboard:loads.stop_types.pickup') : 
+                                 t('dashboard:loads.stop_types.delivery');
+                               return ` (${t('common:stop', { defaultValue: 'Parada' })} ${currentStop.stop_number} (${stopTypeText}))`;
+                             }
                            }
                            return '';
                          })()}
