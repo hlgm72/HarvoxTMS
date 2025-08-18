@@ -48,21 +48,21 @@ export function useLoadStopsNavigation(load: LoadWithStops) {
       case 'assigned':
         // Ir a la primera parada (primer pickup)
         nextStop = sortedStops.find(stop => stop.stop_type === 'pickup') || sortedStops[0];
-        actionText = `Ir a Parada ${nextStop?.stop_number} (${nextStop?.stop_type === 'pickup' ? 'Recogida' : 'Entrega'})`;
+        actionText = 'Camino a recoger';
         nextStatus = 'en_route_pickup';
         break;
 
       case 'en_route_pickup':
         // Llegar a la parada de recogida actual
         nextStop = sortedStops.find(stop => stop.stop_type === 'pickup') || sortedStops[0];
-        actionText = `Llegué a Recoger (Parada ${nextStop?.stop_number})`;
+        actionText = 'Llegué a recogida';
         nextStatus = 'at_pickup';
         break;
 
       case 'at_pickup':
         // Cargar mercancía y continuar
         nextStop = sortedStops.find(stop => stop.stop_type === 'pickup') || sortedStops[0];
-        actionText = 'Cargado';
+        actionText = 'Recogida completada';
         nextStatus = 'loaded';
         break;
 
@@ -73,13 +73,13 @@ export function useLoadStopsNavigation(load: LoadWithStops) {
         
         if (nextPickup) {
           nextStop = nextPickup;
-          actionText = `Ir a Parada ${nextStop.stop_number} (Recogida)`;
+          actionText = 'Camino a recoger';
           nextStatus = 'en_route_pickup';
         } else {
           // No hay más pickups, ir a primera entrega
           nextStop = sortedStops.find(stop => stop.stop_type === 'delivery');
           if (nextStop) {
-            actionText = `Ir a Parada ${nextStop.stop_number} (Entrega)`;
+            actionText = 'Camino a entregar';
             nextStatus = 'en_route_delivery';
           }
         }
@@ -89,7 +89,7 @@ export function useLoadStopsNavigation(load: LoadWithStops) {
         // Llegar a la parada de entrega actual
         nextStop = sortedStops.find(stop => stop.stop_type === 'delivery');
         if (nextStop) {
-          actionText = `Llegué a Entregar (Parada ${nextStop.stop_number})`;
+          actionText = 'Llegué a entrega';
           nextStatus = 'at_delivery';
         }
         break;
@@ -106,12 +106,12 @@ export function useLoadStopsNavigation(load: LoadWithStops) {
           
           if (nextDelivery) {
             nextStop = nextDelivery;
-            actionText = `Ir a Parada ${nextStop.stop_number} (Entrega)`;
+            actionText = 'Camino a entregar';
             nextStatus = 'en_route_delivery';
           } else {
             // Última entrega
             nextStop = currentDeliveryStop;
-            actionText = 'Entregado';
+            actionText = 'Entrega completada';
             nextStatus = 'delivered';
           }
         }
