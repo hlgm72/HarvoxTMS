@@ -193,8 +193,18 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
 
   const timeFieldInfo = getTimeFieldInfo();
 
+  console.log('🔍 StatusUpdateModal - Estado del modal:', {
+    isOpen,
+    newStatus,
+    timeFieldInfo,
+    etaDate,
+    etaTime
+  });
+
   // Set default date and time
   React.useEffect(() => {
+    console.log('🕐 useEffect ejecutándose:', { isOpen, etaDate, etaTime, timeFieldInfo });
+    
     if (isOpen && !etaDate) {
       const now = new Date();
       setEtaDate(format(now, 'yyyy-MM-dd'));
@@ -204,10 +214,12 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
         const now = new Date();
         const hours = now.getHours().toString().padStart(2, '0');
         const minutes = now.getMinutes().toString().padStart(2, '0');
-        setEtaTime(`${hours}:${minutes}`);
+        const timeValue = `${hours}:${minutes}`;
+        console.log('⏰ Estableciendo hora automática:', timeValue);
+        setEtaTime(timeValue);
       }
     }
-  }, [isOpen, etaDate, etaTime, timeFieldInfo.defaultToNow]);
+  }, [isOpen, etaDate, etaTime, timeFieldInfo.defaultToNow, newStatus]); // Agregué newStatus como dependencia
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
