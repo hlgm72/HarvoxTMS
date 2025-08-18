@@ -477,6 +477,21 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                       <Badge className={getStatusColor(load.status)}>
                         {getStatusText(load.status)}
                       </Badge>
+                      {load.status === 'assigned' && load.stops && load.stops.length > 0 && (
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {(() => {
+                            const firstStop = load.stops!.find(stop => stop.stop_type === 'pickup') || load.stops![0];
+                            if (firstStop?.scheduled_date) {
+                              let dateText = formatDateSafe(firstStop.scheduled_date, 'dd/MM/yyyy');
+                              if (firstStop.scheduled_time) {
+                                dateText += ` ${firstStop.scheduled_time}`;
+                              }
+                              return dateText;
+                            }
+                            return null;
+                          })()}
+                        </div>
+                      )}
                       <CurrentStopInfo load={load} />
                     </div>
                   </div>
