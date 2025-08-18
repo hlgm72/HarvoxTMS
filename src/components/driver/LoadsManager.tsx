@@ -113,14 +113,46 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     stopInfo: undefined
   });
 
-  const calculateProgress = (status: string): number => {
+  const calculateProgress = (status: string, stopsData?: any[]): number => {
+    if (!stopsData || stopsData.length === 0) {
+      // Fallback a porcentajes fijos si no hay paradas definidas
+      switch (status) {
+        case 'assigned': return 0;
+        case 'en_route_pickup': return 25;
+        case 'at_pickup': return 50;
+        case 'loaded': return 65;
+        case 'en_route_delivery': return 80;
+        case 'at_delivery': return 95;
+        case 'delivered': return 100;
+        default: return 0;
+      }
+    }
+
+    // Cálculo dinámico basado en paradas
+    const sortedStops = [...stopsData].sort((a, b) => a.stop_number - b.stop_number);
+    const pickupStops = sortedStops.filter(stop => stop.stop_type === 'pickup');
+    const deliveryStops = sortedStops.filter(stop => stop.stop_type === 'delivery');
+    
+    // Calcular total de estados posibles (excluyendo 'assigned')
+    // Para cada pickup: en_route_pickup, at_pickup, loaded
+    // Para cada delivery: en_route_delivery, at_delivery
+    // Más el estado final: delivered
+    const totalStates = (pickupStops.length * 3) + (deliveryStops.length * 2) + 1;
+    const progressPerState = 100 / totalStates;
+    
     switch (status) {
       case 'assigned': return 0;
-      case 'en_route_pickup': return 25;
-      case 'at_pickup': return 50;
-      case 'loaded': return 65;
-      case 'en_route_delivery': return 80;
-      case 'at_delivery': return 95;
+      case 'en_route_pickup': return Math.round(progressPerState * 1);
+      case 'at_pickup': return Math.round(progressPerState * 2);
+      case 'loaded': return Math.round(progressPerState * 3);
+      case 'en_route_delivery': 
+        // Calcular basado en qué entrega es
+        const basePickupStates = pickupStops.length * 3;
+        return Math.round(progressPerState * (basePickupStates + 1));
+      case 'at_delivery':
+        // Calcular basado en qué entrega es
+        const basePickupStates2 = pickupStops.length * 3;
+        return Math.round(progressPerState * (basePickupStates2 + 2));
       case 'delivered': return 100;
       default: return 0;
     }
@@ -157,11 +189,13 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
           delivery_date: latestDelivery?.scheduled_date || '',
           status: load.status,
           total_amount: load.total_amount,
-          progress: calculateProgress(load.status),
+          progress: calculateProgress(load.status, stops),
           stops: stops.map(stop => ({
             ...stop,
             id: stop.id || crypto.randomUUID(),
-            address: stop.address || ''
+            address: stop.address || '',
+            city: stop.city || '',
+            state: stop.state || ''
           }))
         };
       });
