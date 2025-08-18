@@ -49,8 +49,16 @@ export const useUpdateLoadStatus = () => {
         };
 
         if (params.eta) {
-          // Mantener la fecha/hora tal como la puso el usuario, sin conversión a UTC
-          historyUpdateData.eta_provided = params.eta.toISOString().replace('Z', '+00');
+          // Formatear la fecha/hora manteniendo la zona horaria local del usuario
+          const year = params.eta.getFullYear();
+          const month = String(params.eta.getMonth() + 1).padStart(2, '0');
+          const day = String(params.eta.getDate()).padStart(2, '0');
+          const hours = String(params.eta.getHours()).padStart(2, '0');
+          const minutes = String(params.eta.getMinutes()).padStart(2, '0');
+          const seconds = String(params.eta.getSeconds()).padStart(2, '0');
+          
+          // Guardar en formato timestamp sin conversión a UTC
+          historyUpdateData.eta_provided = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}+00`;
         }
 
         // Buscar el registro de historial más reciente para esta carga y actualizarlo
