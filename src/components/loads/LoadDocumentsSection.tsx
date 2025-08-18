@@ -422,6 +422,12 @@ const [uploading, setUploading] = useState<string | null>(null);
       }
 
       await loadDocuments();
+      
+      // Invalidar la query de validación de documentos para actualizar el indicador
+      if (loadData?.id) {
+        queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadData.id] });
+      }
+      
       showSuccess("Documento subido", `${file.name} se subió correctamente`);
     } catch (error) {
       console.error('Error uploading document:', error);
@@ -555,6 +561,12 @@ const [uploading, setUploading] = useState<string | null>(null);
 
       console.log('🔄 handleRemoveDocument - Reloading documents...');
       await loadDocuments();
+      
+      // Invalidar la query de validación de documentos para actualizar el indicador
+      if (loadData?.id) {
+        queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadData.id] });
+      }
+      
       console.log('🎉 handleRemoveDocument - Process completed');
       showSuccess("Documento eliminado", `${document.fileName} se eliminó correctamente`);
     } catch (error) {
