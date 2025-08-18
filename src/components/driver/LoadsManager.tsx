@@ -533,9 +533,9 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                               </div>
                                 <div className="flex-1">
                                    <div className="flex items-center gap-2 mb-1">
-                                     <Badge variant="outline" className="text-xs">
-                                       {stop.stop_type === 'pickup' ? 'Recogida' : 'Entrega'} #{stop.stop_number}
-                                     </Badge>
+                                      <Badge variant="outline" className="text-xs">
+                                        {stop.stop_type === 'pickup' ? t('dashboard:loads.stop_types.pickup') : t('dashboard:loads.stop_types.delivery')} #{stop.stop_number}
+                                      </Badge>
                                      {stop.scheduled_date && (
                                        <span className="text-xs text-primary font-medium flex items-center gap-1">
                                          <Calendar className="h-3 w-3" />
