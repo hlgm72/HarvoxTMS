@@ -196,7 +196,10 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
       
       // Si no es ETA, establecer la hora actual por defecto
       if (timeFieldInfo.defaultToNow && !etaTime) {
-        setEtaTime(format(now, 'HH:mm'));
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        setEtaTime(`${hours}:${minutes}`);
       }
     }
   }, [isOpen, etaDate, etaTime, timeFieldInfo.defaultToNow]);
@@ -249,15 +252,23 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                 </Label>
                 <Input
                   id="eta-time"
-                  type="time"
-                  step="60"
+                  type="text"
+                  placeholder="HH:mm"
+                  pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
                   value={etaTime}
-                  onChange={(e) => setEtaTime(e.target.value)}
-                  className="text-sm"
-                  style={{ 
-                    appearance: 'textfield',
-                    WebkitAppearance: 'textfield'
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Solo permitir números y :
+                    const formatted = value.replace(/[^\d:]/g, '');
+                    // Auto-formatear mientras escribe
+                    if (formatted.length === 2 && !formatted.includes(':')) {
+                      setEtaTime(formatted + ':');
+                    } else if (formatted.length <= 5) {
+                      setEtaTime(formatted);
+                    }
                   }}
+                  className="text-sm font-mono"
+                  maxLength={5}
                 />
               </div>
             </div>
