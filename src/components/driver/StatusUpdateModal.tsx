@@ -119,14 +119,17 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
           .select('company_id')
           .eq('user_id', user.id)
           .eq('is_active', true)
-          .single();
+          .limit(1)
+          .maybeSingle();
 
         if (error) {
           console.error('Error fetching company ID:', error);
           return;
         }
 
-        setCompanyId(data.company_id);
+        if (data) {
+          setCompanyId(data.company_id);
+        }
       } catch (error) {
         console.error('Error:', error);
       }
