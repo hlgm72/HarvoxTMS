@@ -179,6 +179,34 @@
     "actions": {
       "view_report": "View Report",
       "download_receipt": "Download Receipt"
+    },
+    "charts": {
+      "tabs": {
+        "trend": "Trend",
+        "comparison": "Comparison", 
+        "breakdown": "Breakdown"
+      },
+      "trend": {
+        "title": "Income Trend (8 Weeks)",
+        "net_income": "Net Income",
+        "gross_earnings": "Gross Earnings"
+      },
+      "comparison": {
+        "title": "Income vs Expenses (6 Months)",
+        "income": "Income",
+        "fuel": "Fuel",
+        "other_expenses": "Other Expenses"
+      },
+      "breakdown": {
+        "title": "Expense Breakdown",
+        "fuel": "Fuel",
+        "truck_payment": "Truck Payment",
+        "insurance": "Insurance", 
+        "maintenance": "Maintenance",
+        "other": "Other",
+        "total_expenses": "Total Expenses",
+        "highest_expense": "Highest Expense"
+      }
     }
   }
 }

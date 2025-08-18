@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -51,6 +52,7 @@ interface FinancialChartsProps {
 }
 
 export function FinancialCharts({ currentPeriodData, className }: FinancialChartsProps) {
+  const { t } = useTranslation(['dashboard']);
   // Generate mock data for the last 8 weeks
   const weeklyTrendData: WeeklyData[] = useMemo(() => {
     const weeks = [];
@@ -131,27 +133,27 @@ export function FinancialCharts({ currentPeriodData, className }: FinancialChart
     
     return [
       { 
-        name: 'Combustible', 
+        name: t('dashboard:financial.charts.breakdown.fuel'), 
         value: fuelExpenses, 
         color: 'hsl(var(--destructive))' 
       },
       { 
-        name: 'Pago de Camión', 
+        name: t('dashboard:financial.charts.breakdown.truck_payment'), 
         value: truck_payment, 
         color: 'hsl(var(--primary))' 
       },
       { 
-        name: 'Seguro', 
+        name: t('dashboard:financial.charts.breakdown.insurance'), 
         value: insurance, 
         color: 'hsl(var(--secondary))' 
       },
       { 
-        name: 'Mantenimiento', 
+        name: t('dashboard:financial.charts.breakdown.maintenance'), 
         value: maintenance, 
         color: 'hsl(var(--accent))' 
       },
       { 
-        name: 'Otros', 
+        name: t('dashboard:financial.charts.breakdown.other'), 
         value: other, 
         color: 'hsl(var(--muted))' 
       }
@@ -165,12 +167,12 @@ export function FinancialCharts({ currentPeriodData, className }: FinancialChart
           <p className="font-medium text-sm mb-2">{label}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
-              {`${entry.dataKey === 'netIncome' ? 'Ingreso Neto' : 
-                 entry.dataKey === 'grossEarnings' ? 'Ingresos Brutos' :
-                 entry.dataKey === 'fuelExpenses' ? 'Combustible' :
-                 entry.dataKey === 'income' ? 'Ingresos' :
-                 entry.dataKey === 'fuel' ? 'Combustible' :
-                 entry.dataKey === 'otherExpenses' ? 'Otros Gastos' :
+              {`${entry.dataKey === 'netIncome' ? t('dashboard:financial.charts.trend.net_income') : 
+                 entry.dataKey === 'grossEarnings' ? t('dashboard:financial.charts.trend.gross_earnings') :
+                 entry.dataKey === 'fuelExpenses' ? t('dashboard:financial.charts.breakdown.fuel') :
+                 entry.dataKey === 'income' ? t('dashboard:financial.charts.comparison.income') :
+                 entry.dataKey === 'fuel' ? t('dashboard:financial.charts.comparison.fuel') :
+                 entry.dataKey === 'otherExpenses' ? t('dashboard:financial.charts.comparison.other_expenses') :
                  entry.dataKey}: ${formatCurrency(entry.value)}`}
             </p>
           ))}
@@ -201,15 +203,15 @@ export function FinancialCharts({ currentPeriodData, className }: FinancialChart
         <TabsList className="grid w-full grid-cols-3 gap-1">
           <TabsTrigger value="trend" className="text-xs">
             <TrendingUp className="h-4 w-4 mr-1" />
-            Tendencia
+            {t('dashboard:financial.charts.tabs.trend')}
           </TabsTrigger>
           <TabsTrigger value="comparison" className="text-xs">
             <BarChart3 className="h-4 w-4 mr-1" />
-            Comparación
+            {t('dashboard:financial.charts.tabs.comparison')}
           </TabsTrigger>
           <TabsTrigger value="breakdown" className="text-xs">
             <PieChartIcon className="h-4 w-4 mr-1" />
-            Desglose
+            {t('dashboard:financial.charts.tabs.breakdown')}
           </TabsTrigger>
         </TabsList>
 
@@ -219,7 +221,7 @@ export function FinancialCharts({ currentPeriodData, className }: FinancialChart
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
-                Tendencia de Ingresos (8 Semanas)
+                {t('dashboard:financial.charts.trend.title')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -244,7 +246,7 @@ export function FinancialCharts({ currentPeriodData, className }: FinancialChart
                       dataKey="netIncome" 
                       stroke="hsl(var(--primary))" 
                       strokeWidth={3}
-                      name="Ingreso Neto"
+                      name={t('dashboard:financial.charts.trend.net_income')}
                       dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 4 }}
                     />
                     <Line 
@@ -253,7 +255,7 @@ export function FinancialCharts({ currentPeriodData, className }: FinancialChart
                       stroke="hsl(var(--secondary))" 
                       strokeWidth={2}
                       strokeDasharray="5 5"
-                      name="Ingresos Brutos"
+                      name={t('dashboard:financial.charts.trend.gross_earnings')}
                       dot={{ fill: 'hsl(var(--secondary))', strokeWidth: 2, r: 3 }}
                     />
                   </LineChart>
@@ -269,7 +271,7 @@ export function FinancialCharts({ currentPeriodData, className }: FinancialChart
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
-                Ingresos vs Gastos (6 Meses)
+                {t('dashboard:financial.charts.comparison.title')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -292,19 +294,19 @@ export function FinancialCharts({ currentPeriodData, className }: FinancialChart
                     <Bar 
                       dataKey="income" 
                       fill="hsl(var(--primary))" 
-                      name="Ingresos"
+                      name={t('dashboard:financial.charts.comparison.income')}
                       radius={[4, 4, 0, 0]}
                     />
                     <Bar 
                       dataKey="fuel" 
                       fill="hsl(var(--destructive))" 
-                      name="Combustible"
+                      name={t('dashboard:financial.charts.comparison.fuel')}
                       radius={[4, 4, 0, 0]}
                     />
                     <Bar 
                       dataKey="otherExpenses" 
                       fill="hsl(var(--muted))" 
-                      name="Otros Gastos"
+                      name={t('dashboard:financial.charts.comparison.other_expenses')}
                       radius={[4, 4, 0, 0]}
                     />
                   </BarChart>
@@ -320,7 +322,7 @@ export function FinancialCharts({ currentPeriodData, className }: FinancialChart
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <PieChartIcon className="h-5 w-5" />
-                Desglose de Gastos
+                {t('dashboard:financial.charts.breakdown.title')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -355,13 +357,13 @@ export function FinancialCharts({ currentPeriodData, className }: FinancialChart
               {/* Summary below chart */}
               <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
                 <div className="text-center">
-                  <p className="text-muted-foreground">Total Gastos</p>
+                  <p className="text-muted-foreground">{t('dashboard:financial.charts.breakdown.total_expenses')}</p>
                   <p className="font-bold text-lg">
                     {formatCurrency(deductionsData.reduce((sum, item) => sum + item.value, 0))}
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-muted-foreground">Gasto Mayor</p>
+                  <p className="text-muted-foreground">{t('dashboard:financial.charts.breakdown.highest_expense')}</p>
                   <p className="font-bold text-lg">
                     {deductionsData.length > 0 ? deductionsData.reduce((max, item) => 
                       item.value > max.value ? item : max

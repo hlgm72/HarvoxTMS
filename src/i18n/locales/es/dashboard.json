@@ -179,6 +179,34 @@
     "actions": {
       "view_report": "Ver Reporte",
       "download_receipt": "Descargar Comprobante"
+    },
+    "charts": {
+      "tabs": {
+        "trend": "Tendencia",
+        "comparison": "Comparación",
+        "breakdown": "Desglose"
+      },
+      "trend": {
+        "title": "Tendencia de Ingresos (8 Semanas)",
+        "net_income": "Ingreso Neto",
+        "gross_earnings": "Ingresos Brutos"
+      },
+      "comparison": {
+        "title": "Ingresos vs Gastos (6 Meses)",
+        "income": "Ingresos",
+        "fuel": "Combustible",
+        "other_expenses": "Otros Gastos"
+      },
+      "breakdown": {
+        "title": "Desglose de Gastos",
+        "fuel": "Combustible",
+        "truck_payment": "Pago de Camión",
+        "insurance": "Seguro",
+        "maintenance": "Mantenimiento", 
+        "other": "Otros",
+        "total_expenses": "Total Gastos",
+        "highest_expense": "Gasto Mayor"
+      }
     }
   }
 }
