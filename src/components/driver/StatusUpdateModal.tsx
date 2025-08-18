@@ -30,29 +30,6 @@ interface StatusUpdateModalProps {
   newStatus?: string; // Agregar el estado al que se está transicionando
 }
 
-const TIME_OPTIONS = Array.from({ length: 24 }, (_, hour) => {
-  const h = hour.toString().padStart(2, '0');
-  return [
-    `${h}:00`,
-    `${h}:30`
-  ];
-}).flat();
-
-// Función para redondear la hora actual al intervalo más cercano de 30 minutos
-const roundToNearestTimeSlot = (): string => {
-  const now = new Date();
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
-  
-  // Redondear al intervalo de 30 minutos más cercano
-  const roundedMinutes = minutes < 15 ? 0 : minutes < 45 ? 30 : 0;
-  const roundedHours = minutes >= 45 ? hours + 1 : hours;
-  
-  // Ajustar si se pasa de las 23:30
-  const finalHours = roundedHours >= 24 ? 0 : roundedHours;
-  
-  return `${finalHours.toString().padStart(2, '0')}:${roundedMinutes.toString().padStart(2, '0')}`;
-};
 
 export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   isOpen,
@@ -222,10 +199,12 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
       const now = new Date();
       setEtaDate(format(now, 'yyyy-MM-dd'));
       
-      // Si no es ETA, establecer la hora actual redondeada al intervalo más cercano
+      // Si no es ETA, establecer la hora actual exacta
       if (timeFieldInfo.defaultToNow && !etaTime) {
-        const roundedTime = roundToNearestTimeSlot();
-        setEtaTime(roundedTime);
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        setEtaTime(`${hours}:${minutes}`);
       }
     }
   }, [isOpen, etaDate, etaTime, timeFieldInfo.defaultToNow]);
@@ -276,21 +255,14 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                 <Label htmlFor="eta-time" className="text-xs text-muted-foreground">
                   {t('dashboard:loads.status_update_modal.time_label')}
                 </Label>
-                 <Select
+                 <input
+                   type="time"
+                   id="eta-time"
                    value={etaTime || ""}
-                   onValueChange={setEtaTime}
-                 >
-                  <SelectTrigger className="text-sm">
-                    <SelectValue placeholder={t('dashboard:loads.status_update_modal.time_placeholder')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TIME_OPTIONS.map(time => (
-                      <SelectItem key={time} value={time}>
-                        {time}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                   onChange={(e) => setEtaTime(e.target.value)}
+                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                   placeholder={t('dashboard:loads.status_update_modal.time_placeholder')}
+                 />
               </div>
             </div>
           </div>
