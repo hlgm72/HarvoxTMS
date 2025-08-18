@@ -93,6 +93,9 @@
     "status_update_modal": {
       "title": "Actualizar Estado de Carga",
       "eta_label": "Tiempo Estimado de Llegada (ETA)",
+      "arrival_time_label": "Hora de Llegada",
+      "pickup_time_label": "Hora de Recogida",
+      "delivery_time_label": "Hora de Entrega",
       "date_label": "Fecha",
       "time_label": "Hora",
       "pod_label": "Subir POD (Proof of Delivery)",

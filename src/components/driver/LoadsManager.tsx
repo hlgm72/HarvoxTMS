@@ -637,6 +637,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         isLoading={updateLoadStatus.isPending}
         loadId={statusModal.loadId}
         isDeliveryStep={statusModal.newStatus === 'delivered'}
+        newStatus={statusModal.newStatus}
       />
     </div>
   );

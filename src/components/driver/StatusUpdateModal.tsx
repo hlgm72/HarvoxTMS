@@ -26,6 +26,7 @@ interface StatusUpdateModalProps {
   isLoading?: boolean;
   loadId?: string;
   isDeliveryStep?: boolean;
+  newStatus?: string; // Agregar el estado al que se está transicionando
 }
 
 export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
@@ -36,7 +37,8 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   stopInfo,
   isLoading = false,
   loadId,
-  isDeliveryStep = false
+  isDeliveryStep = false,
+  newStatus
 }) => {
   const { t } = useTranslation(['dashboard']);
   const [etaDate, setEtaDate] = useState('');
@@ -140,13 +142,64 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     fetchCompanyId();
   }, [isOpen]);
 
-  // Set default date to today
+  // Determinar el tipo de campo de tiempo según el estado
+  const getTimeFieldInfo = () => {
+    if (!newStatus) {
+      return { 
+        label: t('dashboard:loads.status_update_modal.eta_label'), 
+        isETA: true,
+        defaultToNow: false 
+      };
+    }
+
+    // Estados que requieren ETA (yendo)
+    if (newStatus.includes('en_route')) {
+      return { 
+        label: t('dashboard:loads.status_update_modal.eta_label'), 
+        isETA: true,
+        defaultToNow: false 
+      };
+    }
+
+    // Estados que requieren hora actual (llegando o completando)
+    if (newStatus.includes('at_') || newStatus === 'loaded' || newStatus === 'delivered') {
+      const isArrival = newStatus.includes('at_');
+      const isPickup = newStatus === 'loaded';
+      const isDelivery = newStatus === 'delivered';
+      
+      let labelKey = 'arrival_time_label';
+      if (isPickup) labelKey = 'pickup_time_label';
+      if (isDelivery) labelKey = 'delivery_time_label';
+      
+      return { 
+        label: t(`dashboard:loads.status_update_modal.${labelKey}`), 
+        isETA: false,
+        defaultToNow: true 
+      };
+    }
+
+    // Default
+    return { 
+      label: t('dashboard:loads.status_update_modal.eta_label'), 
+      isETA: true,
+      defaultToNow: false 
+    };
+  };
+
+  const timeFieldInfo = getTimeFieldInfo();
+
+  // Set default date and time
   React.useEffect(() => {
     if (isOpen && !etaDate) {
-      const today = new Date();
-      setEtaDate(format(today, 'yyyy-MM-dd'));
+      const now = new Date();
+      setEtaDate(format(now, 'yyyy-MM-dd'));
+      
+      // Si no es ETA, establecer la hora actual por defecto
+      if (timeFieldInfo.defaultToNow && !etaTime) {
+        setEtaTime(format(now, 'HH:mm'));
+      }
     }
-  }, [isOpen, etaDate]);
+  }, [isOpen, etaDate, etaTime, timeFieldInfo.defaultToNow]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -170,10 +223,10 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
             )}
           </div>
 
-          {/* ETA Fields */}
+          {/* Time Fields */}
           <div className="space-y-3">
             <Label className="text-sm font-medium">
-              {t('dashboard:loads.status_update_modal.eta_label')}
+              {timeFieldInfo.label}
             </Label>
             
             <div className="grid grid-cols-2 gap-3">

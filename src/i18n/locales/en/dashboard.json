@@ -93,6 +93,9 @@
     "status_update_modal": {
       "title": "Update Load Status",
       "eta_label": "Estimated Time of Arrival (ETA)",
+      "arrival_time_label": "Arrival Time",
+      "pickup_time_label": "Pickup Time",
+      "delivery_time_label": "Delivery Time",
       "date_label": "Date",
       "time_label": "Time",
       "pod_label": "Upload POD (Proof of Delivery)",
