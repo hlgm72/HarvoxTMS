@@ -139,7 +139,7 @@ export const useCreateLoad = () => {
 
   return useMutation({
     mutationFn: async (data: CreateLoadData): Promise<string> => {
-      console.log('🚛 useCreateLoad - Starting ACID mutation with data:', data);
+      // Starting ACID mutation with data
       
       if (!user) {
         throw new Error('Usuario no autenticado');

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 export function FleetStatus() {
-  console.log('🚛 FleetStatus rendering with simplified implementation');
+  // FleetStatus rendering with simplified implementation
   
   return (
     <Card className="h-[400px]">

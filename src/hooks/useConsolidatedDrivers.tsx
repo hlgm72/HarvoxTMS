@@ -101,8 +101,7 @@ export const useConsolidatedDrivers = () => {
           // REMOVED: .not('target_user_id', 'is', null) para incluir todas las invitaciones pendientes
 
         // Debug log para invitaciones pendientes
-        console.log('🚛 Debug invitaciones pendientes:', pendingInvitations);
-        console.log('🚛 Debug error invitaciones:', invitationsError);
+        // Debug processing invitaciones pendientes
 
         const invitedUserIds = pendingInvitations?.map(inv => inv.target_user_id).filter(Boolean) || [];
         const driverUserIds = driverRoles?.map(role => role.user_id) || [];

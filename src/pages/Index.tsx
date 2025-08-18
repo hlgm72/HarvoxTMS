@@ -38,12 +38,12 @@ export default function Index() {
     const loginSuccess = localStorage.getItem('loginSuccess');
     if (loginSuccess === 'true') {
       localStorage.removeItem('loginSuccess');
-      console.log('🏠 Welcome back! Login successful');
+      // Welcome back! Login successful (silent)
     }
 
     // Wait for auth context to fully initialize before redirecting
     if (!loading && user) {
-      console.log('🏠 User is authenticated, checking roles...');
+      // User is authenticated, checking roles...
       
       // Esperar a que los roles se carguen completamente
       // Si userRoles es null, aún se están cargando

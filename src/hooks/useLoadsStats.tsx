@@ -163,21 +163,20 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
           // Contar cargas activas (cualquier estado que no sea completed o cancelled)
           if (load.status && !['completed', 'cancelled'].includes(load.status)) {
             acc.totalActive++;
-            console.log('✅ Load counted as active:', load.load_number, 'status:', load.status);
           } else {
-            console.log('❌ Load NOT counted as active:', load.load_number, 'status:', load.status);
+            // Load NOT counted as active
           }
 
           // Contar cargas en tránsito
           if (load.status === 'in_transit' || load.status === 'dispatched') {
             acc.totalInTransit++;
-            console.log('🚛 Load counted as in transit:', load.load_number);
+            // Load counted as in transit
           }
 
           // Contar cargas pendientes de asignación (sin conductor asignado)
           if (!load.driver_user_id) {
             acc.pendingAssignment++;
-            console.log('⏳ Load counted as pending assignment:', load.load_number);
+            // Load counted as pending assignment
           }
 
           // Sumar el total de ingresos en tránsito

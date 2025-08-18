@@ -311,7 +311,7 @@ export const useLoads = (filters?: LoadsFilters) => {
         }
 
         const stopsData = stopsResult.data || [];
-        console.log('🚛 All stops data:', stopsData);
+        // Processing stops data
         
         // Separar paradas con UUIDs vs nombres de texto
         const stopsWithUUIDs = stopsData.filter(stop => {
@@ -324,8 +324,7 @@ export const useLoads = (filters?: LoadsFilters) => {
           return stop.city && (stop.city.length !== 36 || !stop.city.includes('-'));
         });
 
-        console.log('🚛 Stops with UUIDs:', stopsWithUUIDs.length);
-        console.log('🚛 Stops with text names:', stopsWithTextNames.length);
+        // Processing UUID vs text names
 
         // Obtener nombres de ciudades solo para los UUIDs
         let cities: any[] = [];
