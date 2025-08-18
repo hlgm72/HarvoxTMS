@@ -3759,7 +3759,9 @@ export type Database = {
         Returns: Json
       }
       simple_load_operation: {
-        Args: { load_data: Json; operation_mode?: string; stops_data: Json }
+        Args:
+          | { load_data: Json }
+          | { load_data: Json; operation_mode?: string; stops_data: Json }
         Returns: Json
       }
       unassign_equipment_with_validation: {
