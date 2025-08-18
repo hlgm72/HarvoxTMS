@@ -43,12 +43,12 @@ export default function Index() {
 
     // Wait for auth context to fully initialize before redirecting
     if (!loading && user) {
-      // User is authenticated, checking roles...
+      // User is authenticated
       
       // Esperar a que los roles se carguen completamente
       // Si userRoles es null, aún se están cargando
       if (userRoles === null) {
-        // Roles still loading, waiting...
+        // Roles still loading
         return;
       }
       

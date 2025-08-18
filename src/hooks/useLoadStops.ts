@@ -165,7 +165,7 @@ export function useLoadStops(initialStops?: LoadStop[]) {
   }, [stops]);
 
   const addStop = useCallback(() => {
-    console.log('🚨 useLoadStops - addStop called, current stops:', stops.length);
+    // console.log('🚨 useLoadStops - addStop called, current stops:', stops.length);
     const newStopNumber = stops.length + 1;
     const newStop: LoadStop = {
       id: `stop-${newStopNumber}`,
@@ -188,7 +188,7 @@ export function useLoadStops(initialStops?: LoadStop[]) {
       stop_number: index + 1
     }));
 
-    console.log('🚨 useLoadStops - setting new stops:', renumberedStops);
+    // console.log('🚨 useLoadStops - setting new stops:', renumberedStops);
     setStops(renumberedStops);
   }, [stops]);
 
@@ -206,7 +206,7 @@ export function useLoadStops(initialStops?: LoadStop[]) {
   }, []);
 
   const updateStop = useCallback((stopId: string, updates: Partial<LoadStop>) => {
-    console.log('🚨 useLoadStops - updateStop called', { stopId, updates });
+    // console.log('🚨 useLoadStops - updateStop called', { stopId, updates });
     setStops(currentStops => {
       const updatedStops = currentStops.map(stop => {
         if (stop.id === stopId) {
@@ -214,7 +214,7 @@ export function useLoadStops(initialStops?: LoadStop[]) {
         }
         return stop;
       });
-      console.log('🚨 useLoadStops - updated stops:', updatedStops);
+      // console.log('🚨 useLoadStops - updated stops:', updatedStops);
       return updatedStops;
     });
   }, []);

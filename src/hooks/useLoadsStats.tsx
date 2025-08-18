@@ -192,7 +192,7 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
           totalAmount: 0
         });
 
-        console.log('📊 Final stats calculated:', stats);
+        // console.log('📊 Final stats calculated:', stats);
 
         return stats;
 

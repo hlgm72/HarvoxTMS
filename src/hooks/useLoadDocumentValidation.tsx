@@ -11,7 +11,7 @@ export const useLoadDocumentValidation = (loadId: string) => {
   return useQuery({
     queryKey: ['load-document-validation', loadId],
     queryFn: async (): Promise<LoadDocumentValidation> => {
-      console.log('🔍 Validating documents for load:', loadId);
+      // console.log('🔍 Validating documents for load:', loadId);
       
       // Get load documents using the secure function
       const { data: documents, error } = await supabase.rpc('get_load_documents_with_validation', {

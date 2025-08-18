@@ -82,13 +82,13 @@ export function LoadStopsManager({ onStopsChange, showValidation = false, initia
   };
 
   const handleEditStop = (stop: LoadStop) => {
-    console.log('🔧 LoadStopsManager - handleEditStop called for stop:', stop.id);
+    // console.log('🔧 LoadStopsManager - handleEditStop called for stop:', stop.id);
     setEditingStop(stop);
     setIsModalOpen(true);
   };
 
   const handleSaveStop = (updates: Partial<LoadStop>) => {
-    console.log('💾 LoadStopsManager - handleSaveStop called with updates:', updates);
+    // console.log('💾 LoadStopsManager - handleSaveStop called with updates:', updates);
     if (editingStop) {
       updateStop(editingStop.id, updates);
     }
@@ -97,7 +97,7 @@ export function LoadStopsManager({ onStopsChange, showValidation = false, initia
   };
 
   const handleCloseModal = () => {
-    console.log('❌ LoadStopsManager - handleCloseModal called');
+    // console.log('❌ LoadStopsManager - handleCloseModal called');
     setEditingStop(null);
     setIsModalOpen(false);
   };

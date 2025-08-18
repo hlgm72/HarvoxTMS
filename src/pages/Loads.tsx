@@ -90,11 +90,11 @@ export default function Loads() {
   
   // Crear el subtitle dinámico con las estadísticas
   const getSubtitle = () => {
-    console.log('🎯 getSubtitle called - statsLoading:', statsLoading, 'loadsStats:', loadsStats);
+    // console.log('🎯 getSubtitle called - statsLoading:', statsLoading, 'loadsStats:', loadsStats);
     
     if (statsLoading || !loadsStats) {
       const loadingText = `Cargando estadísticas...${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`;
-      console.log('📝 Showing loading text:', loadingText);
+      // console.log('📝 Showing loading text:', loadingText);
       return loadingText;
     }
     
@@ -105,8 +105,8 @@ export default function Loads() {
     ].join(' • ');
     
     const finalSubtitle = `${stats}${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`;
-    console.log('📝 Final subtitle:', finalSubtitle);
-    console.log('📊 Stats used:', loadsStats);
+    // console.log('📝 Final subtitle:', finalSubtitle);
+    // console.log('📊 Stats used:', loadsStats);
     
     return finalSubtitle;
   };

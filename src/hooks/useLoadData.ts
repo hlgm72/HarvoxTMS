@@ -60,7 +60,7 @@ export const useLoadData = (loadId?: string) => {
     }
 
     const fetchLoadData = async () => {
-      console.log('🔍 useLoadData - Fetching load data for ID:', loadId);
+      // console.log('🔍 useLoadData - Fetching load data for ID:', loadId);
       setIsLoading(true);
       setError(null);
 

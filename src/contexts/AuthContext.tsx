@@ -119,7 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             error.message?.includes('Invalid') ||
             error.code === 'PGRST116' ||
             error.code === '42501') {
-          console.log('🚨 Auth/RLS error detected, signing out...');
+          // console.log('🚨 Auth/RLS error detected, signing out...');
           enhancedCleanupAuthState();
           window.location.href = '/auth';
           return [];
@@ -128,7 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return [];
       }
 
-      console.log('✅ Roles fetched successfully:', roles);
+      // console.log('✅ Roles fetched successfully:', roles);
       return roles || [];
     } catch (error) {
       console.error('💥 Exception in fetchUserRoles:', error);
@@ -492,13 +492,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Attempt global sign out from Supabase
       try {
         await supabase.auth.signOut({ scope: 'global' });
-        console.log('✅ Supabase sign out successful');
+        // console.log('✅ Supabase sign out successful');
       } catch (err) {
         console.warn('⚠️ Supabase sign out error (continuing anyway):', err);
       }
       
       // Force page reload to ensure completely clean state
-      console.log('🔄 Redirecting to auth page...');
+      // console.log('🔄 Redirecting to auth page...');
       window.location.href = '/auth';
     } catch (error) {
       console.error('❌ Error in sign out process:', error);

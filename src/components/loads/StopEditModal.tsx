@@ -60,7 +60,7 @@ export function StopEditModal({
   };
 
   const handleSave = () => {
-    console.log('💾 StopEditModal - handleSave called with formData:', formData);
+    // console.log('💾 StopEditModal - handleSave called with formData:', formData);
     onSave(formData);
     onClose();
   };

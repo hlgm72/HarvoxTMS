@@ -52,27 +52,27 @@ export const RoleSwitcher = () => {
   };
 
   const handleRoleChange = (role: any) => {
-    console.log('🔄 RoleSwitcher: Cambiando a rol:', role);
+    // console.log('🔄 RoleSwitcher: Cambiando a rol:', role);
     
     // FIRST: Guardar el rol INMEDIATAMENTE y de forma síncrona ANTES de switchRole
     const roleString = JSON.stringify(role);
     localStorage.setItem('currentRole', roleString);
     localStorage.setItem('lastActiveRole', roleString);
     sessionStorage.setItem('activeRole', roleString);
-    console.log('🔄 RoleSwitcher: Rol guardado PRIMERO en storage:', role.role);
-    console.log('🔄 RoleSwitcher: Verificando localStorage después de guardar:', localStorage.getItem('currentRole'));
+    // console.log('🔄 RoleSwitcher: Rol guardado PRIMERO en storage:', role.role);
+    // console.log('🔄 RoleSwitcher: Verificando localStorage después de guardar:', localStorage.getItem('currentRole'));
     
     // SECOND: Llamar switchRole DESPUÉS de guardar - usando role.id como espera el context
     switchRole(role.id);
-    console.log('🔄 RoleSwitcher: switchRole llamado con role.id:', role.id);
+    // console.log('🔄 RoleSwitcher: switchRole llamado con role.id:', role.id);
     
     // THIRD: Navegar y actualizar la URL actual
     const dashboardRoute = getDashboardRoute(role.role);
-    console.log('🔄 RoleSwitcher: Navegando a:', dashboardRoute);
+    // console.log('🔄 RoleSwitcher: Navegando a:', dashboardRoute);
     
     // Actualizar la URL actual para que futuras pestañas se abran aquí
     window.history.replaceState(null, '', dashboardRoute);
-    console.log('🔄 RoleSwitcher: URL actualizada a:', dashboardRoute);
+    // console.log('🔄 RoleSwitcher: URL actualizada a:', dashboardRoute);
     
     navigate(dashboardRoute);
   };

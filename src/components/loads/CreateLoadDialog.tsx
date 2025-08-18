@@ -202,10 +202,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
       // Find and set driver (only in edit mode, duplicate should start fresh)
       if (mode === 'edit' && activeLoadData.driver_user_id && drivers.length > 0) {
-        console.log('🔍 CreateLoadDialog - Looking for driver:', activeLoadData.driver_user_id);
+        // console.log('🔍 CreateLoadDialog - Looking for driver:', activeLoadData.driver_user_id);
         const driver = drivers.find(d => d.user_id === activeLoadData.driver_user_id);
         if (driver) {
-          console.log('✅ CreateLoadDialog - Driver found:', driver.first_name, driver.last_name);
+          // console.log('✅ CreateLoadDialog - Driver found:', driver.first_name, driver.last_name);
           setSelectedDriver(driver);
         } else {
           console.warn('⚠️ CreateLoadDialog - Driver not found in drivers list');
@@ -533,8 +533,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     
     createLoadMutation.mutate(loadDataToSubmit, {
       onSuccess: () => {
-        console.log('✅ CreateLoadDialog - Load mutation successful');
-        console.log(`✅ CreateLoadDialog - Mode: ${mode}, currentPhase: ${currentPhase}`);
+        // console.log('✅ CreateLoadDialog - Load mutation successful');
+        // console.log(`✅ CreateLoadDialog - Mode: ${mode}, currentPhase: ${currentPhase}`);
         
         // Show success toast based on mode
         const isEdit = mode === 'edit';
