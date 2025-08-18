@@ -43,6 +43,10 @@ interface Load {
   status: string;
   total_amount: number;
   progress?: number;
+  // Información del historial de estado más reciente
+  latest_status_notes?: string;
+  latest_status_eta?: string;
+  latest_status_stop_id?: string;
   stops?: Array<{
     id: string;
     stop_number: number;
@@ -254,6 +258,10 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
           status: load.status,
           total_amount: load.total_amount,
           progress: calculateProgress(load.status, stops),
+          // Información del historial de estado más reciente
+          latest_status_notes: (load as any).latest_status_notes,
+          latest_status_eta: (load as any).latest_status_eta,
+          latest_status_stop_id: (load as any).latest_status_stop_id,
           stops: stops.map((stop, index) => ({
             ...stop,
             id: stop.id || `${load.id}-stop-${index}`,
@@ -493,34 +501,58 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                           })()}
                         </div>
                        )}
-                       {/* Mostrar solo fecha y hora debajo del badge */}
-                       {(() => {
-                         if (load.status !== 'assigned' && load.stops && load.stops.length > 0) {
-                           // Encontrar la parada actual según el estado
-                           let currentStop = null;
-                           if (load.status === 'en_route_pickup' || load.status === 'at_pickup') {
-                             currentStop = load.stops.find(stop => stop.stop_type === 'pickup');
-                           } else if (load.status === 'loaded' || load.status === 'en_route_delivery' || load.status === 'at_delivery') {
-                             currentStop = load.stops.find(stop => stop.stop_type === 'delivery');
-                           }
-                           
-                           if (currentStop?.scheduled_date) {
-                             const pattern = i18n.language === 'es' ? 'dd/MM' : 'MM/dd';
-                             let result = `${formatDateSafe(currentStop.scheduled_date, pattern)}`;
-                             if (currentStop.scheduled_time) {
-                               const timeWithoutSeconds = currentStop.scheduled_time.length > 5 ? currentStop.scheduled_time.substring(0, 5) : currentStop.scheduled_time;
-                               result += ` ${timeWithoutSeconds}`;
+                       {/* Para estados diferentes a "assigned", mostrar ETA del historial de estado */}
+                       {load.status !== 'assigned' && (
+                         <div className="text-xs text-primary font-medium mt-0.5">
+                           {(() => {
+                             // Priorizar información del historial de estado más reciente
+                             if (load.latest_status_eta) {
+                               const etaDate = new Date(load.latest_status_eta);
+                               const language = i18n.language;
+                               const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
+                               const etaDisplayDate = formatInternationalized(etaDate, pattern);
+                               const etaDisplayTime = etaDate.toLocaleTimeString('en-GB', { 
+                                 hour12: false, 
+                                 hour: '2-digit', 
+                                 minute: '2-digit'
+                               });
+                               return (
+                                 <>
+                                   <Calendar className="h-3 w-3 inline mr-1" />
+                                   {etaDisplayDate} {etaDisplayTime}
+                                 </>
+                               );
                              }
-                             return (
-                               <div className="text-xs text-primary font-medium mt-0.5">
-                                 <Calendar className="h-3 w-3 inline mr-1" />
-                                 {result}
-                               </div>
-                             );
-                           }
-                         }
-                         return null;
-                       })()}
+                             
+                             // Fallback: mostrar fecha programada de la parada actual si no hay ETA del historial
+                             const currentStop = load.stops?.find(stop => {
+                               if (load.status === 'en_route_pickup' || load.status === 'at_pickup') {
+                                 return stop.stop_type === 'pickup';
+                               } else if (load.status === 'loaded' || load.status === 'en_route_delivery' || load.status === 'at_delivery') {
+                                 return stop.stop_type === 'delivery';
+                               }
+                               return false;
+                             });
+                             
+                             if (currentStop?.scheduled_date) {
+                               const pattern = i18n.language === 'es' ? 'dd/MM' : 'MM/dd';
+                               let result = `${formatDateSafe(currentStop.scheduled_date, pattern)}`;
+                               if (currentStop.scheduled_time) {
+                                 const timeWithoutSeconds = currentStop.scheduled_time.length > 5 ? currentStop.scheduled_time.substring(0, 5) : currentStop.scheduled_time;
+                                 result += ` ${timeWithoutSeconds}`;
+                               }
+                               return (
+                                 <>
+                                   <Calendar className="h-3 w-3 inline mr-1" />
+                                   {result}
+                                 </>
+                               );
+                             }
+                             
+                             return null;
+                           })()}
+                         </div>
+                       )}
                       
                     </div>
                   </div>
