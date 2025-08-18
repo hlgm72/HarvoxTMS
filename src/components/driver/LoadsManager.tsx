@@ -478,7 +478,6 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                                   </div>
                                    {firstStop.scheduled_time && (
                                      <div className="flex items-center gap-1">
-                                       <Clock className="h-3 w-3" />
                                        <span>{firstStop.scheduled_time.length > 5 ? firstStop.scheduled_time.substring(0, 5) : firstStop.scheduled_time}</span>
                                      </div>
                                    )}
