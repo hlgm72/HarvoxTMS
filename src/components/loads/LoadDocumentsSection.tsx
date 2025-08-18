@@ -205,9 +205,11 @@ export function LoadDocumentsSection({
   const [removingDocuments, setRemovingDocuments] = useState<Set<string>>(new Set());
   const [showGenerateLoadOrder, setShowGenerateLoadOrder] = useState(false);
   const [hasLoadOrder, setHasLoadOrder] = useState(false);
-  const [uploading, setUploading] = useState<string | null>(null);
+const [uploading, setUploading] = useState<string | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string>('');
   const [showUploadDropdown, setShowUploadDropdown] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState<string | null>(null);
+  const [showPhotoDropdown, setShowPhotoDropdown] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const { notifyDocumentChange } = useLoadDocuments();
@@ -291,6 +293,57 @@ export function LoadDocumentsSection({
     } catch (error) {
       console.error('Error loading documents:', error);
       showError("Error", "No se pudieron cargar los documentos");
+    }
+  };
+
+  const handlePhotoUpload = async (file: File, category: 'pickup' | 'delivery') => {
+    setUploadingPhoto(category);
+    
+    try {
+      const fileExt = file.name.split('.').pop();
+      const photoCount = getPhotoCount(category) + 1;
+      const fileName = `${loadData.load_number}_foto_${category}_${photoCount}.${fileExt}`;
+      const filePath = `${user?.id}/${loadData.id}/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('load-documents')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        console.error('Error uploading photo:', error);
+        showError("Error", "No se pudo subir la foto");
+        return;
+      }
+
+      const documentData = {
+        load_id: loadData.id,
+        document_type: 'load_photos',
+        file_name: fileName,
+        file_url: filePath,
+        uploaded_by: user?.id || '',
+      };
+
+      const { error: dbError } = await supabase
+        .from('load_documents')
+        .insert(documentData);
+
+      if (dbError) {
+        console.error('Error saving photo to database:', dbError);
+        await supabase.storage.from('load-documents').remove([filePath]);
+        showError("Error", "No se pudo guardar la información de la foto");
+        return;
+      }
+
+      await loadDocuments();
+      showSuccess("Foto subida", `Foto de ${category} subida correctamente`);
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      showError("Error", "Error inesperado al subir la foto");
+    } finally {
+      setUploadingPhoto(null);
     }
   };
 
@@ -393,6 +446,34 @@ export function LoadDocumentsSection({
     return uploadableDocumentTypes.filter(docType => !uploadedTypes.includes(docType.type));
   };
 
+  // Get photo counts by category
+  const getPhotoCount = (category: 'pickup' | 'delivery') => {
+    return [...documents, ...temporaryDocuments].filter(doc => 
+      doc.type === 'load_photos' && doc.category === category
+    ).length;
+  };
+
+  // Check if photo category is available (less than 4 photos)
+  const isPhotoCategoryAvailable = (category: 'pickup' | 'delivery') => {
+    return getPhotoCount(category) < 4;
+  };
+
+  // Get available photo categories
+  const getAvailablePhotoCategories = () => {
+    return [
+      { 
+        value: 'pickup', 
+        label: `Recogida (${getPhotoCount('pickup')}/4)`,
+        disabled: !isPhotoCategoryAvailable('pickup')
+      },
+      { 
+        value: 'delivery', 
+        label: `Entrega (${getPhotoCount('delivery')}/4)`,
+        disabled: !isPhotoCategoryAvailable('delivery')
+      }
+    ].filter(category => !category.disabled);
+  };
+
   const handleUploadClick = (documentType: string) => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -405,6 +486,20 @@ export function LoadDocumentsSection({
     };
     input.click();
     setShowUploadDropdown(false);
+  };
+
+  const handlePhotoUploadClick = (category: 'pickup' | 'delivery') => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/jpeg,image/png,image/webp';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        handlePhotoUpload(file, category);
+      }
+    };
+    input.click();
+    setShowPhotoDropdown(false);
   };
 
   const handleRemoveDocument = async (documentId: string) => {
@@ -792,6 +887,46 @@ export function LoadDocumentsSection({
             </DropdownMenu>
           </div>
           <div className="flex gap-2">
+            <DropdownMenu open={showPhotoDropdown} onOpenChange={setShowPhotoDropdown}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  disabled={uploadingPhoto !== null || getAvailablePhotoCategories().length === 0}
+                  className="gap-2"
+                >
+                  {uploadingPhoto ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Subiendo foto...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4" />
+                      Subir foto
+                      <ChevronDown className="h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {getAvailablePhotoCategories().map((category) => (
+                  <DropdownMenuItem
+                    key={category.value}
+                    onClick={() => handlePhotoUploadClick(category.value as 'pickup' | 'delivery')}
+                    disabled={category.disabled}
+                    className="flex items-center justify-between"
+                  >
+                    <span>{category.label}</span>
+                  </DropdownMenuItem>
+                ))}
+                {getAvailablePhotoCategories().length === 0 && (
+                  <DropdownMenuItem disabled>
+                    Todas las categorías completas (4/4)
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
             <Button
               onClick={() => {
                 console.log('🔄 Load Order button clicked');
