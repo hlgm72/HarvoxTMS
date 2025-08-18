@@ -464,13 +464,13 @@ const [uploading, setUploading] = useState<string | null>(null);
       { 
         value: 'pickup', 
         label: `Recogida (${getPhotoCount('pickup')}/4)`,
-        description: 'Fotografías del punto de recogida',
+        description: 'Fotografías en la recogida',
         disabled: !isPhotoCategoryAvailable('pickup')
       },
       { 
         value: 'delivery', 
         label: `Entrega (${getPhotoCount('delivery')}/4)`,
-        description: 'Fotografías del punto de entrega',
+        description: 'Fotografías en la entrega',
         disabled: !isPhotoCategoryAvailable('delivery')
       }
     ].filter(category => !category.disabled);
