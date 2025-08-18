@@ -97,24 +97,40 @@ function CurrentStopInfo({ load }: { load: Load }) {
         stop_type: stop.stop_type,
         scheduled_date: stop.scheduled_date,
         scheduled_time: stop.scheduled_time,
-        scheduled_time_is_null: stop.scheduled_time === null,
-        scheduled_time_type: typeof stop.scheduled_time
+        eta_date: stop.eta_date,
+        eta_time: stop.eta_time,
+        actual_arrival_datetime: stop.actual_arrival_datetime
       }
     });
 
-    // Por ahora solo mostrar la fecha programada disponible
+    // Priorizar ETA si está disponible
+    if (stop.eta_date) {
+      let result = `🎯 ETA: ${formatDateSafe(stop.eta_date, 'dd/MM')}`;
+      if (stop.eta_time) {
+        result += ` ${stop.eta_time}`;
+      }
+      console.log('✅ Showing ETA:', result);
+      return result;
+    }
+
+    // Si hay llegada real, mostrarla
+    if (stop.actual_arrival_datetime) {
+      const result = `✅ Llegó: ${formatDateSafe(stop.actual_arrival_datetime, 'dd/MM HH:mm')}`;
+      console.log('✅ Showing actual arrival:', result);
+      return result;
+    }
+
+    // Mostrar fecha programada como fallback
     if (stop.scheduled_date) {
       let result = `📅 ${formatDateSafe(stop.scheduled_date, 'dd/MM')}`;
       if (stop.scheduled_time) {
         result += ` ${stop.scheduled_time}`;
-        console.log('✅ Showing scheduled date + time:', result);
-      } else {
-        console.log('⚠️ scheduled_time is null/empty, showing only date:', result);
       }
+      console.log('✅ Showing scheduled time:', result);
       return result;
     }
     
-    console.log('❌ No scheduled date available');
+    console.log('❌ No time information available');
     return null;
   };
   

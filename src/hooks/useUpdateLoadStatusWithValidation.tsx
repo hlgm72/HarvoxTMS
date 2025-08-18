@@ -72,12 +72,14 @@ export const useUpdateLoadStatusWithValidation = () => {
       // Si hay información de ETA o notas y stopId, actualizar la parada
       if (params.stopId && (params.eta || params.notes)) {
         const stopUpdateData: any = {
-          status_updated_at: new Date().toISOString(),
-          status_updated_by: user.id
+          last_status_update: new Date().toISOString()
         };
 
         if (params.eta) {
-          stopUpdateData.estimated_arrival_time = params.eta.toISOString();
+          const etaDate = params.eta.toISOString().split('T')[0];
+          const etaTime = params.eta.toTimeString().split(' ')[0];
+          stopUpdateData.eta_date = etaDate;
+          stopUpdateData.eta_time = etaTime;
         }
 
         if (params.notes) {
