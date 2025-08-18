@@ -223,14 +223,14 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
 
   const getStatusColor = (status: string): string => {
     switch (status) {
-      case 'assigned': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'en_route_pickup': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'at_pickup': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'loaded': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'en_route_delivery': return 'bg-cyan-100 text-cyan-800 border-cyan-200';
-      case 'at_delivery': return 'bg-lime-100 text-lime-800 border-lime-200';
-      case 'delivered': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'assigned': return 'bg-primary/10 text-primary border-primary/20 hover:bg-primary/15 hover:border-primary/30';
+      case 'en_route_pickup': return 'bg-secondary/10 text-secondary border-secondary/20 hover:bg-secondary/15 hover:border-secondary/30';
+      case 'at_pickup': return 'bg-warning/10 text-warning border-warning/20 hover:bg-warning/15 hover:border-warning/30';
+      case 'loaded': return 'bg-accent/50 text-accent-foreground border-accent hover:bg-accent/60 hover:border-accent';
+      case 'en_route_delivery': return 'bg-chart-5/10 text-chart-5 border-chart-5/20 hover:bg-chart-5/15 hover:border-chart-5/30';
+      case 'at_delivery': return 'bg-chart-3/10 text-chart-3 border-chart-3/20 hover:bg-chart-3/15 hover:border-chart-3/30';
+      case 'delivered': return 'bg-success/10 text-success border-success/20 hover:bg-success/15 hover:border-success/30';
+      default: return 'bg-muted text-muted-foreground border-border hover:bg-muted/80 hover:border-border';
     }
   };
 
@@ -592,9 +592,9 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                       <CheckCircle className="h-5 w-5 text-green-600" />
                       <CardTitle className="text-base">{load.load_number}</CardTitle>
                     </div>
-                    <Badge className="bg-green-100 text-green-800 border-green-200">
-                      Entregada
-                    </Badge>
+                     <Badge className="bg-success/10 text-success border-success/20 hover:bg-success/15 hover:border-success/30">
+                       Entregada
+                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">{load.client_name}</p>
                 </CardHeader>
