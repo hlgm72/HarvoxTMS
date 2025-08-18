@@ -3789,11 +3789,13 @@ export type Database = {
         Returns: Json
       }
       update_load_status_with_validation: {
-        Args: {
-          load_id_param: string
-          new_status: string
-          status_reason?: string
-        }
+        Args:
+          | { load_id_param: string; new_status: string }
+          | {
+              load_id_param: string
+              new_status: string
+              status_reason?: string
+            }
         Returns: Json
       }
       update_other_income_with_validation: {
