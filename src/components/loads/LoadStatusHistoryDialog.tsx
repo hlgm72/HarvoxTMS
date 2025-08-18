@@ -57,7 +57,7 @@ export function LoadStatusHistoryDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            Historial de Estados - Carga {loadNumber}
+            Historial de Estados - Carga #{loadNumber}
           </DialogTitle>
         </DialogHeader>
 
