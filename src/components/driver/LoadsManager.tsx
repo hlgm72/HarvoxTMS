@@ -80,16 +80,40 @@ function CurrentStopInfo({ load }: { load: Load }) {
     return null;
   }
   
+  
   const getStopActionText = (status: string, stop: any) => {
     const stopTypeText = stop.stop_type === 'pickup' ? 
       t('dashboard:loads.stop_types.pickup') : 
       t('dashboard:loads.stop_types.delivery');
     return `${t('common:stop', { defaultValue: 'Parada' })} ${stop.stop_number} (${stopTypeText})`;
   };
+
+  const getTimeDisplayText = (status: string, stop: any) => {
+    // Determinar si mostrar ETA o tiempo real según el estado
+    const isEnRoute = status.includes('en_route');
+    const isAtLocation = status.includes('at_');
+    const isCompleted = status === 'loaded' || status === 'delivered';
+
+    if (isEnRoute && stop.eta_date && stop.eta_time) {
+      return `ETA: ${formatDateSafe(stop.eta_date, 'dd/MM')} ${stop.eta_time}`;
+    } else if ((isAtLocation || isCompleted) && stop.actual_arrival_time) {
+      return `Llegada: ${formatDateSafe(stop.actual_arrival_time, 'dd/MM HH:mm')}`;
+    } else if (stop.scheduled_date && stop.scheduled_time) {
+      return `Programado: ${formatDateSafe(stop.scheduled_date, 'dd/MM')} ${stop.scheduled_time}`;
+    }
+    return null;
+  };
+  
+  const timeDisplay = getTimeDisplayText(load.status, nextStopInfo.stop);
   
   return (
     <div className="text-xs text-muted-foreground mt-1">
-      {getStopActionText(load.status, nextStopInfo.stop)}
+      <div>{getStopActionText(load.status, nextStopInfo.stop)}</div>
+      {timeDisplay && (
+        <div className="text-xs text-primary font-medium mt-0.5">
+          {timeDisplay}
+        </div>
+      )}
     </div>
   );
 }
@@ -453,16 +477,36 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                                   <div className="w-0.5 h-6 bg-border"></div>
                                 )}
                               </div>
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <Badge variant="outline" className="text-xs">
-                                    {stop.stop_type === 'pickup' ? 'Recogida' : 'Entrega'} #{stop.stop_number}
-                                  </Badge>
-                                  <span className="text-xs text-muted-foreground">
-                                    {stop.scheduled_date ? formatDateSafe(stop.scheduled_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
-                                    {stop.scheduled_time && ` - ${stop.scheduled_time}`}
-                                  </span>
-                                </div>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <Badge variant="outline" className="text-xs">
+                                      {stop.stop_type === 'pickup' ? 'Recogida' : 'Entrega'} #{stop.stop_number}
+                                    </Badge>
+                                    <span className="text-xs text-muted-foreground">
+                                      {stop.scheduled_date ? formatDateSafe(stop.scheduled_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
+                                      {stop.scheduled_time && ` - ${stop.scheduled_time}`}
+                                    </span>
+                                  </div>
+                                  {/* Time display for each stop */}
+                                  <div className="text-xs text-primary font-medium mb-1">
+                                    {(() => {
+                                      const getStopTimeDisplay = (status: string, stop: any) => {
+                                        const isEnRoute = status.includes('en_route');
+                                        const isAtLocation = status.includes('at_');
+                                        const isCompleted = status === 'loaded' || status === 'delivered';
+
+                                        if (isEnRoute && stop.eta_date && stop.eta_time) {
+                                          return `ETA: ${formatDateSafe(stop.eta_date, 'dd/MM')} ${stop.eta_time}`;
+                                        } else if ((isAtLocation || isCompleted) && stop.actual_arrival_time) {
+                                          return `Llegada: ${formatDateSafe(stop.actual_arrival_time, 'dd/MM HH:mm')}`;
+                                        }
+                                        return null;
+                                      };
+                                      
+                                      const timeDisplay = getStopTimeDisplay(load.status, stop);
+                                      return timeDisplay || null;
+                                    })()}
+                                  </div>
                                 <p className="font-medium text-sm">
                                   {stop.company_name}
                                 </p>
