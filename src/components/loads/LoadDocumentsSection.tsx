@@ -836,8 +836,8 @@ const [uploading, setUploading] = useState<string | null>(null);
     return (
       <div className="space-y-6">
         {/* Upload Controls */}
-        <div className="flex flex-col sm:flex-row gap-3 p-4 bg-muted/30 rounded-lg">
-          <div className="flex-1">
+        <div className="flex gap-3 p-4 bg-muted/30 rounded-lg">
+          <div className="w-1/2">
             <DropdownMenu open={showUploadDropdown} onOpenChange={setShowUploadDropdown}>
               <DropdownMenuTrigger asChild>
                 <Button 
@@ -888,13 +888,14 @@ const [uploading, setUploading] = useState<string | null>(null);
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="flex gap-2">
+          
+          <div className="w-1/4">
             <DropdownMenu open={showPhotoDropdown} onOpenChange={setShowPhotoDropdown}>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
                   disabled={uploadingPhoto !== null || getAvailablePhotoCategories().length === 0}
-                  className="gap-2"
+                  className="w-full gap-2"
                 >
                   {uploadingPhoto ? (
                     <>
@@ -934,7 +935,9 @@ const [uploading, setUploading] = useState<string | null>(null);
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-            
+          </div>
+          
+          <div className="w-1/4">
             <Button
               onClick={() => {
                 console.log('🔄 Load Order button clicked');
@@ -943,7 +946,7 @@ const [uploading, setUploading] = useState<string | null>(null);
                 setShowGenerateLoadOrder(true);
               }}
               disabled={uploading !== null || !canGenerateLoadOrder(loadData)}
-              className="bg-orange-500 hover:bg-orange-600 text-white border-orange-500 hover:border-orange-600"
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white border-orange-500 hover:border-orange-600"
               title={canGenerateLoadOrder(loadData) ? "Generar Load Order" : "Faltan datos de la carga o paradas para generar el Load Order"}
             >
               <FileText className="h-4 w-4 mr-2" />
