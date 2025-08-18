@@ -1,2 +1,3 @@
-// This file is now deprecated - use AuthContext instead
-export { useAuth } from '@/contexts/AuthContext';
+import { useAuth as useAuthFromContext } from '@/contexts/AuthContext';
+
+export const useAuth = useAuthFromContext;
