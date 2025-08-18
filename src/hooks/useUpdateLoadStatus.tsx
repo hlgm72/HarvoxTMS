@@ -49,7 +49,8 @@ export const useUpdateLoadStatus = () => {
         };
 
         if (params.eta) {
-          historyUpdateData.eta_provided = params.eta.toISOString();
+          // Mantener la fecha/hora tal como la puso el usuario, sin conversión a UTC
+          historyUpdateData.eta_provided = params.eta.toISOString().replace('Z', '+00');
         }
 
         // Buscar el registro de historial más reciente para esta carga y actualizarlo
