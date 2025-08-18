@@ -281,14 +281,18 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="active" className="relative">
             <div className="flex items-center gap-2">
-              <span>{dashboardMode ? "Carga Actual" : "Cargas Activas"}</span>
-              {activeLoads.length > 0 && (
+              <span>{dashboardMode ? "Carga Activa" : "Cargas Activas"}</span>
+              {!dashboardMode && activeLoads.length > 0 && (
                 <Badge variant="secondary" className="h-5 w-5 rounded-full p-0 text-xs">
                   {activeLoads.length}
                 </Badge>
               )}
               {dashboardMode && activeLoads.length > 1 && (
-                <Link to="/my-loads" className="ml-1 hover:text-primary transition-colors">
+                <Link 
+                  to="/my-loads" 
+                  className="ml-1 hover:text-primary transition-colors"
+                  title="Ver Cargas Asignadas"
+                >
                   <ExternalLink className="h-3 w-3" />
                 </Link>
               )}
