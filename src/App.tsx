@@ -12,7 +12,6 @@ import Companies from "./pages/Companies";
 import PaymentSystem from "./pages/PaymentSystem";
 import Equipment from "./pages/Equipment";
 import Invitation from "./pages/Invitation";
-import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import Users from "./pages/Users";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -31,6 +30,8 @@ import Deductions from "./pages/Deductions";
 import AdditionalPayments from "./pages/AdditionalPayments";
 import FuelManagement from "./pages/FuelManagement";
 import Loads from "./pages/Loads";
+import MyLoads from "./pages/MyLoads";
+import NotFound from "./pages/NotFound";
 
 import DriverMobile from "./pages/DriverMobile";
 import PaymentReports from "./pages/PaymentReports";
@@ -194,6 +195,16 @@ function AppContent() {
             <ProtectedRoute>
               <Layout>
                 <Loads />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/my-loads" 
+          element={
+            <ProtectedRoute requiredRole="driver">
+              <Layout>
+                <MyLoads />
               </Layout>
             </ProtectedRoute>
           } 

@@ -43,7 +43,7 @@ export default function DriverDashboard() {
       {/* Main Driver Focus Areas */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Load Management - Primary Focus */}
-        <LoadsManager className="lg:col-span-1" />
+        <LoadsManager className="lg:col-span-1" dashboardMode={true} />
         
         {/* Financial Summary - Daily Focus */}
         <FinancialSummary className="lg:col-span-1" />
