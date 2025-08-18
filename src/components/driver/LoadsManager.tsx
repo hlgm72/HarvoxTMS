@@ -104,7 +104,7 @@ function CurrentStopInfo({ load }: { load: Load }) {
     if (stop.eta_date) {
       const language = i18n.language;
       const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
-      let result = `🎯 ETA: ${formatDateSafe(stop.eta_date, pattern)}`;
+      let result = `🎯 ETA: ${formatInternationalized(stop.eta_date, pattern)}`;
       if (stop.eta_time) {
         // Formatear hora para remover segundos si los tiene
         const timeWithoutSeconds = stop.eta_time.length > 5 ? stop.eta_time.substring(0, 5) : stop.eta_time;

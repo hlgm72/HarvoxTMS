@@ -97,7 +97,10 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     let eta: Date | null = null;
     
     if (etaDate && etaTime) {
-      eta = new Date(`${etaDate}T${etaTime}`);
+      // Crear fecha en zona horaria local del usuario para evitar problemas de conversión
+      const [year, month, day] = etaDate.split('-').map(Number);
+      const [hours, minutes] = etaTime.split(':').map(Number);
+      eta = new Date(year, month - 1, day, hours, minutes);
     }
     
     onConfirm(eta, notes);

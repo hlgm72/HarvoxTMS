@@ -48,11 +48,15 @@ export const useUpdateLoadStatus = () => {
         };
 
         if (params.eta) {
-          const etaDate = params.eta.toISOString().split('T')[0];
-          // Usar la hora local del usuario en lugar de UTC
-          const hours = params.eta.getHours().toString().padStart(2, '0');
-          const minutes = params.eta.getMinutes().toString().padStart(2, '0');
-          const etaTime = `${hours}:${minutes}`;
+          // Usar formateo seguro de zona horaria para evitar problemas de conversión
+          const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          const etaDate = params.eta.toLocaleDateString('en-CA'); // Formato YYYY-MM-DD
+          const etaTime = params.eta.toLocaleTimeString('en-GB', { 
+            hour12: false, 
+            hour: '2-digit', 
+            minute: '2-digit',
+            timeZone: userTimeZone 
+          });
           stopUpdateData.eta_date = etaDate;
           stopUpdateData.eta_time = etaTime;
         }
