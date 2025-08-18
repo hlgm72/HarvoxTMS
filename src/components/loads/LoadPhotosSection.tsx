@@ -239,154 +239,163 @@ export function LoadPhotosSection({
   };
 
   const renderPhotoGrid = (photos: LoadPhotoDocument[], category: 'pickup' | 'delivery') => {
-    const canUpload = canUploadMorePhotos(category);
-    
     return (
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h4 className="font-medium text-sm flex items-center gap-2">
-            <Camera className="h-4 w-4" />
-            {category === 'pickup' ? 'Pickup' : 'Delivery'}
-            <Badge variant="outline" className="text-xs">
-              {photos.length}/4
-            </Badge>
-          </h4>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {photos.map((photo) => {
+          const photoUrl = photoUrls.get(photo.id);
           
-          {canUpload && (
-            <div className="flex items-center gap-2">
-              <input
-                type="file"
-                id={`upload-${category}`}
-                accept="image/jpeg,image/png,image/webp"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) {
-                    handleFileUpload(e.target.files[0], category);
-                  }
-                  e.target.value = '';
-                }}
-                className="hidden"
-              />
-              <Button
-                onClick={() => document.getElementById(`upload-${category}`)?.click()}
-                disabled={!!uploading}
-                size="sm"
-                variant="outline"
-                className="h-7 text-xs"
-              >
-                {uploading?.includes(category) ? (
-                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                ) : (
-                  <Upload className="h-3 w-3 mr-1" />
-                )}
-                {uploading?.includes(category) ? 'Subiendo...' : 'Subir Foto'}
-              </Button>
-            </div>
-          )}
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {photos.map((photo) => {
-            const photoUrl = photoUrls.get(photo.id);
-            
-            return (
-              <div key={photo.id} className="relative group">
-                <div className="aspect-square border rounded-lg overflow-hidden bg-muted/20">
-                  {photoUrl ? (
-                    <img
-                      src={photoUrl}
-                      alt={photo.fileName}
-                      className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                      onClick={() => handleViewPhoto(photo)}
-                      onError={(e) => {
-                        console.error('Error loading image:', photo.fileName);
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                    </div>
-                   )}
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="h-7 w-7 p-0"
+          return (
+            <div key={photo.id} className="relative group">
+              <div className="aspect-square border rounded-lg overflow-hidden bg-muted/20">
+                {photoUrl ? (
+                  <img
+                    src={photoUrl}
+                    alt={photo.fileName}
+                    className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
                     onClick={() => handleViewPhoto(photo)}
-                    title="Ver foto"
-                  >
-                    <Eye className="h-3 w-3" />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        className="h-7 w-7 p-0"
-                        disabled={removing.has(photo.id)}
-                        title="Eliminar foto"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>¿Eliminar foto?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Esta acción eliminará permanentemente esta foto. No se puede deshacer.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleRemovePhoto(photo.id)}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          Eliminar
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                    onError={(e) => {
+                      console.error('Error loading image:', photo.fileName);
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                   </div>
+                 )}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="h-7 w-7 p-0"
+                  onClick={() => handleViewPhoto(photo)}
+                  title="Ver foto"
+                >
+                  <Eye className="h-3 w-3" />
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="h-7 w-7 p-0"
+                      disabled={removing.has(photo.id)}
+                      title="Eliminar foto"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>¿Eliminar foto?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Esta acción eliminará permanentemente esta foto. No se puede deshacer.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleRemovePhoto(photo.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Eliminar
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1 truncate">
-                  {photo.fileName}
-                </p>
               </div>
-            );
-          })}
-          
-          {/* Empty slots */}
-          {Array.from({ length: 4 - photos.length }).map((_, index) => (
-            <div key={`empty-${index}`} className="aspect-square border border-dashed border-border/40 rounded-lg flex items-center justify-center bg-muted/10">
-              <ImageIcon className="h-6 w-6 text-muted-foreground" />
+              <p className="text-xs text-muted-foreground mt-1 truncate">
+                {photo.fileName}
+              </p>
             </div>
-          ))}
-        </div>
+          );
+        })}
+        
+        {/* Empty slots */}
+        {Array.from({ length: 4 - photos.length }).map((_, index) => (
+          <div key={`empty-${index}`} className="aspect-square border border-dashed border-border/40 rounded-lg flex items-center justify-center bg-muted/10">
+            <ImageIcon className="h-6 w-6 text-muted-foreground" />
+          </div>
+        ))}
       </div>
     );
   };
 
-  return (
-    <div className="p-3 border rounded-lg bg-white space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+  // Check if there are any photos
+  const hasPhotos = loadPhotos.length > 0;
+  const hasPickupPhotos = pickupPhotos.length > 0;
+  const hasDeliveryPhotos = deliveryPhotos.length > 0;
+
+  if (!hasPhotos) {
+    // Empty state similar to documents
+    return (
+      <div className="p-6 border rounded-lg bg-white">
+        <div className="flex items-center gap-2 mb-2">
           <Camera className="h-4 w-4 text-muted-foreground" />
           <span className="font-medium text-sm">Fotos de la Carga</span>
         </div>
-        <Badge variant="outline" className="text-xs">
-          {loadPhotos.length}/8 fotos
-        </Badge>
+        <p className="text-xs text-muted-foreground mb-4">
+          Fotografías del pickup y delivery (máx. 4 por categoría)
+        </p>
+        <div className="text-center py-8">
+          <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground mb-2">
+            No hay fotos de la carga
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Las fotos aparecerán aquí cuando las subas usando el botón "Subir foto"
+          </p>
+        </div>
       </div>
-      
-      <p className="text-xs text-muted-foreground">
-        Fotografías del pickup y delivery (máx. 4 por categoría)
-      </p>
+    );
+  }
 
-      <div className="space-y-6">
-        {renderPhotoGrid(pickupPhotos, 'pickup')}
-        {renderPhotoGrid(deliveryPhotos, 'delivery')}
+  return (
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="p-3 border rounded-lg bg-white">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <Camera className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium text-sm">Fotos de la Carga</span>
+          </div>
+          <Badge variant="outline" className="text-xs">
+            {loadPhotos.length}/8 fotos
+          </Badge>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Fotografías del pickup y delivery (máx. 4 por categoría)
+        </p>
       </div>
+
+      {/* Pickup Photos Section */}
+      {hasPickupPhotos && (
+        <div className="p-3 border rounded-lg bg-white">
+          <div className="flex items-center gap-2 mb-3">
+            <Camera className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium text-sm">Fotos de Recogida</span>
+            <Badge variant="outline" className="text-xs">
+              {pickupPhotos.length}/4
+            </Badge>
+          </div>
+          {renderPhotoGrid(pickupPhotos, 'pickup')}
+        </div>
+      )}
+
+      {/* Delivery Photos Section */}
+      {hasDeliveryPhotos && (
+        <div className="p-3 border rounded-lg bg-white">
+          <div className="flex items-center gap-2 mb-3">
+            <Camera className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium text-sm">Fotos de Entrega</span>
+            <Badge variant="outline" className="text-xs">
+              {deliveryPhotos.length}/4
+            </Badge>
+          </div>
+          {renderPhotoGrid(deliveryPhotos, 'delivery')}
+        </div>
+      )}
     </div>
   );
 }
