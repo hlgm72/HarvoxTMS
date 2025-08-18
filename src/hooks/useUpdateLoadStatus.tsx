@@ -41,29 +41,51 @@ export const useUpdateLoadStatus = () => {
         throw new Error((data as any)?.message || 'Error actualizando estado');
       }
 
-      // Si hay información de ETA o notas y stopId, actualizar la parada
-      if (params.stopId && (params.eta || params.notes)) {
+      // Actualizar el historial de estado con ETA y notas del conductor
+      if (params.eta || params.notes || params.stopId) {
+        const historyUpdateData: any = {
+          notes: params.notes || null,
+          stop_id: params.stopId || null
+        };
+
+        if (params.eta) {
+          historyUpdateData.eta_provided = params.eta.toISOString();
+        }
+
+        // Buscar el registro de historial más reciente para esta carga y actualizarlo
+        const { error: historyError } = await supabase
+          .from('load_status_history')
+          .update(historyUpdateData)
+          .eq('load_id', params.loadId)
+          .eq('new_status', params.newStatus)
+          .order('changed_at', { ascending: false })
+          .limit(1);
+
+        if (historyError) {
+          console.error('❌ useUpdateLoadStatus - Error actualizando historial:', historyError);
+        } else {
+          console.log('✅ useUpdateLoadStatus - Historial actualizado con ETA/notas');
+        }
+      }
+
+      // Opcionalmente actualizar también la parada específica si se proporciona stopId
+      // Esto permite cambiar la ETA estimada de la parada, pero no la programada
+      if (params.stopId && params.eta) {
         const stopUpdateData: any = {
           last_status_update: new Date().toISOString()
         };
 
-        if (params.eta) {
-          // Usar formateo seguro de zona horaria para evitar problemas de conversión
-          const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-          const etaDate = params.eta.toLocaleDateString('en-CA'); // Formato YYYY-MM-DD
-          const etaTime = params.eta.toLocaleTimeString('en-GB', { 
-            hour12: false, 
-            hour: '2-digit', 
-            minute: '2-digit',
-            timeZone: userTimeZone 
-          });
-          stopUpdateData.eta_date = etaDate;
-          stopUpdateData.eta_time = etaTime;
-        }
-
-        if (params.notes) {
-          stopUpdateData.driver_notes = params.notes;
-        }
+        // Usar formateo seguro de zona horaria para evitar problemas de conversión
+        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const etaDate = params.eta.toLocaleDateString('en-CA'); // Formato YYYY-MM-DD
+        const etaTime = params.eta.toLocaleTimeString('en-GB', { 
+          hour12: false, 
+          hour: '2-digit', 
+          minute: '2-digit',
+          timeZone: userTimeZone 
+        });
+        stopUpdateData.eta_date = etaDate;
+        stopUpdateData.eta_time = etaTime;
 
         const { error: stopError } = await supabase
           .from('load_stops')
@@ -72,9 +94,8 @@ export const useUpdateLoadStatus = () => {
 
         if (stopError) {
           console.error('❌ useUpdateLoadStatus - Error actualizando parada:', stopError);
-          // No lanzamos error para no bloquear la actualización de estado principal
         } else {
-          console.log('✅ useUpdateLoadStatus - Parada actualizada con ETA/notas');
+          console.log('✅ useUpdateLoadStatus - Parada actualizada con ETA estimada');
         }
       }
 

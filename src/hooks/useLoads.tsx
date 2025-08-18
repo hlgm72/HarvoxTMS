@@ -297,20 +297,34 @@ export const useLoads = (filters?: LoadsFilters) => {
           loads.map(l => l.id)
         ];
 
-        // Obtener ciudades de las paradas para resolver los UUIDs
+        // Obtener paradas con información de ETA y notas
         const stopsResult = loadIds.length > 0 
           ? await supabase
               .from('load_stops')
-              .select('id, load_id, stop_type, stop_number, company_name, address, city, state, zip_code, contact_name, contact_phone, reference_number, scheduled_date, scheduled_time, special_instructions')
+              .select('id, load_id, stop_type, stop_number, company_name, address, city, state, zip_code, contact_name, contact_phone, reference_number, scheduled_date, scheduled_time, eta_date, eta_time, driver_notes, special_instructions')
               .in('load_id', loadIds)
               .order('stop_number', { ascending: true })
+          : { data: [], error: null };
+
+        // Obtener historial de estado más reciente para cada carga
+        const statusHistoryResult = loadIds.length > 0
+          ? await supabase
+              .from('load_status_history')
+              .select('load_id, stop_id, notes, eta_provided, new_status, changed_at')
+              .in('load_id', loadIds)
+              .order('changed_at', { ascending: false })
           : { data: [], error: null };
 
         if (stopsResult.error) {
           console.error('Error obteniendo paradas:', stopsResult.error);
         }
 
+        if (statusHistoryResult.error) {
+          console.error('Error obteniendo historial de estado:', statusHistoryResult.error);
+        }
+
         const stopsData = stopsResult.data || [];
+        const statusHistoryData = statusHistoryResult.data || [];
         // Processing stops data
         
         // Separar paradas con UUIDs vs nombres de texto
@@ -436,6 +450,11 @@ export const useLoads = (filters?: LoadsFilters) => {
             };
           });
 
+          // Obtener el historial de estado más reciente para esta carga
+          const latestStatusHistory = statusHistoryData
+            .filter(h => h.load_id === load.id)
+            .sort((a, b) => new Date(b.changed_at).getTime() - new Date(a.changed_at).getTime())[0];
+
           return {
             ...load,
             broker_id: load.client_id, // Compatibility field
@@ -452,7 +471,11 @@ export const useLoads = (filters?: LoadsFilters) => {
             period_end_date: period?.period_end_date,
             period_frequency: period?.period_frequency,
             period_status: period?.status,
-            stops: processedStops
+            stops: processedStops,
+            // Información del estado más reciente
+            latest_status_notes: latestStatusHistory?.notes,
+            latest_status_eta: latestStatusHistory?.eta_provided,
+            latest_status_stop_id: latestStatusHistory?.stop_id
           };
         });
 
