@@ -811,7 +811,16 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                         {load.delivery_date ? formatDateSafe(load.delivery_date, 'dd/MM/yyyy') : 'Sin fecha'}
                       </p>
                     </div>
-                    <p className="font-bold text-green-600">${load.total_amount.toLocaleString()}</p>
+                    <div className="flex items-center gap-2">
+                      <LoadStatusHistoryButton
+                        loadId={load.id}
+                        loadNumber={load.load_number}
+                        variant="outline"
+                        size="sm"
+                        showText={false}
+                      />
+                      <p className="font-bold text-green-600">${load.total_amount.toLocaleString()}</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
