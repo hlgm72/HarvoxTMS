@@ -25,7 +25,7 @@ import { useLoads } from "@/hooks/useLoads";
 import { useUpdateLoadStatus } from "@/hooks/useUpdateLoadStatus";
 import { useFleetNotifications } from "@/components/notifications";
 import { StatusUpdateModal } from './StatusUpdateModal';
-import { formatDateSafe, formatInternationalized } from '@/lib/dateFormatting';
+import { formatDateSafe, formatInternationalized, formatDateTimeAuto } from '@/lib/dateFormatting';
 import { useNavigationMaps } from '@/hooks/useNavigationMaps';
 import { useLoadStopsNavigation } from '@/hooks/useLoadStopsNavigation';
 import { Loader2 } from 'lucide-react';
@@ -505,26 +505,32 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                        {load.status !== 'assigned' && (
                          <div className="text-xs text-primary font-medium mt-0.5">
                            {(() => {
-                             // Priorizar información del historial de estado más reciente
-                             if (load.latest_status_eta) {
-                               const etaDate = new Date(load.latest_status_eta);
-                               const language = i18n.language;
-                               const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
-                               const etaDisplayDate = formatInternationalized(etaDate, pattern);
-                               const etaDisplayTime = etaDate.toLocaleTimeString('en-GB', { 
-                                 hour12: false, 
-                                 hour: '2-digit', 
-                                 minute: '2-digit'
-                               });
-                               return (
-                                 <>
-                                   <Calendar className="h-3 w-3 inline mr-1" />
-                                   {etaDisplayDate} {etaDisplayTime}
-                                 </>
-                               );
-                             }
-                             
-                             // Fallback: mostrar fecha programada de la parada actual si no hay ETA del historial
+                              // Priorizar información del historial de estado más reciente
+                              if (load.latest_status_eta) {
+                                // Usar formatDateTimeAuto que maneja correctamente las zonas horarias
+                                const formattedETA = formatDateTimeAuto(load.latest_status_eta);
+                                // Extraer solo la parte de fecha y hora (dd/MM HH:mm)
+                                const parts = formattedETA.split(' ');
+                                if (parts.length >= 2) {
+                                  const datePart = parts[0]; // dd/MM/yyyy
+                                  const timePart = parts[1]; // HH:mm
+                                  const dateShort = datePart.substring(0, 5); // dd/MM
+                                  return (
+                                    <>
+                                      <Calendar className="h-3 w-3 inline mr-1" />
+                                      {dateShort} {timePart}
+                                    </>
+                                  );
+                                }
+                                return (
+                                  <>
+                                    <Calendar className="h-3 w-3 inline mr-1" />
+                                    {formattedETA}
+                                  </>
+                                 );
+                               }
+                              
+                              // Fallback: mostrar fecha programada de la parada actual si no hay ETA del historial
                              const currentStop = load.stops?.find(stop => {
                                if (load.status === 'en_route_pickup' || load.status === 'at_pickup') {
                                  return stop.stop_type === 'pickup';
