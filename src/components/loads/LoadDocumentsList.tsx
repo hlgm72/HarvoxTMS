@@ -24,6 +24,7 @@ interface LoadDocumentsListProps {
   showActions?: boolean;
   refreshTrigger?: number;
   showDeleteButton?: boolean;
+  driverView?: boolean;
 }
 
 const documentTypeLabels: Record<string, string> = {
@@ -33,6 +34,8 @@ const documentTypeLabels: Record<string, string> = {
   'load_order': 'LO',
   'pod': 'POD',
   'receipt': 'RCPT',
+  'load_invoice': 'LI',
+  'load_photos': 'FOTOS',
   'other': 'OD'
 };
 
@@ -43,6 +46,8 @@ const documentTypeColors: Record<string, string> = {
   'load_order': 'bg-orange-100 text-orange-800 border-orange-200',
   'pod': 'bg-emerald-100 text-emerald-800 border-emerald-200',
   'receipt': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  'load_invoice': 'bg-cyan-100 text-cyan-800 border-cyan-200',
+  'load_photos': 'bg-pink-100 text-pink-800 border-pink-200',
   'other': 'bg-gray-100 text-gray-800 border-gray-200'
 };
 
@@ -54,6 +59,8 @@ const documentTypeOrder = [
   'load_order',
   'pod',
   'receipt',
+  'load_invoice',
+  'load_photos',
   'other'
 ];
 
@@ -62,7 +69,8 @@ export function LoadDocumentsList({
   maxItems = 3, 
   showActions = false,
   refreshTrigger = 0,
-  showDeleteButton = false
+  showDeleteButton = false,
+  driverView = false
 }: LoadDocumentsListProps) {
   const [documents, setDocuments] = useState<LoadDocument[]>([]);
   const [isLoading, setIsLoading] = useState(true);

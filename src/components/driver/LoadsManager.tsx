@@ -17,7 +17,8 @@ import {
   MessageSquare,
   Route,
   ExternalLink,
-  Calendar
+  Calendar,
+  FileText
 } from "lucide-react";
 import { Link } from 'react-router-dom';
 import { useAuth } from "@/hooks/useAuth";
@@ -31,6 +32,8 @@ import { useLoadStopsNavigation } from '@/hooks/useLoadStopsNavigation';
 import { Loader2 } from 'lucide-react';
 import { LoadDocumentStatusIndicator } from '@/components/loads/LoadDocumentStatusIndicator';
 import { LoadStatusHistoryButton } from '@/components/loads/LoadStatusHistoryButton';
+import { DriverLoadDocumentManagement } from '@/components/loads/DriverLoadDocumentManagement';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface Load {
   id: string;
@@ -763,12 +766,28 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                        size="sm"
                        showText={false}
                      />
-                     <Button size="sm" variant="outline">
-                       <Phone className="h-4 w-4" />
-                     </Button>
-                     <Button size="sm" variant="outline">
-                       <Route className="h-4 w-4" />
-                     </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button size="sm" variant="outline" title="Ver documentos de la carga">
+                            <FileText className="h-4 w-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Documentos - {load.load_number}</DialogTitle>
+                          </DialogHeader>
+                          <DriverLoadDocumentManagement 
+                            loadId={load.id}
+                            loadStatus={load.status}
+                          />
+                        </DialogContent>
+                      </Dialog>
+                      <Button size="sm" variant="outline">
+                        <Phone className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <Route className="h-4 w-4" />
+                      </Button>
                    </div>
                 </CardContent>
               </Card>
