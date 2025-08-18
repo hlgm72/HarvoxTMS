@@ -143,9 +143,11 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     // Más delivered + closed
     const totalStates = (pickupStops.length * 3) + (deliveryStops.length * 2) + 2;
     
-    // Estados efectivos (excluyendo 'assigned')
+    // Estados efectivos (excluyendo 'assigned') 
     const effectiveStates = totalStates - 1;
-    const progressPerState = Math.round(100 / effectiveStates);
+    
+    // Para 2 paradas: 7 estados efectivos, entonces 100÷7 = 14.28% ≈ 14% por estado
+    const progressPerState = 100 / effectiveStates;
     
     // Casos especiales
     if (status === 'assigned') return 0;
@@ -178,7 +180,9 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         return 0;
     }
     
-    return Math.min(Math.round(progressPerState * currentStatePosition), 99);
+    // Calcular el progreso final sin redondear la multiplicación
+    const finalProgress = Math.floor(progressPerState * currentStatePosition);
+    return Math.min(finalProgress, 99);
   };
 
   // Fetch driver's loads using the real hook
