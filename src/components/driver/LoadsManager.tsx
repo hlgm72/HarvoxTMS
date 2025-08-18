@@ -520,21 +520,25 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                                   const dateShort = language === 'es' ? `${day}/${month}` : `${month}/${day}`;
                                   const timeShort = `${hour}:${minute}`;
                                   
+                                  // Solo mostrar "ETA:" cuando se está yendo hacia un lugar (en_route)
+                                  const showETA = load.status === 'en_route_pickup' || load.status === 'en_route_delivery';
+                                  const prefix = showETA ? 'ETA: ' : '';
+                                  
                                   return (
                                     <>
                                       <Calendar className="h-3 w-3 inline mr-1" />
-                                      ETA: {dateShort} {timeShort}
+                                      {prefix}{dateShort} {timeShort}
                                     </>
-                                  );
-                                }
-                                // Fallback para otros formatos
-                                return (
-                                  <>
-                                    <Calendar className="h-3 w-3 inline mr-1" />
-                                    {formatDateTimeAuto(load.latest_status_eta)}
-                                  </>
-                                );
-                              }
+                                   );
+                                 }
+                                 // Fallback para otros formatos
+                                 return (
+                                   <>
+                                     <Calendar className="h-3 w-3 inline mr-1" />
+                                     {formatDateTimeAuto(load.latest_status_eta)}
+                                   </>
+                                 );
+                               }
                               
                               // Fallback: mostrar fecha programada de la parada actual si no hay ETA del historial
                              const currentStop = load.stops?.find(stop => {
