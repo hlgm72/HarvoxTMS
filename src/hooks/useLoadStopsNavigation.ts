@@ -55,7 +55,7 @@ export function useLoadStopsNavigation(load: LoadWithStops) {
       case 'en_route_pickup':
         // Llegar a la parada de recogida actual
         nextStop = sortedStops.find(stop => stop.stop_type === 'pickup') || sortedStops[0];
-        actionText = `Llegar a Parada ${nextStop?.stop_number} (Recogida)`;
+        actionText = `Llegué a Recoger (Parada ${nextStop?.stop_number})`;
         nextStatus = 'at_pickup';
         break;
 
@@ -89,7 +89,7 @@ export function useLoadStopsNavigation(load: LoadWithStops) {
         // Llegar a la parada de entrega actual
         nextStop = sortedStops.find(stop => stop.stop_type === 'delivery');
         if (nextStop) {
-          actionText = `Llegar a Parada ${nextStop.stop_number} (Entrega)`;
+          actionText = `Llegué a Entregar (Parada ${nextStop.stop_number})`;
           nextStatus = 'at_delivery';
         }
         break;
