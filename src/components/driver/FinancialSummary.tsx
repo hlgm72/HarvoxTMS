@@ -139,12 +139,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
   };
 
   const getStatusText = (status: string): string => {
-    switch (status) {
-      case 'paid': return 'Pagado';
-      case 'approved': return 'Aprobado';
-      case 'calculated': return 'Calculado';
-      default: return status;
-    }
+    return t(`dashboard:financial.status.${status}`, { defaultValue: status });
   };
 
   if (isLoading) {
@@ -153,7 +148,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <DollarSign className="h-5 w-5" />
-            Cargando datos financieros...
+            {t('dashboard:financial.loading')}
           </CardTitle>
         </CardHeader>
       </Card>
@@ -165,9 +160,9 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
       <Card className={className}>
         <CardContent className="py-8 text-center">
           <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Sin datos financieros</h3>
+          <h3 className="text-lg font-semibold mb-2">{t('dashboard:financial.no_data')}</h3>
           <p className="text-muted-foreground">
-            No hay información de pago disponible
+            {t('dashboard:financial.no_data_description')}
           </p>
         </CardContent>
       </Card>
@@ -186,9 +181,9 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
       
       <Tabs defaultValue="summary" className="w-full">
         <TabsList className="grid w-full grid-cols-3 gap-1">
-          <TabsTrigger value="summary">Resumen</TabsTrigger>
-          <TabsTrigger value="period">Período</TabsTrigger>
-          <TabsTrigger value="fuel">Combustible</TabsTrigger>
+          <TabsTrigger value="summary">{t('dashboard:financial.tabs.summary')}</TabsTrigger>
+          <TabsTrigger value="period">{t('dashboard:financial.tabs.period')}</TabsTrigger>
+          <TabsTrigger value="fuel">{t('dashboard:financial.tabs.fuel')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="summary" className="space-y-4">
@@ -198,7 +193,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
               <div className="flex items-center justify-between">
                 <CardTitle className="text-green-800 flex items-center gap-2">
                   <DollarSign className="h-5 w-5" />
-                  Pago Neto Actual
+                  {t('dashboard:financial.current_net_payment')}
                 </CardTitle>
                 <Badge className={getStatusColor(currentPeriod.status)}>
                   {getStatusText(currentPeriod.status)}
@@ -221,7 +216,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Cargas</p>
+                    <p className="text-sm text-muted-foreground">{t('dashboard:financial.stats.loads')}</p>
                     <p className="text-2xl font-bold">{weeklyStats.loads_completed}</p>
                   </div>
                   <TrendingUp className="h-8 w-8 text-blue-500" />
@@ -233,7 +228,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Millas</p>
+                    <p className="text-sm text-muted-foreground">{t('dashboard:financial.stats.miles')}</p>
                     <p className="text-2xl font-bold">{weeklyStats.miles_driven.toLocaleString()}</p>
                   </div>
                   <TrendingUp className="h-8 w-8 text-purple-500" />
@@ -245,7 +240,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">$/Milla</p>
+                    <p className="text-sm text-muted-foreground">{t('dashboard:financial.stats.per_mile')}</p>
                     <p className="text-2xl font-bold">${weeklyStats.avg_rate_per_mile.toFixed(2)}</p>
                   </div>
                   <DollarSign className="h-8 w-8 text-green-500" />
@@ -257,7 +252,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Próximo Pago</p>
+                    <p className="text-sm text-muted-foreground">{t('dashboard:financial.stats.next_payment')}</p>
                     <p className="text-sm font-medium">
                       {new Date(weeklyStats.next_payment_date).toLocaleDateString()}
                     </p>
@@ -273,24 +268,24 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>Detalle del Período</span>
+                <span>{t('dashboard:financial.period_detail')}</span>
                 <Button size="sm" variant="outline">
                   <Eye className="h-4 w-4 mr-2" />
-                  Ver Reporte
+                  {t('dashboard:financial.actions.view_report')}
                 </Button>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Ingresos Brutos</span>
+                  <span className="text-sm text-muted-foreground">{t('dashboard:financial.breakdown.gross_earnings')}</span>
                   <span className="font-semibold text-green-600">
                     {formatCurrency(currentPeriod.gross_earnings)}
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Otros Ingresos</span>
+                  <span className="text-sm text-muted-foreground">{t('dashboard:financial.breakdown.other_income')}</span>
                   <span className="font-semibold text-green-600">
                     {formatCurrency(currentPeriod.other_income)}
                   </span>
@@ -299,14 +294,14 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
                 <Separator />
 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Gastos de Combustible</span>
+                  <span className="text-sm text-muted-foreground">{t('dashboard:financial.breakdown.fuel_expenses')}</span>
                   <span className="font-semibold text-red-600">
                     -{formatCurrency(currentPeriod.fuel_expenses)}
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Otras Deducciones</span>
+                  <span className="text-sm text-muted-foreground">{t('dashboard:financial.breakdown.other_deductions')}</span>
                   <span className="font-semibold text-red-600">
                     -{formatCurrency(currentPeriod.total_deductions)}
                   </span>
@@ -315,7 +310,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
                 <Separator />
 
                 <div className="flex justify-between items-center">
-                  <span className="font-medium">Pago Neto</span>
+                  <span className="font-medium">{t('dashboard:financial.breakdown.net_payment')}</span>
                   <span className="font-bold text-lg text-green-600">
                     {formatCurrency(currentPeriod.net_payment)}
                   </span>
@@ -324,7 +319,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
 
               <Button className="w-full mt-4" variant="outline">
                 <Download className="h-4 w-4 mr-2" />
-                Descargar Comprobante
+                {t('dashboard:financial.actions.download_receipt')}
               </Button>
             </CardContent>
           </Card>
@@ -335,31 +330,31 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Fuel className="h-5 w-5" />
-                Tarjeta de Combustible
+                {t('dashboard:financial.fuel_card')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Balance Disponible</span>
+                  <span className="text-sm text-muted-foreground">{t('dashboard:financial.fuel.available_balance')}</span>
                   <span className="font-bold text-green-600">
                     {formatCurrency(fuelCard.balance)}
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Gasto Semanal</span>
+                  <span className="text-sm text-muted-foreground">{t('dashboard:financial.fuel.weekly_spend')}</span>
                   <span className="font-semibold text-red-600">
                     {formatCurrency(fuelCard.weekly_spend)}
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Última Transacción</span>
+                  <span className="text-sm text-muted-foreground">{t('dashboard:financial.fuel.last_transaction')}</span>
                   <span className="text-sm">
                     {fuelCard.last_transaction ? 
                       new Date(fuelCard.last_transaction).toLocaleDateString() : 
-                      'Sin transacciones'
+                      t('dashboard:financial.fuel.no_transactions')
                     }
                   </span>
                 </div>
@@ -370,18 +365,18 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
               {/* Fuel usage progress */}
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Uso del límite semanal</span>
+                  <span>{t('dashboard:financial.fuel.weekly_limit_usage')}</span>
                   <span>{((fuelCard.weekly_spend / 800) * 100).toFixed(0)}%</span>
                 </div>
                 <Progress value={(fuelCard.weekly_spend / 800) * 100} className="h-2" />
                 <p className="text-xs text-muted-foreground">
-                  Límite semanal: $800.00
+                  {t('dashboard:financial.fuel.weekly_limit')}
                 </p>
               </div>
 
               <Button className="w-full" variant="outline">
                 <Receipt className="h-4 w-4 mr-2" />
-                Ver Historial de Combustible
+                {t('dashboard:financial.fuel.view_history')}
               </Button>
             </CardContent>
           </Card>

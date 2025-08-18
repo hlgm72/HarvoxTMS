@@ -135,5 +135,50 @@
       "safety_bonus": "Safety bonus applied",
       "bonus_added": "$200 added to next payment"
     }
+  },
+  "financial": {
+    "title": "Financial Summary",
+    "loading": "Loading financial data...",
+    "no_data": "No financial data",
+    "no_data_description": "No payment information available",
+    "tabs": {
+      "summary": "Summary",
+      "period": "Period",
+      "fuel": "Fuel"
+    },
+    "current_net_payment": "Current Net Payment",
+    "period_detail": "Period Detail",
+    "fuel_card": "Fuel Card",
+    "status": {
+      "paid": "Paid",
+      "approved": "Approved",
+      "calculated": "Calculated"
+    },
+    "stats": {
+      "loads": "Loads",
+      "miles": "Miles",
+      "per_mile": "$/Mile",
+      "next_payment": "Next Payment"
+    },
+    "breakdown": {
+      "gross_earnings": "Gross Earnings",
+      "other_income": "Other Income",
+      "fuel_expenses": "Fuel Expenses",
+      "other_deductions": "Other Deductions",
+      "net_payment": "Net Payment"
+    },
+    "fuel": {
+      "available_balance": "Available Balance",
+      "weekly_spend": "Weekly Spend",
+      "last_transaction": "Last Transaction",
+      "no_transactions": "No transactions",
+      "weekly_limit_usage": "Weekly limit usage",
+      "weekly_limit": "Weekly limit: $800.00",
+      "view_history": "View Fuel History"
+    },
+    "actions": {
+      "view_report": "View Report",
+      "download_receipt": "Download Receipt"
+    }
   }
 }
