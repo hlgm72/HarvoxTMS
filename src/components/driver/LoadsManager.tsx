@@ -101,7 +101,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
   const loads = useMemo(() => {
     if (!loadsData || !user?.id) return [];
     
-    return loadsData
+    const transformedLoads = loadsData
       .filter(load => load.driver_user_id === user.id)
       .map(load => {
         const stops = (load.stops || []).sort((a, b) => a.stop_number - b.stop_number);
@@ -133,7 +133,24 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
           }))
         };
       });
-  }, [loadsData, user?.id]);
+
+    // Si no es modo dashboard, ordenar por fecha de recogida
+    if (!dashboardMode) {
+      return transformedLoads.sort((a, b) => {
+        // Si ambas tienen fecha de recogida, ordenar por fecha
+        if (a.pickup_date && b.pickup_date) {
+          return new Date(a.pickup_date).getTime() - new Date(b.pickup_date).getTime();
+        }
+        // Si solo una tiene fecha, ponerla primero
+        if (a.pickup_date && !b.pickup_date) return -1;
+        if (!a.pickup_date && b.pickup_date) return 1;
+        // Si ninguna tiene fecha, mantener orden original
+        return 0;
+      });
+    }
+
+    return transformedLoads;
+  }, [loadsData, user?.id, dashboardMode]);
 
   const getStatusColor = (status: string): string => {
     switch (status) {
