@@ -96,7 +96,9 @@ function CurrentStopInfo({ load }: { load: Load }) {
         stop_number: stop.stop_number,
         stop_type: stop.stop_type,
         scheduled_date: stop.scheduled_date,
-        scheduled_time: stop.scheduled_time
+        scheduled_time: stop.scheduled_time,
+        scheduled_time_is_null: stop.scheduled_time === null,
+        scheduled_time_type: typeof stop.scheduled_time
       }
     });
 
@@ -105,8 +107,10 @@ function CurrentStopInfo({ load }: { load: Load }) {
       let result = `📅 ${formatDateSafe(stop.scheduled_date, 'dd/MM')}`;
       if (stop.scheduled_time) {
         result += ` ${stop.scheduled_time}`;
+        console.log('✅ Showing scheduled date + time:', result);
+      } else {
+        console.log('⚠️ scheduled_time is null/empty, showing only date:', result);
       }
-      console.log('✅ Showing scheduled time:', result);
       return result;
     }
     
