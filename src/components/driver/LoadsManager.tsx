@@ -26,6 +26,7 @@ import { useFleetNotifications } from "@/components/notifications";
 import { StatusUpdateModal } from './StatusUpdateModal';
 import { formatDateSafe } from '@/lib/dateFormatting';
 import { useNavigationMaps } from '@/hooks/useNavigationMaps';
+import { useLoadStopsNavigation } from '@/hooks/useLoadStopsNavigation';
 import { Loader2 } from 'lucide-react';
 
 interface Load {
@@ -57,6 +58,37 @@ interface Load {
 interface LoadsManagerProps {
   className?: string;
   dashboardMode?: boolean; // Nuevo prop para controlar el modo
+}
+
+// Componente para mostrar información de la parada actual
+function CurrentStopInfo({ load }: { load: Load }) {
+  const loadWithStops = {
+    id: load.id,
+    status: load.status,
+    stops: load.stops
+  };
+  
+  const { nextStopInfo } = useLoadStopsNavigation(loadWithStops);
+  
+  // No mostrar información de parada cuando está en "assigned"
+  if (load.status === 'assigned') {
+    return null;
+  }
+  
+  if (!nextStopInfo) {
+    return null;
+  }
+  
+  const getStopActionText = (status: string, stop: any) => {
+    const stopTypeText = stop.stop_type === 'pickup' ? 'Recoger' : 'Entregar';
+    return `Parada ${stop.stop_number} (${stopTypeText})`;
+  };
+  
+  return (
+    <div className="text-xs text-muted-foreground mt-1">
+      {getStopActionText(load.status, nextStopInfo.stop)}
+    </div>
+  );
 }
 
 export function LoadsManager({ className, dashboardMode = false }: LoadsManagerProps) {
@@ -346,9 +378,12 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                       <Package className="h-5 w-5" />
                       <CardTitle className="text-base">{load.load_number}</CardTitle>
                     </div>
-                    <Badge className={getStatusColor(load.status)}>
-                      {getStatusText(load.status)}
-                    </Badge>
+                    <div className="text-right">
+                      <Badge className={getStatusColor(load.status)}>
+                        {getStatusText(load.status)}
+                      </Badge>
+                      <CurrentStopInfo load={load} />
+                    </div>
                   </div>
                   <p className="text-sm text-muted-foreground">{load.client_name}</p>
                 </CardHeader>
