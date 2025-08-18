@@ -42,23 +42,47 @@ export const useLoadStatusHistory = (loadId: string) => {
 
       if (error) throw error;
 
-      // Get user emails for the status changes
+      // Get user emails and profiles for the status changes
       const userIds = [...new Set(data.map(entry => entry.changed_by))];
+      
+      // Get emails through RPC function
       const { data: userEmails, error: userError } = await supabase
         .rpc('get_user_emails_for_company', {
           company_id_param: await getCurrentUserCompanyId()
         });
 
+      // Get user profiles for names
+      const { data: userProfiles, error: profileError } = await supabase
+        .from('profiles')
+        .select('user_id, first_name, last_name')
+        .in('user_id', userIds);
+
       if (userError) {
         console.warn('Could not fetch user emails:', userError);
       }
+      
+      if (profileError) {
+        console.warn('Could not fetch user profiles:', profileError);
+      }
 
       // Enrich with user information
-      const enrichedData = data.map(entry => ({
-        ...entry,
-        user_email: userEmails?.find(u => u.user_id === entry.changed_by)?.email || 'Unknown',
-        user_name: userEmails?.find(u => u.user_id === entry.changed_by)?.email?.split('@')[0] || 'Unknown'
-      }));
+      const enrichedData = data.map(entry => {
+        const userEmail = userEmails?.find(u => u.user_id === entry.changed_by)?.email;
+        const userProfile = userProfiles?.find(u => u.user_id === entry.changed_by);
+        
+        let displayName = 'Usuario desconocido';
+        if (userProfile && (userProfile.first_name || userProfile.last_name)) {
+          displayName = `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim();
+        } else if (userEmail) {
+          displayName = userEmail.split('@')[0];
+        }
+        
+        return {
+          ...entry,
+          user_email: userEmail || 'Unknown',
+          user_name: displayName
+        };
+      });
 
       return enrichedData as LoadStatusHistoryEntry[];
     },
