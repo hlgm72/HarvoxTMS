@@ -15,8 +15,10 @@ import {
   AlertCircle,
   Phone,
   MessageSquare,
-  Route
+  Route,
+  ExternalLink
 } from "lucide-react";
+import { Link } from 'react-router-dom';
 import { useAuth } from "@/hooks/useAuth";
 import { useLoads } from "@/hooks/useLoads";
 import { useUpdateLoadStatus } from "@/hooks/useUpdateLoadStatus";
@@ -216,12 +218,48 @@ export function LoadsManager({ className }: LoadsManagerProps) {
       address: stop.address,
       city: stop.city,
       state: stop.state,
-      zipCode: stop.zip_code
+      zipCode: ''
     });
   };
 
   const activeLoads = loads.filter(load => !['delivered', 'cancelled'].includes(load.status));
   const completedLoads = loads.filter(load => ['delivered'].includes(load.status));
+
+  // Determinar la carga actual (más prioritaria) para mostrar en el dashboard
+  const getCurrentLoad = (loads: Load[]): Load | null => {
+    if (loads.length === 0) return null;
+    
+    // Priorizar por orden de progreso/estado (más avanzado = más prioritario)
+    const statusPriority = {
+      'at_delivery': 6,
+      'en_route_delivery': 5,
+      'loaded': 4,
+      'at_pickup': 3,
+      'en_route_pickup': 2,
+      'assigned': 1
+    };
+    
+    // Ordenar por prioridad de estado y luego por fecha más cercana
+    const sortedLoads = [...loads].sort((a, b) => {
+      const priorityA = statusPriority[a.status as keyof typeof statusPriority] || 0;
+      const priorityB = statusPriority[b.status as keyof typeof statusPriority] || 0;
+      
+      if (priorityA !== priorityB) {
+        return priorityB - priorityA; // Mayor prioridad primero
+      }
+      
+      // Si tienen la misma prioridad, ordenar por fecha de entrega más cercana
+      if (a.delivery_date && b.delivery_date) {
+        return new Date(a.delivery_date).getTime() - new Date(b.delivery_date).getTime();
+      }
+      
+      return 0;
+    });
+    
+    return sortedLoads[0];
+  };
+
+  const currentLoad = getCurrentLoad(activeLoads);
 
   if (isLoading) {
     return (
@@ -241,12 +279,19 @@ export function LoadsManager({ className }: LoadsManagerProps) {
       <Tabs defaultValue="active" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="active" className="relative">
-            Cargas Activas
-            {activeLoads.length > 0 && (
-              <Badge variant="secondary" className="ml-2 h-5 w-5 rounded-full p-0 text-xs">
-                {activeLoads.length}
-              </Badge>
-            )}
+            <div className="flex items-center gap-2">
+              <span>Carga Actual</span>
+              {activeLoads.length > 0 && (
+                <Badge variant="secondary" className="h-5 w-5 rounded-full p-0 text-xs">
+                  {activeLoads.length}
+                </Badge>
+              )}
+              {activeLoads.length > 1 && (
+                <Link to="/loads" className="ml-1 hover:text-primary transition-colors">
+                  <ExternalLink className="h-3 w-3" />
+                </Link>
+              )}
+            </div>
           </TabsTrigger>
           <TabsTrigger value="completed">
             Completadas
@@ -259,7 +304,7 @@ export function LoadsManager({ className }: LoadsManagerProps) {
         </TabsList>
 
         <TabsContent value="active" className="space-y-4">
-          {activeLoads.length === 0 ? (
+          {!currentLoad ? (
             <Card>
               <CardContent className="py-8 text-center">
                 <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -270,180 +315,178 @@ export function LoadsManager({ className }: LoadsManagerProps) {
               </CardContent>
             </Card>
           ) : (
-            activeLoads.map((load) => (
-              <Card key={load.id} className="overflow-hidden">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Package className="h-5 w-5" />
-                      <CardTitle className="text-base">{load.load_number}</CardTitle>
-                    </div>
-                    <Badge className={getStatusColor(load.status)}>
-                      {getStatusText(load.status)}
-                    </Badge>
+            <Card key={currentLoad.id} className="overflow-hidden">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Package className="h-5 w-5" />
+                    <CardTitle className="text-base">{currentLoad.load_number}</CardTitle>
                   </div>
-                  <p className="text-sm text-muted-foreground">{load.client_name}</p>
-                </CardHeader>
+                  <Badge className={getStatusColor(currentLoad.status)}>
+                    {getStatusText(currentLoad.status)}
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground">{currentLoad.client_name}</p>
+              </CardHeader>
 
-                <CardContent className="space-y-4">
-                  {/* Route Info - Enhanced for multiple stops */}
-                  <div className="space-y-3">
-                    {load.stops && load.stops.length > 0 ? (
-                      // Show detailed stops if available
-                      <div className="space-y-2">
-                        {load.stops.map((stop, index) => {
-                          // Encontrar todas las entregas para determinar la última
-                          const deliveryStops = load.stops!.filter(s => s.stop_type === 'delivery');
-                          const lastDeliveryIndex = deliveryStops.length > 0 ? 
-                            load.stops!.lastIndexOf(deliveryStops[deliveryStops.length - 1]) : -1;
-                          const isLastDelivery = stop.stop_type === 'delivery' && index === lastDeliveryIndex;
-                          
-                          let stopColor = '';
-                          if (stop.stop_type === 'pickup') {
-                            stopColor = 'bg-green-500'; // Verde para recogidas
-                          } else if (stop.stop_type === 'delivery') {
-                            if (load.stops!.length > 2 && !isLastDelivery) {
-                              stopColor = 'bg-blue-500'; // Azul para entregas intermedias
-                            } else {
-                              stopColor = 'bg-red-500'; // Rojo para la última entrega o cargas simples
-                            }
+              <CardContent className="space-y-4">
+                {/* Route Info - Enhanced for multiple stops */}
+                <div className="space-y-3">
+                  {currentLoad.stops && currentLoad.stops.length > 0 ? (
+                    // Show detailed stops if available
+                    <div className="space-y-2">
+                      {currentLoad.stops.map((stop, index) => {
+                        // Encontrar todas las entregas para determinar la última
+                        const deliveryStops = currentLoad.stops!.filter(s => s.stop_type === 'delivery');
+                        const lastDeliveryIndex = deliveryStops.length > 0 ? 
+                          currentLoad.stops!.lastIndexOf(deliveryStops[deliveryStops.length - 1]) : -1;
+                        const isLastDelivery = stop.stop_type === 'delivery' && index === lastDeliveryIndex;
+                        
+                        let stopColor = '';
+                        if (stop.stop_type === 'pickup') {
+                          stopColor = 'bg-green-500'; // Verde para recogidas
+                        } else if (stop.stop_type === 'delivery') {
+                          if (currentLoad.stops!.length > 2 && !isLastDelivery) {
+                            stopColor = 'bg-blue-500'; // Azul para entregas intermedias
+                          } else {
+                            stopColor = 'bg-red-500'; // Rojo para la última entrega o cargas simples
                           }
-                          
-                          return (
-                            <div key={stop.id} className="flex items-start gap-3">
-                              <div className="flex flex-col items-center">
-                                <div className={`w-3 h-3 rounded-full ${stopColor}`}></div>
-                                {index < load.stops!.length - 1 && (
-                                  <div className="w-0.5 h-6 bg-border"></div>
-                                )}
-                              </div>
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <Badge variant="outline" className="text-xs">
-                                    {stop.stop_type === 'pickup' ? 'Recogida' : 'Entrega'} #{stop.stop_number}
-                                  </Badge>
-                                  <span className="text-xs text-muted-foreground">
-                                    {stop.scheduled_date ? formatDateSafe(stop.scheduled_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
-                                    {stop.scheduled_time && ` - ${stop.scheduled_time}`}
-                                  </span>
-                                </div>
-                                <p className="font-medium text-sm">
-                                  {stop.company_name}
-                                </p>
-                                <button
-                                  onClick={() => handleNavigateToStop(stop)}
-                                  disabled={isNavigating}
-                                  className="text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer text-left underline decoration-dashed underline-offset-2 hover:decoration-solid"
-                                >
-                                  {[stop.address, stop.city, stop.state, stop.zip_code].filter(Boolean).join(', ')}
-                                </button>
-                              </div>
-                              {index === 0 && (
-                                <div className="text-right">
-                                  <p className="font-bold text-green-600">${load.total_amount.toLocaleString()}</p>
-                                </div>
+                        }
+                        
+                        return (
+                          <div key={stop.id} className="flex items-start gap-3">
+                            <div className="flex flex-col items-center">
+                              <div className={`w-3 h-3 rounded-full ${stopColor}`}></div>
+                              {index < currentLoad.stops!.length - 1 && (
+                                <div className="w-0.5 h-6 bg-border"></div>
                               )}
                             </div>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      // Fallback to simple origin/destination view
-                      <div className="flex items-start gap-3">
-                        <div className="flex flex-col items-center">
-                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                          <div className="w-0.5 h-8 bg-border"></div>
-                          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                        </div>
-                        <div className="flex-1 space-y-2">
-                          <div>
-                            <p className="font-medium text-sm">{load.origin_city}, {load.origin_state}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Recogida: {load.pickup_date ? formatDateSafe(load.pickup_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
-                            </p>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Badge variant="outline" className="text-xs">
+                                  {stop.stop_type === 'pickup' ? 'Recogida' : 'Entrega'} #{stop.stop_number}
+                                </Badge>
+                                <span className="text-xs text-muted-foreground">
+                                  {stop.scheduled_date ? formatDateSafe(stop.scheduled_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
+                                  {stop.scheduled_time && ` - ${stop.scheduled_time}`}
+                                </span>
+                              </div>
+                              <p className="font-medium text-sm">
+                                {stop.company_name}
+                              </p>
+                              <button
+                                onClick={() => handleNavigateToStop(stop)}
+                                disabled={isNavigating}
+                                className="text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer text-left underline decoration-dashed underline-offset-2 hover:decoration-solid"
+                              >
+                                {[stop.address, stop.city, stop.state].filter(Boolean).join(', ')}
+                              </button>
+                            </div>
+                            {index === 0 && (
+                              <div className="text-right">
+                                <p className="font-bold text-green-600">${currentLoad.total_amount.toLocaleString()}</p>
+                              </div>
+                            )}
                           </div>
-                          <div>
-                            <p className="font-medium text-sm">{load.destination_city}, {load.destination_state}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Entrega: {load.delivery_date ? formatDateSafe(load.delivery_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold text-green-600">${load.total_amount.toLocaleString()}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Progress */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Progreso</span>
-                      <span className="font-medium">{load.progress}%</span>
+                        );
+                      })}
                     </div>
-                    <Progress value={load.progress} className="h-2" />
-                  </div>
+                  ) : (
+                    // Fallback to simple origin/destination view
+                    <div className="flex items-start gap-3">
+                      <div className="flex flex-col items-center">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <div className="w-0.5 h-8 bg-border"></div>
+                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      </div>
+                      <div className="flex-1 space-y-2">
+                        <div>
+                          <p className="font-medium text-sm">{currentLoad.origin_city}, {currentLoad.origin_state}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Recogida: {currentLoad.pickup_date ? formatDateSafe(currentLoad.pickup_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{currentLoad.destination_city}, {currentLoad.destination_state}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Entrega: {currentLoad.delivery_date ? formatDateSafe(currentLoad.delivery_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-green-600">${currentLoad.total_amount.toLocaleString()}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-                  <Separator />
-
-                  {/* Actions */}
-                  <div className="flex gap-2">
-                    {(() => {
-                      const nextStatus = getNextStatus(load.status);
-                      const nextActionText = getNextActionText(load.status);
-                      
-                      if (!nextStatus) return null;
-                      
-                      // Encontrar la parada actual según el estado
-                      const currentStop = load.stops?.find(stop => {
-                        if (load.status === 'assigned' || load.status === 'en_route_pickup') {
-                          return stop.stop_type === 'pickup';
-                        } else if (load.status === 'at_pickup' || load.status === 'loaded' || load.status === 'en_route_delivery') {
-                          return stop.stop_type === 'delivery';
-                        }
-                        return false;
-                      });
-                      
-                      return (
-                        <Button
-                          onClick={() => {
-                            openStatusModal(
-                              load.id, 
-                              nextStatus, 
-                              nextActionText,
-                              currentStop?.id,
-                              currentStop
-                            );
-                          }}
-                          disabled={updateLoadStatus.isPending}
-                          size="sm"
-                          className="flex-1"
-                        >
-                          {updateLoadStatus.isPending ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Actualizando...
-                            </>
-                          ) : (
-                            <>
-                              <MapPin className="mr-2 h-4 w-4" />
-                              {nextActionText}
-                            </>
-                          )}
-                        </Button>
-                      );
-                    })()}
-                    <Button size="sm" variant="outline">
-                      <Phone className="h-4 w-4" />
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      <Route className="h-4 w-4" />
-                    </Button>
+                {/* Progress */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Progreso</span>
+                    <span className="font-medium">{currentLoad.progress}%</span>
                   </div>
-                </CardContent>
-              </Card>
-            ))
+                  <Progress value={currentLoad.progress} className="h-2" />
+                </div>
+
+                <Separator />
+
+                {/* Actions */}
+                <div className="flex gap-2">
+                  {(() => {
+                    const nextStatus = getNextStatus(currentLoad.status);
+                    const nextActionText = getNextActionText(currentLoad.status);
+                    
+                    if (!nextStatus) return null;
+                    
+                    // Encontrar la parada actual según el estado
+                    const currentStop = currentLoad.stops?.find(stop => {
+                      if (currentLoad.status === 'assigned' || currentLoad.status === 'en_route_pickup') {
+                        return stop.stop_type === 'pickup';
+                      } else if (currentLoad.status === 'at_pickup' || currentLoad.status === 'loaded' || currentLoad.status === 'en_route_delivery') {
+                        return stop.stop_type === 'delivery';
+                      }
+                      return false;
+                    });
+                    
+                    return (
+                      <Button
+                        onClick={() => {
+                          openStatusModal(
+                            currentLoad.id, 
+                            nextStatus, 
+                            nextActionText,
+                            currentStop?.id,
+                            currentStop
+                          );
+                        }}
+                        disabled={updateLoadStatus.isPending}
+                        size="sm"
+                        className="flex-1"
+                      >
+                        {updateLoadStatus.isPending ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Actualizando...
+                          </>
+                        ) : (
+                          <>
+                            <MapPin className="mr-2 h-4 w-4" />
+                            {nextActionText}
+                          </>
+                        )}
+                      </Button>
+                    );
+                  })()}
+                  <Button size="sm" variant="outline">
+                    <Phone className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm" variant="outline">
+                    <Route className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </TabsContent>
 
