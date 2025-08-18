@@ -46,12 +46,12 @@ export function LoadActionButton({ load, onUpdateStatus, isPending }: LoadAction
 
   const getFallbackText = (status: string): string => {
     switch (status) {
-      case 'en_route_pickup': return 'Ir al origen';
-      case 'at_pickup': return 'En origen';
-      case 'loaded': return 'Cargado';
-      case 'en_route_delivery': return 'Ir al destino';
-      case 'at_delivery': return 'En destino';
-      case 'delivered': return 'Entregado';
+      case 'en_route_pickup': return 'Camino a recoger';
+      case 'at_pickup': return 'Llegué a recogida';
+      case 'loaded': return 'Recogida completada';
+      case 'en_route_delivery': return 'Camino a entregar';
+      case 'at_delivery': return 'Llegué a entrega';
+      case 'delivered': return 'Entrega completada';
       default: return 'Continuar';
     }
   };
