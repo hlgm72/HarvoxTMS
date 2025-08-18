@@ -155,6 +155,18 @@ export const useCreateLoad = () => {
         return isNaN(num) ? null : num;
       };
 
+      // Get company_id from user's active role
+      const { data: userRoles } = await supabase
+        .from('user_company_roles')
+        .select('company_id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .single();
+
+      if (!userRoles?.company_id) {
+        throw new Error('No se pudo determinar la empresa del usuario');
+      }
+
       // Prepare load data for ACID function
       const loadData = {
         ...(isEdit && { id: data.id }),
@@ -171,7 +183,8 @@ export const useCreateLoad = () => {
         customer_name: data.customer_name || '',
         factoring_percentage: toNumber(data.factoring_percentage),
         dispatching_percentage: toNumber(data.dispatching_percentage),
-        leasing_percentage: toNumber(data.leasing_percentage)
+        leasing_percentage: toNumber(data.leasing_percentage),
+        company_id: userRoles.company_id
       };
 
       // Prepare stops data
@@ -199,14 +212,15 @@ export const useCreateLoad = () => {
       }));
 
       // ✅ USE ACID FUNCTION FOR ATOMIC OPERATION
-      console.log('🔥 useCreateLoad - Using ACID function with data:', { loadData, stopsData, mode });
+      const loadDataWithStops = {
+        ...loadData,
+        stops: stopsData
+      };
       
       const { data: result, error: acidError } = await supabase.rpc(
         'simple_load_operation',
         {
-          load_data: loadData,
-          stops_data: stopsData,
-          operation_mode: mode
+          load_data: loadDataWithStops
         }
       );
 
