@@ -191,6 +191,7 @@ export const useCreateLoad = () => {
           (stop.scheduled_date instanceof Date ? 
             formatDateInUserTimeZone(stop.scheduled_date) : 
             stop.scheduled_date) : '',
+        scheduled_time: stop.scheduled_time || '',
         actual_date: stop.actual_date ? 
           (stop.actual_date instanceof Date ? 
             formatDateInUserTimeZone(stop.actual_date) : 
