@@ -82,8 +82,8 @@ function CurrentStopInfo({ load }: { load: Load }) {
   
   const getStopActionText = (status: string, stop: any) => {
     const stopTypeText = stop.stop_type === 'pickup' ? 
-      t('dashboard:owner.loads.stop_types.pickup') : 
-      t('dashboard:owner.loads.stop_types.delivery');
+      t('dashboard:loads.stop_types.pickup') : 
+      t('dashboard:loads.stop_types.delivery');
     return `${t('common:stop', { defaultValue: 'Parada' })} ${stop.stop_number} (${stopTypeText})`;
   };
   
@@ -235,7 +235,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
   };
 
   const getStatusText = (status: string): string => {
-    return t(`dashboard:owner.loads.status.${status}`, { defaultValue: status });
+    return t(`dashboard:loads.status.${status}`, { defaultValue: status });
   };
 
   // Función para abrir el modal de actualización de estado
@@ -280,8 +280,8 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
   };
 
   const getNextActionText = (currentStatus: string): string => {
-    return t(`dashboard:owner.loads.actions.${currentStatus}`, { 
-      defaultValue: t('dashboard:owner.loads.actions.update_status') 
+    return t(`dashboard:loads.actions.${currentStatus}`, { 
+      defaultValue: t('dashboard:loads.actions.update_status') 
     });
   };
   
@@ -339,7 +339,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Package className="h-5 w-5" />
-            {t('dashboard:owner.loads.loading')}
+            {t('dashboard:loads.loading')}
           </CardTitle>
         </CardHeader>
       </Card>
@@ -352,7 +352,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         <TabsList className="grid w-full grid-cols-2 gap-1">
           <TabsTrigger value="active">
             <div className="flex items-center gap-2">
-              <span>{dashboardMode ? t('dashboard:owner.loads.active_load') : t('dashboard:owner.loads.assigned_loads')}</span>
+              <span>{dashboardMode ? t('dashboard:loads.active_load') : t('dashboard:loads.assigned_loads')}</span>
               {!dashboardMode && activeLoads.length > 0 && (
                 <Badge variant="outline" className="h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center bg-white text-orange-600 border-orange-200">
                   {activeLoads.length}
@@ -370,7 +370,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
             </div>
           </TabsTrigger>
           <TabsTrigger value="completed">
-            {t('dashboard:owner.loads.completed')}
+            {t('dashboard:loads.completed')}
             {completedLoads.length > 0 && (
               <Badge variant="outline" className="ml-2 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center">
                 {completedLoads.length}
@@ -384,9 +384,9 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
             <Card className={dashboardMode ? "" : "lg:col-span-2"}>
               <CardContent className="py-8 text-center">
                 <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">{t('dashboard:owner.loads.no_active_loads')}</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('dashboard:loads.no_active_loads')}</h3>
                 <p className="text-muted-foreground">
-                  {t('dashboard:owner.loads.no_loads_description')}
+                  {t('dashboard:loads.no_loads_description')}
                 </p>
               </CardContent>
             </Card>

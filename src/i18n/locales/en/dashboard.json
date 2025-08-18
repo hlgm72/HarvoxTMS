@@ -60,80 +60,80 @@
         "paid": "Paid",
         "pending": "Pending"
       }
+    }
+  },
+  "loads": {
+    "title": "Driver Dashboard",
+    "loading": "Loading loads...",
+    "no_active_loads": "No active loads",
+    "no_loads_description": "You currently have no assigned loads",
+    "active_load": "Active Load",
+    "assigned_loads": "Assigned Loads",
+    "completed": "Completed",
+    "status": {
+      "assigned": "Assigned",
+      "en_route_pickup": "En route to pickup",
+      "at_pickup": "At pickup location",
+      "loaded": "Loaded",
+      "en_route_delivery": "En route to delivery",
+      "at_delivery": "At delivery location",
+      "delivered": "Delivered"
     },
-    "loads": {
-      "title": "My Dashboard",
-      "loading": "Loading loads...",
-      "no_active_loads": "No active loads",
-      "no_loads_description": "You currently have no assigned loads",
-      "active_load": "Active Load",
-      "assigned_loads": "Assigned Loads",
-      "completed": "Completed",
-      "status": {
-        "assigned": "Assigned",
-        "en_route_pickup": "En route to pickup",
-        "at_pickup": "At pickup location",
-        "loaded": "Loaded",
-        "en_route_delivery": "En route to delivery",
-        "at_delivery": "At delivery location",
-        "delivered": "Delivered"
-      },
-      "actions": {
-        "assigned": "On my way to pickup",
-        "en_route_pickup": "Arrived at pickup",
-        "at_pickup": "Pickup completed",
-        "loaded": "On my way to delivery",
-        "en_route_delivery": "Arrived at delivery",
-        "at_delivery": "Delivery completed",
-        "update_status": "Update Status"
-      },
-      "stop_types": {
-        "pickup": "Pickup",
-        "delivery": "Delivery"
-      }
+    "actions": {
+      "assigned": "On my way to pickup",
+      "en_route_pickup": "Arrived at pickup",
+      "at_pickup": "Pickup completed",
+      "loaded": "On my way to delivery",
+      "en_route_delivery": "Arrived at delivery",
+      "at_delivery": "Delivery completed",
+      "update_status": "Update Status"
     },
-    "driver": {
-      "title": "My Dashboard",
-      "documents": {
-        "title": "Documents",
-        "cdl_license": "CDL License",
-        "medical_certificate": "Medical Certificate",
-        "hazmat_permit": "HazMat Permit",
-        "valid": "Valid",
-        "expires_soon": "Expires soon",
-        "manage": "Manage Documents"
-      },
-      "vehicle": {
-        "title": "Vehicle Status",
-        "fuel": "Fuel:",
-        "odometer": "Odometer:",
-        "next_service": "Next service:",
-        "all_good": "All good",
-        "no_alerts": "No mechanical alerts"
-      },
-      "hours": {
-        "title": "Hours of Service",
-        "driving_today": "Driving today:",
-        "on_duty": "On duty:",
-        "rest_required": "Rest required in:",
-        "hrs": "hrs"
-      },
-      "activity": {
-        "title": "Recent Activity",
-        "load_delivered": "Load delivered successfully",
-        "new_load_assigned": "New load assigned",
-        "dispatcher_message": "Dispatcher message",
-        "route_change": "Route change due to traffic"
-      },
-      "notifications": {
-        "title": "Important Notifications",
-        "hazmat_expires": "HazMat permit expires in 30 days",
-        "renew_before": "Renew before August 15th",
-        "safety_training": "Safety training pending",
-        "complete_before": "Complete before July 30th",
-        "safety_bonus": "Safety bonus applied",
-        "bonus_added": "$200 added to next payment"
-      }
+    "stop_types": {
+      "pickup": "Pickup",
+      "delivery": "Delivery"
+    }
+  },
+  "driver": {
+    "title": "Driver Dashboard",
+    "documents": {
+      "title": "Documents",
+      "cdl_license": "CDL License",
+      "medical_certificate": "Medical Certificate",
+      "hazmat_permit": "HazMat Permit",
+      "valid": "Valid",
+      "expires_soon": "Expires soon",
+      "manage": "Manage Documents"
+    },
+    "vehicle": {
+      "title": "Vehicle Status",
+      "fuel": "Fuel:",
+      "odometer": "Odometer:",
+      "next_service": "Next service:",
+      "all_good": "All good",
+      "no_alerts": "No mechanical alerts"
+    },
+    "hours": {
+      "title": "Hours of Service",
+      "driving_today": "Driving today:",
+      "on_duty": "On duty:",
+      "rest_required": "Rest required in:",
+      "hrs": "hrs"
+    },
+    "activity": {
+      "title": "Recent Activity",
+      "load_delivered": "Load delivered successfully",
+      "new_load_assigned": "New load assigned",
+      "dispatcher_message": "Dispatcher message",
+      "route_change": "Route change due to traffic"
+    },
+    "notifications": {
+      "title": "Important Notifications",
+      "hazmat_expires": "HazMat permit expires in 30 days",
+      "renew_before": "Renew before August 15th",
+      "safety_training": "Safety training pending",
+      "complete_before": "Complete before July 30th",
+      "safety_bonus": "Safety bonus applied",
+      "bonus_added": "$200 added to next payment"
     }
   }
 }

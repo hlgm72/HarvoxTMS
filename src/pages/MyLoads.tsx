@@ -28,7 +28,7 @@ export default function MyLoads() {
 
   const getSubtitle = () => {
     if (isLoading) {
-      return t('dashboard:owner.loads.loading');
+      return t('dashboard:loads.loading');
     }
     
     const parts = [];
@@ -42,7 +42,7 @@ export default function MyLoads() {
       parts.push(`${stats.completed} ${completedText}`);
     }
     if (parts.length === 0) {
-      return t('dashboard:owner.loads.no_loads_description');
+      return t('dashboard:loads.no_loads_description');
     }
     
     return parts.join(' • ');
