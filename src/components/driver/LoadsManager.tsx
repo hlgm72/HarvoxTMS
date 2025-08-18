@@ -201,10 +201,10 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     switch (status) {
       case 'assigned': return 'Asignada';
       case 'en_route_pickup': return 'En ruta al origen';
-      case 'at_pickup': return 'En origen';
+      case 'at_pickup': return 'En lugar de carga';
       case 'loaded': return 'Cargada';
       case 'en_route_delivery': return 'En ruta al destino';
-      case 'at_delivery': return 'En destino';
+      case 'at_delivery': return 'En lugar de entrega';
       case 'delivered': return 'Entregada';
       default: return status;
     }
