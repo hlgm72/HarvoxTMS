@@ -524,33 +524,18 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                                 )}
                               </div>
                                 <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <Badge variant="outline" className="text-xs">
-                                      {stop.stop_type === 'pickup' ? 'Recogida' : 'Entrega'} #{stop.stop_number}
-                                    </Badge>
-                                    <span className="text-xs text-muted-foreground">
-                                      {stop.scheduled_date ? formatDateSafe(stop.scheduled_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
-                                      {stop.scheduled_time && ` - ${stop.scheduled_time}`}
-                                    </span>
-                                  </div>
-                                  {/* Time display for each stop */}
-                                  <div className="text-xs text-primary font-medium mb-1">
-                                     {(() => {
-                                       const getStopTimeDisplay = (stop: any) => {
-                                         // Mostrar fecha programada disponible
-                                         if (stop.scheduled_date) {
-                                           let result = `📅 ${formatDateSafe(stop.scheduled_date, 'dd/MM')}`;
-                                           if (stop.scheduled_time) {
-                                             result += ` ${stop.scheduled_time}`;
-                                           }
-                                           return result;
-                                         }
-                                         return null;
-                                       };
-                                       
-                                       return getStopTimeDisplay(stop) || null;
-                                     })()}
-                                  </div>
+                                   <div className="flex items-center gap-2 mb-1">
+                                     <Badge variant="outline" className="text-xs">
+                                       {stop.stop_type === 'pickup' ? 'Recogida' : 'Entrega'} #{stop.stop_number}
+                                     </Badge>
+                                     {stop.scheduled_date && (
+                                       <span className="text-xs text-primary font-medium flex items-center gap-1">
+                                         <Calendar className="h-3 w-3" />
+                                         {formatDateSafe(stop.scheduled_date, 'dd/MM')}
+                                         {stop.scheduled_time && ` ${stop.scheduled_time}`}
+                                       </span>
+                                     )}
+                                   </div>
                                 <p className="font-medium text-sm">
                                   {stop.company_name}
                                 </p>
