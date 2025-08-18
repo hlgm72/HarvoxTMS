@@ -325,9 +325,9 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="active" className="space-y-4">
+        <TabsContent value="active" className={dashboardMode ? "space-y-4" : "grid grid-cols-1 lg:grid-cols-2 gap-4"}>
           {activeLoads.length === 0 ? (
-            <Card>
+            <Card className={dashboardMode ? "" : "lg:col-span-2"}>
               <CardContent className="py-8 text-center">
                 <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No hay cargas activas</h3>
