@@ -433,7 +433,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<Blob> {
     doc.setFontSize(8);
     doc.setFont("helvetica", "italic");
     doc.text(
-      `Generated on ${new Date().toLocaleDateString('en-US')} at ${new Date().toLocaleTimeString('en-US')}`,
+      `Generated on ${new Date().toLocaleDateString('en-US')} at ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`,
       pageWidth / 2,
       pageHeight - 25,
       { align: "center" }

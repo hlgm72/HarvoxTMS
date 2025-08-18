@@ -207,7 +207,7 @@ export const DriverTrackingInterface = () => {
                   <span>Última actualización</span>
                 </div>
                 <span className="text-xs">
-                  {new Date(position.timestamp).toLocaleTimeString()}
+                  {new Date(position.timestamp).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
             </div>

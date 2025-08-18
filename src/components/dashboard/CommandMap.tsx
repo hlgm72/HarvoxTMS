@@ -129,7 +129,7 @@ export function CommandMap() {
         <div>
           <h3 className="text-lg font-semibold">{t('tracking.real_time_title')}</h3>
           <p className="text-sm text-muted-foreground">
-            {lastUpdate ? `${t('tracking.last_update')} ${lastUpdate.toLocaleTimeString()}` : 'Cargando...'}
+            {lastUpdate ? `${t('tracking.last_update')} ${lastUpdate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}` : 'Cargando...'}
           </p>
         </div>
         <Button onClick={fetchVehiclePositions} disabled={loading} size="sm">
@@ -215,7 +215,7 @@ export function CommandMap() {
                       
                       <div className="flex justify-between">
                         <span>{t('vehicle.last_update')}:</span>
-                        <span>{new Date(vehicle.last_update).toLocaleTimeString()}</span>
+                        <span>{new Date(vehicle.last_update).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
                       </div>
                     </div>
                   </div>
