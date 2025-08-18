@@ -254,10 +254,10 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
   const getNextActionText = (currentStatus: string): string => {
     switch (currentStatus) {
       case 'assigned': return 'Ir a Parada 1 (Recogida)';
-      case 'en_route_pickup': return 'Llegar a Recogida';
+      case 'en_route_pickup': return 'Llegué a Recoger';
       case 'at_pickup': return 'Marcar como Cargado';
       case 'loaded': return 'Ir a Entrega';
-      case 'en_route_delivery': return 'Llegar a Entrega';
+      case 'en_route_delivery': return 'Llegué a Entregar';
       case 'at_delivery': return 'Marcar como Entregado';
       default: return 'Actualizar Estado';
     }
