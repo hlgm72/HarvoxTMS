@@ -83,7 +83,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
 
   const calculateProgress = (status: string): number => {
     switch (status) {
-      case 'assigned': return 10;
+      case 'assigned': return 0;
       case 'en_route_pickup': return 25;
       case 'at_pickup': return 50;
       case 'loaded': return 65;
