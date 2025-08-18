@@ -135,8 +135,8 @@ function CurrentStopInfo({ load }: { load: Load }) {
     <div className="text-xs text-muted-foreground mt-1">
       <div>{getStopActionText(load.status, nextStopInfo.stop)}</div>
       {timeDisplay && (
-        <div className="text-xs text-primary font-medium mt-0.5 flex items-center justify-start gap-1">
-          <Calendar className="h-3 w-3" />
+        <div className="text-xs text-primary font-medium mt-0.5">
+          <Calendar className="h-3 w-3 inline mr-1" />
           {timeDisplay}
         </div>
       )}
