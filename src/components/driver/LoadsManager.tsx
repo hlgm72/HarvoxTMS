@@ -484,11 +484,11 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                                
                               
                               return (
-                                <>
-                                  <div className="flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
-                                    <span>{shortDate}</span>
-                                  </div>
+                                 <>
+                                   <div className="flex items-center gap-1">
+                                     <Calendar className="h-3 w-3" />
+                                     <span>STA: {shortDate}</span>
+                                   </div>
                                    {firstStop.scheduled_time && (
                                      <div className="flex items-center gap-1">
                                        <span>{firstStop.scheduled_time.length > 5 ? firstStop.scheduled_time.substring(0, 5) : firstStop.scheduled_time}</span>
@@ -523,7 +523,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                                   return (
                                     <>
                                       <Calendar className="h-3 w-3 inline mr-1" />
-                                      {dateShort} {timeShort}
+                                      ETA: {dateShort} {timeShort}
                                     </>
                                   );
                                 }
