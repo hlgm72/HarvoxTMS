@@ -310,7 +310,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
 
   return (
     <>
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {filteredLoads.map((load) => (
           <Card key={load.id} className="hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
