@@ -324,8 +324,12 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                    pattern="[0-9]{2}:[0-9]{2}"
                    title="Formato 24 horas (HH:MM)"
                    data-format="24"
+                   data-time-format="24"
                    style={{ colorScheme: 'light' }}
                    lang="en-GB"
+                   inputMode="numeric"
+                   autoComplete="off"
+                   data-testid="time-input-24h"
                  />
               </div>
             </div>
