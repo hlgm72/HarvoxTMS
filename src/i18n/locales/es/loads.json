@@ -142,8 +142,8 @@
     "documents_ok": "Documentos OK",
     "all_required_docs": "Todos los documentos requeridos están presentes",
     "verifying": "Verificando...",
-    "ready": "Listo: {doc}",
-    "active": "Activo: {doc}",
+    "ready": "Listo: {{doc}}",
+    "active": "Activo: {{doc}}",
     "missing": "Sin RC/LO",
     "no_period": "Sin período asignado"
   },
