@@ -291,8 +291,19 @@ export function LoadDocumentsList({
     );
   }
 
+  // Filtrar y ordenar documentos para conductores
+  let filteredDocuments = documents;
+  
+  // Para conductores: si hay LO, no mostrar RC
+  if (driverView) {
+    const hasLoadOrder = documents.some(doc => doc.document_type === 'load_order');
+    if (hasLoadOrder) {
+      filteredDocuments = documents.filter(doc => doc.document_type !== 'rate_confirmation');
+    }
+  }
+  
   // Ordenar documentos según el tipo especificado
-  const sortedDocuments = documents.sort((a, b) => {
+  const sortedDocuments = filteredDocuments.sort((a, b) => {
     const indexA = documentTypeOrder.indexOf(a.document_type);
     const indexB = documentTypeOrder.indexOf(b.document_type);
     

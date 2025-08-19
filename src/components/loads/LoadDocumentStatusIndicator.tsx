@@ -72,14 +72,9 @@ export function LoadDocumentStatusIndicator({
         {statusInfo.text}
       </Badge>
 
-      {showDetails && validation.activeWorkDocument && (
+      {showDetails && validation.activeWorkDocument && workStatus.isInProgress && (
         <div className="text-xs text-muted-foreground">
-          {validation.hasLoadOrder && validation.hasRateConfirmation && (
-            <span className="text-orange-600">LO tiene prioridad</span>
-          )}
-          {workStatus.isInProgress && (
-            <span className="text-amber-600">• Docs protegidos</span>
-          )}
+          <span className="text-amber-600">• Docs protegidos</span>
         </div>
       )}
     </div>
