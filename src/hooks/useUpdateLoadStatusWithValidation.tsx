@@ -84,11 +84,13 @@ export const useUpdateLoadStatusWithValidation = () => {
         };
 
         if (params.eta) {
-          // Separar fecha y hora para los nuevos campos
-          const etaDate = params.eta.toISOString().split('T')[0];
-          // Usar la hora local del usuario en lugar de UTC
-          const hours = params.eta.getHours().toString().padStart(2, '0');
-          const minutes = params.eta.getMinutes().toString().padStart(2, '0');
+          // CORREGIDO: Convertir la fecha local del usuario a UTC primero
+          const utcDate = new Date(params.eta.getTime() - (params.eta.getTimezoneOffset() * 60000));
+          
+          // Separar fecha y hora para los nuevos campos (ahora en UTC)
+          const etaDate = utcDate.toISOString().split('T')[0];
+          const hours = utcDate.getUTCHours().toString().padStart(2, '0');
+          const minutes = utcDate.getUTCMinutes().toString().padStart(2, '0');
           const etaTime = `${hours}:${minutes}`;
           
           stopUpdateData.eta_date = etaDate;
@@ -128,7 +130,7 @@ export const useUpdateLoadStatusWithValidation = () => {
               new_status: params.newStatus,
               changed_by: user.id,
               notes: params.notes || `ETA updated for stop`,
-              eta_provided: params.eta?.toISOString()
+              eta_provided: params.eta ? new Date(params.eta.getTime() - (params.eta.getTimezoneOffset() * 60000)).toISOString() : null
             });
 
           if (historyError) {

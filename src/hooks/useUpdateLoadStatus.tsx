@@ -49,16 +49,9 @@ export const useUpdateLoadStatus = () => {
         };
 
         if (params.eta) {
-          // Formatear la fecha/hora manteniendo la zona horaria local del usuario
-          const year = params.eta.getFullYear();
-          const month = String(params.eta.getMonth() + 1).padStart(2, '0');
-          const day = String(params.eta.getDate()).padStart(2, '0');
-          const hours = String(params.eta.getHours()).padStart(2, '0');
-          const minutes = String(params.eta.getMinutes()).padStart(2, '0');
-          const seconds = String(params.eta.getSeconds()).padStart(2, '0');
-          
-          // Guardar en formato timestamp sin conversión a UTC
-          historyUpdateData.eta_provided = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}+00`;
+          // CORREGIDO: Convertir la fecha local del usuario a UTC y guardar como ISO string
+          const utcDate = new Date(params.eta.getTime() - (params.eta.getTimezoneOffset() * 60000));
+          historyUpdateData.eta_provided = utcDate.toISOString();
         }
 
         // Buscar el registro de historial más reciente para esta carga y actualizarlo
@@ -84,15 +77,13 @@ export const useUpdateLoadStatus = () => {
           last_status_update: new Date().toISOString()
         };
 
-        // Usar formateo seguro de zona horaria para evitar problemas de conversión
-        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const etaDate = params.eta.toLocaleDateString('en-CA'); // Formato YYYY-MM-DD
-        const etaTime = params.eta.toLocaleTimeString('en-GB', { 
-          hour12: false, 
-          hour: '2-digit', 
-          minute: '2-digit',
-          timeZone: userTimeZone 
-        });
+        // CORREGIDO: Convertir a UTC antes de guardar
+        const utcDate = new Date(params.eta.getTime() - (params.eta.getTimezoneOffset() * 60000));
+        const etaDate = utcDate.toISOString().split('T')[0];
+        const hours = utcDate.getUTCHours().toString().padStart(2, '0');
+        const minutes = utcDate.getUTCMinutes().toString().padStart(2, '0');
+        const etaTime = `${hours}:${minutes}`;
+        
         stopUpdateData.eta_date = etaDate;
         stopUpdateData.eta_time = etaTime;
 
