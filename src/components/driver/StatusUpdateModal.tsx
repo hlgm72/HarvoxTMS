@@ -52,7 +52,16 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   // Handler personalizado para el input de tiempo que fuerza formato 24h
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const timeValue = e.target.value;
-    // El input type="time" siempre devuelve formato HH:MM en 24h
+    console.log('🕐 handleTimeChange - Valor recibido del input:', timeValue);
+    
+    // Validar que el formato sea HH:MM y esté en rango 24h
+    const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    if (timeValue && !timeRegex.test(timeValue)) {
+      console.warn('⚠️ Formato de hora inválido:', timeValue);
+      return;
+    }
+    
+    console.log('✅ Hora válida, estableciendo:', timeValue);
     setEtaTime(timeValue);
   };
 
@@ -94,13 +103,27 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   };
 
   const handleConfirm = () => {
+    console.log('🔍 handleConfirm - Valores antes de procesar:', { etaDate, etaTime });
+    
     let eta: Date | null = null;
     
     if (etaDate && etaTime) {
       // Crear fecha en zona horaria local del usuario para evitar problemas de conversión
       const [year, month, day] = etaDate.split('-').map(Number);
       const [hours, minutes] = etaTime.split(':').map(Number);
+      
+      console.log('🕐 handleConfirm - Componentes de fecha/hora:', { 
+        year, month, day, hours, minutes,
+        originalTime: etaTime 
+      });
+      
       eta = new Date(year, month - 1, day, hours, minutes);
+      console.log('📅 handleConfirm - Fecha ETA creada:', {
+        eta: eta.toISOString(),
+        local: eta.toString(),
+        hours24: eta.getHours(),
+        minutes: eta.getMinutes()
+      });
     }
     
     onConfirm(eta, notes);
