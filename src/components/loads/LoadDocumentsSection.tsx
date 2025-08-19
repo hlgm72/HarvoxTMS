@@ -19,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { useLoadDocumentManagementACID } from '@/hooks/useLoadDocumentManagementACID';
 
 interface LoadDocument {
   id: string;
@@ -233,6 +234,7 @@ const [uploading, setUploading] = useState<string | null>(null);
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const { notifyDocumentChange } = useLoadDocuments();
+  const { mutate: createLoadDocument } = useLoadDocumentManagementACID();
   
   // Get current user
   const { data: user } = useQuery({
@@ -343,15 +345,14 @@ const [uploading, setUploading] = useState<string | null>(null);
         document_type: 'load_photos',
         file_name: fileName,
         file_url: filePath,
-        uploaded_by: user?.id || '',
       };
 
-      const { error: dbError } = await supabase
-        .from('load_documents')
-        .insert(documentData);
-
-      if (dbError) {
-        console.error('Error saving photo to database:', dbError);
+      try {
+        createLoadDocument({
+          documentData
+        });
+      } catch (error) {
+        console.error('Error saving photo to database:', error);
         await supabase.storage.from('load-documents').remove([filePath]);
         showError("Error", "No se pudo guardar la información de la foto");
         return;
@@ -427,15 +428,14 @@ const [uploading, setUploading] = useState<string | null>(null);
         document_type: documentType,
         file_name: fileName,
         file_url: filePath, // Save the file path, not the public URL
-        uploaded_by: user?.id || '',
       };
 
-      const { error: dbError } = await supabase
-        .from('load_documents')
-        .insert(documentData);
-
-      if (dbError) {
-        console.error('Error saving document to database:', dbError);
+      try {
+        createLoadDocument({
+          documentData
+        });
+      } catch (error) {
+        console.error('Error saving document to database:', error);
         await supabase.storage.from('load-documents').remove([filePath]);
         showError("Error", "No se pudo guardar la información del documento");
         return;

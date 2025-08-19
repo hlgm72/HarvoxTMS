@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Camera, Upload, Eye, Trash2, ImageIcon, Loader2 } from 'lucide-react';
 import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from '@/integrations/supabase/client';
+import { useLoadDocumentManagementACID } from '@/hooks/useLoadDocumentManagementACID';
 import { useTranslation } from 'react-i18next';
 
 interface LoadPhotoDocument {
@@ -43,6 +44,7 @@ export function LoadPhotosSection({
   const [selectedCategory, setSelectedCategory] = useState<'pickup' | 'delivery'>('pickup');
   const [photoUrls, setPhotoUrls] = useState<Map<string, string>>(new Map());
   const { showSuccess, showError } = useFleetNotifications();
+  const { mutate: createLoadDocument } = useLoadDocumentManagementACID();
 
   // Count photos by category
   const pickupPhotos = loadPhotos.filter(photo => photo.category === 'pickup');
@@ -142,12 +144,12 @@ export function LoadPhotosSection({
         metadata: JSON.stringify({ category })
       };
 
-      const { error: dbError } = await supabase
-        .from('load_documents')
-        .insert(documentData);
-
-      if (dbError) {
-        console.error('Error saving photo to database:', dbError);
+      try {
+        createLoadDocument({
+          documentData
+        });
+      } catch (error) {
+        console.error('Error saving photo to database:', error);
         await supabase.storage.from('load-documents').remove([filePath]);
         showError("Error", "No se pudo guardar la información de la foto");
         return;

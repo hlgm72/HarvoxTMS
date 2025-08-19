@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Upload, FileText } from "lucide-react";
-import { useDocumentUploadFlowACID } from '@/hooks/useDocumentManagementACID';
+import { useLoadDocumentUploadFlowACID } from '@/hooks/useLoadDocumentManagementACID';
 import { useFleetNotifications } from '@/components/notifications';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -15,9 +15,8 @@ interface PODUploadModalProps {
 
 function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [companyId, setCompanyId] = useState<string>('');
   const { showSuccess, showError } = useFleetNotifications();
-  const { mutate: uploadDocument, isPending: isUploading } = useDocumentUploadFlowACID();
+  const { mutate: uploadDocument, isPending: isUploading } = useLoadDocumentUploadFlowACID();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -27,7 +26,7 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
   };
 
   const handleUpload = () => {
-    if (!selectedFile || !companyId) {
+    if (!selectedFile) {
       showError('Por favor selecciona un archivo PDF');
       return;
     }
@@ -36,7 +35,6 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
       file: selectedFile,
       documentData: {
         document_type: 'pod',
-        company_id: companyId,
         load_id: loadId
       }
     }, {
@@ -53,32 +51,6 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
     });
   };
 
-  // Obtener company_id del usuario actual
-  useEffect(() => {
-    const fetchCompanyId = async () => {
-      if (isOpen) {
-        try {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            const { data } = await supabase
-              .from('user_company_roles')
-              .select('company_id')
-              .eq('user_id', user.id)
-              .eq('is_active', true)
-              .single();
-            
-            if (data) {
-              setCompanyId(data.company_id);
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching company ID:', error);
-        }
-      }
-    };
-    
-    fetchCompanyId();
-  }, [isOpen]);
 
   const handleClose = () => {
     setSelectedFile(null);
