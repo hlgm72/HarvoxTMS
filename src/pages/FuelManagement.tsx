@@ -14,7 +14,6 @@ import { ViewFuelExpenseDialog } from '@/components/fuel/ViewFuelExpenseDialog';
 import { DriverCardsManager } from '@/components/fuel/DriverCardsManager';
 import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { PDFAnalyzer } from '@/components/fuel/PDFAnalyzer';
-import { FuelExpenseCleanup } from '@/components/debug/FuelExpenseCleanup';
 
 export default function FuelManagement() {
   const { t } = useTranslation();
@@ -106,10 +105,7 @@ export default function FuelManagement() {
             <DriverCardsManager />
           </TabsContent>
 
-          <TabsContent value="analyzer" className="mt-6 space-y-6">
-            {/* Limpieza de transacciones con fechas incorrectas */}
-            <FuelExpenseCleanup />
-            
+          <TabsContent value="analyzer" className="mt-6">
             {/* Analizador de PDF */}
             <PDFAnalyzer />
           </TabsContent>
