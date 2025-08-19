@@ -25,6 +25,7 @@ interface LoadDocumentsListProps {
   refreshTrigger?: number;
   showDeleteButton?: boolean;
   driverView?: boolean;
+  userRole?: 'admin' | 'driver';
 }
 
 const documentTypeLabels: Record<string, string> = {
@@ -70,7 +71,8 @@ export function LoadDocumentsList({
   showActions = false,
   refreshTrigger = 0,
   showDeleteButton = false,
-  driverView = false
+  driverView = false,
+  userRole = 'admin'
 }: LoadDocumentsListProps) {
   const [documents, setDocuments] = useState<LoadDocument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -182,6 +184,12 @@ export function LoadDocumentsList({
 
   const handleDelete = async (document: LoadDocument) => {
     if (!workStatus) return;
+    
+    // Drivers can't delete any documents
+    if (userRole === 'driver') {
+      showError("Acción no permitida", "Los conductores no pueden eliminar documentos");
+      return;
+    }
     
     const validation = validateDocumentAction(
       document.document_type,

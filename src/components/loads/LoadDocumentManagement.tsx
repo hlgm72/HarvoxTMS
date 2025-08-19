@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { FileText, Upload, Download, Eye, Trash2, AlertTriangle, CheckCircle, RefreshCw } from "lucide-react";
+import { FileText, Upload, Download, Eye, Trash2, AlertTriangle, CheckCircle, RefreshCw, Camera, FileImage } from "lucide-react";
 import { useLoadDocumentValidation } from '@/hooks/useLoadDocumentValidation';
 import { useLoadWorkStatus } from '@/hooks/useLoadWorkStatus';
 import { LoadDocumentsList } from './LoadDocumentsList';
@@ -15,13 +15,15 @@ interface LoadDocumentManagementProps {
   loadStatus: string;
   onUploadDocument?: () => void;
   onRegenerateLoadOrder?: () => void;
+  userRole?: 'admin' | 'driver';
 }
 
 export function LoadDocumentManagement({ 
   loadId, 
   loadStatus,
   onUploadDocument,
-  onRegenerateLoadOrder 
+  onRegenerateLoadOrder,
+  userRole = 'admin'
 }: LoadDocumentManagementProps) {
   const { data: validation, isLoading: validationLoading } = useLoadDocumentValidation(loadId);
   const { data: workStatus, isLoading: workStatusLoading } = useLoadWorkStatus(loadId);
@@ -60,10 +62,14 @@ export function LoadDocumentManagement({
     workStatus.isInProgress
   );
 
-  const canUploadRC = true; // Siempre se puede subir RC
-  const canUploadLO = true; // Siempre se puede generar/subir LO
-  const canReplaceRC = workStatus.canReplaceRateConfirmation;
-  const canRegenerateLO = workStatus.canRegenerateLoadOrder;
+  const isLoadClosed = loadStatus === 'delivered_completed' || loadStatus === 'closed';
+  const isDriver = userRole === 'driver';
+  
+  // Driver restrictions
+  const canUploadRC = !isDriver && !isLoadClosed; // Solo admins pueden subir RC
+  const canUploadLO = !isDriver && !isLoadClosed; // Solo admins pueden generar LO
+  const canReplaceRC = !isDriver && workStatus.canReplaceRateConfirmation && !isLoadClosed;
+  const canRegenerateLO = !isDriver && workStatus.canRegenerateLoadOrder && !isLoadClosed;
 
   return (
     <div className="space-y-4">
@@ -102,79 +108,130 @@ export function LoadDocumentManagement({
         </CardContent>
       </Card>
 
-      {/* Document Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Acciones de Documentos</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Rate Confirmation Actions */}
-            <div className="space-y-2">
-              <h4 className="font-medium text-sm flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Rate Confirmation
-                {validation.hasRateConfirmation && (
-                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700">
-                    Activo
-                  </Badge>
-                )}
-              </h4>
-              
+      {/* Document Actions - Only show for admins */}
+      {!isDriver && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Acciones de Documentos</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Rate Confirmation Actions */}
               <div className="space-y-2">
-                <Button
-                  variant={validation.hasRateConfirmation ? "outline" : "default"}
-                  size="sm"
-                  onClick={onUploadDocument}
-                  disabled={!canUploadRC}
-                  className="w-full"
-                >
-                  <Upload className="h-3 w-3 mr-2" />
-                  {validation.hasRateConfirmation ? 'Reemplazar RC' : 'Subir RC'}
-                </Button>
+                <h4 className="font-medium text-sm flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Rate Confirmation
+                  {validation.hasRateConfirmation && (
+                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700">
+                      Activo
+                    </Badge>
+                  )}
+                </h4>
                 
-                {validation.hasRateConfirmation && workStatus.isInProgress && (
-                  <p className="text-xs text-muted-foreground">
-                    ℹ️ Puede reemplazar el RC incluso durante el trabajo
-                  </p>
-                )}
+                <div className="space-y-2">
+                  <Button
+                    variant={validation.hasRateConfirmation ? "outline" : "default"}
+                    size="sm"
+                    onClick={onUploadDocument}
+                    disabled={!canUploadRC}
+                    className="w-full"
+                  >
+                    <Upload className="h-3 w-3 mr-2" />
+                    {validation.hasRateConfirmation ? 'Reemplazar RC' : 'Subir RC'}
+                  </Button>
+                  
+                  {validation.hasRateConfirmation && workStatus.isInProgress && (
+                    <p className="text-xs text-muted-foreground">
+                      ℹ️ Puede reemplazar el RC incluso durante el trabajo
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* Load Order Actions */}
-            <div className="space-y-2">
-              <h4 className="font-medium text-sm flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Load Order
-                {validation.hasLoadOrder && (
-                  <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700">
-                    Activo (Prioridad)
-                  </Badge>
-                )}
-              </h4>
-              
+              {/* Load Order Actions */}
               <div className="space-y-2">
-                <Button
-                  variant={validation.hasLoadOrder ? "outline" : "default"}
-                  size="sm"
-                  onClick={onRegenerateLoadOrder}
-                  disabled={!canRegenerateLO}
-                  className="w-full"
-                >
-                  <RefreshCw className="h-3 w-3 mr-2" />
-                  {validation.hasLoadOrder ? 'Regenerar LO' : 'Generar LO'}
-                </Button>
+                <h4 className="font-medium text-sm flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Load Order
+                  {validation.hasLoadOrder && (
+                    <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700">
+                      Activo (Prioridad)
+                    </Badge>
+                  )}
+                </h4>
                 
-                {validation.hasLoadOrder && workStatus.isInProgress && (
-                  <p className="text-xs text-muted-foreground">
-                    ℹ️ Puede regenerar el LO para actualizar datos
-                  </p>
-                )}
+                <div className="space-y-2">
+                  <Button
+                    variant={validation.hasLoadOrder ? "outline" : "default"}
+                    size="sm"
+                    onClick={onRegenerateLoadOrder}
+                    disabled={!canRegenerateLO}
+                    className="w-full"
+                  >
+                    <RefreshCw className="h-3 w-3 mr-2" />
+                    {validation.hasLoadOrder ? 'Regenerar LO' : 'Generar LO'}
+                  </Button>
+                  
+                  {validation.hasLoadOrder && workStatus.isInProgress && (
+                    <p className="text-xs text-muted-foreground">
+                      ℹ️ Puede regenerar el LO para actualizar datos
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Driver Upload Actions */}
+      {isDriver && !isLoadClosed && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Subir Documentos</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onUploadDocument && onUploadDocument()}
+                className="h-auto flex-col py-3"
+              >
+                <FileText className="h-4 w-4 mb-1" />
+                <span className="text-xs">BOL</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onUploadDocument && onUploadDocument()}
+                className="h-auto flex-col py-3"
+              >
+                <CheckCircle className="h-4 w-4 mb-1" />
+                <span className="text-xs">POD</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onUploadDocument && onUploadDocument()}
+                className="h-auto flex-col py-3"
+              >
+                <FileText className="h-4 w-4 mb-1" />
+                <span className="text-xs">Factura</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onUploadDocument && onUploadDocument()}
+                className="h-auto flex-col py-3"
+              >
+                <Camera className="h-4 w-4 mb-1" />
+                <span className="text-xs">Fotos</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Documents List */}
       <Card>
@@ -186,13 +243,14 @@ export function LoadDocumentManagement({
             loadId={loadId}
             maxItems={10}
             showActions={true}
-            showDeleteButton={true}
+            showDeleteButton={!isDriver}
+            userRole={userRole}
           />
         </CardContent>
       </Card>
 
       {/* Protection Warnings */}
-      {workStatus.isInProgress && (
+      {workStatus.isInProgress && !isDriver && (
         <Card className="border-warning/20 bg-warning/5">
           <CardContent className="py-4">
             <div className="flex items-center gap-2 text-warning">
@@ -201,6 +259,21 @@ export function LoadDocumentManagement({
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               El conductor ha comenzado a trabajar en esta carga. Los documentos principales están protegidos contra eliminación.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Driver Load Closed Warning */}
+      {isDriver && isLoadClosed && (
+        <Card className="border-muted bg-muted/30">
+          <CardContent className="py-4">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <CheckCircle className="h-4 w-4" />
+              <span className="font-medium text-sm">Carga Completada</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Esta carga ha sido completada. No se pueden agregar más documentos.
             </p>
           </CardContent>
         </Card>

@@ -32,7 +32,7 @@ import { useLoadStopsNavigation } from '@/hooks/useLoadStopsNavigation';
 import { Loader2 } from 'lucide-react';
 import { LoadDocumentStatusIndicator } from '@/components/loads/LoadDocumentStatusIndicator';
 import { LoadStatusHistoryButton } from '@/components/loads/LoadStatusHistoryButton';
-import { DriverLoadDocumentManagement } from '@/components/loads/DriverLoadDocumentManagement';
+import { LoadDocumentManagement } from '@/components/loads/LoadDocumentManagement';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface Load {
@@ -776,10 +776,11 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                           <DialogHeader>
                             <DialogTitle>Documentos - {load.load_number}</DialogTitle>
                           </DialogHeader>
-                          <DriverLoadDocumentManagement 
-                            loadId={load.id}
-                            loadStatus={load.status}
-                          />
+              <LoadDocumentManagement 
+                loadId={load.id}
+                loadStatus={load.status}
+                userRole="driver"
+              />
                         </DialogContent>
                       </Dialog>
                       <Button size="sm" variant="outline">
