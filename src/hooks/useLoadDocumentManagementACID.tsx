@@ -93,6 +93,7 @@ export const useLoadDocumentManagementACID = () => {
 // Hook for handling complete load document upload flow (Storage + Database)
 export const useLoadDocumentUploadFlowACID = () => {
   const documentManagement = useLoadDocumentManagementACID();
+  const queryClient = useQueryClient();
   const { showError, showSuccess } = useFleetNotifications();
 
   return useMutation({

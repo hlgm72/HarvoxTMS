@@ -631,32 +631,32 @@ const [uploading, setUploading] = useState<string | null>(null);
 
     return (
       <div className="p-2 sm:p-3 border rounded-lg bg-white">
-        {/* Main flex container: responsive layout */}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-          {/* Content section - full width on mobile, left column on desktop */}
-          <div className="flex-1 space-y-2">
-            {/* Header: Document title and required badge */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                <span className="font-medium text-sm truncate">{docType.label}</span>
+        {/* Main flex container: always horizontal layout for optimal space usage */}
+        <div className="flex gap-2 sm:gap-3">
+          {/* Content section - takes remaining space */}
+          <div className="flex-1 space-y-1.5 min-w-0">
+            {/* Header: Document title and compact badges */}
+            <div className="flex items-start justify-between gap-1">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <FileText className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                <span className="font-medium text-xs sm:text-sm truncate">{docType.label}</span>
               </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                {docType.required && <Badge variant="destructive" className="text-[10px] h-4 px-1">Requerido</Badge>}
-                {docType.generated && <Badge variant="secondary" className="text-[10px] h-4 px-1">Generado</Badge>}
+              <div className="flex items-center gap-0.5 flex-shrink-0">
+                {docType.required && <Badge variant="destructive" className="text-[8px] sm:text-[10px] h-3 sm:h-4 px-0.5 sm:px-1">R</Badge>}
+                {docType.generated && <Badge variant="secondary" className="text-[8px] sm:text-[10px] h-3 sm:h-4 px-0.5 sm:px-1">G</Badge>}
               </div>
             </div>
 
-            {/* Document description */}
-            <p className="text-xs text-muted-foreground leading-tight">{docType.description}</p>
+            {/* Document description - hidden on extra small screens */}
+            <p className="text-[10px] sm:text-xs text-muted-foreground leading-tight hidden xs:block">{docType.description}</p>
 
             {/* File name */}
-            <div className="min-h-[16px]">
-              <span className="text-xs font-medium text-foreground">{document.fileName}</span>
+            <div className="min-h-[14px]">
+              <span className="text-[10px] sm:text-xs font-medium text-foreground truncate block">{document.fileName}</span>
             </div>
 
             {/* Action buttons */}
-            <div className="flex items-center gap-1 pt-1 flex-wrap">
+            <div className="flex items-center gap-0.5 sm:gap-1 pt-0.5 flex-wrap">
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -812,12 +812,12 @@ const [uploading, setUploading] = useState<string | null>(null);
             </div>
           </div>
 
-          {/* Preview Section - below content on mobile, right column on desktop */}
-          <div className="flex-shrink-0 w-full sm:w-auto flex justify-center sm:block">
+          {/* Preview Section - always on the right for optimal mobile layout */}
+          <div className="flex-shrink-0 w-16 sm:w-auto flex justify-center">
             <DocumentPreview
               documentUrl={document.url}
               fileName={document.fileName}
-              className="w-24 h-24 sm:w-32 sm:h-32"
+              className="w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32"
               onClick={async () => {
                 try {
                   if (document.url.startsWith('blob:')) {
