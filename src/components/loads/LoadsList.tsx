@@ -388,7 +388,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     {load.broker_logo_url ? (
                       <img 
                         src={load.broker_logo_url} 
-                        alt={`Logo de ${load.broker_name}`}
+                        alt={t('list.logo_alt', { brokerName: load.broker_name })}
                         className="h-8 w-8 rounded object-contain bg-white border border-border"
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
@@ -404,8 +404,8 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     <div>
                       <p className="text-sm font-medium">{load.broker_name}</p>
                        {load.dispatcher_name && (
-                         <p className="text-xs text-muted-foreground">{t('list.contact')} {load.dispatcher_name}</p>
-                       )}
+                          <p className="text-xs text-muted-foreground">{t('list.contact')} {load.dispatcher_name}</p>
+                        )}
                     </div>
                   </div>
                 </div>
@@ -418,7 +418,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     <Avatar className="h-8 w-8">
                       <AvatarImage 
                         src={load.driver_avatar_url || ''} 
-                        alt={load.driver_name || 'Sin conductor asignado'} 
+                        alt={load.driver_name || t('list.not_assigned')} 
                       />
                       <AvatarFallback className="text-xs bg-muted text-muted-foreground">
                         {load.driver_name ? 
@@ -434,15 +434,15 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                          )}
                       </p>
                        {load.internal_dispatcher_name && (
-                         <p className="text-xs text-muted-foreground">{t('list.dispatcher')} {load.internal_dispatcher_name}</p>
-                       )}
+                          <p className="text-xs text-muted-foreground">{t('list.dispatcher')} {load.internal_dispatcher_name}</p>
+                        )}
                     </div>
                   </div>
                 </div>
                 
                 <div>
                   <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Commodity
+                    {t('list.commodity')}
                   </label>
                   <p className="text-sm font-medium">{load.commodity}</p>
                   <p className="text-xs text-muted-foreground">{load.weight_lbs?.toLocaleString()} lbs</p>
@@ -453,7 +453,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
               <div className="mb-3 pb-3 border-b border-border">
                 <div>
                   <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
-                    Período de Pago
+                    {t('list.payment_period')}
                   </label>
                   <PaymentPeriodInfo
                     periodStartDate={load.period_start_date}
@@ -466,7 +466,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
               
               <div className="flex items-center justify-between">
                 <div className="text-xs text-muted-foreground">
-                  Creada: {formatDateTime(load.created_at)}
+                  {t('list.created')} {formatDateTime(load.created_at)}
                 </div>
                 
                 <div className="flex gap-2 relative z-20">
@@ -476,7 +476,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     onClick={() => setViewDialog({ isOpen: true, load })}
                   >
                     <Eye className="h-3 w-3 mr-1" />
-                    Ver
+                    {t('list.view')}
                   </Button>
                   <Button 
                     variant="outline" 
@@ -484,7 +484,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     onClick={() => setEditDialog({ isOpen: true, load })}
                   >
                     <Edit className="h-3 w-3 mr-1" />
-                    Editar
+                    {t('list.edit')}
                   </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -519,7 +519,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                         })}
                       >
                         <Copy className="h-3 w-3 mr-2" />
-                        Duplicar Carga
+                        {t('list.duplicate_load')}
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         onClick={() => setReassignmentDialog({ 
@@ -528,7 +528,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                         })}
                       >
                         <ArrowRightLeft className="h-3 w-3 mr-2" />
-                        Reasignar Período
+                        {t('list.reassign_period')}
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         onClick={() => setDocumentsDialog({ 
@@ -537,7 +537,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                         })}
                       >
                         <FileText className="h-3 w-3 mr-2" />
-                        Gestionar Documentos
+                        {t('list.manage_documents')}
                       </DropdownMenuItem>
                       
                       <DropdownMenuItem 
@@ -565,7 +565,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                         className="text-destructive focus:text-destructive disabled:text-muted-foreground disabled:cursor-not-allowed"
                       >
                         <Trash2 className="h-3 w-3 mr-2" />
-                        Eliminar Carga
+                        {t('list.delete_load')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -637,16 +637,16 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
       <AlertDialog open={deleteDialog.isOpen} onOpenChange={(open) => !open && setDeleteDialog({ isOpen: false })}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Confirmar eliminación?</AlertDialogTitle>
+            <AlertDialogTitle>{t('list.confirm_deletion')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción eliminará permanentemente la carga <strong>{deleteDialog.load?.load_number}</strong> y todos sus datos asociados (paradas y documentos). 
+              {t('list.deletion_warning', { loadNumber: deleteDialog.load?.load_number })}
               <br /><br />
-              <span className="text-destructive font-medium">Esta acción no se puede deshacer.</span>
+              <span className="text-destructive font-medium">{t('list.deletion_irreversible')}</span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={deleteLoadMutation.isPending}>
-              Cancelar
+              {t('list.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteDialog.load && handleDeleteLoad(deleteDialog.load.id)}
@@ -656,12 +656,12 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
               {deleteLoadMutation.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Eliminando...
+                  {t('list.deleting')}
                 </>
               ) : (
                 <>
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Eliminar Carga
+                  {t('list.delete_load')}
                 </>
               )}
             </AlertDialogAction>
