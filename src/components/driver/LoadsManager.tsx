@@ -869,6 +869,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
             loadId={documentsDialog.load.id}
             loadNumber={documentsDialog.load.load_number}
             loadData={documentsDialog.load}
+            userRole="driver"
           />
         </LoadDocumentsProvider>
       )}

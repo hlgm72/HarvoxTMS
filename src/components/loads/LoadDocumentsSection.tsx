@@ -46,6 +46,7 @@ interface LoadDocumentsSectionProps {
   wizardMode?: boolean;
   canGenerate?: boolean;
   showGenerateButton?: boolean;
+  userRole?: 'owner' | 'dispatcher' | 'driver';
 }
 
 const documentTypes = [
@@ -112,7 +113,25 @@ const documentTypes = [
 ];
 
 // Filtrar documentos disponibles para subir (excluyendo load_photos que tiene su propia sección)
-const uploadableDocumentTypes = documentTypes.filter(doc => doc.type !== 'load_photos' && !doc.generated);
+const getUploadableDocumentTypes = (userRole?: string) => {
+  let filteredTypes = documentTypes.filter(doc => doc.type !== 'load_photos' && !doc.generated);
+  
+  // Restricciones para conductores: no pueden subir RC ni DI
+  if (userRole === 'driver') {
+    filteredTypes = filteredTypes.filter(doc => 
+      doc.type !== 'rate_confirmation' && 
+      doc.type !== 'driver_instructions'
+    );
+  }
+  
+  return filteredTypes;
+};
+
+// Verificar si el conductor puede modificar/eliminar un documento
+const canDriverModifyDocument = (documentType: string): boolean => {
+  const restrictedTypes = ['rate_confirmation', 'load_order', 'driver_instructions'];
+  return !restrictedTypes.includes(documentType);
+};
 
 // Helper function to generate standardized file names
 const generateDocumentFileName = (loadNumber: string, documentType: string, originalFileName: string, otherDocCount?: number): string => {
@@ -198,7 +217,8 @@ export function LoadDocumentsSection({
   isOpen = false,
   wizardMode = false,
   canGenerate = false,
-  showGenerateButton = false
+  showGenerateButton = false,
+  userRole = 'owner'
 }: LoadDocumentsSectionProps) {
   const [documents, setDocuments] = useState<LoadDocument[]>(propDocuments);
   const [uploadingDocuments, setUploadingDocuments] = useState<Set<string>>(new Set());
@@ -449,7 +469,8 @@ const [uploading, setUploading] = useState<string | null>(null);
   // Get available document types (not uploaded yet)
   const getAvailableDocumentTypes = () => {
     const uploadedTypes = [...documents, ...temporaryDocuments].map(doc => doc.type);
-    return uploadableDocumentTypes.filter(docType => !uploadedTypes.includes(docType.type));
+    const uploadableTypes = getUploadableDocumentTypes(userRole);
+    return uploadableTypes.filter(docType => !uploadedTypes.includes(docType.type));
   };
 
   // Get photo counts by category
@@ -734,12 +755,18 @@ const [uploading, setUploading] = useState<string | null>(null);
                 className="hidden"
                 id={`replace-${document.id}`}
               />
-              <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={() => {
-                window.document.getElementById(`replace-${document.id}`)?.click();
-              }} disabled={isUploading || isRemoving} title="Reemplazar documento">
-                <RotateCcw className="h-3 w-3" />
-              </Button>
-              <AlertDialog>
+              {/* Botón de reemplazar - oculto para conductores en documentos restringidos */}
+              {(userRole !== 'driver' || canDriverModifyDocument(docType.type)) && (
+                <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={() => {
+                  window.document.getElementById(`replace-${document.id}`)?.click();
+                }} disabled={isUploading || isRemoving} title="Reemplazar documento">
+                  <RotateCcw className="h-3 w-3" />
+                </Button>
+              )}
+              
+              {/* Botón de eliminar - oculto para conductores en documentos restringidos */}
+              {(userRole !== 'driver' || canDriverModifyDocument(docType.type)) && (
+                <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button 
                     variant="outline" 
@@ -774,8 +801,9 @@ const [uploading, setUploading] = useState<string | null>(null);
                       Eliminar
                     </AlertDialogAction>
                   </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
             </div>
           </div>
 
@@ -949,22 +977,25 @@ const [uploading, setUploading] = useState<string | null>(null);
             </DropdownMenu>
           </div>
           
-          <div className="w-1/4">
-            <Button
-              onClick={() => {
-                console.log('🔄 Load Order button clicked');
-                console.log('📄 Load data:', loadData);
-                console.log('✅ Can generate:', canGenerateLoadOrder(loadData));
-                setShowGenerateLoadOrder(true);
-              }}
-              disabled={uploading !== null || !canGenerateLoadOrder(loadData)}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white border-orange-500 hover:border-orange-600"
-              title={canGenerateLoadOrder(loadData) ? "Generar Load Order" : "Faltan datos de la carga o paradas para generar el Load Order"}
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Generar Load Order
-            </Button>
-          </div>
+          {/* Solo mostrar botón de "Generar Load Order" si no es conductor */}
+          {userRole !== 'driver' && (
+            <div className="w-1/4">
+              <Button
+                onClick={() => {
+                  console.log('🔄 Load Order button clicked');
+                  console.log('📄 Load data:', loadData);
+                  console.log('✅ Can generate:', canGenerateLoadOrder(loadData));
+                  setShowGenerateLoadOrder(true);
+                }}
+                disabled={uploading !== null || !canGenerateLoadOrder(loadData)}
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white border-orange-500 hover:border-orange-600"
+                title={canGenerateLoadOrder(loadData) ? "Generar Load Order" : "Faltan datos de la carga o paradas para generar el Load Order"}
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Generar Load Order
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Dynamic Document Containers */}
