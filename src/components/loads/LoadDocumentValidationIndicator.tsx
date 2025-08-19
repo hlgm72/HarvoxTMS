@@ -56,7 +56,7 @@ export function LoadDocumentValidationIndicator({
               </span>
             </TooltipTrigger>
             <TooltipContent side="bottom" align="center" className="z-50">
-              <p>Todos los documentos requeridos están presentes</p>
+              <p>{t('validation.all_required_docs')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -66,7 +66,7 @@ export function LoadDocumentValidationIndicator({
     return (
       <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
         <CheckCircle className="h-3 w-3 mr-1" />
-        Documentos OK
+        {t('validation.documents_ok')}
       </Badge>
     );
   }

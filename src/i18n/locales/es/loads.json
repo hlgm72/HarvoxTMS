@@ -138,7 +138,14 @@
     "replace_rc": "Reemplazar RC",
     "upload_rc": "Subir RC", 
     "regenerate_lo": "Regenerar LO",
-    "generate_lo": "Generar LO"
+    "generate_lo": "Generar LO",
+    "documents_ok": "Documentos OK",
+    "all_required_docs": "Todos los documentos requeridos están presentes",
+    "verifying": "Verificando...",
+    "ready": "Listo: {doc}",
+    "active": "Activo: {doc}",
+    "missing": "Sin RC/LO",
+    "no_period": "Sin período asignado"
   },
   "documents": {
     "title": "Documentos de la Carga",
@@ -226,5 +233,20 @@
     "deletion_irreversible": "Esta acción no se puede deshacer.",
     "cancel": "Cancelar",
     "deleting": "Eliminando..."
+  },
+  "period": {
+    "frequency": {
+      "weekly": "Semanal",
+      "biweekly": "Quincenal", 
+      "monthly": "Mensual"
+    },
+    "status": {
+      "open": "Abierto",
+      "processing": "Procesando",
+      "closed": "Cerrado",
+      "paid": "Pagado",
+      "locked": "Bloqueado",
+      "unknown": "Desconocido"
+    }
   }
 }

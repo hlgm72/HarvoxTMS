@@ -2,6 +2,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock } from 'lucide-react';
 import { formatPaymentPeriod } from '@/lib/dateFormatting';
+import { useTranslation } from 'react-i18next';
 
 interface PaymentPeriodInfoProps {
   periodStartDate?: string;
@@ -18,11 +19,12 @@ const PaymentPeriodInfo = ({
   periodStatus,
   className 
 }: PaymentPeriodInfoProps) => {
+  const { t } = useTranslation('loads');
   if (!periodStartDate || !periodEndDate) {
     return (
       <div className={`flex items-center gap-2 text-muted-foreground ${className}`}>
         <Clock className="h-4 w-4" />
-        <span className="text-sm">Sin período asignado</span>
+        <span className="text-sm">{t('validation.no_period')}</span>
       </div>
     );
   }
@@ -47,28 +49,28 @@ const PaymentPeriodInfo = ({
   const getStatusText = (status?: string) => {
     switch (status) {
       case 'open':
-        return 'Abierto';
+        return t('period.status.open');
       case 'processing':
-        return 'Procesando';
+        return t('period.status.processing');
       case 'closed':
-        return 'Cerrado';
+        return t('period.status.closed');
       case 'paid':
-        return 'Pagado';
+        return t('period.status.paid');
       case 'locked':
-        return 'Bloqueado';
+        return t('period.status.locked');
       default:
-        return status || 'Desconocido';
+        return status || t('period.status.unknown');
     }
   };
 
   const getFrequencyText = (frequency?: string) => {
     switch (frequency) {
       case 'weekly':
-        return 'Semanal';
+        return t('period.frequency.weekly');
       case 'biweekly':
-        return 'Quincenal';
+        return t('period.frequency.biweekly');
       case 'monthly':
-        return 'Mensual';
+        return t('period.frequency.monthly');
       default:
         return frequency || '';
     }

@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, CheckCircle, Clock } from "lucide-react";
 import { useLoadDocumentValidation } from '@/hooks/useLoadDocumentValidation';
 import { useLoadWorkStatus } from '@/hooks/useLoadWorkStatus';
+import { useTranslation } from 'react-i18next';
 
 interface LoadDocumentStatusIndicatorProps {
   loadId: string;
@@ -12,6 +13,7 @@ export function LoadDocumentStatusIndicator({
   loadId, 
   showDetails = false 
 }: LoadDocumentStatusIndicatorProps) {
+  const { t } = useTranslation('loads');
   const { data: validation, isLoading: validationLoading } = useLoadDocumentValidation(loadId);
   const { data: workStatus, isLoading: workStatusLoading } = useLoadWorkStatus(loadId);
 
@@ -19,7 +21,7 @@ export function LoadDocumentStatusIndicator({
     return (
       <Badge variant="secondary" className="text-xs">
         <Clock className="w-3 h-3 mr-1" />
-        Verificando...
+        {t('validation.verifying')}
       </Badge>
     );
   }
@@ -34,7 +36,7 @@ export function LoadDocumentStatusIndicator({
       return {
         variant: 'default' as const,
         icon: CheckCircle,
-        text: `Activo: ${docLabel}`,
+        text: t('validation.active', { doc: docLabel }),
         color: 'bg-green-100 text-green-800 border-green-200'
       };
     }
@@ -45,7 +47,7 @@ export function LoadDocumentStatusIndicator({
       return {
         variant: 'secondary' as const,
         icon: CheckCircle,
-        text: `Listo: ${docLabel}`,
+        text: t('validation.ready', { doc: docLabel }),
         color: 'bg-blue-100 text-blue-800 border-blue-200'
       };
     }
@@ -54,7 +56,7 @@ export function LoadDocumentStatusIndicator({
     return {
       variant: 'destructive' as const,
       icon: AlertTriangle,
-      text: 'Sin RC/LO',
+      text: t('validation.missing'),
       color: 'bg-red-100 text-red-800 border-red-200'
     };
   };

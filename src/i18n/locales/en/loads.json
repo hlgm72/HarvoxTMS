@@ -138,7 +138,14 @@
     "replace_rc": "Replace RC",
     "upload_rc": "Upload RC", 
     "regenerate_lo": "Regenerate LO",
-    "generate_lo": "Generate LO"
+    "generate_lo": "Generate LO",
+    "documents_ok": "Documents OK",
+    "all_required_docs": "All required documents are present",
+    "verifying": "Verifying...",
+    "ready": "Ready: {doc}",
+    "active": "Active: {doc}",
+    "missing": "No RC/LO",
+    "no_period": "No period assigned"
   },
   "documents": {
     "title": "Load Documents",
@@ -226,5 +233,20 @@
     "deletion_irreversible": "This action cannot be undone.",
     "cancel": "Cancel",
     "deleting": "Deleting..."
+  },
+  "period": {
+    "frequency": {
+      "weekly": "Weekly",
+      "biweekly": "Bi-weekly", 
+      "monthly": "Monthly"
+    },
+    "status": {
+      "open": "Open",
+      "processing": "Processing",
+      "closed": "Closed",
+      "paid": "Paid",
+      "locked": "Locked",
+      "unknown": "Unknown"
+    }
   }
 }
