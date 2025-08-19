@@ -177,7 +177,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         <PopoverTrigger asChild>
           <Button 
             variant="outline" 
-            className="justify-between min-w-[200px]"
+            className="justify-between min-w-[200px] bg-white hover:bg-gray-50 border-gray-300 shadow-sm"
             disabled={isLoading}
           >
             <div className="flex items-center gap-2">
