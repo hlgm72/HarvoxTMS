@@ -55,17 +55,20 @@ export const useLoadDocumentValidation = (loadId: string) => {
       // Can start work if has either RC or LO
       const canStartWork = hasRequiredWorkDocument;
 
-      // Define required documents for completion (work document + POD)
-      const requiredDocuments = [activeWorkDocument, 'pod'].filter(Boolean);
+      // Define required documents for completion
+      // Si no hay ningún documento de trabajo (RC o LO), ambos son faltantes para comenzar
+      let missingRequiredDocuments: string[] = [];
       
-      // Only consider non-archived documents for validation
-      const activeDocumentTypes = documents
-        ?.filter(doc => doc.archived_at === null)
-        ?.map(doc => doc.document_type) || [];
+      // Verificar documento de trabajo faltante (RC o LO)
+      if (!hasRequiredWorkDocument) {
+        // Si no hay ningún documento de trabajo, considerar que falta rate_confirmation por defecto
+        missingRequiredDocuments.push('rate_confirmation');
+      }
       
-      const missingRequiredDocuments = requiredDocuments.filter(
-        reqDoc => !activeDocumentTypes.includes(reqDoc)
-      );
+      // Verificar POD faltante (siempre requerido para completar)
+      if (!hasPOD) {
+        missingRequiredDocuments.push('pod');
+      }
 
       const canMarkAsDelivered = hasRequiredWorkDocument && hasPOD;
 
