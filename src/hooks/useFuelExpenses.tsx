@@ -223,22 +223,31 @@ export function useDeleteFuelExpense() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      console.log('🗑️ Iniciando eliminación de gasto de combustible:', id);
+      
       const { data: result, error } = await supabase.rpc(
         'delete_fuel_expense_with_validation',
         { expense_id: id }
       );
 
+      console.log('📋 Resultado RPC eliminación:', { result, error });
+
       if (error) {
-        console.error('Error deleting fuel expense (RPC):', error);
+        console.error('❌ Error deleting fuel expense (RPC):', error);
         throw error;
       }
 
       if (result && (result as any).success === false) {
         const msg = (result as any).message || 'No se pudo eliminar el gasto de combustible';
+        console.error('❌ RPC returned failure:', msg);
         throw new Error(msg);
       }
+      
+      console.log('✅ Gasto de combustible eliminado exitosamente');
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('🎉 Success callback ejecutado:', data);
       showSuccess('Gasto de combustible eliminado exitosamente');
       queryClient.invalidateQueries({ 
         queryKey: ['fuel-expenses', user?.id, selectedCompany?.id] 
@@ -248,8 +257,8 @@ export function useDeleteFuelExpense() {
       });
     },
     onError: (error) => {
-      console.error('Error deleting fuel expense:', error);
-      showError('No se pudo eliminar el gasto de combustible');
+      console.error('💥 Error callback ejecutado:', error);
+      showError(`No se pudo eliminar el gasto de combustible: ${error.message}`);
     },
   });
 }

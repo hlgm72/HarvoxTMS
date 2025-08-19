@@ -70,15 +70,19 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
   };
 
   const handleDelete = (expenseId: string) => {
+    console.log('🎯 Iniciando proceso de eliminación para expense:', expenseId);
     setExpenseToDelete(expenseId);
     setDeleteDialogOpen(true);
   };
 
   const confirmDelete = () => {
     if (expenseToDelete) {
+      console.log('✅ Confirmando eliminación de expense:', expenseToDelete);
       deleteMutation.mutate(expenseToDelete);
       setDeleteDialogOpen(false);
       setExpenseToDelete(null);
+    } else {
+      console.warn('⚠️ No hay expense ID para eliminar');
     }
   };
 
