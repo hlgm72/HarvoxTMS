@@ -33,6 +33,7 @@ import { Loader2 } from 'lucide-react';
 import { LoadDocumentStatusIndicator } from '@/components/loads/LoadDocumentStatusIndicator';
 import { LoadStatusHistoryButton } from '@/components/loads/LoadStatusHistoryButton';
 import { LoadDocumentsSection } from '@/components/loads/LoadDocumentsSection';
+import { LoadDocumentsProvider } from '@/contexts/LoadDocumentsContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface Load {
@@ -776,12 +777,14 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                           <DialogHeader>
                             <DialogTitle>Gestión de Documentos - {load.load_number}</DialogTitle>
                           </DialogHeader>
-                          <LoadDocumentsSection 
-                            loadId={load.id}
-                            loadNumber={load.load_number}
-                            loadData={load}
-                            isDialogMode={true}
-                          />
+                          <LoadDocumentsProvider>
+                            <LoadDocumentsSection 
+                              loadId={load.id}
+                              loadNumber={load.load_number}
+                              loadData={load}
+                              isDialogMode={true}
+                            />
+                          </LoadDocumentsProvider>
                         </DialogContent>
                       </Dialog>
                       <Button size="sm" variant="outline">
