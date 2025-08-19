@@ -256,10 +256,19 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         const earliestPickup = pickupStops.find(stop => stop.scheduled_date);
         const latestDelivery = deliveryStops.find(stop => stop.scheduled_date);
         
+         // Check if load has Load Order document
+         const hasLoadOrder = (load as any).documents?.some((doc: any) => doc.document_type === 'load_order');
+         
+         // Determine client name: if has Load Order, show company name, otherwise broker name
+         let clientName = load.broker_name || 'Sin cliente';
+         if (hasLoadOrder && (load as any).company_name) {
+           clientName = (load as any).company_name;
+         }
+        
         return {
           id: load.id,
           load_number: load.load_number,
-          client_name: load.broker_name || 'Sin cliente',
+          client_name: clientName,
           origin_city: load.pickup_city || 'Sin origen',
           origin_state: '',
           destination_city: load.delivery_city || 'Sin destino', 
