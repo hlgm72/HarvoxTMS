@@ -272,6 +272,19 @@ export function PaymentReportDialog({
       // Verificar permisos adicionales
       console.log('🔐 Current user ID:', (await supabase.auth.getUser()).data.user?.id);
       
+      // Debug: Calcular manualmente los totales esperados por tipo de deducción
+      if (data && data.length > 0) {
+        const leasingTotal = data.filter(d => d.expense_types?.name === 'Leasing Fee').reduce((sum, d) => sum + d.amount, 0);
+        const factoringTotal = data.filter(d => d.expense_types?.name === 'Factoring Fee').reduce((sum, d) => sum + d.amount, 0);
+        const dispatchingTotal = data.filter(d => d.expense_types?.name === 'Dispatching Fee').reduce((sum, d) => sum + d.amount, 0);
+        
+        console.log('📊 DEDUCTION TOTALS BY TYPE:');
+        console.log('  Leasing Total:', leasingTotal);
+        console.log('  Factoring Total:', factoringTotal);
+        console.log('  Dispatching Total:', dispatchingTotal);
+        console.log('  Grand Total:', leasingTotal + factoringTotal + dispatchingTotal);
+      }
+      
       return data || [];
     },
     enabled: !!calculationId
@@ -318,6 +331,21 @@ export function PaymentReportDialog({
       loads: loads.map(load => {
         const clientData = clients.find(c => c.id === load.client_id);
         let clientName = 'Sin cliente';
+        
+        // Debug: Log individual load percentage calculations
+        const dispatchingAmount = (load.total_amount * (load.dispatching_percentage || 0)) / 100;
+        const factoringAmount = (load.total_amount * (load.factoring_percentage || 0)) / 100;
+        const leasingAmount = (load.total_amount * (load.leasing_percentage || 0)) / 100;
+        
+        console.log(`🚛 LOAD ${load.load_number}:`, {
+          total_amount: load.total_amount,
+          dispatching_percentage: load.dispatching_percentage,
+          factoring_percentage: load.factoring_percentage,
+          leasing_percentage: load.leasing_percentage,
+          calculated_dispatching: dispatchingAmount,
+          calculated_factoring: factoringAmount,
+          calculated_leasing: leasingAmount
+        });
         
         if (clientData) {
           if (clientData.alias && clientData.alias.trim()) {
