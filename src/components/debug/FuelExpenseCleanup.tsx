@@ -3,13 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, Trash2, CheckCircle } from 'lucide-react';
 import { useDeleteFuelExpense, useFuelExpenses } from '@/hooks/useFuelExpenses';
-import { useToast } from '@/components/ui/use-toast';
+import { useFleetNotifications } from '@/components/notifications';
 import { formatDateAuto, formatCurrency } from '@/lib/dateFormatting';
 
 export const FuelExpenseCleanup = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deletedCount, setDeletedCount] = useState(0);
-  const { toast } = useToast();
+  const { showSuccess, showError, showInfo } = useFleetNotifications();
   
   // Get recent fuel expenses (from last 2 hours)
   const { data: fuelExpenses, isLoading } = useFuelExpenses();
@@ -24,11 +24,7 @@ export const FuelExpenseCleanup = () => {
 
   const handleDeleteRecentExpenses = async () => {
     if (recentExpenses.length === 0) {
-      toast({
-        title: "Sin transacciones",
-        description: "No hay transacciones recientes para eliminar",
-        variant: "default",
-      });
+      showInfo("Sin transacciones", "No hay transacciones recientes para eliminar");
       return;
     }
 
@@ -47,11 +43,11 @@ export const FuelExpenseCleanup = () => {
 
       setDeletedCount(successCount);
       
-      toast({
-        title: "Eliminación completada",
-        description: `Se eliminaron ${successCount} de ${recentExpenses.length} transacciones`,
-        variant: successCount === recentExpenses.length ? "default" : "destructive",
-      });
+      if (successCount === recentExpenses.length) {
+        showSuccess("Eliminación completada", `Se eliminaron ${successCount} transacciones correctamente`);
+      } else {
+        showError("Eliminación parcial", `Se eliminaron ${successCount} de ${recentExpenses.length} transacciones`);
+      }
 
     } finally {
       setIsDeleting(false);
@@ -90,7 +86,7 @@ export const FuelExpenseCleanup = () => {
                 {recentExpenses.map((expense) => (
                   <div key={expense.id} className="flex justify-between items-center text-sm p-2 bg-gray-50 rounded">
                     <div>
-                      <span className="font-medium">{expense.vehicle?.equipment_number || 'Sin vehículo'}</span>
+                      <span className="font-medium">{expense.company_equipment?.equipment_number || 'Sin vehículo'}</span>
                       <span className="text-muted-foreground ml-2">
                         {formatDateAuto(expense.transaction_date)} - {expense.station_name}
                       </span>
