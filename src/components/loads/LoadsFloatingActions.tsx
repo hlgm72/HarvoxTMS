@@ -127,19 +127,19 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
 
   const getPeriodLabel = (type?: string) => {
     switch (type) {
-      case 'current': return 'Período Actual';
-      case 'previous': return 'Período Anterior';
-      case 'next': return 'Período Siguiente';
-      case 'all': return 'Todos los Períodos';
-      case 'this_month': return 'Este Mes';
-      case 'last_month': return 'Mes Pasado';
-      case 'this_quarter': return 'Este Trimestre';
-      case 'last_quarter': return 'Trimestre Pasado';
-      case 'this_year': return 'Este Año';
-      case 'last_year': return 'Año Pasado';
-      case 'specific': return 'Período Específico';
-      case 'custom': return 'Rango Personalizado';
-      default: return 'Período Actual';
+      case 'current': return t('periods.current');
+      case 'previous': return t('periods.previous');
+      case 'next': return t('periods.next');
+      case 'all': return t('periods.all');
+      case 'this_month': return t('periods.this_month');
+      case 'last_month': return t('periods.last_month');
+      case 'this_quarter': return t('periods.this_quarter');
+      case 'last_quarter': return t('periods.last_quarter');
+      case 'this_year': return t('periods.this_year');
+      case 'last_year': return t('periods.last_year');
+      case 'specific': return t('periods.specific');
+      case 'custom': return t('periods.custom');
+      default: return t('periods.current');
     }
   };
 
@@ -284,9 +284,9 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccionar período" />
                       </SelectTrigger>
-                       <SelectContent>
-                        <SelectItem value="current">Período Actual</SelectItem>
-                        <SelectItem value="previous">Período Anterior</SelectItem>
+                        <SelectContent>
+                         <SelectItem value="current">{t('periods.current')}</SelectItem>
+                         <SelectItem value="previous">{t('periods.previous')}</SelectItem>
                         <SelectItem value="next">Período Siguiente</SelectItem>
                         <SelectItem value="all">Todos los Períodos</SelectItem>
                         <SelectItem value="this_month">Este Mes</SelectItem>

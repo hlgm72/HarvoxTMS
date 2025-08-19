@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,21 +9,23 @@ interface EmptyLoadsStateProps {
 }
 
 export function EmptyLoadsState({ onCreateLoad }: EmptyLoadsStateProps) {
+  const { t } = useTranslation('loads');
+  
   const features = [
     {
       icon: Clock,
-      title: "Gestión de Tiempos",
-      description: "Seguimiento automático de pickup y delivery"
+      title: t('empty_state.features.time_management'),
+      description: t('empty_state.features.automatic_tracking')
     },
     {
       icon: TrendingUp,
-      title: "Rentabilidad",
-      description: "Análisis en tiempo real de márgenes"
+      title: t('empty_state.features.profitability'),
+      description: t('empty_state.features.realtime_analysis')
     },
     {
       icon: FileText,
-      title: "Documentación",
-      description: "Control completo de documentos de carga"
+      title: t('empty_state.features.documentation'),
+      description: t('empty_state.features.complete_control')
     }
   ];
 
@@ -41,10 +44,10 @@ export function EmptyLoadsState({ onCreateLoad }: EmptyLoadsStateProps) {
           
           <div className="space-y-3">
             <h2 className="text-3xl font-bold text-foreground">
-              Comienza tu gestión de cargas
+              {t('empty_state.title')}
             </h2>
             <p className="text-lg text-muted-foreground max-w-md mx-auto">
-              Administra tus cargas de manera eficiente con nuestro sistema integral de gestión logística
+              {t('empty_state.description')}
             </p>
           </div>
         </div>
@@ -70,21 +73,21 @@ export function EmptyLoadsState({ onCreateLoad }: EmptyLoadsStateProps) {
             className="px-8 py-6 text-lg hover-scale shadow-lg"
           >
             <Plus className="h-5 w-5 mr-2" />
-            Crear Primera Carga
+            {t('empty_state.create_button')}
           </Button>
           
           <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span>Gestión automatizada</span>
+              <span>{t('empty_state.features.automated_management')}</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-              <span>Seguimiento en tiempo real</span>
+              <span>{t('empty_state.features.realtime_tracking')}</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
-              <span>Reportes detallados</span>
+              <span>{t('empty_state.features.detailed_reports')}</span>
             </div>
           </div>
         </div>
@@ -93,15 +96,15 @@ export function EmptyLoadsState({ onCreateLoad }: EmptyLoadsStateProps) {
         <div className="grid grid-cols-3 gap-4 pt-6 border-t border-border">
           <div className="text-center">
             <div className="text-2xl font-bold text-primary">0</div>
-            <div className="text-xs text-muted-foreground">Cargas Activas</div>
+            <div className="text-xs text-muted-foreground">{t('empty_state.stats.active_loads')}</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-primary">$0</div>
-            <div className="text-xs text-muted-foreground">Ingresos Totales</div>
+            <div className="text-xs text-muted-foreground">{t('empty_state.stats.total_revenue')}</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-primary">0</div>
-            <div className="text-xs text-muted-foreground">Entregas Completadas</div>
+            <div className="text-xs text-muted-foreground">{t('empty_state.stats.completed_deliveries')}</div>
           </div>
         </div>
       </div>

@@ -83,9 +83,25 @@
     "apply": "Aplicar Filtros"
   },
   "empty_state": {
-    "title": "No se encontraron cargas",
-    "description": "No hay cargas que coincidan con tus filtros o período actual",
-    "create_button": "Crear Primera Carga"
+    "title": "Comienza tu gestión de cargas",
+    "description": "Administra tus cargas de manera eficiente con nuestro sistema integral de gestión logística",
+    "create_button": "Crear Primera Carga",
+    "features": {
+      "time_management": "Gestión de Tiempos",
+      "automatic_tracking": "Seguimiento automático de pickup y delivery",
+      "profitability": "Rentabilidad", 
+      "realtime_analysis": "Análisis en tiempo real de márgenes",
+      "documentation": "Documentación",
+      "complete_control": "Control completo de documentos de carga",
+      "automated_management": "Gestión automatizada",
+      "realtime_tracking": "Seguimiento en tiempo real",
+      "detailed_reports": "Reportes detallados"
+    },
+    "stats": {
+      "active_loads": "Cargas Activas",
+      "total_revenue": "Ingresos Totales",
+      "completed_deliveries": "Entregas Completadas"
+    }
   },
   "history": {
     "title": "Historial de Estado",

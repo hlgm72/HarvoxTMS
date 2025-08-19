@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -24,6 +25,7 @@ interface PeriodFilterProps {
 }
 
 export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilterProps) {
+  const { t } = useTranslation('loads');
   const [open, setOpen] = useState(false);
   const { data: allPeriods = [] } = usePaymentPeriods();
   const { data: currentPeriod } = useCurrentPaymentPeriod();
@@ -82,23 +84,23 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
     switch (value.type) {
       case 'current':
         return currentPeriod 
-          ? `Período Actual (${formatPaymentPeriod(currentPeriod.period_start_date, currentPeriod.period_end_date)})`
-          : 'Período Actual';
+          ? `${t('periods.current')} (${formatPaymentPeriod(currentPeriod.period_start_date, currentPeriod.period_end_date)})`
+          : t('periods.current');
       case 'previous':
         return previousPeriod 
-          ? `Período Anterior (${formatPaymentPeriod(previousPeriod.period_start_date, previousPeriod.period_end_date)})`
-          : 'Período Anterior';
+          ? `${t('periods.previous')} (${formatPaymentPeriod(previousPeriod.period_start_date, previousPeriod.period_end_date)})`
+          : t('periods.previous');
       case 'next':
         return nextPeriod 
-          ? `Período Siguiente (${formatPaymentPeriod(nextPeriod.period_start_date, nextPeriod.period_end_date)})`
-          : 'Período Siguiente';
+          ? `${t('periods.next')} (${formatPaymentPeriod(nextPeriod.period_start_date, nextPeriod.period_end_date)})`
+          : t('periods.next');
       case 'all':
-        return 'Todos los períodos';
+        return t('periods.all');
       case 'specific':
         const selectedPeriod = allPeriods.find(p => p.id === value.periodId);
         return selectedPeriod 
           ? formatPaymentPeriod(selectedPeriod.period_start_date, selectedPeriod.period_end_date)
-          : 'Período específico';
+          : t('periods.specific');
       case 'this_month':
       case 'last_month':
       case 'this_quarter':
@@ -106,11 +108,11 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
       case 'this_year':
       case 'last_year':
         const dateRange = getDateRangeForType(value.type);
-        return dateRange?.label || 'Rango de fechas';
+        return dateRange?.label || t('periods.custom');
       case 'custom':
-        return value.label || 'Rango personalizado';
+        return value.label || t('periods.custom');
       default:
-        return 'Filtrar por período';
+        return t('periods.current');
     }
   };
 
@@ -211,7 +213,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 disabled={!previousPeriod}
               >
                 <Clock className="h-4 w-4 mr-2" />
-                Período Anterior
+                {t('periods.previous')}
                 {previousPeriod && (
                   <Badge variant="secondary" className="ml-auto text-[8px] md:text-[10px]">
                     {formatPaymentPeriodBadge(previousPeriod.period_start_date, previousPeriod.period_end_date)}
@@ -236,7 +238,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 }}
               >
                 <Clock className="h-4 w-4 mr-2" />
-                Período Actual
+                {t('periods.current')}
                 {currentPeriod && (
                   <Badge variant="secondary" className="ml-auto text-[8px] md:text-[10px]">
                     {formatPaymentPeriodBadge(currentPeriod.period_start_date, currentPeriod.period_end_date)}
@@ -260,7 +262,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 disabled={!nextPeriod}
               >
                 <Clock className="h-4 w-4 mr-2" />
-                Período Siguiente
+                {t('periods.next')}
                 {nextPeriod && (
                   <Badge variant="secondary" className="ml-auto text-[8px] md:text-[10px]">
                     {formatPaymentPeriodBadge(nextPeriod.period_start_date, nextPeriod.period_end_date)}
@@ -274,7 +276,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 onClick={() => handleOptionSelect({ type: 'all' })}
               >
                 <CalendarDays className="h-4 w-4 mr-2" />
-                Todos los períodos
+                {t('periods.all')}
                 <Badge variant="secondary" className="ml-auto text-xs">
                   {allPeriods.length}
                 </Badge>
@@ -291,7 +293,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 onClick={() => handleDateRangeSelect('this_month')}
               >
                 <TrendingUp className="h-4 w-4 mr-2" />
-                Este mes
+                 {t('periods.this_month')}
                 <Badge variant="secondary" className="ml-auto text-xs">
                   {formatMonthName(new Date())}
                 </Badge>
@@ -303,7 +305,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 onClick={() => handleDateRangeSelect('last_month')}
               >
                 <TrendingUp className="h-4 w-4 mr-2" />
-                Mes pasado
+                 {t('periods.last_month')}
                 <Badge variant="secondary" className="ml-auto text-xs">
                   {formatMonthName(subMonths(new Date(), 1))}
                 </Badge>
@@ -315,7 +317,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 onClick={() => handleDateRangeSelect('this_quarter')}
               >
                 <FileText className="h-4 w-4 mr-2" />
-                Este trimestre
+                 {t('periods.this_quarter')}
                 <Badge variant="secondary" className="ml-auto text-xs">
                   Q{Math.ceil((new Date().getMonth() + 1) / 3)}
                 </Badge>
@@ -327,7 +329,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 onClick={() => handleDateRangeSelect('last_quarter')}
               >
                 <FileText className="h-4 w-4 mr-2" />
-                Trimestre pasado
+                 {t('periods.last_quarter')}
                 <Badge variant="secondary" className="ml-auto text-xs">
                   Q{Math.ceil((subQuarters(new Date(), 1).getMonth() + 1) / 3)}
                 </Badge>
@@ -339,7 +341,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 onClick={() => handleDateRangeSelect('this_year')}
               >
                 <Calendar className="h-4 w-4 mr-2" />
-                Este año
+                 {t('periods.this_year')}
                 <Badge variant="secondary" className="ml-auto text-xs">
                   {new Date().getFullYear()}
                 </Badge>
@@ -351,7 +353,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 onClick={() => handleDateRangeSelect('last_year')}
               >
                 <Calendar className="h-4 w-4 mr-2" />
-                Año pasado
+                 {t('periods.last_year')}
                 <Badge variant="secondary" className="ml-auto text-xs">
                   {subYears(new Date(), 1).getFullYear()}
                 </Badge>

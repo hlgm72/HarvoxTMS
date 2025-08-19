@@ -83,9 +83,25 @@
     "apply": "Apply Filters"
   },
   "empty_state": {
-    "title": "No loads found",
-    "description": "No loads match your current filters or period",
-    "create_button": "Create First Load"
+    "title": "Start your load management",
+    "description": "Manage your loads efficiently with our comprehensive logistics management system",
+    "create_button": "Create First Load",
+    "features": {
+      "time_management": "Time Management",
+      "automatic_tracking": "Automatic pickup and delivery tracking",
+      "profitability": "Profitability",
+      "realtime_analysis": "Real-time margin analysis",
+      "documentation": "Documentation",
+      "complete_control": "Complete control of load documents",
+      "automated_management": "Automated management",
+      "realtime_tracking": "Real-time tracking",
+      "detailed_reports": "Detailed reports"
+    },
+    "stats": {
+      "active_loads": "Active Loads",
+      "total_revenue": "Total Revenue",
+      "completed_deliveries": "Completed Deliveries"
+    }
   },
   "history": {
     "title": "Status History",
