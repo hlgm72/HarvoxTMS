@@ -98,6 +98,8 @@
       "delivery_time_label": "Hora de Entrega",
       "date_label": "Fecha",
       "time_label": "Hora",
+      "hours_label": "Horas",
+      "minutes_label": "Minutos",
       "time_placeholder": "Seleccionar hora",
       "pod_label": "Subir POD (Proof of Delivery)",
       "file_selected": "Archivo seleccionado:",
