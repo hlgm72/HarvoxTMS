@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   Package, 
   MapPin, 
@@ -18,7 +19,8 @@ import {
   Route,
   ExternalLink,
   Calendar,
-  FileText
+  FileText,
+  Loader2
 } from "lucide-react";
 import { Link } from 'react-router-dom';
 import { useAuth } from "@/hooks/useAuth";
@@ -29,12 +31,10 @@ import { StatusUpdateModal } from './StatusUpdateModal';
 import { formatDateSafe, formatInternationalized, formatDateTimeAuto } from '@/lib/dateFormatting';
 import { useNavigationMaps } from '@/hooks/useNavigationMaps';
 import { useLoadStopsNavigation } from '@/hooks/useLoadStopsNavigation';
-import { Loader2 } from 'lucide-react';
 import { LoadDocumentStatusIndicator } from '@/components/loads/LoadDocumentStatusIndicator';
 import { LoadStatusHistoryButton } from '@/components/loads/LoadStatusHistoryButton';
 import { LoadDocumentsSection } from '@/components/loads/LoadDocumentsSection';
 import { LoadDocumentsProvider } from '@/contexts/LoadDocumentsContext';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface Load {
   id: string;
