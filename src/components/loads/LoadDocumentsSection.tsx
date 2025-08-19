@@ -94,7 +94,7 @@ const documentTypes = [
     type: 'load_order' as const,
     label: 'Load Order',
     shortLabel: 'Load Order',
-    description: 'Orden de carga generada automáticamente',
+    description: 'Orden de carga disponible',
     required: false,
     generated: true,
   },
