@@ -3750,6 +3750,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      reset_load_status_to_assigned: {
+        Args: { load_id_param: string }
+        Returns: Json
+      }
       restore_company_document: {
         Args: { document_id: string }
         Returns: Json
