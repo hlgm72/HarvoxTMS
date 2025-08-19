@@ -317,7 +317,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     <CardTitle className="text-lg font-semibold">
                       Load #{load.load_number}
                       <span className="text-sm font-normal text-muted-foreground ml-2">
-                        (PO#: {load.po_number || ''})
+                        (PO #{load.po_number || ''})
                       </span>
                     </CardTitle>
                     
