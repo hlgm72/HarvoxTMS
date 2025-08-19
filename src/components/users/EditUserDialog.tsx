@@ -161,6 +161,7 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
       showSuccess('Rol agregado correctamente');
       setNewRole('');
       loadUserRoles();
+      onSuccess?.(); // Notificar al componente padre para actualizar la lista
     } else {
       showError(result.error || 'Error al agregar el rol');
     }
@@ -180,6 +181,7 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
     if (result.success) {
       showSuccess('Rol eliminado correctamente');
       loadUserRoles();
+      onSuccess?.(); // Notificar al componente padre para actualizar la lista
     } else {
       showError(result.error || 'Error al eliminar el rol');
     }
