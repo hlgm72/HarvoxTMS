@@ -28,7 +28,7 @@ import { useLoads } from "@/hooks/useLoads";
 import { useUpdateLoadStatus } from "@/hooks/useUpdateLoadStatus";
 import { useFleetNotifications } from "@/components/notifications";
 import { StatusUpdateModal } from './StatusUpdateModal';
-import { formatDateSafe, formatInternationalized, formatDateTimeAuto } from '@/lib/dateFormatting';
+import { formatDateSafe, formatInternationalized, formatDateTimeAuto, formatDateTimeShort } from '@/lib/dateFormatting';
 import { useNavigationMaps } from '@/hooks/useNavigationMaps';
 import { useLoadStopsNavigation } from '@/hooks/useLoadStopsNavigation';
 import { LoadDocumentStatusIndicator } from '@/components/loads/LoadDocumentStatusIndicator';
@@ -537,7 +537,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                                  return (
                                    <>
                                      <Calendar className="h-3 w-3 inline mr-1" />
-                                     {prefix}{formatDateTimeAuto(load.latest_status_eta)}
+                                     {prefix}{formatDateTimeShort(load.latest_status_eta)}
                                    </>
                                  );
                                }

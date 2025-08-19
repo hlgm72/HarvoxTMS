@@ -338,6 +338,39 @@ export const formatDateTimeAuto = (dateInput: string | Date | null | undefined):
   }
 };
 
+export const formatDateTimeShort = (dateInput: string | Date | null | undefined): string => {
+  const language = getGlobalLanguage();
+  const locale = language === 'es' ? es : enUS;
+  const pattern = language === 'es' ? 'dd/MM HH:mm' : 'MM/dd HH:mm';
+  
+  if (!dateInput) return language === 'es' ? 'No definida' : 'Not defined';
+  
+  try {
+    // Obtener zona horaria del usuario
+    const userTimeZone = getUserTimeZone();
+    
+    // Si es un string, parsearlo como fecha ISO (UTC)
+    let date: Date;
+    if (typeof dateInput === 'string') {
+      date = new Date(dateInput);
+    } else {
+      date = dateInput;
+    }
+    
+    // Verificar que la fecha sea válida
+    if (!date || isNaN(date.getTime())) {
+      return language === 'es' ? 'Fecha inválida' : 'Invalid date';
+    }
+    
+    // Formatear en la zona horaria del usuario usando date-fns-tz
+    return formatInTimeZone(date, userTimeZone, pattern, { locale });
+  } catch (error) {
+    console.error('Error formatting datetime short:', error);
+    return language === 'es' ? 'Fecha inválida' : 'Invalid date';
+  }
+};
+
+
 /**
  * Convierte fecha de usuario a UTC para consultas a base de datos
  * Uso: Para filtros y búsquedas que necesitan enviar fecha en UTC
