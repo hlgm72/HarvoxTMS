@@ -8,6 +8,7 @@ import { useFleetNotifications } from '@/components/notifications';
 import { useTranslation } from 'react-i18next';
 import { useLoadWorkStatus } from '@/hooks/useLoadWorkStatus';
 import { validateDocumentAction } from '@/utils/loadDocumentValidation';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface LoadDocument {
   id: string;
@@ -76,78 +77,35 @@ export function LoadDocumentsList({
   userRole = 'admin'
 }: LoadDocumentsListProps) {
   const { t } = useTranslation(['common']);
-  const [documents, setDocuments] = useState<LoadDocument[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [forceRefresh, setForceRefresh] = useState(0);
   const { showError, showSuccess } = useFleetNotifications();
   const { data: workStatus } = useLoadWorkStatus(loadId);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    let mounted = true;
-    
-    const fetchDocuments = async () => {
-      if (!loadId) {
-        if (mounted) {
-          setIsLoading(false);
-        }
-        return;
-      }
+  // Use React Query to fetch documents (same query key as validation hook)
+  const { data: documents = [], isLoading, error } = useQuery({
+    queryKey: ['load-documents', loadId],
+    queryFn: async () => {
+      if (!loadId) return [];
       
-      try {
-        if (mounted) {
-          setIsLoading(true);
-        }
-        // Use the secure function to load documents (same as other components)
-        const { data, error } = await supabase.rpc('get_load_documents_with_validation', {
-          target_load_id: loadId
-        });
+      const { data, error } = await supabase.rpc('get_load_documents_with_validation', {
+        target_load_id: loadId
+      });
 
-        if (error) throw error;
-        
-        if (mounted) {
-          setDocuments(data || []);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        if (mounted) {
-          console.error('Error fetching load documents:', error);
-          setIsLoading(false);
-          showError(
-            "Error",
-            "No se pudieron cargar los documentos"
-          );
-        }
-      }
-    };
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!loadId,
+    staleTime: 10000, // 10 seconds
+    refetchOnWindowFocus: false
+  });
 
-    fetchDocuments();
-
-    // Configurar listener de tiempo real para actualizaciones de documentos
-    const channel = supabase
-      .channel(`load_documents_${loadId}_${refreshTrigger}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'load_documents',
-          filter: `load_id=eq.${loadId}`
-        },
-        (payload) => {
-          console.log('Document change detected:', payload);
-          // Refrescar documentos cuando haya cambios, pero solo si no estamos cargando
-          if (mounted) {
-            fetchDocuments();
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      mounted = false;
-      supabase.removeChannel(channel);
-    };
-  }, [loadId, refreshTrigger]); // Agregué refreshTrigger como dependencia
+  // Show error if query failed
+  useEffect(() => {
+    if (error) {
+      console.error('Error fetching load documents:', error);
+      showError("Error", "No se pudieron cargar los documentos");
+    }
+  }, [error, showError]);
 
   const handleDownload = async (doc: LoadDocument) => {
     try {
@@ -212,7 +170,9 @@ export function LoadDocumentsList({
       if (error) throw error;
       
       showSuccess("Documento eliminado exitosamente");
-      setForceRefresh(prev => prev + 1);
+      // Invalidate cache to refresh the list
+      queryClient.invalidateQueries({ queryKey: ['load-documents'] });
+      queryClient.invalidateQueries({ queryKey: ['load-document-validation'] });
     } catch (error) {
       console.error('Error deleting document:', error);
       showError("Error", "No se pudo eliminar el documento");
