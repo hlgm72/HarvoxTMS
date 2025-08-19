@@ -337,7 +337,9 @@
       "delete_document": "Delete document",
       "replace_document": "Replace document",
       "view_photo": "View photo",
-      "upload_photo": "Upload {{category}} photo"
+      "delete_photo": "Delete photo",
+      "upload_photo": "Upload {{category}} photo",
+      "view_status_history": "View status history"
     }
   },
   "stop": "Stop",

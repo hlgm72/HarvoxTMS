@@ -50,7 +50,7 @@ export function LoadStatusHistoryButton({
               {button}
             </TooltipTrigger>
             <TooltipContent>
-              <p>Ver historial de estados</p>
+              <p>{t('common:loads.tooltips.view_status_history')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
