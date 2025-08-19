@@ -853,7 +853,20 @@ const [uploading, setUploading] = useState<string | null>(null);
 
   const renderDocumentManagement = () => {
     // Get all documents except load_photos which has its own section
-    const allDocuments = [...documents, ...temporaryDocuments];
+    // Remove duplicates by merging documents and temporaryDocuments, prioritizing documents array
+    const documentMap = new Map<string, LoadDocument>();
+    
+    // Add temporary documents first
+    temporaryDocuments.forEach(doc => {
+      documentMap.set(doc.id, doc);
+    });
+    
+    // Add regular documents (will override temporaryDocuments if same id)
+    documents.forEach(doc => {
+      documentMap.set(doc.id, doc);
+    });
+    
+    const allDocuments = Array.from(documentMap.values());
     
     // Para conductores: si hay LO, no mostrar RC
     let filteredDocuments = allDocuments;
