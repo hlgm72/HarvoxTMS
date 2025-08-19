@@ -813,7 +813,7 @@ const [uploading, setUploading] = useState<string | null>(null);
           </div>
 
           {/* Preview Section - always on the right for optimal mobile layout */}
-          <div className="flex-shrink-0 w-16 sm:w-auto flex justify-center">
+          <div className="flex-shrink-0 w-16 sm:w-auto flex justify-center items-center">
             <DocumentPreview
               documentUrl={document.url}
               fileName={document.fileName}
