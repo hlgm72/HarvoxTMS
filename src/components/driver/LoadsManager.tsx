@@ -529,36 +529,15 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                          <div className="text-xs text-primary font-medium mt-0.5">
                            {(() => {
                               // Priorizar información del historial de estado más reciente
-                              if (load.latest_status_eta) {
-                                // Para ETAs del historial, usar directamente la hora guardada sin conversión de zona horaria
-                                const etaString = load.latest_status_eta;
-                                if (etaString.includes('T')) {
-                                  // Formato ISO: extraer fecha y hora directamente
-                                  const [datePart, timePart] = etaString.split('T');
-                                  const [year, month, day] = datePart.split('-');
-                                  const [time] = timePart.split('+'); // Remover parte de zona horaria
-                                  const [hour, minute] = time.split(':');
-                                  
-                                  const language = i18n.language;
-                                  const dateShort = language === 'es' ? `${day}/${month}` : `${month}/${day}`;
-                                  const timeShort = `${hour}:${minute}`;
-                                  
-                                  // Solo mostrar "ETA:" cuando se está yendo hacia un lugar (en_route)
-                                  const showETA = load.status === 'en_route_pickup' || load.status === 'en_route_delivery';
-                                  const prefix = showETA ? 'ETA: ' : '';
-                                  
-                                  return (
-                                    <>
-                                      <Calendar className="h-3 w-3 inline mr-1" />
-                                      {prefix}{dateShort} {timeShort}
-                                    </>
-                                   );
-                                 }
-                                 // Fallback para otros formatos
+                               if (load.latest_status_eta) {
+                                 // Solo mostrar "ETA:" cuando se está yendo hacia un lugar (en_route)
+                                 const showETA = load.status === 'en_route_pickup' || load.status === 'en_route_delivery';
+                                 const prefix = showETA ? 'ETA: ' : '';
+                                 
                                  return (
                                    <>
                                      <Calendar className="h-3 w-3 inline mr-1" />
-                                     {formatDateTimeAuto(load.latest_status_eta)}
+                                     {prefix}{formatDateTimeAuto(load.latest_status_eta)}
                                    </>
                                  );
                                }
