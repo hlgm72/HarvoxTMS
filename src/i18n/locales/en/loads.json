@@ -27,6 +27,21 @@
     "custom": "Custom Range",
     "selected": "Selected Period"
   },
+  "period_filter": {
+    "quick_filters": "Quick Filters",
+    "by_dates": "By Dates", 
+    "open_periods": "Open Periods",
+    "processing": "Processing",
+    "historical_periods": "Historical Periods",
+    "more_periods": "more periods",
+    "status": {
+      "open": "Open",
+      "processing": "Processing", 
+      "closed": "Closed",
+      "paid": "Paid",
+      "locked": "Locked"
+    }
+  },
   "status": {
     "created": "Created",
     "route_planned": "Route Planned",

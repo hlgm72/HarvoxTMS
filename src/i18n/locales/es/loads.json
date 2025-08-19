@@ -27,6 +27,21 @@
     "custom": "Rango Personalizado",
     "selected": "Período Seleccionado"
   },
+  "period_filter": {
+    "quick_filters": "Filtros rápidos",
+    "by_dates": "Por fechas",
+    "open_periods": "Períodos Abiertos", 
+    "processing": "En Procesamiento",
+    "historical_periods": "Períodos Históricos",
+    "more_periods": "períodos más",
+    "status": {
+      "open": "Abierto",
+      "processing": "Procesando",
+      "closed": "Cerrado", 
+      "paid": "Pagado",
+      "locked": "Bloqueado"
+    }
+  },
   "status": {
     "created": "Creada",
     "route_planned": "Ruta Planificada",

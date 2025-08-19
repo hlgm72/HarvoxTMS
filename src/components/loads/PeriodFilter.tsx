@@ -40,40 +40,40 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         return {
            startDate: formatDateInUserTimeZone(startOfMonth(now)),
            endDate: formatDateInUserTimeZone(endOfMonth(now)),
-          label: `Este mes (${formatMonthName(now)} ${now.getFullYear()})`
+          label: `${t('periods.this_month')} (${formatMonthName(now)} ${now.getFullYear()})`
         };
       case 'last_month':
         const lastMonth = subMonths(now, 1);
         return {
            startDate: formatDateInUserTimeZone(startOfMonth(lastMonth)),
            endDate: formatDateInUserTimeZone(endOfMonth(lastMonth)),
-          label: `Mes pasado (${formatMonthName(lastMonth)} ${lastMonth.getFullYear()})`
+          label: `${t('periods.last_month')} (${formatMonthName(lastMonth)} ${lastMonth.getFullYear()})`
         };
       case 'this_quarter':
         return {
            startDate: formatDateInUserTimeZone(startOfQuarter(now)),
            endDate: formatDateInUserTimeZone(endOfQuarter(now)),
-          label: `Este trimestre (Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()})`
+          label: `${t('periods.this_quarter')} (Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()})`
         };
       case 'last_quarter':
         const lastQuarter = subQuarters(now, 1);
         return {
            startDate: formatDateInUserTimeZone(startOfQuarter(lastQuarter)),
            endDate: formatDateInUserTimeZone(endOfQuarter(lastQuarter)),
-          label: `Trimestre pasado (Q${Math.ceil((lastQuarter.getMonth() + 1) / 3)} ${lastQuarter.getFullYear()})`
+          label: `${t('periods.last_quarter')} (Q${Math.ceil((lastQuarter.getMonth() + 1) / 3)} ${lastQuarter.getFullYear()})`
         };
       case 'this_year':
         return {
            startDate: formatDateInUserTimeZone(startOfYear(now)),
            endDate: formatDateInUserTimeZone(endOfYear(now)),
-          label: `Este año (${now.getFullYear()})`
+          label: `${t('periods.this_year')} (${now.getFullYear()})`
         };
       case 'last_year':
         const lastYear = subYears(now, 1);
         return {
            startDate: formatDateInUserTimeZone(startOfYear(lastYear)),
            endDate: formatDateInUserTimeZone(endOfYear(lastYear)),
-          label: `Año pasado (${lastYear.getFullYear()})`
+          label: `${t('periods.last_year')} (${lastYear.getFullYear()})`
         };
       default:
         return null;
@@ -135,11 +135,11 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'open': return 'Abierto';
-      case 'processing': return 'Procesando';
-      case 'closed': return 'Cerrado';
-      case 'paid': return 'Pagado';
-      case 'locked': return 'Bloqueado';
+      case 'open': return t('period_filter.status.open');
+      case 'processing': return t('period_filter.status.processing');
+      case 'closed': return t('period_filter.status.closed');
+      case 'paid': return t('period_filter.status.paid');
+      case 'locked': return t('period_filter.status.locked');
       default: return status;
     }
   };
@@ -195,7 +195,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           <div className="p-4 space-y-4">
             {/* Opciones rápidas */}
             <div className="space-y-2">
-              <h4 className="font-medium text-sm text-muted-foreground">Filtros rápidos</h4>
+              <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.quick_filters')}</h4>
               
               <Button
                 variant={value.type === 'previous' ? 'default' : 'ghost'}
@@ -285,7 +285,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
 
             {/* Filtros por fechas inteligentes */}
             <div className="space-y-2">
-              <h4 className="font-medium text-sm text-muted-foreground">Por fechas</h4>
+              <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.by_dates')}</h4>
               
               <Button
                 variant={value.type === 'this_month' ? 'default' : 'ghost'}
@@ -363,7 +363,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             {/* Períodos abiertos */}
             {openPeriods.length > 0 && (
               <div className="space-y-2">
-                <h4 className="font-medium text-sm text-muted-foreground">Períodos Abiertos</h4>
+                <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.open_periods')}</h4>
                 {openPeriods.slice(0, 3).map((period) => (
                   <Button
                     key={period.id}
@@ -391,7 +391,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 ))}
                 {openPeriods.length > 3 && (
                   <div className="text-xs text-muted-foreground text-center">
-                    +{openPeriods.length - 3} períodos más
+                    +{openPeriods.length - 3} {t('period_filter.more_periods')}
                   </div>
                 )}
               </div>
@@ -400,7 +400,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             {/* Períodos en procesamiento */}
             {processingPeriods.length > 0 && (
               <div className="space-y-2">
-                <h4 className="font-medium text-sm text-muted-foreground">En Procesamiento</h4>
+                <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.processing')}</h4>
                 {processingPeriods.slice(0, 2).map((period) => (
                   <Button
                     key={period.id}
@@ -432,7 +432,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             {/* Períodos históricos */}
             {otherPeriods.length > 0 && (
               <div className="space-y-2">
-                <h4 className="font-medium text-sm text-muted-foreground">Períodos Históricos</h4>
+                <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.historical_periods')}</h4>
                 {otherPeriods.slice(0, 2).map((period) => (
                   <Button
                     key={period.id}
@@ -460,7 +460,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 ))}
                 {otherPeriods.length > 2 && (
                   <div className="text-xs text-muted-foreground text-center">
-                    +{otherPeriods.length - 2} períodos más
+                    +{otherPeriods.length - 2} {t('period_filter.more_periods')}
                   </div>
                 )}
               </div>
