@@ -129,6 +129,7 @@ const mockLoads = [
 ];
 
 const statusColors = {
+  draft: "bg-gray-100 text-gray-700 border-gray-300",
   created: "bg-slate-100 text-slate-700 border-slate-300",
   route_planned: "bg-blue-100 text-blue-700 border-blue-300",
   assigned: "bg-yellow-100 text-yellow-700 border-yellow-300",
@@ -138,7 +139,18 @@ const statusColors = {
 };
 
 const getStatusLabel = (status: string, t: any) => {
-  return t(`status.${status}`) || status;
+  // Map specific statuses to proper labels
+  const statusMap: Record<string, string> = {
+    draft: "Borrador",
+    created: "Creado", 
+    assigned: "Asignado",
+    route_planned: "Ruta Planificada",
+    in_transit: "En Tránsito",
+    delivered: "Entregado",
+    completed: "Completado"
+  };
+  
+  return statusMap[status] || t(`status.${status}`) || status;
 };
 
 interface LoadsListProps {

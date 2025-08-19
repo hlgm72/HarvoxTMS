@@ -102,6 +102,8 @@ export const useLoadDocumentUploadFlowACID = () => {
       bucketName?: string;
     }) => {
       console.log('🔄 Starting complete load document upload ACID flow...', { file, documentData });
+      console.log('📁 documentData.load_id:', documentData.load_id);
+      console.log('📁 documentData.document_type:', documentData.document_type);
 
       // 1. Generate consistent file path for document type (allows replacement)
       const fileExt = file.name.split('.').pop();
