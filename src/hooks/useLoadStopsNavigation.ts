@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface LoadStop {
   id?: string;
@@ -32,7 +33,9 @@ interface NextStopInfo {
   isLastDelivery?: boolean; // Nueva propiedad para indicar si es la última entrega
 }
 
-export function useLoadStopsNavigation(load: LoadWithStops) {
+export const useLoadStopsNavigation = (load: LoadWithStops) => {
+  const { t } = useTranslation(['common']);
+  
   const nextStopInfo = useMemo((): NextStopInfo | null => {
     if (!load.stops || load.stops.length === 0) {
       return null;
@@ -50,21 +53,21 @@ export function useLoadStopsNavigation(load: LoadWithStops) {
       case 'assigned':
         // Ir a la primera parada (primer pickup)
         nextStop = sortedStops.find(stop => stop.stop_type === 'pickup') || sortedStops[0];
-        actionText = 'Camino a recoger';
+        actionText = t('common:loads.actions.en_route_pickup');
         nextStatus = 'en_route_pickup';
         break;
 
       case 'en_route_pickup':
         // Llegar a la parada de recogida actual
         nextStop = sortedStops.find(stop => stop.stop_type === 'pickup') || sortedStops[0];
-        actionText = 'Llegué a recogida';
+        actionText = t('common:loads.actions.at_pickup');
         nextStatus = 'at_pickup';
         break;
 
       case 'at_pickup':
         // Cargar mercancía y continuar
         nextStop = sortedStops.find(stop => stop.stop_type === 'pickup') || sortedStops[0];
-        actionText = 'Recogida completada';
+        actionText = t('common:loads.actions.loaded');
         nextStatus = 'loaded';
         break;
 
@@ -75,13 +78,13 @@ export function useLoadStopsNavigation(load: LoadWithStops) {
         
         if (nextPickup) {
           nextStop = nextPickup;
-          actionText = 'Camino a recoger';
+          actionText = t('common:loads.actions.en_route_pickup');
           nextStatus = 'en_route_pickup';
         } else {
           // No hay más pickups, ir a primera entrega
           nextStop = sortedStops.find(stop => stop.stop_type === 'delivery');
           if (nextStop) {
-            actionText = 'Camino a entregar';
+            actionText = t('common:loads.actions.en_route_delivery');
             nextStatus = 'en_route_delivery';
           }
         }
@@ -91,7 +94,7 @@ export function useLoadStopsNavigation(load: LoadWithStops) {
         // Llegar a la parada de entrega actual
         nextStop = sortedStops.find(stop => stop.stop_type === 'delivery');
         if (nextStop) {
-          actionText = 'Llegué a entrega';
+          actionText = t('common:loads.actions.at_delivery');
           nextStatus = 'at_delivery';
         }
         break;
@@ -108,12 +111,12 @@ export function useLoadStopsNavigation(load: LoadWithStops) {
           
           if (nextDelivery) {
             nextStop = nextDelivery;
-            actionText = 'Camino a entregar';
+            actionText = t('common:loads.actions.en_route_delivery');
             nextStatus = 'en_route_delivery';
           } else {
             // Última entrega - verificar POD
             nextStop = currentDeliveryStop;
-            actionText = 'Entrega completada';
+            actionText = t('common:loads.actions.delivered');
             nextStatus = 'delivered';
           }
         }
@@ -139,7 +142,7 @@ export function useLoadStopsNavigation(load: LoadWithStops) {
       requiresPOD: isLastDelivery,
       isLastDelivery
     };
-  }, [load.status, load.stops]);
+  }, [load.status, load.stops, t]);
 
   return {
     nextStopInfo,

@@ -316,7 +316,17 @@
   "loads": {
     "load": "load",
     "load_plural": "loads",
-    "my_loads": "My Loads"
+    "my_loads": "My Loads",
+    "actions": {
+      "en_route_pickup": "En route to pickup",
+      "at_pickup": "Arrived at pickup",
+      "loaded": "Pickup completed",
+      "en_route_delivery": "En route to delivery",
+      "at_delivery": "Arrived at delivery",
+      "delivered": "Delivery completed",
+      "continue": "Continue",
+      "upload_pod": "Upload POD"
+    }
   },
   "stop": "Stop",
   "active": "active",

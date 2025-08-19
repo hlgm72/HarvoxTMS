@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { useLoadStopsNavigation } from '@/hooks/useLoadStopsNavigation';
+import { useTranslation } from 'react-i18next';
 
 interface LoadActionButtonProps {
   load: {
@@ -29,6 +30,7 @@ interface LoadActionButtonProps {
 }
 
 export function LoadActionButton({ load, onUpdateStatus, isPending }: LoadActionButtonProps) {
+  const { t } = useTranslation(['common']);
   const { nextStopInfo, hasNextAction } = useLoadStopsNavigation(load);
 
   // Fallback para la lógica anterior si no hay paradas definidas
@@ -46,13 +48,13 @@ export function LoadActionButton({ load, onUpdateStatus, isPending }: LoadAction
 
   const getFallbackText = (status: string): string => {
     switch (status) {
-      case 'en_route_pickup': return 'Camino a recoger';
-      case 'at_pickup': return 'Llegué a recogida';
-      case 'loaded': return 'Recogida completada';
-      case 'en_route_delivery': return 'Camino a entregar';
-      case 'at_delivery': return 'Llegué a entrega';
-      case 'delivered': return 'Entrega completada';
-      default: return 'Continuar';
+      case 'en_route_pickup': return t('common:loads.actions.en_route_pickup');
+      case 'at_pickup': return t('common:loads.actions.at_pickup');
+      case 'loaded': return t('common:loads.actions.loaded');
+      case 'en_route_delivery': return t('common:loads.actions.en_route_delivery');
+      case 'at_delivery': return t('common:loads.actions.at_delivery');
+      case 'delivered': return t('common:loads.actions.delivered');
+      default: return t('common:loads.actions.continue');
     }
   };
 

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, Upload } from "lucide-react";
 import { useLoadStopsNavigation } from '@/hooks/useLoadStopsNavigation';
 import { useLoadDocumentValidation } from '@/hooks/useLoadDocumentValidation';
+import { useTranslation } from 'react-i18next';
 
 interface LoadActionButtonWithPODProps {
   load: {
@@ -36,6 +37,7 @@ export function LoadActionButtonWithPOD({
   onUploadPOD, 
   isPending 
 }: LoadActionButtonWithPODProps) {
+  const { t } = useTranslation(['common']);
   const { nextStopInfo, hasNextAction } = useLoadStopsNavigation(load);
   const { data: documentValidation } = useLoadDocumentValidation(load.id);
 
@@ -54,13 +56,13 @@ export function LoadActionButtonWithPOD({
 
   const getFallbackText = (status: string): string => {
     switch (status) {
-      case 'en_route_pickup': return 'Camino a recoger';
-      case 'at_pickup': return 'Llegué a recogida';
-      case 'loaded': return 'Recogida completada';
-      case 'en_route_delivery': return 'Camino a entregar';
-      case 'at_delivery': return 'Llegué a entrega';
-      case 'delivered': return 'Entrega completada';
-      default: return 'Continuar';
+      case 'en_route_pickup': return t('common:loads.actions.en_route_pickup');
+      case 'at_pickup': return t('common:loads.actions.at_pickup');
+      case 'loaded': return t('common:loads.actions.loaded');
+      case 'en_route_delivery': return t('common:loads.actions.en_route_delivery');
+      case 'at_delivery': return t('common:loads.actions.at_delivery');
+      case 'delivered': return t('common:loads.actions.delivered');
+      default: return t('common:loads.actions.continue');
     }
   };
 
@@ -77,7 +79,7 @@ export function LoadActionButtonWithPOD({
           variant="default"
         >
           <Upload className="h-4 w-4 mr-2" />
-          Subir POD
+          {t('common:loads.actions.upload_pod')}
         </Button>
       );
     }
@@ -118,7 +120,7 @@ export function LoadActionButtonWithPOD({
         variant="default"
       >
         <Upload className="h-4 w-4 mr-2" />
-        Subir POD
+        {t('common:loads.actions.upload_pod')}
       </Button>
     );
   }

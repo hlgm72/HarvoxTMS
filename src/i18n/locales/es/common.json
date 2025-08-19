@@ -316,7 +316,17 @@
   "loads": {
     "load": "carga",
     "load_plural": "cargas",
-    "my_loads": "Mis Cargas"
+    "my_loads": "Mis Cargas",
+    "actions": {
+      "en_route_pickup": "Camino a recoger",
+      "at_pickup": "Llegué a recogida",
+      "loaded": "Recogida completada",
+      "en_route_delivery": "Camino a entregar",
+      "at_delivery": "Llegué a entrega",
+      "delivered": "Entrega completada",
+      "continue": "Continuar",
+      "upload_pod": "Subir POD"
+    }
   },
   "stop": "Parada",
   "active": "activa",
