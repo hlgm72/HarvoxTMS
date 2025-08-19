@@ -21,6 +21,7 @@ import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from "@/integrations/supabase/client";
 import { createPhoneHandlers, handleTextBlur } from '@/lib/textUtils';
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRoles } from "@/hooks/useUserRoles";
 import { X } from "lucide-react";
 
 interface User {
@@ -60,6 +61,7 @@ const STATUS_OPTIONS = [
 export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDialogProps) {
   const { showSuccess, showError } = useFleetNotifications();
   const { userRole } = useAuth();
+  const { assignRole, removeRole, loading: rolesLoading } = useUserRoles();
   const [loading, setLoading] = useState(false);
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [newRole, setNewRole] = useState<string>('');
@@ -155,27 +157,14 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
       return;
     }
 
-    setLoading(true);
-    try {
-      const { error } = await supabase
-        .from('user_company_roles')
-        .insert({
-          user_id: user.id,
-          company_id: userRole.company_id,
-          role: newRole as any,
-          is_active: true,
-        });
-
-      if (error) throw error;
-
+    const result = await assignRole(user.id, userRole.company_id, newRole as any);
+    
+    if (result.success) {
       showSuccess('Rol agregado correctamente');
       setNewRole('');
       loadUserRoles();
-    } catch (error) {
-      console.error('Error adding role:', error);
-      showError('Error al agregar el rol');
-    } finally {
-      setLoading(false);
+    } else {
+      showError(result.error || 'Error al agregar el rol');
     }
   };
 
@@ -188,24 +177,13 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
       return;
     }
 
-    setLoading(true);
-    try {
-      const { error } = await supabase
-        .from('user_company_roles')
-        .update({ is_active: false })
-        .eq('user_id', user.id)
-        .eq('company_id', userRole.company_id)
-        .eq('role', roleToRemove as any);
-
-      if (error) throw error;
-
+    const result = await removeRole(user.id, userRole.company_id, roleToRemove as any);
+    
+    if (result.success) {
       showSuccess('Rol eliminado correctamente');
       loadUserRoles();
-    } catch (error) {
-      console.error('Error removing role:', error);
-      showError('Error al eliminar el rol');
-    } finally {
-      setLoading(false);
+    } else {
+      showError(result.error || 'Error al eliminar el rol');
     }
   };
 
@@ -354,7 +332,7 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
                       'driver': { 
                         label: '🚛 Driver', 
                         variant: 'default',
-                        className: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-700'
+                        className: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-700'
                       },
                       'multi_company_dispatcher': { 
                         label: '🏢 Multi-Company Dispatcher', 
@@ -384,7 +362,7 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
                       {userRoles.length > 1 && (
                         <button
                           onClick={() => handleRemoveRole(role)}
-                          disabled={loading}
+                          disabled={loading || rolesLoading}
                           className="ml-1 text-xs hover:text-destructive"
                         >
                           <X className="h-3 w-3" />
@@ -418,7 +396,7 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
                   </Select>
                   <Button 
                     onClick={handleAddRole}
-                    disabled={!newRole || loading}
+                    disabled={!newRole || loading || rolesLoading}
                   >
                     Agregar
                   </Button>
@@ -432,8 +410,8 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
-          <Button onClick={handleSaveProfile} disabled={loading}>
-            {loading ? 'Guardando...' : 'Guardar Cambios'}
+          <Button onClick={handleSaveProfile} disabled={loading || rolesLoading}>
+            {loading || rolesLoading ? 'Guardando...' : 'Guardar Cambios'}
           </Button>
         </div>
       </DialogContent>
