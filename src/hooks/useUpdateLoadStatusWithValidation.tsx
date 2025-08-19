@@ -146,6 +146,8 @@ export const useUpdateLoadStatusWithValidation = () => {
       queryClient.invalidateQueries({ queryKey: ['loads'] });
       queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['load-document-validation', params.loadId] });
+      // Invalidar el historial de estados para esta carga específica
+      queryClient.invalidateQueries({ queryKey: ['load-status-history', params.loadId] });
       
       showSuccess('Estado de carga actualizado exitosamente');
     },
