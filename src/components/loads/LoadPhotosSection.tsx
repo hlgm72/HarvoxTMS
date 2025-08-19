@@ -1,11 +1,13 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Camera, Upload, Eye, Trash2, ImageIcon, Loader2 } from 'lucide-react';
 import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
 
 interface LoadPhotoDocument {
   id: string;
@@ -35,6 +37,7 @@ export function LoadPhotosSection({
   user,
   onReloadDocuments
 }: LoadPhotosSectionProps) {
+  const { t } = useTranslation(['common']);
   const [uploading, setUploading] = useState<string | null>(null);
   const [removing, setRemoving] = useState<Set<string>>(new Set());
   const [selectedCategory, setSelectedCategory] = useState<'pickup' | 'delivery'>('pickup');
@@ -281,27 +284,44 @@ export function LoadPhotosSection({
                   </div>
                  )}
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  className="h-7 w-7 p-0"
-                  onClick={() => handleViewPhoto(photo)}
-                  title="Ver foto"
-                >
-                  <Eye className="h-3 w-3" />
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="h-7 w-7 p-0"
+                        onClick={() => handleViewPhoto(photo)}
+                      >
+                        <Eye className="h-3 w-3" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{t('common:loads.tooltips.view_photo')}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
                 <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      className="h-7 w-7 p-0"
-                      disabled={removing.has(photo.id)}
-                      title="Eliminar foto"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </AlertDialogTrigger>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="h-7 w-7 p-0"
+                            disabled={removing.has(photo.id)}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </AlertDialogTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{t('common:loads.tooltips.delete_photo')}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>¿Eliminar foto?</AlertDialogTitle>
@@ -335,7 +355,7 @@ export function LoadPhotosSection({
             key={`empty-${index}`} 
             className="aspect-square border border-dashed border-border/40 rounded-lg flex items-center justify-center bg-muted/10 group cursor-pointer hover:bg-muted/20 transition-colors"
             onClick={() => triggerFileUpload(category)}
-            title={`Subir foto de ${category === 'pickup' ? 'recogida' : 'entrega'}`}
+            title={t('common:loads.tooltips.upload_photo', { category: category === 'pickup' ? 'recogida' : 'entrega' })}
           >
             <div className="flex items-center justify-center">
               <ImageIcon className="h-6 w-6 text-muted-foreground group-hover:hidden" />

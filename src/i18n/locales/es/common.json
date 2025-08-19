@@ -331,7 +331,13 @@
       "view_all_loads": "Ver todas las cargas asignadas",
       "view_documents": "Ver documentos de la carga",
       "call_contact": "Llamar al contacto",
-      "view_route": "Ver ruta en mapa"
+      "view_route": "Ver ruta en mapa",
+      "view_document": "Ver documento",
+      "download_document": "Descargar documento",
+      "delete_document": "Eliminar documento",
+      "replace_document": "Reemplazar documento",
+      "view_photo": "Ver foto",
+      "upload_photo": "Subir foto de {{category}}"
     }
   },
   "stop": "Parada",

@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { FileText, Download, Eye, Loader2, Trash2 } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
+import { useTranslation } from 'react-i18next';
 import { useLoadWorkStatus } from '@/hooks/useLoadWorkStatus';
 import { validateDocumentAction } from '@/utils/loadDocumentValidation';
 
@@ -74,6 +75,7 @@ export function LoadDocumentsList({
   driverView = false,
   userRole = 'admin'
 }: LoadDocumentsListProps) {
+  const { t } = useTranslation(['common']);
   const [documents, setDocuments] = useState<LoadDocument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [forceRefresh, setForceRefresh] = useState(0);
@@ -336,39 +338,65 @@ export function LoadDocumentsList({
             </Tooltip>
            {showActions && (
             <div className="flex gap-0.5">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-5 w-5 p-0"
-                onClick={() => handleView(document)}
-                title="Ver documento"
-              >
-                <Eye className="h-2.5 w-2.5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-5 w-5 p-0"
-                onClick={() => handleDownload(document)}
-                title="Descargar documento"
-              >
-                <Download className="h-2.5 w-2.5" />
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-5 w-5 p-0"
+                      onClick={() => handleView(document)}
+                    >
+                      <Eye className="h-2.5 w-2.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{t('common:loads.tooltips.view_document')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-5 w-5 p-0"
+                      onClick={() => handleDownload(document)}
+                    >
+                      <Download className="h-2.5 w-2.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{t('common:loads.tooltips.download_document')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               {showDeleteButton && workStatus && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-5 w-5 p-0 text-destructive hover:text-destructive"
-                  onClick={() => handleDelete(document)}
-                  title={
-                    validateDocumentAction(document.document_type, workStatus.currentStatus, 'delete').canDelete
-                      ? "Eliminar documento"
-                      : validateDocumentAction(document.document_type, workStatus.currentStatus, 'delete').reason
-                  }
-                  disabled={!validateDocumentAction(document.document_type, workStatus.currentStatus, 'delete').canDelete}
-                >
-                  <Trash2 className="h-2.5 w-2.5" />
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-5 w-5 p-0 text-destructive hover:text-destructive"
+                        onClick={() => handleDelete(document)}
+                        disabled={!validateDocumentAction(document.document_type, workStatus.currentStatus, 'delete').canDelete}
+                      >
+                        <Trash2 className="h-2.5 w-2.5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        {validateDocumentAction(document.document_type, workStatus.currentStatus, 'delete').canDelete
+                          ? t('common:loads.tooltips.delete_document')
+                          : validateDocumentAction(document.document_type, workStatus.currentStatus, 'delete').reason
+                        }
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               )}
             </div>
           )}

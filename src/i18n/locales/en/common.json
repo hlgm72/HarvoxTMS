@@ -331,7 +331,13 @@
       "view_all_loads": "View all assigned loads",
       "view_documents": "View load documents",
       "call_contact": "Call contact",
-      "view_route": "View route on map"
+      "view_route": "View route on map",
+      "view_document": "View document",
+      "download_document": "Download document",
+      "delete_document": "Delete document",
+      "replace_document": "Replace document",
+      "view_photo": "View photo",
+      "upload_photo": "Upload {{category}} photo"
     }
   },
   "stop": "Stop",
