@@ -16,7 +16,7 @@ interface LoadDocumentManagementProps {
   loadStatus: string;
   onUploadDocument?: () => void;
   onRegenerateLoadOrder?: () => void;
-  userRole?: 'admin' | 'driver';
+  userRole?: 'admin' | 'dispatcher' | 'driver';
 }
 
 export function LoadDocumentManagement({ 
@@ -66,12 +66,13 @@ export function LoadDocumentManagement({
 
   const isLoadClosed = loadStatus === 'delivered_completed' || loadStatus === 'closed';
   const isDriver = userRole === 'driver';
+  const isAdminOrDispatcher = userRole === 'admin' || userRole === 'dispatcher';
   
-  // Driver restrictions
-  const canUploadRC = !isDriver && !isLoadClosed; // Solo admins pueden subir RC
-  const canUploadLO = !isDriver && !isLoadClosed; // Solo admins pueden generar LO
-  const canReplaceRC = !isDriver && workStatus.canReplaceRateConfirmation && !isLoadClosed;
-  const canRegenerateLO = !isDriver && workStatus.canRegenerateLoadOrder && !isLoadClosed;
+  // Permission restrictions
+  const canUploadRC = isAdminOrDispatcher && !isLoadClosed; // Admins y dispatchers pueden subir RC
+  const canUploadLO = isAdminOrDispatcher && !isLoadClosed; // Admins y dispatchers pueden generar LO
+  const canReplaceRC = isAdminOrDispatcher && workStatus.canReplaceRateConfirmation && !isLoadClosed;
+  const canRegenerateLO = isAdminOrDispatcher && workStatus.canRegenerateLoadOrder && !isLoadClosed;
 
   return (
     <div className="space-y-4">
@@ -110,8 +111,8 @@ export function LoadDocumentManagement({
         </CardContent>
       </Card>
 
-      {/* Document Actions - Only show for admins */}
-      {!isDriver && (
+      {/* Document Actions - Show for admins and dispatchers */}
+      {isAdminOrDispatcher && (
         <Card>
           <CardHeader>
             <CardTitle className="text-base">{t('documents.actions_title')}</CardTitle>
@@ -252,7 +253,7 @@ export function LoadDocumentManagement({
       </Card>
 
       {/* Protection Warnings */}
-      {workStatus.isInProgress && !isDriver && (
+      {workStatus.isInProgress && isAdminOrDispatcher && (
         <Card className="border-warning/20 bg-warning/5">
           <CardContent className="py-4">
              <div className="flex items-center gap-2 text-warning">

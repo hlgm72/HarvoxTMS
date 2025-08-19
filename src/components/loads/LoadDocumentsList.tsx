@@ -26,7 +26,7 @@ interface LoadDocumentsListProps {
   refreshTrigger?: number;
   showDeleteButton?: boolean;
   driverView?: boolean;
-  userRole?: 'admin' | 'driver';
+  userRole?: 'admin' | 'dispatcher' | 'driver';
 }
 
 const documentTypeLabels: Record<string, string> = {
