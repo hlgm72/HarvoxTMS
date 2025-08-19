@@ -639,7 +639,7 @@ const [uploading, setUploading] = useState<string | null>(null);
             <div className="flex items-start justify-between gap-1">
               <div className="flex items-center gap-1.5 min-w-0">
                 <FileText className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                <span className="font-medium text-xs sm:text-sm truncate">{docType.label}</span>
+                <span className="font-medium text-sm sm:text-base truncate">{docType.label}</span>
               </div>
               <div className="flex items-center gap-0.5 flex-shrink-0">
                 {docType.required && <Badge variant="destructive" className="text-[8px] sm:text-[10px] h-3 sm:h-4 px-0.5 sm:px-1">Requerido</Badge>}
@@ -652,7 +652,7 @@ const [uploading, setUploading] = useState<string | null>(null);
 
             {/* File name */}
             <div className="min-h-[14px]">
-              <span className="text-[10px] sm:text-xs font-medium text-foreground truncate block">{document.fileName}</span>
+              <span className="text-xs sm:text-sm font-medium text-foreground truncate block">{document.fileName}</span>
             </div>
 
             {/* Action buttons */}
