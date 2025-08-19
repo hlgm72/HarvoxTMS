@@ -22,6 +22,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { createPhoneHandlers, handleTextBlur } from '@/lib/textUtils';
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRoles } from "@/hooks/useUserRoles";
+import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 
 interface User {
@@ -60,6 +61,7 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
   const { showSuccess, showError } = useFleetNotifications();
   const { userRole } = useAuth();
   const { assignRole, removeRole, loading: rolesLoading } = useUserRoles();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [newRole, setNewRole] = useState<string>('');
@@ -161,7 +163,9 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
       showSuccess('Rol agregado correctamente');
       setNewRole('');
       loadUserRoles();
-      onSuccess?.(); // Notificar al componente padre para actualizar la lista
+      // Invalidar cache y notificar al componente padre
+      queryClient.invalidateQueries({ queryKey: ['user_company_roles'] });
+      onSuccess?.(); 
     } else {
       showError(result.error || 'Error al agregar el rol');
     }
@@ -181,7 +185,9 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
     if (result.success) {
       showSuccess('Rol eliminado correctamente');
       loadUserRoles();
-      onSuccess?.(); // Notificar al componente padre para actualizar la lista
+      // Invalidar cache y notificar al componente padre
+      queryClient.invalidateQueries({ queryKey: ['user_company_roles'] });
+      onSuccess?.(); 
     } else {
       showError(result.error || 'Error al eliminar el rol');
     }
