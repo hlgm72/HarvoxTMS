@@ -51,14 +51,28 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
 
   // Handler personalizado para el input de tiempo que fuerza formato 24h
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const timeValue = e.target.value;
+    let timeValue = e.target.value;
     console.log('🕐 handleTimeChange - Valor recibido del input:', timeValue);
     
-    // Validar que el formato sea HH:MM y esté en rango 24h
-    const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-    if (timeValue && !timeRegex.test(timeValue)) {
-      console.warn('⚠️ Formato de hora inválido:', timeValue);
-      return;
+    // Remover caracteres no válidos (solo números y :)
+    timeValue = timeValue.replace(/[^0-9:]/g, '');
+    
+    // Auto-formatear mientras se escribe
+    if (timeValue.length === 2 && !timeValue.includes(':')) {
+      timeValue = timeValue + ':';
+    }
+    
+    // Validar que el formato sea HH:MM y esté en rango 24h cuando esté completo
+    if (timeValue.length === 5) {
+      const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+      if (!timeRegex.test(timeValue)) {
+        console.warn('⚠️ Formato de hora inválido:', timeValue);
+        return;
+      }
+      
+      // Asegurar formato de 2 dígitos
+      const [hours, minutes] = timeValue.split(':');
+      timeValue = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
     }
     
     console.log('✅ Hora válida, estableciendo:', timeValue);
@@ -314,22 +328,16 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                 <Label htmlFor="eta-time" className="text-xs text-muted-foreground">
                   {t('dashboard:loads.status_update_modal.time_label')}
                 </Label>
-                 <input
-                   type="time"
-                   step="60"
+                 <Input
+                   type="text"
                    id="eta-time"
                    value={etaTime || ""}
                    onChange={handleTimeChange}
-                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-datetime-edit-ampm-field]:hidden [&::-webkit-datetime-edit-ampm-field]:!hidden"
+                   placeholder="HH:MM (24h)"
+                   className="text-sm font-mono"
+                   maxLength={5}
                    pattern="[0-9]{2}:[0-9]{2}"
                    title="Formato 24 horas (HH:MM)"
-                   data-format="24"
-                   data-time-format="24"
-                   style={{ colorScheme: 'light' }}
-                   lang="en-GB"
-                   inputMode="numeric"
-                   autoComplete="off"
-                   data-testid="time-input-24h"
                  />
               </div>
             </div>
