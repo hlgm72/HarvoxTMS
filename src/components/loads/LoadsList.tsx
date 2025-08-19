@@ -8,7 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2, Copy, Play, CheckCircle, XCircle, Clock } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatCurrency } from "@/lib/utils";
-import { formatDateTime } from '@/lib/dateFormatting';
+import { formatDateTimeAuto } from '@/lib/dateFormatting';
 import { useLoads } from "@/hooks/useLoads";
 import { useDeleteLoad } from "@/hooks/useDeleteLoad";
 import { useUpdateLoadStatusWithValidation } from "@/hooks/useUpdateLoadStatusWithValidation";
@@ -466,7 +466,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
               
               <div className="flex items-center justify-between">
                 <div className="text-xs text-muted-foreground">
-                  {t('list.created')} {formatDateTime(load.created_at)}
+                  {t('list.created')} {formatDateTimeAuto(load.created_at)}
                 </div>
                 
                 <div className="flex gap-2 relative z-20">
