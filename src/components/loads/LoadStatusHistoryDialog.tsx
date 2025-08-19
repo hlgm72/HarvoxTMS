@@ -107,11 +107,6 @@ export function LoadStatusHistoryDialog({
                             className={statusColors[entry.new_status] || "bg-muted"}
                           >
                             {statusLabels[entry.new_status] || entry.new_status}
-                            {entry.eta_provided && (
-                              <span className="ml-1 font-normal">
-                                ({entry.new_status.includes('en_route') ? 'ETA: ' : ''}{formatDateTimeAuto(entry.eta_provided)})
-                              </span>
-                            )}
                           </Badge>
                           {index === 0 && (
                             <Badge variant="secondary" className="text-xs">
@@ -119,6 +114,19 @@ export function LoadStatusHistoryDialog({
                             </Badge>
                           )}
                         </div>
+
+                        {/* ETA Information (separated from badge) */}
+                        {entry.eta_provided && (
+                          <div className="flex items-center gap-1 mb-2">
+                            <Clock className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-sm text-muted-foreground">
+                              {entry.new_status.includes('en_route') ? 'ETA: ' : 'Hora: '}
+                              <span className="font-medium text-foreground">
+                                {formatDateTimeAuto(entry.eta_provided)}
+                              </span>
+                            </span>
+                          </div>
+                        )}
 
                         {/* Timestamp and User */}
                         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
