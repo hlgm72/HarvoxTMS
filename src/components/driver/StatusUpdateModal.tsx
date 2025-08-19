@@ -44,19 +44,21 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
 }) => {
   const { t } = useTranslation(['dashboard']);
   const [etaDate, setEtaDate] = useState('');
-  const [etaHours, setEtaHours] = useState('');
-  const [etaMinutes, setEtaMinutes] = useState('');
+  const [etaTime, setEtaTime] = useState('');
   const [notes, setNotes] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [companyId, setCompanyId] = useState<string | null>(null);
 
-  // Generar opciones para los dropdowns
-  const generateHours = () => {
-    return Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
-  };
-
-  const generateMinutes = () => {
-    return Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
+  // Generar opciones para el dropdown de tiempo combinado
+  const generateTimeOptions = () => {
+    const times = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 5) { // Intervalos de 5 minutos
+        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        times.push(timeString);
+      }
+    }
+    return times;
   };
 
   const { mutate: uploadDocument, isPending: isUploading } = useDocumentUploadFlowACID();
@@ -97,15 +99,14 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   };
 
   const handleConfirm = () => {
-    console.log('🔍 handleConfirm - Valores antes de procesar:', { etaDate, etaHours, etaMinutes });
+    console.log('🔍 handleConfirm - Valores antes de procesar:', { etaDate, etaTime });
     
     let eta: Date | null = null;
     
-    if (etaDate && etaHours && etaMinutes) {
+    if (etaDate && etaTime) {
       // Crear fecha en zona horaria local del usuario para evitar problemas de conversión
       const [year, month, day] = etaDate.split('-').map(Number);
-      const hours = parseInt(etaHours);
-      const minutes = parseInt(etaMinutes);
+      const [hours, minutes] = etaTime.split(':').map(Number);
       
       console.log('🕐 handleConfirm - Componentes de fecha/hora:', { 
         year, month, day, hours, minutes
@@ -124,8 +125,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     
     // Reset form
     setEtaDate('');
-    setEtaHours('');
-    setEtaMinutes('');
+    setEtaTime('');
     setNotes('');
     setSelectedFile(null);
   };
@@ -133,8 +133,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   const handleClose = () => {
     // Reset form
     setEtaDate('');
-    setEtaHours('');
-    setEtaMinutes('');
+    setEtaTime('');
     setNotes('');
     setSelectedFile(null);
     onClose();
@@ -224,36 +223,34 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     newStatus,
     timeFieldInfo,
     etaDate,
-    etaHours,
-    etaMinutes
+    etaTime
   });
 
   // Set default date and time
   React.useEffect(() => {
-    console.log('🕐 useEffect ejecutándose:', { isOpen, etaDate, etaHours, etaMinutes, timeFieldInfo });
+    console.log('🕐 useEffect ejecutándose:', { isOpen, etaDate, etaTime, timeFieldInfo });
     
     if (isOpen && !etaDate) {
       const now = new Date();
       setEtaDate(format(now, 'yyyy-MM-dd'));
       
       // Si no es ETA, establecer la hora actual exacta
-      if (timeFieldInfo.defaultToNow && !etaHours && !etaMinutes) {
+      if (timeFieldInfo.defaultToNow && !etaTime) {
         const now = new Date();
         const hours = now.getHours().toString().padStart(2, '0');
         const minutes = now.getMinutes().toString().padStart(2, '0');
+        const timeValue = `${hours}:${minutes}`;
         console.log('⏰ DEBUG - Hora actual del sistema:', {
           now: now.toString(),
           hours: now.getHours(),
           minutes: now.getMinutes(),
-          hoursFormatted: hours,
-          minutesFormatted: minutes
+          timeValue: timeValue
         });
-        console.log('⏰ Estableciendo hora automática:', hours, minutes);
-        setEtaHours(hours);
-        setEtaMinutes(minutes);
+        console.log('⏰ Estableciendo hora automática:', timeValue);
+        setEtaTime(timeValue);
       }
     }
-  }, [isOpen, etaDate, etaHours, etaMinutes, timeFieldInfo.defaultToNow, newStatus]);
+  }, [isOpen, etaDate, etaTime, timeFieldInfo.defaultToNow, newStatus]);
 
   return (
     <>
@@ -307,42 +304,22 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                 />
               </div>
               
-               <div className="grid grid-cols-2 gap-2">
-                 <div>
-                   <Label htmlFor="eta-hours" className="text-xs text-muted-foreground">
-                     {t('dashboard:loads.status_update_modal.hours_label')}
-                   </Label>
-                   <Select value={etaHours} onValueChange={setEtaHours}>
-                     <SelectTrigger className="text-sm">
-                       <SelectValue placeholder="HH" />
-                     </SelectTrigger>
-                     <SelectContent>
-                       {generateHours().map((hour) => (
-                         <SelectItem key={hour} value={hour}>
-                           {hour}
-                         </SelectItem>
-                       ))}
-                     </SelectContent>
-                   </Select>
-                 </div>
-                 
-                 <div>
-                    <Label htmlFor="eta-minutes" className="text-xs text-muted-foreground">
-                      {t('dashboard:loads.status_update_modal.minutes_label')}
-                    </Label>
-                   <Select value={etaMinutes} onValueChange={setEtaMinutes}>
-                     <SelectTrigger className="text-sm">
-                       <SelectValue placeholder="MM" />
-                     </SelectTrigger>
-                     <SelectContent>
-                       {generateMinutes().map((minute) => (
-                         <SelectItem key={minute} value={minute}>
-                           {minute}
-                         </SelectItem>
-                       ))}
-                     </SelectContent>
-                   </Select>
-                 </div>
+               <div>
+                 <Label htmlFor="eta-time" className="text-xs text-muted-foreground">
+                   {t('dashboard:loads.status_update_modal.time_label')}
+                 </Label>
+                 <Select value={etaTime} onValueChange={setEtaTime}>
+                   <SelectTrigger className="text-sm">
+                     <SelectValue placeholder="HH:MM" />
+                   </SelectTrigger>
+                   <SelectContent className="max-h-60 overflow-y-auto">
+                     {generateTimeOptions().map((time) => (
+                       <SelectItem key={time} value={time}>
+                         {time}
+                       </SelectItem>
+                     ))}
+                   </SelectContent>
+                 </Select>
                </div>
             </div>
           </div>
