@@ -245,6 +245,13 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
         const hours = now.getHours().toString().padStart(2, '0');
         const minutes = now.getMinutes().toString().padStart(2, '0');
         const timeValue = `${hours}:${minutes}`;
+        console.log('⏰ DEBUG - Hora actual del sistema:', {
+          now: now.toString(),
+          hours: now.getHours(),
+          minutes: now.getMinutes(),
+          timeValue: timeValue,
+          formatted: `${hours}:${minutes}`
+        });
         console.log('⏰ Estableciendo hora automática:', timeValue);
         setEtaTime(timeValue);
       }
