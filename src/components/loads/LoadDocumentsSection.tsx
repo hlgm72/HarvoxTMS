@@ -854,7 +854,17 @@ const [uploading, setUploading] = useState<string | null>(null);
   const renderDocumentManagement = () => {
     // Get all documents except load_photos which has its own section
     const allDocuments = [...documents, ...temporaryDocuments];
-    const regularDocuments = allDocuments.filter(doc => doc.type !== 'load_photos');
+    
+    // Para conductores: si hay LO, no mostrar RC
+    let filteredDocuments = allDocuments;
+    if (userRole === 'driver') {
+      const hasLoadOrder = allDocuments.some(doc => doc.type === 'load_order');
+      if (hasLoadOrder) {
+        filteredDocuments = allDocuments.filter(doc => doc.type !== 'rate_confirmation');
+      }
+    }
+    
+    const regularDocuments = filteredDocuments.filter(doc => doc.type !== 'load_photos');
     const loadPhotos = allDocuments.filter(doc => doc.type === 'load_photos') as Array<LoadDocument & { type: 'load_photos' }>;
 
     // Group documents by type to handle duplicates
