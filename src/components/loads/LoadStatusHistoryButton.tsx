@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Clock, Activity } from "lucide-react";
 import { LoadStatusHistoryDialog } from "./LoadStatusHistoryDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTranslation } from 'react-i18next';
 
 interface LoadStatusHistoryButtonProps {
   loadId: string;
@@ -19,12 +20,13 @@ export function LoadStatusHistoryButton({
   size = "sm",
   showText = true
 }: LoadStatusHistoryButtonProps) {
+  const { t } = useTranslation('loads');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const ButtonContent = () => (
     <>
       <Activity className="h-4 w-4" />
-      {showText && size !== "icon" && "Historial"}
+      {showText && size !== "icon" && t('actions.status_history')}
     </>
   );
 

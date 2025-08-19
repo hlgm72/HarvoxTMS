@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Clock, User, MessageSquare, AlertCircle } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 import { useLoadStatusHistory } from "@/hooks/useLoadStatusHistory";
 import { formatDateTimeAuto } from "@/lib/dateFormatting";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -33,14 +34,14 @@ const statusColors: Record<string, string> = {
 };
 
 const statusLabels: Record<string, string> = {
-  assigned: "Asignada",
-  en_route_pickup: "En Ruta al Pickup",
-  at_pickup: "En Pickup",
-  loaded: "Cargada",
-  en_route_delivery: "En Ruta de Entrega",
-  at_delivery: "En Entrega",
-  delivered: "Entregada",
-  completed: "Completada",
+  assigned: "status.assigned",
+  en_route_pickup: "status.en_route_pickup",
+  at_pickup: "status.at_pickup",
+  loaded: "status.loaded",
+  en_route_delivery: "status.en_route_delivery",
+  at_delivery: "status.at_delivery",
+  delivered: "status.delivered",
+  completed: "status.completed",
 };
 
 export function LoadStatusHistoryDialog({ 
@@ -49,6 +50,7 @@ export function LoadStatusHistoryDialog({
   isOpen, 
   onClose 
 }: LoadStatusHistoryDialogProps) {
+  const { t } = useTranslation('loads');
   const { data: history = [], isLoading, error } = useLoadStatusHistory(loadId);
 
   return (
@@ -57,7 +59,7 @@ export function LoadStatusHistoryDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            Historial de Estados - Carga #{loadNumber}
+            {t('history.title')} - Carga #{loadNumber}
           </DialogTitle>
         </DialogHeader>
 
@@ -89,7 +91,7 @@ export function LoadStatusHistoryDialog({
             <Card>
               <CardContent className="p-4">
                 <div className="text-center text-muted-foreground">
-                  No hay historial de estados disponible para esta carga
+                  {t('history.no_history')}
                 </div>
               </CardContent>
             </Card>
@@ -107,12 +109,12 @@ export function LoadStatusHistoryDialog({
                               variant="outline"
                               className={statusColors[entry.new_status] || "bg-muted"}
                             >
-                              {statusLabels[entry.new_status] || entry.new_status}
+                              {t(statusLabels[entry.new_status]) || entry.new_status}
                             </Badge>
                             {index === 0 && (
-                              <Badge variant="secondary" className="text-xs">
-                                Actual
-                              </Badge>
+                            <Badge variant="secondary" className="text-xs">
+                              {t('history.current')}
+                            </Badge>
                             )}
                           </div>
                           
@@ -121,7 +123,7 @@ export function LoadStatusHistoryDialog({
                             <div className="flex items-center gap-1">
                               <Clock className="h-3 w-3 text-muted-foreground" />
                               <span className="text-sm text-muted-foreground">
-                                {entry.new_status.includes('en_route') ? 'ETA: ' : 'Hora: '}
+                                {entry.new_status.includes('en_route') ? t('history.eta') : t('history.time')}
                                 <span className="font-medium text-foreground">
                                   {formatDateTimeAuto(entry.eta_provided)}
                                 </span>

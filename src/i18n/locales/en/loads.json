@@ -1,0 +1,102 @@
+{
+  "title": "Load Management",
+  "subtitle": {
+    "loading": "Loading statistics...",
+    "active_loads": "active loads",
+    "in_transit": "in transit",
+    "pending_assignment": "pending assignment"
+  },
+  "create": {
+    "button": "New Load",
+    "title": "Create New Load",
+    "duplicate": "Duplicate Load",
+    "edit": "Edit Load"
+  },
+  "periods": {
+    "current": "Current Period",
+    "previous": "Previous Period", 
+    "next": "Next Period",
+    "all": "Complete History",
+    "this_month": "This Month",
+    "last_month": "Last Month",
+    "this_quarter": "This Quarter",
+    "last_quarter": "Last Quarter",
+    "this_year": "This Year",
+    "last_year": "Last Year",
+    "specific": "Specific Period",
+    "custom": "Custom Range",
+    "selected": "Selected Period"
+  },
+  "status": {
+    "assigned": "Assigned",
+    "en_route_pickup": "En Route to Pickup",
+    "at_pickup": "At Pickup",
+    "loaded": "Loaded",
+    "en_route_delivery": "En Route to Delivery",
+    "at_delivery": "At Delivery", 
+    "delivered": "Delivered",
+    "completed": "Completed",
+    "pending": "Pending",
+    "cancelled": "Cancelled"
+  },
+  "actions": {
+    "view": "View Details",
+    "edit": "Edit",
+    "duplicate": "Duplicate",
+    "delete": "Delete",
+    "status_history": "Status History",
+    "assign": "Assign Driver",
+    "documents": "Documents",
+    "photos": "Photos"
+  },
+  "floating_actions": {
+    "title": "Load Actions",
+    "filters": {
+      "title": "Load Filters",
+      "description": "Filter loads by status, driver, broker and dates"
+    },
+    "export": {
+      "title": "Export Data", 
+      "description": "Export load data in different formats"
+    },
+    "view": {
+      "title": "View Settings",
+      "description": "Customize how loads are displayed"
+    },
+    "stats": {
+      "title": "Statistics",
+      "description": "View quick statistics of your loads"
+    }
+  },
+  "filters": {
+    "status": "Status",
+    "driver": "Driver", 
+    "broker": "Broker",
+    "date_range": "Date Range",
+    "all": "All",
+    "clear": "Clear Filters",
+    "apply": "Apply Filters"
+  },
+  "empty_state": {
+    "title": "No loads found",
+    "description": "No loads match your current filters or period",
+    "create_button": "Create First Load"
+  },
+  "history": {
+    "title": "Status History",
+    "current": "Current",
+    "eta": "ETA: ",
+    "time": "Time: ",
+    "no_history": "No status history available for this load"
+  },
+  "validation": {
+    "missing_docs": "Missing Docs",
+    "pending_doc": "Pending Doc",
+    "rate_confirmation": "Rate Confirmation",
+    "load_order": "Load Order",
+    "replace_rc": "Replace RC",
+    "upload_rc": "Upload RC", 
+    "regenerate_lo": "Regenerate LO",
+    "generate_lo": "Generate LO"
+  }
+}

@@ -12,7 +12,7 @@ import { formatPaymentPeriodCompact, formatCurrency } from "@/lib/dateFormatting
 import { useLoadsStats } from "@/hooks/useLoadsStats";
 
 export default function Loads() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('loads');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   
   // Inicializar con período actual simple (sin fechas pre-calculadas)
@@ -37,35 +37,35 @@ export default function Loads() {
 
   const getPeriodDescription = () => {
     // console.log('🔍 getPeriodDescription - periodFilter:', periodFilter);
-    if (!periodFilter) return 'Período Actual';
+    if (!periodFilter) return t('periods.current');
     
     switch (periodFilter.type) {
       case 'current':
-        return 'Período Actual';
+        return t('periods.current');
       case 'previous':
-        return 'Período Anterior';
+        return t('periods.previous');
       case 'next':
-        return 'Período Siguiente';
+        return t('periods.next');
       case 'all':
-        return 'Histórico Completo';
+        return t('periods.all');
       case 'this_month':
-        return 'Este Mes';
+        return t('periods.this_month');
       case 'last_month':
-        return 'Mes Pasado';
+        return t('periods.last_month');
       case 'this_quarter':
-        return 'Este Trimestre';
+        return t('periods.this_quarter');
       case 'last_quarter':
-        return 'Trimestre Pasado';
+        return t('periods.last_quarter');
       case 'this_year':
-        return 'Este Año';
+        return t('periods.this_year');
       case 'last_year':
-        return 'Año Pasado';
+        return t('periods.last_year');
       case 'specific':
-        return 'Período Específico';
+        return t('periods.specific');
       case 'custom':
-        return 'Rango Personalizado';
+        return t('periods.custom');
       default:
-        return 'Período Seleccionado';
+        return t('periods.selected');
     }
   };
 
@@ -93,15 +93,15 @@ export default function Loads() {
     // console.log('🎯 getSubtitle called - statsLoading:', statsLoading, 'loadsStats:', loadsStats);
     
     if (statsLoading || !loadsStats) {
-      const loadingText = `Cargando estadísticas...${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`;
+      const loadingText = `${t('subtitle.loading')}${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`;
       // console.log('📝 Showing loading text:', loadingText);
       return loadingText;
     }
     
     const stats = [
-      `${loadsStats.totalActive} cargas activas`,
-      `${formatCurrency(loadsStats.totalAmount)} en tránsito`,
-      `${loadsStats.pendingAssignment} pendientes asignación`
+      `${loadsStats.totalActive} ${t('subtitle.active_loads')}`,
+      `${formatCurrency(loadsStats.totalAmount)} ${t('subtitle.in_transit')}`,
+      `${loadsStats.pendingAssignment} ${t('subtitle.pending_assignment')}`
     ].join(' • ');
     
     const finalSubtitle = `${stats}${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`;
@@ -117,12 +117,12 @@ export default function Loads() {
     <>
       <PageToolbar 
         icon={Package}
-        title={t("loads.title", "Gestión de Cargas")}
+        title={t("title")}
         subtitle={getSubtitle()}
         actions={
           <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
             <Plus className="h-4 w-4" />
-            {t("loads.create.button", "Nueva Carga")}
+            {t("create.button")}
           </Button>
         }
       />

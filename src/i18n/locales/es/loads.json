@@ -1,0 +1,102 @@
+{
+  "title": "Gestión de Cargas",
+  "subtitle": {
+    "loading": "Cargando estadísticas...",
+    "active_loads": "cargas activas", 
+    "in_transit": "en tránsito",
+    "pending_assignment": "pendientes asignación"
+  },
+  "create": {
+    "button": "Nueva Carga",
+    "title": "Crear Nueva Carga",
+    "duplicate": "Duplicar Carga",
+    "edit": "Editar Carga"
+  },
+  "periods": {
+    "current": "Período Actual",
+    "previous": "Período Anterior",
+    "next": "Período Siguiente", 
+    "all": "Histórico Completo",
+    "this_month": "Este Mes",
+    "last_month": "Mes Pasado",
+    "this_quarter": "Este Trimestre",
+    "last_quarter": "Trimestre Pasado",
+    "this_year": "Este Año",
+    "last_year": "Año Pasado",
+    "specific": "Período Específico",
+    "custom": "Rango Personalizado",
+    "selected": "Período Seleccionado"
+  },
+  "status": {
+    "assigned": "Asignada",
+    "en_route_pickup": "En Ruta al Pickup",
+    "at_pickup": "En Pickup",
+    "loaded": "Cargada",
+    "en_route_delivery": "En Ruta de Entrega",
+    "at_delivery": "En Entrega",
+    "delivered": "Entregada", 
+    "completed": "Completada",
+    "pending": "Pendiente",
+    "cancelled": "Cancelada"
+  },
+  "actions": {
+    "view": "Ver Detalles",
+    "edit": "Editar",
+    "duplicate": "Duplicar",
+    "delete": "Eliminar",
+    "status_history": "Historial",
+    "assign": "Asignar Conductor",
+    "documents": "Documentos",
+    "photos": "Fotos"
+  },
+  "floating_actions": {
+    "title": "Acciones de Cargas",
+    "filters": {
+      "title": "Filtros de Cargas", 
+      "description": "Filtra las cargas por estado, conductor, broker y fechas"
+    },
+    "export": {
+      "title": "Exportar Datos",
+      "description": "Exporta los datos de cargas en diferentes formatos"
+    },
+    "view": {
+      "title": "Configuración de Vista",
+      "description": "Personaliza cómo se muestran las cargas"
+    },
+    "stats": {
+      "title": "Estadísticas",
+      "description": "Ve estadísticas rápidas de tus cargas"
+    }
+  },
+  "filters": {
+    "status": "Estado",
+    "driver": "Conductor",
+    "broker": "Broker", 
+    "date_range": "Rango de Fechas",
+    "all": "Todos",
+    "clear": "Limpiar Filtros",
+    "apply": "Aplicar Filtros"
+  },
+  "empty_state": {
+    "title": "No se encontraron cargas",
+    "description": "No hay cargas que coincidan con tus filtros o período actual",
+    "create_button": "Crear Primera Carga"
+  },
+  "history": {
+    "title": "Historial de Estados",
+    "current": "Actual",
+    "eta": "ETA: ",
+    "time": "Hora: ",
+    "no_history": "No hay historial de estados disponible para esta carga"
+  },
+  "validation": {
+    "missing_docs": "Docs. faltantes",
+    "pending_doc": "Doc. pendiente", 
+    "rate_confirmation": "Rate Confirmation",
+    "load_order": "Load Order",
+    "replace_rc": "Reemplazar RC",
+    "upload_rc": "Subir RC",
+    "regenerate_lo": "Regenerar LO", 
+    "generate_lo": "Generar LO"
+  }
+}

@@ -2,6 +2,7 @@ import { AlertTriangle, CheckCircle, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useLoadDocumentValidation } from "@/hooks/useLoadDocumentValidation";
+import { useTranslation } from 'react-i18next';
 
 interface LoadDocumentValidationIndicatorProps {
   loadId: string;
@@ -14,6 +15,7 @@ export function LoadDocumentValidationIndicator({
   loadStatus,
   compact = false 
 }: LoadDocumentValidationIndicatorProps) {
+  const { t } = useTranslation('loads');
   const { data: validation, isLoading } = useLoadDocumentValidation(loadId);
 
   if (isLoading) {
@@ -150,7 +152,7 @@ export function LoadDocumentValidationIndicator({
       }
     >
       {getIconBadge()}
-      {validation.missingRequiredDocuments.length === 2 ? "Docs. faltantes" : "Doc. pendiente"}
+      {validation.missingRequiredDocuments.length === 2 ? t('validation.missing_docs') : t('validation.pending_doc')}
     </Badge>
   );
 }

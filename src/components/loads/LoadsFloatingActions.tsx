@@ -75,7 +75,7 @@ interface LoadsFloatingActionsProps {
 }
 
 export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, onPeriodFilterChange }: LoadsFloatingActionsProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('loads');
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'view' | 'stats'>('filters');
   
@@ -177,7 +177,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
       {/* Botones Flotantes Expandibles */}
       <ExpandableFloatingActions
         actions={floatingActions}
-        mainLabel="Acciones de Cargas"
+        mainLabel={t('floating_actions.title')}
         position="bottom-right"
       />
 
@@ -186,16 +186,16 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
         <SheetContent className="w-[400px] sm:w-[440px]">
           <SheetHeader>
             <SheetTitle>
-              {activeTab === 'filters' && 'Filtros de Cargas'}
-              {activeTab === 'export' && 'Exportar Datos'}
-              {activeTab === 'view' && 'Configuración de Vista'}
-              {activeTab === 'stats' && 'Estadísticas'}
+              {activeTab === 'filters' && t('floating_actions.filters.title')}
+              {activeTab === 'export' && t('floating_actions.export.title')}
+              {activeTab === 'view' && t('floating_actions.view.title')}
+              {activeTab === 'stats' && t('floating_actions.stats.title')}
             </SheetTitle>
             <SheetDescription>
-              {activeTab === 'filters' && 'Filtra las cargas por estado, conductor, broker y fechas'}
-              {activeTab === 'export' && 'Exporta los datos de cargas en diferentes formatos'}
-              {activeTab === 'view' && 'Personaliza cómo se muestran las cargas'}
-              {activeTab === 'stats' && 'Ve estadísticas rápidas de tus cargas'}
+              {activeTab === 'filters' && t('floating_actions.filters.description')}
+              {activeTab === 'export' && t('floating_actions.export.description')}
+              {activeTab === 'view' && t('floating_actions.view.description')}
+              {activeTab === 'stats' && t('floating_actions.stats.description')}
             </SheetDescription>
           </SheetHeader>
 
