@@ -427,12 +427,21 @@ const [uploading, setUploading] = useState<string | null>(null);
         documentData
       });
 
+      // Reload documents and force refresh
       await loadDocuments();
+      
+      // Notify context about document change for global refresh
+      notifyDocumentChange();
       
       // Invalidar la query de validación de documentos para actualizar el indicador
       if (loadData?.id) {
         queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadData.id] });
+        queryClient.refetchQueries({ queryKey: ['load-document-validation', loadData.id] });
       }
+      
+      // Force invalidation of main document queries
+      queryClient.invalidateQueries({ queryKey: ['load-documents'] });
+      queryClient.refetchQueries({ queryKey: ['load-documents'] });
       
       showSuccess("Documento subido", `${file.name} se subió correctamente`);
     } catch (error) {
@@ -569,10 +578,18 @@ const [uploading, setUploading] = useState<string | null>(null);
       console.log('🔄 handleRemoveDocument - Reloading documents...');
       await loadDocuments();
       
+      // Notify context about document change for global refresh
+      notifyDocumentChange();
+      
       // Invalidar la query de validación de documentos para actualizar el indicador
       if (loadData?.id) {
         queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadData.id] });
+        queryClient.refetchQueries({ queryKey: ['load-document-validation', loadData.id] });
       }
+      
+      // Force invalidation of main document queries
+      queryClient.invalidateQueries({ queryKey: ['load-documents'] });
+      queryClient.refetchQueries({ queryKey: ['load-documents'] });
       
       console.log('🎉 handleRemoveDocument - Process completed');
       showSuccess("Documento eliminado", `${document.fileName} se eliminó correctamente`);

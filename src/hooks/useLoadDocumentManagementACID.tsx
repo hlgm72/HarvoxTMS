@@ -74,10 +74,14 @@ export const useLoadDocumentManagementACID = () => {
       
       showSuccess(message);
       
-      // Invalidate relevant cache
+      // Invalidate relevant cache with more specific queries
       queryClient.invalidateQueries({ queryKey: ['load-documents'] });
       queryClient.invalidateQueries({ queryKey: ['load-document-validation'] });
       queryClient.invalidateQueries({ queryKey: ['loads'] });
+      
+      // Force immediate refetch of document list
+      queryClient.refetchQueries({ queryKey: ['load-documents'] });
+      queryClient.refetchQueries({ queryKey: ['load-document-validation'] });
     },
     onError: (error: Error) => {
       console.error('❌ Error in ACID load document operation:', error);
@@ -157,6 +161,10 @@ export const useLoadDocumentUploadFlowACID = () => {
     },
     onSuccess: (data: LoadDocumentACIDResponse) => {
       showSuccess('Load document uploaded and validated successfully');
+      
+      // Force immediate refetch of document list for upload flow
+      queryClient.refetchQueries({ queryKey: ['load-documents'] });
+      queryClient.refetchQueries({ queryKey: ['load-document-validation'] });
     },
     onError: (error: Error) => {
       console.error('❌ Error in complete load document flow:', error);
