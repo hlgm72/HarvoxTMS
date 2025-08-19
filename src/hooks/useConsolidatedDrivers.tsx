@@ -4,6 +4,7 @@ import { useAuth } from './useAuth';
 import { useFleetNotifications } from '@/components/notifications';
 import { useCompanyCache } from './useCompanyCache';
 import { useMemo } from 'react';
+import { getCurrentUTC } from '@/lib/dateFormatting';
 
 export interface ConsolidatedDriver {
   id: string;
@@ -97,7 +98,7 @@ export const useConsolidatedDrivers = () => {
           .eq('role', 'driver')
           .is('accepted_at', null)  // Solo invitaciones no aceptadas
           .eq('is_active', true)
-          .gt('expires_at', new Date().toISOString());
+          .gt('expires_at', getCurrentUTC());
           // REMOVED: .not('target_user_id', 'is', null) para incluir todas las invitaciones pendientes
 
         // Debug log para invitaciones pendientes

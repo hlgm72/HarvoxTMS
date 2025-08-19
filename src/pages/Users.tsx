@@ -58,7 +58,7 @@ import { deleteTestUser } from "@/utils/deleteTestUser";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { UsersFloatingActions } from "@/components/users/UsersFloatingActions";
 import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
-import { formatDateAuto } from '@/lib/dateFormatting';
+import { formatDateAuto, getCurrentUTC } from '@/lib/dateFormatting';
 import { UserDetailsContent } from "@/components/users/UserDetailsContent";
 
 type UserRole = Database["public"]["Enums"]["user_role"];
@@ -188,7 +188,7 @@ export default function Users() {
         .eq('company_id', userRole.company_id)
         .eq('is_active', true)
         .is('accepted_at', null)  // Solo invitaciones no aceptadas
-        .gt('expires_at', new Date().toISOString())
+        .gt('expires_at', getCurrentUTC())
         .order('created_at', { ascending: false });
 
       if (invitationsError) {
@@ -482,7 +482,7 @@ export default function Users() {
         .eq('company_id', companyId)
         .eq('invited_by', user?.id) // Solo invitaciones enviadas por el usuario actual
         .is('accepted_at', null)
-        .gt('expires_at', new Date().toISOString());
+        .gt('expires_at', getCurrentUTC());
 
       if (invitationsError) {
         console.error('Error fetching pending invitations:', invitationsError);

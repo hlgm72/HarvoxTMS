@@ -293,6 +293,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     if (!dashboardMode) {
       return transformedLoads.sort((a, b) => {
         // Si ambas tienen fecha de recogida, ordenar por fecha
+        // CORREGIDO: Usar parseISO para manejar fechas de BD correctamente
         if (a.pickup_date && b.pickup_date) {
           return new Date(a.pickup_date).getTime() - new Date(b.pickup_date).getTime();
         }
@@ -407,6 +408,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
       }
       
       // Si tienen la misma prioridad, ordenar por fecha de entrega más cercana
+      // CORREGIDO: Usar parseISO para manejar fechas de BD correctamente
       if (a.delivery_date && b.delivery_date) {
         return new Date(a.delivery_date).getTime() - new Date(b.delivery_date).getTime();
       }

@@ -6,6 +6,7 @@ import { MapPin, Activity, RefreshCw, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from 'react-i18next';
+import { formatDateTimeAuto } from '@/lib/dateFormatting';
 
 interface VehiclePosition {
   id: string;
@@ -129,7 +130,7 @@ export function CommandMap() {
         <div>
           <h3 className="text-lg font-semibold">{t('tracking.real_time_title')}</h3>
           <p className="text-sm text-muted-foreground">
-            {lastUpdate ? `${t('tracking.last_update')} ${lastUpdate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}` : 'Cargando...'}
+            {lastUpdate ? `${t('tracking.last_update')} ${formatDateTimeAuto(lastUpdate.toISOString()).split(' ')[1]}` : 'Cargando...'}
           </p>
         </div>
         <Button onClick={fetchVehiclePositions} disabled={loading} size="sm">
@@ -215,7 +216,7 @@ export function CommandMap() {
                       
                       <div className="flex justify-between">
                         <span>{t('vehicle.last_update')}:</span>
-                        <span>{new Date(vehicle.last_update).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
+                        <span>{formatDateTimeAuto(vehicle.last_update).split(' ')[1]}</span>
                       </div>
                     </div>
                   </div>

@@ -45,9 +45,12 @@ export function useFuelStats(filters: FuelStatsFilters = {}) {
       }
 
       if (filters.startDate && filters.endDate) {
+        // CORREGIDO: Convertir fechas del usuario a UTC para consultas de BD
+        const startUTC = new Date(filters.startDate).toISOString().split('T')[0];
+        const endUTC = new Date(filters.endDate).toISOString().split('T')[0];
         query = query
-          .gte('transaction_date', filters.startDate)
-          .lte('transaction_date', filters.endDate);
+          .gte('transaction_date', startUTC)
+          .lte('transaction_date', endUTC);
       }
 
       const { data, error } = await query;
