@@ -4,10 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PageToolbar } from "@/components/layout/PageToolbar";
-import { Calendar, Download, FileText, Search, Filter, Plus, DollarSign, Clock, Calculator, Banknote, CalendarDays, Timer, BarChart3, Users, Wallet, ClockIcon } from "lucide-react";
+import { FileText, Plus, DollarSign, Timer, BarChart3, Users, Wallet, ClockIcon, Banknote, CalendarDays } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { formatPaymentPeriod, formatDateAuto, formatCurrency } from "@/lib/dateFormatting";
 import { useFleetNotifications } from "@/components/notifications";
@@ -17,13 +15,18 @@ import { PaymentReportDialog } from "@/components/payments/PaymentReportDialog";
 import { MarkDriverPaidDialog } from "@/components/payments/MarkDriverPaidDialog";
 import { useDriverPaymentActions } from "@/hooks/useDriverPaymentActions";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
+import { PaymentFilters, PaymentFiltersType } from "@/components/payments/PaymentFilters";
+import { PaymentFiltersSheet } from "@/components/payments/PaymentFiltersSheet";
 
 export default function PaymentReports() {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedDriver, setSelectedDriver] = useState("all");
+  const [filters, setFilters] = useState<PaymentFiltersType>({
+    search: '',
+    driverId: 'all',
+    status: 'all',
+    periodFilter: { type: 'current' }
+  });
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedCalculationId, setSelectedCalculationId] = useState<string | null>(null);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
@@ -76,10 +79,39 @@ export default function PaymentReports() {
   const filteredCalculations = paymentCalculations.filter(calc => {
     const driver = drivers.find(d => d.user_id === calc.driver_user_id);
     const driverName = `${driver?.first_name || ''} ${driver?.last_name || ''}`.toLowerCase();
-    const matchesSearch = driverName.includes(searchTerm.toLowerCase());
-    const matchesDriver = selectedDriver === "all" || calc.driver_user_id === selectedDriver;
     
-    return matchesSearch && matchesDriver;
+    // Filtro de búsqueda
+    const matchesSearch = !filters.search || driverName.includes(filters.search.toLowerCase());
+    
+    // Filtro de conductor
+    const matchesDriver = filters.driverId === "all" || calc.driver_user_id === filters.driverId;
+    
+    // Filtro de estado
+    let matchesStatus = true;
+    if (filters.status !== 'all') {
+      switch (filters.status) {
+        case 'pending':
+          matchesStatus = !calc.calculated_at;
+          break;
+        case 'calculated':
+          matchesStatus = !!calc.calculated_at && calc.payment_status !== 'paid';
+          break;
+        case 'paid':
+          matchesStatus = calc.payment_status === 'paid';
+          break;
+        case 'failed':
+          matchesStatus = calc.payment_status === 'failed';
+          break;
+        case 'negative':
+          matchesStatus = calc.has_negative_balance;
+          break;
+        case 'approved':
+          matchesStatus = calc.payment_status === 'approved';
+          break;
+      }
+    }
+    
+    return matchesSearch && matchesDriver && matchesStatus;
   });
 
   // Estadísticas del dashboard
@@ -203,51 +235,25 @@ export default function PaymentReports() {
         </div>
 
         {/* Filtros */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 flex-wrap">
-              <Filter className="h-5 w-5" />
-              Filtros
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar conductor..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Select value={selectedDriver} onValueChange={setSelectedDriver}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar conductor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos los conductores</SelectItem>
-                  {drivers.map((driver) => (
-                    <SelectItem key={driver.user_id} value={driver.user_id}>
-                      {driver.first_name} {driver.last_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Estado" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos los estados</SelectItem>
-                  <SelectItem value="ready">Listos</SelectItem>
-                  <SelectItem value="pending">Pendientes</SelectItem>
-                  <SelectItem value="negative">Balance Negativo</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Filtros principales en desktop */}
+          <div className="hidden lg:block flex-1">
+            <PaymentFilters
+              filters={filters}
+              onFiltersChange={setFilters}
+              drivers={drivers}
+            />
+          </div>
+          
+          {/* Filtros móviles con sheet */}
+          <div className="lg:hidden">
+            <PaymentFiltersSheet
+              filters={filters}
+              onFiltersChange={setFilters}
+              drivers={drivers}
+            />
+          </div>
+        </div>
 
         {/* Lista de Reportes */}
         <Card>
