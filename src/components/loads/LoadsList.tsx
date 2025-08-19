@@ -21,10 +21,11 @@ import { EmptyLoadsState } from "./EmptyLoadsState";
 import { CreateLoadDialog } from "./CreateLoadDialog";
 import { LoadViewDialog } from "./LoadViewDialog";
 import { LoadDocumentsList } from "./LoadDocumentsList";
-import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
+import { useLoadDocuments, LoadDocumentsProvider } from "@/contexts/LoadDocumentsContext";
 import { LoadDocumentValidationIndicator } from "./LoadDocumentValidationIndicator";
 import { LoadDocumentStatusIndicator } from "./LoadDocumentStatusIndicator";
 import { LoadStatusHistoryButton } from "./LoadStatusHistoryButton";
+import { useAuth } from "@/hooks/useAuth";
 
 // Componente de skeleton para cargas
 const LoadSkeleton = () => (
@@ -154,6 +155,7 @@ interface LoadsListProps {
 export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProps) {
   const { t } = useTranslation('loads');
   const { refreshTrigger } = useLoadDocuments();
+  const { userRole } = useAuth();
   
   // console.log('📋 LoadsList - periodFilter recibido:', periodFilter);
   // console.log('📋 LoadsList - filters recibido:', filters);
@@ -614,14 +616,23 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
 
       {/* Dialog de gestión de documentos */}
       {documentsDialog.load && (
-        <LoadDocumentsSection
-          isDialogMode={true}
-          isOpen={documentsDialog.isOpen}
-          onClose={() => setDocumentsDialog({ isOpen: false })}
-          loadId={documentsDialog.load.id}
-          loadNumber={documentsDialog.load.load_number}
-          loadData={documentsDialog.load}
-        />
+        <LoadDocumentsProvider>
+          <LoadDocumentsSection
+            isDialogMode={true}
+            isOpen={documentsDialog.isOpen}
+            onClose={() => setDocumentsDialog({ isOpen: false })}
+            loadId={documentsDialog.load.id}
+            loadNumber={documentsDialog.load.load_number}
+            loadData={documentsDialog.load}
+            userRole={
+              userRole?.role === 'operations_manager' || userRole?.role === 'dispatcher' 
+                ? 'dispatcher'
+                : userRole?.role === 'driver' 
+                  ? 'driver' 
+                  : 'owner'
+            }
+          />
+        </LoadDocumentsProvider>
       )}
 
       {/* Dialog de vista de detalles */}

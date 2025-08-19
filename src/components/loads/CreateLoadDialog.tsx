@@ -30,6 +30,7 @@ import { LoadDocumentsSection } from "./LoadDocumentsSection";
 import { LoadDocumentsProvider } from "@/contexts/LoadDocumentsContext";
 import { LoadAssignmentSection } from "./LoadAssignmentSection";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface CreateLoadDialogProps {
   isOpen: boolean;
@@ -40,6 +41,7 @@ interface CreateLoadDialogProps {
 
 export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: externalLoadData }: CreateLoadDialogProps) {
   const { t } = useTranslation();
+  const { userRole } = useAuth();
   const [currentPhase, setCurrentPhase] = useState(1);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showCreateClient, setShowCreateClient] = useState(false);
@@ -1003,6 +1005,13 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                   }}
                   onDocumentsChange={setLoadDocuments}
                   temporaryDocuments={loadDocuments}
+                  userRole={
+                    userRole?.role === 'operations_manager' || userRole?.role === 'dispatcher' 
+                      ? 'dispatcher'
+                      : userRole?.role === 'driver' 
+                        ? 'driver' 
+                        : 'owner'
+                  }
                   onTemporaryDocumentsChange={setLoadDocuments}
                 />
               </LoadDocumentsProvider>
