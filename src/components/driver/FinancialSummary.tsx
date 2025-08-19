@@ -20,6 +20,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency, calculateNetPayment, calculateTotalIncome } from "@/lib/paymentCalculations";
+import { getCurrentUTC, formatDateAuto, formatDateInUserTimeZone } from "@/lib/dateFormatting";
 import { FinancialCharts } from "./FinancialCharts";
 
 interface FinancialData {
@@ -84,8 +85,8 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
         .select('total_amount')
         .eq('driver_user_id', user.id)
         .eq('status', 'delivered')
-        .gte('delivery_date', currentCalculation?.company_payment_periods?.period_start_date || new Date().toISOString())
-        .lte('delivery_date', currentCalculation?.company_payment_periods?.period_end_date || new Date().toISOString());
+        .gte('delivery_date', currentCalculation?.company_payment_periods?.period_start_date || getCurrentUTC())
+        .lte('delivery_date', currentCalculation?.company_payment_periods?.period_end_date || getCurrentUTC());
 
       if (loadsError) throw loadsError;
 
@@ -113,7 +114,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
         },
         fuelCard: {
           balance: 1500,
-          last_transaction: new Date().toISOString(),
+          last_transaction: getCurrentUTC(),
           weekly_spend: weeklyFuelSpend
         }
       };
@@ -126,7 +127,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
     const now = new Date();
     const nextFriday = new Date(now);
     nextFriday.setDate(now.getDate() + (5 - now.getDay() + 7) % 7);
-    return nextFriday.toISOString().split('T')[0];
+    return formatDateInUserTimeZone(nextFriday);
   }
 
   const getStatusColor = (status: string): string => {
@@ -205,7 +206,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
                 {formatCurrency(currentPeriod.net_payment)}
               </div>
               <p className="text-green-700 text-sm">
-                {new Date(currentPeriod.period_start).toLocaleDateString()} - {new Date(currentPeriod.period_end).toLocaleDateString()}
+                {formatDateAuto(currentPeriod.period_start)} - {formatDateAuto(currentPeriod.period_end)}
               </p>
             </CardContent>
           </Card>
@@ -254,7 +255,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
                   <div>
                     <p className="text-sm text-muted-foreground">{t('dashboard:financial.stats.next_payment')}</p>
                     <p className="text-sm font-medium">
-                      {new Date(weeklyStats.next_payment_date).toLocaleDateString()}
+                      {formatDateAuto(weeklyStats.next_payment_date)}
                     </p>
                   </div>
                   <Calendar className="h-8 w-8 text-orange-500" />
@@ -353,7 +354,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
                   <span className="text-sm text-muted-foreground">{t('dashboard:financial.fuel.last_transaction')}</span>
                   <span className="text-sm">
                     {fuelCard.last_transaction ? 
-                      new Date(fuelCard.last_transaction).toLocaleDateString() : 
+                      formatDateAuto(fuelCard.last_transaction) : 
                       t('dashboard:financial.fuel.no_transactions')
                     }
                   </span>

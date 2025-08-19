@@ -34,6 +34,7 @@ import { useFleetNotifications } from '@/components/notifications';
 import { useAuth } from '@/hooks/useAuth';
 import { getRoleLabel } from '@/lib/roleUtils';
 import { formatDistance } from 'date-fns';
+import { getCurrentUTC } from '@/lib/dateFormatting';
 import { deleteUserCompletely } from '@/utils/deleteTestUser';
 
 interface PendingInvitation {
@@ -104,7 +105,7 @@ export function PendingInvitationsSection({
         .eq('company_id', userRole.company_id)
         .eq('is_active', true) // Solo mostrar invitaciones activas
         .is('accepted_at', null)
-        .gt('expires_at', new Date().toISOString())
+        .gt('expires_at', getCurrentUTC())
         .order('created_at', { ascending: false });
 
       // Aplicar filtro de rol si se especifica
@@ -182,8 +183,8 @@ export function PendingInvitationsSection({
         .from('user_invitations')
         .update({ 
           is_active: false,
-          expires_at: new Date().toISOString(), // Marca como expirada para que no aparezca en la lista
-          updated_at: new Date().toISOString()
+          expires_at: getCurrentUTC(), // Marca como expirada para que no aparezca en la lista
+          updated_at: getCurrentUTC()
         })
         .eq('id', selectedInvitation.id);
 

@@ -139,3 +139,11 @@ export const getYearSafe = (dateInput: string | Date | null | undefined): number
     return null;
   }
 };
+
+/**
+ * Obtiene fecha actual en UTC para consultas
+ * Uso: Para comparaciones y consultas que requieren timestamp actual en UTC
+ */
+export const getCurrentUTC = (): string => {
+  return new Date().toISOString();
+};

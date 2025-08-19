@@ -304,3 +304,30 @@ export const formatDateTimeAuto = (dateInput: string | Date | null | undefined):
     return language === 'es' ? 'Fecha inválida' : 'Invalid date';
   }
 };
+
+/**
+ * Convierte fecha de usuario a UTC para consultas a base de datos
+ * Uso: Para filtros y búsquedas que necesitan enviar fecha en UTC
+ */
+export const convertUserDateToUTC = (userDate: Date): string => {
+  return new Date(userDate.getTime() - (userDate.getTimezoneOffset() * 60000)).toISOString();
+};
+
+/**
+ * Obtiene fecha actual en UTC para consultas
+ * Uso: Para comparaciones y consultas que requieren timestamp actual en UTC
+ */
+export const getCurrentUTC = (): string => {
+  return new Date().toISOString();
+};
+
+/**
+ * Convierte rango de fechas del usuario a UTC para consultas
+ * Uso: Para filtros de periodo que necesitan convertir fechas locales a UTC
+ */
+export const convertDateRangeToUTC = (startDate: Date, endDate: Date): { start: string; end: string } => {
+  return {
+    start: convertUserDateToUTC(startDate),
+    end: convertUserDateToUTC(endDate)
+  };
+};

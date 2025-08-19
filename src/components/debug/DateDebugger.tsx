@@ -1,10 +1,10 @@
-import { getTodayInUserTimeZone, getUserTimeZone } from '@/utils/dateUtils';
+import { getTodayInUserTimeZone, getUserTimeZone, getCurrentUTC } from '@/utils/dateUtils';
 
 // Componente temporal para debug
 export const DateDebugger = () => {
   const userTimeZone = getUserTimeZone();
   const todayInUserTZ = getTodayInUserTimeZone();
-  const utcToday = new Date().toISOString().split('T')[0];
+  const utcToday = getCurrentUTC().split('T')[0];
   
   console.log('🕐 Debug timezone info:', {
     userTimeZone,
