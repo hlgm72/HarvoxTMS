@@ -176,6 +176,11 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     stopInfo: undefined
   });
 
+  const [documentsDialog, setDocumentsDialog] = useState<{
+    isOpen: boolean;
+    load?: any;
+  }>({ isOpen: false });
+
   const calculateProgress = (status: string, stopsData?: any[]): number => {
     // Casos especiales
     if (status === 'assigned') return 0;
@@ -767,26 +772,14 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                        size="sm"
                        showText={false}
                      />
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button size="sm" variant="outline" title="Ver documentos de la carga">
-                            <FileText className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-                          <DialogHeader>
-                            <DialogTitle>Gestión de Documentos - {load.load_number}</DialogTitle>
-                          </DialogHeader>
-                          <LoadDocumentsProvider>
-                            <LoadDocumentsSection 
-                              loadId={load.id}
-                              loadNumber={load.load_number}
-                              loadData={load}
-                              isDialogMode={true}
-                            />
-                          </LoadDocumentsProvider>
-                        </DialogContent>
-                      </Dialog>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        title="Ver documentos de la carga"
+                        onClick={() => setDocumentsDialog({ isOpen: true, load })}
+                      >
+                        <FileText className="h-4 w-4" />
+                      </Button>
                       <Button size="sm" variant="outline">
                         <Phone className="h-4 w-4" />
                       </Button>
@@ -865,6 +858,20 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         isDeliveryStep={statusModal.newStatus === 'delivered'}
         newStatus={statusModal.newStatus}
       />
+      
+      {/* Dialog de gestión de documentos */}
+      {documentsDialog.load && (
+        <LoadDocumentsProvider>
+          <LoadDocumentsSection
+            isDialogMode={true}
+            isOpen={documentsDialog.isOpen}
+            onClose={() => setDocumentsDialog({ isOpen: false })}
+            loadId={documentsDialog.load.id}
+            loadNumber={documentsDialog.load.load_number}
+            loadData={documentsDialog.load}
+          />
+        </LoadDocumentsProvider>
+      )}
     </div>
   );
 }
