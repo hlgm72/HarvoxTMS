@@ -44,39 +44,19 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
 }) => {
   const { t } = useTranslation(['dashboard']);
   const [etaDate, setEtaDate] = useState('');
-  const [etaTime, setEtaTime] = useState('');
+  const [etaHours, setEtaHours] = useState('');
+  const [etaMinutes, setEtaMinutes] = useState('');
   const [notes, setNotes] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [companyId, setCompanyId] = useState<string | null>(null);
 
-  // Handler personalizado para el input de tiempo que fuerza formato 24h
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let timeValue = e.target.value;
-    console.log('🕐 handleTimeChange - Valor recibido del input:', timeValue);
-    
-    // Remover caracteres no válidos (solo números y :)
-    timeValue = timeValue.replace(/[^0-9:]/g, '');
-    
-    // Auto-formatear mientras se escribe
-    if (timeValue.length === 2 && !timeValue.includes(':')) {
-      timeValue = timeValue + ':';
-    }
-    
-    // Validar que el formato sea HH:MM y esté en rango 24h cuando esté completo
-    if (timeValue.length === 5) {
-      const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-      if (!timeRegex.test(timeValue)) {
-        console.warn('⚠️ Formato de hora inválido:', timeValue);
-        return;
-      }
-      
-      // Asegurar formato de 2 dígitos
-      const [hours, minutes] = timeValue.split(':');
-      timeValue = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
-    }
-    
-    console.log('✅ Hora válida, estableciendo:', timeValue);
-    setEtaTime(timeValue);
+  // Generar opciones para los dropdowns
+  const generateHours = () => {
+    return Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
+  };
+
+  const generateMinutes = () => {
+    return Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
   };
 
   const { mutate: uploadDocument, isPending: isUploading } = useDocumentUploadFlowACID();
@@ -117,18 +97,18 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   };
 
   const handleConfirm = () => {
-    console.log('🔍 handleConfirm - Valores antes de procesar:', { etaDate, etaTime });
+    console.log('🔍 handleConfirm - Valores antes de procesar:', { etaDate, etaHours, etaMinutes });
     
     let eta: Date | null = null;
     
-    if (etaDate && etaTime) {
+    if (etaDate && etaHours && etaMinutes) {
       // Crear fecha en zona horaria local del usuario para evitar problemas de conversión
       const [year, month, day] = etaDate.split('-').map(Number);
-      const [hours, minutes] = etaTime.split(':').map(Number);
+      const hours = parseInt(etaHours);
+      const minutes = parseInt(etaMinutes);
       
       console.log('🕐 handleConfirm - Componentes de fecha/hora:', { 
-        year, month, day, hours, minutes,
-        originalTime: etaTime 
+        year, month, day, hours, minutes
       });
       
       eta = new Date(year, month - 1, day, hours, minutes);
@@ -144,7 +124,8 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     
     // Reset form
     setEtaDate('');
-    setEtaTime('');
+    setEtaHours('');
+    setEtaMinutes('');
     setNotes('');
     setSelectedFile(null);
   };
@@ -152,7 +133,8 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   const handleClose = () => {
     // Reset form
     setEtaDate('');
-    setEtaTime('');
+    setEtaHours('');
+    setEtaMinutes('');
     setNotes('');
     setSelectedFile(null);
     onClose();
@@ -242,35 +224,36 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     newStatus,
     timeFieldInfo,
     etaDate,
-    etaTime
+    etaHours,
+    etaMinutes
   });
 
   // Set default date and time
   React.useEffect(() => {
-    console.log('🕐 useEffect ejecutándose:', { isOpen, etaDate, etaTime, timeFieldInfo });
+    console.log('🕐 useEffect ejecutándose:', { isOpen, etaDate, etaHours, etaMinutes, timeFieldInfo });
     
     if (isOpen && !etaDate) {
       const now = new Date();
       setEtaDate(format(now, 'yyyy-MM-dd'));
       
       // Si no es ETA, establecer la hora actual exacta
-      if (timeFieldInfo.defaultToNow && !etaTime) {
+      if (timeFieldInfo.defaultToNow && !etaHours && !etaMinutes) {
         const now = new Date();
         const hours = now.getHours().toString().padStart(2, '0');
         const minutes = now.getMinutes().toString().padStart(2, '0');
-        const timeValue = `${hours}:${minutes}`;
         console.log('⏰ DEBUG - Hora actual del sistema:', {
           now: now.toString(),
           hours: now.getHours(),
           minutes: now.getMinutes(),
-          timeValue: timeValue,
-          formatted: `${hours}:${minutes}`
+          hoursFormatted: hours,
+          minutesFormatted: minutes
         });
-        console.log('⏰ Estableciendo hora automática:', timeValue);
-        setEtaTime(timeValue);
+        console.log('⏰ Estableciendo hora automática:', hours, minutes);
+        setEtaHours(hours);
+        setEtaMinutes(minutes);
       }
     }
-  }, [isOpen, etaDate, etaTime, timeFieldInfo.defaultToNow, newStatus]); // Agregué newStatus como dependencia
+  }, [isOpen, etaDate, etaHours, etaMinutes, timeFieldInfo.defaultToNow, newStatus]);
 
   return (
     <>
@@ -324,22 +307,43 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                 />
               </div>
               
-              <div>
-                <Label htmlFor="eta-time" className="text-xs text-muted-foreground">
-                  {t('dashboard:loads.status_update_modal.time_label')}
-                </Label>
-                 <Input
-                   type="text"
-                   id="eta-time"
-                   value={etaTime || ""}
-                   onChange={handleTimeChange}
-                   placeholder="HH:MM (24h)"
-                   className="text-sm"
-                   maxLength={5}
-                   pattern="[0-9]{2}:[0-9]{2}"
-                   title="Formato 24 horas (HH:MM)"
-                 />
-              </div>
+               <div className="grid grid-cols-2 gap-2">
+                 <div>
+                   <Label htmlFor="eta-hours" className="text-xs text-muted-foreground">
+                     Horas
+                   </Label>
+                   <Select value={etaHours} onValueChange={setEtaHours}>
+                     <SelectTrigger className="text-sm">
+                       <SelectValue placeholder="HH" />
+                     </SelectTrigger>
+                     <SelectContent>
+                       {generateHours().map((hour) => (
+                         <SelectItem key={hour} value={hour}>
+                           {hour}
+                         </SelectItem>
+                       ))}
+                     </SelectContent>
+                   </Select>
+                 </div>
+                 
+                 <div>
+                   <Label htmlFor="eta-minutes" className="text-xs text-muted-foreground">
+                     Minutos
+                   </Label>
+                   <Select value={etaMinutes} onValueChange={setEtaMinutes}>
+                     <SelectTrigger className="text-sm">
+                       <SelectValue placeholder="MM" />
+                     </SelectTrigger>
+                     <SelectContent>
+                       {generateMinutes().map((minute) => (
+                         <SelectItem key={minute} value={minute}>
+                           {minute}
+                         </SelectItem>
+                       ))}
+                     </SelectContent>
+                   </Select>
+                 </div>
+               </div>
             </div>
           </div>
 
