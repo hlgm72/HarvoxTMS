@@ -157,14 +157,20 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
       return;
     }
 
+    console.log('➕ Attempting to add role:', { newRole, userId: user.id, companyId: userRole.company_id });
+    
     const result = await assignRole(user.id, userRole.company_id, newRole as any);
+    
+    console.log('➕ Add role result:', result);
     
     if (result.success) {
       showSuccess('Rol agregado correctamente');
       setNewRole('');
-      loadUserRoles();
-      // Invalidar cache y notificar al componente padre
+      // Immediately update local state
+      setUserRoles(prev => [...prev, newRole]);
+      // Invalidate cache and reload
       queryClient.invalidateQueries({ queryKey: ['user_company_roles'] });
+      loadUserRoles();
       onSuccess?.(); 
     } else {
       showError(result.error || 'Error al agregar el rol');
@@ -180,13 +186,19 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
       return;
     }
 
+    console.log('🗑️ Attempting to remove role:', { roleToRemove, userId: user.id, companyId: userRole.company_id });
+    
     const result = await removeRole(user.id, userRole.company_id, roleToRemove as any);
+    
+    console.log('🗑️ Remove role result:', result);
     
     if (result.success) {
       showSuccess('Rol eliminado correctamente');
-      loadUserRoles();
-      // Invalidar cache y notificar al componente padre
+      // Immediately update local state
+      setUserRoles(prev => prev.filter(r => r !== roleToRemove));
+      // Invalidate cache and reload
       queryClient.invalidateQueries({ queryKey: ['user_company_roles'] });
+      loadUserRoles();
       onSuccess?.(); 
     } else {
       showError(result.error || 'Error al eliminar el rol');
