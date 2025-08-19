@@ -397,6 +397,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     
     // Priorizar por orden de progreso/estado (más avanzado = más prioritario)
     const statusPriority = {
+      'delivered': 7,        // ✅ Alta prioridad - necesita POD
       'at_delivery': 6,
       'en_route_delivery': 5,
       'loaded': 4,
