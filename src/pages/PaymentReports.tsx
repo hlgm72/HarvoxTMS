@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,16 +17,25 @@ import { useDriverPaymentActions } from "@/hooks/useDriverPaymentActions";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
 import { PaymentFilters, PaymentFiltersType } from "@/components/payments/PaymentFilters";
 import { PaymentFiltersSheet } from "@/components/payments/PaymentFiltersSheet";
+import { useCurrentPaymentPeriod, usePaymentPeriods, usePreviousPaymentPeriod, useNextPaymentPeriod } from "@/hooks/usePaymentPeriods";
 
 export default function PaymentReports() {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
+  
+  // Obtener períodos para inicializar con el período actual
+  const { data: currentPeriod } = useCurrentPaymentPeriod();
+  const { data: previousPeriod } = usePreviousPaymentPeriod();
+  const { data: nextPeriod } = useNextPaymentPeriod();
+  const { data: allPeriods } = usePaymentPeriods();
+  
   const [filters, setFilters] = useState<PaymentFiltersType>({
     search: '',
     driverId: 'all',
     status: 'all',
     periodFilter: { type: 'current' }
   });
+  
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedCalculationId, setSelectedCalculationId] = useState<string | null>(null);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
@@ -35,15 +44,63 @@ export default function PaymentReports() {
   
   const { markDriverAsPaid, calculateDriverPeriod, checkPeriodClosureStatus, isLoading: paymentLoading } = useDriverPaymentActions();
 
-  // Obtener reportes existentes (simulando con datos de cálculos)
+  // Actualizar filtro de período cuando se carga el período actual
+  useEffect(() => {
+    if (currentPeriod && filters.periodFilter.type === 'current' && !filters.periodFilter.periodId) {
+      setFilters(prev => ({
+        ...prev,
+        periodFilter: {
+          type: 'current',
+          periodId: currentPeriod.id,
+          startDate: currentPeriod.period_start_date,
+          endDate: currentPeriod.period_end_date,
+          label: `Período Actual (${formatPaymentPeriod(currentPeriod.period_start_date, currentPeriod.period_end_date)})`
+        }
+      }));
+    }
+  }, [currentPeriod, filters.periodFilter.type, filters.periodFilter.periodId]);
+
+  // Determinar qué período usar para filtrar
+  const getFilterPeriodIds = useMemo(() => {
+    const periodFilter = filters.periodFilter;
+    
+    if (!periodFilter) return [];
+
+    switch (periodFilter.type) {
+      case 'current':
+        return currentPeriod ? [currentPeriod.id] : [];
+      
+      case 'previous':
+        return previousPeriod ? [previousPeriod.id] : [];
+      
+      case 'next':
+        return nextPeriod ? [nextPeriod.id] : [];
+      
+      case 'specific':
+        return periodFilter.periodId ? [periodFilter.periodId] : [];
+      
+      case 'all':
+        return allPeriods ? allPeriods.map(p => p.id) : [];
+      
+      case 'custom':
+        // Para filtro personalizado, usaremos las fechas en la query
+        return [];
+      
+      default:
+        return currentPeriod ? [currentPeriod.id] : [];
+    }
+  }, [filters.periodFilter, currentPeriod, previousPeriod, nextPeriod, allPeriods]);
+
+  // Obtener reportes existentes filtrados por período
   const { data: paymentCalculations = [], isLoading, refetch } = useQuery({
-    queryKey: ['payment-calculations-reports'],
+    queryKey: ['payment-calculations-reports', getFilterPeriodIds, filters.periodFilter],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('driver_period_calculations')
         .select(`
           *,
           company_payment_periods!inner(
+            id,
             period_start_date,
             period_end_date,
             company_id,
@@ -52,9 +109,22 @@ export default function PaymentReports() {
         `)
         .order('created_at', { ascending: false });
 
+      // Filtrar por períodos específicos si no es filtro personalizado
+      if (filters.periodFilter.type !== 'custom' && getFilterPeriodIds.length > 0) {
+        query = query.in('company_payment_period_id', getFilterPeriodIds);
+      } else if (filters.periodFilter.type === 'custom' && filters.periodFilter.startDate && filters.periodFilter.endDate) {
+        // Para filtro personalizado, usar las fechas
+        query = query
+          .gte('company_payment_periods.period_start_date', filters.periodFilter.startDate)
+          .lte('company_payment_periods.period_end_date', filters.periodFilter.endDate);
+      }
+
+      const { data, error } = await query;
+
       if (error) throw error;
       return data || [];
-    }
+    },
+    enabled: !!user && (getFilterPeriodIds.length > 0 || filters.periodFilter.type === 'custom')
   });
 
   // Obtener conductores para filtro
@@ -75,7 +145,7 @@ export default function PaymentReports() {
     enabled: paymentCalculations.length > 0
   });
 
-  // Filtrar cálculos según los filtros aplicados
+  // Filtrar cálculos según los filtros aplicados (excepto período que ya se filtra en la query)
   const filteredCalculations = paymentCalculations.filter(calc => {
     const driver = drivers.find(d => d.user_id === calc.driver_user_id);
     const driverName = `${driver?.first_name || ''} ${driver?.last_name || ''}`.toLowerCase();
