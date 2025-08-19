@@ -322,5 +322,6 @@
   "active": "activa",
   "active_plural": "activas", 
   "completed": "completada",
-  "completed_plural": "completadas"
+  "completed_plural": "completadas",
+  "locale": "es"
 }

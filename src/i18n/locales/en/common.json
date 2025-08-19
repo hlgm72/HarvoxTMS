@@ -322,5 +322,6 @@
   "active": "active",
   "active_plural": "active",
   "completed": "completed",
-  "completed_plural": "completed"
+  "completed_plural": "completed",
+  "locale": "en"
 }
