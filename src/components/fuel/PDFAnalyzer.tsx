@@ -271,9 +271,9 @@ export function PDFAnalyzer() {
         };
 
         // Verificar si la transacción ya existe en la base de datos
-        const txnDateStr = formatDateInUserTimeZone(new Date(transaction.date));
+        const txnDateStr = transaction.date; // ✅ Usar directamente fecha YYYY-MM-DD del PDF
         const existingTransaction = existingFuelExpenses?.find(existing => {
-          const existingDate = formatDateInUserTimeZone(new Date(existing.transaction_date));
+          const existingDate = existing.transaction_date.split('T')[0]; // ✅ Solo parte de fecha
           const sameDate = existingDate === txnDateStr;
           const sameInvoice = existing.invoice_number === transaction.invoice;
           const sameCard = existing.card_last_five?.includes(transaction.card.slice(-5)) || 
@@ -482,7 +482,8 @@ export function PDFAnalyzer() {
       // Crear períodos automáticamente para transacciones que los necesiten
       for (const transaction of validTransactions) {
         if (transaction.period_mapping_status === 'will_create' && transaction.driver_user_id) {
-          const targetDate = formatDateInUserTimeZone(new Date(transaction.date));
+          // ✅ Usar función UTC segura para fechas de base de datos
+          const targetDate = transaction.date; // Ya viene en formato YYYY-MM-DD del PDF
           
           // Obtener companyId del usuario
           const { data: userCompanies } = await supabase
@@ -522,7 +523,7 @@ export function PDFAnalyzer() {
         const fuelExpenseData = {
           driver_user_id: transaction.driver_user_id!,
           payment_period_id: transaction.payment_period_id!,
-          transaction_date: formatDateInUserTimeZone(new Date(transaction.date)),
+          transaction_date: transaction.date, // ✅ Usar fecha directamente en formato YYYY-MM-DD
           fuel_type: transaction.category?.toLowerCase() || 'diesel',
           gallons_purchased: Number(transaction.qty),
           price_per_gallon: Number(transaction.gross_ppg),
