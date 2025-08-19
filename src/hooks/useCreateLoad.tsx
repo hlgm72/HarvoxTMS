@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { useLoadDocumentManagementACID } from '@/hooks/useLoadDocumentManagementACID';
 import { useFleetNotifications } from '@/components/notifications';
+import { supabase } from '@/integrations/supabase/client';
 import { formatDateInUserTimeZone, getTodayInUserTimeZone } from '@/lib/dateFormatting';
 
 export interface CreateLoadData {
@@ -97,18 +98,20 @@ const uploadTemporaryDocuments = async (
 
       console.log('🔗 Generated public URL:', urlData.publicUrl);
 
-      // Save document record in database
-      const { error: dbError } = await supabase
-        .from('load_documents')
-        .insert({
-          load_id: loadId,
-          document_type: doc.type,
-          file_name: customFileName, // Use custom filename
-          file_url: urlData.publicUrl,
-          file_size: file.size,
-          content_type: file.type,
-          uploaded_by: (await supabase.auth.getUser()).data.user?.id
-        });
+      // Save document record in database using RPC
+      const { data: docResult, error: dbError } = await supabase.rpc(
+        'create_or_update_load_document_with_validation',
+        {
+          document_data: {
+            load_id: loadId,
+            document_type: doc.type,
+            file_name: customFileName,
+            file_url: urlData.publicUrl,
+            file_size: file.size,
+            content_type: file.type,
+          }
+        }
+      );
 
       if (dbError) {
         console.error('❌ Database save error:', dbError);
