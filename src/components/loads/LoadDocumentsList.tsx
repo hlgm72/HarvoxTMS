@@ -284,11 +284,7 @@ export function LoadDocumentsList({
   }
 
   if (documents.length === 0) {
-    return (
-      <div className="text-xs text-muted-foreground italic">
-        Sin documentos subidos
-      </div>
-    );
+    return null;
   }
 
   // Filtrar y ordenar documentos para conductores
