@@ -66,23 +66,8 @@ export function LoadActionButtonWithPOD({
 
   // Usar la nueva lógica si hay paradas
   if (hasNextAction && nextStopInfo) {
-    // Si es la última entrega y el status es 'delivered' y no hay POD, mostrar botón de subir POD
-    if (nextStopInfo.isLastDelivery && nextStopInfo.nextStatus === 'delivered' && !documentValidation?.hasPOD) {
-      return (
-        <Button 
-          size="sm" 
-          className="flex-1"
-          onClick={() => onUploadPOD(load.id)}
-          disabled={isPending}
-          variant="default"
-        >
-          <Upload className="h-4 w-4 mr-2" />
-          Subir POD
-        </Button>
-      );
-    }
-
-    // Botón normal para todos los otros casos
+    // Siempre mostrar el botón de acción principal primero
+    // La validación de POD se maneja en el backend al intentar marcar como delivered
     return (
       <Button 
         size="sm" 
@@ -107,21 +92,7 @@ export function LoadActionButtonWithPOD({
     return null;
   }
 
-  // Si es la última entrega en el fallback y el próximo estado es 'delivered' y no hay POD
-  if (load.status === 'at_delivery' && nextStatus === 'delivered' && !documentValidation?.hasPOD) {
-    return (
-      <Button 
-        size="sm" 
-        className="flex-1"
-        onClick={() => onUploadPOD(load.id)}
-        disabled={isPending}
-        variant="default"
-      >
-        <Upload className="h-4 w-4 mr-2" />
-        Subir POD
-      </Button>
-    );
-  }
+  // Fallback: siempre mostrar el botón de siguiente estado primero
 
   return (
     <Button 
