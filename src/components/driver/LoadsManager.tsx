@@ -808,9 +808,6 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         actionText={statusModal.actionText}
         stopInfo={statusModal.stopInfo}
         isLoading={updateLoadStatus.isPending}
-        loadId={statusModal.loadId}
-        isDeliveryStep={statusModal.newStatus === 'delivered'}
-        newStatus={statusModal.newStatus}
       />
       
       {/* Dialog de gestión de documentos */}

@@ -5,12 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CalendarIcon, Clock, Upload } from 'lucide-react';
+import { CalendarIcon, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { useDocumentUploadFlowACID } from '@/hooks/useDocumentManagementACID';
-import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 
 interface StatusUpdateModalProps {
@@ -25,9 +22,6 @@ interface StatusUpdateModalProps {
     street_address: string;
   };
   isLoading?: boolean;
-  loadId?: string;
-  isDeliveryStep?: boolean;
-  newStatus?: string; // Agregar el estado al que se está transicionando
 }
 
 
@@ -37,17 +31,12 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   onConfirm,
   actionText,
   stopInfo,
-  isLoading = false,
-  loadId,
-  isDeliveryStep = false,
-  newStatus
+  isLoading = false
 }) => {
   const { t } = useTranslation(['dashboard']);
   const [etaDate, setEtaDate] = useState('');
   const [etaTime, setEtaTime] = useState('');
   const [notes, setNotes] = useState('');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [companyId, setCompanyId] = useState<string | null>(null);
 
   // Generar opciones para el dropdown de tiempo combinado
   const generateTimeOptions = () => {
@@ -78,42 +67,6 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     return `${hours.toString().padStart(2, '0')}:${roundedMinutes.toString().padStart(2, '0')}`;
   };
 
-  const { mutate: uploadDocument, isPending: isUploading } = useDocumentUploadFlowACID();
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-    }
-  };
-
-  const handleUploadPOD = () => {
-    if (!selectedFile || !loadId || !companyId) {
-      toast.error('Faltan datos requeridos para subir el documento');
-      return;
-    }
-
-    uploadDocument({
-      file: selectedFile,
-      documentData: {
-        document_type: 'pod',
-        file_name: selectedFile.name,
-        file_size: selectedFile.size,
-        content_type: selectedFile.type,
-        company_id: companyId,
-        load_id: loadId
-      }
-    }, {
-      onSuccess: () => {
-        toast.success('POD subido exitosamente');
-        setSelectedFile(null);
-      },
-      onError: (error) => {
-        console.error('Error uploading POD:', error);
-        toast.error('Error al subir el POD');
-      }
-    });
-  };
 
   const handleConfirm = () => {
     console.log('🔍 handleConfirm - Valores antes de procesar:', { etaDate, etaTime });
@@ -155,7 +108,6 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     setEtaDate('');
     setEtaTime('');
     setNotes('');
-    setSelectedFile(null);
   };
 
   const handleClose = () => {
@@ -163,80 +115,12 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     setEtaDate('');
     setEtaTime('');
     setNotes('');
-    setSelectedFile(null);
     onClose();
   };
 
-  // Get company ID for current user
-  React.useEffect(() => {
-    const fetchCompanyId = async () => {
-      if (!isOpen) return;
-      
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const { data, error } = await supabase
-          .from('user_company_roles')
-          .select('company_id')
-          .eq('user_id', user.id)
-          .eq('is_active', true)
-          .limit(1)
-          .maybeSingle();
-
-        if (error) {
-          console.error('Error fetching company ID:', error);
-          return;
-        }
-
-        if (data) {
-          setCompanyId(data.company_id);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
-
-    fetchCompanyId();
-  }, [isOpen]);
 
   // Determinar el tipo de campo de tiempo según el estado
   const getTimeFieldInfo = () => {
-    if (!newStatus) {
-      return { 
-        label: t('dashboard:loads.status_update_modal.eta_label'), 
-        isETA: true,
-        defaultToNow: false 
-      };
-    }
-
-    // Estados que requieren ETA (yendo)
-    if (newStatus.includes('en_route')) {
-      return { 
-        label: t('dashboard:loads.status_update_modal.eta_label'), 
-        isETA: true,
-        defaultToNow: false 
-      };
-    }
-
-    // Estados que requieren hora actual (llegando o completando)
-    if (newStatus.includes('at_') || newStatus === 'loaded' || newStatus === 'delivered') {
-      const isArrival = newStatus.includes('at_');
-      const isPickup = newStatus === 'loaded';
-      const isDelivery = newStatus === 'delivered';
-      
-      let labelKey = 'arrival_time_label';
-      if (isPickup) labelKey = 'pickup_time_label';
-      if (isDelivery) labelKey = 'delivery_time_label';
-      
-      return { 
-        label: t(`dashboard:loads.status_update_modal.${labelKey}`), 
-        isETA: false,
-        defaultToNow: true 
-      };
-    }
-
-    // Default
     return { 
       label: t('dashboard:loads.status_update_modal.eta_label'), 
       isETA: true,
@@ -248,7 +132,6 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
 
   console.log('🔍 StatusUpdateModal - Estado del modal:', {
     isOpen,
-    newStatus,
     timeFieldInfo,
     etaDate,
     etaTime
@@ -278,7 +161,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
         setEtaTime(roundedTimeValue);
       }
     }
-  }, [isOpen, etaDate, etaTime, timeFieldInfo.defaultToNow, newStatus]);
+  }, [isOpen, etaDate, etaTime, timeFieldInfo.defaultToNow]);
 
   return (
     <>
@@ -352,39 +235,6 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
             </div>
           </div>
 
-          {/* POD Upload - Only show for delivery step */}
-          {isDeliveryStep && (
-            <div className="space-y-3">
-              <Label className="text-sm font-medium">
-                {t('dashboard:loads.status_update_modal.pod_label')}
-              </Label>
-              <div className="flex items-center gap-3">
-                <Input
-                  type="file"
-                  accept="image/*,.pdf"
-                  onChange={handleFileChange}
-                  className="text-sm"
-                />
-                {selectedFile && (
-                  <Button
-                    type="button"
-                    onClick={handleUploadPOD}
-                    disabled={isUploading}
-                    size="sm"
-                    className="shrink-0"
-                  >
-                    <Upload className="h-4 w-4 mr-1" />
-                    {isUploading ? t('dashboard:loads.status_update_modal.uploading') : t('dashboard:loads.status_update_modal.upload')}
-                  </Button>
-                )}
-              </div>
-              {selectedFile && (
-                <p className="text-xs text-muted-foreground">
-                  {t('dashboard:loads.status_update_modal.file_selected')} {selectedFile.name}
-                </p>
-              )}
-            </div>
-          )}
 
           {/* Notes */}
           <div className="space-y-2">
