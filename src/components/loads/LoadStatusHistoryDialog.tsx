@@ -100,33 +100,35 @@ export function LoadStatusHistoryDialog({
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        {/* Status Badge */}
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge 
-                            variant="outline"
-                            className={statusColors[entry.new_status] || "bg-muted"}
-                          >
-                            {statusLabels[entry.new_status] || entry.new_status}
-                          </Badge>
-                          {index === 0 && (
-                            <Badge variant="secondary" className="text-xs">
-                              Actual
+                        {/* Status Badge and ETA in same line */}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
+                          <div className="flex items-center gap-2">
+                            <Badge 
+                              variant="outline"
+                              className={statusColors[entry.new_status] || "bg-muted"}
+                            >
+                              {statusLabels[entry.new_status] || entry.new_status}
                             </Badge>
+                            {index === 0 && (
+                              <Badge variant="secondary" className="text-xs">
+                                Actual
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          {/* ETA Information (separated but same line) */}
+                          {entry.eta_provided && (
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">
+                                {entry.new_status.includes('en_route') ? 'ETA: ' : 'Hora: '}
+                                <span className="font-medium text-foreground">
+                                  {formatDateTimeAuto(entry.eta_provided)}
+                                </span>
+                              </span>
+                            </div>
                           )}
                         </div>
-
-                        {/* ETA Information (separated from badge) */}
-                        {entry.eta_provided && (
-                          <div className="flex items-center gap-1 mb-2">
-                            <Clock className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-sm text-muted-foreground">
-                              {entry.new_status.includes('en_route') ? 'ETA: ' : 'Hora: '}
-                              <span className="font-medium text-foreground">
-                                {formatDateTimeAuto(entry.eta_provided)}
-                              </span>
-                            </span>
-                          </div>
-                        )}
 
                         {/* Timestamp and User */}
                         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
