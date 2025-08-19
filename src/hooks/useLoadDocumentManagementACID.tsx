@@ -103,10 +103,10 @@ export const useLoadDocumentUploadFlowACID = () => {
     }) => {
       console.log('🔄 Starting complete load document upload ACID flow...', { file, documentData });
 
-      // 1. Generate unique file path
+      // 1. Generate consistent file path for document type (allows replacement)
       const fileExt = file.name.split('.').pop();
-      const fileName = `${crypto.randomUUID()}.${fileExt}`;
-      const filePath = `${documentData.load_id}/${documentData.document_type}/${fileName}`;
+      const fileName = `${documentData.document_type}.${fileExt}`;
+      const filePath = `${documentData.load_id}/${fileName}`;
 
       try {
         // 2. Upload to Supabase Storage
