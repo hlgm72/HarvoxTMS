@@ -49,6 +49,13 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [companyId, setCompanyId] = useState<string | null>(null);
 
+  // Handler personalizado para el input de tiempo que fuerza formato 24h
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const timeValue = e.target.value;
+    // El input type="time" siempre devuelve formato HH:MM en 24h
+    setEtaTime(timeValue);
+  };
+
   const { mutate: uploadDocument, isPending: isUploading } = useDocumentUploadFlowACID();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -272,9 +279,12 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                    step="60"
                    id="eta-time"
                    value={etaTime || ""}
-                   onChange={(e) => setEtaTime(e.target.value)}
-                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                   placeholder="HH:MM"
+                   onChange={handleTimeChange}
+                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-datetime-edit-ampm-field]:hidden"
+                   pattern="[0-9]{2}:[0-9]{2}"
+                   title="Formato 24 horas (HH:MM)"
+                   data-format="24"
+                   style={{ colorScheme: 'light' }}
                  />
               </div>
             </div>
