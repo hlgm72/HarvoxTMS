@@ -388,8 +388,8 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     });
   };
 
-  const activeLoads = loads.filter(load => !['delivered', 'cancelled'].includes(load.status));
-  const completedLoads = loads.filter(load => ['delivered'].includes(load.status));
+  const activeLoads = loads.filter(load => !['completed', 'cancelled'].includes(load.status));
+  const completedLoads = loads.filter(load => ['completed'].includes(load.status));
 
   // Determinar la carga actual (más prioritaria) para mostrar en el dashboard
   const getCurrentLoad = (loads: Load[]): Load | null => {
