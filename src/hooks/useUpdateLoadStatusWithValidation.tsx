@@ -51,14 +51,25 @@ export const useUpdateLoadStatusWithValidation = () => {
           doc.archived_at === null
         ) || false;
 
-        const hasRequiredWorkDocument = hasLoadOrder || hasRateConfirmation;
-        const activeWorkDocument = hasLoadOrder ? 'Load Order' : 'Rate Confirmation';
+        // ✅ AGREGAR VALIDACIÓN DE POD
+        const hasPOD = documents?.some(doc => 
+          doc.document_type === 'pod' && 
+          doc.archived_at === null
+        ) || false;
 
+        const hasRequiredWorkDocument = hasLoadOrder || hasRateConfirmation;
+
+        // Validar que tenga documento de trabajo (RC o LO)
         if (!hasRequiredWorkDocument) {
           throw new Error('No se puede marcar como entregada: falta el documento Rate Confirmation o Load Order requerido');
         }
 
-        console.log('✅ Validación de documentos exitosa, procediendo con actualización de estado');
+        // ✅ VALIDAR QUE TENGA POD ANTES DE PERMITIR 'delivered'
+        if (!hasPOD) {
+          throw new Error('No se puede marcar como entregada: falta subir el Proof of Delivery (POD)');
+        }
+
+        console.log('✅ Validación completa de documentos exitosa (RC/LO + POD), procediendo con actualización de estado');
       }
 
       // Proceder con la actualización del estado
