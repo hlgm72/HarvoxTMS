@@ -47,32 +47,41 @@ export const formatDateSafe = (
     let dateToFormat: Date;
     
     if (typeof dateInput === 'string') {
-      // Extraer año, mes, día directamente para evitar problemas de zona horaria
-      let year: number, month: number, day: number;
-      
-      if (dateInput.includes('T') || dateInput.includes('Z')) {
-        // Formato ISO: 2025-07-14T00:00:00.000Z - extraer solo la parte de fecha
-        const datePart = dateInput.split('T')[0];
-        [year, month, day] = datePart.split('-').map(Number);
-      } else if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        // Formato solo fecha: 2025-07-14
-        [year, month, day] = dateInput.split('-').map(Number);
-      } else {
-        // Si no es un formato reconocido, usar parseISO como fallback
+      // Si contiene información de hora (T o :), usar parseISO para preservar la hora
+      if (dateInput.includes('T') && (dateInput.includes(':') || dateInput.includes('Z'))) {
+        // Formato ISO completo con hora: 2025-07-14T08:00:00.000Z
         dateToFormat = parseISO(dateInput);
         if (!isValid(dateToFormat)) {
           return 'Fecha inválida';
         }
-        return format(dateToFormat, formatPattern, options);
+      } else {
+        // Para fechas sin hora o solo fechas YYYY-MM-DD
+        let year: number, month: number, day: number;
+        
+        if (dateInput.includes('T')) {
+          // Formato ISO: extraer solo la parte de fecha
+          const datePart = dateInput.split('T')[0];
+          [year, month, day] = datePart.split('-').map(Number);
+        } else if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          // Formato solo fecha: 2025-07-14
+          [year, month, day] = dateInput.split('-').map(Number);
+        } else {
+          // Si no es un formato reconocido, usar parseISO como fallback
+          dateToFormat = parseISO(dateInput);
+          if (!isValid(dateToFormat)) {
+            return 'Fecha inválida';
+          }
+          return format(dateToFormat, formatPattern, options);
+        }
+        
+        // Validar que los valores sean números válidos
+        if (isNaN(year) || isNaN(month) || isNaN(day)) {
+          return 'Fecha inválida';
+        }
+        
+        // Crear fecha local evitando zona horaria UTC (usar mediodía para mayor seguridad solo para fechas sin hora)
+        dateToFormat = new Date(year, month - 1, day, 12, 0, 0, 0);
       }
-      
-      // Validar que los valores sean números válidos
-      if (isNaN(year) || isNaN(month) || isNaN(day)) {
-        return 'Fecha inválida';
-      }
-      
-      // Crear fecha local evitando zona horaria UTC (usar mediodía para mayor seguridad)
-      dateToFormat = new Date(year, month - 1, day, 12, 0, 0, 0);
     } else {
       dateToFormat = dateInput;
     }
