@@ -110,9 +110,9 @@ export const useUserRoles = (): UseUserRolesReturn => {
       return { success: false, error: 'No tienes permisos para remover roles' };
     }
 
-    // Prevent removing company_owner role from others (only superadmin can do this)
-    if (role === 'company_owner' && currentRole !== 'superadmin') {
-      return { success: false, error: 'Solo un Super Administrador puede remover el rol de Propietario' };
+    // Prevent removing company_owner role from others (only superadmin and other company owners can do this)
+    if (role === 'company_owner' && currentRole !== 'superadmin' && currentRole !== 'company_owner') {
+      return { success: false, error: 'Solo un Super Administrador o Propietario puede remover el rol de Propietario' };
     }
 
     setLoading(true);
