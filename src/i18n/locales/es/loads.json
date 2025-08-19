@@ -133,7 +133,9 @@
   "validation": {
     "missing_docs": "Docs Faltantes",
     "pending_doc": "Doc Pendiente",
-    "rate_confirmation": "Rate Confirmation",
+    "missing_required_single": "Falta documento requerido: {{docs}}",
+    "missing_required_multiple": "Faltan documentos requeridos: {{docs}}",
+    "cannot_mark_delivered": "No se puede marcar como entregada sin documentos requeridos",
     "load_order": "Load Order",
     "replace_rc": "Reemplazar RC",
     "upload_rc": "Subir RC", 

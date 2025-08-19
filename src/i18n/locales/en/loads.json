@@ -133,7 +133,9 @@
   "validation": {
     "missing_docs": "Missing Docs",
     "pending_doc": "Pending Doc",
-    "rate_confirmation": "Rate Confirmation",
+    "missing_required_single": "Missing required document: {{docs}}",
+    "missing_required_multiple": "Missing required documents: {{docs}}",
+    "cannot_mark_delivered": "Cannot mark as delivered without required documents",
     "load_order": "Load Order",
     "replace_rc": "Replace RC",
     "upload_rc": "Upload RC", 
