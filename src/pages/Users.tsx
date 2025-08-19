@@ -202,7 +202,7 @@ export default function Users() {
       const allUserIds = new Set();
       const usersMap = new Map<string, User>();
 
-      // Procesar usuarios activos
+      // Procesar usuarios activos - reconstruir roles completamente
       if (companyUsers && companyUsers.length > 0) {
         companyUsers.forEach(companyUserRole => {
           const userId = companyUserRole.user_id;
@@ -211,7 +211,11 @@ export default function Users() {
           if (usersMap.has(userId)) {
             // Usuario ya existe, agregar rol adicional
             const existingUser = usersMap.get(userId)!;
-            existingUser.role = existingUser.role + ', ' + getRoleLabel(companyUserRole.role);
+            const currentRoles = existingUser.role.split(', ');
+            const newRoleLabel = getRoleLabel(companyUserRole.role);
+            if (!currentRoles.includes(newRoleLabel)) {
+              existingUser.role = existingUser.role + ', ' + newRoleLabel;
+            }
           } else {
             // Nuevo usuario activo
             usersMap.set(userId, {
