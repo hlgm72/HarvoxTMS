@@ -70,15 +70,15 @@ const LoadSkeleton = () => (
 );
 
 // Componente de loading mejorado
-const LoadingState = () => (
+const LoadingState = ({ t }: { t: any }) => (
   <div className="space-y-4">
     <div className="flex flex-col items-center justify-center py-12 space-y-4">
       <div className="flex items-center gap-3">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
-        <div className="text-lg font-medium">Cargando cargas...</div>
+        <div className="text-lg font-medium">{t('list.loading')}</div>
       </div>
       <div className="text-sm text-muted-foreground animate-pulse">
-        Obteniendo datos del período seleccionado
+        {t('list.getting_data')}
       </div>
     </div>
     
@@ -157,7 +157,7 @@ interface LoadsListProps {
 }
 
 export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('loads');
   const { refreshTrigger } = useLoadDocuments();
   
   // console.log('📋 LoadsList - periodFilter recibido:', periodFilter);
@@ -291,13 +291,13 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
   });
 
   if (isLoading) {
-    return <LoadingState />;
+    return <LoadingState t={t} />;
   }
 
   if (error) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-destructive">Error cargando cargas: {error.message}</div>
+        <div className="text-destructive">{t('list.error_loading')} {error.message}</div>
       </div>
     );
   }
@@ -328,9 +328,9 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     
                     {/* Documentos Subidos al lado del PO# */}
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Documentos:
-                      </span>
+                       <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                         {t('list.documents')}
+                       </span>
                       <LoadDocumentValidationIndicator 
                         loadId={load.id} 
                         loadStatus={load.status}
@@ -386,9 +386,9 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
             <CardContent className="pt-0">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Broker / Cliente
-                  </label>
+                   <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                     {t('list.broker_client')}
+                   </label>
                   <div className="flex items-center gap-3 mt-1">
                     {load.broker_logo_url ? (
                       <img 
@@ -408,17 +408,17 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     )}
                     <div>
                       <p className="text-sm font-medium">{load.broker_name}</p>
-                      {load.dispatcher_name && (
-                        <p className="text-xs text-muted-foreground">Contacto: {load.dispatcher_name}</p>
-                      )}
+                       {load.dispatcher_name && (
+                         <p className="text-xs text-muted-foreground">{t('list.contact')} {load.dispatcher_name}</p>
+                       )}
                     </div>
                   </div>
                 </div>
                 
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Conductor Asignado
-                  </label>
+                   <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                     {t('list.assigned_driver')}
+                   </label>
                   <div className="flex items-center gap-3 mt-1">
                     <Avatar className="h-8 w-8">
                       <AvatarImage 
@@ -434,13 +434,13 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     </Avatar>
                     <div>
                       <p className="text-sm font-medium">
-                        {load.driver_name || (
-                          <span className="text-muted-foreground italic">Sin asignar</span>
-                        )}
+                         {load.driver_name || (
+                           <span className="text-muted-foreground italic">{t('list.not_assigned')}</span>
+                         )}
                       </p>
-                      {load.internal_dispatcher_name && (
-                        <p className="text-xs text-muted-foreground">Dispatcher: {load.internal_dispatcher_name}</p>
-                      )}
+                       {load.internal_dispatcher_name && (
+                         <p className="text-xs text-muted-foreground">{t('list.dispatcher')} {load.internal_dispatcher_name}</p>
+                       )}
                     </div>
                   </div>
                 </div>

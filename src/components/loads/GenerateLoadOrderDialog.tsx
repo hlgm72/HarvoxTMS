@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -40,6 +41,7 @@ export function GenerateLoadOrderDialog({
   loadData, 
   onLoadOrderGenerated 
 }: GenerateLoadOrderDialogProps) {
+  const { t } = useTranslation('loads');
   const [isGenerating, setIsGenerating] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
   
@@ -131,10 +133,10 @@ export function GenerateLoadOrderDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Generar Load Order
+            {t('generate_load_order.title')}
           </DialogTitle>
           <DialogDescription>
-            Crea un Load Order personalizado con el monto que verá el conductor.
+            {t('generate_load_order.description')}
           </DialogDescription>
         </DialogHeader>
 

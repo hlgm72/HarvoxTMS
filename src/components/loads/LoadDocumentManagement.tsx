@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,6 +26,7 @@ export function LoadDocumentManagement({
   onRegenerateLoadOrder,
   userRole = 'admin'
 }: LoadDocumentManagementProps) {
+  const { t } = useTranslation('loads');
   const { data: validation, isLoading: validationLoading } = useLoadDocumentValidation(loadId);
   const { data: workStatus, isLoading: workStatusLoading } = useLoadWorkStatus(loadId);
   
@@ -39,7 +41,7 @@ export function LoadDocumentManagement({
         <CardContent className="py-6">
           <div className="flex items-center justify-center">
             <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
-            <span className="ml-2">Cargando estado de documentos...</span>
+            <span className="ml-2">{t('documents.loading')}</span>
           </div>
         </CardContent>
       </Card>
@@ -50,7 +52,7 @@ export function LoadDocumentManagement({
     return (
       <Card>
         <CardContent className="py-6 text-center text-muted-foreground">
-          No se pudo cargar la información de documentos
+          {t('documents.error_loading')}
         </CardContent>
       </Card>
     );
@@ -79,7 +81,7 @@ export function LoadDocumentManagement({
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Estado de Documentos
+              {t('documents.status_title')}
             </CardTitle>
             <LoadDocumentStatusIndicator loadId={loadId} showDetails={true} />
           </div>
@@ -96,12 +98,12 @@ export function LoadDocumentManagement({
 
             {/* Document Rules Information */}
             <div className="bg-muted/30 p-3 rounded-lg">
-              <h4 className="font-medium text-sm mb-2">Reglas de Documentos:</h4>
+              <h4 className="font-medium text-sm mb-2">{t('documents.rules_title')}</h4>
               <ul className="text-xs text-muted-foreground space-y-1">
-                <li>• Se requiere Rate Confirmation (RC) o Load Order (LO) para comenzar</li>
-                <li>• Load Order tiene prioridad sobre Rate Confirmation</li>
-                <li>• Una vez iniciado el trabajo, los documentos se protegen</li>
-                <li>• RC se puede reemplazar, LO se puede regenerar</li>
+                <li>• {t('documents.rules.1')}</li>
+                <li>• {t('documents.rules.2')}</li>
+                <li>• {t('documents.rules.3')}</li>
+                <li>• {t('documents.rules.4')}</li>
               </ul>
             </div>
           </div>

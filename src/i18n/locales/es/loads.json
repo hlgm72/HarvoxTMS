@@ -2,9 +2,9 @@
   "title": "Gestión de Cargas",
   "subtitle": {
     "loading": "Cargando estadísticas...",
-    "active_loads": "cargas activas", 
+    "active_loads": "cargas activas",
     "in_transit": "en tránsito",
-    "pending_assignment": "pendientes asignación"
+    "pending_assignment": "pendientes de asignación"
   },
   "create": {
     "button": "Nueva Carga",
@@ -14,9 +14,9 @@
   },
   "periods": {
     "current": "Período Actual",
-    "previous": "Período Anterior",
-    "next": "Período Siguiente", 
-    "all": "Histórico Completo",
+    "previous": "Período Anterior", 
+    "next": "Período Siguiente",
+    "all": "Historial Completo",
     "this_month": "Este Mes",
     "last_month": "Mes Pasado",
     "this_quarter": "Este Trimestre",
@@ -28,13 +28,12 @@
     "selected": "Período Seleccionado"
   },
   "status": {
+    "created": "Creada",
+    "route_planned": "Ruta Planificada",
     "assigned": "Asignada",
-    "en_route_pickup": "En Ruta al Pickup",
-    "at_pickup": "En Pickup",
-    "loaded": "Cargada",
-    "en_route_delivery": "En Ruta de Entrega",
-    "at_delivery": "En Entrega",
-    "delivered": "Entregada", 
+    "in_progress": "En Progreso",
+    "in_transit": "En Tránsito",
+    "delivered": "Entregada",
     "completed": "Completada",
     "pending": "Pendiente",
     "cancelled": "Cancelada"
@@ -44,34 +43,40 @@
     "edit": "Editar",
     "duplicate": "Duplicar",
     "delete": "Eliminar",
-    "status_history": "Historial",
+    "status_history": "Historial de Estado",
     "assign": "Asignar Conductor",
-    "documents": "Documentos",
-    "photos": "Fotos"
+    "documents": "Gestionar Documentos",
+    "photos": "Fotos",
+    "assign_status": "Asignar",
+    "in_transit_status": "En Tránsito",
+    "delivered_status": "Entregada",
+    "complete_status": "Completar",
+    "cancel_status": "Cancelar",
+    "reopen_status": "Reabrir (En Tránsito)"
   },
   "floating_actions": {
     "title": "Acciones de Cargas",
     "filters": {
-      "title": "Filtros de Cargas", 
-      "description": "Filtra las cargas por estado, conductor, broker y fechas"
+      "title": "Filtros de Cargas",
+      "description": "Filtrar cargas por estado, conductor, broker y fechas"
     },
     "export": {
-      "title": "Exportar Datos",
-      "description": "Exporta los datos de cargas en diferentes formatos"
+      "title": "Exportar Datos", 
+      "description": "Exportar datos de cargas en diferentes formatos"
     },
     "view": {
       "title": "Configuración de Vista",
-      "description": "Personaliza cómo se muestran las cargas"
+      "description": "Personalizar cómo se muestran las cargas"
     },
     "stats": {
       "title": "Estadísticas",
-      "description": "Ve estadísticas rápidas de tus cargas"
+      "description": "Ver estadísticas rápidas de tus cargas"
     }
   },
   "filters": {
     "status": "Estado",
-    "driver": "Conductor",
-    "broker": "Broker", 
+    "driver": "Conductor", 
+    "broker": "Broker",
     "date_range": "Rango de Fechas",
     "all": "Todos",
     "clear": "Limpiar Filtros",
@@ -83,20 +88,93 @@
     "create_button": "Crear Primera Carga"
   },
   "history": {
-    "title": "Historial de Estados",
+    "title": "Historial de Estado",
     "current": "Actual",
     "eta": "ETA: ",
     "time": "Hora: ",
-    "no_history": "No hay historial de estados disponible para esta carga"
+    "no_history": "No hay historial de estado disponible para esta carga"
   },
   "validation": {
-    "missing_docs": "Docs. faltantes",
-    "pending_doc": "Doc. pendiente", 
+    "missing_docs": "Docs Faltantes",
+    "pending_doc": "Doc Pendiente",
     "rate_confirmation": "Rate Confirmation",
     "load_order": "Load Order",
     "replace_rc": "Reemplazar RC",
-    "upload_rc": "Subir RC",
-    "regenerate_lo": "Regenerar LO", 
+    "upload_rc": "Subir RC", 
+    "regenerate_lo": "Regenerar LO",
     "generate_lo": "Generar LO"
+  },
+  "documents": {
+    "title": "Documentos de la Carga",
+    "status_title": "Estado de Documentos",
+    "actions_title": "Acciones de Documentos",
+    "upload_title": "Subir Documentos",
+    "uploaded_title": "Documentos Subidos",
+    "loading": "Cargando estado de documentos...",
+    "error_loading": "No se pudo cargar la información de documentos",
+    "no_documents": "No hay documentos subidos aún",
+    "generate_load_order": "Generar Load Order",
+    "export_pdf": "Exportar a PDF",
+    "preview_not_available": "Vista previa no disponible",
+    "protected_documents": "Documentos Protegidos",
+    "load_completed": "Carga Completada",
+    "protection_warning": "El conductor ha comenzado a trabajar en esta carga. Los documentos principales están protegidos contra eliminación.",
+    "completion_warning": "Esta carga ha sido completada. No se pueden agregar más documentos.",
+    "active": "Activo",
+    "priority": "Prioridad",
+    "info_regenerate": "Puede regenerar el LO para actualizar datos",
+    "info_replace": "Puede reemplazar el RC incluso durante el trabajo",
+    "error_generate_link": "No se pudo generar el enlace de descarga",
+    "error_view_link": "No se pudo generar el enlace para ver el documento",
+    "error_save_document": "No se pudo guardar la información del documento",
+    "error_upload": "No se pudo subir el archivo",
+    "error_generate_lo": "No se pudo generar el Load Order. Intenta nuevamente.",
+    "success_upload": "Documento subido",
+    "success_generate_lo": "Load Order generado",
+    "success_photo": "Foto subida",
+    "rules_title": "Reglas de Documentos:",
+    "rules": {
+      "1": "Se requiere Rate Confirmation (RC) o Load Order (LO) para comenzar",
+      "2": "Load Order tiene prioridad sobre Rate Confirmation",
+      "3": "Una vez iniciado el trabajo, los documentos se protegen",
+      "4": "RC se puede reemplazar, LO se puede regenerar"
+    }
+  },
+  "generate_load_order": {
+    "title": "Generar Load Order",
+    "description": "Crea un Load Order personalizado con el monto que verá el conductor.",
+    "custom_amount": "Monto para el Load Order ($)",
+    "original_amount": "Monto original:",
+    "commodity": "Commodity:",
+    "load": "Carga:",
+    "important": "Importante:",
+    "warning": "El conductor verá este Load Order en lugar del Rate Confirmation original. El monto debe ser menor o igual al monto original.",
+    "generating": "Generando...",
+    "generate": "Generar Load Order",
+    "cancel": "Cancelar",
+    "amount_error": "El monto no puede ser mayor al original",
+    "amount_required": "El monto debe ser mayor a 0",
+    "success": "Load Order creado exitosamente con monto",
+    "error": "No se pudo generar el Load Order. Intenta nuevamente."
+  },
+  "list": {
+    "loading": "Cargando cargas...",
+    "getting_data": "Obteniendo datos del período seleccionado",
+    "error_loading": "Error cargando cargas:",
+    "documents": "Documentos:",
+    "broker_client": "Broker / Cliente",
+    "assigned_driver": "Conductor Asignado",
+    "contact": "Contacto:",
+    "dispatcher": "Dispatcher:",
+    "not_assigned": "Sin asignar",
+    "commodity_info": "Información de Commodity",
+    "dates_schedule": "Fechas y Horarios",
+    "pickup": "Recogida:",
+    "delivery": "Entrega:",
+    "period_status": "Estado del Período",
+    "actions_available": "Acciones Disponibles",
+    "view_load": "Ver Carga",
+    "edit_load": "Editar Carga",
+    "more_actions": "Más Acciones"
   }
 }
