@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { 
   Package, 
   MapPin, 
@@ -449,15 +450,23 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                   {activeLoads.length}
                 </Badge>
               )}
-              {dashboardMode && activeLoads.length > 1 && (
-                <Link 
-                  to="/my-loads" 
-                  className="ml-1 hover:text-primary transition-colors"
-                  title="Ver Cargas Asignadas"
-                >
-                  <ExternalLink className="h-3 w-3" />
-                </Link>
-              )}
+               {dashboardMode && activeLoads.length > 1 && (
+                 <TooltipProvider>
+                   <Tooltip>
+                     <TooltipTrigger asChild>
+                       <Link 
+                         to="/my-loads" 
+                         className="ml-1 hover:text-primary transition-colors"
+                       >
+                         <ExternalLink className="h-3 w-3" />
+                       </Link>
+                     </TooltipTrigger>
+                     <TooltipContent>
+                       <p>{t('common:loads.tooltips.view_all_loads')}</p>
+                     </TooltipContent>
+                   </Tooltip>
+                 </TooltipProvider>
+               )}
             </div>
           </TabsTrigger>
           <TabsTrigger value="completed">
@@ -726,20 +735,46 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                        size="sm"
                        showText={false}
                      />
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        title="Ver documentos de la carga"
-                        onClick={() => setDocumentsDialog({ isOpen: true, load })}
-                      >
-                        <FileText className="h-4 w-4" />
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        <Phone className="h-4 w-4" />
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        <Route className="h-4 w-4" />
-                      </Button>
+                       <TooltipProvider>
+                         <Tooltip>
+                           <TooltipTrigger asChild>
+                             <Button 
+                               size="sm" 
+                               variant="outline" 
+                               onClick={() => setDocumentsDialog({ isOpen: true, load })}
+                             >
+                               <FileText className="h-4 w-4" />
+                             </Button>
+                           </TooltipTrigger>
+                           <TooltipContent>
+                             <p>{t('common:loads.tooltips.view_documents')}</p>
+                           </TooltipContent>
+                         </Tooltip>
+                       </TooltipProvider>
+                       <TooltipProvider>
+                         <Tooltip>
+                           <TooltipTrigger asChild>
+                             <Button size="sm" variant="outline">
+                               <Phone className="h-4 w-4" />
+                             </Button>
+                           </TooltipTrigger>
+                           <TooltipContent>
+                             <p>{t('common:loads.tooltips.call_contact')}</p>
+                           </TooltipContent>
+                         </Tooltip>
+                       </TooltipProvider>
+                       <TooltipProvider>
+                         <Tooltip>
+                           <TooltipTrigger asChild>
+                             <Button size="sm" variant="outline">
+                               <Route className="h-4 w-4" />
+                             </Button>
+                           </TooltipTrigger>
+                           <TooltipContent>
+                             <p>{t('common:loads.tooltips.view_route')}</p>
+                           </TooltipContent>
+                         </Tooltip>
+                       </TooltipProvider>
                    </div>
                 </CardContent>
               </Card>

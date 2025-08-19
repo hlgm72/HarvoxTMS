@@ -326,6 +326,12 @@
       "delivered": "Entrega completada",
       "continue": "Continuar",
       "upload_pod": "Subir POD"
+    },
+    "tooltips": {
+      "view_all_loads": "Ver todas las cargas asignadas",
+      "view_documents": "Ver documentos de la carga",
+      "call_contact": "Llamar al contacto",
+      "view_route": "Ver ruta en mapa"
     }
   },
   "stop": "Parada",
