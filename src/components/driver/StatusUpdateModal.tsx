@@ -61,6 +61,23 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     return times;
   };
 
+  // Función para redondear la hora actual a intervalos de 5 minutos
+  const roundTimeToNearestInterval = (date: Date) => {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    
+    // Redondear a los 5 minutos más cercanos
+    const roundedMinutes = Math.round(minutes / 5) * 5;
+    
+    // Si se redondea a 60, ajustar la hora
+    if (roundedMinutes === 60) {
+      const adjustedHours = (hours + 1) % 24;
+      return `${adjustedHours.toString().padStart(2, '0')}:00`;
+    }
+    
+    return `${hours.toString().padStart(2, '0')}:${roundedMinutes.toString().padStart(2, '0')}`;
+  };
+
   const { mutate: uploadDocument, isPending: isUploading } = useDocumentUploadFlowACID();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -245,20 +262,20 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
       const now = new Date();
       setEtaDate(format(now, 'yyyy-MM-dd'));
       
-      // Si no es ETA, establecer la hora actual exacta
+      // Si no es ETA, establecer la hora actual redondeada a intervalos de 5 minutos
       if (timeFieldInfo.defaultToNow && !etaTime) {
         const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        const timeValue = `${hours}:${minutes}`;
+        const roundedTimeValue = roundTimeToNearestInterval(now);
+        
         console.log('⏰ DEBUG - Hora actual del sistema:', {
           now: now.toString(),
           hours: now.getHours(),
           minutes: now.getMinutes(),
-          timeValue: timeValue
+          originalTime: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`,
+          roundedTime: roundedTimeValue
         });
-        console.log('⏰ Estableciendo hora automática:', timeValue);
-        setEtaTime(timeValue);
+        console.log('⏰ Estableciendo hora automática redondeada:', roundedTimeValue);
+        setEtaTime(roundedTimeValue);
       }
     }
   }, [isOpen, etaDate, etaTime, timeFieldInfo.defaultToNow, newStatus]);
