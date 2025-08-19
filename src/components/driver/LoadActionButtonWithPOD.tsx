@@ -66,25 +66,24 @@ export function LoadActionButtonWithPOD({
     }
   };
 
-  // Usar la nueva lógica si hay paradas
-  if (hasNextAction && nextStopInfo) {
-    // Si ya está delivered (última entrega completada) y falta POD, mostrar botón subir POD
-    if (load.status === 'delivered' && nextStopInfo.isLastDelivery && !documentValidation?.hasPOD) {
-      return (
-        <Button 
-          size="sm" 
-          className="flex-1"
-          onClick={() => onUploadPOD(load.id)}
-          disabled={isPending}
-          variant="default"
-        >
-          <Upload className="h-4 w-4 mr-2" />
-          {t('common:loads.actions.upload_pod')}
-        </Button>
-      );
-    }
+  // ✅ Lógica simple: si está delivered y no tiene POD, mostrar botón Upload POD
+  if (load.status === 'delivered' && !documentValidation?.hasPOD) {
+    return (
+      <Button 
+        size="sm" 
+        className="flex-1"
+        onClick={() => onUploadPOD(load.id)}
+        disabled={isPending}
+        variant="default"
+      >
+        <Upload className="h-4 w-4 mr-2" />
+        {t('common:loads.actions.upload_pod')}
+      </Button>
+    );
+  }
 
-    // Para todos los otros casos, mostrar botón de acción normal
+  // Usar la nueva lógica si hay paradas y no está en delivered
+  if (hasNextAction && nextStopInfo) {
     return (
       <Button 
         size="sm" 
