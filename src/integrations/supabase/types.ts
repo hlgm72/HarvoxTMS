@@ -3208,6 +3208,10 @@ export type Database = {
         Args: { income_id: string }
         Returns: Json
       }
+      delete_recent_fuel_expenses_with_timezone_issues: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       delete_test_company: {
         Args: { company_id_param: string }
         Returns: Json
