@@ -83,7 +83,7 @@ interface InviteUserForm {
 }
 
 const ROLE_OPTIONS = [
-  { value: 'company_admin', label: '👨‍💼 Company Admin' },
+  { value: 'operations_manager', label: '👨‍💼 Operations Manager' },
   { value: 'dispatcher', label: '📋 Dispatcher' },
   { value: 'driver', label: '🚛 Driver' },
   { value: 'multi_company_dispatcher', label: '🏢 Multi-Company Dispatcher' },
@@ -386,7 +386,7 @@ export default function Users() {
           return Object.entries({
             'superadmin': getRoleLabel('superadmin'),
             'company_owner': getRoleLabel('company_owner'),
-            'company_admin': getRoleLabel('company_admin'),
+            'operations_manager': getRoleLabel('operations_manager'),
             'dispatcher': getRoleLabel('dispatcher'),
             'driver': getRoleLabel('driver'),
             'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
@@ -465,7 +465,7 @@ export default function Users() {
           const originalRole = Object.entries({
             'superadmin': getRoleLabel('superadmin'),
             'company_owner': getRoleLabel('company_owner'),
-            'company_admin': getRoleLabel('company_admin'),
+            'operations_manager': getRoleLabel('operations_manager'),
             'dispatcher': getRoleLabel('dispatcher'),
             'driver': getRoleLabel('driver'),
             'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
@@ -629,13 +629,8 @@ export default function Users() {
         variant: 'default',
         className: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700'
       },
-      'company_admin': { 
-        label: getRoleLabel('company_admin'), 
-        variant: 'default',
-        className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
-      },
       'operations_manager': { 
-        label: '👨‍💼 Operations Manager', 
+        label: getRoleLabel('operations_manager'), 
         variant: 'default',
         className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
       },
@@ -867,14 +862,14 @@ export default function Users() {
                          <TableCell>
                            {user.role.split(', ').map((roleLabel, index) => {
                               // Convertir el label de vuelta al rol original para obtener el badge correcto
-                             const originalRole = Object.entries({
-                                'superadmin': getRoleLabel('superadmin'),
-                                'company_owner': getRoleLabel('company_owner'),
-                                'company_admin': getRoleLabel('company_admin'),
-                                'dispatcher': getRoleLabel('dispatcher'),
-                                'driver': getRoleLabel('driver'),
-                                'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
-                              }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+                               const originalRole = Object.entries({
+                                 'superadmin': getRoleLabel('superadmin'),
+                                 'company_owner': getRoleLabel('company_owner'),
+                                 'operations_manager': getRoleLabel('operations_manager'),
+                                 'dispatcher': getRoleLabel('dispatcher'),
+                                 'driver': getRoleLabel('driver'),
+                                 'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
+                               }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
                              
                              return (
                                <span key={index} className="inline-flex items-center mr-1">
@@ -981,13 +976,13 @@ export default function Users() {
                                  {user.role.split(', ').map((roleLabel, index) => {
                                    // Convertir el label de vuelta al rol original para obtener el badge correcto
                                    const originalRole = Object.entries({
-                                      'superadmin': getRoleLabel('superadmin'),
-                                      'company_owner': getRoleLabel('company_owner'),
-                                      'company_admin': getRoleLabel('company_admin'),
-                                      'dispatcher': getRoleLabel('dispatcher'),
-                                      'driver': getRoleLabel('driver'),
-                                      'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
-                                    }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+                                       'superadmin': getRoleLabel('superadmin'),
+                                       'company_owner': getRoleLabel('company_owner'),
+                                       'operations_manager': getRoleLabel('operations_manager'),
+                                       'dispatcher': getRoleLabel('dispatcher'),
+                                       'driver': getRoleLabel('driver'),
+                                       'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
+                                     }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
                                    
                                    return getRoleBadge(originalRole);
                                  })}

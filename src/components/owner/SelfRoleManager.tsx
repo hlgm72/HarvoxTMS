@@ -35,8 +35,8 @@ type UserRole = string; // Database['public']['Enums']['user_role'];
 
 const availableRoles: { value: UserRole; label: string; description: string }[] = [
   {
-    value: 'company_admin',
-    label: 'Administrador de Compañía',
+    value: 'operations_manager',
+    label: 'Gerente de Operaciones',
     description: 'Gestión administrativa y operacional'
   },
   {

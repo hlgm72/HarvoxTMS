@@ -17,8 +17,8 @@ export const ROLE_CONFIGS: Record<string, RoleConfig> = {
     emoji: '👑',
     className: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700'
   },
-  'company_admin': {
-    label: 'Company Admin',
+  'operations_manager': {
+    label: 'Operations Manager',
     emoji: '👨‍💼',
     className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
   },

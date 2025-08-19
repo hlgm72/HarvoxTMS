@@ -16,6 +16,7 @@ interface UserFiltersSheetProps {
 
 const ROLE_OPTIONS = [
   { value: 'company_owner', label: 'Propietario de Empresa' },
+  { value: 'operations_manager', label: 'Gerente de Operaciones' },
   { value: 'senior_dispatcher', label: 'Despachador Senior' },
   { value: 'dispatcher', label: 'Despachador' },
   { value: 'driver', label: 'Conductor' },

@@ -45,9 +45,7 @@ interface EditUserDialogProps {
 
 const ROLE_OPTIONS = [
   { value: 'company_owner', label: 'Dueño de la Empresa' },
-  { value: 'general_manager', label: 'Gerente General' },
   { value: 'operations_manager', label: 'Gerente de Operaciones' },
-  { value: 'safety_manager', label: 'Gerente de Seguridad' },
   { value: 'senior_dispatcher', label: 'Despachador Senior' },
   { value: 'dispatcher', label: 'Despachador' },
   { value: 'driver', label: 'Conductor' },
@@ -298,11 +296,6 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
                         label: '👑 Company Owner', 
                         variant: 'default',
                         className: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700'
-                      },
-                      'company_admin': { 
-                        label: '👨‍💼 Company Admin', 
-                        variant: 'default',
-                        className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
                       },
                       'operations_manager': { 
                         label: '👨‍💼 Operations Manager', 
