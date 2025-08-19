@@ -4,6 +4,7 @@
  */
 
 import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import { es, enUS } from 'date-fns/locale';
 import { 
   formatDateSafe,
@@ -277,8 +278,27 @@ export const formatDateTimeAuto = (dateInput: string | Date | null | undefined):
   const locale = language === 'es' ? es : enUS;
   const pattern = language === 'es' ? 'dd/MM/yyyy HH:mm' : 'MM/dd/yyyy HH:mm';
   
+  if (!dateInput) return language === 'es' ? 'No definida' : 'Not defined';
+  
   try {
-    return formatDateSafe(dateInput, pattern, { locale });
+    // Obtener zona horaria del usuario
+    const userTimeZone = getUserTimeZone();
+    
+    // Si es un string, parsearlo como fecha ISO (UTC)
+    let date: Date;
+    if (typeof dateInput === 'string') {
+      date = new Date(dateInput);
+    } else {
+      date = dateInput;
+    }
+    
+    // Verificar que la fecha sea válida
+    if (!date || isNaN(date.getTime())) {
+      return language === 'es' ? 'Fecha inválida' : 'Invalid date';
+    }
+    
+    // Formatear en la zona horaria del usuario usando date-fns-tz
+    return formatInTimeZone(date, userTimeZone, pattern, { locale });
   } catch (error) {
     console.error('Error formatting datetime auto:', error);
     return language === 'es' ? 'Fecha inválida' : 'Invalid date';
