@@ -613,18 +613,18 @@ const [uploading, setUploading] = useState<string | null>(null);
     const isRemoving = removingDocuments.has(document.id);
 
     return (
-      <div className="p-3 border rounded-lg bg-white">
-        {/* Main flex container: left content, right preview */}
-        <div className="flex gap-3">
-          {/* Left column: All content and actions */}
+      <div className="p-2 sm:p-3 border rounded-lg bg-white">
+        {/* Main flex container: responsive layout */}
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+          {/* Content section - full width on mobile, left column on desktop */}
           <div className="flex-1 space-y-2">
             {/* Header: Document title and required badge */}
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium text-sm">{docType.label}</span>
+              <div className="flex items-center gap-2 min-w-0">
+                <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <span className="font-medium text-sm truncate">{docType.label}</span>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 flex-shrink-0">
                 {docType.required && <Badge variant="destructive" className="text-[10px] h-4 px-1">Requerido</Badge>}
                 {docType.generated && <Badge variant="secondary" className="text-[10px] h-4 px-1">Generado</Badge>}
               </div>
@@ -645,7 +645,7 @@ const [uploading, setUploading] = useState<string | null>(null);
                 size="sm" 
                 disabled={isRemoving} 
                 title="Ver documento" 
-                className="h-7 text-xs"
+                className="h-7 w-7 p-0 sm:w-auto sm:px-2 text-xs"
                 onClick={async () => {
                   try {
                     if (document.url.startsWith('blob:')) {
@@ -679,6 +679,7 @@ const [uploading, setUploading] = useState<string | null>(null);
                 }}
               >
                 <Eye className="h-3 w-3" />
+                <span className="hidden sm:inline ml-1">Ver</span>
               </Button>
               <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={async () => {
                 try {
@@ -728,6 +729,7 @@ const [uploading, setUploading] = useState<string | null>(null);
                 }
               }} disabled={isRemoving} title="Descargar documento">
                 <Download className="h-3 w-3" />
+                <span className="hidden sm:inline ml-1">Descargar</span>
               </Button>
               <input
                 type="file"
@@ -793,12 +795,12 @@ const [uploading, setUploading] = useState<string | null>(null);
             </div>
           </div>
 
-          {/* Right column: Preview Section */}
-          <div className="flex-shrink-0">
+          {/* Preview Section - below content on mobile, right column on desktop */}
+          <div className="flex-shrink-0 w-full sm:w-auto flex justify-center sm:block">
             <DocumentPreview
               documentUrl={document.url}
               fileName={document.fileName}
-              className="w-32 h-32"
+              className="w-24 h-24 sm:w-32 sm:h-32"
               onClick={async () => {
                 try {
                   if (document.url.startsWith('blob:')) {
@@ -885,26 +887,34 @@ const [uploading, setUploading] = useState<string | null>(null);
     return (
       <div className="space-y-6">
         {/* Upload Controls */}
-        <div className="flex gap-3 p-4 bg-muted/30 rounded-lg">
-          <div className="w-1/2">
+        <div className="flex flex-col sm:flex-row gap-3 p-3 sm:p-4 bg-muted/30 rounded-lg">
+          <div className="w-full sm:w-1/2">
             <DropdownMenu open={showUploadDropdown} onOpenChange={setShowUploadDropdown}>
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="default" 
-                  className="w-full justify-between"
+                  className="w-full justify-between text-sm"
                   disabled={getAvailableDocumentTypes().length === 0}
                 >
                   <div className="flex items-center gap-2">
                     <Upload className="h-4 w-4" />
-                    {getAvailableDocumentTypes().length === 0 
-                      ? 'Todos los documentos han sido subidos' 
-                      : 'Subir documento'
-                    }
+                    <span className="hidden sm:inline">
+                      {getAvailableDocumentTypes().length === 0 
+                        ? 'Todos los documentos han sido subidos' 
+                        : 'Subir documento'
+                      }
+                    </span>
+                    <span className="sm:hidden">
+                      {getAvailableDocumentTypes().length === 0 
+                        ? 'Completado' 
+                        : 'Documento'
+                      }
+                    </span>
                   </div>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-80">
+              <DropdownMenuContent className="w-80 z-50">
                 {getAvailableDocumentTypes().map((docType) => (
                   <DropdownMenuItem 
                     key={docType.type}
@@ -938,29 +948,31 @@ const [uploading, setUploading] = useState<string | null>(null);
             </DropdownMenu>
           </div>
           
-          <div className="w-1/4">
+          <div className="w-full sm:w-1/4">
             <DropdownMenu open={showPhotoDropdown} onOpenChange={setShowPhotoDropdown}>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
                   disabled={uploadingPhoto !== null || getAvailablePhotoCategories().length === 0}
-                  className="w-full gap-2"
+                  className="w-full gap-2 text-sm"
                 >
                   {uploadingPhoto ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Subiendo foto...
+                      <span className="hidden sm:inline">Subiendo foto...</span>
+                      <span className="sm:hidden">Subiendo...</span>
                     </>
                   ) : (
                     <>
                       <Upload className="h-4 w-4" />
-                      Subir foto
+                      <span className="hidden sm:inline">Subir foto</span>
+                      <span className="sm:hidden">Foto</span>
                       <ChevronDown className="h-4 w-4" />
                     </>
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-56 z-50">
                 {getAvailablePhotoCategories().map((category) => (
                   <DropdownMenuItem
                     key={category.value}
@@ -988,7 +1000,7 @@ const [uploading, setUploading] = useState<string | null>(null);
           
           {/* Solo mostrar botón de "Generar Load Order" si no es conductor */}
           {userRole !== 'driver' && (
-            <div className="w-1/4">
+            <div className="w-full sm:w-1/4">
               <Button
                 onClick={() => {
                   console.log('🔄 Load Order button clicked');
@@ -997,11 +1009,12 @@ const [uploading, setUploading] = useState<string | null>(null);
                   setShowGenerateLoadOrder(true);
                 }}
                 disabled={uploading !== null || !canGenerateLoadOrder(loadData)}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white border-orange-500 hover:border-orange-600"
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white border-orange-500 hover:border-orange-600 text-sm"
                 title={canGenerateLoadOrder(loadData) ? "Generar Load Order" : "Faltan datos de la carga o paradas para generar el Load Order"}
               >
                 <FileText className="h-4 w-4 mr-2" />
-                Generar Load Order
+                <span className="hidden sm:inline">Generar Load Order</span>
+                <span className="sm:hidden">Load Order</span>
               </Button>
             </div>
           )}
@@ -1009,7 +1022,7 @@ const [uploading, setUploading] = useState<string | null>(null);
 
         {/* Dynamic Document Containers */}
         {sortedDocumentTypes.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             {sortedDocumentTypes.map(docType => {
               const docs = documentGroups[docType];
               const documentTypeDef = documentTypes.find(dt => dt.type === docType);
@@ -1051,7 +1064,7 @@ const [uploading, setUploading] = useState<string | null>(null);
             onOpenChange?.(false);
           }
         }}>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="w-[95vw] max-w-4xl max-h-[85vh] overflow-y-auto p-3 sm:p-6">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <span>

@@ -59,7 +59,7 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[95vw] max-w-md mx-2 sm:mx-0">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
@@ -90,14 +90,14 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
             )}
           </div>
           
-          <div className="flex gap-2 pt-4">
-            <Button onClick={handleClose} variant="outline" className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-2 pt-4">
+            <Button onClick={handleClose} variant="outline" className="flex-1 text-sm">
               Cancelar
             </Button>
             <Button 
               onClick={handleUpload} 
               disabled={!selectedFile || isUploading}
-              className="flex-1"
+              className="flex-1 text-sm"
             >
               <Upload className="h-4 w-4 mr-2" />
               {isUploading ? 'Subiendo...' : 'Subir POD'}

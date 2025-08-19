@@ -251,7 +251,7 @@ export function EmailDocumentsModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-white">
+      <DialogContent className="w-[95vw] max-w-2xl mx-2 sm:mx-0 bg-white max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Mail className="w-5 h-5" />
@@ -277,20 +277,20 @@ export function EmailDocumentsModal({
               )}
             </div>
             
-            <div className="max-h-40 overflow-y-auto border rounded-md p-3 space-y-2">
+            <div className="max-h-32 sm:max-h-40 overflow-y-auto border rounded-md p-2 sm:p-3 space-y-2">
               {selectedDocuments.map((doc) => {
                 const fileSizeMB = (doc.file_size || 0) / (1024 * 1024);
                 const isLarge = (doc.file_size || 0) > MAX_FILE_SIZE;
                 
                 return (
-                  <div key={doc.id} className={`flex items-center justify-between rounded p-2 ${isLarge ? 'bg-red-50 border border-red-200' : 'bg-muted/50'}`}>
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      {isLarge ? (
-                        <FileWarning className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      ) : (
-                        <FileText className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                      )}
-                      <span className="text-sm truncate">{doc.file_name}</span>
+                   <div key={doc.id} className={`flex items-center justify-between rounded p-1.5 sm:p-2 ${isLarge ? 'bg-red-50 border border-red-200' : 'bg-muted/50'}`}>
+                     <div className="flex items-center gap-1 sm:gap-2 flex-1 min-w-0">
+                       {isLarge ? (
+                         <FileWarning className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 flex-shrink-0" />
+                       ) : (
+                         <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+                       )}
+                       <span className="text-xs sm:text-sm truncate">{doc.file_name}</span>
                       <Badge 
                         variant={isLarge ? "destructive" : "outline"} 
                         className="text-xs"
@@ -428,15 +428,15 @@ export function EmailDocumentsModal({
           </div>
 
           {/* Enhanced Actions */}
-          <div className="flex justify-between">
-            <div>
+          <div className="flex flex-col sm:flex-row justify-between gap-3">
+            <div className="w-full sm:w-auto">
               {canSplit && (
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleSplitAndSend}
                   disabled={sendEmailMutation.isPending || largeFiles.length > 0}
-                  className="mr-2"
+                  className="w-full sm:w-auto text-sm"
                 >
                   <Split className="w-4 h-4 mr-2" />
                   Dividir en Emails
@@ -444,12 +444,13 @@ export function EmailDocumentsModal({
               )}
             </div>
             
-            <div className="flex space-x-2">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 disabled={sendEmailMutation.isPending}
+                className="w-full sm:w-auto text-sm"
               >
                 Cancelar
               </Button>
@@ -462,16 +463,19 @@ export function EmailDocumentsModal({
                   largeFiles.length > 0 ||
                   selectedDocuments.length === 0
                 }
+                className="w-full sm:w-auto text-sm"
               >
                 {sendEmailMutation.isPending ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Enviando...
+                    <span className="hidden sm:inline">Enviando...</span>
+                    <span className="sm:hidden">Enviando</span>
                   </>
                 ) : (
                   <>
                     <Send className="w-4 h-4 mr-2" />
-                    Enviar Documentos
+                    <span className="hidden sm:inline">Enviar Documentos</span>
+                    <span className="sm:hidden">Enviar</span>
                   </>
                 )}
               </Button>
