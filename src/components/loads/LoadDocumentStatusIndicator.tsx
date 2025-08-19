@@ -72,11 +72,6 @@ export function LoadDocumentStatusIndicator({
         {statusInfo.text}
       </Badge>
 
-      {showDetails && validation.activeWorkDocument && workStatus.isInProgress && (
-        <div className="text-xs text-muted-foreground">
-          <span className="text-amber-600">• Docs protegidos</span>
-        </div>
-      )}
     </div>
   );
 }
