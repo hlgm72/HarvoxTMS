@@ -310,7 +310,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                <div className="grid grid-cols-2 gap-2">
                  <div>
                    <Label htmlFor="eta-hours" className="text-xs text-muted-foreground">
-                     Horas
+                     {t('dashboard:loads.status_update_modal.hours_label')}
                    </Label>
                    <Select value={etaHours} onValueChange={setEtaHours}>
                      <SelectTrigger className="text-sm">
@@ -327,9 +327,9 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                  </div>
                  
                  <div>
-                   <Label htmlFor="eta-minutes" className="text-xs text-muted-foreground">
-                     Minutos
-                   </Label>
+                    <Label htmlFor="eta-minutes" className="text-xs text-muted-foreground">
+                      {t('dashboard:loads.status_update_modal.minutes_label')}
+                    </Label>
                    <Select value={etaMinutes} onValueChange={setEtaMinutes}>
                      <SelectTrigger className="text-sm">
                        <SelectValue placeholder="MM" />
