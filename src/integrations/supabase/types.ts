@@ -3019,6 +3019,10 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: boolean
       }
+      can_access_customer_contacts: {
+        Args: { client_id_param: string }
+        Returns: boolean
+      }
       can_access_driver_highly_sensitive_data: {
         Args: { target_user_id: string }
         Returns: boolean
