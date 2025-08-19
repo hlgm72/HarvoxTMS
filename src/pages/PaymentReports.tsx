@@ -95,6 +95,9 @@ export default function PaymentReports() {
   const { data: paymentCalculations = [], isLoading, refetch } = useQuery({
     queryKey: ['payment-calculations-reports', getFilterPeriodIds, filters.periodFilter],
     queryFn: async () => {
+      console.log('🔍 PaymentReports Query - getFilterPeriodIds:', getFilterPeriodIds);
+      console.log('🔍 PaymentReports Query - periodFilter:', filters.periodFilter);
+      
       let query = supabase
         .from('driver_period_calculations')
         .select(`
@@ -111,20 +114,38 @@ export default function PaymentReports() {
 
       // Filtrar por períodos específicos si no es filtro personalizado
       if (filters.periodFilter.type !== 'custom' && getFilterPeriodIds.length > 0) {
+        console.log('📊 Adding period filter for IDs:', getFilterPeriodIds);
         query = query.in('company_payment_period_id', getFilterPeriodIds);
       } else if (filters.periodFilter.type === 'custom' && filters.periodFilter.startDate && filters.periodFilter.endDate) {
         // Para filtro personalizado, usar las fechas
+        console.log('📊 Adding custom date filter:', filters.periodFilter.startDate, 'to', filters.periodFilter.endDate);
         query = query
           .gte('company_payment_periods.period_start_date', filters.periodFilter.startDate)
           .lte('company_payment_periods.period_end_date', filters.periodFilter.endDate);
+      } else if (filters.periodFilter.type === 'all') {
+        console.log('📊 Showing all periods - no filter applied');
+        // No agregar filtro para mostrar todos
+      } else {
+        console.log('📊 No period filter applied - no period IDs available yet');
+        // Si no hay IDs de período, devolver array vacío para evitar mostrar todos
+        return [];
       }
 
       const { data, error } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ PaymentReports Query Error:', error);
+        throw error;
+      }
+      
+      console.log('✅ PaymentReports Query Result:', data?.length, 'calculations found');
       return data || [];
     },
-    enabled: !!user && (getFilterPeriodIds.length > 0 || filters.periodFilter.type === 'custom')
+    enabled: !!user && (
+      filters.periodFilter.type === 'all' || 
+      getFilterPeriodIds.length > 0 || 
+      (filters.periodFilter.type === 'custom' && !!filters.periodFilter.startDate && !!filters.periodFilter.endDate)
+    )
   });
 
   // Obtener conductores para filtro
