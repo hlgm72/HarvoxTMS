@@ -25,7 +25,7 @@ interface PeriodFilterProps {
 }
 
 export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilterProps) {
-  const { t } = useTranslation(['loads', 'common']);
+  const { t, i18n } = useTranslation(['loads', 'common']);
   const [open, setOpen] = useState(false);
   const { data: allPeriods = [] } = usePaymentPeriods();
   const { data: currentPeriod } = useCurrentPaymentPeriod();
@@ -295,7 +295,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <TrendingUp className="h-4 w-4 mr-2" />
                  {t('periods.this_month')}
                 <Badge variant="secondary" className="ml-auto text-xs">
-                  {format(new Date(), 'MMM', { locale: t('common.locale') === 'es' ? es : undefined })}
+                  {format(new Date(), 'MMM', { locale: i18n.language === 'es' ? es : undefined })}
                 </Badge>
               </Button>
 
@@ -307,7 +307,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <TrendingUp className="h-4 w-4 mr-2" />
                  {t('periods.last_month')}
                 <Badge variant="secondary" className="ml-auto text-xs">
-                  {format(subMonths(new Date(), 1), 'MMM', { locale: t('common.locale') === 'es' ? es : undefined })}
+                  {format(subMonths(new Date(), 1), 'MMM', { locale: i18n.language === 'es' ? es : undefined })}
                 </Badge>
               </Button>
 
@@ -319,7 +319,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <FileText className="h-4 w-4 mr-2" />
                  {t('periods.this_quarter')}
                 <Badge variant="secondary" className="ml-auto text-xs">
-                  {t('common.locale') === 'es' ? `T${Math.ceil((new Date().getMonth() + 1) / 3)}` : `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`}
+                  {i18n.language === 'es' ? `T${Math.ceil((new Date().getMonth() + 1) / 3)}` : `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`}
                 </Badge>
               </Button>
 
@@ -331,7 +331,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <FileText className="h-4 w-4 mr-2" />
                  {t('periods.last_quarter')}
                 <Badge variant="secondary" className="ml-auto text-xs">
-                  {t('common.locale') === 'es' ? `T${Math.ceil((subQuarters(new Date(), 1).getMonth() + 1) / 3)}` : `Q${Math.ceil((subQuarters(new Date(), 1).getMonth() + 1) / 3)}`}
+                  {i18n.language === 'es' ? `T${Math.ceil((subQuarters(new Date(), 1).getMonth() + 1) / 3)}` : `Q${Math.ceil((subQuarters(new Date(), 1).getMonth() + 1) / 3)}`}
                 </Badge>
               </Button>
 
