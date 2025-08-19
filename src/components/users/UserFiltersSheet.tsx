@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Filter, Search, X } from "lucide-react";
@@ -62,10 +63,11 @@ export function UserFiltersSheet({
         <div className="space-y-6 mt-6">
           {/* Búsqueda por nombre/email */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Buscar</label>
+            <Label htmlFor="search-input">Buscar</Label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
+                id="search-input"
                 placeholder="Buscar por nombre o email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -86,10 +88,10 @@ export function UserFiltersSheet({
 
           {/* Filtro por rol */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Rol</label>
+            <Label htmlFor="role-filter">Rol</Label>
             <div className="flex items-center gap-2">
               <Select value={roleFilter} onValueChange={setRoleFilter}>
-                <SelectTrigger className="flex-1">
+                <SelectTrigger id="role-filter" className="flex-1">
                   <SelectValue placeholder="Filtrar por rol" />
                 </SelectTrigger>
                 <SelectContent>
@@ -116,10 +118,10 @@ export function UserFiltersSheet({
 
           {/* Filtro por estado */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Estado</label>
+            <Label htmlFor="status-filter">Estado</Label>
             <div className="flex items-center gap-2">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="flex-1">
+                <SelectTrigger id="status-filter" className="flex-1">
                   <SelectValue placeholder="Estado" />
                 </SelectTrigger>
                 <SelectContent>
