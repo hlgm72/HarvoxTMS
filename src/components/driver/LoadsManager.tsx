@@ -184,30 +184,38 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     load?: any;
   }>({ isOpen: false });
 
-  const calculateProgress = (status: string, stopsData?: any[]): number => {
+  const calculateProgress = (status: string, stopsData?: any[], loadId?: string): number => {
     // Casos especiales
     if (status === 'assigned') return 0;
     if (status === 'closed') return 100;
 
     if (!stopsData || stopsData.length === 0) {
-      // Fallback para carga de 2 paradas: 2×3 + 1 = 7 estados totales
-      const totalStates = 7;
-      const progressPerState = Math.floor(100 / totalStates); // 14%
+      // Fallback para carga de 2 paradas: 2×3 + 1 = 7 estados totales + POD
+      const totalStates = 8; // Agregamos 1 estado para POD
+      const progressPerState = Math.floor(100 / totalStates); // 12.5%
       
       switch (status) {
-        case 'en_route_pickup': return progressPerState; // 14%
-        case 'at_pickup': return progressPerState * 2; // 28%
-        case 'loaded': return progressPerState * 3; // 42%
-        case 'en_route_delivery': return progressPerState * 4; // 56%
-        case 'at_delivery': return progressPerState * 5; // 70%
-        case 'delivered': return progressPerState * 6; // 84%
+        case 'en_route_pickup': return progressPerState; // 12.5%
+        case 'at_pickup': return progressPerState * 2; // 25%
+        case 'loaded': return progressPerState * 3; // 37.5%
+        case 'en_route_delivery': return progressPerState * 4; // 50%
+        case 'at_delivery': return progressPerState * 5; // 62.5%
+        case 'delivered': {
+          // Si está delivered, verificar si tiene POD
+          if (loadId) {
+            // TODO: Aquí podríamos verificar si tiene POD para dar 100% o 87.5%
+            // Por ahora, asumimos que delivered sin validación de POD = 87.5%
+            return progressPerState * 7; // 87.5%
+          }
+          return progressPerState * 6; // 75%
+        }
         default: return 0;
       }
     }
 
-    // Cálculo dinámico: número de paradas × 3 + 1 estado cerrar
+    // Cálculo dinámico: número de paradas × 3 + 1 estado delivered + 1 POD
     const sortedStops = [...stopsData].sort((a, b) => a.stop_number - b.stop_number);
-    const totalStates = sortedStops.length * 3 + 1;
+    const totalStates = sortedStops.length * 3 + 2; // +1 para delivered, +1 para POD
     const progressPerState = Math.floor(100 / totalStates);
     
     // Calcular posición del estado actual
@@ -230,6 +238,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         currentStatePosition = 5;
         break;
       case 'delivered':
+        // delivered = estado 6, pero falta POD para llegar a 100%
         currentStatePosition = 6;
         break;
       default:
@@ -237,7 +246,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     }
     
     const finalProgress = progressPerState * currentStatePosition;
-    return Math.min(finalProgress, 99);
+    return Math.min(finalProgress, 90); // Máximo 90% hasta que se valide POD
   };
 
   // Fetch driver's loads using the real hook
@@ -277,7 +286,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
           delivery_date: latestDelivery?.scheduled_date || '',
           status: load.status,
           total_amount: load.total_amount,
-          progress: calculateProgress(load.status, stops),
+          progress: calculateProgress(load.status, stops, load.id),
           // Información del historial de estado más reciente
           latest_status_notes: (load as any).latest_status_notes,
           latest_status_eta: (load as any).latest_status_eta,
