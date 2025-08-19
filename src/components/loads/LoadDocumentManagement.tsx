@@ -114,7 +114,7 @@ export function LoadDocumentManagement({
       {!isDriver && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Acciones de Documentos</CardTitle>
+            <CardTitle className="text-base">{t('documents.actions_title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -124,10 +124,10 @@ export function LoadDocumentManagement({
                   <FileText className="h-4 w-4" />
                   Rate Confirmation
                   {validation.hasRateConfirmation && (
-                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700">
-                      Activo
-                    </Badge>
-                  )}
+                     <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700">
+                       {t('documents.active')}
+                     </Badge>
+                   )}
                 </h4>
                 
                 <div className="space-y-2">
@@ -137,14 +137,14 @@ export function LoadDocumentManagement({
                     onClick={onUploadDocument}
                     disabled={!canUploadRC}
                     className="w-full"
-                  >
-                    <Upload className="h-3 w-3 mr-2" />
-                    {validation.hasRateConfirmation ? 'Reemplazar RC' : 'Subir RC'}
+                   >
+                     <Upload className="h-3 w-3 mr-2" />
+                     {validation.hasRateConfirmation ? t('validation.replace_rc') : t('validation.upload_rc')}
                   </Button>
                   
-                  {validation.hasRateConfirmation && workStatus.isInProgress && (
-                    <p className="text-xs text-muted-foreground">
-                      ℹ️ Puede reemplazar el RC incluso durante el trabajo
+                   {validation.hasRateConfirmation && workStatus.isInProgress && (
+                     <p className="text-xs text-muted-foreground">
+                       ℹ️ {t('documents.info_replace')}
                     </p>
                   )}
                 </div>
@@ -156,10 +156,10 @@ export function LoadDocumentManagement({
                   <FileText className="h-4 w-4" />
                   Load Order
                   {validation.hasLoadOrder && (
-                    <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700">
-                      Activo (Prioridad)
-                    </Badge>
-                  )}
+                     <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700">
+                       {t('documents.active')} ({t('documents.priority')})
+                     </Badge>
+                   )}
                 </h4>
                 
                 <div className="space-y-2">
@@ -169,14 +169,14 @@ export function LoadDocumentManagement({
                     onClick={onRegenerateLoadOrder}
                     disabled={!canRegenerateLO}
                     className="w-full"
-                  >
-                    <RefreshCw className="h-3 w-3 mr-2" />
-                    {validation.hasLoadOrder ? 'Regenerar LO' : 'Generar LO'}
+                   >
+                     <RefreshCw className="h-3 w-3 mr-2" />
+                     {validation.hasLoadOrder ? t('validation.regenerate_lo') : t('validation.generate_lo')}
                   </Button>
                   
-                  {validation.hasLoadOrder && workStatus.isInProgress && (
-                    <p className="text-xs text-muted-foreground">
-                      ℹ️ Puede regenerar el LO para actualizar datos
+                   {validation.hasLoadOrder && workStatus.isInProgress && (
+                     <p className="text-xs text-muted-foreground">
+                       ℹ️ {t('documents.info_regenerate')}
                     </p>
                   )}
                 </div>
@@ -190,8 +190,8 @@ export function LoadDocumentManagement({
       {isDriver && !isLoadClosed && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Subir Documentos</CardTitle>
-          </CardHeader>
+             <CardTitle className="text-base">{t('documents.upload_title')}</CardTitle>
+           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               <Button
@@ -237,9 +237,9 @@ export function LoadDocumentManagement({
 
       {/* Documents List */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Documentos Subidos</CardTitle>
-        </CardHeader>
+         <CardHeader>
+           <CardTitle className="text-base">{t('documents.uploaded_title')}</CardTitle>
+         </CardHeader>
         <CardContent>
           <LoadDocumentsList 
             loadId={loadId}
@@ -255,12 +255,12 @@ export function LoadDocumentManagement({
       {workStatus.isInProgress && !isDriver && (
         <Card className="border-warning/20 bg-warning/5">
           <CardContent className="py-4">
-            <div className="flex items-center gap-2 text-warning">
-              <AlertTriangle className="h-4 w-4" />
-              <span className="font-medium text-sm">Documentos Protegidos</span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              El conductor ha comenzado a trabajar en esta carga. Los documentos principales están protegidos contra eliminación.
+             <div className="flex items-center gap-2 text-warning">
+               <AlertTriangle className="h-4 w-4" />
+               <span className="font-medium text-sm">{t('documents.protected_documents')}</span>
+             </div>
+             <p className="text-xs text-muted-foreground mt-1">
+               {t('documents.protection_warning')}
             </p>
           </CardContent>
         </Card>
@@ -269,13 +269,13 @@ export function LoadDocumentManagement({
       {/* Driver Load Closed Warning */}
       {isDriver && isLoadClosed && (
         <Card className="border-muted bg-muted/30">
-          <CardContent className="py-4">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <CheckCircle className="h-4 w-4" />
-              <span className="font-medium text-sm">Carga Completada</span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Esta carga ha sido completada. No se pueden agregar más documentos.
+           <CardContent className="py-4">
+             <div className="flex items-center gap-2 text-muted-foreground">
+               <CheckCircle className="h-4 w-4" />
+               <span className="font-medium text-sm">{t('documents.load_completed')}</span>
+             </div>
+             <p className="text-xs text-muted-foreground mt-1">
+               {t('documents.completion_warning')}
             </p>
           </CardContent>
         </Card>

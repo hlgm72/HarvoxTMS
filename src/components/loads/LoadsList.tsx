@@ -136,13 +136,8 @@ const statusColors = {
   completed: "bg-emerald-100 text-emerald-700 border-emerald-300"
 };
 
-const statusLabels = {
-  created: "Creada",
-  route_planned: "Ruta Planificada", 
-  assigned: "Asignada",
-  in_transit: "En Tránsito",
-  delivered: "Entregada",
-  completed: "Completada"
+const getStatusLabel = (status: string, t: any) => {
+  return t(`status.${status}`) || status;
 };
 
 interface LoadsListProps {
@@ -243,31 +238,31 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
       case 'open':
       case 'created':
         actions.push(
-          { status: 'assigned', label: 'Asignar', icon: <Play className="h-3 w-3 mr-2" /> },
-          { status: 'cancelled', label: 'Cancelar', icon: <XCircle className="h-3 w-3 mr-2" /> }
+          { status: 'assigned', label: t('actions.assign_status'), icon: <Play className="h-3 w-3 mr-2" /> },
+          { status: 'cancelled', label: t('actions.cancel_status'), icon: <XCircle className="h-3 w-3 mr-2" /> }
         );
         break;
       case 'assigned':
         actions.push(
-          { status: 'in_transit', label: 'En Tránsito', icon: <Play className="h-3 w-3 mr-2" /> },
-          { status: 'cancelled', label: 'Cancelar', icon: <XCircle className="h-3 w-3 mr-2" /> }
+          { status: 'in_transit', label: t('actions.in_transit_status'), icon: <Play className="h-3 w-3 mr-2" /> },
+          { status: 'cancelled', label: t('actions.cancel_status'), icon: <XCircle className="h-3 w-3 mr-2" /> }
         );
         break;
       case 'in_progress':
       case 'in_transit':
         actions.push(
-          { status: 'delivered', label: 'Entregada', icon: <CheckCircle className="h-3 w-3 mr-2" /> },
-          { status: 'cancelled', label: 'Cancelar', icon: <XCircle className="h-3 w-3 mr-2" /> }
+          { status: 'delivered', label: t('actions.delivered_status'), icon: <CheckCircle className="h-3 w-3 mr-2" /> },
+          { status: 'cancelled', label: t('actions.cancel_status'), icon: <XCircle className="h-3 w-3 mr-2" /> }
         );
         break;
       case 'delivered':
         actions.push(
-          { status: 'completed', label: 'Completar', icon: <CheckCircle className="h-3 w-3 mr-2" /> }
+          { status: 'completed', label: t('actions.complete_status'), icon: <CheckCircle className="h-3 w-3 mr-2" /> }
         );
         break;
       case 'completed':
         actions.push(
-          { status: 'in_transit', label: 'Reabrir (En Tránsito)', icon: <Clock className="h-3 w-3 mr-2" /> }
+          { status: 'in_transit', label: t('actions.reopen_status'), icon: <Clock className="h-3 w-3 mr-2" /> }
         );
         break;
     }
@@ -373,12 +368,12 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge 
-                    variant="outline" 
-                    className={statusColors[load.status as keyof typeof statusColors]}
-                  >
-                    {statusLabels[load.status as keyof typeof statusLabels]}
-                  </Badge>
+                   <Badge 
+                     variant="outline" 
+                     className={statusColors[load.status as keyof typeof statusColors]}
+                   >
+                     {getStatusLabel(load.status, t)}
+                   </Badge>
                 </div>
               </div>
             </CardHeader>

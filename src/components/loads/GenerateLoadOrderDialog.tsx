@@ -14,7 +14,7 @@ import { useFleetNotifications } from "@/components/notifications";
 import { generateLoadOrderPDF } from "@/lib/loadOrderPDF";
 
 const loadOrderSchema = z.object({
-  customAmount: z.number().min(0.01, "El monto debe ser mayor a 0"),
+  customAmount: z.number().min(0.01, "generate_load_order.amount_required"),
 });
 
 interface GenerateLoadOrderDialogProps {
@@ -76,9 +76,9 @@ export function GenerateLoadOrderDialog({
   const onSubmit = async (values: z.infer<typeof loadOrderSchema>) => {
     // Validar que el monto no sea mayor al original
     if (values.customAmount > loadData.total_amount) {
-      form.setError("customAmount", {
-        type: "manual",
-        message: `El monto no puede ser mayor al original ($${loadData.total_amount.toFixed(2)})`
+       form.setError("customAmount", {
+         type: "manual",
+         message: `${t('generate_load_order.amount_error')} ($${loadData.total_amount.toFixed(2)})`
       });
       return;
     }
@@ -107,19 +107,19 @@ export function GenerateLoadOrderDialog({
         amount: values.customAmount
       });
 
-      console.log('🎉 GenerateLoadOrderDialog - Load Order generated successfully');
-      showSuccess(
-        "Load Order generado",
-        `Load Order creado exitosamente con monto $${values.customAmount.toFixed(2)}`
+       console.log('🎉 GenerateLoadOrderDialog - Load Order generated successfully');
+       showSuccess(
+         t('generate_load_order.success'),
+         `${t('generate_load_order.success')} $${values.customAmount.toFixed(2)}`
       );
 
       console.log('🚪 GenerateLoadOrderDialog - Closing modal...');
       onClose();
     } catch (error) {
-      console.error('❌ GenerateLoadOrderDialog - Error generating Load Order:', error);
-      showError(
-        "Error",
-        "No se pudo generar el Load Order. Intenta nuevamente."
+       console.error('❌ GenerateLoadOrderDialog - Error generating Load Order:', error);
+       showError(
+         "Error",
+         t('generate_load_order.error')
       );
     } finally {
       console.log('🏁 GenerateLoadOrderDialog - Finishing, setting isGenerating to false');
@@ -145,19 +145,19 @@ export function GenerateLoadOrderDialog({
             {/* Load Info Summary */}
             <Card>
               <CardContent className="pt-4">
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Carga:</span>
-                    <span className="font-medium">{loadData.load_number}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Monto original:</span>
-                    <span className="font-medium">${loadData.total_amount.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Commodity:</span>
-                    <span className="font-medium">{loadData.commodity}</span>
-                  </div>
+                 <div className="space-y-2 text-sm">
+                   <div className="flex justify-between">
+                     <span className="text-muted-foreground">{t('generate_load_order.load')}</span>
+                     <span className="font-medium">{loadData.load_number}</span>
+                   </div>
+                   <div className="flex justify-between">
+                     <span className="text-muted-foreground">{t('generate_load_order.original_amount')}</span>
+                     <span className="font-medium">${loadData.total_amount.toFixed(2)}</span>
+                   </div>
+                   <div className="flex justify-between">
+                     <span className="text-muted-foreground">{t('generate_load_order.commodity')}</span>
+                     <span className="font-medium">{loadData.commodity}</span>
+                   </div>
                 </div>
               </CardContent>
             </Card>
@@ -168,7 +168,7 @@ export function GenerateLoadOrderDialog({
               name="customAmount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Monto para el Load Order ($) *</FormLabel>
+                  <FormLabel>{t('generate_load_order.custom_amount')} *</FormLabel>
                   <FormControl>
                     <Input 
                       type="text"
@@ -189,22 +189,21 @@ export function GenerateLoadOrderDialog({
             {/* Warning */}
             <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
               <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
-              <div className="text-sm">
-                <p className="font-medium text-amber-800">Importante:</p>
-                <p className="text-amber-700">
-                  El conductor verá este Load Order en lugar del Rate Confirmation original. 
-                  El monto debe ser menor o igual al monto original.
-                </p>
+               <div className="text-sm">
+                 <p className="font-medium text-amber-800">{t('generate_load_order.important')}</p>
+                 <p className="text-amber-700">
+                   {t('generate_load_order.warning')}
+                 </p>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end gap-2 pt-2">
-              <Button type="button" variant="outline" onClick={onClose}>
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={isGenerating}>
-                {isGenerating ? "Generando..." : "Generar Load Order"}
+             <div className="flex justify-end gap-2 pt-2">
+               <Button type="button" variant="outline" onClick={onClose}>
+                 {t('generate_load_order.cancel')}
+               </Button>
+               <Button type="submit" disabled={isGenerating}>
+                 {isGenerating ? t('generate_load_order.generating') : t('generate_load_order.generate')}
               </Button>
             </div>
           </form>

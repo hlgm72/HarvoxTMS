@@ -175,6 +175,20 @@
     "actions_available": "Acciones Disponibles",
     "view_load": "Ver Carga",
     "edit_load": "Editar Carga",
-    "more_actions": "Más Acciones"
+    "more_actions": "Más Acciones",
+    "commodity": "Commodity",
+    "payment_period": "Período de Pago",
+    "created": "Creada:",
+    "view": "Ver",
+    "edit": "Editar",
+    "duplicate_load": "Duplicar Carga",
+    "reassign_period": "Reasignar Período",
+    "manage_documents": "Gestionar Documentos",
+    "delete_load": "Eliminar Carga",
+    "confirm_deletion": "¿Confirmar eliminación?",
+    "deletion_warning": "Esta acción eliminará permanentemente la carga {loadNumber} y todos sus datos asociados (paradas y documentos).",
+    "deletion_irreversible": "Esta acción no se puede deshacer.",
+    "cancel": "Cancelar",
+    "deleting": "Eliminando..."
   }
 }

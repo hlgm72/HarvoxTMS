@@ -175,6 +175,20 @@
     "actions_available": "Available Actions",
     "view_load": "View Load",
     "edit_load": "Edit Load",
-    "more_actions": "More Actions"
+    "more_actions": "More Actions",
+    "commodity": "Commodity",
+    "payment_period": "Payment Period",
+    "created": "Created:",
+    "view": "View",
+    "edit": "Edit",
+    "duplicate_load": "Duplicate Load",
+    "reassign_period": "Reassign Period",
+    "manage_documents": "Manage Documents",
+    "delete_load": "Delete Load",
+    "confirm_deletion": "Confirm deletion?",
+    "deletion_warning": "This action will permanently delete load {loadNumber} and all its associated data (stops and documents).",
+    "deletion_irreversible": "This action cannot be undone.",
+    "cancel": "Cancel",
+    "deleting": "Deleting..."
   }
 }
