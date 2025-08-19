@@ -117,12 +117,16 @@ export const useUserRoles = (): UseUserRolesReturn => {
 
     setLoading(true);
     try {
+      console.log('🗑️ Attempting to remove role:', { userId, companyId, role });
+      
       const { error } = await supabase
         .from('user_company_roles')
         .update({ is_active: false })
         .eq('user_id', userId)
         .eq('company_id', companyId)
         .eq('role', role);
+
+      console.log('🗑️ Remove role result:', { error });
 
       if (error) {
         console.error('Error removing role:', error);
