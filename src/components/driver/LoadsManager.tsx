@@ -35,6 +35,8 @@ import { LoadDocumentStatusIndicator } from '@/components/loads/LoadDocumentStat
 import { LoadStatusHistoryButton } from '@/components/loads/LoadStatusHistoryButton';
 import { LoadDocumentsSection } from '@/components/loads/LoadDocumentsSection';
 import { LoadDocumentsProvider } from '@/contexts/LoadDocumentsContext';
+import { LoadActionButtonWithPOD } from "./LoadActionButtonWithPOD";
+import { usePODUpload } from "@/hooks/usePODUpload";
 
 interface Load {
   id: string;
@@ -160,6 +162,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
   const { showSuccess } = useFleetNotifications();
   const updateLoadStatus = useUpdateLoadStatus();
   const { openInMaps, isNavigating } = useNavigationMaps();
+  const { openPODUpload, PODUploadComponent } = usePODUpload();
   const [statusModal, setStatusModal] = useState<{
     isOpen: boolean;
     loadId: string;
@@ -726,53 +729,17 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
 
                   <Separator />
 
-                  {/* Actions */}
-                   <div className="flex gap-2">
-                     {(() => {
-                       const nextStatus = getNextStatus(load.status);
-                       const nextActionText = getNextActionText(load.status);
-                       
-                       if (!nextStatus) return null;
-                       
-                       // Encontrar la parada actual según el estado
-                       const currentStop = load.stops?.find(stop => {
-                         if (load.status === 'assigned' || load.status === 'en_route_pickup') {
-                           return stop.stop_type === 'pickup';
-                         } else if (load.status === 'at_pickup' || load.status === 'loaded' || load.status === 'en_route_delivery') {
-                           return stop.stop_type === 'delivery';
-                         }
-                         return false;
-                       });
-                       
-                       return (
-                         <Button
-                           onClick={() => {
-                             openStatusModal(
-                               load.id, 
-                               nextStatus, 
-                               nextActionText,
-                               currentStop?.id,
-                               currentStop
-                             );
-                           }}
-                           disabled={updateLoadStatus.isPending}
-                           size="sm"
-                           className="flex-1"
-                         >
-                           {updateLoadStatus.isPending ? (
-                             <>
-                               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                               Actualizando...
-                             </>
-                           ) : (
-                             <>
-                               <MapPin className="mr-2 h-4 w-4" />
-                               {nextActionText}
-                             </>
-                           )}
-                         </Button>
-                       );
-                     })()}
+                   {/* Actions */}
+                    <div className="flex gap-2">
+                      <LoadActionButtonWithPOD
+                        load={load}
+                        onUpdateStatus={(loadId, newStatus, stopId, stopInfo) => {
+                          const actionText = getNextActionText(load.status);
+                          openStatusModal(loadId, newStatus, actionText, stopId, stopInfo);
+                        }}
+                        onUploadPOD={openPODUpload}
+                        isPending={updateLoadStatus.isPending}
+                      />
                      <LoadStatusHistoryButton
                        loadId={load.id}
                        loadNumber={load.load_number}
@@ -881,6 +848,9 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
           />
         </LoadDocumentsProvider>
       )}
+      
+      {/* Modal de subida de POD */}
+      <PODUploadComponent onSuccess={() => refetch()} />
     </div>
   );
 }

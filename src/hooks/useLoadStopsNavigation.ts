@@ -28,6 +28,8 @@ interface NextStopInfo {
   stop: LoadStop;
   actionText: string;
   nextStatus: string;
+  requiresPOD?: boolean; // Nueva propiedad para indicar si necesita POD
+  isLastDelivery?: boolean; // Nueva propiedad para indicar si es la última entrega
 }
 
 export function useLoadStopsNavigation(load: LoadWithStops) {
@@ -109,7 +111,7 @@ export function useLoadStopsNavigation(load: LoadWithStops) {
             actionText = 'Camino a entregar';
             nextStatus = 'en_route_delivery';
           } else {
-            // Última entrega
+            // Última entrega - verificar POD
             nextStop = currentDeliveryStop;
             actionText = 'Entrega completada';
             nextStatus = 'delivered';
@@ -125,10 +127,17 @@ export function useLoadStopsNavigation(load: LoadWithStops) {
       return null;
     }
 
+    // Determinar si es la última entrega
+    const isLastDelivery = load.status === 'at_delivery' && 
+      nextStatus === 'delivered' && 
+      nextStop.stop_type === 'delivery';
+
     return {
       stop: nextStop,
       actionText,
-      nextStatus
+      nextStatus,
+      requiresPOD: isLastDelivery,
+      isLastDelivery
     };
   }, [load.status, load.stops]);
 

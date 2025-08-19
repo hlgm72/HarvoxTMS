@@ -9,6 +9,7 @@ export interface LoadDocumentValidation {
   missingRequiredDocuments: string[];
   canMarkAsDelivered: boolean;
   canStartWork: boolean; // Nueva validación para que conductor pueda comenzar
+  hasPOD: boolean; // Nueva validación específica para POD
 }
 
 export const useLoadDocumentValidation = (loadId: string) => {
@@ -87,7 +88,8 @@ export const useLoadDocumentValidation = (loadId: string) => {
         activeWorkDocument,
         missingRequiredDocuments,
         canMarkAsDelivered,
-        canStartWork
+        canStartWork,
+        hasPOD
       };
     },
     enabled: !!loadId,
