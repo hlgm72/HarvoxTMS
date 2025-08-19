@@ -256,13 +256,10 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         const earliestPickup = pickupStops.find(stop => stop.scheduled_date);
         const latestDelivery = deliveryStops.find(stop => stop.scheduled_date);
         
-         // Check if load has Load Order document
-         const hasLoadOrder = (load as any).documents?.some((doc: any) => doc.document_type === 'load_order');
-         
-         // Determine client name: if has Load Order, show company name, otherwise broker name
+         // Determine client name: if has Load Order, show company name, otherwise broker name  
          let clientName = load.broker_name || 'Sin cliente';
-         if (hasLoadOrder && (load as any).company_name) {
-           clientName = (load as any).company_name;
+         if (load.has_load_order && load.company_name) {
+           clientName = load.company_name;
          }
         
         return {

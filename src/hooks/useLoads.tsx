@@ -59,6 +59,9 @@ export interface Load {
   period_frequency?: string;
   period_status?: string;
   stops?: LoadStop[];
+  documents?: any[];
+  company_name?: string | null;
+  has_load_order?: boolean;
 }
 
 interface LoadsFilters {
@@ -306,6 +309,24 @@ export const useLoads = (filters?: LoadsFilters) => {
               .order('stop_number', { ascending: true })
           : { data: [], error: null };
 
+        // Obtener documentos de las cargas
+        const documentsResult = loadIds.length > 0
+          ? await supabase
+              .from('load_documents')
+              .select('load_id, document_type')
+              .in('load_id', loadIds)
+              .eq('archived_at', null) // Solo documentos activos
+          : { data: [], error: null };
+
+        // Obtener información de la compañía asignadora
+        const companiesResult = userCompany.company_id
+          ? await supabase
+              .from('companies')
+              .select('id, name')
+              .eq('id', userCompany.company_id)
+              .single()
+          : { data: null, error: null };
+
         // Obtener historial de estado más reciente para cada carga
         const statusHistoryResult = loadIds.length > 0
           ? await supabase
@@ -319,11 +340,21 @@ export const useLoads = (filters?: LoadsFilters) => {
           console.error('Error obteniendo paradas:', stopsResult.error);
         }
 
+        if (documentsResult.error) {
+          console.error('Error obteniendo documentos:', documentsResult.error);
+        }
+
+        if (companiesResult.error) {
+          console.error('Error obteniendo información de la compañía:', companiesResult.error);
+        }
+
         if (statusHistoryResult.error) {
           console.error('Error obteniendo historial de estado:', statusHistoryResult.error);
         }
 
         const stopsData = stopsResult.data || [];
+        const documentsData = documentsResult.data || [];
+        const companyData = companiesResult.data;
         const statusHistoryData = statusHistoryResult.data || [];
         // Processing stops data
         
@@ -393,6 +424,11 @@ export const useLoads = (filters?: LoadsFilters) => {
           const period = periods.find(p => p.id === load.payment_period_id);
           
           const loadStops = stopsData.filter(s => s.load_id === load.id);
+          const loadDocuments = documentsData.filter(d => d.load_id === load.id);
+          
+          // Check if load has Load Order document
+          const hasLoadOrder = loadDocuments.some(doc => doc.document_type === 'load_order');
+          
           // Load stops processing
           
           const pickupStop = loadStops
@@ -430,8 +466,13 @@ export const useLoads = (filters?: LoadsFilters) => {
 
           // Final display processing
 
-          // Priorizar alias sobre nombre para el broker
-          const brokerDisplayName = broker ? (broker.alias && broker.alias.trim() ? broker.alias : broker.name) : 'Sin cliente';
+          // Priorizar alias sobre nombre para el broker, pero si hay Load Order mostrar compañía
+          let brokerDisplayName = broker ? (broker.alias && broker.alias.trim() ? broker.alias : broker.name) : 'Sin cliente';
+          
+          // Si hay Load Order y información de la compañía, mostrar el nombre de la compañía
+          if (hasLoadOrder && companyData?.name) {
+            brokerDisplayName = companyData.name;
+          }
 
           // Procesar paradas para esta carga específica
           const processedStops = loadStops.map(stop => {
@@ -464,17 +505,20 @@ export const useLoads = (filters?: LoadsFilters) => {
             driver_name: profile ? `${profile.first_name} ${profile.last_name}` : 'Sin asignar',
             driver_avatar_url: profile?.avatar_url || null,
             broker_name: brokerDisplayName,
-            broker_alias: broker?.alias,
+            broker_alias: broker?.alias || null,
             broker_logo_url: broker?.logo_url || null,
             dispatcher_name: contact?.name || null,
             internal_dispatcher_name: dispatcher ? `${dispatcher.first_name} ${dispatcher.last_name}` : null,
             pickup_city: pickupCityDisplay,
             delivery_city: deliveryCityDisplay,
-            period_start_date: period?.period_start_date,
-            period_end_date: period?.period_end_date,
-            period_frequency: period?.period_frequency,
-            period_status: period?.status,
+            period_start_date: period?.period_start_date || null,
+            period_end_date: period?.period_end_date || null,
+            period_frequency: period?.period_frequency || null,
+            period_status: period?.status || null,
             stops: processedStops,
+            documents: loadDocuments, // Add documents to the load object
+            company_name: companyData?.name || null, // Add company name
+            has_load_order: hasLoadOrder, // Add flag for Load Order presence
             // Información del estado más reciente
             latest_status_notes: latestStatusHistory?.notes,
             latest_status_eta: latestStatusHistory?.eta_provided,
