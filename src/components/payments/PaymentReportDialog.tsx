@@ -278,11 +278,14 @@ export function PaymentReportDialog({
         const factoringTotal = data.filter(d => d.expense_types?.name === 'Factoring Fee').reduce((sum, d) => sum + d.amount, 0);
         const dispatchingTotal = data.filter(d => d.expense_types?.name === 'Dispatching Fee').reduce((sum, d) => sum + d.amount, 0);
         
-        console.log('📊 DEDUCTION TOTALS BY TYPE:');
-        console.log('  Leasing Total:', leasingTotal);
-        console.log('  Factoring Total:', factoringTotal);
-        console.log('  Dispatching Total:', dispatchingTotal);
-        console.log('  Grand Total:', leasingTotal + factoringTotal + dispatchingTotal);
+        console.log('📊 DEDUCTION TOTALS FROM DB BY TYPE:');
+        console.log('  Leasing Total from DB:', leasingTotal);
+        console.log('  Factoring Total from DB:', factoringTotal);
+        console.log('  Dispatching Total from DB:', dispatchingTotal);
+        console.log('  Grand Total from DB:', leasingTotal + factoringTotal + dispatchingTotal);
+        
+        console.log('📊 AVAILABLE EXPENSE TYPES:');
+        data.forEach(d => console.log(`  - ${d.expense_types?.name}: $${d.amount}`));
       }
       
       return data || [];
@@ -295,6 +298,19 @@ export function PaymentReportDialog({
     
     console.log('🔍 Report Data - Deductions count:', deductions.length);
     console.log('🔍 Report Data - Deductions:', deductions);
+    
+    // Calcular totales esperados de las cargas
+    const expectedTotals = {
+      dispatching: loads.reduce((sum, load) => sum + ((load.total_amount * (load.dispatching_percentage || 0)) / 100), 0),
+      factoring: loads.reduce((sum, load) => sum + ((load.total_amount * (load.factoring_percentage || 0)) / 100), 0),
+      leasing: loads.reduce((sum, load) => sum + ((load.total_amount * (load.leasing_percentage || 0)) / 100), 0)
+    };
+    
+    console.log('💰 EXPECTED TOTALS FROM LOADS:');
+    console.log('  Expected Dispatching Total:', expectedTotals.dispatching);
+    console.log('  Expected Factoring Total:', expectedTotals.factoring);
+    console.log('  Expected Leasing Total:', expectedTotals.leasing);
+    console.log('  Expected Grand Total:', expectedTotals.dispatching + expectedTotals.factoring + expectedTotals.leasing);
     
     return {
       driver: {
