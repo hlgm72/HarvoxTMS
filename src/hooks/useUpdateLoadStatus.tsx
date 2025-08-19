@@ -49,9 +49,13 @@ export const useUpdateLoadStatus = () => {
         };
 
         if (params.eta) {
-          // CORREGIDO: Convertir la fecha local del usuario a UTC y guardar como ISO string
-          const utcDate = new Date(params.eta.getTime() - (params.eta.getTimezoneOffset() * 60000));
-          historyUpdateData.eta_provided = utcDate.toISOString();
+          // La fecha viene como fecha local, la convertimos a ISO string UTC
+          console.log('🔄 useUpdateLoadStatus - Fecha recibida:', {
+            original: params.eta.toString(),
+            iso: params.eta.toISOString(),
+            timezone: params.eta.getTimezoneOffset()
+          });
+          historyUpdateData.eta_provided = params.eta.toISOString();
         }
 
         // Buscar el registro de historial más reciente para esta carga y actualizarlo
@@ -77,12 +81,11 @@ export const useUpdateLoadStatus = () => {
           last_status_update: new Date().toISOString()
         };
 
-        // CORREGIDO: Convertir a UTC antes de guardar
-        const utcDate = new Date(params.eta.getTime() - (params.eta.getTimezoneOffset() * 60000));
-        const etaDate = utcDate.toISOString().split('T')[0];
-        const hours = utcDate.getUTCHours().toString().padStart(2, '0');
-        const minutes = utcDate.getUTCMinutes().toString().padStart(2, '0');
-        const etaTime = `${hours}:${minutes}`;
+        // La fecha ya viene en hora local, usar toISOString() para UTC
+        const isoString = params.eta.toISOString();
+        const etaDate = isoString.split('T')[0];
+        const timePart = isoString.split('T')[1];
+        const etaTime = timePart.substring(0, 5); // HH:MM
         
         stopUpdateData.eta_date = etaDate;
         stopUpdateData.eta_time = etaTime;

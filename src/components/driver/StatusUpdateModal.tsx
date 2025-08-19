@@ -104,7 +104,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     let eta: Date | null = null;
     
     if (etaDate && etaTime) {
-      // Crear fecha en zona horaria local del usuario para evitar problemas de conversión
+      // Crear fecha en zona horaria local del usuario
       const [year, month, day] = etaDate.split('-').map(Number);
       const [hours, minutes] = etaTime.split(':').map(Number);
       
@@ -112,8 +112,19 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
         year, month, day, hours, minutes
       });
       
-      eta = new Date(year, month - 1, day, hours, minutes);
-      console.log('📅 handleConfirm - Fecha ETA creada:', {
+      // Crear fecha local y convertir explícitamente a UTC
+      const localDate = new Date(year, month - 1, day, hours, minutes);
+      console.log('📅 handleConfirm - Fecha local creada:', {
+        local: localDate.toString(),
+        localISOString: localDate.toISOString(),
+        timezoneOffset: localDate.getTimezoneOffset()
+      });
+      
+      // La fecha ya se convierte automáticamente a UTC cuando usamos toISOString()
+      // Solo necesitamos pasarla como está
+      eta = localDate;
+      
+      console.log('📅 handleConfirm - Fecha ETA final:', {
         eta: eta.toISOString(),
         local: eta.toString(),
         hours24: eta.getHours(),
