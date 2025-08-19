@@ -662,7 +662,7 @@ export default function Users() {
       'driver': { 
         label: getRoleLabel('driver'), 
         variant: 'default',
-        className: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-700'
+        className: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-700'
       },
       'multi_company_dispatcher': { 
         label: getRoleLabel('multi_company_dispatcher'), 
