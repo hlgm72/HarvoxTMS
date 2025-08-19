@@ -642,8 +642,8 @@ const [uploading, setUploading] = useState<string | null>(null);
                 <span className="font-medium text-xs sm:text-sm truncate">{docType.label}</span>
               </div>
               <div className="flex items-center gap-0.5 flex-shrink-0">
-                {docType.required && <Badge variant="destructive" className="text-[8px] sm:text-[10px] h-3 sm:h-4 px-0.5 sm:px-1">R</Badge>}
-                {docType.generated && <Badge variant="secondary" className="text-[8px] sm:text-[10px] h-3 sm:h-4 px-0.5 sm:px-1">G</Badge>}
+                {docType.required && <Badge variant="destructive" className="text-[8px] sm:text-[10px] h-3 sm:h-4 px-0.5 sm:px-1">Requerido</Badge>}
+                {docType.generated && <Badge variant="secondary" className="text-[8px] sm:text-[10px] h-3 sm:h-4 px-0.5 sm:px-1">Generado</Badge>}
               </div>
             </div>
 
