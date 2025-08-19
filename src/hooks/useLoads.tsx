@@ -315,7 +315,7 @@ export const useLoads = (filters?: LoadsFilters) => {
               .from('load_documents')
               .select('load_id, document_type')
               .in('load_id', loadIds)
-              .eq('archived_at', null) // Solo documentos activos
+              .is('archived_at', null) // Usar 'is' en lugar de 'eq' para valores null
           : { data: [], error: null };
 
         // Obtener información de la compañía asignadora
