@@ -124,7 +124,7 @@ export const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
     return { 
       label: t('dashboard:loads.status_update_modal.eta_label'), 
       isETA: true,
-      defaultToNow: false 
+      defaultToNow: true  // ✅ Cambiar a true para predefinir la hora actual
     };
   };
 
