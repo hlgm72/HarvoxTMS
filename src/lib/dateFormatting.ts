@@ -34,13 +34,23 @@ export {
  * Constantes para patrones de fecha comunes
  */
 export const DATE_PATTERNS = {
-  SHORT_DATE: 'dd/MM/yyyy',
-  LONG_DATE: 'dd \'de\' MMMM \'de\' yyyy',
-  DATE_TIME: 'dd/MM/yyyy HH:mm',
-  DATE_TIME_SECONDS: 'dd/MM/yyyy HH:mm:ss',
+  // Patrones en español
+  SHORT_DATE_ES: 'dd/MM/yyyy',
+  LONG_DATE_ES: 'dd \'de\' MMMM \'de\' yyyy',
+  DATE_TIME_ES: 'dd/MM/yyyy HH:mm',
+  DATE_TIME_SECONDS_ES: 'dd/MM/yyyy HH:mm:ss',
+  DISPLAY_DATE_ES: 'dd MMM yyyy',
+  
+  // Patrones en inglés
+  SHORT_DATE_EN: 'MM/dd/yyyy',
+  LONG_DATE_EN: 'MMMM dd, yyyy',
+  DATE_TIME_EN: 'MM/dd/yyyy HH:mm',
+  DATE_TIME_SECONDS_EN: 'MM/dd/yyyy HH:mm:ss',
+  DISPLAY_DATE_EN: 'MMM dd, yyyy',
+  
+  // Patrones universales
   ISO_DATE: 'yyyy-MM-dd',
   ISO_DATETIME: 'yyyy-MM-dd\'T\'HH:mm',
-  DISPLAY_DATE: 'dd MMM yyyy',
   MONTH_YEAR: 'MMM yyyy',
   YEAR_ONLY: 'yyyy'
 } as const;
@@ -53,13 +63,20 @@ export const DATE_PATTERNS = {
  * Formateo específico para períodos de pago
  */
 export const formatPaymentPeriod = (startDate: string | null, endDate: string | null): string => {
-  if (!startDate || !endDate) return 'Período no definido';
+  if (!startDate || !endDate) {
+    const language = getGlobalLanguage();
+    return language === 'es' ? 'Período no definido' : 'Period not defined';
+  }
   
-  const start = formatDateOnly(startDate);
-  const end = formatDateOnly(endDate);
+  const start = formatDateAuto(startDate);
+  const end = formatDateAuto(endDate);
   
-  if (start === 'No definida' || end === 'No definida') {
-    return 'Período incompleto';
+  const language = getGlobalLanguage();
+  const invalidText = language === 'es' ? 'Período incompleto' : 'Incomplete period';
+  const notDefinedText = language === 'es' ? 'No definida' : 'Not defined';
+  
+  if (start === notDefinedText || end === notDefinedText) {
+    return invalidText;
   }
   
   return `${start} - ${end}`;
@@ -69,13 +86,22 @@ export const formatPaymentPeriod = (startDate: string | null, endDate: string | 
  * Formateo compacto para períodos de pago (para filtros y espacios reducidos)
  */
 export const formatPaymentPeriodCompact = (startDate: string | null, endDate: string | null): string => {
-  if (!startDate || !endDate) return 'No definido';
+  if (!startDate || !endDate) {
+    const language = getGlobalLanguage();
+    return language === 'es' ? 'No definido' : 'Not defined';
+  }
   
-  const start = formatDateSafe(startDate, 'dd/MM/yy');
-  const end = formatDateSafe(endDate, 'dd/MM/yy');
+  const language = getGlobalLanguage();
+  const pattern = language === 'es' ? 'dd/MM/yy' : 'MM/dd/yy';
   
-  if (start === 'No definida' || end === 'No definida') {
-    return 'Incompleto';
+  const start = formatDateSafe(startDate, pattern);
+  const end = formatDateSafe(endDate, pattern);
+  
+  const notDefinedText = language === 'es' ? 'No definida' : 'Not defined';
+  const incompleteText = language === 'es' ? 'Incompleto' : 'Incomplete';
+  
+  if (start === notDefinedText || end === notDefinedText) {
+    return incompleteText;
   }
   
   return `${start} - ${end}`;
@@ -85,21 +111,28 @@ export const formatPaymentPeriodCompact = (startDate: string | null, endDate: st
  * Formateo ultra compacto para badges (omite año si es el mismo)
  */
 export const formatPaymentPeriodBadge = (startDate: string | null, endDate: string | null): string => {
-  if (!startDate || !endDate) return 'No definido';
+  if (!startDate || !endDate) {
+    const language = getGlobalLanguage();
+    return language === 'es' ? 'No definido' : 'Not defined';
+  }
   
   const startYear = getYearSafe(startDate);
   const endYear = getYearSafe(endDate);
+  const language = getGlobalLanguage();
   
   // Si es el mismo año, omitir el año en ambas fechas
   if (startYear === endYear) {
-    const start = formatDateSafe(startDate, 'dd/MM');
-    const end = formatDateSafe(endDate, 'dd/MM');
+    const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
+    const start = formatDateSafe(startDate, pattern);
+    const end = formatDateSafe(endDate, pattern);
     return `${start} - ${end}`;
   }
   
   // Si son años diferentes, mostrar año solo en la fecha final
-  const start = formatDateSafe(startDate, 'dd/MM');
-  const end = formatDateSafe(endDate, 'dd/MM/yy');
+  const startPattern = language === 'es' ? 'dd/MM' : 'MM/dd';
+  const endPattern = language === 'es' ? 'dd/MM/yy' : 'MM/dd/yy';
+  const start = formatDateSafe(startDate, startPattern);
+  const end = formatDateSafe(endDate, endPattern);
   return `${start} - ${end}`;
 };
 
