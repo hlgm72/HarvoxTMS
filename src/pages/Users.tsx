@@ -1180,7 +1180,11 @@ export default function Users() {
         }}
         user={selectedUser}
         onSuccess={() => {
-          fetchUsers(); // Recargar la lista
+          console.log('🔄 EditUserDialog onSuccess - forcing user list refresh');
+          // Force a complete refresh with a small delay to ensure DB changes are propagated
+          setTimeout(() => {
+            fetchUsers();
+          }, 100);
         }}
       />
 

@@ -194,12 +194,15 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
     
     if (result.success) {
       showSuccess('Rol eliminado correctamente');
-      // Immediately update local state
+      // Immediately update local state to provide instant feedback
       setUserRoles(prev => prev.filter(r => r !== roleToRemove));
-      // Invalidate cache and reload
-      queryClient.invalidateQueries({ queryKey: ['user_company_roles'] });
-      loadUserRoles();
-      onSuccess?.(); 
+      
+      // Force a complete refresh with delay to ensure UI updates
+      setTimeout(async () => {
+        queryClient.invalidateQueries({ queryKey: ['user_company_roles'] });
+        await loadUserRoles();
+        onSuccess?.();
+      }, 200);
     } else {
       showError(result.error || 'Error al eliminar el rol');
     }
