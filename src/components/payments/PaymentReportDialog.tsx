@@ -299,18 +299,11 @@ export function PaymentReportDialog({
     console.log('🔍 Report Data - Deductions count:', deductions.length);
     console.log('🔍 Report Data - Deductions:', deductions);
     
-    // Calcular totales esperados de las cargas
-    const expectedTotals = {
-      dispatching: loads.reduce((sum, load) => sum + ((load.total_amount * (load.dispatching_percentage || 0)) / 100), 0),
-      factoring: loads.reduce((sum, load) => sum + ((load.total_amount * (load.factoring_percentage || 0)) / 100), 0),
-      leasing: loads.reduce((sum, load) => sum + ((load.total_amount * (load.leasing_percentage || 0)) / 100), 0)
-    };
-    
-    console.log('💰 EXPECTED TOTALS FROM LOADS:');
-    console.log('  Expected Dispatching Total:', expectedTotals.dispatching);
-    console.log('  Expected Factoring Total:', expectedTotals.factoring);
-    console.log('  Expected Leasing Total:', expectedTotals.leasing);
-    console.log('  Expected Grand Total:', expectedTotals.dispatching + expectedTotals.factoring + expectedTotals.leasing);
+    // Usar los totales precalculados de driver_period_calculations
+    console.log('💰 USING PRECALCULATED TOTALS FROM DB:');
+    console.log('  Total Deductions from calculation:', calculation.total_deductions);
+    console.log('  Gross Earnings from calculation:', calculation.gross_earnings);
+    console.log('  Net Payment from calculation:', calculation.net_payment);
     
     return {
       driver: {
