@@ -347,17 +347,10 @@ const [uploading, setUploading] = useState<string | null>(null);
         file_url: filePath,
       };
 
-      try {
-        createLoadDocument({
-          documentData
-        });
-      } catch (error) {
-        console.error('Error saving photo to database:', error);
-        await supabase.storage.from('load-documents').remove([filePath]);
-        showError("Error", "No se pudo guardar la información de la foto");
-        return;
-      }
-
+      createLoadDocument({
+        documentData
+      });
+      
       await loadDocuments();
       showSuccess("Foto subida", `Foto de ${category} subida correctamente`);
     } catch (error) {
@@ -430,16 +423,9 @@ const [uploading, setUploading] = useState<string | null>(null);
         file_url: filePath, // Save the file path, not the public URL
       };
 
-      try {
-        createLoadDocument({
-          documentData
-        });
-      } catch (error) {
-        console.error('Error saving document to database:', error);
-        await supabase.storage.from('load-documents').remove([filePath]);
-        showError("Error", "No se pudo guardar la información del documento");
-        return;
-      }
+      createLoadDocument({
+        documentData
+      });
 
       await loadDocuments();
       

@@ -39,27 +39,32 @@ export const useLoadDocumentManagementACID = () => {
     }) => {
       console.log('🔄 Executing ACID load document operation...', { documentData, documentId });
 
-      const { data, error } = await supabase.rpc(
-        'create_or_update_load_document_with_validation',
-        {
-          document_data: documentData,
-          document_id: documentId || null
+      try {
+        const { data, error } = await supabase.rpc(
+          'create_or_update_load_document_with_validation',
+          {
+            document_data: documentData,
+            document_id: documentId || null
+          }
+        );
+
+        if (error) {
+          console.error('❌ ACID load document error:', error);
+          throw new Error(error.message);
         }
-      );
 
-      if (error) {
-        console.error('❌ ACID load document error:', error);
-        throw new Error(error.message);
+        const result = data as unknown as LoadDocumentACIDResponse;
+        if (!result?.success) {
+          console.error('❌ ACID operation failed:', result);
+          throw new Error(result?.message || 'Error in load document operation');
+        }
+
+        console.log('✅ ACID load document operation successful:', result);
+        return result;
+      } catch (error) {
+        console.error('❌ Mutation error in load document ACID:', error);
+        throw error;
       }
-
-      const result = data as unknown as LoadDocumentACIDResponse;
-      if (!result?.success) {
-        console.error('❌ ACID operation failed:', result);
-        throw new Error(result?.message || 'Error in load document operation');
-      }
-
-      console.log('✅ ACID load document operation successful:', result);
-      return result;
     },
     onSuccess: (data: LoadDocumentACIDResponse) => {
       const operation = data.operation;
