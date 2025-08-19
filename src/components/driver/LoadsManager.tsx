@@ -343,6 +343,9 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
 
   // Función para confirmar la actualización de estado con ETA y notas
   const handleStatusConfirm = async (eta: Date | null, notes: string) => {
+    // ✅ Cerrar el modal inmediatamente para mejor UX
+    setStatusModal({ ...statusModal, isOpen: false });
+    
     try {
       await updateLoadStatus.mutateAsync({
         loadId: statusModal.loadId,
@@ -352,9 +355,9 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         stopId: statusModal.stopId
       });
       await refetch();
-      setStatusModal({ ...statusModal, isOpen: false });
     } catch (error) {
       console.error('Error updating status:', error);
+      // Si hay error, el hook ya muestra la notificación de error
     }
   };
 
