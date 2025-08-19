@@ -129,7 +129,6 @@ export function UserDetailsContent({ user }: UserDetailsContentProps) {
       const originalRole = Object.entries({
         'superadmin': '🔧 Super Admin',
         'company_owner': '👑 Company Owner',
-        'company_admin': '👨‍💼 Company Admin',
         'operations_manager': '👨‍💼 Operations Manager',
         'dispatcher': '📋 Dispatcher',
         'driver': '🚛 Driver',

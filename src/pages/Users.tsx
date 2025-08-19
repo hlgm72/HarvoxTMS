@@ -301,7 +301,7 @@ export default function Users() {
       const hasAdminPrivileges = userRole?.role && [
         'superadmin', 
         'company_owner', 
-        'company_admin'
+        'operations_manager'
       ].includes(userRole.role);
 
       if (hasAdminPrivileges) {

@@ -26,7 +26,7 @@ export const RoleSwitcher = () => {
   const roleColors = {
     superadmin: 'bg-purple-500 text-white hover:bg-purple-600',
     company_owner: 'bg-amber-500 text-white hover:bg-amber-600',
-    company_admin: 'bg-blue-500 text-white hover:bg-blue-600',
+    operations_manager: 'bg-blue-500 text-white hover:bg-blue-600',
     dispatcher: 'bg-emerald-500 text-white hover:bg-emerald-600',
     driver: 'bg-orange-500 text-white hover:bg-orange-600',
     multi_company_dispatcher: 'bg-cyan-500 text-white hover:bg-cyan-600',
@@ -37,7 +37,7 @@ export const RoleSwitcher = () => {
     switch (role) {
       case 'company_owner':
         return '/dashboard/owner';
-      case 'company_admin':
+      case 'operations_manager':
         return '/dashboard/operations';
       case 'dispatcher':
       case 'multi_company_dispatcher':
@@ -129,7 +129,7 @@ export const RoleSwitcher = () => {
             const roleHierarchy = [
               'superadmin',
               'company_owner', 
-              'company_admin',
+              'operations_manager',
               'dispatcher',
               'multi_company_dispatcher',
               'driver'

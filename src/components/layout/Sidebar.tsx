@@ -39,7 +39,7 @@ import { useUserCompanies } from "@/hooks/useUserCompanies";
 
 // Mock data for companies
 const companies = [
-  { id: 1, name: "Swift Transportation", role: "company_admin", avatar: "ST" },
+  { id: 1, name: "Swift Transportation", role: "operations_manager", avatar: "ST" },
   { id: 2, name: "Prime Inc", role: "dispatcher", avatar: "PI" },
 ];
 

@@ -303,7 +303,7 @@
     "labels": {
       "superadmin": "Super Admin",
       "company_owner": "Propietario de Empresa",
-      "company_admin": "Administrador de Empresa",
+      "operations_manager": "Gerente de Operaciones",
       "dispatcher": "Despachador",
       "driver": "Conductor",
       "multi_company_dispatcher": "Despachador Multi-Empresa"
