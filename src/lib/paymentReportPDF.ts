@@ -1084,34 +1084,19 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   try {
     if (isPreview) {
       console.log('👁️ Modo preview activado');
-      // Abrir PDF en nueva pestaña para vista previa con nombre descriptivo
+      // Abrir PDF en nueva pestaña para vista previa
       const pdfBlob = doc.output('blob');
       const pdfUrl = URL.createObjectURL(new Blob([pdfBlob], { type: 'application/pdf' }));
       
-      // Crear enlace temporal con nombre descriptivo y abrir en nueva pestaña
+      // Crear enlace temporal y abrir en nueva pestaña (sin atributo download)
       const link = document.createElement('a');
       link.href = pdfUrl;
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
-      // Agregar el nombre del archivo como parámetro para identificación
-      link.setAttribute('download', fileName); // Aunque no se use para descarga, ayuda con identificación
       
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
-      // Intentar establecer título de la nueva ventana después de un pequeño delay
-      setTimeout(() => {
-        try {
-          // Buscar la ventana que acabamos de abrir
-          const newWindows = window.open('', '_blank');
-          if (newWindows) {
-            newWindows.document.title = fileName.replace('.pdf', '');
-          }
-        } catch (error) {
-          console.log('No se pudo establecer título de ventana (restricciones del navegador)');
-        }
-      }, 100);
       
       // Limpiar URL después de un tiempo para liberar memoria
       setTimeout(() => {
