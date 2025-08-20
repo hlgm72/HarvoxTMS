@@ -21,11 +21,11 @@ export const useDriversList = () => {
       }
 
       // Obtener usuarios de la compañía con rol de conductor
-      const { data: companyUsers, error: usersError } = await (supabase as any)
-        .from('company_users')
+      const { data: companyUsers, error: usersError } = await supabase
+        .from('user_company_roles')
         .select(`
           user_id,
-          roles,
+          role,
           profiles!inner(
             user_id,
             first_name,
@@ -33,7 +33,8 @@ export const useDriversList = () => {
           )
         `)
         .eq('company_id', userCompany.company_id)
-        .contains('roles', ['driver']);
+        .eq('role', 'driver')
+        .eq('is_active', true);
 
       if (usersError) {
         console.error('Error fetching company drivers:', usersError);
