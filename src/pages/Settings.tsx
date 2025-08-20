@@ -247,12 +247,110 @@ export default function Settings() {
                   </CardContent>
                 </Card>
 
-                {/* Profile Form */}
+                {/* Profile Tabs - Personal, Preferencia, Seguridad */}
                 <Card className="md:col-span-2">
-                  <CardContent className="p-8 space-y-8">
-                    <ProfileForm showCancelButton={false} />
-                    <PreferencesForm showCancelButton={false} />
-                    <OnboardingPreferencesForm />
+                  <CardContent className="p-6">
+                    <Tabs defaultValue="personal" className="space-y-6">
+                      <TabsList className="grid w-full grid-cols-3 gap-1">
+                        <TabsTrigger value="personal" className="flex items-center gap-2">
+                          <User className="h-4 w-4" />
+                          Personal
+                        </TabsTrigger>
+                        <TabsTrigger value="preferencia" className="flex items-center gap-2">
+                          <Globe className="h-4 w-4" />
+                          Preferencia
+                        </TabsTrigger>
+                        <TabsTrigger value="seguridad" className="flex items-center gap-2">
+                          <Shield className="h-4 w-4" />
+                          Seguridad
+                        </TabsTrigger>
+                      </TabsList>
+
+                      {/* Tab: Personal */}
+                      <TabsContent value="personal" className="space-y-6">
+                        <ProfileForm showCancelButton={false} />
+                      </TabsContent>
+
+                      {/* Tab: Preferencia */}
+                      <TabsContent value="preferencia" className="space-y-6">
+                        <PreferencesForm showCancelButton={false} />
+                      </TabsContent>
+
+                      {/* Tab: Seguridad */}
+                      <TabsContent value="seguridad" className="space-y-6">
+                        {/* Cambio de Contraseña */}
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                              <KeyRound className="h-5 w-5" />
+                              Cambiar Contraseña
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <Form {...passwordForm}>
+                              <form onSubmit={passwordForm.handleSubmit(onSubmitPassword)} className="space-y-4">
+                                <FormField
+                                  control={passwordForm.control}
+                                  name="currentPassword"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Contraseña Actual</FormLabel>
+                                      <FormControl>
+                                        <Input type="password" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={passwordForm.control}
+                                  name="newPassword"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Nueva Contraseña</FormLabel>
+                                      <FormControl>
+                                        <Input type="password" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={passwordForm.control}
+                                  name="confirmPassword"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Confirmar Nueva Contraseña</FormLabel>
+                                      <FormControl>
+                                        <Input type="password" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <div className="flex gap-2">
+                                  <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    onClick={() => passwordForm.reset()}
+                                  >
+                                    <RotateCcw className="mr-2 h-4 w-4" />
+                                    Cancelar
+                                  </Button>
+                                  <Button type="submit" disabled={changingPassword}>
+                                    <Save className="mr-2 h-4 w-4" />
+                                    {changingPassword ? 'Cambiando...' : 'Cambiar Contraseña'}
+                                  </Button>
+                                </div>
+                              </form>
+                            </Form>
+                          </CardContent>
+                        </Card>
+
+                        {/* Opciones de Tour y Configuración */}
+                        <OnboardingPreferencesForm />
+                      </TabsContent>
+                    </Tabs>
                   </CardContent>
                 </Card>
               </div>
