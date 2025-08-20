@@ -14,6 +14,7 @@ import { SelfRoleManager } from '@/components/owner/SelfRoleManager';
 import { PageToolbar } from '@/components/layout/PageToolbar';
 import { Company } from '@/types/company';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { ProfileForm } from '@/components/profile/ProfileForm';
 import { useForm } from 'react-hook-form';
@@ -41,6 +42,7 @@ export default function Settings() {
   const { user, userRole } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const { profile, loading: profileLoading, refreshProfile } = useUserProfile();
+  const { preferences } = useUserPreferences();
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(true);
   const [companyInfo, setCompanyInfo] = useState<Company | null>(null);
@@ -218,11 +220,11 @@ export default function Settings() {
                       </div>
                       <div className="flex justify-between items-center py-2 border-b border-gray-100">
                         <span className="text-muted-foreground">Idioma:</span>
-                        <span className="font-medium">{profile?.preferred_language === 'es' ? 'Español' : 'English'}</span>
+                        <span className="font-medium">{preferences?.preferred_language === 'es' ? 'Español' : 'English'}</span>
                       </div>
                       <div className="flex justify-between items-center py-2 border-b border-gray-100">
                         <span className="text-muted-foreground">Zona horaria:</span>
-                        <span className="font-medium">{profile?.timezone || 'America/New_York'}</span>
+                        <span className="font-medium">{preferences?.timezone || 'America/New_York'}</span>
                       </div>
                       {(profile?.street_address || profile?.zip_code) && (
                         <div className="pt-4 border-t border-gray-200">

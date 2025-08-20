@@ -5,6 +5,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 import { useFleetNotifications } from '@/components/notifications';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { ProfileForm } from '@/components/profile/ProfileForm';
 import { PageToolbar } from '@/components/layout/PageToolbar';
@@ -19,6 +20,7 @@ export default function Profile() {
   const { isSuperAdmin, isCompanyOwner, isOperationsManager, isDispatcher, isDriver } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const { profile, loading, user, refreshProfile } = useUserProfile();
+  const { preferences } = useUserPreferences();
 
   // Función para obtener la ruta del dashboard según el rol del usuario
   const getDashboardRoute = () => {
@@ -78,11 +80,11 @@ export default function Profile() {
                 </div>
                 <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                   <span className="text-muted-foreground font-medium">Idioma:</span>
-                  <span className="text-foreground">{profile?.preferred_language === 'es' ? 'Español' : 'English'}</span>
+                  <span className="text-foreground">{preferences?.preferred_language === 'es' ? 'Español' : 'English'}</span>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                   <span className="text-muted-foreground font-medium">Zona horaria:</span>
-                  <span className="text-foreground">{profile?.timezone || 'America/New_York'}</span>
+                  <span className="text-foreground">{preferences?.timezone || 'America/New_York'}</span>
                 </div>
                 {(profile?.street_address || profile?.zip_code) && (
                   <div className="pt-2 border-t">

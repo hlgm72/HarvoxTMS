@@ -9,8 +9,6 @@ interface UserProfile {
   last_name: string | null;
   phone: string | null;
   avatar_url: string | null;
-  preferred_language: string | null;
-  timezone: string | null;
   street_address: string | null;
   state_id: string | null;
   city: string | null;

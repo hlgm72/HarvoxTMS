@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserProfile } from './useUserProfile';
+import { useUserPreferences } from './useUserPreferences';
 import { supabase } from '@/integrations/supabase/client';
 
 /**
@@ -10,46 +11,37 @@ import { supabase } from '@/integrations/supabase/client';
  */
 export const useLanguageSync = () => {
   const { i18n } = useTranslation();
-  const { profile, loading, user, refreshProfile } = useUserProfile();
+  const { user } = useUserProfile();
+  const { preferences, loading, updatePreferences } = useUserPreferences();
 
   useEffect(() => {
-    // Solo ejecutar cuando ya se haya cargado el perfil
+    // Solo ejecutar cuando ya se haya cargado las preferencias
     if (loading) return;
 
-    if (profile?.preferred_language) {
-      // Si el usuario tiene un idioma preferido en su perfil, usarlo
-      if (profile.preferred_language !== i18n.language) {
-        i18n.changeLanguage(profile.preferred_language);
+    if (preferences?.preferred_language) {
+      // Si el usuario tiene un idioma preferido en sus preferencias, usarlo
+      if (preferences.preferred_language !== i18n.language) {
+        i18n.changeLanguage(preferences.preferred_language);
       }
     } else {
-      // Si no hay idioma preferido en el perfil, usar el detectado por i18n (localStorage/navegador)
+      // Si no hay idioma preferido en las preferencias, usar el detectado por i18n (localStorage/navegador)
       // Esto permite que usuarios nuevos usen el idioma de su navegador
       const detectedLanguage = localStorage.getItem('i18nextLng') || 'en';
       if (detectedLanguage !== i18n.language) {
         i18n.changeLanguage(detectedLanguage);
       }
     }
-  }, [profile?.preferred_language, loading, i18n]);
+  }, [preferences?.preferred_language, loading, i18n]);
 
-  // Escuchar cambios en i18n y actualizar el perfil en la BD
+  // Escuchar cambios en i18n y actualizar las preferencias en la BD
   useEffect(() => {
     const handleLanguageChange = async (language: string) => {
       // Si hay usuario autenticado y el idioma cambió
-      if (user && profile && profile.preferred_language !== language) {
+      if (user && preferences && preferences.preferred_language !== language) {
         try {
-          const { error } = await supabase
-            .from('profiles')
-            .upsert({
-              user_id: user.id,
-              preferred_language: language,
-            }, {
-              onConflict: 'user_id'
-            });
-
-          if (!error) {
-            // Refrescar el perfil para obtener los datos actualizados
-            await refreshProfile();
-          }
+          await updatePreferences({
+            preferred_language: language,
+          });
         } catch (error) {
           console.error('Error updating language preference:', error);
         }
@@ -63,7 +55,7 @@ export const useLanguageSync = () => {
     return () => {
       i18n.off('languageChanged', handleLanguageChange);
     };
-  }, [user, profile, i18n, refreshProfile]);
+  }, [user, preferences, i18n, updatePreferences]);
 
   return {
     currentLanguage: i18n.language,

@@ -438,13 +438,13 @@ export function PaymentReportDialog({
 
     try {
       // Consultar el idioma preferido del conductor
-      const { data: driverProfile } = await supabase
-        .from('profiles')
+      const { data: driverPreferences } = await supabase
+        .from('user_preferences')
         .select('preferred_language')
         .eq('user_id', calculation.driver_user_id)
-        .single();
+        .maybeSingle();
 
-      const driverLanguage = driverProfile?.preferred_language || 'en';
+      const driverLanguage = driverPreferences?.preferred_language || 'en';
 
       // Usar los datos que ya tenemos
       const reportData = getReportData();

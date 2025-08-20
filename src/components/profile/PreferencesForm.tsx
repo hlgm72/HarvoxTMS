@@ -7,6 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useFleetNotifications } from '@/components/notifications';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { supabase } from '@/integrations/supabase/client';
 import { Save, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +32,8 @@ export interface PreferencesFormRef {
 export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormProps>(({ onCancel, showCancelButton = true, className }, ref) => {
   const { t, i18n } = useTranslation(['common']);
   const { showSuccess, showError } = useFleetNotifications();
-  const { profile, user, refreshProfile } = useUserProfile();
+  const { user } = useUserProfile();
+  const { preferences, updatePreferences } = useUserPreferences();
   const [updating, setUpdating] = useState(false);
 
   const preferencesForm = useForm<PreferencesFormData>({
@@ -43,31 +45,25 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
   });
 
   useEffect(() => {
-    if (profile) {
+    if (preferences) {
       preferencesForm.reset({
-        preferred_language: profile.preferred_language || 'en',
-        timezone: profile.timezone || 'America/New_York',
+        preferred_language: preferences.preferred_language || 'en',
+        timezone: preferences.timezone || 'America/New_York',
       });
     }
-  }, [profile, preferencesForm]);
+  }, [preferences, preferencesForm]);
 
   const savePreferencesData = async (data: PreferencesFormData): Promise<{ success: boolean; error?: string }> => {
     if (!user) return { success: false, error: 'Usuario no encontrado' };
 
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          user_id: user.id,
-          preferred_language: data.preferred_language || 'en',
-          timezone: data.timezone || 'America/New_York',
-        }, {
-          onConflict: 'user_id'
-        });
+      const result = await updatePreferences({
+        preferred_language: data.preferred_language || 'en',
+        timezone: data.timezone || 'America/New_York',
+      });
 
-      if (error) {
-        console.error('Error saving preferences:', error);
-        return { success: false, error: error.message };
+      if (!result.success) {
+        return { success: false, error: result.error };
       }
 
       // Update i18n language if changed
@@ -75,7 +71,6 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
         await i18n.changeLanguage(data.preferred_language);
       }
 
-      await refreshProfile();
       return { success: true };
     } catch (error: any) {
       return { success: false, error: error.message || 'Error desconocido' };
@@ -113,10 +108,10 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
   }));
 
   const handleCancel = () => {
-    if (profile) {
+    if (preferences) {
       preferencesForm.reset({
-        preferred_language: profile.preferred_language || 'en',
-        timezone: profile.timezone || 'America/New_York',
+        preferred_language: preferences.preferred_language || 'en',
+        timezone: preferences.timezone || 'America/New_York',
       });
     }
     onCancel?.();
