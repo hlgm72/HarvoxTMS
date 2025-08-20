@@ -147,3 +147,25 @@ export const getYearSafe = (dateInput: string | Date | null | undefined): number
 export const getCurrentUTC = (): string => {
   return new Date().toISOString();
 };
+
+/**
+ * Convierte una fecha en formato YYYY-MM-DD a medianoche UTC
+ * Esto previene problemas de zona horaria al guardar en la base de datos
+ */
+export const convertDateToUTC = (dateString: string): string => {
+  if (!dateString || typeof dateString !== 'string') {
+    throw new Error('dateString debe ser una cadena válida en formato YYYY-MM-DD');
+  }
+  
+  // Verificar que esté en formato YYYY-MM-DD
+  const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+  if (!datePattern.test(dateString)) {
+    throw new Error('dateString debe estar en formato YYYY-MM-DD');
+  }
+  
+  // Crear fecha UTC explícitamente en medianoche
+  const [year, month, day] = dateString.split('-').map(Number);
+  const utcDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+  
+  return utcDate.toISOString();
+};
