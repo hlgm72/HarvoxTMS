@@ -81,6 +81,8 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   console.log('🔍 PDF Generation - Data received:', data);
   console.log('🔍 PDF Generation - Deductions data:', data.deductions);
   console.log('🔍 PDF Generation - Deductions length:', data.deductions?.length || 0);
+  console.log('🔍 PDF Generation - isPreview parameter:', isPreview);
+  console.log('🔍 PDF Generation - typeof isPreview:', typeof isPreview);
   
   const doc = new jsPDF('p', 'mm', 'letter');
   
