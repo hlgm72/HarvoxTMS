@@ -1084,19 +1084,37 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   try {
     if (isPreview) {
       console.log('👁️ Modo preview activado');
-      // Abrir PDF en nueva pestaña para vista previa
+      // Crear PDF como blob y abrirlo en nueva ventana
       const pdfBlob = doc.output('blob');
       const pdfUrl = URL.createObjectURL(new Blob([pdfBlob], { type: 'application/pdf' }));
       
-      // Crear enlace temporal y abrir en nueva pestaña (sin atributo download)
-      const link = document.createElement('a');
-      link.href = pdfUrl;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
+      console.log('🔗 URL del PDF creada:', pdfUrl);
       
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      // Intentar abrir con window.open primero
+      try {
+        const newWindow = window.open(pdfUrl, '_blank');
+        if (newWindow) {
+          console.log('✅ PDF abierto en nueva ventana');
+        } else {
+          console.log('⚠️ Popup bloqueado, usando método alternativo');
+          // Fallback: crear iframe temporal
+          const iframe = document.createElement('iframe');
+          iframe.src = pdfUrl;
+          iframe.style.display = 'none';
+          document.body.appendChild(iframe);
+          
+          // Abrir el contenido del iframe en nueva ventana
+          setTimeout(() => {
+            const iframeWindow = window.open('', '_blank');
+            if (iframeWindow) {
+              iframeWindow.location.href = pdfUrl;
+            }
+            document.body.removeChild(iframe);
+          }, 100);
+        }
+      } catch (error) {
+        console.error('❌ Error abriendo PDF:', error);
+      }
       
       // Limpiar URL después de un tiempo para liberar memoria
       setTimeout(() => {
