@@ -48,6 +48,7 @@ export function DeductionsManager({
   const [isEventualDialogOpen, setIsEventualDialogOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<any>(null);
   const [deletingTemplate, setDeletingTemplate] = useState<any>(null);
+  const [reactivatingTemplate, setReactivatingTemplate] = useState<any>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Obtener plantillas de deducciones activas
@@ -329,9 +330,14 @@ export function DeductionsManager({
     setDeletingTemplate(template);
   };
 
-  const handleReactivateTemplate = (templateId: string) => {
-    if (window.confirm('¿Estás seguro de que quieres reactivar esta plantilla? Se volverán a generar deducciones automáticas.')) {
-      reactivateTemplateMutation.mutate(templateId);
+  const handleReactivateTemplate = (template: any) => {
+    setReactivatingTemplate(template);
+  };
+
+  const confirmReactivateTemplate = () => {
+    if (reactivatingTemplate) {
+      reactivateTemplateMutation.mutate(reactivatingTemplate.id);
+      setReactivatingTemplate(null);
     }
   };
 
@@ -416,7 +422,7 @@ export function DeductionsManager({
                         <Button 
                           variant="outline" 
                           size="sm"
-                          onClick={() => handleReactivateTemplate(template.id)}
+                          onClick={() => handleReactivateTemplate(template)}
                           disabled={reactivateTemplateMutation.isPending}
                           className="text-green-600 hover:text-green-700 hover:bg-green-50"
                         >
@@ -609,6 +615,106 @@ export function DeductionsManager({
               disabled={deleteTemplateMutation.isPending}
             >
               {deleteTemplateMutation.isPending ? "Eliminando..." : "Eliminar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Dialog de confirmación para reactivar plantilla */}
+      <AlertDialog open={!!reactivatingTemplate} onOpenChange={() => setReactivatingTemplate(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <RotateCcw className="h-5 w-5 text-green-600" />
+              ¿Reactivar deducción recurrente?
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-4">
+                <p>
+                  Se reactivará esta plantilla de deducción y se volverán a generar deducciones automáticas 
+                  para los próximos períodos de pago.
+                </p>
+                
+                {reactivatingTemplate && (
+                  <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                    <div className="flex items-center gap-2 mb-3">
+                      <DollarSign className="h-4 w-4 text-green-600" />
+                      <span className="font-semibold text-sm">Detalles de la plantilla:</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div>
+                        <span className="text-muted-foreground">Usuario:</span>
+                        <div className="font-medium">
+                          {reactivatingTemplate.driver_profile?.first_name} {reactivatingTemplate.driver_profile?.last_name}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <span className="text-muted-foreground">Monto:</span>
+                        <div className="font-medium text-green-700">
+                          ${formatCurrency(parseFloat(reactivatingTemplate.amount || 0))}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <span className="text-muted-foreground">Tipo:</span>
+                        <div className="font-medium">
+                          {reactivatingTemplate.expense_types?.name}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <span className="text-muted-foreground">Frecuencia:</span>
+                        <div className="font-medium">
+                          {reactivatingTemplate.frequency === 'weekly' ? 'Semanal' : 
+                           reactivatingTemplate.frequency === 'biweekly' ? 'Quincenal' : 
+                           reactivatingTemplate.frequency === 'monthly' ? 
+                             `Mensual - ${reactivatingTemplate.month_week === 1 ? '1era' : 
+                                          reactivatingTemplate.month_week === 2 ? '2da' : 
+                                          reactivatingTemplate.month_week === 3 ? '3era' : 
+                                          reactivatingTemplate.month_week === 4 ? '4ta' : 'Última'} semana` : 
+                           'Mensual'}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {reactivatingTemplate.notes && (
+                      <div className="mt-3 pt-2 border-t">
+                        <span className="text-muted-foreground text-sm">Notas:</span>
+                        <div className="text-sm mt-1">{reactivatingTemplate.notes}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-xs text-amber-800">
+                    <strong>Importante:</strong> Las deducciones se aplicarán automáticamente en los próximos períodos de pago según la frecuencia configurada.
+                  </div>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmReactivateTemplate}
+              className="bg-green-600 text-white hover:bg-green-700"
+              disabled={reactivateTemplateMutation.isPending}
+            >
+              {reactivateTemplateMutation.isPending ? (
+                <div className="flex items-center gap-2">
+                  <RotateCcw className="h-4 w-4 animate-spin" />
+                  Reactivando...
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <RotateCcw className="h-4 w-4" />
+                  Reactivar Plantilla
+                </div>
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
