@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import { Calendar, CalendarDays, ChevronDown, Clock, X, TrendingUp, FileText, Loader2 } from 'lucide-react';
 import { usePaymentPeriods, useCurrentPaymentPeriod, usePreviousPaymentPeriod, useNextPaymentPeriod } from '@/hooks/usePaymentPeriods';
 import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
@@ -289,82 +291,52 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
               </Button>
             </div>
 
-            {/* Filtros por fechas inteligentes */}
+            {/* Filtro de período usando el sistema que funciona bien */}
             <div className="space-y-2">
-              <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.by_dates')}</h4>
-              
-              <Button
-                variant={value.type === 'this_month' ? 'default' : 'ghost'}
-                className="w-full justify-start"
-                onClick={() => handleDateRangeSelect('this_month')}
+              <label className="text-sm font-medium">Período de Pago</label>
+              <Select 
+                value={value.type || 'current'} 
+                onValueChange={(type) => {
+                  // Usar la misma lógica que funciona en LoadsFloatingActions
+                  const newFilter: PeriodFilterValue = { type: type as any };
+                  
+                  // Calcular fechas para períodos basados en fechas
+                  const dateRange = getDateRangeForType(type);
+                  if (dateRange) {
+                    newFilter.startDate = dateRange.startDate;
+                    newFilter.endDate = dateRange.endDate;
+                    newFilter.label = dateRange.label;
+                  }
+                  
+                  onChange(newFilter);
+                  setOpen(false);
+                }}
               >
-                <TrendingUp className="h-4 w-4 mr-2" />
-                 {t('periods.this_month')}
-                <Badge variant="secondary" className="ml-auto text-xs">
-                  {format(new Date(), 'MMM', { locale: i18n.language === 'es' ? es : undefined })}
-                </Badge>
-              </Button>
-
-              <Button
-                variant={value.type === 'last_month' ? 'default' : 'ghost'}
-                className="w-full justify-start"
-                onClick={() => handleDateRangeSelect('last_month')}
-              >
-                <TrendingUp className="h-4 w-4 mr-2" />
-                 {t('periods.last_month')}
-                <Badge variant="secondary" className="ml-auto text-xs">
-                  {format(subMonths(new Date(), 1), 'MMM', { locale: i18n.language === 'es' ? es : undefined })}
-                </Badge>
-              </Button>
-
-              <Button
-                variant={value.type === 'this_quarter' ? 'default' : 'ghost'}
-                className="w-full justify-start"
-                onClick={() => handleDateRangeSelect('this_quarter')}
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                 {t('periods.this_quarter')}
-                <Badge variant="secondary" className="ml-auto text-xs">
-                  {i18n.language === 'es' ? `T${Math.ceil((new Date().getMonth() + 1) / 3)}` : `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`}
-                </Badge>
-              </Button>
-
-              <Button
-                variant={value.type === 'last_quarter' ? 'default' : 'ghost'}
-                className="w-full justify-start"
-                onClick={() => handleDateRangeSelect('last_quarter')}
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                 {t('periods.last_quarter')}
-                <Badge variant="secondary" className="ml-auto text-xs">
-                  {i18n.language === 'es' ? `T${Math.ceil((subQuarters(new Date(), 1).getMonth() + 1) / 3)}` : `Q${Math.ceil((subQuarters(new Date(), 1).getMonth() + 1) / 3)}`}
-                </Badge>
-              </Button>
-
-              <Button
-                variant={value.type === 'this_year' ? 'default' : 'ghost'}
-                className="w-full justify-start"
-                onClick={() => handleDateRangeSelect('this_year')}
-              >
-                <Calendar className="h-4 w-4 mr-2" />
-                 {t('periods.this_year')}
-                <Badge variant="secondary" className="ml-auto text-xs">
-                  {new Date().getFullYear()}
-                </Badge>
-              </Button>
-
-              <Button
-                variant={value.type === 'last_year' ? 'default' : 'ghost'}
-                className="w-full justify-start"
-                onClick={() => handleDateRangeSelect('last_year')}
-              >
-                <Calendar className="h-4 w-4 mr-2" />
-                 {t('periods.last_year')}
-                <Badge variant="secondary" className="ml-auto text-xs">
-                  {subYears(new Date(), 1).getFullYear()}
-                </Badge>
-              </Button>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar período" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="current">{t('periods.current')}</SelectItem>
+                  <SelectItem value="previous">{t('periods.previous')}</SelectItem>
+                  <SelectItem value="next">Período Siguiente</SelectItem>
+                  <SelectItem value="all">Todos los Períodos</SelectItem>
+                  <SelectItem value="this_month">Este Mes</SelectItem>
+                  <SelectItem value="last_month">Mes Pasado</SelectItem>
+                  <SelectItem value="this_quarter">Este Trimestre</SelectItem>
+                  <SelectItem value="last_quarter">Trimestre Pasado</SelectItem>
+                  <SelectItem value="this_year">Este Año</SelectItem>
+                  <SelectItem value="last_year">Año Pasado</SelectItem>
+                  <SelectItem value="specific">Período Específico...</SelectItem>
+                </SelectContent>
+              </Select>
+              {value.type && value.type !== 'current' && (
+                <div className="text-xs text-muted-foreground">
+                  {getFilterLabel()}
+                </div>
+              )}
             </div>
+
+            <Separator />
 
             {/* Períodos abiertos */}
             {openPeriods.length > 0 && (
