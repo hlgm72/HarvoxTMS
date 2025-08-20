@@ -394,7 +394,11 @@ export function DeductionsManager({
                       <p className={`font-semibold text-lg ${isInactive ? 'text-muted-foreground' : ''}`}>
                         ${formatCurrency(parseFloat(template.amount || 0))}
                       </p>
-                      <Badge variant={isInactive ? "secondary" : "outline"}>
+                      <Badge variant={
+                        isInactive ? "secondary" : 
+                        template.frequency === 'weekly' ? "success" :
+                        template.frequency === 'biweekly' ? "warning" : "default"
+                      }>
                         {isInactive && 'Inactiva • '}
                         {template.frequency === 'weekly' ? 'Semanal' : 
                          template.frequency === 'biweekly' ? 'Quincenal' : 
