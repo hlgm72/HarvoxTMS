@@ -118,7 +118,7 @@ export function ExpenseTemplateDialog({
   // Actualizar ATM input cuando cambie el template en modo edición
   useEffect(() => {
     if (mode === 'edit' && template?.amount) {
-      atmInput.setValue(template.amount * 100); // Convert to cents
+      atmInput.setValue(template.amount); // El hook useATMInput ya maneja la conversión a centavos
     }
   }, [template?.amount, mode]);
 
