@@ -1081,23 +1081,40 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     // Abrir PDF en nueva pestaña para vista previa (sin forzar descarga)
     const pdfBlob = doc.output('blob');
     const pdfUrl = URL.createObjectURL(new Blob([pdfBlob], { type: 'application/pdf' }));
-    const newWindow = window.open('', '_blank');
     
-    if (newWindow) {
-      newWindow.location.href = pdfUrl;
-      // Limpiar URL después de un tiempo para liberar memoria
-      setTimeout(() => {
-        URL.revokeObjectURL(pdfUrl);
-      }, 10000);
-    } else {
-      console.warn('Popup bloqueado. Intentando download fallback.');
-      doc.save(fileName);
-    }
+    // Crear enlace temporal y hacer clic para abrir en nueva pestaña
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Limpiar URL después de un tiempo para liberar memoria
+    setTimeout(() => {
+      URL.revokeObjectURL(pdfUrl);
+    }, 10000);
   } else if (isPreview === false) {
     // Si isPreview es explícitamente false, retornar el documento
     return doc;
   } else {
-    // Descargar PDF con nombre personalizado
-    doc.save(fileName);
+    // Descargar PDF usando técnica más robusta con enlace temporal
+    const pdfBlob = doc.output('blob');
+    const pdfUrl = URL.createObjectURL(new Blob([pdfBlob], { type: 'application/pdf' }));
+    
+    // Crear enlace temporal para descarga
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.download = fileName;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Limpiar URL después de un breve momento
+    setTimeout(() => {
+      URL.revokeObjectURL(pdfUrl);
+    }, 1000);
   }
 }
