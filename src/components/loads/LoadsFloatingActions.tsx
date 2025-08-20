@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { ExpandableFloatingActions } from "@/components/ui/ExpandableFloatingActions";
+import { useDriversList } from "@/hooks/useDriversList";
 import { 
   Filter, 
   FilterX, 
@@ -34,12 +35,6 @@ const statusOptions = [
   { value: "completed", label: "Completada" }
 ];
 
-const driverOptions = [
-  { value: "all", label: "Todos los conductores" },
-  { value: "driver1", label: "María García" },
-  { value: "driver2", label: "Carlos Rodríguez" },
-  { value: "driver3", label: "Ana Martínez" }
-];
 
 const brokerOptions = [
   { value: "all", label: "Todos los brokers" },
@@ -78,6 +73,9 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
   const { t } = useTranslation('loads');
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'view' | 'stats'>('filters');
+  
+  // Obtener lista de conductores reales
+  const { data: driversData = [], isLoading: driversLoading } = useDriversList();
   
   // View configuration state
   const [viewConfig, setViewConfig] = useState({
@@ -240,14 +238,16 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                     <Select 
                       value={filters.driver} 
                       onValueChange={(value) => handleFilterChange("driver", value)}
+                      disabled={driversLoading}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar conductor" />
+                        <SelectValue placeholder={driversLoading ? "Cargando..." : "Seleccionar conductor"} />
                       </SelectTrigger>
                       <SelectContent>
-                        {driverOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                        <SelectItem value="all">Todos los conductores</SelectItem>
+                        {driversData.map((driver) => (
+                          <SelectItem key={driver.value} value={driver.value}>
+                            {driver.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
