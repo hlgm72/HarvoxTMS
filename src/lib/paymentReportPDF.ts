@@ -77,7 +77,7 @@ interface PaymentReportData {
   }>;
 }
 
-export async function generatePaymentReportPDF(data: PaymentReportData, isPreview: boolean = false): Promise<jsPDF | void> {
+export async function generatePaymentReportPDF(data: PaymentReportData, isPreview?: boolean): Promise<jsPDF | void> {
   console.log('🔍 PDF Generation - Data received:', data);
   console.log('🔍 PDF Generation - Deductions data:', data.deductions);
   console.log('🔍 PDF Generation - Deductions length:', data.deductions?.length || 0);
