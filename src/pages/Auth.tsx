@@ -440,6 +440,7 @@ export default function Auth() {
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
+          skipBrowserRedirect: false,
         }
       });
 
