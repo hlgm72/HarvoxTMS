@@ -19,7 +19,9 @@ import {
   BarChart3,
   FileText,
   FileSpreadsheet,
-  Plus
+  Plus,
+  Clock,
+  CalendarDays
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from "date-fns";
 import { formatShortDate, formatMediumDate, formatCurrency, formatDateInUserTimeZone, formatMonthName } from '@/lib/dateFormatting';
@@ -274,98 +276,200 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                     </Select>
                   </div>
 
-                  {/* Period Filter - Enhanced */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Período de Pago</label>
-                    <Select 
-                      value={periodFilter?.type || 'current'} 
-                      onValueChange={(value) => {
-                        // Create a proper PeriodFilterValue using the same logic as PeriodFilter
-                        const newFilter: any = { type: value };
-                        
-                        // Use the same date calculation logic as PeriodFilter
-                        const getDateRangeForType = (type: string) => {
-                          const now = new Date();
+                  {/* Period Filter - Enhanced Quick Filters */}
+                  <div className="space-y-4">
+                    <h4 className="font-medium text-sm text-muted-foreground">Filtros Rápidos de Período</h4>
+                    
+                    {/* Quick Filter Buttons */}
+                    <div className="space-y-2">
+                      <Button
+                        variant={periodFilter?.type === 'previous' ? 'default' : 'ghost'}
+                        className="w-full justify-start"
+                        onClick={() => {
+                          onPeriodFilterChange?.({ 
+                            type: 'previous'
+                          });
+                        }}
+                      >
+                        <Clock className="h-4 w-4 mr-2" />
+                        {t('periods.previous')}
+                        <Badge variant="secondary" className="ml-auto text-xs">
+                          08/11 - 08/17
+                        </Badge>
+                      </Button>
+
+                      <Button
+                        variant={periodFilter?.type === 'current' ? 'default' : 'ghost'}
+                        className="w-full justify-start"
+                        onClick={() => {
+                          onPeriodFilterChange?.({ 
+                            type: 'current'
+                          });
+                        }}
+                      >
+                        <Clock className="h-4 w-4 mr-2" />
+                        {t('periods.current')}
+                        <Badge variant="secondary" className="ml-auto text-xs">
+                          08/18 - 08/24
+                        </Badge>
+                      </Button>
+
+                      <Button
+                        variant={periodFilter?.type === 'next' ? 'default' : 'ghost'}
+                        className="w-full justify-start"
+                        onClick={() => {
+                          onPeriodFilterChange?.({ 
+                            type: 'next'
+                          });
+                        }}
+                      >
+                        <Clock className="h-4 w-4 mr-2" />
+                        {t('periods.next')}
+                        <Badge variant="secondary" className="ml-auto text-xs">
+                          08/25 - 08/31
+                        </Badge>
+                      </Button>
+
+                      <Button
+                        variant={periodFilter?.type === 'all' ? 'default' : 'ghost'}
+                        className="w-full justify-start"
+                        onClick={() => {
+                          onPeriodFilterChange?.({ 
+                            type: 'all'
+                          });
+                        }}
+                      >
+                        <CalendarDays className="h-4 w-4 mr-2" />
+                        Historial Completo
+                        <Badge variant="secondary" className="ml-auto text-xs">
+                          10
+                        </Badge>
+                      </Button>
+                    </div>
+
+                    <Separator />
+
+                    {/* Período de Pago Dropdown */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Período de Pago</label>
+                      <Select 
+                        value={periodFilter?.type || 'current'} 
+                        onValueChange={(value) => {
+                          // Create a proper PeriodFilterValue using the same logic as PeriodFilter
+                          const newFilter: any = { type: value };
                           
-                          switch (type) {
-                            case 'this_month':
-                              return {
-                                startDate: formatDateInUserTimeZone(startOfMonth(now)),
-                                endDate: formatDateInUserTimeZone(endOfMonth(now)),
-                                label: `${t('periods.this_month')} (${formatMonthName(now)} ${now.getFullYear()})`
-                              };
-                            case 'last_month':
-                              const lastMonth = subMonths(now, 1);
-                              return {
-                                startDate: formatDateInUserTimeZone(startOfMonth(lastMonth)),
-                                endDate: formatDateInUserTimeZone(endOfMonth(lastMonth)),
-                                label: `${t('periods.last_month')} (${formatMonthName(lastMonth)} ${lastMonth.getFullYear()})`
-                              };
-                            case 'this_quarter':
-                              return {
-                                startDate: formatDateInUserTimeZone(startOfQuarter(now)),
-                                endDate: formatDateInUserTimeZone(endOfQuarter(now)),
-                                label: `${t('periods.this_quarter')} (Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()})`
-                              };
-                            case 'last_quarter':
-                              const lastQuarter = subQuarters(now, 1);
-                              return {
-                                startDate: formatDateInUserTimeZone(startOfQuarter(lastQuarter)),
-                                endDate: formatDateInUserTimeZone(endOfQuarter(lastQuarter)),
-                                label: `${t('periods.last_quarter')} (Q${Math.ceil((lastQuarter.getMonth() + 1) / 3)} ${lastQuarter.getFullYear()})`
-                              };
-                            case 'this_year':
-                              return {
-                                startDate: formatDateInUserTimeZone(startOfYear(now)),
-                                endDate: formatDateInUserTimeZone(endOfYear(now)),
-                                label: `${t('periods.this_year')} (${now.getFullYear()})`
-                              };
-                            case 'last_year':
-                              const lastYear = subYears(now, 1);
-                              return {
-                                startDate: formatDateInUserTimeZone(startOfYear(lastYear)),
-                                endDate: formatDateInUserTimeZone(endOfYear(lastYear)),
-                                label: `${t('periods.last_year')} (${lastYear.getFullYear()})`
-                              };
-                            default:
-                              return null;
+                          // Use the same date calculation logic as PeriodFilter
+                          const getDateRangeForType = (type: string) => {
+                            const now = new Date();
+                            
+                            switch (type) {
+                              case 'this_month':
+                                return {
+                                  startDate: formatDateInUserTimeZone(startOfMonth(now)),
+                                  endDate: formatDateInUserTimeZone(endOfMonth(now)),
+                                  label: `${t('periods.this_month')} (${formatMonthName(now)} ${now.getFullYear()})`
+                                };
+                              case 'last_month':
+                                const lastMonth = subMonths(now, 1);
+                                return {
+                                  startDate: formatDateInUserTimeZone(startOfMonth(lastMonth)),
+                                  endDate: formatDateInUserTimeZone(endOfMonth(lastMonth)),
+                                  label: `${t('periods.last_month')} (${formatMonthName(lastMonth)} ${lastMonth.getFullYear()})`
+                                };
+                              case 'this_quarter':
+                                return {
+                                  startDate: formatDateInUserTimeZone(startOfQuarter(now)),
+                                  endDate: formatDateInUserTimeZone(endOfQuarter(now)),
+                                  label: `${t('periods.this_quarter')} (Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()})`
+                                };
+                              case 'last_quarter':
+                                const lastQuarter = subQuarters(now, 1);
+                                return {
+                                  startDate: formatDateInUserTimeZone(startOfQuarter(lastQuarter)),
+                                  endDate: formatDateInUserTimeZone(endOfQuarter(lastQuarter)),
+                                  label: `${t('periods.last_quarter')} (Q${Math.ceil((lastQuarter.getMonth() + 1) / 3)} ${lastQuarter.getFullYear()})`
+                                };
+                              case 'this_year':
+                                return {
+                                  startDate: formatDateInUserTimeZone(startOfYear(now)),
+                                  endDate: formatDateInUserTimeZone(endOfYear(now)),
+                                  label: `${t('periods.this_year')} (${now.getFullYear()})`
+                                };
+                              case 'last_year':
+                                const lastYear = subYears(now, 1);
+                                return {
+                                  startDate: formatDateInUserTimeZone(startOfYear(lastYear)),
+                                  endDate: formatDateInUserTimeZone(endOfYear(lastYear)),
+                                  label: `${t('periods.last_year')} (${lastYear.getFullYear()})`
+                                };
+                              default:
+                                return null;
+                            }
+                          };
+                          
+                          // Calculate dates for date-based periods
+                          const dateRange = getDateRangeForType(value);
+                          if (dateRange) {
+                            newFilter.startDate = dateRange.startDate;
+                            newFilter.endDate = dateRange.endDate;
+                            newFilter.label = dateRange.label;
                           }
-                        };
-                        
-                        // Calculate dates for date-based periods
-                        const dateRange = getDateRangeForType(value);
-                        if (dateRange) {
-                          newFilter.startDate = dateRange.startDate;
-                          newFilter.endDate = dateRange.endDate;
-                          newFilter.label = dateRange.label;
-                        }
-                        
-                        onPeriodFilterChange?.(newFilter);
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar período" />
-                      </SelectTrigger>
+                          
+                          onPeriodFilterChange?.(newFilter);
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar período" />
+                        </SelectTrigger>
                         <SelectContent>
-                         <SelectItem value="current">{t('periods.current')}</SelectItem>
-                         <SelectItem value="previous">{t('periods.previous')}</SelectItem>
-                        <SelectItem value="next">Período Siguiente</SelectItem>
-                        <SelectItem value="all">Todos los Períodos</SelectItem>
-                        <SelectItem value="this_month">Este Mes</SelectItem>
-                        <SelectItem value="last_month">Mes Pasado</SelectItem>
-                        <SelectItem value="this_quarter">Este Trimestre</SelectItem>
-                        <SelectItem value="last_quarter">Trimestre Pasado</SelectItem>
-                        <SelectItem value="this_year">Este Año</SelectItem>
-                        <SelectItem value="last_year">Año Pasado</SelectItem>
-                        <SelectItem value="specific">Período Específico...</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {periodFilter?.type && periodFilter.type !== 'current' && (
-                      <div className="text-xs text-muted-foreground">
-                        {getPeriodLabel(periodFilter.type)}
-                        {periodFilter.label && ` - ${periodFilter.label}`}
-                      </div>
-                    )}
+                          <SelectItem value="current">{t('periods.current')}</SelectItem>
+                          <SelectItem value="previous">{t('periods.previous')}</SelectItem>
+                          <SelectItem value="next">Período Siguiente</SelectItem>
+                          <SelectItem value="all">Todos los Períodos</SelectItem>
+                          <SelectItem value="this_month">Este Mes</SelectItem>
+                          <SelectItem value="last_month">Mes Pasado</SelectItem>
+                          <SelectItem value="this_quarter">Este Trimestre</SelectItem>
+                          <SelectItem value="last_quarter">Trimestre Pasado</SelectItem>
+                          <SelectItem value="this_year">Este Año</SelectItem>
+                          <SelectItem value="last_year">Año Pasado</SelectItem>
+                          <SelectItem value="specific">Período Específico...</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {periodFilter?.type && periodFilter.type !== 'current' && (
+                        <div className="text-xs text-muted-foreground">
+                          {getPeriodLabel(periodFilter.type)}
+                          {periodFilter.label && ` - ${periodFilter.label}`}
+                        </div>
+                      )}
+                    </div>
+
+                    <Separator />
+
+                    {/* Open Periods Section */}
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm text-muted-foreground">Períodos Abiertos</h4>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-left"
+                        onClick={() => {
+                          onPeriodFilterChange?.({ 
+                            type: 'specific',
+                            periodId: '1',
+                            startDate: '2025-09-15',
+                            endDate: '2025-09-21'
+                          });
+                        }}
+                      >
+                        <div className="flex flex-col items-start w-full">
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-sm">09/15/25 - 09/21/25</span>
+                            <Badge className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                              Open
+                            </Badge>
+                          </div>
+                        </div>
+                      </Button>
+                    </div>
                   </div>
 
                   {/* Date Range Filter */}
