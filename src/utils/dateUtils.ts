@@ -119,11 +119,37 @@ export const formatDateTime = (
 
 /**
  * Función para formatear solo la fecha, sin hora
+ * Esta función maneja correctamente fechas UTC que representan fechas puras (sin hora significativa)
  */
 export const formatDateOnly = (
   dateInput: string | Date | null | undefined
 ): string => {
-  return formatDateSafe(dateInput, 'dd/MM/yyyy');
+  if (!dateInput) return 'No definida';
+  
+  try {
+    if (typeof dateInput === 'string') {
+      // Si es una fecha UTC en medianoche (como las de transacciones), extraer solo la parte de fecha
+      if (dateInput.includes('T00:00:00') && dateInput.includes('+00')) {
+        const datePart = dateInput.split('T')[0];
+        const [year, month, day] = datePart.split('-').map(Number);
+        
+        // Validar que los valores sean números válidos
+        if (isNaN(year) || isNaN(month) || isNaN(day)) {
+          return 'Fecha inválida';
+        }
+        
+        // Crear fecha local directamente para evitar problemas de zona horaria
+        const localDate = new Date(year, month - 1, day, 12, 0, 0, 0);
+        return format(localDate, 'dd/MM/yyyy', { locale: es });
+      }
+    }
+    
+    // Para otros casos, usar la función segura existente
+    return formatDateSafe(dateInput, 'dd/MM/yyyy');
+  } catch (error) {
+    console.error('Error formatting date only:', error, 'Input:', dateInput);
+    return 'Error en fecha';
+  }
 };
 
 /**
