@@ -436,11 +436,21 @@ export default function Auth() {
     setError(null);
 
     try {
+      // Clean up any existing auth state first
+      localStorage.removeItem('supabase.auth.token');
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      const currentOrigin = window.location.origin;
+      console.log('Current origin for Google OAuth:', currentOrigin);
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          skipBrowserRedirect: false,
+          redirectTo: `${currentOrigin}/auth/callback`,
         }
       });
 
