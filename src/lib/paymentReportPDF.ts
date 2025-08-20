@@ -1084,41 +1084,53 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   try {
     if (isPreview) {
       console.log('👁️ Modo preview activado');
-      // Crear PDF como blob y abrirlo en nueva ventana
+      // Crear PDF como blob
       const pdfBlob = doc.output('blob');
       const pdfUrl = URL.createObjectURL(new Blob([pdfBlob], { type: 'application/pdf' }));
       
       console.log('🔗 URL del PDF creada:', pdfUrl);
       
-      // Intentar abrir con window.open primero
+      // Crear documento HTML wrapper con título personalizado
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+          <meta charset="UTF-8">
+          <title>${fileName.replace('.pdf', '')}</title>
+          <style>
+            body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+            iframe { width: 100%; height: 100%; border: none; }
+          </style>
+        </head>
+        <body>
+          <iframe src="${pdfUrl}" type="application/pdf"></iframe>
+        </body>
+        </html>
+      `;
+      
+      const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
+      const htmlUrl = URL.createObjectURL(htmlBlob);
+      
+      // Intentar abrir el wrapper HTML primero
       try {
-        const newWindow = window.open(pdfUrl, '_blank');
+        const newWindow = window.open(htmlUrl, '_blank');
         if (newWindow) {
-          console.log('✅ PDF abierto en nueva ventana');
+          console.log('✅ PDF wrapper abierto en nueva ventana con título:', fileName);
         } else {
-          console.log('⚠️ Popup bloqueado, usando método alternativo');
-          // Fallback: crear iframe temporal
-          const iframe = document.createElement('iframe');
-          iframe.src = pdfUrl;
-          iframe.style.display = 'none';
-          document.body.appendChild(iframe);
-          
-          // Abrir el contenido del iframe en nueva ventana
-          setTimeout(() => {
-            const iframeWindow = window.open('', '_blank');
-            if (iframeWindow) {
-              iframeWindow.location.href = pdfUrl;
-            }
-            document.body.removeChild(iframe);
-          }, 100);
+          console.log('⚠️ Popup bloqueado, usando fallback directo...');
+          // Fallback directo al PDF si falla el popup
+          window.open(pdfUrl, '_blank');
         }
       } catch (error) {
-        console.error('❌ Error abriendo PDF:', error);
+        console.error('❌ Error abriendo PDF wrapper:', error);
+        // Fallback al método original
+        window.open(pdfUrl, '_blank');
       }
       
-      // Limpiar URL después de un tiempo para liberar memoria
+      // Limpiar URLs después de un tiempo para liberar memoria
       setTimeout(() => {
         URL.revokeObjectURL(pdfUrl);
+        URL.revokeObjectURL(htmlUrl);
       }, 10000);
     } else if (isPreview === false) {
       console.log('📄 Modo retorno de documento activado');
