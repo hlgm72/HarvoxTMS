@@ -11,7 +11,7 @@ import { ExpenseTemplateDialog } from "./ExpenseTemplateDialog";
 import { EventualDeductionDialog } from "./EventualDeductionDialog";
 import { EventualDeductionsList } from "./EventualDeductionsList";
 import { formatDateOnly, formatCurrency } from '@/lib/dateFormatting';
-import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle, Repeat, Clock, Archive, History } from "lucide-react";
+import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle, Repeat, Clock, Archive, History, X } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 
 interface DeductionsManagerProps {
@@ -49,6 +49,7 @@ export function DeductionsManager({
   const [editingTemplate, setEditingTemplate] = useState<any>(null);
   const [deletingTemplate, setDeletingTemplate] = useState<any>(null);
   const [reactivatingTemplate, setReactivatingTemplate] = useState<any>(null);
+  const [permanentlyDeletingTemplate, setPermanentlyDeletingTemplate] = useState<any>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Obtener plantillas de deducciones activas
@@ -326,12 +327,35 @@ export function DeductionsManager({
     }
   });
 
+  // Mutation para eliminar definitivamente plantilla
+  const permanentlyDeleteTemplateMutation = useMutation({
+    mutationFn: async (templateId: string) => {
+      const { error } = await supabase
+        .from('expense_recurring_templates')
+        .delete()
+        .eq('id', templateId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      showSuccess("Éxito", "Plantilla eliminada definitivamente");
+      handleCreateSuccess();
+    },
+    onError: (error: any) => {
+      showError("Error", error.message || "No se pudo eliminar la plantilla definitivamente");
+    }
+  });
+
   const handleDeleteTemplate = (template: any) => {
     setDeletingTemplate(template);
   };
 
   const handleReactivateTemplate = (template: any) => {
     setReactivatingTemplate(template);
+  };
+
+  const handlePermanentlyDeleteTemplate = (template: any) => {
+    setPermanentlyDeletingTemplate(template);
   };
 
   const confirmReactivateTemplate = () => {
@@ -345,6 +369,13 @@ export function DeductionsManager({
     if (deletingTemplate) {
       deleteTemplateMutation.mutate(deletingTemplate.id);
       setDeletingTemplate(null);
+    }
+  };
+
+  const confirmPermanentlyDeleteTemplate = () => {
+    if (permanentlyDeletingTemplate) {
+      permanentlyDeleteTemplateMutation.mutate(permanentlyDeletingTemplate.id);
+      setPermanentlyDeletingTemplate(null);
     }
   };
 
@@ -419,16 +450,28 @@ export function DeductionsManager({
                     
                     <div className="flex gap-2">
                       {isInactive ? (
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleReactivateTemplate(template)}
-                          disabled={reactivateTemplateMutation.isPending}
-                          className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                        >
-                          <RotateCcw className="h-4 w-4 mr-1" />
-                          Reactivar
-                        </Button>
+                        <>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleReactivateTemplate(template)}
+                            disabled={reactivateTemplateMutation.isPending}
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                          >
+                            <RotateCcw className="h-4 w-4 mr-1" />
+                            Reactivar
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handlePermanentlyDeleteTemplate(template)}
+                            disabled={permanentlyDeleteTemplateMutation.isPending}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Eliminar
+                          </Button>
+                        </>
                       ) : (
                         <>
                           <Button 
@@ -713,6 +756,106 @@ export function DeductionsManager({
                 <div className="flex items-center gap-2">
                   <RotateCcw className="h-4 w-4" />
                   Reactivar Plantilla
+                </div>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Dialog de confirmación para eliminar definitivamente plantilla */}
+      <AlertDialog open={!!permanentlyDeletingTemplate} onOpenChange={() => setPermanentlyDeletingTemplate(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <X className="h-5 w-5 text-red-600" />
+              ¿Eliminar plantilla definitivamente?
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-4">
+                <p>
+                  Esta acción eliminará permanentemente la plantilla de la base de datos. 
+                  <strong className="text-red-600"> Esta acción no se puede deshacer.</strong>
+                </p>
+                
+                {permanentlyDeletingTemplate && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-2">
+                    <div className="flex items-center gap-2 mb-3">
+                      <X className="h-4 w-4 text-red-600" />
+                      <span className="font-semibold text-sm">Plantilla a eliminar:</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div>
+                        <span className="text-muted-foreground">Usuario:</span>
+                        <div className="font-medium">
+                          {permanentlyDeletingTemplate.driver_profile?.first_name} {permanentlyDeletingTemplate.driver_profile?.last_name}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <span className="text-muted-foreground">Monto:</span>
+                        <div className="font-medium text-red-700">
+                          ${formatCurrency(parseFloat(permanentlyDeletingTemplate.amount || 0))}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <span className="text-muted-foreground">Tipo:</span>
+                        <div className="font-medium">
+                          {permanentlyDeletingTemplate.expense_types?.name}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <span className="text-muted-foreground">Frecuencia:</span>
+                        <div className="font-medium">
+                          {permanentlyDeletingTemplate.frequency === 'weekly' ? 'Semanal' : 
+                           permanentlyDeletingTemplate.frequency === 'biweekly' ? 'Quincenal' : 
+                           permanentlyDeletingTemplate.frequency === 'monthly' ? 
+                             `Mensual - ${permanentlyDeletingTemplate.month_week === 1 ? '1era' : 
+                                          permanentlyDeletingTemplate.month_week === 2 ? '2da' : 
+                                          permanentlyDeletingTemplate.month_week === 3 ? '3era' : 
+                                          permanentlyDeletingTemplate.month_week === 4 ? '4ta' : 'Última'} semana` : 
+                           'Mensual'}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {permanentlyDeletingTemplate.notes && (
+                      <div className="mt-3 pt-2 border-t">
+                        <span className="text-muted-foreground text-sm">Notas:</span>
+                        <div className="text-sm mt-1">{permanentlyDeletingTemplate.notes}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex items-start gap-2 p-3 bg-red-100 border border-red-300 rounded-lg">
+                  <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-xs text-red-800">
+                    <strong>Advertencia:</strong> Una vez eliminada, no podrás recuperar esta plantilla ni su historial asociado.
+                  </div>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmPermanentlyDeleteTemplate}
+              className="bg-red-600 text-white hover:bg-red-700"
+              disabled={permanentlyDeleteTemplateMutation.isPending}
+            >
+              {permanentlyDeleteTemplateMutation.isPending ? (
+                <div className="flex items-center gap-2">
+                  <X className="h-4 w-4 animate-spin" />
+                  Eliminando...
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <X className="h-4 w-4" />
+                  Eliminar Definitivamente
                 </div>
               )}
             </AlertDialogAction>
