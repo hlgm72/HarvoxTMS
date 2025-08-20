@@ -199,68 +199,109 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             <ChevronDown className="h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-80 p-0 bg-white dark:bg-gray-800 border border-border shadow-lg z-50" align="start">
-          <div className="p-4">
-            {/* EXACTAMENTE el mismo sistema que funciona en LoadsFloatingActions */}
+        <PopoverContent className="w-72 sm:w-80 p-0 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 border border-border shadow-lg z-50" align="start">
+          <div className="p-4 space-y-4">
+            {/* Opciones rápidas */}
+            <div className="space-y-2">
+              <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.quick_filters')}</h4>
+              
+              <Button
+                variant={value.type === 'previous' ? 'default' : 'ghost'}
+                className="w-full justify-start"
+                onClick={() => {
+                  if (previousPeriod) {
+                    handleOptionSelect({ 
+                      type: 'previous',
+                      periodId: previousPeriod.id,
+                      startDate: previousPeriod.period_start_date,
+                      endDate: previousPeriod.period_end_date
+                    });
+                  }
+                }}
+                disabled={!previousPeriod}
+              >
+                <Clock className="h-4 w-4 mr-2" />
+                {t('periods.previous')}
+                {previousPeriod && (
+                  <Badge variant="secondary" className="ml-auto text-[8px] md:text-[10px]">
+                    {formatPaymentPeriodBadge(previousPeriod.period_start_date, previousPeriod.period_end_date)}
+                  </Badge>
+                )}
+              </Button>
+
+               <Button
+                variant={value.type === 'current' ? 'default' : 'ghost'}
+                className="w-full justify-start"
+                onClick={() => {
+                  if (currentPeriod) {
+                    handleOptionSelect({ 
+                      type: 'current',
+                      periodId: currentPeriod.id,
+                      startDate: currentPeriod.period_start_date,
+                      endDate: currentPeriod.period_end_date
+                    });
+                  } else {
+                    handleOptionSelect({ type: 'current' });
+                  }
+                }}
+              >
+                <Clock className="h-4 w-4 mr-2" />
+                {t('periods.current')}
+                {currentPeriod && (
+                  <Badge variant="secondary" className="ml-auto text-[8px] md:text-[10px]">
+                    {formatPaymentPeriodBadge(currentPeriod.period_start_date, currentPeriod.period_end_date)}
+                  </Badge>
+                )}
+              </Button>
+
+              <Button
+                variant={value.type === 'next' ? 'default' : 'ghost'}
+                className="w-full justify-start"
+                onClick={() => {
+                  if (nextPeriod) {
+                    handleOptionSelect({ 
+                      type: 'next',
+                      periodId: nextPeriod.id,
+                      startDate: nextPeriod.period_start_date,
+                      endDate: nextPeriod.period_end_date
+                    });
+                  }
+                }}
+                disabled={!nextPeriod}
+              >
+                <Clock className="h-4 w-4 mr-2" />
+                {t('periods.next')}
+                {nextPeriod && (
+                  <Badge variant="secondary" className="ml-auto text-[8px] md:text-[10px]">
+                    {formatPaymentPeriodBadge(nextPeriod.period_start_date, nextPeriod.period_end_date)}
+                  </Badge>
+                )}
+              </Button>
+
+              <Button
+                variant={value.type === 'all' ? 'default' : 'ghost'}
+                className="w-full justify-start"
+                onClick={() => handleOptionSelect({ type: 'all' })}
+              >
+                <CalendarDays className="h-4 w-4 mr-2" />
+                {t('periods.all')}
+                <Badge variant="secondary" className="ml-auto text-xs">
+                  {allPeriods.length}
+                </Badge>
+              </Button>
+            </div>
+
+            {/* Filtro de período usando el sistema que funciona bien */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Período de Pago</label>
               <Select 
                 value={value.type || 'current'} 
-                onValueChange={(filterValue) => {
-                  // EXACTAMENTE la misma lógica que funciona en LoadsFloatingActions
-                  const newFilter: any = { type: filterValue };
+                onValueChange={(type) => {
+                  // Usar la misma lógica que funciona en LoadsFloatingActions
+                  const newFilter: PeriodFilterValue = { type: type as any };
                   
-                  // EXACTAMENTE la misma función getDateRangeForType que funciona
-                  const getDateRangeForType = (type: string) => {
-                    const now = new Date();
-                    
-                    switch (type) {
-                      case 'this_month':
-                        return {
-                          startDate: formatDateInUserTimeZone(startOfMonth(now)),
-                          endDate: formatDateInUserTimeZone(endOfMonth(now)),
-                          label: `${t('periods.this_month')} (${formatMonthName(now)} ${now.getFullYear()})`
-                        };
-                      case 'last_month':
-                        const lastMonth = subMonths(now, 1);
-                        return {
-                          startDate: formatDateInUserTimeZone(startOfMonth(lastMonth)),
-                          endDate: formatDateInUserTimeZone(endOfMonth(lastMonth)),
-                          label: `${t('periods.last_month')} (${formatMonthName(lastMonth)} ${lastMonth.getFullYear()})`
-                        };
-                      case 'this_quarter':
-                        return {
-                          startDate: formatDateInUserTimeZone(startOfQuarter(now)),
-                          endDate: formatDateInUserTimeZone(endOfQuarter(now)),
-                          label: `${t('periods.this_quarter')} (Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()})`
-                        };
-                      case 'last_quarter':
-                        const lastQuarter = subQuarters(now, 1);
-                        return {
-                          startDate: formatDateInUserTimeZone(startOfQuarter(lastQuarter)),
-                          endDate: formatDateInUserTimeZone(endOfQuarter(lastQuarter)),
-                          label: `${t('periods.last_quarter')} (Q${Math.ceil((lastQuarter.getMonth() + 1) / 3)} ${lastQuarter.getFullYear()})`
-                        };
-                      case 'this_year':
-                        return {
-                          startDate: formatDateInUserTimeZone(startOfYear(now)),
-                          endDate: formatDateInUserTimeZone(endOfYear(now)),
-                          label: `${t('periods.this_year')} (${now.getFullYear()})`
-                        };
-                      case 'last_year':
-                        const lastYear = subYears(now, 1);
-                        return {
-                          startDate: formatDateInUserTimeZone(startOfYear(lastYear)),
-                          endDate: formatDateInUserTimeZone(endOfYear(lastYear)),
-                          label: `${t('periods.last_year')} (${lastYear.getFullYear()})`
-                        };
-                      default:
-                        return null;
-                    }
-                  };
-                  
-                  // Calculate dates for date-based periods - EXACTAMENTE igual
-                  const dateRange = getDateRangeForType(filterValue);
+                  // Calcular fechas para períodos basados en fechas
+                  const dateRange = getDateRangeForType(type);
                   if (dateRange) {
                     newFilter.startDate = dateRange.startDate;
                     newFilter.endDate = dateRange.endDate;
@@ -291,10 +332,117 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
               {value.type && value.type !== 'current' && (
                 <div className="text-xs text-muted-foreground">
                   {getFilterLabel()}
-                  {value.label && ` - ${value.label}`}
                 </div>
               )}
             </div>
+
+            <Separator />
+
+            {/* Períodos abiertos */}
+            {openPeriods.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.open_periods')}</h4>
+                {openPeriods.slice(0, 3).map((period) => (
+                  <Button
+                    key={period.id}
+                    variant={value.periodId === period.id ? 'default' : 'ghost'}
+                    className="w-full justify-start text-left"
+                    onClick={() => handleOptionSelect({ 
+                      type: 'specific', 
+                      periodId: period.id,
+                      startDate: period.period_start_date,
+                      endDate: period.period_end_date
+                    })}
+                  >
+                    <div className="flex flex-col items-start w-full min-w-0">
+                      <div className="flex items-center justify-between w-full gap-2">
+                        <span className="text-sm truncate flex-1 min-w-0">
+                          {formatPaymentPeriodCompact(period.period_start_date, period.period_end_date)}
+                        </span>
+                        <Badge className={`text-xs flex-shrink-0 ${getStatusColor(period.status)}`}>
+                          {getStatusText(period.status)}
+                        </Badge>
+                      </div>
+                      {/* Driver name not needed for company periods */}
+                    </div>
+                  </Button>
+                ))}
+                {openPeriods.length > 3 && (
+                  <div className="text-xs text-muted-foreground text-center">
+                    +{openPeriods.length - 3} {t('period_filter.more_periods')}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Períodos en procesamiento */}
+            {processingPeriods.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.processing')}</h4>
+                {processingPeriods.slice(0, 2).map((period) => (
+                  <Button
+                    key={period.id}
+                    variant={value.periodId === period.id ? 'default' : 'ghost'}
+                    className="w-full justify-start text-left"
+                    onClick={() => handleOptionSelect({ 
+                      type: 'specific', 
+                      periodId: period.id,
+                      startDate: period.period_start_date,
+                      endDate: period.period_end_date
+                    })}
+                  >
+                    <div className="flex flex-col items-start w-full">
+                      <div className="flex items-center justify-between w-full">
+                        <span className="text-sm">
+                          {formatPaymentPeriodCompact(period.period_start_date, period.period_end_date)}
+                        </span>
+                        <Badge className={`text-xs ${getStatusColor(period.status)}`}>
+                          {getStatusText(period.status)}
+                        </Badge>
+                      </div>
+                      {/* Driver name not needed for company periods */}
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            )}
+
+            {/* Períodos históricos */}
+            {otherPeriods.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.historical_periods')}</h4>
+                {otherPeriods.slice(0, 2).map((period) => (
+                  <Button
+                    key={period.id}
+                    variant={value.periodId === period.id ? 'default' : 'ghost'}
+                    className="w-full justify-start text-left"
+                    onClick={() => handleOptionSelect({ 
+                      type: 'specific', 
+                      periodId: period.id,
+                      startDate: period.period_start_date,
+                      endDate: period.period_end_date
+                    })}
+                  >
+                    <div className="flex flex-col items-start w-full">
+                      <div className="flex items-center justify-between w-full">
+                        <span className="text-sm">
+                          {formatPaymentPeriodCompact(period.period_start_date, period.period_end_date)}
+                        </span>
+                        <Badge className={`text-xs ${getStatusColor(period.status)}`}>
+                          {getStatusText(period.status)}
+                        </Badge>
+                      </div>
+                      {/* Driver name not needed for company periods */}
+                    </div>
+                  </Button>
+                ))}
+                {otherPeriods.length > 2 && (
+                  <div className="text-xs text-muted-foreground text-center">
+                    +{otherPeriods.length - 2} {t('period_filter.more_periods')}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </PopoverContent>
       </Popover>
