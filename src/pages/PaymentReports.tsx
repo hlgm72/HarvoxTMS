@@ -351,7 +351,7 @@ export default function PaymentReports() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Períodos de Pago Disponibles
+              Reportes de Pago Disponibles
             </CardTitle>
           </CardHeader>
           <CardContent>
