@@ -791,7 +791,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   if (data.fuelExpenses && data.fuelExpenses.length > 0) {
     data.fuelExpenses.forEach(fuel => {
-      const dateStr = new Date(fuel.transaction_date).toLocaleDateString('en-US');
+      const dateStr = formatDateSafe(fuel.transaction_date, 'MM/dd/yyyy');
       
       addText(dateStr, margin + 2, currentY, {
         fontSize: 9,
