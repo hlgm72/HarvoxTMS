@@ -169,8 +169,13 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
   const { refreshTrigger } = useLoadDocuments();
   const { userRole } = useAuth();
   
-  // console.log('📋 LoadsList - periodFilter recibido:', periodFilter);
-  // console.log('📋 LoadsList - filters recibido:', filters);
+  console.log('🔍 DEBUG LoadsList - Filters recibidos:', {
+    status: filters.status,
+    driver: filters.driver,
+    broker: filters.broker,
+    dateRange: filters.dateRange,
+    periodFilter: periodFilter
+  });
   
   // Convertir el filtro de períodos al formato que espera el hook useLoads
   const loadsFilters = periodFilter ? {
@@ -182,15 +187,22 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
     }
   } : undefined;
   
-  // console.log('📋 LoadsList - loadsFilters enviado a useLoads:', loadsFilters);
+  console.log('🔍 DEBUG LoadsList - loadsFilters enviado a useLoads:', loadsFilters);
   
   const { data: loads = [], isLoading, error } = useLoads(loadsFilters);
   
-  // console.log('📋 LoadsList - Resultado useLoads:', { 
-  //   loadsCount: loads?.length || 0, 
-  //   isLoading, 
-  //   error: error?.message || 'No error' 
-  // });
+  console.log('🔍 DEBUG LoadsList - Resultado useLoads:', { 
+    loadsCount: loads?.length || 0, 
+    isLoading, 
+    error: error?.message || 'No error',
+    sampleLoads: loads?.slice(0, 2).map(load => ({
+      id: load.id,
+      load_number: load.load_number,
+      driver_user_id: load.driver_user_id,
+      driver_name: load.driver_name,
+      status: load.status
+    }))
+  });
   const deleteLoadMutation = useDeleteLoad();
   const updateStatusMutation = useUpdateLoadStatusWithValidation();
   
@@ -286,6 +298,15 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
   
   // Aplicar filtros a los datos reales
   const filteredLoads = loads.filter(load => {
+    console.log(`🔍 DEBUG Filtering load ${load.load_number}:`, {
+      loadDriverUserId: load.driver_user_id,
+      filterDriver: filters.driver,
+      driverMatch: filters.driver === "all" || load.driver_user_id === filters.driver,
+      loadStatus: load.status,
+      filterStatus: filters.status,
+      statusMatch: filters.status === "all" || load.status === filters.status
+    });
+    
     if (filters.status !== "all" && load.status !== filters.status) return false;
     
     // CORRECCIÓN: Comparar por driver_user_id en lugar de driver_name
@@ -300,6 +321,12 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
     }
     
     return true;
+  });
+
+  console.log('🔍 DEBUG Final filtered loads:', {
+    originalCount: loads.length,
+    filteredCount: filteredLoads.length,
+    filters: filters
   });
 
   if (isLoading) {
