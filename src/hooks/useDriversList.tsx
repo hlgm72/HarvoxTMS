@@ -20,42 +20,48 @@ export const useDriversList = () => {
         throw new Error('Usuario o compañía no disponible');
       }
 
-      // Obtener usuarios de la compañía con rol de conductor
-      const { data: companyUsers, error: usersError } = await supabase
+      // Estrategia optimizada: obtener roles de conductores primero
+      const { data: driverRoles, error: rolesError } = await supabase
         .from('user_company_roles')
-        .select(`
-          user_id,
-          role,
-          profiles!inner(
-            user_id,
-            first_name,
-            last_name
-          )
-        `)
+        .select('user_id')
         .eq('company_id', userCompany.company_id)
         .eq('role', 'driver')
         .eq('is_active', true);
 
-      if (usersError) {
-        console.error('Error fetching company drivers:', usersError);
-        throw usersError;
+      if (rolesError) {
+        console.error('Error fetching driver roles:', rolesError);
+        throw rolesError;
       }
 
-      if (!companyUsers || companyUsers.length === 0) {
+      if (!driverRoles || driverRoles.length === 0) {
+        return [];
+      }
+
+      const driverUserIds = driverRoles.map(role => role.user_id);
+
+      // Obtener perfiles de los conductores por separado
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, first_name, last_name')
+        .in('user_id', driverUserIds);
+
+      if (profilesError) {
+        console.error('Error fetching driver profiles:', profilesError);
+        throw profilesError;
+      }
+
+      if (!profiles || profiles.length === 0) {
         return [];
       }
 
       // Transformar a formato de opciones
-      const driverOptions: DriverOption[] = companyUsers.map((companyUser: any) => {
-        const profile = companyUser.profiles;
-        const fullName = profile 
-          ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim()
-          : 'Sin nombre';
+      const driverOptions: DriverOption[] = profiles.map(profile => {
+        const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
         
         return {
-          value: companyUser.user_id,
+          value: profile.user_id,
           label: fullName || 'Conductor sin nombre',
-          user_id: companyUser.user_id
+          user_id: profile.user_id
         };
       });
 
