@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import { formatDateSafe, createDateInUserTimeZone } from './dateFormatting';
+import { formatDateSafe, formatDateOnly } from './dateFormatting';
 
 interface PaymentReportData {
   driver: {
@@ -791,7 +791,23 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   if (data.fuelExpenses && data.fuelExpenses.length > 0) {
     data.fuelExpenses.forEach(fuel => {
-      const dateStr = formatDateSafe(fuel.transaction_date, 'MM/dd/yyyy');
+      // Convertir fecha UTC a formato local MM/dd/yyyy
+      const dateStr = (() => {
+        try {
+          if (fuel.transaction_date.includes('T00:00:00') && fuel.transaction_date.includes('+00')) {
+            // Fecha UTC en medianoche - extraer solo la parte de fecha
+            const datePart = fuel.transaction_date.split('T')[0];
+            const [year, month, day] = datePart.split('-').map(Number);
+            return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+          } else {
+            // Usar formatDateOnly como fallback
+            return formatDateOnly(fuel.transaction_date).replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3'); // Convertir dd/MM/yyyy a MM/dd/yyyy
+          }
+        } catch (error) {
+          console.error('Error formatting fuel date:', error);
+          return 'Invalid Date';
+        }
+      })();
       
       addText(dateStr, margin + 2, currentY, {
         fontSize: 9,
