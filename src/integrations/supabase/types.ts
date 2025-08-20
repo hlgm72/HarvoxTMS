@@ -3304,7 +3304,7 @@ export type Database = {
         Returns: Json
       }
       get_companies_basic_info: {
-        Args: Record<PropertyKey, never> | { target_company_id?: string }
+        Args: { target_company_id?: string }
         Returns: {
           city: string
           created_at: string
