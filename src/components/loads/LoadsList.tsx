@@ -287,7 +287,10 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
   // Aplicar filtros a los datos reales
   const filteredLoads = loads.filter(load => {
     if (filters.status !== "all" && load.status !== filters.status) return false;
-    if (filters.driver !== "all" && load.driver_name !== filters.driver) return false;
+    
+    // CORRECCIÓN: Comparar por driver_user_id en lugar de driver_name
+    if (filters.driver !== "all" && load.driver_user_id !== filters.driver) return false;
+    
     if (filters.broker !== "all" && load.broker_name !== filters.broker) return false;
     
     // Filtro por rango de fechas
