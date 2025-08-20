@@ -21,8 +21,8 @@ import {
   FileSpreadsheet,
   Plus
 } from "lucide-react";
-import { format } from "date-fns";
-import { formatShortDate, formatMediumDate, formatCurrency } from '@/lib/dateFormatting';
+import { format, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from "date-fns";
+import { formatShortDate, formatMediumDate, formatCurrency, formatDateInUserTimeZone, formatMonthName } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 
 const statusOptions = [
@@ -279,7 +279,69 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                     <label className="text-sm font-medium">Período de Pago</label>
                     <Select 
                       value={periodFilter?.type || 'current'} 
-                      onValueChange={(value) => onPeriodFilterChange?.({ type: value })}
+                      onValueChange={(value) => {
+                        // Create a proper PeriodFilterValue using the same logic as PeriodFilter
+                        const newFilter: any = { type: value };
+                        
+                        // Use the same date calculation logic as PeriodFilter
+                        const getDateRangeForType = (type: string) => {
+                          const now = new Date();
+                          
+                          switch (type) {
+                            case 'this_month':
+                              return {
+                                startDate: formatDateInUserTimeZone(startOfMonth(now)),
+                                endDate: formatDateInUserTimeZone(endOfMonth(now)),
+                                label: `${t('periods.this_month')} (${formatMonthName(now)} ${now.getFullYear()})`
+                              };
+                            case 'last_month':
+                              const lastMonth = subMonths(now, 1);
+                              return {
+                                startDate: formatDateInUserTimeZone(startOfMonth(lastMonth)),
+                                endDate: formatDateInUserTimeZone(endOfMonth(lastMonth)),
+                                label: `${t('periods.last_month')} (${formatMonthName(lastMonth)} ${lastMonth.getFullYear()})`
+                              };
+                            case 'this_quarter':
+                              return {
+                                startDate: formatDateInUserTimeZone(startOfQuarter(now)),
+                                endDate: formatDateInUserTimeZone(endOfQuarter(now)),
+                                label: `${t('periods.this_quarter')} (Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()})`
+                              };
+                            case 'last_quarter':
+                              const lastQuarter = subQuarters(now, 1);
+                              return {
+                                startDate: formatDateInUserTimeZone(startOfQuarter(lastQuarter)),
+                                endDate: formatDateInUserTimeZone(endOfQuarter(lastQuarter)),
+                                label: `${t('periods.last_quarter')} (Q${Math.ceil((lastQuarter.getMonth() + 1) / 3)} ${lastQuarter.getFullYear()})`
+                              };
+                            case 'this_year':
+                              return {
+                                startDate: formatDateInUserTimeZone(startOfYear(now)),
+                                endDate: formatDateInUserTimeZone(endOfYear(now)),
+                                label: `${t('periods.this_year')} (${now.getFullYear()})`
+                              };
+                            case 'last_year':
+                              const lastYear = subYears(now, 1);
+                              return {
+                                startDate: formatDateInUserTimeZone(startOfYear(lastYear)),
+                                endDate: formatDateInUserTimeZone(endOfYear(lastYear)),
+                                label: `${t('periods.last_year')} (${lastYear.getFullYear()})`
+                              };
+                            default:
+                              return null;
+                          }
+                        };
+                        
+                        // Calculate dates for date-based periods
+                        const dateRange = getDateRangeForType(value);
+                        if (dateRange) {
+                          newFilter.startDate = dateRange.startDate;
+                          newFilter.endDate = dateRange.endDate;
+                          newFilter.label = dateRange.label;
+                        }
+                        
+                        onPeriodFilterChange?.(newFilter);
+                      }}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccionar período" />
