@@ -3800,6 +3800,10 @@ export type Database = {
         Args: { expense_id: string; update_data: Json }
         Returns: Json
       }
+      update_load_status: {
+        Args: { load_id: string; new_status: string }
+        Returns: Json
+      }
       update_load_status_with_validation: {
         Args: { load_id_param: string; new_status: string }
         Returns: Json
