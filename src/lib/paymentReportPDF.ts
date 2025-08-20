@@ -1084,56 +1084,36 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   try {
     if (isPreview) {
       console.log('👁️ Modo preview activado');
-      // Crear PDF como blob y abrirlo en nueva ventana con título personalizado
+      // Crear PDF como blob y abrirlo en nueva ventana
       const pdfBlob = doc.output('blob');
       const pdfUrl = URL.createObjectURL(new Blob([pdfBlob], { type: 'application/pdf' }));
       
       console.log('🔗 URL del PDF creada:', pdfUrl);
-      console.log('📄 Título personalizado:', fileName);
       
-      // Crear documento HTML que contenga el PDF con título personalizado
-      const htmlContent = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>${fileName}</title>
-          <style>
-            body, html {
-              margin: 0;
-              padding: 0;
-              height: 100vh;
-              overflow: hidden;
-            }
-            iframe {
-              width: 100%;
-              height: 100vh;
-              border: none;
-            }
-          </style>
-        </head>
-        <body>
-          <iframe src="${pdfUrl}" type="application/pdf"></iframe>
-        </body>
-        </html>
-      `;
-      
-      // Crear blob del HTML y abrirlo
-      const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
-      const htmlUrl = URL.createObjectURL(htmlBlob);
-      
+      // Intentar abrir con window.open primero
       try {
-        const newWindow = window.open(htmlUrl, '_blank');
+        const newWindow = window.open(pdfUrl, '_blank');
         if (newWindow) {
-          console.log('✅ PDF abierto en nueva ventana con título personalizado');
+          console.log('✅ PDF abierto en nueva ventana');
         } else {
-          console.log('⚠️ Popup bloqueado, usando método directo');
-          // Fallback: abrir PDF directamente
-          window.open(pdfUrl, '_blank');
+          console.log('⚠️ Popup bloqueado, usando método alternativo');
+          // Fallback: crear iframe temporal
+          const iframe = document.createElement('iframe');
+          iframe.src = pdfUrl;
+          iframe.style.display = 'none';
+          document.body.appendChild(iframe);
+          
+          // Abrir el contenido del iframe en nueva ventana
+          setTimeout(() => {
+            const iframeWindow = window.open('', '_blank');
+            if (iframeWindow) {
+              iframeWindow.location.href = pdfUrl;
+            }
+            document.body.removeChild(iframe);
+          }, 100);
         }
       } catch (error) {
         console.error('❌ Error abriendo PDF:', error);
-        // Fallback final: abrir PDF directamente
-        window.open(pdfUrl, '_blank');
       }
       
       // Limpiar URL después de un tiempo para liberar memoria
