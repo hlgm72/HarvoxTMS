@@ -227,14 +227,6 @@ export const useLoads = (filters?: LoadsFilters) => {
     // Deduplicar queries - crucial para ERR_INSUFFICIENT_RESOURCES
     networkMode: 'online',
     queryFn: async (): Promise<Load[]> => {
-      console.log('🔍 DEBUG useLoads queryFn - INICIANDO con estado:', {
-        user: !!user,
-        userId: user?.id,
-        userCompany: userCompany,
-        companyUsersCount: companyUsers.length,
-        cacheError: cacheError?.message,
-        filters: filters
-      });
 
       if (!user) {
         console.error('❌ useLoads - Usuario no autenticado');
@@ -258,14 +250,7 @@ export const useLoads = (filters?: LoadsFilters) => {
 
       try {
         // PASO 2: Obtener period_ids relevantes según el filtro (OPTIMIZACIÓN CLAVE)
-        console.log('🔍 DEBUG useLoads - Obteniendo period_ids relevantes:', {
-          companyId: userCompany.company_id,
-          periodFilter: filters?.periodFilter
-        });
-        
         const relevantPeriodIds = await getRelevantPeriodIds(userCompany.company_id, filters?.periodFilter);
-        
-        console.log('🔍 DEBUG useLoads - Period IDs obtenidos:', relevantPeriodIds);
         
         // PASO 3: Construir query optimizada de cargas
         let loadsQuery = supabase
@@ -274,15 +259,11 @@ export const useLoads = (filters?: LoadsFilters) => {
           .or(`driver_user_id.in.(${companyUsers.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUsers.join(',')}))`)
           .order('created_at', { ascending: false });
 
-        console.log('🔍 DEBUG useLoads - Query inicial construida para usuarios:', companyUsers);
-
         // Aplicar filtro de períodos si hay alguno
         if (relevantPeriodIds.length > 0) {
           loadsQuery = loadsQuery.in('payment_period_id', relevantPeriodIds);
-          console.log('🔍 DEBUG useLoads - Aplicando filtro de períodos:', relevantPeriodIds);
         } else if (filters?.periodFilter?.type !== 'all' && filters?.periodFilter) {
           loadsQuery = loadsQuery.eq('id', '00000000-0000-0000-0000-000000000000');
-          console.log('🔍 DEBUG useLoads - No hay períodos relevantes, aplicando filtro imposible para devolver vacío');
         }
 
         // Aplicar límites inteligentes
@@ -290,19 +271,7 @@ export const useLoads = (filters?: LoadsFilters) => {
         const limit = isHistoricalView ? 50 : 200;
         loadsQuery = loadsQuery.limit(limit);
 
-        console.log('🔍 DEBUG useLoads - Ejecutando query final...');
         const { data: loads, error: loadsError } = await loadsQuery;
-
-        console.log('🔍 DEBUG useLoads - Query ejecutada, resultado:', {
-          loadsCount: loads?.length || 0,
-          error: loadsError?.message || 'No error',
-          sampleLoads: loads?.slice(0, 3).map(load => ({
-            id: load.id,
-            load_number: load.load_number,
-            driver_user_id: load.driver_user_id,
-            payment_period_id: load.payment_period_id
-          }))
-        });
 
         if (loadsError) {
           console.error('Error obteniendo cargas:', loadsError);
@@ -310,7 +279,6 @@ export const useLoads = (filters?: LoadsFilters) => {
         }
 
         if (!loads || loads.length === 0) {
-          console.log('🔍 DEBUG useLoads - No se encontraron cargas, retornando array vacío');
           return [];
         }
 

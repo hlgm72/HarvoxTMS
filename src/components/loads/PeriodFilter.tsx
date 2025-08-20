@@ -27,10 +27,15 @@ interface PeriodFilterProps {
 export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilterProps) {
   const { t, i18n } = useTranslation(['loads', 'common']);
   const [open, setOpen] = useState(false);
+  
+  // Importar el useCompanyCache para obtener el company_id
+  const { userCompany } = require('@/hooks/useCompanyCache').useCompanyCache();
+  
+  // Pasar el companyId a todos los hooks de períodos
   const { data: allPeriods = [] } = usePaymentPeriods();
-  const { data: currentPeriod } = useCurrentPaymentPeriod();
-  const { data: previousPeriod } = usePreviousPaymentPeriod();
-  const { data: nextPeriod } = useNextPaymentPeriod();
+  const { data: currentPeriod } = useCurrentPaymentPeriod(userCompany?.company_id);
+  const { data: previousPeriod } = usePreviousPaymentPeriod(userCompany?.company_id);
+  const { data: nextPeriod } = useNextPaymentPeriod(userCompany?.company_id);
 
   const getDateRangeForType = (type: string) => {
     const now = new Date();
