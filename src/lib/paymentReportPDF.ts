@@ -479,12 +479,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       // Load number (en negrita) con alineación
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(10);
-      addText(loadPrefix, margin, currentY, {
+      addText('Load', margin, currentY, {
         fontSize: 10,
         fontStyle: 'bold',
         color: '#003366'
       });
-      addText(`: ${load.load_number}`, colonPosition, currentY, {
+      addText(`#${load.load_number}`, colonPosition, currentY, {
         fontSize: 10,
         fontStyle: 'bold',
         color: '#003366'
