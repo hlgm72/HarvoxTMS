@@ -397,7 +397,13 @@ export function DeductionsManager({
                       <Badge variant={isInactive ? "secondary" : "outline"}>
                         {isInactive && 'Inactiva • '}
                         {template.frequency === 'weekly' ? 'Semanal' : 
-                         template.frequency === 'biweekly' ? 'Quincenal' : 'Mensual'}
+                         template.frequency === 'biweekly' ? 'Quincenal' : 
+                         template.frequency === 'monthly' ? 
+                           `Mensual - ${template.month_week === 1 ? '1era' : 
+                                        template.month_week === 2 ? '2da' : 
+                                        template.month_week === 3 ? '3era' : 
+                                        template.month_week === 4 ? '4ta' : 'Última'} semana` : 
+                         'Mensual'}
                       </Badge>
                     </div>
                     
