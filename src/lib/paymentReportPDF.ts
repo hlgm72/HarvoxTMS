@@ -1073,74 +1073,69 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   }
 
   // Descargar o ver el PDF
+  console.log('📝 Generando nombre de archivo...');
   const weekInfo = formatWeekInfo();
   const driverName = data.driver.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
   const year = new Date(data.period.start_date + 'T12:00:00').getFullYear();
   const weekNumber = weekInfo.week.replace('Week ', 'W').replace(` / ${year}`, '');
   const fileName = `PayReport_${year}_${weekNumber}_${driverName}.pdf`;
+  console.log('📁 Nombre de archivo generado:', fileName);
   
-  if (isPreview) {
-    // Abrir PDF en nueva pestaña para vista previa (sin forzar descarga)
-    const pdfBlob = doc.output('blob');
-    const pdfUrl = URL.createObjectURL(new Blob([pdfBlob], { type: 'application/pdf' }));
-    
-    // Crear enlace temporal y hacer clic para abrir en nueva pestaña
-    const link = document.createElement('a');
-    link.href = pdfUrl;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Limpiar URL después de un tiempo para liberar memoria
-    setTimeout(() => {
-      URL.revokeObjectURL(pdfUrl);
-    }, 10000);
-  } else if (isPreview === false) {
-    // Si isPreview es explícitamente false, retornar el documento
-    return doc;
-  } else {
-    // Descargar PDF forzando el diálogo de descarga del navegador
-    console.log('🔽 Iniciando descarga PDF:', fileName);
-    const pdfBlob = doc.output('blob');
-    console.log('📁 Blob creado:', pdfBlob.size, 'bytes');
-    
-    // Método simple y directo - crear URL y descargar inmediatamente
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    console.log('🔗 URL creada:', pdfUrl);
-    
-    // Crear enlace temporal para forzar descarga
-    const link = document.createElement('a');
-    link.href = pdfUrl;
-    link.download = fileName;
-    link.style.display = 'none';
-    
-    console.log('📎 Enlace creado con nombre:', fileName);
-    
-    // Agregar al DOM y hacer clic
-    document.body.appendChild(link);
-    console.log('🎯 Haciendo clic en enlace...');
-    
-    // Intentar descarga inmediatamente
-    try {
+  try {
+    if (isPreview) {
+      console.log('👁️ Modo preview activado');
+      // Abrir PDF en nueva pestaña para vista previa (sin forzar descarga)
+      const pdfBlob = doc.output('blob');
+      const pdfUrl = URL.createObjectURL(new Blob([pdfBlob], { type: 'application/pdf' }));
+      
+      // Crear enlace temporal y hacer clic para abrir en nueva pestaña
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
       link.click();
-      console.log('✅ Click ejecutado exitosamente');
-    } catch (error) {
-      console.error('❌ Error en click:', error);
-    }
-    
-    // Limpiar después de un momento
-    setTimeout(() => {
-      try {
-        document.body.removeChild(link);
+      document.body.removeChild(link);
+      
+      // Limpiar URL después de un tiempo para liberar memoria
+      setTimeout(() => {
         URL.revokeObjectURL(pdfUrl);
-        console.log('🧹 Limpieza completada');
-      } catch (error) {
-        console.error('❌ Error en limpieza:', error);
+      }, 10000);
+    } else if (isPreview === false) {
+      console.log('📄 Modo retorno de documento activado');
+      // Si isPreview es explícitamente false, retornar el documento
+      return doc;
+    } else {
+      console.log('💾 Modo descarga activado');
+      // Usar método más simple y compatible
+      try {
+        doc.save(fileName);
+        console.log('✅ Descarga iniciada con doc.save()');
+      } catch (saveError) {
+        console.error('❌ Error con doc.save(), intentando método alternativo:', saveError);
+        
+        // Método fallback
+        const pdfBlob = doc.output('blob');
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        setTimeout(() => {
+          URL.revokeObjectURL(pdfUrl);
+        }, 100);
+        
+        console.log('✅ Descarga iniciada con método alternativo');
       }
-    }, 100);
-    
-    console.log('📥 Proceso de descarga iniciado');
+    }
+  } catch (error) {
+    console.error('❌ Error general en descarga/preview:', error);
+    throw error;
   }
+  
+  console.log('🏁 Función PDF completada');
 }
