@@ -201,16 +201,16 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         </PopoverTrigger>
         <PopoverContent className="w-80 p-0 bg-white dark:bg-gray-800 border border-border shadow-lg z-50" align="start">
           <div className="p-4">
-            {/* Único sistema de filtro usando Select - igual al que funciona en LoadsFloatingActions */}
+            {/* EXACTAMENTE el mismo sistema que funciona en LoadsFloatingActions */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Período de Pago</label>
               <Select 
                 value={value.type || 'current'} 
-                onValueChange={(type) => {
-                  // Usar exactamente la misma lógica que funciona en LoadsFloatingActions
-                  const newFilter: PeriodFilterValue = { type: type as any };
+                onValueChange={(filterValue) => {
+                  // EXACTAMENTE la misma lógica que funciona en LoadsFloatingActions
+                  const newFilter: any = { type: filterValue };
                   
-                  // Calcular fechas para períodos basados en fechas
+                  // EXACTAMENTE la misma función getDateRangeForType que funciona
                   const getDateRangeForType = (type: string) => {
                     const now = new Date();
                     
@@ -219,47 +219,48 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                         return {
                           startDate: formatDateInUserTimeZone(startOfMonth(now)),
                           endDate: formatDateInUserTimeZone(endOfMonth(now)),
-                          label: `Este Mes (${formatMonthName(now)} ${now.getFullYear()})`
+                          label: `${t('periods.this_month')} (${formatMonthName(now)} ${now.getFullYear()})`
                         };
                       case 'last_month':
                         const lastMonth = subMonths(now, 1);
                         return {
                           startDate: formatDateInUserTimeZone(startOfMonth(lastMonth)),
                           endDate: formatDateInUserTimeZone(endOfMonth(lastMonth)),
-                          label: `Mes Pasado (${formatMonthName(lastMonth)} ${lastMonth.getFullYear()})`
+                          label: `${t('periods.last_month')} (${formatMonthName(lastMonth)} ${lastMonth.getFullYear()})`
                         };
                       case 'this_quarter':
                         return {
                           startDate: formatDateInUserTimeZone(startOfQuarter(now)),
                           endDate: formatDateInUserTimeZone(endOfQuarter(now)),
-                          label: `Este Trimestre (Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()})`
+                          label: `${t('periods.this_quarter')} (Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()})`
                         };
                       case 'last_quarter':
                         const lastQuarter = subQuarters(now, 1);
                         return {
                           startDate: formatDateInUserTimeZone(startOfQuarter(lastQuarter)),
                           endDate: formatDateInUserTimeZone(endOfQuarter(lastQuarter)),
-                          label: `Trimestre Pasado (Q${Math.ceil((lastQuarter.getMonth() + 1) / 3)} ${lastQuarter.getFullYear()})`
+                          label: `${t('periods.last_quarter')} (Q${Math.ceil((lastQuarter.getMonth() + 1) / 3)} ${lastQuarter.getFullYear()})`
                         };
                       case 'this_year':
                         return {
                           startDate: formatDateInUserTimeZone(startOfYear(now)),
                           endDate: formatDateInUserTimeZone(endOfYear(now)),
-                          label: `Este Año (${now.getFullYear()})`
+                          label: `${t('periods.this_year')} (${now.getFullYear()})`
                         };
                       case 'last_year':
                         const lastYear = subYears(now, 1);
                         return {
                           startDate: formatDateInUserTimeZone(startOfYear(lastYear)),
                           endDate: formatDateInUserTimeZone(endOfYear(lastYear)),
-                          label: `Año Pasado (${lastYear.getFullYear()})`
+                          label: `${t('periods.last_year')} (${lastYear.getFullYear()})`
                         };
                       default:
                         return null;
                     }
                   };
                   
-                  const dateRange = getDateRangeForType(type);
+                  // Calculate dates for date-based periods - EXACTAMENTE igual
+                  const dateRange = getDateRangeForType(filterValue);
                   if (dateRange) {
                     newFilter.startDate = dateRange.startDate;
                     newFilter.endDate = dateRange.endDate;
@@ -270,10 +271,10 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                   setOpen(false);
                 }}
               >
-                <SelectTrigger className="bg-white dark:bg-gray-800">
+                <SelectTrigger>
                   <SelectValue placeholder="Seleccionar período" />
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 z-50">
+                <SelectContent>
                   <SelectItem value="current">{t('periods.current')}</SelectItem>
                   <SelectItem value="previous">{t('periods.previous')}</SelectItem>
                   <SelectItem value="next">Período Siguiente</SelectItem>
@@ -290,6 +291,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
               {value.type && value.type !== 'current' && (
                 <div className="text-xs text-muted-foreground">
                   {getFilterLabel()}
+                  {value.label && ` - ${value.label}`}
                 </div>
               )}
             </div>
