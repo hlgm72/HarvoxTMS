@@ -201,96 +201,6 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         </PopoverTrigger>
         <PopoverContent className="w-72 sm:w-80 p-0 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 border border-border shadow-lg z-50" align="start">
           <div className="p-4 space-y-4">
-            {/* Opciones rápidas */}
-            <div className="space-y-2">
-              <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.quick_filters')}</h4>
-              
-              <Button
-                variant={value.type === 'previous' ? 'default' : 'ghost'}
-                className="w-full justify-start"
-                onClick={() => {
-                  if (previousPeriod) {
-                    handleOptionSelect({ 
-                      type: 'previous',
-                      periodId: previousPeriod.id,
-                      startDate: previousPeriod.period_start_date,
-                      endDate: previousPeriod.period_end_date
-                    });
-                  }
-                }}
-                disabled={!previousPeriod}
-              >
-                <Clock className="h-4 w-4 mr-2" />
-                {t('periods.previous')}
-                {previousPeriod && (
-                  <Badge variant="secondary" className="ml-auto text-[8px] md:text-[10px]">
-                    {formatPaymentPeriodBadge(previousPeriod.period_start_date, previousPeriod.period_end_date)}
-                  </Badge>
-                )}
-              </Button>
-
-               <Button
-                variant={value.type === 'current' ? 'default' : 'ghost'}
-                className="w-full justify-start"
-                onClick={() => {
-                  if (currentPeriod) {
-                    handleOptionSelect({ 
-                      type: 'current',
-                      periodId: currentPeriod.id,
-                      startDate: currentPeriod.period_start_date,
-                      endDate: currentPeriod.period_end_date
-                    });
-                  } else {
-                    handleOptionSelect({ type: 'current' });
-                  }
-                }}
-              >
-                <Clock className="h-4 w-4 mr-2" />
-                {t('periods.current')}
-                {currentPeriod && (
-                  <Badge variant="secondary" className="ml-auto text-[8px] md:text-[10px]">
-                    {formatPaymentPeriodBadge(currentPeriod.period_start_date, currentPeriod.period_end_date)}
-                  </Badge>
-                )}
-              </Button>
-
-              <Button
-                variant={value.type === 'next' ? 'default' : 'ghost'}
-                className="w-full justify-start"
-                onClick={() => {
-                  if (nextPeriod) {
-                    handleOptionSelect({ 
-                      type: 'next',
-                      periodId: nextPeriod.id,
-                      startDate: nextPeriod.period_start_date,
-                      endDate: nextPeriod.period_end_date
-                    });
-                  }
-                }}
-                disabled={!nextPeriod}
-              >
-                <Clock className="h-4 w-4 mr-2" />
-                {t('periods.next')}
-                {nextPeriod && (
-                  <Badge variant="secondary" className="ml-auto text-[8px] md:text-[10px]">
-                    {formatPaymentPeriodBadge(nextPeriod.period_start_date, nextPeriod.period_end_date)}
-                  </Badge>
-                )}
-              </Button>
-
-              <Button
-                variant={value.type === 'all' ? 'default' : 'ghost'}
-                className="w-full justify-start"
-                onClick={() => handleOptionSelect({ type: 'all' })}
-              >
-                <CalendarDays className="h-4 w-4 mr-2" />
-                {t('periods.all')}
-                <Badge variant="secondary" className="ml-auto text-xs">
-                  {allPeriods.length}
-                </Badge>
-              </Button>
-            </div>
-
             {/* Filtro de período usando el sistema que funciona bien */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Período de Pago</label>
@@ -312,10 +222,10 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                   setOpen(false);
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-white dark:bg-gray-800">
                   <SelectValue placeholder="Seleccionar período" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 z-50">
                   <SelectItem value="current">{t('periods.current')}</SelectItem>
                   <SelectItem value="previous">{t('periods.previous')}</SelectItem>
                   <SelectItem value="next">Período Siguiente</SelectItem>
