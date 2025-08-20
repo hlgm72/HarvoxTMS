@@ -1099,22 +1099,51 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     // Si isPreview es explícitamente false, retornar el documento
     return doc;
   } else {
-    // Descargar PDF usando técnica más robusta con enlace temporal
+    // Descargar PDF forzando el diálogo de descarga del navegador
     const pdfBlob = doc.output('blob');
-    const pdfUrl = URL.createObjectURL(new Blob([pdfBlob], { type: 'application/pdf' }));
     
-    // Crear enlace temporal para descarga
+    // Usar la API moderna de descarga si está disponible
+    if ('showSaveFilePicker' in window) {
+      try {
+        // @ts-ignore - showSaveFilePicker es experimental pero ampliamente soportado
+        const fileHandle = await window.showSaveFilePicker({
+          suggestedName: fileName,
+          types: [{
+            description: 'PDF files',
+            accept: { 'application/pdf': ['.pdf'] }
+          }]
+        });
+        const writableStream = await fileHandle.createWritable();
+        await writableStream.write(pdfBlob);
+        await writableStream.close();
+        return;
+      } catch (error) {
+        // Si el usuario cancela o hay error, continuar con método fallback
+        console.log('User cancelled save dialog or API not supported');
+      }
+    }
+    
+    // Método fallback más robusto para navegadores sin API moderna
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    
+    // Crear enlace temporal para forzar descarga
     const link = document.createElement('a');
     link.href = pdfUrl;
     link.download = fileName;
     link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
     
-    // Limpiar URL después de un breve momento
+    // Agregar al DOM, hacer clic y remover inmediatamente
+    document.body.appendChild(link);
+    
+    // Usar setTimeout para asegurar que el DOM se actualice
     setTimeout(() => {
-      URL.revokeObjectURL(pdfUrl);
-    }, 1000);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Limpiar URL después de un momento
+      setTimeout(() => {
+        URL.revokeObjectURL(pdfUrl);
+      }, 1000);
+    }, 10);
   }
 }
