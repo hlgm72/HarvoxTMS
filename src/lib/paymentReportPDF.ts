@@ -1100,31 +1100,13 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     return doc;
   } else {
     // Descargar PDF forzando el diálogo de descarga del navegador
+    console.log('🔽 Iniciando descarga PDF:', fileName);
     const pdfBlob = doc.output('blob');
+    console.log('📁 Blob creado:', pdfBlob.size, 'bytes');
     
-    // Usar la API moderna de descarga si está disponible
-    if ('showSaveFilePicker' in window) {
-      try {
-        // @ts-ignore - showSaveFilePicker es experimental pero ampliamente soportado
-        const fileHandle = await window.showSaveFilePicker({
-          suggestedName: fileName,
-          types: [{
-            description: 'PDF files',
-            accept: { 'application/pdf': ['.pdf'] }
-          }]
-        });
-        const writableStream = await fileHandle.createWritable();
-        await writableStream.write(pdfBlob);
-        await writableStream.close();
-        return;
-      } catch (error) {
-        // Si el usuario cancela o hay error, continuar con método fallback
-        console.log('User cancelled save dialog or API not supported');
-      }
-    }
-    
-    // Método fallback más robusto para navegadores sin API moderna
+    // Método simple y directo - crear URL y descargar inmediatamente
     const pdfUrl = URL.createObjectURL(pdfBlob);
+    console.log('🔗 URL creada:', pdfUrl);
     
     // Crear enlace temporal para forzar descarga
     const link = document.createElement('a');
@@ -1132,18 +1114,31 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     link.download = fileName;
     link.style.display = 'none';
     
-    // Agregar al DOM, hacer clic y remover inmediatamente
-    document.body.appendChild(link);
+    console.log('📎 Enlace creado con nombre:', fileName);
     
-    // Usar setTimeout para asegurar que el DOM se actualice
-    setTimeout(() => {
+    // Agregar al DOM y hacer clic
+    document.body.appendChild(link);
+    console.log('🎯 Haciendo clic en enlace...');
+    
+    // Intentar descarga inmediatamente
+    try {
       link.click();
-      document.body.removeChild(link);
-      
-      // Limpiar URL después de un momento
-      setTimeout(() => {
+      console.log('✅ Click ejecutado exitosamente');
+    } catch (error) {
+      console.error('❌ Error en click:', error);
+    }
+    
+    // Limpiar después de un momento
+    setTimeout(() => {
+      try {
+        document.body.removeChild(link);
         URL.revokeObjectURL(pdfUrl);
-      }, 1000);
-    }, 10);
+        console.log('🧹 Limpieza completada');
+      } catch (error) {
+        console.error('❌ Error en limpieza:', error);
+      }
+    }, 100);
+    
+    console.log('📥 Proceso de descarga iniciado');
   }
 }
