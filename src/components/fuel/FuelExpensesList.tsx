@@ -195,7 +195,12 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-3 w-3 text-muted-foreground" />
-                    <span>{formatDateOnly(expense.transaction_date)}</span>
+                    <span>
+                      {(() => {
+                        console.log('🗓️ Mobile date display:', expense.transaction_date, 'Formatted:', formatDateOnly(expense.transaction_date));
+                        return formatDateOnly(expense.transaction_date);
+                      })()}
+                    </span>
                   </div>
                   <div className="flex items-center gap-1">
                     <MapPin className="h-3 w-3 text-muted-foreground" />
@@ -263,7 +268,10 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">
-                          {formatDateOnly(expense.transaction_date)}
+                          {(() => {
+                            console.log('🗓️ Desktop date display:', expense.transaction_date, 'Formatted:', formatDateOnly(expense.transaction_date));
+                            return formatDateOnly(expense.transaction_date);
+                          })()}
                         </span>
                       </div>
                     </TableCell>

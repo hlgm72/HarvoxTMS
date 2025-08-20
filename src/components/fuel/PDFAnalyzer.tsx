@@ -539,6 +539,7 @@ export function PDFAnalyzer() {
         };
 
         console.log('📋 Creating fuel expense with RPC:', fuelExpenseData);
+        console.log('🗓️ Date being sent to RPC:', transaction.date, 'Type:', typeof transaction.date);
         
         const { data, error } = await supabase.rpc('create_or_update_fuel_expense_with_validation', {
           expense_data: fuelExpenseData,
