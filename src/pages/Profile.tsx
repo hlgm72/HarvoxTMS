@@ -8,6 +8,8 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { ProfileForm } from '@/components/profile/ProfileForm';
+import { PreferencesForm } from '@/components/profile/PreferencesForm';
+import { OnboardingPreferencesForm } from '@/components/profile/OnboardingPreferencesForm';
 import { PageToolbar } from '@/components/layout/PageToolbar';
 import { User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -107,8 +109,10 @@ export default function Profile() {
 
           {/* Profile Form */}
           <Card className="lg:col-span-2 order-1 lg:order-2">
-            <CardContent className="p-4 md:p-6">
+            <CardContent className="p-4 md:p-6 space-y-6">
               <ProfileForm onCancel={onCancelProfile} />
+              <PreferencesForm showCancelButton={false} />
+              <OnboardingPreferencesForm />
             </CardContent>
           </Card>
         </div>

@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 
 export function useSetupWizard() {
   const { user, currentRole } = useAuth();
+  const { preferences } = useUserPreferences();
   const [shouldShowSetup, setShouldShowSetup] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -10,6 +12,13 @@ export function useSetupWizard() {
     if (!user || !currentRole) return;
 
     try {
+      // Si el usuario ha deshabilitado el setup wizard, no mostrarlo
+      if (preferences?.disable_setup_wizard) {
+        setShouldShowSetup(false);
+        setIsLoading(false);
+        return;
+      }
+
       // Verificar si ya completó el setup usando localStorage
       const setupKey = `fleetnest_setup_${user.id}_${currentRole}`;
       const completed = localStorage.getItem(setupKey);
@@ -28,7 +37,7 @@ export function useSetupWizard() {
     } finally {
       setIsLoading(false);
     }
-  }, [user, currentRole]);
+  }, [user, currentRole, preferences]);
 
   useEffect(() => {
     if (!user || !currentRole) {

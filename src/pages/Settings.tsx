@@ -17,6 +17,8 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { ProfileForm } from '@/components/profile/ProfileForm';
+import { PreferencesForm } from '@/components/profile/PreferencesForm';
+import { OnboardingPreferencesForm } from '@/components/profile/OnboardingPreferencesForm';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -247,8 +249,10 @@ export default function Settings() {
 
                 {/* Profile Form */}
                 <Card className="md:col-span-2">
-                  <CardContent className="p-8">
+                  <CardContent className="p-8 space-y-8">
                     <ProfileForm showCancelButton={false} />
+                    <PreferencesForm showCancelButton={false} />
+                    <OnboardingPreferencesForm />
                   </CardContent>
                 </Card>
               </div>

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 
 export function useOnboarding() {
   const { user, currentRole } = useAuth();
+  const { preferences } = useUserPreferences();
   const [shouldShowOnboarding, setShouldShowOnboarding] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -13,12 +15,19 @@ export function useOnboarding() {
     }
 
     checkOnboardingStatus();
-  }, [user, currentRole]);
+  }, [user, currentRole, preferences]);
 
   const checkOnboardingStatus = () => {
     if (!user || !currentRole) return;
 
     try {
+      // Si el usuario ha deshabilitado el onboarding, no mostrarlo
+      if (preferences?.disable_welcome_modal || preferences?.disable_onboarding_tour) {
+        setShouldShowOnboarding(false);
+        setIsLoading(false);
+        return;
+      }
+
       // Usar localStorage temporalmente
       const onboardingKey = `onboarding_${user.id}_${currentRole}`;
       const completed = localStorage.getItem(onboardingKey);

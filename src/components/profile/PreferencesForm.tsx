@@ -176,18 +176,18 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
-            {showCancelButton && (
+          {showCancelButton && (
+            <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
               <Button type="button" variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
                 <RotateCcw className="mr-2 h-4 w-4" />
                 Cancelar
               </Button>
-            )}
-            <Button type="submit" disabled={updating} className="w-full sm:w-auto">
-              <Save className="mr-2 h-4 w-4" />
-              {updating ? 'Guardando...' : 'Guardar Cambios'}
-            </Button>
-          </div>
+              <Button type="submit" disabled={updating} className="w-full sm:w-auto">
+                <Save className="mr-2 h-4 w-4" />
+                {updating ? 'Guardando...' : 'Guardar Cambios'}
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
     </div>

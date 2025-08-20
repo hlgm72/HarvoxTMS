@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useSetupWizard } from '@/hooks/useSetupWizard';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { useOnboardingSteps } from './OnboardingSteps';
 import { WelcomeModal } from './WelcomeModal';
 import { OnboardingOverlay } from './OnboardingOverlay';
@@ -16,6 +17,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   const navigate = useNavigate();
   const { shouldShowOnboarding, isLoading, markOnboardingCompleted, currentRole } = useOnboarding();
   const { shouldShowSetup, markSetupCompleted } = useSetupWizard();
+  const { preferences } = useUserPreferences();
   const [showWelcome, setShowWelcome] = useState(true);
   const [showTour, setShowTour] = useState(false);
   const [showSetup, setShowSetup] = useState(false);
@@ -90,7 +92,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       {children}
       
       {/* Modal de Bienvenida */}
-      {shouldShowOnboarding && (
+      {shouldShowOnboarding && !preferences?.disable_welcome_modal && (
         <WelcomeModal
           isOpen={showWelcome}
           onClose={handleCloseWelcome}
@@ -100,7 +102,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       )}
 
       {/* Tour Guiado */}
-      {shouldShowOnboarding && (
+      {shouldShowOnboarding && !preferences?.disable_onboarding_tour && (
         <OnboardingOverlay
           isOpen={showTour}
           onClose={handleCloseTour}
@@ -110,12 +112,14 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       )}
 
       {/* Setup Wizard */}
-      <SetupWizard
-        isOpen={showSetup}
-        onClose={handleSetupClose}
-        onComplete={handleSetupComplete}
-        userRole={currentRole}
-      />
+      {!preferences?.disable_setup_wizard && (
+        <SetupWizard
+          isOpen={showSetup}
+          onClose={handleSetupClose}
+          onComplete={handleSetupComplete}
+          userRole={currentRole}
+        />
+      )}
 
       {/* Modal de Configuración Completada */}
       <SetupCompletedModal
