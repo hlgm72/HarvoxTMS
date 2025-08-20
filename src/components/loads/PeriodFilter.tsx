@@ -9,6 +9,7 @@ import { usePaymentPeriods, useCurrentPaymentPeriod, usePreviousPaymentPeriod, u
 import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { formatPaymentPeriod, formatPaymentPeriodCompact, formatPaymentPeriodBadge, formatDateOnly, formatMonthName, formatDateInUserTimeZone } from '@/lib/dateFormatting';
+import { useCompanyCache } from '@/hooks/useCompanyCache';
 
 export interface PeriodFilterValue {
   type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
@@ -29,7 +30,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   const [open, setOpen] = useState(false);
   
   // Importar el useCompanyCache para obtener el company_id
-  const { userCompany } = require('@/hooks/useCompanyCache').useCompanyCache();
+  const { userCompany } = useCompanyCache();
   
   // Pasar el companyId a todos los hooks de períodos
   const { data: allPeriods = [] } = usePaymentPeriods();
