@@ -351,20 +351,6 @@ export function EventualDeductionDialog({
     parseFloat(formData.amount) > 0 &&
     formData.description.trim().length > 0;
 
-  // Debug para ver qué está pasando con la validación
-  console.log('🔍 Form validation debug:', {
-    isEditing: !!editingDeduction,
-    user_id: !!formData.user_id,
-    expenseDate: !!expenseDate,
-    paymentPeriodsLength: paymentPeriods.length,
-    expense_type_id: !!formData.expense_type_id,
-    amount: formData.amount,
-    amountParsed: parseFloat(formData.amount),
-    description: formData.description,
-    descriptionTrimmed: formData.description.trim().length,
-    isFormValid
-  });
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
