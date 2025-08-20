@@ -3051,18 +3051,6 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: boolean
       }
-      can_access_company_sensitive_data: {
-        Args: { company_id_param: string }
-        Returns: boolean
-      }
-      can_access_customer_contacts: {
-        Args: { client_id_param: string }
-        Returns: boolean
-      }
-      can_access_driver_highly_sensitive_data: {
-        Args: { target_user_id: string }
-        Returns: boolean
-      }
       can_access_driver_operational_data: {
         Args: { target_user_id: string }
         Returns: boolean
@@ -3073,10 +3061,6 @@ export type Database = {
       }
       can_access_load: {
         Args: { load_id_param: string }
-        Returns: boolean
-      }
-      can_access_owner_details: {
-        Args: { company_id_param: string }
         Returns: boolean
       }
       can_access_sensitive_company_data: {
@@ -3312,7 +3296,7 @@ export type Database = {
         Returns: Json
       }
       get_companies_basic_info: {
-        Args: { target_company_id?: string }
+        Args: Record<PropertyKey, never> | { target_company_id?: string }
         Returns: {
           city: string
           created_at: string
@@ -3331,10 +3315,9 @@ export type Database = {
         }[]
       }
       get_companies_financial_data: {
-        Args: { target_company_id?: string }
+        Args: Record<PropertyKey, never> | { target_company_id?: string }
         Returns: {
           city: string
-          contract_start_date: string
           created_at: string
           default_dispatching_percentage: number
           default_factoring_percentage: number
@@ -3344,12 +3327,12 @@ export type Database = {
           ein: string
           email: string
           id: string
-          load_assignment_criteria: string
-          logo_url: string
-          max_users: number
-          max_vehicles: number
           mc_number: string
           name: string
+          owner_email: string
+          owner_name: string
+          owner_phone: string
+          owner_title: string
           payment_cycle_start_day: number
           payment_day: string
           phone: string
@@ -3609,10 +3592,6 @@ export type Database = {
         Returns: boolean
       }
       is_user_superadmin: {
-        Args: { user_id_param: string }
-        Returns: boolean
-      }
-      is_user_superadmin_safe: {
         Args: { user_id_param: string }
         Returns: boolean
       }
@@ -3906,7 +3885,7 @@ export type Database = {
         Returns: boolean
       }
       user_is_company_owner: {
-        Args: { target_company_id: string }
+        Args: { company_id_param: string }
         Returns: boolean
       }
       user_is_superadmin: {
