@@ -2512,10 +2512,8 @@ export type Database = {
           id: string
           last_name: string | null
           phone: string | null
-          preferred_language: string | null
           state_id: string | null
           street_address: string | null
-          timezone: string | null
           updated_at: string
           user_id: string
           zip_code: string | null
@@ -2530,10 +2528,8 @@ export type Database = {
           id?: string
           last_name?: string | null
           phone?: string | null
-          preferred_language?: string | null
           state_id?: string | null
           street_address?: string | null
-          timezone?: string | null
           updated_at?: string
           user_id: string
           zip_code?: string | null
@@ -2548,10 +2544,8 @@ export type Database = {
           id?: string
           last_name?: string | null
           phone?: string | null
-          preferred_language?: string | null
           state_id?: string | null
           street_address?: string | null
-          timezone?: string | null
           updated_at?: string
           user_id?: string
           zip_code?: string | null
@@ -2932,6 +2926,48 @@ export type Database = {
           id?: string
           role?: string
           skipped?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          created_at: string
+          disable_onboarding_tour: boolean | null
+          disable_setup_wizard: boolean | null
+          disable_welcome_modal: boolean | null
+          id: string
+          notifications_enabled: boolean | null
+          preferred_language: string | null
+          theme: string | null
+          timezone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          disable_onboarding_tour?: boolean | null
+          disable_setup_wizard?: boolean | null
+          disable_welcome_modal?: boolean | null
+          id?: string
+          notifications_enabled?: boolean | null
+          preferred_language?: string | null
+          theme?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          disable_onboarding_tour?: boolean | null
+          disable_setup_wizard?: boolean | null
+          disable_welcome_modal?: boolean | null
+          id?: string
+          notifications_enabled?: boolean | null
+          preferred_language?: string | null
+          theme?: string | null
+          timezone?: string | null
           updated_at?: string
           user_id?: string
         }
