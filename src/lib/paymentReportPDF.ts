@@ -77,7 +77,7 @@ interface PaymentReportData {
   }>;
 }
 
-export async function generatePaymentReportPDF(data: PaymentReportData, isPreview: boolean = false): Promise<jsPDF | { doc: jsPDF, pdfUrl: string } | void> {
+export async function generatePaymentReportPDF(data: PaymentReportData, isPreview: boolean = false): Promise<jsPDF | void> {
   console.log('🔍 PDF Generation - Data received:', data);
   console.log('🔍 PDF Generation - Deductions data:', data.deductions);
   console.log('🔍 PDF Generation - Deductions length:', data.deductions?.length || 0);
@@ -1078,10 +1078,25 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const fileName = `PayReport_${year}_${weekNumber}_${driverName}.pdf`;
   
   if (isPreview) {
-    // Para vista previa, retornar la URL del blob para mostrar en iframe
+    // Crear blob y abrir en nueva ventana usando createElement approach
     const pdfBlob = doc.output('blob');
-    const pdfUrl = URL.createObjectURL(new Blob([pdfBlob], { type: 'application/pdf' }));
-    return { doc, pdfUrl };
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    
+    // Crear un enlace temporal y hacer click para abrir en nueva ventana
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    
+    // Hacer click en el enlace para abrir en nueva ventana
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Limpiar URL después de un tiempo
+    setTimeout(() => {
+      URL.revokeObjectURL(pdfUrl);
+    }, 3000);
   } else if (isPreview === false) {
     // Si isPreview es explícitamente false, retornar el documento
     return doc;

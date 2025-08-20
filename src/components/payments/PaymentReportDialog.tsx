@@ -45,18 +45,8 @@ export function PaymentReportDialog({
 }: PaymentReportDialogProps) {
   const { showSuccess, showError } = useFleetNotifications();
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [showEmailConfirm, setShowEmailConfirm] = useState(false);
-
-  // Limpiar URL del blob cuando el componente se desmonte
-  useEffect(() => {
-    return () => {
-      if (pdfPreviewUrl) {
-        URL.revokeObjectURL(pdfPreviewUrl);
-      }
-    };
-  }, [pdfPreviewUrl]);
 
   // Obtener datos completos del cálculo
   const { data: calculation, isLoading } = useQuery({
@@ -426,14 +416,11 @@ export function PaymentReportDialog({
     
     setIsGeneratingPDF(true);
     try {
-      const result = await generatePaymentReportPDF(reportData, true); // true for preview mode
-      if (result && typeof result === 'object' && 'pdfUrl' in result) {
-        setPdfPreviewUrl(result.pdfUrl);
-        showSuccess("PDF Generado", "Vista previa del reporte generada exitosamente");
-      }
+      await generatePaymentReportPDF(reportData, true); // true for preview mode
+      showSuccess("PDF Abierto", "El reporte se ha abierto en una nueva pestaña");
     } catch (error: any) {
       console.error('Error previewing PDF:', error);
-      showError("Error", "No se pudo generar la vista previa");
+      showError("Error", "No se pudo abrir la vista previa");
     } finally {
       setIsGeneratingPDF(false);
     }
@@ -469,13 +456,13 @@ export function PaymentReportDialog({
       const { generatePaymentReportPDF } = await import('@/lib/paymentReportPDF');
       
       // Usar la función existente que genera el PDF completo
-      const result = await generatePaymentReportPDF(reportData, false);
+      const doc = await generatePaymentReportPDF(reportData, false);
       
-      if (!result || (typeof result === 'object' && 'pdfUrl' in result)) {
-        throw new Error('Error generando el PDF para email');
+      if (!doc) {
+        throw new Error('Error generando el PDF');
       }
 
-      const pdfBlob = result.output('blob');
+      const pdfBlob = doc.output('blob');
       const pdfBuffer = await pdfBlob.arrayBuffer();
       const pdfArray = Array.from(new Uint8Array(pdfBuffer));
 
@@ -885,37 +872,6 @@ export function PaymentReportDialog({
             </Button>
           </div>
         </div>
-
-        {/* Modal de vista previa del PDF */}
-        {pdfPreviewUrl && (
-          <Dialog open={!!pdfPreviewUrl} onOpenChange={() => {
-            if (pdfPreviewUrl) {
-              URL.revokeObjectURL(pdfPreviewUrl);
-              setPdfPreviewUrl(null);
-            }
-          }}>
-            <DialogContent className="w-[95vw] max-w-6xl h-[95vh] max-h-[90vh] overflow-hidden flex flex-col p-0">
-              <div className="p-4 border-b shrink-0">
-                <DialogHeader>
-                  <DialogTitle>Vista Previa - Reporte de Pago</DialogTitle>
-                  <DialogDescription>
-                    {driver.display_name || `${driver.first_name} ${driver.last_name}`} - {formatPaymentPeriod(
-                      calculation.company_payment_periods.period_start_date,
-                      calculation.company_payment_periods.period_end_date
-                    )}
-                  </DialogDescription>
-                </DialogHeader>
-              </div>
-              <div className="flex-1 overflow-hidden">
-                <iframe
-                  src={pdfPreviewUrl}
-                  className="w-full h-full border-none"
-                  title="Vista previa del PDF"
-                />
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
       </DialogContent>
       
       <EmailConfirmationDialog
