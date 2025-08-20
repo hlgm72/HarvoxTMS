@@ -92,7 +92,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       {children}
       
       {/* Modal de Bienvenida */}
-      {shouldShowOnboarding && !preferences?.disable_welcome_modal && (
+      {shouldShowOnboarding && (
         <WelcomeModal
           isOpen={showWelcome}
           onClose={handleCloseWelcome}
@@ -102,7 +102,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       )}
 
       {/* Tour Guiado */}
-      {shouldShowOnboarding && !preferences?.disable_onboarding_tour && (
+      {shouldShowOnboarding && (
         <OnboardingOverlay
           isOpen={showTour}
           onClose={handleCloseTour}
@@ -112,14 +112,12 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       )}
 
       {/* Setup Wizard */}
-      {!preferences?.disable_setup_wizard && (
-        <SetupWizard
-          isOpen={showSetup}
-          onClose={handleSetupClose}
-          onComplete={handleSetupComplete}
-          userRole={currentRole}
-        />
-      )}
+      <SetupWizard
+        isOpen={showSetup}
+        onClose={handleSetupClose}
+        onComplete={handleSetupComplete}
+        userRole={currentRole}
+      />
 
       {/* Modal de Configuración Completada */}
       <SetupCompletedModal

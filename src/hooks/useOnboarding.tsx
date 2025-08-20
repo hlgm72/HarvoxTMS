@@ -21,18 +21,12 @@ export function useOnboarding() {
     if (!user || !currentRole) return;
 
     try {
-      // Si el usuario ha deshabilitado el onboarding, no mostrarlo
-      if (preferences?.disable_welcome_modal || preferences?.disable_onboarding_tour) {
-        setShouldShowOnboarding(false);
-        setIsLoading(false);
-        return;
-      }
-
-      // Usar localStorage temporalmente
+      // Verificar si ya completó el onboarding usando localStorage
       const onboardingKey = `onboarding_${user.id}_${currentRole}`;
       const completed = localStorage.getItem(onboardingKey);
       
-      // Si no hay registro, mostrar onboarding
+      // Si ya completó el onboarding, no mostrarlo más
+      // Solo se vuelve a mostrar si se resetea explícitamente
       setShouldShowOnboarding(!completed);
     } catch (error) {
       console.error('Error checking onboarding status:', error);

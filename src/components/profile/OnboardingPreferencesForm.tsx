@@ -1,81 +1,66 @@
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFleetNotifications } from '@/components/notifications';
-import { useUserPreferences } from '@/hooks/useUserPreferences';
-import { Save, RotateCcw, Eye, EyeOff } from 'lucide-react';
+import { useOnboarding } from '@/hooks/useOnboarding';
+import { useSetupWizard } from '@/hooks/useSetupWizard';
+import { RotateCcw, Play, BookOpen, Settings } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
-const onboardingPreferencesSchema = z.object({
-  disable_welcome_modal: z.boolean().default(false),
-  disable_onboarding_tour: z.boolean().default(false),
-  disable_setup_wizard: z.boolean().default(false),
-});
-
-type OnboardingPreferencesFormData = z.infer<typeof onboardingPreferencesSchema>;
-
-interface OnboardingPreferencesFormProps {
+interface OnboardingActionsProps {
   className?: string;
 }
 
-export function OnboardingPreferencesForm({ className }: OnboardingPreferencesFormProps) {
+export function OnboardingPreferencesForm({ className }: OnboardingActionsProps) {
   const { showSuccess, showError } = useFleetNotifications();
-  const { preferences, updatePreferences } = useUserPreferences();
-  const [updating, setUpdating] = useState(false);
+  const { resetOnboarding } = useOnboarding();
+  const { resetSetup } = useSetupWizard();
+  const { user, currentRole } = useAuth();
+  const [resetting, setResetting] = useState(false);
 
-  const form = useForm<OnboardingPreferencesFormData>({
-    resolver: zodResolver(onboardingPreferencesSchema),
-    defaultValues: {
-      disable_welcome_modal: preferences?.disable_welcome_modal || false,
-      disable_onboarding_tour: preferences?.disable_onboarding_tour || false,
-      disable_setup_wizard: preferences?.disable_setup_wizard || false,
-    },
-  });
-
-  // Update form when preferences change
-  useEffect(() => {
-    if (preferences) {
-      form.reset({
-        disable_welcome_modal: preferences.disable_welcome_modal || false,
-        disable_onboarding_tour: preferences.disable_onboarding_tour || false,
-        disable_setup_wizard: preferences.disable_setup_wizard || false,
-      });
+  const handleResetOnboarding = async () => {
+    if (!user || !currentRole) {
+      showError("Error", "No se pudo identificar el usuario.");
+      return;
     }
-  }, [preferences, form]);
 
-  const onSubmit = async (data: OnboardingPreferencesFormData) => {
-    setUpdating(true);
+    setResetting(true);
     try {
-      const result = await updatePreferences(data);
-      if (result.success) {
-        showSuccess(
-          "Preferencias actualizadas",
-          "Tus preferencias de introducción han sido guardadas correctamente."
-        );
-      } else {
-        throw new Error(result.error);
-      }
+      resetOnboarding();
+      showSuccess(
+        "Onboarding reiniciado",
+        "El tour de bienvenida se mostrará la próxima vez que recargues la página."
+      );
     } catch (error: any) {
       showError(
-        "Error en la actualización",
-        error.message || "No se ha podido completar la actualización. Por favor, inténtelo nuevamente."
+        "Error al reiniciar",
+        error.message || "No se pudo reiniciar el onboarding."
       );
     } finally {
-      setUpdating(false);
+      setResetting(false);
     }
   };
 
-  const handleReset = () => {
-    if (preferences) {
-      form.reset({
-        disable_welcome_modal: preferences.disable_welcome_modal || false,
-        disable_onboarding_tour: preferences.disable_onboarding_tour || false,
-        disable_setup_wizard: preferences.disable_setup_wizard || false,
-      });
+  const handleResetSetup = async () => {
+    if (!user || !currentRole) {
+      showError("Error", "No se pudo identificar el usuario.");
+      return;
+    }
+
+    setResetting(true);
+    try {
+      resetSetup();
+      showSuccess(
+        "Configuración reiniciada",
+        "El asistente de configuración se mostrará la próxima vez que recargues la página."
+      );
+    } catch (error: any) {
+      showError(
+        "Error al reiniciar",
+        error.message || "No se pudo reiniciar la configuración."
+      );
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -83,97 +68,41 @@ export function OnboardingPreferencesForm({ className }: OnboardingPreferencesFo
     <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Eye className="h-5 w-5" />
-          Preferencias de Introducción
+          <BookOpen className="h-5 w-5" />
+          Tour y Configuración Inicial
         </CardTitle>
         <CardDescription>
-          Controla qué elementos de bienvenida y configuración inicial se muestran cuando accedes a la aplicación.
+          ¿Necesitas volver a ver el tour de bienvenida o el asistente de configuración? Puedes reactivarlos aquí.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="disable_welcome_modal"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base font-medium">
-                      Deshabilitar Modal de Bienvenida
-                    </FormLabel>
-                    <FormDescription>
-                      No mostrar el modal de bienvenida al acceder por primera vez a cada sección.
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="disable_onboarding_tour"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base font-medium">
-                      Deshabilitar Tour Guiado
-                    </FormLabel>
-                    <FormDescription>
-                      No mostrar el tour interactivo que explica las funcionalidades principales.
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="disable_setup_wizard"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base font-medium">
-                      Deshabilitar Asistente de Configuración
-                    </FormLabel>
-                    <FormDescription>
-                      No mostrar el asistente que ayuda a configurar perfiles, equipos y otros datos iniciales.
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
-              <Button type="button" variant="outline" onClick={handleReset} className="w-full sm:w-auto">
-                <RotateCcw className="mr-2 h-4 w-4" />
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={updating} className="w-full sm:w-auto">
-                <Save className="mr-2 h-4 w-4" />
-                {updating ? 'Guardando...' : 'Guardar Cambios'}
-              </Button>
-            </div>
-          </form>
-        </Form>
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button
+              variant="outline"
+              onClick={handleResetOnboarding}
+              disabled={resetting}
+              className="flex-1"
+            >
+              <Play className="mr-2 h-4 w-4" />
+              {resetting ? 'Reiniciando...' : 'Ver Tour de Bienvenida'}
+            </Button>
+            
+            <Button
+              variant="outline"
+              onClick={handleResetSetup}
+              disabled={resetting}
+              className="flex-1"
+            >
+              <Settings className="mr-2 h-4 w-4" />
+              {resetting ? 'Reiniciando...' : 'Ver Asistente de Configuración'}
+            </Button>
+          </div>
+          
+          <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
+            <strong>Nota:</strong> Los cambios se aplicarán cuando recargues la página. El tour y la configuración inicial solo se muestran una vez por defecto.
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
