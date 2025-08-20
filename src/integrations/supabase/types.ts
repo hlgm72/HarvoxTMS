@@ -3051,6 +3051,10 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: boolean
       }
+      can_access_customer_contacts: {
+        Args: { client_id_param: string }
+        Returns: boolean
+      }
       can_access_driver_operational_data: {
         Args: { target_user_id: string }
         Returns: boolean
@@ -3061,6 +3065,10 @@ export type Database = {
       }
       can_access_load: {
         Args: { load_id_param: string }
+        Returns: boolean
+      }
+      can_access_owner_details: {
+        Args: { company_id_param: string }
         Returns: boolean
       }
       can_access_sensitive_company_data: {
@@ -3592,6 +3600,10 @@ export type Database = {
         Returns: boolean
       }
       is_user_superadmin: {
+        Args: { user_id_param: string }
+        Returns: boolean
+      }
+      is_user_superadmin_safe: {
         Args: { user_id_param: string }
         Returns: boolean
       }
