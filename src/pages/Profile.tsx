@@ -107,14 +107,25 @@ export default function Profile() {
             </CardContent>
           </Card>
 
-          {/* Profile Form */}
-          <Card className="lg:col-span-2 order-1 lg:order-2">
-            <CardContent className="p-4 md:p-6 space-y-6">
-              <ProfileForm onCancel={onCancelProfile} />
-              <PreferencesForm showCancelButton={false} />
-              <OnboardingPreferencesForm />
-            </CardContent>
-          </Card>
+          {/* Right Column - Forms */}
+          <div className="lg:col-span-2 order-1 lg:order-2 space-y-6">
+            {/* Personal Information Form */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Información Personal</CardTitle>
+                <CardDescription>Actualiza tu información personal y de contacto</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 md:p-6">
+                <ProfileForm onCancel={onCancelProfile} />
+              </CardContent>
+            </Card>
+
+            {/* Language & Timezone Preferences */}
+            <PreferencesForm showCancelButton={false} />
+
+            {/* Onboarding Options */}
+            <OnboardingPreferencesForm />
+          </div>
         </div>
       </div>
     </>
