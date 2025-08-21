@@ -538,82 +538,28 @@ export function ExpenseTemplateDialog({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <div className="p-4 space-y-4">
-                    {/* Selectores de mes y año */}
-                    <div className="grid grid-cols-2 gap-2">
-                      <Select
-                        value={effectiveFrom ? formatMonthName(effectiveFrom).toLowerCase() : formatMonthName(new Date()).toLowerCase()}
-                        onValueChange={(monthName) => {
-                          const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
-                                            'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
-                                            .indexOf(monthName.toLowerCase());
-                          if (monthIndex !== -1) {
-                            const currentYear = effectiveFrom?.getFullYear() || new Date().getFullYear();
-                            const currentDay = effectiveFrom?.getDate() || 1;
-                            setEffectiveFrom(new Date(currentYear, monthIndex, currentDay));
-                          }
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Mes" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="enero">Enero</SelectItem>
-                          <SelectItem value="febrero">Febrero</SelectItem>
-                          <SelectItem value="marzo">Marzo</SelectItem>
-                          <SelectItem value="abril">Abril</SelectItem>
-                          <SelectItem value="mayo">Mayo</SelectItem>
-                          <SelectItem value="junio">Junio</SelectItem>
-                          <SelectItem value="julio">Julio</SelectItem>
-                          <SelectItem value="agosto">Agosto</SelectItem>
-                          <SelectItem value="septiembre">Septiembre</SelectItem>
-                          <SelectItem value="octubre">Octubre</SelectItem>
-                          <SelectItem value="noviembre">Noviembre</SelectItem>
-                          <SelectItem value="diciembre">Diciembre</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      
-                      <Select
-                        value={effectiveFrom?.getFullYear()?.toString() || ""}
-                        onValueChange={(year) => {
-                          const currentMonth = effectiveFrom?.getMonth() || 0;
-                          const currentDay = effectiveFrom?.getDate() || 1;
-                          setEffectiveFrom(new Date(parseInt(year), currentMonth, currentDay));
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Año" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="2024">2024</SelectItem>
-                          <SelectItem value="2025">2025</SelectItem>
-                          <SelectItem value="2026">2026</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    {/* Calendar */}
-                    <Calendar
-                      mode="single"
-                      selected={effectiveFrom}
-                      onSelect={(date) => {
-                        if (date) {
-                          setEffectiveFrom(date);
-                          setIsFromDatePickerOpen(false);
-                        }
-                      }}
-                      disabled={(date) => {
-                        // Deshabilitar fechas posteriores a "Vigente Hasta" si está seleccionada
-                        if (effectiveUntil) {
-                          return date > effectiveUntil;
-                        }
-                        return false;
-                      }}
-                      month={effectiveFrom}
-                      onMonthChange={setEffectiveFrom}
-                      className="p-3 pointer-events-auto"
-                    />
-                  </div>
+                  <Calendar
+                    mode="single"
+                    selected={effectiveFrom}
+                    onSelect={(date) => {
+                      if (date) {
+                        setEffectiveFrom(date);
+                        setIsFromDatePickerOpen(false);
+                      }
+                    }}
+                    disabled={(date) => {
+                      // Deshabilitar fechas posteriores a "Vigente Hasta" si está seleccionada
+                      if (effectiveUntil) {
+                        return date > effectiveUntil;
+                      }
+                      return false;
+                    }}
+                    defaultMonth={effectiveFrom}
+                    className="p-3 pointer-events-auto"
+                    captionLayout="dropdown"
+                    fromYear={2020}
+                    toYear={2030}
+                  />
                 </PopoverContent>
               </Popover>
             </div>
@@ -634,79 +580,25 @@ export function ExpenseTemplateDialog({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <div className="p-4 space-y-4">
-                    {/* Selectores de mes y año */}
-                    <div className="grid grid-cols-2 gap-2">
-                      <Select
-                        value={effectiveUntil ? formatMonthName(effectiveUntil).toLowerCase() : formatMonthName(new Date()).toLowerCase()}
-                        onValueChange={(monthName) => {
-                          const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
-                                            'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
-                                            .indexOf(monthName.toLowerCase());
-                          if (monthIndex !== -1) {
-                            const currentYear = effectiveUntil?.getFullYear() || new Date().getFullYear();
-                            const currentDay = effectiveUntil?.getDate() || 1;
-                            setEffectiveUntil(new Date(currentYear, monthIndex, currentDay));
-                          }
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Mes" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="enero">Enero</SelectItem>
-                          <SelectItem value="febrero">Febrero</SelectItem>
-                          <SelectItem value="marzo">Marzo</SelectItem>
-                          <SelectItem value="abril">Abril</SelectItem>
-                          <SelectItem value="mayo">Mayo</SelectItem>
-                          <SelectItem value="junio">Junio</SelectItem>
-                          <SelectItem value="julio">Julio</SelectItem>
-                          <SelectItem value="agosto">Agosto</SelectItem>
-                          <SelectItem value="septiembre">Septiembre</SelectItem>
-                          <SelectItem value="octubre">Octubre</SelectItem>
-                          <SelectItem value="noviembre">Noviembre</SelectItem>
-                          <SelectItem value="diciembre">Diciembre</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      
-                      <Select
-                        value={effectiveUntil?.getFullYear()?.toString() || ""}
-                        onValueChange={(year) => {
-                          const currentMonth = effectiveUntil?.getMonth() || 0;
-                          const currentDay = effectiveUntil?.getDate() || 1;
-                          setEffectiveUntil(new Date(parseInt(year), currentMonth, currentDay));
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Año" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="2024">2024</SelectItem>
-                          <SelectItem value="2025">2025</SelectItem>
-                          <SelectItem value="2026">2026</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    {/* Calendar */}
-                    <Calendar
-                      mode="single"
-                      selected={effectiveUntil}
-                      onSelect={(date) => {
-                        if (date) {
-                          setEffectiveUntil(date);
-                          setIsUntilDatePickerOpen(false);
-                        }
-                      }}
-                      disabled={(date) => {
-                        // Deshabilitar fechas anteriores a "Vigente Desde"
-                        return date < effectiveFrom;
-                      }}
-                      month={effectiveUntil}
-                      onMonthChange={setEffectiveUntil}
-                      className="p-3 pointer-events-auto"
-                    />
-                  </div>
+                  <Calendar
+                    mode="single"
+                    selected={effectiveUntil}
+                    onSelect={(date) => {
+                      if (date) {
+                        setEffectiveUntil(date);
+                        setIsUntilDatePickerOpen(false);
+                      }
+                    }}
+                    disabled={(date) => {
+                      // Deshabilitar fechas anteriores a "Vigente Desde"
+                      return date < effectiveFrom;
+                    }}
+                    defaultMonth={effectiveUntil}
+                    className="p-3 pointer-events-auto"
+                    captionLayout="dropdown"
+                    fromYear={2020}
+                    toYear={2030}
+                  />
                 </PopoverContent>
               </Popover>
             </div>
