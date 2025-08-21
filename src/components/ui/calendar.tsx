@@ -1,9 +1,11 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
+import { es } from "date-fns/locale";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -15,12 +17,16 @@ function Calendar({
   toYear = 2030,
   ...props
 }: CalendarProps) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language === 'es' ? es : undefined;
+  
   return (
     <DayPicker
       weekStartsOn={1}
       showOutsideDays={showOutsideDays}
       fromYear={fromYear}
       toYear={toYear}
+      locale={locale}
       className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
@@ -75,9 +81,10 @@ function Calendar({
               />
             );
           }
+          // Para el dropdown de meses, aseguramos que se muestren las opciones
           return (
             <select
-              value={props.value}
+              value={props.value || ''}
               onChange={(e) => props.onChange?.(e as any)}
               className="text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[90px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium"
             >
