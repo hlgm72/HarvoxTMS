@@ -9,20 +9,14 @@ interface EquipmentStatsProps {
 }
 
 export function EquipmentStats({ equipment = [] }: EquipmentStatsProps) {
-  const { t, ready } = useTranslation(['common', 'equipment']);
+  const { t, i18n } = useTranslation('equipment');
 
   // Debug logging
-  console.log('EquipmentStats - i18n ready:', ready);
-  console.log('EquipmentStats - Translation keys:');
-  console.log('equipment.stats.total:', t('equipment.stats.total'));
-  console.log('equipment.stats.active:', t('equipment.stats.active'));
-  console.log('equipment.stats.maintenance:', t('equipment.stats.maintenance'));
-  console.log('equipment.stats.expiring:', t('equipment.stats.expiring'));
-  console.log('equipment.stats.attention:', t('equipment.stats.attention'));
-
-  if (!ready) {
-    return <div>Loading translations...</div>;
-  }
+  console.log('EquipmentStats - i18n loaded resources:', i18n.store.data);
+  console.log('EquipmentStats - current language:', i18n.language);
+  console.log('EquipmentStats - has equipment namespace:', i18n.hasResourceBundle(i18n.language, 'equipment'));
+  console.log('EquipmentStats - Translation test:', t('stats.total'));
+  console.log('EquipmentStats - Raw resources:', i18n.getResourceBundle(i18n.language, 'equipment'));
 
   const stats = {
     total: equipment.length,
@@ -48,25 +42,25 @@ export function EquipmentStats({ equipment = [] }: EquipmentStatsProps) {
 
   const statCards = [
     {
-      title: t('equipment.stats.total'),
+      title: t('stats.total'),
       value: stats.total,
       icon: Truck,
       color: "blue",
     },
     {
-      title: t('equipment.stats.active'),
+      title: t('stats.active'),
       value: stats.active,
       icon: CheckCircle,
       color: "green",
     },
     {
-      title: t('equipment.stats.maintenance'),
+      title: t('stats.maintenance'),
       value: stats.maintenance,
       icon: Wrench,
       color: "yellow",
     },
     {
-      title: t('equipment.stats.expiring'),
+      title: t('stats.expiring'),
       value: stats.expiringSoon,
       icon: Calendar,
       color: stats.expiringSoon > 0 ? "red" : "gray",
@@ -88,7 +82,7 @@ export function EquipmentStats({ equipment = [] }: EquipmentStatsProps) {
             {stat.color === "red" && stat.value > 0 && (
               <Badge variant="destructive" className="mt-3 text-xs">
                 <AlertTriangle className="w-3 h-3 mr-1" />
-                {t('equipment.stats.attention')}
+                {t('stats.attention')}
               </Badge>
             )}
           </CardContent>
