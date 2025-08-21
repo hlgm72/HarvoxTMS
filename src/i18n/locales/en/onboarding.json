@@ -1,0 +1,151 @@
+{
+  "welcome": {
+    "title": "Welcome to FleetNest TMS!",
+    "subtitle": "Let's get you started with your fleet management journey",
+    "roleTitle": {
+      "driver": "Driver Dashboard",
+      "company_owner": "Fleet Manager Dashboard",
+      "owner": "Fleet Owner Dashboard",
+      "default": "Fleet Management Dashboard"
+    },
+    "features": {
+      "driver": {
+        "trips": {
+          "title": "Manage Trips",
+          "description": "View and update your assigned trips and routes"
+        },
+        "vehicle": {
+          "title": "Vehicle Inspections",
+          "description": "Perform pre-trip and post-trip vehicle inspections"
+        },
+        "documents": {
+          "title": "Document Management",
+          "description": "Access and manage your driver documents and certifications"
+        },
+        "communication": {
+          "title": "Fleet Communication",
+          "description": "Stay connected with dispatchers and fleet managers"
+        }
+      },
+      "company_owner": {
+        "fleet": {
+          "title": "Fleet Overview",
+          "description": "Monitor your entire fleet status and performance"
+        },
+        "drivers": {
+          "title": "Driver Management",
+          "description": "Manage driver profiles, schedules, and performance"
+        },
+        "loads": {
+          "title": "Load Management",
+          "description": "Create, assign, and track shipment loads"
+        },
+        "analytics": {
+          "title": "Analytics & Reports",
+          "description": "Access comprehensive business intelligence and reports"
+        }
+      }
+    },
+    "stats": {
+      "title": "Quick Stats",
+      "vehicles": "Vehicles in Fleet",
+      "drivers": "Active Drivers",
+      "loads": "Loads This Month"
+    },
+    "actions": {
+      "close": "Skip for now",
+      "startTour": "Start Guided Tour"
+    }
+  },
+  "tour": {
+    "progress": "Step {{current}} of {{total}}",
+    "actions": {
+      "previous": "Previous",
+      "next": "Next",
+      "finish": "Finish Tour",
+      "skip": "Skip Tour"
+    },
+    "steps": {
+      "dashboard": {
+        "title": "Dashboard Overview",
+        "description": "This is your main dashboard where you can see key metrics and quick access to important features.",
+        "content": "Your dashboard provides real-time insights into your fleet operations, including vehicle status, driver activity, and load management."
+      },
+      "navigation": {
+        "title": "Navigation Menu",
+        "description": "Use the sidebar to navigate between different sections of the application.",
+        "content": "Access Fleet Management, Driver Management, Load Tracking, Reports, and more from here."
+      },
+      "search": {
+        "title": "Global Search",
+        "description": "Quickly find vehicles, drivers, loads, or any other information using the search bar.",
+        "content": "Type to search across all your fleet data instantly."
+      },
+      "notifications": {
+        "title": "Notifications",
+        "description": "Stay updated with important alerts, messages, and system notifications.",
+        "content": "Click here to view all notifications and alerts related to your fleet operations."
+      },
+      "profile": {
+        "title": "Profile & Settings",
+        "description": "Manage your profile, company settings, and application preferences.",
+        "content": "Customize your experience and manage account settings from here."
+      }
+    }
+  },
+  "setup": {
+    "title": "Initial Setup",
+    "subtitle": "Let's configure your account to get started",
+    "steps": {
+      "personal": {
+        "title": "Personal Information",
+        "description": "Complete your personal profile"
+      },
+      "preferences": {
+        "title": "Preferences",
+        "description": "Set your language and timezone"
+      },
+      "driver": {
+        "title": "Driver Information",
+        "description": "Complete your driver profile and licenses"
+      },
+      "company": {
+        "title": "Company Setup",
+        "description": "Configure your company information"
+      }
+    },
+    "actions": {
+      "previous": "Previous",
+      "next": "Next",
+      "skip": "Skip this step",
+      "finish": "Complete Setup"
+    },
+    "completion": {
+      "title": "Setup Complete!",
+      "subtitle": "Your account is now configured and ready to use",
+      "message": {
+        "driver": "Welcome to FleetNest! You're all set to start managing your trips and vehicle inspections.",
+        "company_owner": "Welcome to FleetNest! Your fleet management system is ready to help you optimize operations.",
+        "owner": "Welcome to FleetNest! Your comprehensive fleet management platform is fully configured.",
+        "default": "Welcome to FleetNest! Your account is configured and ready to use."
+      },
+      "action": "Get Started"
+    },
+    "company": {
+      "title": "Company Information",
+      "fields": {
+        "name": "Company Name",
+        "namePlaceholder": "Enter your company name",
+        "dotNumber": "DOT Number",
+        "dotPlaceholder": "Enter DOT number",
+        "mcNumber": "MC Number", 
+        "mcPlaceholder": "Enter MC number",
+        "phone": "Phone Number",
+        "phonePlaceholder": "Enter phone number",
+        "email": "Email Address",
+        "emailPlaceholder": "Enter email address",
+        "address": "Company Address"
+      }
+    }
+  }
+}

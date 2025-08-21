@@ -2,6 +2,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { VisuallyHidden } from '@/components/ui/visually-hidden';
 import { CheckCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface SetupCompletedModalProps {
   isOpen: boolean;
@@ -10,43 +11,21 @@ interface SetupCompletedModalProps {
 }
 
 export function SetupCompletedModal({ isOpen, onClose, userRole }: SetupCompletedModalProps) {
+  const { t } = useTranslation('onboarding');
   console.log('🎯 SetupCompletedModal render - isOpen:', isOpen);
   
-  const isDriver = userRole === 'driver';
-  const isOwner = userRole === 'company_owner' || userRole === 'owner';
-  
-  const getWelcomeMessage = () => {
-    if (isDriver) {
-      return {
-        title: '¡Configuración Completada!',
-        description: 'Tu perfil de conductor está completamente configurado. Ya puedes comenzar a recibir y gestionar tus cargas asignadas.',
-        welcomeText: '🚛 ¡Bienvenido conductor!'
-      };
-    } else if (isOwner) {
-      return {
-        title: '¡Configuración Completada!',
-        description: 'Tu cuenta está completamente configurada. Ya puedes comenzar a gestionar tu flota de manera eficiente con FleetNest.',
-        welcomeText: '🚀 ¡Bienvenido a FleetNest!'
-      };
-    } else {
-      return {
-        title: '¡Configuración Completada!',
-        description: 'Tu cuenta está configurada. Ya puedes comenzar a usar FleetNest.',
-        welcomeText: '🚀 ¡Bienvenido a FleetNest!'
-      };
-    }
+  const getMessage = () => {
+    return t(`setup.completion.message.${userRole}`) || t('setup.completion.message.default');
   };
-
-  const welcomeMessage = getWelcomeMessage();
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md p-0">
         <VisuallyHidden>
-          <DialogTitle>Configuración Completada</DialogTitle>
+          <DialogTitle>{t('setup.completion.title')}</DialogTitle>
         </VisuallyHidden>
         <DialogDescription className="hidden">
-          Modal que confirma que la configuración inicial ha sido completada exitosamente
+          {t('setup.completion.subtitle')}
         </DialogDescription>
         <div className="text-center py-12 px-8">
           <div className="w-20 h-20 bg-gradient-to-r from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -54,16 +33,16 @@ export function SetupCompletedModal({ isOpen, onClose, userRole }: SetupComplete
           </div>
           
           <h2 className="text-2xl font-bold text-foreground mb-3">
-            {welcomeMessage.title}
+            {t('setup.completion.title')}
           </h2>
           
           <p className="text-muted-foreground text-base leading-relaxed mb-6">
-            {welcomeMessage.description}
+            {t('setup.completion.subtitle')}
           </p>
           
           <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-4">
             <p className="text-sm text-primary font-medium">
-              {welcomeMessage.welcomeText}
+              {getMessage()}
             </p>
           </div>
         </div>

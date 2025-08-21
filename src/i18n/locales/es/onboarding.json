@@ -1,0 +1,151 @@
+{
+  "welcome": {
+    "title": "¡Bienvenido a FleetNest TMS!",
+    "subtitle": "Comencemos tu viaje en la gestión de flotas",
+    "roleTitle": {
+      "driver": "Panel del Conductor",
+      "company_owner": "Panel del Gerente de Flota",
+      "owner": "Panel del Propietario de Flota",
+      "default": "Panel de Gestión de Flota"
+    },
+    "features": {
+      "driver": {
+        "trips": {
+          "title": "Gestionar Viajes",
+          "description": "Ve y actualiza tus viajes y rutas asignadas"
+        },
+        "vehicle": {
+          "title": "Inspecciones de Vehículos",
+          "description": "Realiza inspecciones pre y post viaje de vehículos"
+        },
+        "documents": {
+          "title": "Gestión de Documentos",
+          "description": "Accede y gestiona tus documentos y certificaciones de conductor"
+        },
+        "communication": {
+          "title": "Comunicación de Flota",
+          "description": "Mantente conectado con despachadores y gerentes de flota"
+        }
+      },
+      "company_owner": {
+        "fleet": {
+          "title": "Resumen de Flota",
+          "description": "Monitorea el estado y rendimiento de toda tu flota"
+        },
+        "drivers": {
+          "title": "Gestión de Conductores",
+          "description": "Gestiona perfiles, horarios y rendimiento de conductores"
+        },
+        "loads": {
+          "title": "Gestión de Cargas",
+          "description": "Crea, asigna y rastrea cargas de envío"
+        },
+        "analytics": {
+          "title": "Análisis y Reportes",
+          "description": "Accede a inteligencia de negocio integral y reportes"
+        }
+      }
+    },
+    "stats": {
+      "title": "Estadísticas Rápidas",
+      "vehicles": "Vehículos en Flota",
+      "drivers": "Conductores Activos",
+      "loads": "Cargas Este Mes"
+    },
+    "actions": {
+      "close": "Omitir por ahora",
+      "startTour": "Iniciar Tour Guiado"
+    }
+  },
+  "tour": {
+    "progress": "Paso {{current}} de {{total}}",
+    "actions": {
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "finish": "Finalizar Tour",
+      "skip": "Omitir Tour"
+    },
+    "steps": {
+      "dashboard": {
+        "title": "Resumen del Panel",
+        "description": "Este es tu panel principal donde puedes ver métricas clave y acceso rápido a características importantes.",
+        "content": "Tu panel proporciona información en tiempo real sobre las operaciones de tu flota, incluyendo estado de vehículos, actividad de conductores y gestión de cargas."
+      },
+      "navigation": {
+        "title": "Menú de Navegación",
+        "description": "Usa la barra lateral para navegar entre diferentes secciones de la aplicación.",
+        "content": "Accede a Gestión de Flota, Gestión de Conductores, Seguimiento de Cargas, Reportes y más desde aquí."
+      },
+      "search": {
+        "title": "Búsqueda Global",
+        "description": "Encuentra rápidamente vehículos, conductores, cargas o cualquier otra información usando la barra de búsqueda.",
+        "content": "Escribe para buscar instantáneamente en todos los datos de tu flota."
+      },
+      "notifications": {
+        "title": "Notificaciones",
+        "description": "Mantente actualizado con alertas importantes, mensajes y notificaciones del sistema.",
+        "content": "Haz clic aquí para ver todas las notificaciones y alertas relacionadas con las operaciones de tu flota."
+      },
+      "profile": {
+        "title": "Perfil y Configuración",
+        "description": "Gestiona tu perfil, configuración de empresa y preferencias de la aplicación.",
+        "content": "Personaliza tu experiencia y gestiona la configuración de la cuenta desde aquí."
+      }
+    }
+  },
+  "setup": {
+    "title": "Configuración Inicial",
+    "subtitle": "Configuremos tu cuenta para comenzar",
+    "steps": {
+      "personal": {
+        "title": "Información Personal",
+        "description": "Completa tu perfil personal"
+      },
+      "preferences": {
+        "title": "Preferencias",
+        "description": "Establece tu idioma y zona horaria"
+      },
+      "driver": {
+        "title": "Información del Conductor",
+        "description": "Completa tu perfil de conductor y licencias"
+      },
+      "company": {
+        "title": "Configuración de Empresa",
+        "description": "Configura la información de tu empresa"
+      }
+    },
+    "actions": {
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "skip": "Omitir este paso",
+      "finish": "Completar Configuración"
+    },
+    "completion": {
+      "title": "¡Configuración Completa!",
+      "subtitle": "Tu cuenta está ahora configurada y lista para usar",
+      "message": {
+        "driver": "¡Bienvenido a FleetNest! Estás listo para comenzar a gestionar tus viajes e inspecciones de vehículos.",
+        "company_owner": "¡Bienvenido a FleetNest! Tu sistema de gestión de flota está listo para ayudarte a optimizar operaciones.",
+        "owner": "¡Bienvenido a FleetNest! Tu plataforma integral de gestión de flota está completamente configurada.",
+        "default": "¡Bienvenido a FleetNest! Tu cuenta está configurada y lista para usar."
+      },
+      "action": "Comenzar"
+    },
+    "company": {
+      "title": "Información de la Empresa",
+      "fields": {
+        "name": "Nombre de la Empresa",
+        "namePlaceholder": "Ingresa el nombre de tu empresa",
+        "dotNumber": "Número DOT",
+        "dotPlaceholder": "Ingresa el número DOT",
+        "mcNumber": "Número MC",
+        "mcPlaceholder": "Ingresa el número MC", 
+        "phone": "Número de Teléfono",
+        "phonePlaceholder": "Ingresa el número de teléfono",
+        "email": "Dirección de Email",
+        "emailPlaceholder": "Ingresa la dirección de email",
+        "address": "Dirección de la Empresa"
+      }
+    }
+  }
+}

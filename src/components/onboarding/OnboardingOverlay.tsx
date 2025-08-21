@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 interface OnboardingStep {
   id: string;
@@ -23,6 +24,7 @@ interface OnboardingOverlayProps {
 }
 
 export function OnboardingOverlay({ isOpen, onClose, steps, currentRole }: OnboardingOverlayProps) {
+  const { t } = useTranslation('onboarding');
   const [currentStep, setCurrentStep] = useState(0);
 
   if (!isOpen || steps.length === 0) return null;
@@ -66,7 +68,7 @@ export function OnboardingOverlay({ isOpen, onClose, steps, currentRole }: Onboa
                     {step.title}
                   </h2>
                   <p className="text-sm text-muted-foreground">
-                    Paso {currentStep + 1} de {steps.length}
+                    {t('tour.progress', { current: currentStep + 1, total: steps.length })}
                   </p>
                 </div>
               </div>
@@ -83,7 +85,7 @@ export function OnboardingOverlay({ isOpen, onClose, steps, currentRole }: Onboa
             {/* Progress Bar */}
             <div className="mb-8">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-muted-foreground">Progreso</span>
+                <span className="text-sm text-muted-foreground">{t('tour.progress', { current: currentStep + 1, total: steps.length })}</span>
                 <span className="text-sm font-medium">{Math.round(((currentStep + 1) / steps.length) * 100)}%</span>
               </div>
               <div className="w-full bg-secondary rounded-full h-2">
@@ -126,7 +128,7 @@ export function OnboardingOverlay({ isOpen, onClose, steps, currentRole }: Onboa
                   onClick={handleSkip}
                   className="text-muted-foreground"
                 >
-                  Saltar Tour
+                  {t('tour.actions.skip')}
                 </Button>
                 {currentStep > 0 && (
                   <Button
@@ -134,17 +136,17 @@ export function OnboardingOverlay({ isOpen, onClose, steps, currentRole }: Onboa
                     onClick={handlePrevious}
                   >
                     <ChevronLeft className="h-4 w-4 mr-1" />
-                    Anterior
+                    {t('tour.actions.previous')}
                   </Button>
                 )}
               </div>
               
               <Button onClick={handleNext}>
                 {currentStep === steps.length - 1 ? (
-                  'Finalizar'
+                  t('tour.actions.finish')
                 ) : (
                   <>
-                    Siguiente
+                    {t('tour.actions.next')}
                     <ChevronRight className="h-4 w-4 ml-1" />
                   </>
                 )}

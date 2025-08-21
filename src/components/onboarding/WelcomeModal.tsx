@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Users, Truck, FileText, BarChart3, Settings, MapPin } from 'lucide-react';
 import { AppLogo } from '@/components/ui/AppLogo';
 import { VisuallyHidden } from '@/components/ui/visually-hidden';
+import { useTranslation } from 'react-i18next';
 
 interface WelcomeModalProps {
   isOpen: boolean;
@@ -13,50 +14,45 @@ interface WelcomeModalProps {
   userRole: string;
 }
 
-const roleFeatures = {
-  company_owner: [
-    { icon: Users, title: 'Gestión de Usuarios', description: 'Administra conductores y personal' },
-    { icon: Truck, title: 'Control de Flota', description: 'Supervisa todos los vehículos' },
-    { icon: BarChart3, title: 'Reportes Financieros', description: 'Analiza ingresos y gastos' },
-    { icon: Settings, title: 'Configuración', description: 'Personaliza tu empresa' }
-  ],
-  operations_manager: [
-    { icon: MapPin, title: 'Rastreo en Tiempo Real', description: 'Monitorea la ubicación de tu flota' },
-    { icon: FileText, title: 'Gestión de Cargas', description: 'Asigna y supervisa entregas' },
-    { icon: Truck, title: 'Estado de Vehículos', description: 'Controla mantenimiento y disponibilidad' },
-    { icon: BarChart3, title: 'Análisis Operativo', description: 'Optimiza rutas y tiempos' }
-  ],
-  dispatcher: [
-    { icon: MapPin, title: 'Despacho de Cargas', description: 'Asigna cargas a conductores' },
-    { icon: FileText, title: 'Documentación', description: 'Gestiona permisos y documentos' },
-    { icon: Users, title: 'Comunicación', description: 'Coordina con conductores' },
-    { icon: Truck, title: 'Seguimiento', description: 'Monitorea entregas en curso' }
-  ],
-  driver: [
-    { icon: MapPin, title: 'Navegación', description: 'Rutas optimizadas para tus entregas' },
-    { icon: FileText, title: 'Documentos de Carga', description: 'Accede a manifiestos y permisos' },
-    { icon: Truck, title: 'Estado del Vehículo', description: 'Reporta inspecciones y problemas' },
-    { icon: BarChart3, title: 'Historial de Viajes', description: 'Revisa tus entregas completadas' }
-  ]
-};
-
-const roleNames = {
-  company_owner: 'Propietario de Empresa',
-  operations_manager: 'Gerente de Operaciones',
-  dispatcher: 'Despachador',
-  driver: 'Conductor'
-};
-
 export function WelcomeModal({ isOpen, onClose, onStartTour, userRole }: WelcomeModalProps) {
+  const { t } = useTranslation('onboarding');
+
+  const roleFeatures = {
+    company_owner: [
+      { icon: Users, title: t('welcome.features.company_owner.drivers.title'), description: t('welcome.features.company_owner.drivers.description') },
+      { icon: Truck, title: t('welcome.features.company_owner.fleet.title'), description: t('welcome.features.company_owner.fleet.description') },
+      { icon: BarChart3, title: t('welcome.features.company_owner.analytics.title'), description: t('welcome.features.company_owner.analytics.description') },
+      { icon: Settings, title: t('welcome.features.company_owner.loads.title'), description: t('welcome.features.company_owner.loads.description') }
+    ],
+    operations_manager: [
+      { icon: MapPin, title: t('welcome.features.company_owner.fleet.title'), description: t('welcome.features.company_owner.fleet.description') },
+      { icon: FileText, title: t('welcome.features.company_owner.loads.title'), description: t('welcome.features.company_owner.loads.description') },
+      { icon: Truck, title: t('welcome.features.driver.vehicle.title'), description: t('welcome.features.driver.vehicle.description') },
+      { icon: BarChart3, title: t('welcome.features.company_owner.analytics.title'), description: t('welcome.features.company_owner.analytics.description') }
+    ],
+    dispatcher: [
+      { icon: MapPin, title: t('welcome.features.company_owner.loads.title'), description: t('welcome.features.company_owner.loads.description') },
+      { icon: FileText, title: t('welcome.features.driver.documents.title'), description: t('welcome.features.driver.documents.description') },
+      { icon: Users, title: t('welcome.features.driver.communication.title'), description: t('welcome.features.driver.communication.description') },
+      { icon: Truck, title: t('welcome.features.driver.trips.title'), description: t('welcome.features.driver.trips.description') }
+    ],
+    driver: [
+      { icon: MapPin, title: t('welcome.features.driver.trips.title'), description: t('welcome.features.driver.trips.description') },
+      { icon: FileText, title: t('welcome.features.driver.documents.title'), description: t('welcome.features.driver.documents.description') },
+      { icon: Truck, title: t('welcome.features.driver.vehicle.title'), description: t('welcome.features.driver.vehicle.description') },
+      { icon: BarChart3, title: t('welcome.features.driver.trips.title'), description: t('welcome.features.driver.trips.description') }
+    ]
+  };
+
   const features = roleFeatures[userRole as keyof typeof roleFeatures] || roleFeatures.driver;
-  const roleName = roleNames[userRole as keyof typeof roleNames] || 'Usuario';
+  const roleName = t(`welcome.roleTitle.${userRole}`) || t('welcome.roleTitle.default');
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <VisuallyHidden>
           <DialogDescription>
-            Modal de bienvenida que introduce las funciones principales de FleetNest
+            {t('welcome.subtitle')}
           </DialogDescription>
         </VisuallyHidden>
         <DialogHeader>
@@ -65,10 +61,10 @@ export function WelcomeModal({ isOpen, onClose, onStartTour, userRole }: Welcome
               <AppLogo width={60} height={60} className="sm:w-20 sm:h-20" />
             </div>
             <DialogTitle className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">
-              ¡Bienvenido a FleetNest!
+              {t('welcome.title')}
             </DialogTitle>
             <p className="text-sm sm:text-base lg:text-lg text-muted-foreground px-2">
-              Tu plataforma completa de gestión de flotas como <span className="font-semibold text-primary">{roleName}</span>
+              {t('welcome.subtitle')} <span className="font-semibold text-primary">{roleName}</span>
             </p>
           </div>
         </DialogHeader>
@@ -77,7 +73,7 @@ export function WelcomeModal({ isOpen, onClose, onStartTour, userRole }: Welcome
           {/* Features Grid */}
           <div>
             <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-center">
-              Funciones principales para tu rol
+              {t('welcome.title')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {features.map((feature, index) => (
@@ -102,7 +98,7 @@ export function WelcomeModal({ isOpen, onClose, onStartTour, userRole }: Welcome
           <Card className="bg-gradient-to-r from-primary/5 to-secondary/5">
             <CardContent className="p-4 sm:p-6">
               <div className="text-center">
-                <h3 className="text-base sm:text-lg font-semibold mb-2">¿Sabías que FleetNest te ayuda a...</h3>
+                <h3 className="text-base sm:text-lg font-semibold mb-2">{t('welcome.stats.title')}</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-3 sm:mt-4">
                   <div>
                     <div className="text-xl sm:text-2xl font-bold text-primary">30%</div>
@@ -124,10 +120,10 @@ export function WelcomeModal({ isOpen, onClose, onStartTour, userRole }: Welcome
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-4">
             <Button variant="outline" onClick={onClose} className="px-4 sm:px-8 text-sm sm:text-base">
-              Explorar por mi cuenta
+              {t('welcome.actions.close')}
             </Button>
             <Button onClick={onStartTour} className="px-4 sm:px-8 text-sm sm:text-base">
-              Comenzar tour guiado
+              {t('welcome.actions.startTour')}
             </Button>
           </div>
 
