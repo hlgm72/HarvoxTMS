@@ -155,7 +155,7 @@ export default function Equipment() {
                       className="gap-2 h-12 px-6"
                     >
                       <Filter className="h-4 w-4" />
-                      {t("common.filters", "Filtros")}
+                      {t("common.filters")}
                     </Button>
                     
                     <div className="flex rounded-md border h-12">

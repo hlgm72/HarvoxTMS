@@ -30,7 +30,7 @@ interface EquipmentLocationStatusProps {
 }
 
 export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'equipment']);
   const [showLinkDialog, setShowLinkDialog] = useState(false);
 
   const geotabVehicle = equipment.geotab_vehicle;
@@ -40,7 +40,7 @@ export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusPr
     if (!geotabVehicle) {
       return {
         status: "not-linked",
-        label: t("equipment.location.notLinked", "No vinculado"),
+        label: t("common.not_linked", "Not linked"),
         color: "secondary" as const,
         icon: Link
       };
@@ -49,7 +49,7 @@ export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusPr
     if (!latestPosition) {
       return {
         status: "no-data",
-        label: t("equipment.location.noData", "Sin datos de ubicación"),
+        label: t("equipment.tracking.no_location_data"),
         color: "outline" as const,
         icon: AlertTriangle
       };
@@ -62,21 +62,21 @@ export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusPr
     if (hoursSinceUpdate < 1) {
       return {
         status: "recent",
-        label: t("equipment.location.recent", "Ubicación reciente"),
+        label: t("common.recent_location", "Recent location"),
         color: "default" as const,
         icon: MapPin
       };
     } else if (hoursSinceUpdate < 24) {
       return {
         status: "stale",
-        label: t("equipment.location.stale", "Datos antiguos"),
+        label: t("common.old_data", "Old data"),
         color: "secondary" as const,
         icon: Clock
       };
     } else {
       return {
         status: "old",
-        label: t("equipment.location.old", "Datos muy antiguos"),
+        label: t("equipment.tracking.very_old_data"),
         color: "outline" as const,
         icon: AlertTriangle
       };
@@ -94,13 +94,13 @@ export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusPr
     const diffInMinutes = Math.floor((now.getTime() - lastUpdate.getTime()) / (1000 * 60));
     
     if (diffInMinutes < 60) {
-      return t("equipment.location.minutesAgo", "{{minutes}} min", { minutes: diffInMinutes });
+      return t("common.minutes_ago", "{{minutes}} min ago", { minutes: diffInMinutes });
     } else if (diffInMinutes < 1440) { // 24 hours
       const hours = Math.floor(diffInMinutes / 60);
-      return t("equipment.location.hoursAgo", "{{hours}} h", { hours });
+      return t("common.hours_ago", "{{hours}} h ago", { hours });
     } else {
       const days = Math.floor(diffInMinutes / 1440);
-      return t("equipment.location.daysAgo", "{{days}} días", { days });
+      return t("common.days_ago", "{{days}} days ago", { days });
     }
   };
 
@@ -127,7 +127,7 @@ export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusPr
           className="h-6 px-2 text-xs"
         >
           <Link className="h-3 w-3 mr-1" />
-          {geotabVehicle ? t("equipment.location.manage", "Gestionar") : t("equipment.location.link", "Vincular")}
+          {geotabVehicle ? t("equipment.tracking.manage") : t("common.link", "Link")}
         </Button>
       </div>
 
@@ -143,7 +143,7 @@ export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusPr
             <>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Clock className="h-3 w-3" />
-                <span>{t("equipment.location.lastUpdate", "Última actualización")}: {formatLastUpdate()}</span>
+                <span>{t("equipment.tracking.last_update", "Last update: {{time}}", { time: formatLastUpdate() })}</span>
               </div>
               
               {latestPosition.speed !== undefined && latestPosition.speed > 0 && (
@@ -167,7 +167,7 @@ export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusPr
                 className="mt-2 h-7 text-xs gap-1"
               >
                 <MapPin className="h-3 w-3" />
-                {t("equipment.location.viewOnMap", "Ver en mapa")}
+                {t("equipment.tracking.view_on_map")}
               </Button>
             </>
           )}

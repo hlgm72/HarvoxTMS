@@ -123,5 +123,18 @@
       "documents": "Documentos",
       "financial": "Información Financiera"
     }
+  },
+  "tracking": {
+    "fleet_tracking": "Seguimiento de Flota",
+    "real_time_locations": "Ubicaciones en Tiempo Real",
+    "online": "En línea",
+    "moving": "En movimiento",
+    "recent_locations": "Ubicaciones Recientes",
+    "manage": "Gestionar",
+    "view_on_map": "Ver en mapa",
+    "no_location_data": "Sin datos de ubicación",
+    "very_old_data": "Datos muy antiguos",
+    "last_update": "Última actualización: {{time}}",
+    "expiring_soon": "Próximo a vencer"
   }
 }

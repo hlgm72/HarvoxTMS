@@ -36,7 +36,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
     equipment_type: z.string().min(1, t("equipment.validation.typeRequired")),
     make: z.string().optional(),
     model: z.string().optional(),
-    year: z.number().min(1990, t("equipment.validation.yearMinimum")).max(new Date().getFullYear() + 1, t("equipment.validation.yearMaximum", "El año no puede ser mayor a {{year}}", { year: new Date().getFullYear() + 1 })).optional(),
+    year: z.number().min(1990, t("equipment.validation.yearMinimum")).max(new Date().getFullYear() + 1, t("equipment.validation.yearMaximum", { year: new Date().getFullYear() + 1 })).optional(),
     vin_number: z.string().optional(),
     license_plate: z.string().optional(),
     license_plate_expiry_date: z.string().optional(),
@@ -507,10 +507,10 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
 
             <div className="flex justify-end space-x-2 pt-4 border-t">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                {t("common.cancel", "Cancelar")}
+                {t("common.cancel")}
               </Button>
               <Button type="submit" disabled={isCreating}>
-                {isCreating ? t("common.creating", "Creando...") : t("common.create", "Crear")}
+                {isCreating ? t("common.creating") : t("common.create")}
               </Button>
             </div>
           </form>

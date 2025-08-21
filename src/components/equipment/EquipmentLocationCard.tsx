@@ -24,7 +24,7 @@ export function EquipmentLocationCard({
   onlineCount, 
   movingCount 
 }: EquipmentLocationCardProps) {
-  const { t } = useTranslation('fleet');
+  const { t } = useTranslation(['common', 'equipment']);
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "moving":
@@ -41,13 +41,13 @@ export function EquipmentLocationCard({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "moving":
-        return <Badge variant="default" className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">{t('tracking.status.moving')}</Badge>;
+        return <Badge variant="default" className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">{t('equipment.tracking.moving')}</Badge>;
       case "parked":
-        return <Badge variant="default" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">{t('tracking.status.parked')}</Badge>;
+        return <Badge variant="default" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">{t('common.parked', 'Parked')}</Badge>;
       case "offline":
-        return <Badge variant="secondary" className="text-xs">{t('tracking.status.offline')}</Badge>;
+        return <Badge variant="secondary" className="text-xs">{t('common.offline', 'Offline')}</Badge>;
       default:
-        return <Badge variant="secondary" className="text-xs">{t('tracking.status.unknown')}</Badge>;
+        return <Badge variant="secondary" className="text-xs">{t('common.unknown', 'Unknown')}</Badge>;
     }
   };
 
@@ -62,9 +62,9 @@ export function EquipmentLocationCard({
             </div>
             <div>
               <CardTitle className="text-lg font-semibold text-blue-900 dark:text-blue-100">
-                {t('tracking.title')}
+                {t('equipment.tracking.fleet_tracking')}
               </CardTitle>
-              <p className="text-sm text-blue-600 dark:text-blue-400">{t('tracking.subtitle')}</p>
+              <p className="text-sm text-blue-600 dark:text-blue-400">{t('equipment.tracking.real_time_locations')}</p>
             </div>
           </div>
           <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-100 dark:hover:bg-blue-900/40">
@@ -78,11 +78,11 @@ export function EquipmentLocationCard({
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-4 bg-green-50/80 dark:bg-green-900/30 backdrop-blur-sm rounded-xl border border-green-200/30 shadow-sm">
             <div className="text-2xl font-bold text-green-600 dark:text-green-400">{onlineCount}</div>
-            <div className="text-xs text-green-600 dark:text-green-400 font-medium mt-1">{t('tracking.stats.online')}</div>
+            <div className="text-xs text-green-600 dark:text-green-400 font-medium mt-1">{t('equipment.tracking.online')}</div>
           </div>
           <div className="text-center p-4 bg-blue-50/80 dark:bg-blue-900/30 backdrop-blur-sm rounded-xl border border-blue-200/30 shadow-sm">
             <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{movingCount}</div>
-            <div className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-1">{t('tracking.stats.moving')}</div>
+            <div className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-1">{t('equipment.tracking.moving')}</div>
           </div>
         </div>
         
@@ -102,7 +102,7 @@ export function EquipmentLocationCard({
                 {locations.length}
               </span>
               <span className="block text-xs text-blue-600 dark:text-blue-400 font-medium">
-                {t('locations.active_locations')}
+                {t('equipment.locations.active_locations')}
               </span>
             </div>
           </div>
@@ -110,7 +110,7 @@ export function EquipmentLocationCard({
         
         {/* Recent locations */}
         <div className="space-y-3">
-          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('tracking.recent_locations')}</h4>
+          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('equipment.tracking.recent_locations')}</h4>
           <div className="space-y-3 max-h-32 overflow-y-auto custom-scrollbar">
             {locations.slice(0, 2).map((location, index) => (
               <div key={location.id} className="flex items-center justify-between p-3 rounded-xl bg-white/50 dark:bg-gray-800/30 backdrop-blur-sm border border-white/20 hover:bg-white/70 dark:hover:bg-gray-800/50 transition-all duration-200">

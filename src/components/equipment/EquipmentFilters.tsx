@@ -79,11 +79,11 @@ export function EquipmentFilters({ onFiltersChange }: EquipmentFiltersProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">{t("equipment.filters.title", "Filtros")}</h3>
+        <h3 className="text-lg font-semibold">{t("equipment.filters.title")}</h3>
         {hasActiveFilters && (
           <Button variant="outline" size="sm" onClick={clearFilters} className="gap-2">
             <X className="h-3 w-3" />
-            {t("common.clearFilters", "Limpiar filtros")}
+            {t("common.clearFilters", "Clear filters")}
           </Button>
         )}
       </div>

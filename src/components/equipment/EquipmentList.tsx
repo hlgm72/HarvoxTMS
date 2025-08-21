@@ -153,7 +153,7 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                             <div className={nextExpiry.isExpiring ? "text-destructive font-medium" : "text-muted-foreground"}>
                               <p className="text-xs font-medium">{nextExpiry.type}</p>
                               <p className="text-sm">{formatDateAuto(nextExpiry.date!)}</p>
-                              {nextExpiry.isExpiring && <p className="text-xs text-destructive">⚠️ Próximo a vencer</p>}
+                              {nextExpiry.isExpiring && <p className="text-xs text-destructive">⚠️ {t('equipment.tracking.expiring_soon')}</p>}
                             </div>
                           </div>
                         )}
