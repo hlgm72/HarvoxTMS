@@ -84,6 +84,7 @@ export function ExpenseTemplateDialog({
       setEffectiveFrom(new Date());
       setEffectiveUntil(undefined);
       setInactiveTemplate(null);
+      atmInput.setValue(0);
     } else if (mode === 'edit' && template) {
       setSelectedRole(template.applied_to_role || 'driver');
       setFormData({
@@ -99,6 +100,27 @@ export function ExpenseTemplateDialog({
       setInactiveTemplate(null);
     }
   }, [mode, template]);
+
+  // Reset form when modal opens/closes in create mode
+  useEffect(() => {
+    if (!isOpen && mode === 'create') {
+      // Reset all fields when modal closes in create mode
+      setSelectedRole('driver');
+      setFormData({
+        driver_user_id: '',
+        expenseTypeId: '',
+        amount: '',
+        frequency: 'weekly',
+        notes: '',
+        month_week: 1
+      });
+      setEffectiveFrom(new Date());
+      setEffectiveUntil(undefined);
+      setInactiveTemplate(null);
+      setDriverSearchValue('');
+      atmInput.setValue(0);
+    }
+  }, [isOpen, mode]);
 
   // Reset selected user when role changes in create mode
   useEffect(() => {
