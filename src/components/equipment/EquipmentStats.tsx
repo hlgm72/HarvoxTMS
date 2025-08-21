@@ -9,17 +9,7 @@ interface EquipmentStatsProps {
 }
 
 export function EquipmentStats({ equipment = [] }: EquipmentStatsProps) {
-  const { t, i18n } = useTranslation('equipment');
-
-  // Deep debug logging
-  console.log('=== EQUIPMENT STATS DEBUG ===');
-  console.log('Current language:', i18n.language);
-  console.log('Available resources:', Object.keys(i18n.store.data));
-  console.log('Equipment namespace exists?', i18n.hasResourceBundle(i18n.language, 'equipment'));
-  console.log('Equipment resources:', i18n.getResourceBundle(i18n.language, 'equipment'));
-  console.log('All store data:', i18n.store.data);
-  console.log('Testing translation stats.total:', t('stats.total'));
-  console.log('=== END DEBUG ===');
+  const { t } = useTranslation('equipment');
 
   const stats = {
     total: equipment.length,
