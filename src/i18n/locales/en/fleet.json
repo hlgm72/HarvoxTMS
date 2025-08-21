@@ -167,6 +167,9 @@
     "tracked_vehicles": "Will show: {{count}} tracked vehicles",
     "speed": "Speed:",
     "location": "Location:",
+    "loading_vehicles": "Loading vehicles...",
+    "no_vehicles_connected": "No vehicles connected",
+    "connect_geotab_message": "Connect your Geotab system to see tracking",
     "status": {
       "moving": "Moving",
       "parked": "Parked", 
@@ -183,5 +186,36 @@
     },
     "active_locations": "{{count}} active locations",
     "recent_locations": "Recent Locations"
+  },
+  "driver_interface": {
+    "title": "FleetNest Driver",
+    "driver": "Driver:",
+    "active": "Active",
+    "inactive": "Inactive",
+    "location_permissions_required": "Location permissions are required for tracking",
+    "tracking_control": "Tracking Control",
+    "start_tracking": "Start Tracking",
+    "stop_tracking": "Stop Tracking",
+    "current_location": "Current Location",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "speed": "Speed",
+    "direction": "Direction",
+    "accuracy": "Accuracy",
+    "last_update": "Last update",
+    "emergency_contact": "Emergency Contact",
+    "settings": "Settings"
+  },
+  "fleet_status": {
+    "title": "Fleet Status",
+    "active": "Active",
+    "maintenance": "Maintenance",
+    "available": "Available",
+    "total": "Total",
+    "utilization": "Utilization",
+    "normal": "Normal",
+    "recent_alerts": "Recent Alerts",
+    "all_systems_operational": "All systems operational",
+    "sync_completed": "Synchronization completed"
   }
 }

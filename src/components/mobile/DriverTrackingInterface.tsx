@@ -16,9 +16,11 @@ import {
 } from 'lucide-react';
 import { useGPSTracking } from '@/hooks/useGPSTracking';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 import { useFleetNotifications } from '@/components/notifications';
 
 export const DriverTrackingInterface = () => {
+  const { t } = useTranslation('fleet');
   const { 
     position, 
     isTracking, 
@@ -52,7 +54,10 @@ export const DriverTrackingInterface = () => {
   const handleGetCurrentLocation = async () => {
     const pos = await getCurrentPosition();
     if (pos) {
-      showSuccess("Ubicación actualizada", `Lat: ${pos.coords.latitude.toFixed(6)}, Lng: ${pos.coords.longitude.toFixed(6)}`);
+      showSuccess(
+        t('driver_interface.current_location'),
+        `Lat: ${pos.coords.latitude.toFixed(6)}, Lng: ${pos.coords.longitude.toFixed(6)}`
+      );
     }
   };
 
@@ -74,11 +79,11 @@ export const DriverTrackingInterface = () => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-lg font-semibold">
-            FleetNest Driver
+            {t('driver_interface.title')}
           </CardTitle>
           <div className="flex items-center space-x-2">
             <Badge variant={isTracking ? "default" : "secondary"}>
-              {isTracking ? "Activo" : "Inactivo"}
+              {isTracking ? t('driver_interface.active') : t('driver_interface.inactive')}
             </Badge>
             <Button
               variant="ghost"
@@ -91,7 +96,7 @@ export const DriverTrackingInterface = () => {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Conductor: {user?.email}
+            {t('driver_interface.driver')} {user?.email}
           </p>
         </CardContent>
       </Card>
@@ -103,7 +108,7 @@ export const DriverTrackingInterface = () => {
             <div className="flex items-center space-x-2 text-warning">
               <MapPin className="h-5 w-5" />
               <span className="text-sm">
-                Se requieren permisos de ubicación para el rastreo
+                {t('driver_interface.location_permissions_required')}
               </span>
             </div>
           </CardContent>
@@ -115,7 +120,7 @@ export const DriverTrackingInterface = () => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Navigation className="h-5 w-5" />
-            <span>Control de Rastreo</span>
+            <span>{t('driver_interface.tracking_control')}</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -127,7 +132,7 @@ export const DriverTrackingInterface = () => {
                 disabled={!isPermissionGranted}
               >
                 <Play className="h-4 w-4 mr-2" />
-                Iniciar Rastreo
+                {t('driver_interface.start_tracking')}
               </Button>
             ) : (
               <Button 
@@ -136,7 +141,7 @@ export const DriverTrackingInterface = () => {
                 className="flex-1"
               >
                 <Pause className="h-4 w-4 mr-2" />
-                Detener Rastreo
+                {t('driver_interface.stop_tracking')}
               </Button>
             )}
             
@@ -157,17 +162,17 @@ export const DriverTrackingInterface = () => {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <MapPin className="h-5 w-5" />
-              <span>Ubicación Actual</span>
+              <span>{t('driver_interface.current_location')}</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-muted-foreground">Latitud</p>
+                <p className="text-muted-foreground">{t('driver_interface.latitude')}</p>
                 <p className="font-mono">{position.coords.latitude.toFixed(6)}</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Longitud</p>
+                <p className="text-muted-foreground">{t('driver_interface.longitude')}</p>
                 <p className="font-mono">{position.coords.longitude.toFixed(6)}</p>
               </div>
             </div>
@@ -178,7 +183,7 @@ export const DriverTrackingInterface = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Gauge className="h-4 w-4" />
-                  <span>Velocidad</span>
+                  <span>{t('driver_interface.speed')}</span>
                 </div>
                 <span className="font-mono">{formatSpeed(speed)}</span>
               </div>
@@ -186,7 +191,7 @@ export const DriverTrackingInterface = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Navigation className="h-4 w-4" />
-                  <span>Dirección</span>
+                  <span>{t('driver_interface.direction')}</span>
                 </div>
                 <span className="font-mono">{formatHeading(heading)}</span>
               </div>
@@ -194,7 +199,7 @@ export const DriverTrackingInterface = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <MapPin className="h-4 w-4" />
-                  <span>Precisión</span>
+                  <span>{t('driver_interface.accuracy')}</span>
                 </div>
                 <span className="font-mono">
                   {accuracy ? `${Math.round(accuracy)}m` : 'N/A'}
@@ -204,7 +209,7 @@ export const DriverTrackingInterface = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Clock className="h-4 w-4" />
-                  <span>Última actualización</span>
+                  <span>{t('driver_interface.last_update')}</span>
                 </div>
                 <span className="text-xs">
                   {new Date(position.timestamp).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
@@ -227,7 +232,7 @@ export const DriverTrackingInterface = () => {
             }}
           >
             <Phone className="h-4 w-4 mr-2" />
-            Contacto de Emergencia
+            {t('driver_interface.emergency_contact')}
           </Button>
         </CardContent>
       </Card>
@@ -237,7 +242,7 @@ export const DriverTrackingInterface = () => {
         <CardContent className="pt-6">
           <Button variant="ghost" className="w-full justify-start">
             <Settings className="h-4 w-4 mr-2" />
-            Configuración
+            {t('driver_interface.settings')}
           </Button>
         </CardContent>
       </Card>

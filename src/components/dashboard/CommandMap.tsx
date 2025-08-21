@@ -178,14 +178,14 @@ export function CommandMap() {
               {loading ? (
                 <div className="p-6 text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-                  <p className="text-sm text-muted-foreground">Cargando vehículos...</p>
+                  <p className="text-sm text-muted-foreground">{t('tracking.loading_vehicles')}</p>
                 </div>
               ) : vehicles.length === 0 ? (
                 <div className="p-6 text-center">
                   <Truck className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-sm text-muted-foreground">No hay vehículos conectados</p>
+                  <p className="text-sm text-muted-foreground">{t('tracking.no_vehicles_connected')}</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Conecta tu sistema Geotab para ver el tracking
+                    {t('tracking.connect_geotab_message')}
                   </p>
                 </div>
               ) : (
