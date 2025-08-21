@@ -611,7 +611,7 @@ export function ExpenseTemplateDialog({
                       }}
                       month={effectiveFrom}
                       onMonthChange={setEffectiveFrom}
-                      className="p-0 pointer-events-auto"
+                      className="p-3 pointer-events-auto"
                     />
                   </div>
                 </PopoverContent>
@@ -704,7 +704,7 @@ export function ExpenseTemplateDialog({
                       }}
                       month={effectiveUntil}
                       onMonthChange={setEffectiveUntil}
-                      className="p-0 pointer-events-auto"
+                      className="p-3 pointer-events-auto"
                     />
                   </div>
                 </PopoverContent>
