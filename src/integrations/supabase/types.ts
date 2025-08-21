@@ -3111,6 +3111,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      cleanup_old_recurring_expense_descriptions: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       close_payment_period_when_complete: {
         Args: { period_id: string }
         Returns: Json
