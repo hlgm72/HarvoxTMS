@@ -28,8 +28,8 @@ function Calendar({
         caption: "flex justify-center pt-1 relative items-center gap-1",
         caption_label: "hidden",
         caption_dropdowns: "flex items-center gap-1",
-        dropdown_month: "text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[90px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium [&>*:first-child]:hidden",
-        dropdown_year: "text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[70px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium [&>*:first-child]:hidden",
+        dropdown_month: "text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[90px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium",
+        dropdown_year: "text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[70px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
