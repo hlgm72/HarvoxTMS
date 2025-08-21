@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { useClientContacts, useClientContactCount } from "@/hooks/useClients";
+import { useTranslation } from 'react-i18next';
 
 interface ClientDispatchersPopoverProps {
   clientId: string;
@@ -17,6 +18,7 @@ interface ClientDispatchersPopoverProps {
 }
 
 export function ClientDispatchersPopover({ clientId, clientName }: ClientDispatchersPopoverProps) {
+  const { t } = useTranslation('clients');
   const [open, setOpen] = useState(false);
   const { data: dispatcherCount = 0 } = useClientContactCount(clientId);
   const { data: dispatchers = [], isLoading } = useClientContacts(clientId);
@@ -45,7 +47,7 @@ export function ClientDispatchersPopover({ clientId, clientName }: ClientDispatc
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="start">
         <div className="p-3 border-b">
-          <h4 className="font-medium text-sm">Contactos de {clientName}</h4>
+          <h4 className="font-medium text-sm">{t('contacts.title', { clientName })}</h4>
           <p className="text-xs text-muted-foreground mt-1">
             {dispatcherCount} contacto{dispatcherCount !== 1 ? 's' : ''}
           </p>
@@ -54,11 +56,11 @@ export function ClientDispatchersPopover({ clientId, clientName }: ClientDispatc
         <div className="max-h-64 overflow-y-auto">
           {isLoading ? (
             <div className="p-3 text-center text-sm text-muted-foreground">
-              Cargando contactos...
+              {t('contacts.loading_contacts')}
             </div>
           ) : dispatchers.length === 0 ? (
             <div className="p-3 text-center text-sm text-muted-foreground">
-              No hay contactos registrados
+              {t('contacts.no_contacts')}
             </div>
           ) : (
             <div className="divide-y">
@@ -77,7 +79,7 @@ export function ClientDispatchersPopover({ clientId, clientName }: ClientDispatc
                           variant={dispatcher.is_active ? "default" : "secondary"}
                           className="h-4 text-xs"
                         >
-                          {dispatcher.is_active ? "Activo" : "Inactivo"}
+                          {dispatcher.is_active ? t('status.active') : t('status.inactive')}
                         </Badge>
                       </div>
                     </div>

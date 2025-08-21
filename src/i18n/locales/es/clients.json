@@ -1,0 +1,73 @@
+{
+  "title": "Gestión de Clientes",
+  "subtitle": "Administra tus clientes y brokers de carga",
+  "actions": {
+    "new_client": "Nuevo Cliente",
+    "create_first_client": "Crear Primer Cliente",
+    "search_placeholder": "Buscar clientes...",
+    "select_client": "Seleccionar cliente...",
+    "select_contact": "Seleccionar contacto...",
+    "search_client": "Buscar cliente...",
+    "create_new_client": "Crear nuevo cliente"
+  },
+  "stats": {
+    "total_clients": "Total Clientes",
+    "active_clients": "Clientes Activos",
+    "total_revenue": "Ingresos Totales",
+    "active_loads": "Cargas Activas",
+    "active": "activos",
+    "inactive": "inactivos",
+    "of_total": "% del total",
+    "this_month": "Este mes",
+    "in_progress": "En progreso"
+  },
+  "status": {
+    "active": "Activo",
+    "inactive": "Inactivo"
+  },
+  "messages": {
+    "loading": "Cargando clientes...",
+    "no_clients": "No hay clientes",
+    "no_clients_found": "No se encontraron clientes con los filtros aplicados",
+    "start_adding": "Comienza agregando tu primer cliente",
+    "no_contacts_available": "Sin contactos disponibles",
+    "detailed_info": "Información detallada del cliente",
+    "add_contacts_description": "Agrega contactos y despachadores para este cliente"
+  },
+  "contacts": {
+    "title": "Contactos de {clientName}",
+    "tabs": {
+      "info": "Información",
+      "contacts": "Contactos",
+      "loads": "Cargas", 
+      "stats": "Estadísticas"
+    },
+    "general_info": "Información General",
+    "company_name": "Nombre de la Empresa",
+    "commercial_name": "Nombre Comercial / Alias",
+    "mc_number": "Número MC",
+    "dot_number": "Número DOT",
+    "email_domain": "Dominio de Email", 
+    "address": "Dirección",
+    "notes": "Notas",
+    "contacts_dispatchers": "Contactos y Despachadores",
+    "add_contact": "Agregar Contacto",
+    "loading_contacts": "Cargando contactos...",
+    "no_contacts": "No hay contactos",
+    "add_first_contact": "Agregar Primer Contacto",
+    "mobile": "móvil",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "load_history": "Historial de Cargas",
+    "load_history_description": "El historial de cargas estará disponible cuando se implemente la gestión de cargas",
+    "completed_loads": "Cargas Completadas",
+    "total": "Total",
+    "this_year": "Este año",
+    "confirm_delete": "¿Estás seguro?",
+    "confirm_delete_description": "Esta acción no se puede deshacer. Se eliminará permanentemente el contacto \"{contactName}\".",
+    "cancel": "Cancelar"
+  },
+  "filters": {
+    "title": "Filtros Inteligentes de Clientes"
+  }
+}

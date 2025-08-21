@@ -6,6 +6,7 @@ import { Check, ChevronsUpDown, Building2, Plus } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { CompanyClient, ClientContact } from '@/hooks/useCompanyClients';
+import { useTranslation } from 'react-i18next';
 
 interface ClientComboboxProps {
   clients: CompanyClient[];
@@ -24,12 +25,13 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
   value,
   onValueChange,
   onClientSelect,
-  placeholder = "Seleccionar cliente...",
+  placeholder,
   disabled = false,
   className,
   side = "bottom",
   onCreateNew
 }) => {
+  const { t } = useTranslation('clients');
   const [open, setOpen] = React.useState(false);
 
   const selectedClient = clients.find(client => client.id === value);
@@ -66,7 +68,7 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <Building2 className="h-4 w-4 flex-shrink-0" />
             <span className="truncate">
-              {selectedClient ? formatClientDisplay(selectedClient) : placeholder}
+              {selectedClient ? formatClientDisplay(selectedClient) : placeholder || t('actions.select_client')}
             </span>
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -74,9 +76,9 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
       </PopoverTrigger>
       <PopoverContent className="w-full min-w-[300px] p-0" side={side}>
         <Command>
-          <CommandInput placeholder="Buscar cliente..." />
+          <CommandInput placeholder={t('actions.search_client')} />
           <CommandList>
-            <CommandEmpty>No se encontraron clientes.</CommandEmpty>
+            <CommandEmpty>{t('messages.no_clients_found')}</CommandEmpty>
             {onCreateNew && (
               <CommandGroup>
                 <CommandItem
@@ -87,7 +89,7 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
                   className="cursor-pointer border-b"
                 >
                   <Plus className="mr-2 h-4 w-4 text-primary" />
-                  <span className="text-primary font-medium">Crear nuevo cliente</span>
+                  <span className="text-primary font-medium">{t('actions.create_new_client')}</span>
                 </CommandItem>
               </CommandGroup>
             )}

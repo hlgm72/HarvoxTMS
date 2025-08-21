@@ -30,6 +30,7 @@ import {
 import { Client, useClientContacts, useDeleteContact, ClientContact } from "@/hooks/useClients";
 import { CreateDispatcherDialog } from "./CreateDispatcherDialog";
 import { EditDispatcherDialog } from "./EditDispatcherDialog";
+import { useTranslation } from 'react-i18next';
 
 interface ClientDetailDialogProps {
   client: Client;
@@ -38,6 +39,7 @@ interface ClientDetailDialogProps {
 }
 
 export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailDialogProps) {
+  const { t } = useTranslation('clients');
   const [activeTab, setActiveTab] = useState("info");
   const [showCreateDispatcherDialog, setShowCreateDispatcherDialog] = useState(false);
   const [showEditDispatcherDialog, setShowEditDispatcherDialog] = useState(false);
@@ -80,19 +82,19 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
             </DialogTitle>
             <DialogDescription className="flex items-center gap-2">
               <Badge variant={client.is_active ? "default" : "secondary"}>
-                {client.is_active ? "Activo" : "Inactivo"}
+                {client.is_active ? t('status.active') : t('status.inactive')}
               </Badge>
               <span>•</span>
-              <span>Información detallada del cliente</span>
+              <span>{t('messages.detailed_info')}</span>
             </DialogDescription>
           </DialogHeader>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="info">Información</TabsTrigger>
-              <TabsTrigger value="contacts">Contactos</TabsTrigger>
-              <TabsTrigger value="loads">Cargas</TabsTrigger>
-              <TabsTrigger value="stats">Estadísticas</TabsTrigger>
+              <TabsTrigger value="info">{t('contacts.tabs.info')}</TabsTrigger>
+              <TabsTrigger value="contacts">{t('contacts.tabs.contacts')}</TabsTrigger>
+              <TabsTrigger value="loads">{t('contacts.tabs.loads')}</TabsTrigger>
+              <TabsTrigger value="stats">{t('contacts.tabs.stats')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="info" className="space-y-4">
@@ -100,26 +102,26 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Building2 className="h-4 w-4" />
-                    Información General
+                    {t('contacts.general_info')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-muted-foreground">Nombre de la Empresa</label>
+                      <label className="text-sm font-medium text-muted-foreground">{t('contacts.company_name')}</label>
                       <p className="text-base">{client.name}</p>
                     </div>
 
                     {client.alias && (
                       <div>
-                        <label className="text-sm font-medium text-muted-foreground">Nombre Comercial / Alias</label>
+                        <label className="text-sm font-medium text-muted-foreground">{t('contacts.commercial_name')}</label>
                         <p className="text-base">"{client.alias}"</p>
                       </div>
                     )}
 
                     {client.mc_number && (
                       <div>
-                        <label className="text-sm font-medium text-muted-foreground">Número MC</label>
+                        <label className="text-sm font-medium text-muted-foreground">{t('contacts.mc_number')}</label>
                         <p className="text-base flex items-center gap-2">
                           <Building2 className="h-4 w-4" />
                           <span className="font-mono">{client.mc_number}</span>
@@ -129,7 +131,7 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
 
                     {client.dot_number && (
                       <div>
-                        <label className="text-sm font-medium text-muted-foreground">Número DOT</label>
+                        <label className="text-sm font-medium text-muted-foreground">{t('contacts.dot_number')}</label>
                         <p className="text-base flex items-center gap-2">
                           <Building2 className="h-4 w-4" />
                           <span className="font-mono">{client.dot_number}</span>
@@ -139,7 +141,7 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
 
                     {client.email_domain && (
                       <div>
-                        <label className="text-sm font-medium text-muted-foreground">Dominio de Email</label>
+                        <label className="text-sm font-medium text-muted-foreground">{t('contacts.email_domain')}</label>
                         <p className="text-base flex items-center gap-2">
                           <Mail className="h-4 w-4" />
                           {client.email_domain}
@@ -150,7 +152,7 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
 
                   {client.address && (
                     <div>
-                      <label className="text-sm font-medium text-muted-foreground">Dirección</label>
+                      <label className="text-sm font-medium text-muted-foreground">{t('contacts.address')}</label>
                       <p className="text-base flex items-start gap-2">
                         <MapPin className="h-4 w-4 mt-0.5" />
                         {client.address}
@@ -160,7 +162,7 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
 
                   {client.notes && (
                     <div>
-                      <label className="text-sm font-medium text-muted-foreground">Notas</label>
+                      <label className="text-sm font-medium text-muted-foreground">{t('contacts.notes')}</label>
                       <p className="text-base flex items-start gap-2">
                         <FileText className="h-4 w-4 mt-0.5" />
                         {client.notes}
@@ -173,35 +175,35 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
 
             <TabsContent value="contacts" className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Contactos y Despachadores</h3>
+                <h3 className="text-lg font-medium">{t('contacts.contacts_dispatchers')}</h3>
                 <Button
                   onClick={() => setShowCreateDispatcherDialog(true)}
                   size="sm"
                   className="bg-gradient-fleet hover:opacity-90"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Agregar Contacto
+                  {t('contacts.add_contact')}
                 </Button>
               </div>
 
               {dispatchersLoading ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  Cargando contactos...
+                  {t('contacts.loading_contacts')}
                 </div>
               ) : dispatchers.length === 0 ? (
                 <Card>
                   <CardContent className="py-8 text-center">
                     <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No hay contactos</h3>
+                    <h3 className="text-lg font-semibold mb-2">{t('contacts.no_contacts')}</h3>
                     <p className="text-muted-foreground mb-4">
-                      Agrega contactos y despachadores para este cliente
+                      {t('messages.add_contacts_description')}
                     </p>
                     <Button
                       onClick={() => setShowCreateDispatcherDialog(true)}
                       variant="outline"
                     >
                       <Plus className="h-4 w-4 mr-2" />
-                      Agregar Primer Contacto
+                      {t('contacts.add_first_contact')}
                     </Button>
                   </CardContent>
                 </Card>
@@ -212,33 +214,33 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-medium">{dispatcher.name}</h4>
-                              <Badge variant={dispatcher.is_active ? "default" : "secondary"}>
-                                {dispatcher.is_active ? "Activo" : "Inactivo"}
-                              </Badge>
-                            </div>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                              {dispatcher.email && (
-                                <span className="flex items-center gap-1">
-                                  <Mail className="h-3 w-3" />
-                                  {dispatcher.email}
-                                </span>
-                              )}
-                              {dispatcher.phone_office && (
-                                <span className="flex items-center gap-1">
-                                  <Phone className="h-3 w-3" />
-                                  {dispatcher.phone_office}
-                                  {dispatcher.extension && ` ext. ${dispatcher.extension}`}
-                                </span>
-                              )}
-                              {dispatcher.phone_mobile && (
-                                <span className="flex items-center gap-1">
-                                  <Phone className="h-3 w-3" />
-                                  {dispatcher.phone_mobile} (móvil)
-                                </span>
-                              )}
-                            </div>
+                             <div className="flex items-center gap-2">
+                               <h4 className="font-medium">{dispatcher.name}</h4>
+                               <Badge variant={dispatcher.is_active ? "default" : "secondary"}>
+                                 {dispatcher.is_active ? t('status.active') : t('status.inactive')}
+                               </Badge>
+                             </div>
+                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                               {dispatcher.email && (
+                                 <span className="flex items-center gap-1">
+                                   <Mail className="h-3 w-3" />
+                                   {dispatcher.email}
+                                 </span>
+                               )}
+                               {dispatcher.phone_office && (
+                                 <span className="flex items-center gap-1">
+                                   <Phone className="h-3 w-3" />
+                                   {dispatcher.phone_office}
+                                   {dispatcher.extension && ` ext. ${dispatcher.extension}`}
+                                 </span>
+                               )}
+                               {dispatcher.phone_mobile && (
+                                 <span className="flex items-center gap-1">
+                                   <Phone className="h-3 w-3" />
+                                   {dispatcher.phone_mobile} ({t('contacts.mobile')})
+                                 </span>
+                               )}
+                             </div>
                           </div>
                           
                           <DropdownMenu>
@@ -250,14 +252,14 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem onClick={() => handleEditDispatcher(dispatcher)}>
                                 <Edit className="h-4 w-4 mr-2" />
-                                Editar
+                                {t('contacts.edit')}
                               </DropdownMenuItem>
                               <DropdownMenuItem 
                                 onClick={() => handleDeleteDispatcher(dispatcher)}
                                 className="text-destructive"
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
-                                Eliminar
+                                {t('contacts.delete')}
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -273,9 +275,9 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
               <Card>
                 <CardContent className="py-8 text-center">
                   <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Historial de Cargas</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('contacts.load_history')}</h3>
                   <p className="text-muted-foreground">
-                    El historial de cargas estará disponible cuando se implemente la gestión de cargas
+                    {t('contacts.load_history_description')}
                   </p>
                 </CardContent>
               </Card>
@@ -285,26 +287,26 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
               <div className="grid gap-4 md:grid-cols-2">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Ingresos Totales</CardTitle>
+                    <CardTitle className="text-sm font-medium">{t('stats.total_revenue')}</CardTitle>
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">$0</div>
                     <p className="text-xs text-muted-foreground">
-                      Este año
+                      {t('contacts.this_year')}
                     </p>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Cargas Completadas</CardTitle>
+                    <CardTitle className="text-sm font-medium">{t('contacts.completed_loads')}</CardTitle>
                     <TrendingUp className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">0</div>
                     <p className="text-xs text-muted-foreground">
-                      Total
+                      {t('contacts.total')}
                     </p>
                   </CardContent>
                 </Card>
@@ -334,19 +336,18 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogTitle>{t('contacts.confirm_delete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente el contacto
-              "{dispatcherToDelete?.name}".
+              {t('contacts.confirm_delete_description', { contactName: dispatcherToDelete?.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t('contacts.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDeleteDispatcher}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Eliminar
+              {t('contacts.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

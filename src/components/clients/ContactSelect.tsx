@@ -1,5 +1,6 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ClientContact } from '@/hooks/useCompanyClients';
+import { useTranslation } from 'react-i18next';
 
 interface ContactSelectProps {
   contacts: ClientContact[];
@@ -13,14 +14,15 @@ export const ContactSelect = ({
   contacts,
   value,
   onValueChange,
-  placeholder = "Seleccionar contacto...",
+  placeholder,
   disabled = false
 }: ContactSelectProps) => {
+  const { t } = useTranslation('clients');
   if (!contacts || contacts.length === 0) {
     return (
       <Select disabled>
         <SelectTrigger>
-          <SelectValue placeholder="Sin contactos disponibles" />
+          <SelectValue placeholder={t('messages.no_contacts_available')} />
         </SelectTrigger>
       </Select>
     );
@@ -33,7 +35,7 @@ export const ContactSelect = ({
       disabled={disabled}
     >
       <SelectTrigger>
-        <SelectValue placeholder={placeholder} />
+        <SelectValue placeholder={placeholder || t('actions.select_contact')} />
       </SelectTrigger>
       <SelectContent>
         {contacts.map((contact) => (

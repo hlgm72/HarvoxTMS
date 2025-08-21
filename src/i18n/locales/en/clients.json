@@ -1,0 +1,73 @@
+{
+  "title": "Client Management",
+  "subtitle": "Manage your clients and freight brokers",
+  "actions": {
+    "new_client": "New Client",
+    "create_first_client": "Create First Client",
+    "search_placeholder": "Search clients...",
+    "select_client": "Select client...",
+    "select_contact": "Select contact...",
+    "search_client": "Search client...",
+    "create_new_client": "Create new client"
+  },
+  "stats": {
+    "total_clients": "Total Clients",
+    "active_clients": "Active Clients", 
+    "total_revenue": "Total Revenue",
+    "active_loads": "Active Loads",
+    "active": "active",
+    "inactive": "inactive",
+    "of_total": "% of total",
+    "this_month": "This month",
+    "in_progress": "In progress"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "messages": {
+    "loading": "Loading clients...",
+    "no_clients": "No clients",
+    "no_clients_found": "No clients found with applied filters",
+    "start_adding": "Start by adding your first client",
+    "no_contacts_available": "No contacts available",
+    "detailed_info": "Detailed client information",
+    "add_contacts_description": "Add contacts and dispatchers for this client"
+  },
+  "contacts": {
+    "title": "Contacts for {clientName}",
+    "tabs": {
+      "info": "Information",
+      "contacts": "Contacts", 
+      "loads": "Loads",
+      "stats": "Statistics"
+    },
+    "general_info": "General Information",
+    "company_name": "Company Name",
+    "commercial_name": "Commercial Name / Alias",
+    "mc_number": "MC Number",
+    "dot_number": "DOT Number", 
+    "email_domain": "Email Domain",
+    "address": "Address",
+    "notes": "Notes",
+    "contacts_dispatchers": "Contacts and Dispatchers",
+    "add_contact": "Add Contact",
+    "loading_contacts": "Loading contacts...",
+    "no_contacts": "No contacts",
+    "add_first_contact": "Add First Contact",
+    "mobile": "mobile",
+    "edit": "Edit",
+    "delete": "Delete",
+    "load_history": "Load History",
+    "load_history_description": "Load history will be available when load management is implemented",
+    "completed_loads": "Completed Loads",
+    "total": "Total",
+    "this_year": "This year",
+    "confirm_delete": "Are you sure?",
+    "confirm_delete_description": "This action cannot be undone. Contact \"{contactName}\" will be permanently deleted.",
+    "cancel": "Cancel"
+  },
+  "filters": {
+    "title": "Smart Client Filters"
+  }
+}

@@ -15,7 +15,7 @@ import { useClients } from "@/hooks/useClients";
 import { formatCurrency } from '@/lib/dateFormatting';
 
 export default function Clients() {
-  const { t } = useTranslation(['common', 'fleet']);
+  const { t } = useTranslation(['common', 'clients']);
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -102,15 +102,15 @@ export default function Clients() {
   };
 
   const breadcrumbs = [
-    { label: "Gestión de Clientes" }
+    { label: t('clients:title') }
   ];
 
   return (
     <Layout>
       <PageToolbar
         icon={Building2}
-        title="Gestión de Clientes"
-        subtitle="Administra tus clientes y brokers de carga"
+        title={t('clients:title')}
+        subtitle={t('clients:subtitle')}
         actions={
           <div className="flex gap-2">
             
@@ -119,7 +119,7 @@ export default function Clients() {
               className="gap-2"
             >
               <Plus className="h-4 w-4" />
-              Nuevo Cliente
+              {t('clients:actions.new_client')}
             </Button>
           </div>
         }
@@ -148,33 +148,33 @@ export default function Clients() {
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Total Clientes</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">{t('clients:stats.total_clients')}</CardTitle>
               <Building2 className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-lg sm:text-2xl font-bold text-primary">{stats.total}</div>
               <p className="text-xs text-muted-foreground">
-                {stats.active} activos, {stats.inactive} inactivos
+                {stats.active} {t('clients:stats.active')}, {stats.inactive} {t('clients:stats.inactive')}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Clientes Activos</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">{t('clients:stats.active_clients')}</CardTitle>
               <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-lg sm:text-2xl font-bold text-green-600">{stats.active}</div>
               <p className="text-xs text-muted-foreground">
-                {((stats.active / stats.total) * 100 || 0).toFixed(1)}% del total
+                {((stats.active / stats.total) * 100 || 0).toFixed(1)}{t('clients:stats.of_total')}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Ingresos Totales</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">{t('clients:stats.total_revenue')}</CardTitle>
               <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -182,20 +182,20 @@ export default function Clients() {
                 ${formatCurrency(stats.totalRevenue)}
               </div>
               <p className="text-xs text-muted-foreground">
-                Este mes
+                {t('clients:stats.this_month')}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Cargas Activas</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">{t('clients:stats.active_loads')}</CardTitle>
               <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-lg sm:text-2xl font-bold text-orange-600">{stats.activeLoads}</div>
               <p className="text-xs text-muted-foreground">
-                En progreso
+                {t('clients:stats.in_progress')}
               </p>
             </CardContent>
           </Card>
@@ -206,7 +206,7 @@ export default function Clients() {
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Buscar clientes..."
+              placeholder={t('clients:actions.search_placeholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -225,22 +225,22 @@ export default function Clients() {
           <CardContent className="p-6">
             {isLoading ? (
               <div className="flex items-center justify-center h-64">
-                <div className="text-muted-foreground">Cargando clientes...</div>
+                <div className="text-muted-foreground">{t('clients:messages.loading')}</div>
               </div>
             ) : filteredClients.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-center">
                 <Building2 className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No hay clientes</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('clients:messages.no_clients')}</h3>
                 <p className="text-muted-foreground mb-4">
                   {searchTerm || Object.values(filters).some(f => f !== "all" && f !== "") 
-                    ? "No se encontraron clientes con los filtros aplicados"
-                    : "Comienza agregando tu primer cliente"
+                    ? t('clients:messages.no_clients_found')
+                    : t('clients:messages.start_adding')
                   }
                 </p>
                 {!searchTerm && Object.values(filters).every(f => f === "all" || f === "") && (
                   <Button onClick={() => setShowCreateDialog(true)}>
                     <Plus className="h-4 w-4 mr-2" />
-                    Crear Primer Cliente
+                    {t('clients:actions.create_first_client')}
                   </Button>
                 )}
               </div>
