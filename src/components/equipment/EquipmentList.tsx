@@ -20,7 +20,7 @@ interface EquipmentListProps {
 }
 
 export function EquipmentList({ equipment }: EquipmentListProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'equipment']);
   const { equipmentWithGeotab, isLoadingEquipmentWithGeotab } = useGeotabVehicles();
   const { deleteEquipment, isDeleting } = useEquipment();
   const [equipmentToDelete, setEquipmentToDelete] = useState<Equipment | null>(null);
@@ -125,27 +125,27 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
                     {/* Basic Info */}
                     <div className="space-y-3">
-                      <h4 className="font-medium text-foreground mb-3">{t("equipment.basicInfo", "Información Básica")}</h4>
+                      <h4 className="font-medium text-foreground mb-3">{t("equipment.actions.basicInfo")}</h4>
                       <div className="space-y-2 text-muted-foreground">
-                        <p><span className="font-medium">{t("equipment.make", "Marca")}:</span> {item.make || "N/A"}</p>
-                        <p><span className="font-medium">{t("equipment.model", "Modelo")}:</span> {item.model || "N/A"}</p>
-                        <p><span className="font-medium">{t("equipment.year", "Año")}:</span> {item.year || "N/A"}</p>
+                        <p><span className="font-medium">{t("equipment.fields.make")}:</span> {item.make || "N/A"}</p>
+                        <p><span className="font-medium">{t("equipment.fields.model")}:</span> {item.model || "N/A"}</p>
+                        <p><span className="font-medium">{t("equipment.fields.year")}:</span> {item.year || "N/A"}</p>
                       </div>
                     </div>
                     
                     {/* Vehicle Details */}
                     <div className="space-y-3">
-                      <h4 className="font-medium text-foreground mb-3">{t("equipment.vehicleDetails", "Detalles del Vehículo")}</h4>
+                      <h4 className="font-medium text-foreground mb-3">{t("equipment.actions.vehicleDetails")}</h4>
                       <div className="space-y-2 text-muted-foreground">
-                        <p><span className="font-medium">{t("equipment.licensePlate", "Placa")}:</span> {item.license_plate || "N/A"}</p>
-                        <p><span className="font-medium">{t("equipment.vin", "VIN")}:</span> {item.vin_number ? item.vin_number.substring(0, 10) + "..." : "N/A"}</p>
-                        <p><span className="font-medium">{t("equipment.mileage", "Kilometraje")}:</span> {item.current_mileage ? `${item.current_mileage.toLocaleString()} km` : "N/A"}</p>
+                        <p><span className="font-medium">{t("equipment.fields.licensePlate")}:</span> {item.license_plate || "N/A"}</p>
+                        <p><span className="font-medium">{t("equipment.fields.vin")}:</span> {item.vin_number ? item.vin_number.substring(0, 10) + "..." : "N/A"}</p>
+                        <p><span className="font-medium">{t("equipment.fields.currentMileage")}:</span> {item.current_mileage ? `${item.current_mileage.toLocaleString()} km` : "N/A"}</p>
                       </div>
                     </div>
                     
                     {/* Expiry Info */}
                     <div className="space-y-3">
-                      <h4 className="font-medium text-foreground mb-3">{t("equipment.expiryInfo", "Vencimientos")}</h4>
+                      <h4 className="font-medium text-foreground mb-3">{t("equipment.actions.expiryInfo")}</h4>
                       <div className="space-y-2">
                         {nextExpiry && (
                           <div className="flex items-center gap-2 p-2 rounded-md bg-muted/30">
@@ -158,14 +158,14 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                           </div>
                         )}
                         <p className="text-xs text-muted-foreground mt-4">
-                           {t("equipment.createdAt", "Creado")}: {formatInternationalized(new Date(item.created_at), 'PPP')}
+                           {t("equipment.actions.createdAt")}: {formatInternationalized(new Date(item.created_at), 'PPP')}
                         </p>
                       </div>
                     </div>
                     
                     {/* Location Status */}
                     <div className="space-y-3">
-                      <h4 className="font-medium text-foreground mb-3">{t("equipment.location", "Ubicación")}</h4>
+                      <h4 className="font-medium text-foreground mb-3">{t("equipment.actions.location")}</h4>
                       <EquipmentLocationStatus equipment={item} />
                     </div>
                   </div>
@@ -181,19 +181,19 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem className="py-2">
                         <Eye className="mr-3 h-4 w-4" />
-                        {t("common.view", "Ver detalles")}
+                        {t("common.view")}
                       </DropdownMenuItem>
                       <DropdownMenuItem className="py-2">
                         <Edit className="mr-3 h-4 w-4" />
-                        {t("common.edit", "Editar")}
+                        {t("common.edit")}
                       </DropdownMenuItem>
                       <DropdownMenuItem className="py-2">
                         <FileText className="mr-3 h-4 w-4" />
-                        {t("equipment.documents", "Documentos")}
+                        {t("equipment.actions.documents")}
                       </DropdownMenuItem>
                       <DropdownMenuItem className="py-2">
                         <MapPin className="mr-3 h-4 w-4" />
-                        {t("equipment.location", "Ubicación")}
+                        {t("equipment.actions.location")}
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         className="text-destructive py-2"
@@ -201,7 +201,7 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                         disabled={isDeleting}
                       >
                         <Trash2 className="mr-3 h-4 w-4" />
-                        {t("common.delete", "Eliminar")}
+                        {t("common.delete")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -217,24 +217,22 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {t("equipment.delete.title", "¿Eliminar equipo?")}
+              {t("equipment.delete.title")}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {t("equipment.delete.description", 
-                "Esta acción no se puede deshacer. Se eliminará permanentemente el equipo"
-              )} <strong>{equipmentToDelete?.equipment_number}</strong>.
+              {t("equipment.delete.description")} <strong>{equipmentToDelete?.equipment_number}</strong>.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleDeleteCancel}>
-              {t("common.cancel", "Cancelar")}
+              {t("common.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDeleteConfirm}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={isDeleting}
             >
-              {isDeleting ? t("common.deleting", "Eliminando...") : t("common.delete", "Eliminar")}
+              {isDeleting ? t("common.deleting") : t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

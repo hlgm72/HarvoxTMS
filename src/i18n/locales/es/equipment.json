@@ -25,6 +25,66 @@
     "inactive": "Inactivo",
     "unknown": "Desconocido"
   },
+  "type": {
+    "truck": "Camión",
+    "trailer": "Remolque",
+    "van": "Camioneta",
+    "car": "Automóvil"
+  },
+  "fuel": {
+    "diesel": "Diésel",
+    "gasoline": "Gasolina",
+    "hybrid": "Híbrido",
+    "electric": "Eléctrico"
+  },
+  "fields": {
+    "equipmentNumber": "Número de Equipo",
+    "type": "Tipo de Equipo",
+    "make": "Marca",
+    "model": "Modelo",
+    "year": "Año",
+    "vin": "Número VIN",
+    "licensePlate": "Placa",
+    "fuelType": "Tipo de Combustible",
+    "status": "Estado",
+    "currentMileage": "Kilometraje Actual",
+    "notes": "Notas",
+    "licensePlateExpiry": "Vencimiento de Placa",
+    "registrationExpiry": "Vencimiento de Registro",
+    "insuranceExpiry": "Vencimiento de Seguro",
+    "annualInspectionExpiry": "Vencimiento de Inspección Anual",
+    "purchaseDate": "Fecha de Compra",
+    "purchasePrice": "Precio de Compra"
+  },
+  "validation": {
+    "equipmentNumberRequired": "El número de equipo es requerido",
+    "typeRequired": "El tipo de equipo es requerido",
+    "yearMinimum": "El año debe ser mayor a 1990",
+    "yearMaximum": "El año no puede ser mayor a {{year}}"
+  },
+  "filters": {
+    "title": "Filtros",
+    "status": "Estado",
+    "type": "Tipo de Equipo",
+    "fuel": "Combustible",
+    "special": "Opciones Especiales",
+    "expiring": "Con documentos por vencer"
+  },
+  "actions": {
+    "noMakesFound": "No se encontraron marcas.",
+    "addCustomMake": "Agregar marca personalizada",
+    "documents": "Documentos",
+    "location": "Ubicación",
+    "expiringDocuments": "Documentos por vencer",
+    "basicInfo": "Información Básica",
+    "vehicleDetails": "Detalles del Vehículo",
+    "expiryInfo": "Vencimientos",
+    "createdAt": "Creado"
+  },
+  "delete": {
+    "title": "¿Eliminar equipo?",
+    "description": "Esta acción no se puede deshacer. Se eliminará permanentemente el equipo"
+  },
   "overview": {
     "title": "Resumen de Flota",
     "subtitle": "Panel de Equipos",
@@ -57,6 +117,11 @@
   },
   "create": {
     "title": "Agregar Nuevo Equipo",
-    "description": "Complete la información del nuevo equipo para agregarlo a la flota."
+    "description": "Complete la información del nuevo equipo para agregarlo a la flota.",
+    "tabs": {
+      "basic": "Información Básica",
+      "documents": "Documentos",
+      "financial": "Información Financiera"
+    }
   }
 }

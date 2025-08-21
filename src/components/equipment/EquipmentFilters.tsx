@@ -18,7 +18,7 @@ export interface EquipmentFilters {
 }
 
 export function EquipmentFilters({ onFiltersChange }: EquipmentFiltersProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'equipment']);
   const [filters, setFilters] = useState<EquipmentFilters>({
     status: [],
     equipmentType: [],

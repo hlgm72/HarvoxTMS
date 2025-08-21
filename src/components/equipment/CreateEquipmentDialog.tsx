@@ -20,28 +20,6 @@ import { useEquipment, type CreateEquipmentData } from "@/hooks/useEquipment";
 import { ComboboxField } from "@/components/ui/ComboboxField";
 import { getBrandsByEquipmentType } from "@/constants/equipmentBrands";
 
-const equipmentSchema = z.object({
-  equipment_number: z.string().min(1, "El número de equipo es requerido"),
-  equipment_type: z.string().min(1, "El tipo de equipo es requerido"),
-  make: z.string().optional(),
-  model: z.string().optional(),
-  year: z.number().min(1990, "El año debe ser mayor a 1990").max(new Date().getFullYear() + 1, `El año no puede ser mayor a ${new Date().getFullYear() + 1}`).optional(),
-  vin_number: z.string().optional(),
-  license_plate: z.string().optional(),
-  license_plate_expiry_date: z.string().optional(),
-  registration_expiry_date: z.string().optional(),
-  insurance_expiry_date: z.string().optional(),
-  annual_inspection_expiry_date: z.string().optional(),
-  fuel_type: z.string().optional(),
-  status: z.string().optional(),
-  current_mileage: z.number().optional(),
-  purchase_date: z.string().optional(),
-  purchase_price: z.number().optional(),
-  notes: z.string().optional(),
-});
-
-type EquipmentFormData = z.infer<typeof equipmentSchema>;
-
 interface CreateEquipmentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -49,11 +27,31 @@ interface CreateEquipmentDialogProps {
 }
 
 export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType = "truck" }: CreateEquipmentDialogProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'equipment']);
   const { createEquipment, isCreating } = useEquipment();
   const [currentEquipmentType, setCurrentEquipmentType] = useState(defaultEquipmentType);
 
-  const form = useForm<EquipmentFormData>({
+  const equipmentSchema = z.object({
+    equipment_number: z.string().min(1, t("equipment.validation.equipmentNumberRequired")),
+    equipment_type: z.string().min(1, t("equipment.validation.typeRequired")),
+    make: z.string().optional(),
+    model: z.string().optional(),
+    year: z.number().min(1990, t("equipment.validation.yearMinimum")).max(new Date().getFullYear() + 1, t("equipment.validation.yearMaximum", "El año no puede ser mayor a {{year}}", { year: new Date().getFullYear() + 1 })).optional(),
+    vin_number: z.string().optional(),
+    license_plate: z.string().optional(),
+    license_plate_expiry_date: z.string().optional(),
+    registration_expiry_date: z.string().optional(),
+    insurance_expiry_date: z.string().optional(),
+    annual_inspection_expiry_date: z.string().optional(),
+    fuel_type: z.string().optional(),
+    status: z.string().optional(),
+    current_mileage: z.number().optional(),
+    purchase_date: z.string().optional(),
+    purchase_price: z.number().optional(),
+    notes: z.string().optional(),
+  });
+
+  const form = useForm<z.infer<typeof equipmentSchema>>({
     resolver: zodResolver(equipmentSchema),
     defaultValues: {
       equipment_number: "",
@@ -102,7 +100,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
     return () => subscription.unsubscribe();
   }, [form]);
 
-  const onSubmit = (data: EquipmentFormData) => {
+  const onSubmit = (data: z.infer<typeof equipmentSchema>) => {
     const equipmentData: CreateEquipmentData = {
       equipment_number: data.equipment_number,
       equipment_type: data.equipment_type,
@@ -183,7 +181,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="equipment_number"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.equipmentNumber", "Número de Equipo")} *</FormLabel>
+                        <FormLabel>{t("equipment.fields.equipmentNumber")} *</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -197,7 +195,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="equipment_type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.type", "Tipo de Equipo")} *</FormLabel>
+                        <FormLabel>{t("equipment.fields.type")} *</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
@@ -222,15 +220,15 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="make"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.make", "Marca")}</FormLabel>
+                        <FormLabel>{t("equipment.fields.make")}</FormLabel>
                          <ComboboxField
                           options={availableBrands}
                           value={field.value || ""}
                           onValueChange={field.onChange}
                           placeholder=""
-                          emptyText={t("equipment.noMakesFound", "No se encontraron marcas.")}
+                          emptyText={t("equipment.actions.noMakesFound")}
                           allowCustom={true}
-                          customText={t("equipment.addCustomMake", "Agregar marca personalizada")}
+                          customText={t("equipment.actions.addCustomMake")}
                         />
                         <FormMessage />
                       </FormItem>
@@ -242,7 +240,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="model"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.model", "Modelo")}</FormLabel>
+                        <FormLabel>{t("equipment.fields.model")}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -256,7 +254,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="year"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.year", "Año")}</FormLabel>
+                        <FormLabel>{t("equipment.fields.year")}</FormLabel>
                          <FormControl>
                            <Input 
                              type="number" 
@@ -287,7 +285,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="vin_number"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.vin", "Número VIN")}</FormLabel>
+                        <FormLabel>{t("equipment.fields.vin")}</FormLabel>
                         <FormControl>
                           <Input 
                              {...field}
@@ -314,7 +312,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="license_plate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.licensePlate", "Placa")}</FormLabel>
+                        <FormLabel>{t("equipment.fields.licensePlate")}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -328,7 +326,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="fuel_type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fuelType", "Tipo de Combustible")}</FormLabel>
+                        <FormLabel>{t("equipment.fields.fuelType")}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
@@ -353,7 +351,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="status"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.status", "Estado")}</FormLabel>
+                        <FormLabel>{t("equipment.fields.status")}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
@@ -378,7 +376,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="current_mileage"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.currentMileage", "Kilometraje Actual")}</FormLabel>
+                        <FormLabel>{t("equipment.fields.currentMileage")}</FormLabel>
                         <FormControl>
                            <Input 
                              type="number" 
@@ -397,8 +395,8 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                   control={form.control}
                   name="notes"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("equipment.notes", "Notas")}</FormLabel>
+                  <FormItem>
+                    <FormLabel>{t("equipment.fields.notes")}</FormLabel>
                       <FormControl>
                          <Textarea {...field} />
                       </FormControl>
@@ -415,7 +413,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="license_plate_expiry_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.licensePlateExpiry", "Vencimiento de Placa")}</FormLabel>
+                        <FormLabel>{t("equipment.fields.licensePlateExpiry")}</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -429,7 +427,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="registration_expiry_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.registrationExpiry", "Vencimiento de Registro")}</FormLabel>
+                        <FormLabel>{t("equipment.fields.registrationExpiry")}</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -443,7 +441,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="insurance_expiry_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.insuranceExpiry", "Vencimiento de Seguro")}</FormLabel>
+                        <FormLabel>{t("equipment.fields.insuranceExpiry")}</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -457,7 +455,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="annual_inspection_expiry_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.inspectionExpiry", "Vencimiento de Inspección Anual")}</FormLabel>
+                        <FormLabel>{t("equipment.fields.annualInspectionExpiry")}</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -475,7 +473,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="purchase_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.purchaseDate", "Fecha de Compra")}</FormLabel>
+                        <FormLabel>{t("equipment.fields.purchaseDate")}</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -489,7 +487,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="purchase_price"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.purchasePrice", "Precio de Compra")}</FormLabel>
+                        <FormLabel>{t("equipment.fields.purchasePrice")}</FormLabel>
                         <FormControl>
                            <Input 
                              type="number" 

@@ -25,6 +25,66 @@
     "inactive": "Inactive",
     "unknown": "Unknown"
   },
+  "type": {
+    "truck": "Truck",
+    "trailer": "Trailer",
+    "van": "Van",
+    "car": "Car"
+  },
+  "fuel": {
+    "diesel": "Diesel",
+    "gasoline": "Gasoline",
+    "hybrid": "Hybrid",
+    "electric": "Electric"
+  },
+  "fields": {
+    "equipmentNumber": "Equipment Number",
+    "type": "Equipment Type",
+    "make": "Make",
+    "model": "Model",
+    "year": "Year",
+    "vin": "VIN Number",
+    "licensePlate": "License Plate",
+    "fuelType": "Fuel Type",
+    "status": "Status",
+    "currentMileage": "Current Mileage",
+    "notes": "Notes",
+    "licensePlateExpiry": "License Plate Expiry",
+    "registrationExpiry": "Registration Expiry",
+    "insuranceExpiry": "Insurance Expiry",
+    "annualInspectionExpiry": "Annual Inspection Expiry",
+    "purchaseDate": "Purchase Date",
+    "purchasePrice": "Purchase Price"
+  },
+  "validation": {
+    "equipmentNumberRequired": "Equipment number is required",
+    "typeRequired": "Equipment type is required",
+    "yearMinimum": "Year must be greater than 1990",
+    "yearMaximum": "Year cannot be greater than {{year}}"
+  },
+  "filters": {
+    "title": "Filters",
+    "status": "Status",
+    "type": "Equipment Type",
+    "fuel": "Fuel",
+    "special": "Special Options",
+    "expiring": "With expiring documents"
+  },
+  "actions": {
+    "noMakesFound": "No makes found.",
+    "addCustomMake": "Add custom make",
+    "documents": "Documents",
+    "location": "Location",
+    "expiringDocuments": "Expiring documents",
+    "basicInfo": "Basic Information",
+    "vehicleDetails": "Vehicle Details",
+    "expiryInfo": "Expiry Dates",
+    "createdAt": "Created"
+  },
+  "delete": {
+    "title": "Delete equipment?",
+    "description": "This action cannot be undone. The equipment will be permanently deleted"
+  },
   "overview": {
     "title": "Fleet Overview",
     "subtitle": "Equipment Dashboard",
@@ -57,6 +117,11 @@
   },
   "create": {
     "title": "Add New Equipment",
-    "description": "Complete the information for the new equipment to add it to the fleet."
+    "description": "Complete the information for the new equipment to add it to the fleet.",
+    "tabs": {
+      "basic": "Basic Information",
+      "documents": "Documents",
+      "financial": "Financial Information"
+    }
   }
 }
