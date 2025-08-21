@@ -18,7 +18,8 @@ export interface EquipmentFilters {
 }
 
 export function EquipmentFilters({ onFiltersChange }: EquipmentFiltersProps) {
-  const { t } = useTranslation(['common', 'equipment']);
+  const { t } = useTranslation('equipment');
+  const { t: tCommon } = useTranslation('common');
   const [filters, setFilters] = useState<EquipmentFilters>({
     status: [],
     equipmentType: [],
@@ -27,23 +28,23 @@ export function EquipmentFilters({ onFiltersChange }: EquipmentFiltersProps) {
   });
 
   const statusOptions = [
-    { value: "active", label: t("equipment.status.active", "Activo") },
-    { value: "maintenance", label: t("equipment.status.maintenance", "Mantenimiento") },
-    { value: "inactive", label: t("equipment.status.inactive", "Inactivo") },
+    { value: "active", label: t("status.active") },
+    { value: "maintenance", label: t("status.maintenance") },
+    { value: "inactive", label: t("status.inactive") },
   ];
 
   const equipmentTypeOptions = [
-    { value: "truck", label: t("equipment.type.truck", "Camión") },
-    { value: "trailer", label: t("equipment.type.trailer", "Remolque") },
-    { value: "van", label: t("equipment.type.van", "Camioneta") },
-    { value: "car", label: t("equipment.type.car", "Automóvil") },
+    { value: "truck", label: t("type.truck") },
+    { value: "trailer", label: t("type.trailer") },
+    { value: "van", label: t("type.van") },
+    { value: "car", label: t("type.car") },
   ];
 
   const fuelTypeOptions = [
-    { value: "diesel", label: t("equipment.fuel.diesel", "Diésel") },
-    { value: "gasoline", label: t("equipment.fuel.gasoline", "Gasolina") },
-    { value: "hybrid", label: t("equipment.fuel.hybrid", "Híbrido") },
-    { value: "electric", label: t("equipment.fuel.electric", "Eléctrico") },
+    { value: "diesel", label: t("fuel.diesel") },
+    { value: "gasoline", label: t("fuel.gasoline") },
+    { value: "hybrid", label: t("fuel.hybrid") },
+    { value: "electric", label: t("fuel.electric") },
   ];
 
   const handleFilterChange = (category: keyof EquipmentFilters, value: any) => {
@@ -79,11 +80,11 @@ export function EquipmentFilters({ onFiltersChange }: EquipmentFiltersProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">{t("equipment.filters.title")}</h3>
+        <h3 className="text-lg font-semibold">{t("filters.title")}</h3>
         {hasActiveFilters && (
           <Button variant="outline" size="sm" onClick={clearFilters} className="gap-2">
             <X className="h-3 w-3" />
-            {t("common.clearFilters", "Clear filters")}
+            {tCommon("clearFilters")}
           </Button>
         )}
       </div>
@@ -92,7 +93,7 @@ export function EquipmentFilters({ onFiltersChange }: EquipmentFiltersProps) {
         {/* Estado */}
         <div className="space-y-3">
           <Label className="text-sm font-medium">
-            {t("equipment.filters.status", "Estado")}
+            {t("filters.status")}
           </Label>
           <div className="space-y-2">
             {statusOptions.map((option) => (
@@ -118,7 +119,7 @@ export function EquipmentFilters({ onFiltersChange }: EquipmentFiltersProps) {
         {/* Tipo de Equipo */}
         <div className="space-y-3">
           <Label className="text-sm font-medium">
-            {t("equipment.filters.type", "Tipo de Equipo")}
+            {t("filters.type")}
           </Label>
           <div className="space-y-2">
             {equipmentTypeOptions.map((option) => (
@@ -144,7 +145,7 @@ export function EquipmentFilters({ onFiltersChange }: EquipmentFiltersProps) {
         {/* Tipo de Combustible */}
         <div className="space-y-3">
           <Label className="text-sm font-medium">
-            {t("equipment.filters.fuel", "Combustible")}
+            {t("filters.fuel")}
           </Label>
           <div className="space-y-2">
             {fuelTypeOptions.map((option) => (
@@ -170,7 +171,7 @@ export function EquipmentFilters({ onFiltersChange }: EquipmentFiltersProps) {
         {/* Opciones Especiales */}
         <div className="space-y-3">
           <Label className="text-sm font-medium">
-            {t("equipment.filters.special", "Opciones Especiales")}
+            {t("filters.special")}
           </Label>
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
@@ -185,7 +186,7 @@ export function EquipmentFilters({ onFiltersChange }: EquipmentFiltersProps) {
                 htmlFor="hasExpiring"
                 className="text-sm font-normal cursor-pointer"
               >
-                {t("equipment.filters.expiring", "Con documentos por vencer")}
+                {t("filters.expiring")}
               </Label>
             </div>
           </div>
