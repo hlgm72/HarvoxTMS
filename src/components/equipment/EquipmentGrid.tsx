@@ -18,25 +18,26 @@ interface EquipmentGridProps {
 }
 
 export function EquipmentGrid({ equipment }: EquipmentGridProps) {
-  const { t } = useTranslation(['common', 'equipment']);
+  const { t } = useTranslation('equipment');
+  const { t: tCommon } = useTranslation('common');
   const { deleteEquipment, isDeleting } = useEquipment();
   const [equipmentToDelete, setEquipmentToDelete] = useState<Equipment | null>(null);
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      active: { label: t("equipment.status.active", "Activo"), variant: "success" as const },
-      maintenance: { label: t("equipment.status.maintenance", "Mantenimiento"), variant: "warning" as const },
-      inactive: { label: t("equipment.status.inactive", "Inactivo"), variant: "secondary" as const },
+      active: { label: t("status.active"), variant: "success" as const },
+      maintenance: { label: t("status.maintenance"), variant: "warning" as const },
+      inactive: { label: t("status.inactive"), variant: "secondary" as const },
     };
     return statusMap[status as keyof typeof statusMap] || statusMap.inactive;
   };
 
   const getEquipmentTypeLabel = (type: string) => {
     const typeMap = {
-      truck: t("equipment.type.truck", "Camión"),
-      trailer: t("equipment.type.trailer", "Remolque"),
-      van: t("equipment.type.van", "Camioneta"),
-      car: t("equipment.type.car", "Automóvil"),
+      truck: t("type.truck"),
+      trailer: t("type.trailer"),
+      van: t("type.van"),
+      car: t("type.car"),
     };
     return typeMap[type as keyof typeof typeMap] || type;
   };
@@ -119,19 +120,19 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem>
                       <Eye className="mr-2 h-4 w-4" />
-                      {t("common.view")}
+                      {tCommon("view")}
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Edit className="mr-2 h-4 w-4" />
-                      {t("common.edit")}
+                      {tCommon("edit")}
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <FileText className="mr-2 h-4 w-4" />
-                      {t("equipment.actions.documents")}
+                      {t("actions.documents")}
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <MapPin className="mr-2 h-4 w-4" />
-                      {t("equipment.actions.location")}
+                      {t("actions.location")}
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       className="text-destructive"
@@ -139,7 +140,7 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
                       disabled={isDeleting}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
-                      {t("common.delete")}
+                      {tCommon("delete")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -158,12 +159,12 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
             <CardContent className="space-y-3">
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between py-1">
-                    <span className="text-muted-foreground">{t("equipment.fields.licensePlate")}:</span>
+                    <span className="text-muted-foreground">{t("fields.licensePlate")}:</span>
                     <span className="font-medium">{item.license_plate || "N/A"}</span>
                   </div>
                   
                   <div className="flex justify-between py-1">
-                    <span className="text-muted-foreground">{t("equipment.fields.vin")}:</span>
+                    <span className="text-muted-foreground">{t("fields.vin")}:</span>
                     <span className="font-medium truncate ml-2" title={item.vin_number}>
                       {item.vin_number ? `***${item.vin_number.slice(-4)}` : "N/A"}
                     </span>
@@ -171,7 +172,7 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
                   
                   {item.current_mileage && (
                     <div className="flex justify-between py-1">
-                      <span className="text-muted-foreground">{t("equipment.fields.currentMileage")}:</span>
+                      <span className="text-muted-foreground">{t("fields.currentMileage")}:</span>
                        <span className="font-medium">{item.current_mileage.toLocaleString()} km</span>
                     </div>
                   )}
@@ -182,14 +183,14 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
                   <div className="flex items-center gap-2 text-destructive text-sm">
                     <Calendar className="h-4 w-4" />
                     <span className="font-medium">
-                      {t("equipment.actions.expiringDocuments")}
+                      {t("actions.expiringDocuments")}
                     </span>
                   </div>
                 </div>
               )}
               
               <div className="text-xs text-muted-foreground pt-4 border-t mt-4">
-                 {t("equipment.actions.createdAt")}: {formatInternationalized(new Date(item.created_at), 'PPP')}
+                 {t("actions.createdAt")}: {formatInternationalized(new Date(item.created_at), 'PPP')}
               </div>
             </CardContent>
           </Card>
@@ -201,22 +202,22 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {t("equipment.delete.title")}
+              {t("delete.title")}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {t("equipment.delete.description")} <strong>{equipmentToDelete?.equipment_number}</strong>.
+              {t("delete.description")} <strong>{equipmentToDelete?.equipment_number}</strong>.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleDeleteCancel}>
-              {t("common.cancel")}
+              {tCommon("cancel")}
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDeleteConfirm}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={isDeleting}
             >
-              {isDeleting ? t("common.deleting") : t("common.delete")}
+              {isDeleting ? tCommon("deleting") : tCommon("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

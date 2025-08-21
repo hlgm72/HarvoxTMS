@@ -30,7 +30,8 @@ interface EquipmentLocationStatusProps {
 }
 
 export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusProps) {
-  const { t } = useTranslation(['common', 'equipment']);
+  const { t } = useTranslation('equipment');
+  const { t: tCommon } = useTranslation('common');
   const [showLinkDialog, setShowLinkDialog] = useState(false);
 
   const geotabVehicle = equipment.geotab_vehicle;
@@ -40,7 +41,7 @@ export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusPr
     if (!geotabVehicle) {
       return {
         status: "not-linked",
-        label: t("common.not_linked", "Not linked"),
+        label: tCommon("not_linked"),
         color: "secondary" as const,
         icon: Link
       };
@@ -49,7 +50,7 @@ export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusPr
     if (!latestPosition) {
       return {
         status: "no-data",
-        label: t("equipment.tracking.no_location_data"),
+        label: t("tracking.no_location_data"),
         color: "outline" as const,
         icon: AlertTriangle
       };
@@ -62,21 +63,21 @@ export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusPr
     if (hoursSinceUpdate < 1) {
       return {
         status: "recent",
-        label: t("common.recent_location", "Recent location"),
+        label: tCommon("recent_location"),
         color: "default" as const,
         icon: MapPin
       };
     } else if (hoursSinceUpdate < 24) {
       return {
         status: "stale",
-        label: t("common.old_data", "Old data"),
+        label: tCommon("old_data"),
         color: "secondary" as const,
         icon: Clock
       };
     } else {
       return {
         status: "old",
-        label: t("equipment.tracking.very_old_data"),
+        label: t("tracking.very_old_data"),
         color: "outline" as const,
         icon: AlertTriangle
       };
@@ -94,13 +95,13 @@ export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusPr
     const diffInMinutes = Math.floor((now.getTime() - lastUpdate.getTime()) / (1000 * 60));
     
     if (diffInMinutes < 60) {
-      return t("common.minutes_ago", "{{minutes}} min ago", { minutes: diffInMinutes });
+      return tCommon("minutes_ago", { minutes: diffInMinutes });
     } else if (diffInMinutes < 1440) { // 24 hours
       const hours = Math.floor(diffInMinutes / 60);
-      return t("common.hours_ago", "{{hours}} h ago", { hours });
+      return tCommon("hours_ago", { hours });
     } else {
       const days = Math.floor(diffInMinutes / 1440);
-      return t("common.days_ago", "{{days}} days ago", { days });
+      return tCommon("days_ago", { days });
     }
   };
 
@@ -127,7 +128,7 @@ export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusPr
           className="h-6 px-2 text-xs"
         >
           <Link className="h-3 w-3 mr-1" />
-          {geotabVehicle ? t("equipment.tracking.manage") : t("common.link", "Link")}
+          {geotabVehicle ? t("tracking.manage") : tCommon("link")}
         </Button>
       </div>
 
@@ -143,7 +144,7 @@ export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusPr
             <>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Clock className="h-3 w-3" />
-                <span>{t("equipment.tracking.last_update", "Last update: {{time}}", { time: formatLastUpdate() })}</span>
+                <span>{t("tracking.last_update", { time: formatLastUpdate() })}</span>
               </div>
               
               {latestPosition.speed !== undefined && latestPosition.speed > 0 && (
@@ -167,7 +168,7 @@ export function EquipmentLocationStatus({ equipment }: EquipmentLocationStatusPr
                 className="mt-2 h-7 text-xs gap-1"
               >
                 <MapPin className="h-3 w-3" />
-                {t("equipment.tracking.view_on_map")}
+                {t("tracking.view_on_map")}
               </Button>
             </>
           )}

@@ -20,26 +20,27 @@ interface EquipmentListProps {
 }
 
 export function EquipmentList({ equipment }: EquipmentListProps) {
-  const { t } = useTranslation(['common', 'equipment']);
+  const { t } = useTranslation('equipment');
+  const { t: tCommon } = useTranslation('common');
   const { equipmentWithGeotab, isLoadingEquipmentWithGeotab } = useGeotabVehicles();
   const { deleteEquipment, isDeleting } = useEquipment();
   const [equipmentToDelete, setEquipmentToDelete] = useState<Equipment | null>(null);
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      active: { label: t("equipment.status.active", "Activo"), variant: "success" as const },
-      maintenance: { label: t("equipment.status.maintenance", "Mantenimiento"), variant: "warning" as const },
-      inactive: { label: t("equipment.status.inactive", "Inactivo"), variant: "secondary" as const },
+      active: { label: t("status.active"), variant: "success" as const },
+      maintenance: { label: t("status.maintenance"), variant: "warning" as const },
+      inactive: { label: t("status.inactive"), variant: "secondary" as const },
     };
     return statusMap[status as keyof typeof statusMap] || statusMap.inactive;
   };
 
   const getEquipmentTypeLabel = (type: string) => {
     const typeMap = {
-      truck: t("equipment.type.truck", "Camión"),
-      trailer: t("equipment.type.trailer", "Remolque"),
-      van: t("equipment.type.van", "Camioneta"),
-      car: t("equipment.type.car", "Automóvil"),
+      truck: t("type.truck"),
+      trailer: t("type.trailer"),
+      van: t("type.van"),
+      car: t("type.car"),
     };
     return typeMap[type as keyof typeof typeMap] || type;
   };
@@ -90,7 +91,7 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
     return (
       <div className="text-center py-12">
         <p className="text-muted-foreground">
-          {t("equipment.noEquipment", "No hay equipos registrados")}
+          {t("noEquipment")}
         </p>
       </div>
     );
@@ -125,27 +126,27 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
                     {/* Basic Info */}
                     <div className="space-y-3">
-                      <h4 className="font-medium text-foreground mb-3">{t("equipment.actions.basicInfo")}</h4>
+                      <h4 className="font-medium text-foreground mb-3">{t("actions.basicInfo")}</h4>
                       <div className="space-y-2 text-muted-foreground">
-                        <p><span className="font-medium">{t("equipment.fields.make")}:</span> {item.make || "N/A"}</p>
-                        <p><span className="font-medium">{t("equipment.fields.model")}:</span> {item.model || "N/A"}</p>
-                        <p><span className="font-medium">{t("equipment.fields.year")}:</span> {item.year || "N/A"}</p>
+                        <p><span className="font-medium">{t("fields.make")}:</span> {item.make || "N/A"}</p>
+                        <p><span className="font-medium">{t("fields.model")}:</span> {item.model || "N/A"}</p>
+                        <p><span className="font-medium">{t("fields.year")}:</span> {item.year || "N/A"}</p>
                       </div>
                     </div>
                     
                     {/* Vehicle Details */}
                     <div className="space-y-3">
-                      <h4 className="font-medium text-foreground mb-3">{t("equipment.actions.vehicleDetails")}</h4>
+                      <h4 className="font-medium text-foreground mb-3">{t("actions.vehicleDetails")}</h4>
                       <div className="space-y-2 text-muted-foreground">
-                        <p><span className="font-medium">{t("equipment.fields.licensePlate")}:</span> {item.license_plate || "N/A"}</p>
-                        <p><span className="font-medium">{t("equipment.fields.vin")}:</span> {item.vin_number ? item.vin_number.substring(0, 10) + "..." : "N/A"}</p>
-                        <p><span className="font-medium">{t("equipment.fields.currentMileage")}:</span> {item.current_mileage ? `${item.current_mileage.toLocaleString()} km` : "N/A"}</p>
+                        <p><span className="font-medium">{t("fields.licensePlate")}:</span> {item.license_plate || "N/A"}</p>
+                        <p><span className="font-medium">{t("fields.vin")}:</span> {item.vin_number ? item.vin_number.substring(0, 10) + "..." : "N/A"}</p>
+                        <p><span className="font-medium">{t("fields.currentMileage")}:</span> {item.current_mileage ? `${item.current_mileage.toLocaleString()} km` : "N/A"}</p>
                       </div>
                     </div>
                     
                     {/* Expiry Info */}
                     <div className="space-y-3">
-                      <h4 className="font-medium text-foreground mb-3">{t("equipment.actions.expiryInfo")}</h4>
+                      <h4 className="font-medium text-foreground mb-3">{t("actions.expiryInfo")}</h4>
                       <div className="space-y-2">
                         {nextExpiry && (
                           <div className="flex items-center gap-2 p-2 rounded-md bg-muted/30">
@@ -153,19 +154,19 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                             <div className={nextExpiry.isExpiring ? "text-destructive font-medium" : "text-muted-foreground"}>
                               <p className="text-xs font-medium">{nextExpiry.type}</p>
                               <p className="text-sm">{formatDateAuto(nextExpiry.date!)}</p>
-                              {nextExpiry.isExpiring && <p className="text-xs text-destructive">⚠️ {t('equipment.tracking.expiring_soon')}</p>}
+                              {nextExpiry.isExpiring && <p className="text-xs text-destructive">⚠️ {t('tracking.expiring_soon')}</p>}
                             </div>
                           </div>
                         )}
                         <p className="text-xs text-muted-foreground mt-4">
-                           {t("equipment.actions.createdAt")}: {formatInternationalized(new Date(item.created_at), 'PPP')}
+                           {t("actions.createdAt")}: {formatInternationalized(new Date(item.created_at), 'PPP')}
                         </p>
                       </div>
                     </div>
                     
                     {/* Location Status */}
                     <div className="space-y-3">
-                      <h4 className="font-medium text-foreground mb-3">{t("equipment.actions.location")}</h4>
+                      <h4 className="font-medium text-foreground mb-3">{t("actions.location")}</h4>
                       <EquipmentLocationStatus equipment={item} />
                     </div>
                   </div>
@@ -181,19 +182,19 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem className="py-2">
                         <Eye className="mr-3 h-4 w-4" />
-                        {t("common.view")}
+                        {tCommon("view")}
                       </DropdownMenuItem>
                       <DropdownMenuItem className="py-2">
                         <Edit className="mr-3 h-4 w-4" />
-                        {t("common.edit")}
+                        {tCommon("edit")}
                       </DropdownMenuItem>
                       <DropdownMenuItem className="py-2">
                         <FileText className="mr-3 h-4 w-4" />
-                        {t("equipment.actions.documents")}
+                        {t("actions.documents")}
                       </DropdownMenuItem>
                       <DropdownMenuItem className="py-2">
                         <MapPin className="mr-3 h-4 w-4" />
-                        {t("equipment.actions.location")}
+                        {t("actions.location")}
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         className="text-destructive py-2"
@@ -201,7 +202,7 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                         disabled={isDeleting}
                       >
                         <Trash2 className="mr-3 h-4 w-4" />
-                        {t("common.delete")}
+                        {tCommon("delete")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -217,22 +218,22 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {t("equipment.delete.title")}
+              {t("delete.title")}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {t("equipment.delete.description")} <strong>{equipmentToDelete?.equipment_number}</strong>.
+              {t("delete.description")} <strong>{equipmentToDelete?.equipment_number}</strong>.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleDeleteCancel}>
-              {t("common.cancel")}
+              {tCommon("cancel")}
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDeleteConfirm}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={isDeleting}
             >
-              {isDeleting ? t("common.deleting") : t("common.delete")}
+              {isDeleting ? tCommon("deleting") : tCommon("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
