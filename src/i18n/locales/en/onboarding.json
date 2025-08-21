@@ -67,29 +67,82 @@
     },
     "steps": {
       "dashboard": {
-        "title": "Dashboard Overview",
-        "description": "This is your main dashboard where you can see key metrics and quick access to important features.",
-        "content": "Your dashboard provides real-time insights into your fleet operations, including vehicle status, driver activity, and load management."
+        "title": "Command Center",
+        "description": "Your main dashboard where you can see the general status of your fleet",
+        "stats": "Real-time Statistics",
+        "statsDesc": "View important metrics of your operation",
+        "tracking": "Tracking Map", 
+        "trackingDesc": "Real-time location of your fleet"
       },
-      "navigation": {
-        "title": "Navigation Menu",
-        "description": "Use the sidebar to navigate between different sections of the application.",
-        "content": "Access Fleet Management, Driver Management, Load Tracking, Reports, and more from here."
+      "users": {
+        "title": "User Management",
+        "description": "Manage your team: drivers, dispatchers and managers",
+        "invite": "Invite Users",
+        "inviteDesc": "Add drivers and administrative staff",
+        "tip": "Tip: You can assign different roles and permissions to each user",
+        "action": "View User Management"
       },
-      "search": {
-        "title": "Global Search",
-        "description": "Quickly find vehicles, drivers, loads, or any other information using the search bar.",
-        "content": "Type to search across all your fleet data instantly."
+      "equipment": {
+        "title": "Vehicle Fleet",
+        "description": "Register and manage all your vehicles and equipment",
+        "register": "Vehicle Registration",
+        "registerDesc": "Add trucks, trailers and equipment",
+        "tip": "Tip: Register maintenance information and documents",
+        "action": "Manage Equipment"
       },
-      "notifications": {
-        "title": "Notifications",
-        "description": "Stay updated with important alerts, messages, and system notifications.",
-        "content": "Click here to view all notifications and alerts related to your fleet operations."
+      "financial": {
+        "title": "Payment System",
+        "description": "Configure driver payments and manage deductions",
+        "periods": "Payment Periods",
+        "periodsDesc": "Automate payment calculation by periods",
+        "tip": "Tip: You can configure automatic deductions and reports",
+        "action": "View Payment System"
       },
-      "profile": {
-        "title": "Profile & Settings",
-        "description": "Manage your profile, company settings, and application preferences.",
-        "content": "Customize your experience and manage account settings from here."
+      "loads": {
+        "title": "Load Management",
+        "description": "Manage deliveries, assign loads and supervise progress",
+        "create": "Create Loads",
+        "createDesc": "Register new deliveries with all details",
+        "tip": "Tip: Assign loads to drivers and track their progress",
+        "action": "Manage Loads"
+      },
+      "tracking": {
+        "title": "Fleet Tracking",
+        "description": "Monitor the location and status of all your vehicles",
+        "realtime": "Real-time Location",
+        "realtimeDesc": "See where all your vehicles are",
+        "tip": "Tip: Receive alerts for delays or route deviations"
+      },
+      "dispatch": {
+        "title": "Load Dispatch",
+        "description": "Assign loads to drivers and coordinate deliveries",
+        "assignment": "Load Assignment",
+        "assignmentDesc": "Connect loads with available drivers",
+        "tip": "Tip: Check availability before assigning",
+        "action": "View Loads"
+      },
+      "drivers": {
+        "title": "Driver Management",
+        "description": "Supervise and communicate with your driver team",
+        "status": "Driver Status",
+        "statusDesc": "See who is available, on route or resting",
+        "tip": "Tip: Maintain constant communication to optimize operations",
+        "action": "View Drivers"
+      },
+      "mobileDashboard": {
+        "title": "Your Driver Panel",
+        "description": "Access all your tools from any device",
+        "assigned": "Assigned Loads",
+        "assignedDesc": "See your pending and in-progress deliveries",
+        "tip": "Tip: Update the status of your loads in real time"
+      },
+      "documents": {
+        "title": "Load Documents",
+        "description": "Access manifests, permits and necessary documentation",
+        "digital": "Digital Documentation", 
+        "digitalDesc": "Everything you need for your deliveries",
+        "tip": "Tip: Download documents before going offline",
+        "action": "View Documents"
       }
     }
   },

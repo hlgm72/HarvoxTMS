@@ -67,29 +67,82 @@
     },
     "steps": {
       "dashboard": {
-        "title": "Resumen del Panel",
-        "description": "Este es tu panel principal donde puedes ver métricas clave y acceso rápido a características importantes.",
-        "content": "Tu panel proporciona información en tiempo real sobre las operaciones de tu flota, incluyendo estado de vehículos, actividad de conductores y gestión de cargas."
+        "title": "Centro de Comando",
+        "description": "Tu panel principal donde puedes ver el estado general de tu flota",
+        "stats": "Estadísticas en Tiempo Real",
+        "statsDesc": "Visualiza métricas importantes de tu operación",
+        "tracking": "Mapa de Seguimiento",
+        "trackingDesc": "Ubicación en tiempo real de tu flota"
       },
-      "navigation": {
-        "title": "Menú de Navegación",
-        "description": "Usa la barra lateral para navegar entre diferentes secciones de la aplicación.",
-        "content": "Accede a Gestión de Flota, Gestión de Conductores, Seguimiento de Cargas, Reportes y más desde aquí."
+      "users": {
+        "title": "Gestión de Usuarios",
+        "description": "Administra tu equipo: conductores, despachadores y gerentes",
+        "invite": "Invitar Usuarios",
+        "inviteDesc": "Añade conductores y personal administrativo",
+        "tip": "Tip: Puedes asignar diferentes roles y permisos a cada usuario",
+        "action": "Ver Gestión de Usuarios"
       },
-      "search": {
-        "title": "Búsqueda Global",
-        "description": "Encuentra rápidamente vehículos, conductores, cargas o cualquier otra información usando la barra de búsqueda.",
-        "content": "Escribe para buscar instantáneamente en todos los datos de tu flota."
+      "equipment": {
+        "title": "Flota de Vehículos",
+        "description": "Registra y gestiona todos tus vehículos y equipos",
+        "register": "Registro de Vehículos",
+        "registerDesc": "Añade tractocamiones, remolques y equipos",
+        "tip": "Tip: Registra información de mantenimiento y documentos",
+        "action": "Gestionar Equipos"
       },
-      "notifications": {
-        "title": "Notificaciones",
-        "description": "Mantente actualizado con alertas importantes, mensajes y notificaciones del sistema.",
-        "content": "Haz clic aquí para ver todas las notificaciones y alertas relacionadas con las operaciones de tu flota."
+      "financial": {
+        "title": "Sistema de Pagos",
+        "description": "Configura pagos a conductores y gestiona deducciones",
+        "periods": "Períodos de Pago",
+        "periodsDesc": "Automatiza el cálculo de pagos por períodos",
+        "tip": "Tip: Puedes configurar deducciones automáticas y reportes",
+        "action": "Ver Sistema de Pagos"
       },
-      "profile": {
-        "title": "Perfil y Configuración",
-        "description": "Gestiona tu perfil, configuración de empresa y preferencias de la aplicación.",
-        "content": "Personaliza tu experiencia y gestiona la configuración de la cuenta desde aquí."
+      "loads": {
+        "title": "Gestión de Cargas",
+        "description": "Administra entregas, asigna cargas y supervisa el progreso",
+        "create": "Crear Cargas",
+        "createDesc": "Registra nuevas entregas con todos los detalles",
+        "tip": "Tip: Asigna cargas a conductores y rastrea su progreso",
+        "action": "Gestionar Cargas"
+      },
+      "tracking": {
+        "title": "Rastreo de Flota",
+        "description": "Monitorea la ubicación y estado de todos tus vehículos",
+        "realtime": "Ubicación en Tiempo Real",
+        "realtimeDesc": "Ve dónde están todos tus vehículos",
+        "tip": "Tip: Recibe alertas de demoras o desvíos de ruta"
+      },
+      "dispatch": {
+        "title": "Despacho de Cargas",
+        "description": "Asigna cargas a conductores y coordina entregas",
+        "assignment": "Asignación de Cargas",
+        "assignmentDesc": "Conecta cargas con conductores disponibles",
+        "tip": "Tip: Verifica la disponibilidad antes de asignar",
+        "action": "Ver Cargas"
+      },
+      "drivers": {
+        "title": "Gestión de Conductores",
+        "description": "Supervisa y comunícate con tu equipo de conductores",
+        "status": "Estado de Conductores",
+        "statusDesc": "Ve quién está disponible, en ruta o descansando",
+        "tip": "Tip: Mantén comunicación constante para optimizar operaciones",
+        "action": "Ver Conductores"
+      },
+      "mobileDashboard": {
+        "title": "Tu Panel de Conductor",
+        "description": "Accede a todas tus herramientas desde cualquier dispositivo",
+        "assigned": "Cargas Asignadas",
+        "assignedDesc": "Ve tus entregas pendientes y en progreso",
+        "tip": "Tip: Actualiza el estado de tus cargas en tiempo real"
+      },
+      "documents": {
+        "title": "Documentos de Carga",
+        "description": "Accede a manifiestos, permisos y documentación necesaria",
+        "digital": "Documentación Digital",
+        "digitalDesc": "Todo lo que necesitas para tus entregas",
+        "tip": "Tip: Descarga documentos antes de salir sin conexión",
+        "action": "Ver Documentos"
       }
     }
   },
