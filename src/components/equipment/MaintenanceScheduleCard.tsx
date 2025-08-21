@@ -25,14 +25,19 @@ export function MaintenanceScheduleCard({
   overdueCount, 
   thisWeekCount 
 }: MaintenanceScheduleCardProps) {
-  const { t } = useTranslation(['common', 'equipment']);
+  const { t, ready } = useTranslation(['common', 'equipment']);
   
   // Debug logging
+  console.log('MaintenanceScheduleCard - i18n ready:', ready);
   console.log('MaintenanceScheduleCard - Translation keys:');
   console.log('equipment.maintenance.title:', t('equipment.maintenance.title'));
   console.log('equipment.maintenance.subtitle:', t('equipment.maintenance.subtitle'));
   console.log('equipment.maintenance.overdue:', t('equipment.maintenance.overdue'));
   console.log('equipment.maintenance.this_week:', t('equipment.maintenance.this_week'));
+
+  if (!ready) {
+    return <div>Loading translations...</div>;
+  }
   
   const getPriorityBadge = (priority: string, overdue: boolean = false) => {
     if (overdue) {

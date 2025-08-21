@@ -28,14 +28,19 @@ export function EquipmentOverviewCard({
   maintenanceCount, 
   equipment 
 }: EquipmentOverviewCardProps) {
-  const { t } = useTranslation(['common', 'equipment']);
+  const { t, ready } = useTranslation(['common', 'equipment']);
   
   // Debug logging  
+  console.log('EquipmentOverviewCard - i18n ready:', ready);
   console.log('EquipmentOverviewCard - Translation keys:');
   console.log('equipment.overview.title:', t('equipment.overview.title'));
   console.log('equipment.overview.subtitle:', t('equipment.overview.subtitle'));
   console.log('equipment.overview.total:', t('equipment.overview.total'));
   console.log('equipment.status.active:', t('equipment.status.active'));
+
+  if (!ready) {
+    return <div>Loading translations...</div>;
+  }
   
   const getStatusBadge = (status: string) => {
     switch (status) {

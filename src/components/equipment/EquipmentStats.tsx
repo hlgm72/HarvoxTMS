@@ -9,15 +9,20 @@ interface EquipmentStatsProps {
 }
 
 export function EquipmentStats({ equipment = [] }: EquipmentStatsProps) {
-  const { t } = useTranslation(['common', 'equipment']);
+  const { t, ready } = useTranslation(['common', 'equipment']);
 
   // Debug logging
+  console.log('EquipmentStats - i18n ready:', ready);
   console.log('EquipmentStats - Translation keys:');
   console.log('equipment.stats.total:', t('equipment.stats.total'));
   console.log('equipment.stats.active:', t('equipment.stats.active'));
   console.log('equipment.stats.maintenance:', t('equipment.stats.maintenance'));
   console.log('equipment.stats.expiring:', t('equipment.stats.expiring'));
   console.log('equipment.stats.attention:', t('equipment.stats.attention'));
+
+  if (!ready) {
+    return <div>Loading translations...</div>;
+  }
 
   const stats = {
     total: equipment.length,
