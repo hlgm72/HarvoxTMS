@@ -104,6 +104,13 @@
     "equipment_requires_immediate_attention": "{{count}} equipment requires immediate attention",
     "upcoming_maintenance": "Upcoming Maintenance",
     "view_full_calendar": "View Full Calendar",
+    "next_maintenance": "Next: {{date}}",
+    "types": {
+      "annual_inspection": "Annual Inspection",
+      "oil_change": "Oil Change", 
+      "general_inspection": "General Inspection",
+      "insurance": "Insurance"
+    },
     "priority": {
       "overdue": "Overdue",
       "high": "High",

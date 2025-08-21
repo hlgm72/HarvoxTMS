@@ -361,5 +361,7 @@
   "clearFilters": "Limpiar filtros",
   "creating": "Creando...",
   "create": "Crear",
+  "delete": "Eliminar",
+  "deleting": "Eliminando...",
   "locale": "es"
 }

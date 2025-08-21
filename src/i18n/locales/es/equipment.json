@@ -104,6 +104,13 @@
     "equipment_requires_immediate_attention": "{{count}} equipos requieren atención inmediata",
     "upcoming_maintenance": "Próximos Mantenimientos",
     "view_full_calendar": "Ver Calendario Completo",
+    "next_maintenance": "Próximo: {{date}}",
+    "types": {
+      "annual_inspection": "Inspección Anual",
+      "oil_change": "Cambio de Aceite",
+      "general_inspection": "Revisión General",
+      "insurance": "Seguro"
+    },
     "priority": {
       "overdue": "Vencido",
       "high": "Alta",

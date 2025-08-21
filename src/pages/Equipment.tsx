@@ -40,25 +40,25 @@ export default function Equipment() {
   const mockEquipmentData = equipment?.map(item => ({
     id: item.id,
     equipmentNumber: item.equipment_number,
-    make: item.make || "Unknown",
-    model: item.model || "Unknown",
+    make: item.make || t('common.unknown'),
+    model: item.model || t('common.unknown'),
     status: item.status as "active" | "maintenance" | "inactive",
     mileage: item.current_mileage,
-    nextMaintenance: "Próximo: 2024-08-15"
+    nextMaintenance: t('equipment.maintenance.next_maintenance', 'Next: 2024-08-15')
   })) || [];
 
   const mockLocationData = equipment?.slice(0, 5).map((item, index) => ({
     id: item.id,
     equipmentNumber: item.equipment_number,
     location: index % 3 === 0 ? "Houston, TX" : index % 3 === 1 ? "Dallas, TX" : "Austin, TX",
-    lastUpdate: "2 min ago",
+    lastUpdate: t('common.minutes_ago', { minutes: 2 }),
     status: (index % 3 === 0 ? "moving" : index % 3 === 1 ? "parked" : "offline") as "moving" | "parked" | "offline"
   })) || [];
 
   const mockMaintenanceData = equipment?.slice(0, 4).map((item, index) => ({
     id: item.id,
     equipmentNumber: item.equipment_number,
-    maintenanceType: index % 3 === 0 ? "Inspección Anual" : index % 3 === 1 ? "Cambio de Aceite" : "Revisión General",
+    maintenanceType: index % 3 === 0 ? t('equipment.maintenance.types.annual_inspection') : index % 3 === 1 ? t('equipment.maintenance.types.oil_change') : t('equipment.maintenance.types.general_inspection'),
     dueDate: index % 2 === 0 ? "2024-08-15" : "2024-08-22",
     priority: (index % 3 === 0 ? "high" : index % 3 === 1 ? "medium" : "low") as "high" | "medium" | "low",
     overdue: index === 0
