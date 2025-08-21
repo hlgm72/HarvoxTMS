@@ -11,12 +11,15 @@ interface EquipmentStatsProps {
 export function EquipmentStats({ equipment = [] }: EquipmentStatsProps) {
   const { t, i18n } = useTranslation('equipment');
 
-  // Debug logging
-  console.log('EquipmentStats - i18n loaded resources:', i18n.store.data);
-  console.log('EquipmentStats - current language:', i18n.language);
-  console.log('EquipmentStats - has equipment namespace:', i18n.hasResourceBundle(i18n.language, 'equipment'));
-  console.log('EquipmentStats - Translation test:', t('stats.total'));
-  console.log('EquipmentStats - Raw resources:', i18n.getResourceBundle(i18n.language, 'equipment'));
+  // Deep debug logging
+  console.log('=== EQUIPMENT STATS DEBUG ===');
+  console.log('Current language:', i18n.language);
+  console.log('Available resources:', Object.keys(i18n.store.data));
+  console.log('Equipment namespace exists?', i18n.hasResourceBundle(i18n.language, 'equipment'));
+  console.log('Equipment resources:', i18n.getResourceBundle(i18n.language, 'equipment'));
+  console.log('All store data:', i18n.store.data);
+  console.log('Testing translation stats.total:', t('stats.total'));
+  console.log('=== END DEBUG ===');
 
   const stats = {
     total: equipment.length,
