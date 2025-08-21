@@ -1,0 +1,62 @@
+{
+  "page_title": "Equipment Management",
+  "page_subtitle": "{{total}} equipment • {{active}} active • {{maintenance}} in maintenance",
+  "addNew": "Add Equipment",
+  "tabs": {
+    "equipment": "Equipment",
+    "locations": "Locations"
+  },
+  "searchPlaceholder": "Search by number, make, model or license...",
+  "noResults": "No equipment found",
+  "noResultsDescription": "Try adjusting your search criteria to find equipment",
+  "noEquipment": "No equipment registered",
+  "noEquipmentDescription": "Start by adding the first vehicle or equipment to your fleet",
+  "addFirst": "Add First Equipment",
+  "stats": {
+    "total": "Total Equipment",
+    "active": "Active",
+    "maintenance": "In Maintenance",
+    "expiring": "Expiring Soon",
+    "attention": "Requires attention"
+  },
+  "status": {
+    "active": "Active",
+    "maintenance": "Maintenance",
+    "inactive": "Inactive",
+    "unknown": "Unknown"
+  },
+  "overview": {
+    "title": "Fleet Overview",
+    "subtitle": "Equipment Dashboard",
+    "total": "Total",
+    "active": "Active",
+    "maintenance": "Maint.",
+    "recent_equipment": "Recent Equipment",
+    "upcoming_maintenance": "Upcoming Maintenance",
+    "equipment_requires_attention": "{{count}} equipment requires attention"
+  },
+  "maintenance": {
+    "title": "Maintenance Schedule",
+    "subtitle": "Upcoming & Overdue",
+    "overdue": "Overdue",
+    "this_week": "This Week",
+    "overdue_maintenance": "Overdue Maintenance",
+    "equipment_requires_immediate_attention": "{{count}} equipment requires immediate attention",
+    "upcoming_maintenance": "Upcoming Maintenance",
+    "view_full_calendar": "View Full Calendar",
+    "priority": {
+      "overdue": "Overdue",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "normal": "Normal"
+    }
+  },
+  "locations": {
+    "active_locations": "Active Locations"
+  },
+  "create": {
+    "title": "Add New Equipment",
+    "description": "Complete the information for the new equipment to add it to the fleet."
+  }
+}

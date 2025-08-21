@@ -102,7 +102,7 @@ export function EquipmentLocationCard({
                 {locations.length}
               </span>
               <span className="block text-xs text-blue-600 dark:text-blue-400 font-medium">
-                Ubicaciones Activas
+                {t('locations.active_locations')}
               </span>
             </div>
           </div>

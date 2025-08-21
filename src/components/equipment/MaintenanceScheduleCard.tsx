@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Wrench, Calendar, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from 'react-i18next';
 
 interface MaintenanceItem {
   id: string;
@@ -24,20 +25,22 @@ export function MaintenanceScheduleCard({
   overdueCount, 
   thisWeekCount 
 }: MaintenanceScheduleCardProps) {
+  const { t } = useTranslation('equipment');
+  
   const getPriorityBadge = (priority: string, overdue: boolean = false) => {
     if (overdue) {
-      return <Badge variant="destructive" className="text-xs">Vencido</Badge>;
+      return <Badge variant="destructive" className="text-xs">{t('maintenance.priority.overdue')}</Badge>;
     }
     
     switch (priority) {
       case "high":
-        return <Badge variant="destructive" className="text-xs">Alta</Badge>;
+        return <Badge variant="destructive" className="text-xs">{t('maintenance.priority.high')}</Badge>;
       case "medium":
-        return <Badge variant="warning" className="text-xs">Media</Badge>;
+        return <Badge variant="warning" className="text-xs">{t('maintenance.priority.medium')}</Badge>;
       case "low":
-        return <Badge variant="secondary" className="text-xs">Baja</Badge>;
+        return <Badge variant="secondary" className="text-xs">{t('maintenance.priority.low')}</Badge>;
       default:
-        return <Badge variant="secondary" className="text-xs">Normal</Badge>;
+        return <Badge variant="secondary" className="text-xs">{t('maintenance.priority.normal')}</Badge>;
     }
   };
 
@@ -69,9 +72,9 @@ export function MaintenanceScheduleCard({
             </div>
             <div>
               <CardTitle className="text-lg font-semibold text-orange-900 dark:text-orange-100">
-                Maintenance Schedule
+                {t('maintenance.title')}
               </CardTitle>
-              <p className="text-sm text-orange-600 dark:text-orange-400">Upcoming & Overdue</p>
+              <p className="text-sm text-orange-600 dark:text-orange-400">{t('maintenance.subtitle')}</p>
             </div>
           </div>
           <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-orange-100 dark:hover:bg-orange-900/40">
@@ -85,11 +88,11 @@ export function MaintenanceScheduleCard({
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-4 bg-red-50/80 dark:bg-red-900/30 backdrop-blur-sm rounded-xl border border-red-200/30 shadow-sm">
             <div className="text-2xl font-bold text-red-600 dark:text-red-400">{overdueCount}</div>
-            <div className="text-xs text-red-600 dark:text-red-400 font-medium mt-1">Vencidos</div>
+            <div className="text-xs text-red-600 dark:text-red-400 font-medium mt-1">{t('maintenance.overdue')}</div>
           </div>
           <div className="text-center p-4 bg-yellow-50/80 dark:bg-yellow-900/30 backdrop-blur-sm rounded-xl border border-yellow-200/30 shadow-sm">
             <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{thisWeekCount}</div>
-            <div className="text-xs text-yellow-600 dark:text-yellow-400 font-medium mt-1">Esta Semana</div>
+            <div className="text-xs text-yellow-600 dark:text-yellow-400 font-medium mt-1">{t('maintenance.this_week')}</div>
           </div>
         </div>
         
@@ -102,10 +105,10 @@ export function MaintenanceScheduleCard({
               </div>
               <div className="flex-1">
                 <div className="text-sm font-semibold text-red-800 dark:text-red-200">
-                  Mantenimientos Vencidos
+                  {t('maintenance.overdue_maintenance')}
                 </div>
                 <div className="text-xs text-red-600 dark:text-red-400">
-                  {overdueCount} equipos requieren atención inmediata
+                  {t('maintenance.equipment_requires_immediate_attention', { count: overdueCount })}
                 </div>
               </div>
             </div>
@@ -114,7 +117,7 @@ export function MaintenanceScheduleCard({
         
         {/* Maintenance list */}
         <div className="space-y-3">
-          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Próximos Mantenimientos</h4>
+          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('maintenance.upcoming_maintenance')}</h4>
           <div className="space-y-3 max-h-32 overflow-y-auto custom-scrollbar">
             {upcomingMaintenance.slice(0, 2).map((item, index) => (
               <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-white/50 dark:bg-gray-800/30 backdrop-blur-sm border border-white/20 hover:bg-white/70 dark:hover:bg-gray-800/50 transition-all duration-200">
@@ -144,7 +147,7 @@ export function MaintenanceScheduleCard({
         <div className="pt-2 mt-auto">
           <Button variant="outline" size="sm" className="w-full text-sm h-10 font-medium bg-white/50 backdrop-blur-sm hover:bg-white/70 border-orange-200/40 text-orange-700 hover:text-orange-800 dark:bg-gray-800/30 dark:hover:bg-gray-800/50 dark:text-orange-300 dark:hover:text-orange-200">
             <Calendar className="h-4 w-4 mr-2" />
-            Ver Calendario Completo
+            {t('maintenance.view_full_calendar')}
           </Button>
         </div>
       </CardContent>

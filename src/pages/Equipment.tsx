@@ -20,7 +20,7 @@ import { PageToolbar } from "@/components/layout/PageToolbar";
 import { EquipmentLocationMap } from "@/components/equipment/EquipmentLocationMap";
 
 export default function Equipment() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'equipment']);
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -75,12 +75,16 @@ export default function Equipment() {
     <div>
       <PageToolbar 
         icon={Wrench}
-        title="Gestión de Equipos"
-        subtitle={`${equipment?.length || 0} equipos • ${activeCount} activos • ${maintenanceCount} en mantenimiento`}
+        title={t('equipment.page_title')}
+        subtitle={t('equipment.page_subtitle', { 
+          total: equipment?.length || 0, 
+          active: activeCount, 
+          maintenance: maintenanceCount 
+        })}
         actions={
           <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
             <Plus className="h-4 w-4" />
-            {t("equipment.addNew", "Agregar Equipo")}
+            {t('equipment.addNew')}
           </Button>
         }
       />
@@ -118,11 +122,11 @@ export default function Equipment() {
               <TabsList className="grid w-full grid-cols-2 gap-3 p-2 h-14 bg-muted/50 rounded-lg">
                 <TabsTrigger value="equipment" className="gap-3 h-10 text-sm font-medium">
                   <Wrench className="h-4 w-4" />
-                  {t("equipment.tabs.equipment", "Equipos")}
+                  {t('equipment.tabs.equipment')}
                 </TabsTrigger>
                 <TabsTrigger value="locations" className="gap-3 h-10 text-sm font-medium">
                   <MapPin className="h-4 w-4" />
-                  {t("equipment.tabs.locations", "Ubicaciones")}
+                  {t('equipment.tabs.locations')}
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -136,7 +140,7 @@ export default function Equipment() {
                   <div className="flex-1 relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
-                      placeholder={t("equipment.searchPlaceholder", "Buscar por número, marca, modelo o placa...")}
+                      placeholder={t('equipment.searchPlaceholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10 h-12 text-base"
@@ -205,20 +209,20 @@ export default function Equipment() {
                     <Wrench className="w-16 h-16 text-muted-foreground mx-auto mb-6" />
                     <h3 className="text-lg font-medium mb-3">
                       {searchQuery 
-                        ? t("equipment.noResults", "No se encontraron equipos")
-                        : t("equipment.noEquipment", "No hay equipos registrados")
+                        ? t('equipment.noResults')
+                        : t('equipment.noEquipment')
                       }
                     </h3>
                     <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                       {searchQuery 
-                        ? t("equipment.noResultsDescription", "Intenta ajustar los criterios de búsqueda para encontrar equipos")
-                        : t("equipment.noEquipmentDescription", "Comienza agregando el primer vehículo o equipo de tu flota")
+                        ? t('equipment.noResultsDescription')
+                        : t('equipment.noEquipmentDescription')
                       }
                     </p>
                     {!searchQuery && (
                       <Button onClick={() => setShowCreateDialog(true)} size="lg">
                         <Plus className="w-4 h-4 mr-2" />
-                        {t("equipment.addFirst", "Agregar Primer Equipo")}
+                        {t('equipment.addFirst')}
                       </Button>
                     )}
                   </div>

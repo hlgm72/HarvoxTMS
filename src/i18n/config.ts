@@ -6,6 +6,7 @@ import commonEn from './locales/en/common.json';
 import landingEn from './locales/en/landing.json';
 import authEn from './locales/en/auth.json';
 import fleetEn from './locales/en/fleet.json';
+import equipmentEn from './locales/en/equipment.json';
 import legalEn from './locales/en/legal.json';
 import dashboardEn from './locales/en/dashboard.json';
 import paymentsEn from './locales/en/payments.json';
@@ -22,6 +23,7 @@ import commonEs from './locales/es/common.json';
 import landingEs from './locales/es/landing.json';
 import authEs from './locales/es/auth.json';
 import fleetEs from './locales/es/fleet.json';
+import equipmentEs from './locales/es/equipment.json';
 import legalEs from './locales/es/legal.json';
 import adminEs from './locales/es/admin.json';
 import dashboardEs from './locales/es/dashboard.json';
@@ -36,6 +38,7 @@ const resources = {
     landing: landingEn,
     auth: authEn,
     fleet: fleetEn,
+    equipment: equipmentEn,
     legal: legalEn,
     dashboard: dashboardEn,
     payments: paymentsEn,
@@ -53,6 +56,7 @@ const resources = {
     landing: landingEs,
     auth: authEs,
     fleet: fleetEs,
+    equipment: equipmentEs,
     legal: legalEs,
     dashboard: dashboardEs,
     payments: paymentsEs,
@@ -72,7 +76,7 @@ i18n
     fallbackLng: 'en',
     
     // Namespaces
-    ns: ['common', 'landing', 'auth', 'fleet', 'dashboard', 'admin', 'legal', 'payments', 'loads', 'onboarding', 'clients'],
+    ns: ['common', 'landing', 'auth', 'equipment', 'dashboard', 'admin', 'legal', 'payments', 'loads', 'onboarding', 'clients'],
     defaultNS: 'common',
     
     // Configuration

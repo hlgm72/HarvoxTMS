@@ -1,0 +1,62 @@
+{
+  "page_title": "Gestión de Equipos",
+  "page_subtitle": "{{total}} equipos • {{active}} activos • {{maintenance}} en mantenimiento",
+  "addNew": "Agregar Equipo",
+  "tabs": {
+    "equipment": "Equipos",
+    "locations": "Ubicaciones"
+  },
+  "searchPlaceholder": "Buscar por número, marca, modelo o placa...",
+  "noResults": "No se encontraron equipos",
+  "noResultsDescription": "Intenta ajustar los criterios de búsqueda para encontrar equipos",
+  "noEquipment": "No hay equipos registrados",
+  "noEquipmentDescription": "Comienza agregando el primer vehículo o equipo de tu flota",
+  "addFirst": "Agregar Primer Equipo",
+  "stats": {
+    "total": "Total de Equipos",
+    "active": "Activos",
+    "maintenance": "En Mantenimiento",
+    "expiring": "Vencimientos Próximos",
+    "attention": "Requiere atención"
+  },
+  "status": {
+    "active": "Activo",
+    "maintenance": "Mantenimiento",
+    "inactive": "Inactivo",
+    "unknown": "Desconocido"
+  },
+  "overview": {
+    "title": "Resumen de Flota",
+    "subtitle": "Panel de Equipos",
+    "total": "Total",
+    "active": "Activos",
+    "maintenance": "Mantenim.",
+    "recent_equipment": "Equipos Recientes",
+    "upcoming_maintenance": "Próximos Mantenimientos",
+    "equipment_requires_attention": "{{count}} equipos requieren atención"
+  },
+  "maintenance": {
+    "title": "Cronograma de Mantenimiento",
+    "subtitle": "Próximos y Vencidos",
+    "overdue": "Vencidos",
+    "this_week": "Esta Semana",
+    "overdue_maintenance": "Mantenimientos Vencidos",
+    "equipment_requires_immediate_attention": "{{count}} equipos requieren atención inmediata",
+    "upcoming_maintenance": "Próximos Mantenimientos",
+    "view_full_calendar": "Ver Calendario Completo",
+    "priority": {
+      "overdue": "Vencido",
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Baja",
+      "normal": "Normal"
+    }
+  },
+  "locations": {
+    "active_locations": "Ubicaciones Activas"
+  },
+  "create": {
+    "title": "Agregar Nuevo Equipo",
+    "description": "Complete la información del nuevo equipo para agregarlo a la flota."
+  }
+}
