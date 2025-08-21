@@ -542,7 +542,7 @@ export function ExpenseTemplateDialog({
                     {/* Selectores de mes y año */}
                     <div className="grid grid-cols-2 gap-2">
                       <Select
-                        value={effectiveFrom ? formatMonthName(effectiveFrom) : ""}
+                        value={effectiveFrom ? formatMonthName(effectiveFrom).toLowerCase() : ""}
                         onValueChange={(monthName) => {
                           const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
                                             'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
@@ -638,7 +638,7 @@ export function ExpenseTemplateDialog({
                     {/* Selectores de mes y año */}
                     <div className="grid grid-cols-2 gap-2">
                       <Select
-                        value={effectiveUntil ? formatMonthName(effectiveUntil) : ""}
+                        value={effectiveUntil ? formatMonthName(effectiveUntil).toLowerCase() : ""}
                         onValueChange={(monthName) => {
                           const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
                                             'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
