@@ -3303,6 +3303,10 @@ export type Database = {
         Args: { period_id: string }
         Returns: Json
       }
+      generate_recurring_expenses_for_period_fixed: {
+        Args: { period_id: string }
+        Returns: Json
+      }
       get_companies_basic_info: {
         Args: { target_company_id?: string }
         Returns: {
