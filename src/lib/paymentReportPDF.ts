@@ -1090,20 +1090,42 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       console.log('🔗 URL del PDF creada:', pdfUrl);
       
-      // Crear documento HTML wrapper con título personalizado
+      // Crear documento HTML wrapper con título personalizado  
       const htmlContent = `
         <!DOCTYPE html>
         <html lang="es">
         <head>
           <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>${fileName.replace('.pdf', '')}</title>
           <style>
-            body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-            iframe { width: 100%; height: 100%; border: none; }
+            body, html { 
+              margin: 0; 
+              padding: 0; 
+              height: 100%; 
+              overflow: hidden; 
+              font-family: system-ui, -apple-system, sans-serif;
+            }
+            iframe { 
+              width: 100%; 
+              height: 100%; 
+              border: none; 
+            }
+            .fallback {
+              display: none;
+              padding: 20px;
+              text-align: center;
+            }
           </style>
+          <script>
+            document.title = '${fileName.replace('.pdf', '')}';
+          </script>
         </head>
         <body>
-          <iframe src="${pdfUrl}" type="application/pdf"></iframe>
+          <iframe src="${pdfUrl}" type="application/pdf" title="${fileName}"></iframe>
+          <div class="fallback">
+            <p>Si no puedes ver el PDF, <a href="${pdfUrl}" target="_blank">haz clic aquí</a></p>
+          </div>
         </body>
         </html>
       `;
@@ -1111,19 +1133,24 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
       const htmlUrl = URL.createObjectURL(htmlBlob);
       
-      // Intentar abrir el wrapper HTML primero
+      // Siempre usar el wrapper HTML con título personalizado
       try {
-        const newWindow = window.open(htmlUrl, '_blank');
+        const newWindow = window.open('about:blank', '_blank');
         if (newWindow) {
+          newWindow.document.write(htmlContent);
+          newWindow.document.close();
+          // Establecer el título después de escribir el contenido
+          newWindow.document.title = fileName.replace('.pdf', '');
           console.log('✅ PDF wrapper abierto en nueva ventana con título:', fileName);
         } else {
-          console.log('⚠️ Popup bloqueado, usando fallback directo...');
-          // Fallback directo al PDF si falla el popup
-          window.open(pdfUrl, '_blank');
+          console.log('⚠️ Popup bloqueado, usando data URI...');
+          // Fallback usando data URI para evitar el UUID
+          const dataUri = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
+          window.open(dataUri, '_blank');
         }
       } catch (error) {
         console.error('❌ Error abriendo PDF wrapper:', error);
-        // Fallback al método original
+        // Último fallback al PDF directo si todo falla
         window.open(pdfUrl, '_blank');
       }
       
