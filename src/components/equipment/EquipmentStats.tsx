@@ -9,7 +9,7 @@ interface EquipmentStatsProps {
 }
 
 export function EquipmentStats({ equipment = [] }: EquipmentStatsProps) {
-  const { t } = useTranslation('equipment');
+  const { t } = useTranslation(['common', 'equipment']);
 
   const stats = {
     total: equipment.length,
@@ -35,25 +35,25 @@ export function EquipmentStats({ equipment = [] }: EquipmentStatsProps) {
 
   const statCards = [
     {
-      title: t('stats.total'),
+      title: t('equipment.stats.total'),
       value: stats.total,
       icon: Truck,
       color: "blue",
     },
     {
-      title: t('stats.active'),
+      title: t('equipment.stats.active'),
       value: stats.active,
       icon: CheckCircle,
       color: "green",
     },
     {
-      title: t('stats.maintenance'),
+      title: t('equipment.stats.maintenance'),
       value: stats.maintenance,
       icon: Wrench,
       color: "yellow",
     },
     {
-      title: t('stats.expiring'),
+      title: t('equipment.stats.expiring'),
       value: stats.expiringSoon,
       icon: Calendar,
       color: stats.expiringSoon > 0 ? "red" : "gray",
@@ -75,7 +75,7 @@ export function EquipmentStats({ equipment = [] }: EquipmentStatsProps) {
             {stat.color === "red" && stat.value > 0 && (
               <Badge variant="destructive" className="mt-3 text-xs">
                 <AlertTriangle className="w-3 h-3 mr-1" />
-                {t('stats.attention')}
+                {t('equipment.stats.attention')}
               </Badge>
             )}
           </CardContent>
