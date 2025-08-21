@@ -24,12 +24,14 @@ import { Client, useDeleteClient } from "@/hooks/useClients";
 import { EditClientDialog } from "./EditClientDialog";
 import { ClientDetailDialog } from "./ClientDetailDialog";
 import { ClientDispatchersPopover } from "./ClientDispatchersPopover";
+import { useTranslation } from 'react-i18next';
 
 interface ClientsListProps {
   clients: Client[];
 }
 
 export function ClientsList({ clients }: ClientsListProps) {
+  const { t } = useTranslation('clients');
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
@@ -95,7 +97,7 @@ export function ClientsList({ clients }: ClientsListProps) {
                     </div>
                   </div>
                   <Badge variant={client.is_active ? "default" : "secondary"} className="text-xs">
-                    {client.is_active ? "Activo" : "Inactivo"}
+                    {client.is_active ? t('status.active') : t('status.inactive')}
                   </Badge>
                 </div>
                 
@@ -148,14 +150,14 @@ export function ClientsList({ clients }: ClientsListProps) {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleEdit(client)}>
                           <Edit className="h-4 w-4 mr-2" />
-                          Editar
+                          {t('actions_menu.edit')}
                         </DropdownMenuItem>
                         <DropdownMenuItem 
                           onClick={() => handleDelete(client)}
                           className="text-destructive"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
-                          Eliminar
+                          {t('actions_menu.delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -182,7 +184,7 @@ export function ClientsList({ clients }: ClientsListProps) {
                         )}
                       </div>
                       <Badge variant={client.is_active ? "default" : "secondary"} className="flex-shrink-0">
-                        {client.is_active ? "Activo" : "Inactivo"}
+                        {client.is_active ? t('status.active') : t('status.inactive')}
                       </Badge>
                     </div>
                     
@@ -227,7 +229,7 @@ export function ClientsList({ clients }: ClientsListProps) {
                     className="hidden md:flex"
                   >
                     <Eye className="h-4 w-4 mr-2" />
-                    Ver Detalles
+                    {t('actions_menu.view_details')}
                   </Button>
                   <Button
                     variant="outline"
@@ -247,14 +249,14 @@ export function ClientsList({ clients }: ClientsListProps) {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => handleEdit(client)}>
                         <Edit className="h-4 w-4 mr-2" />
-                        Editar
+                        {t('actions_menu.edit')}
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         onClick={() => handleDelete(client)}
                         className="text-destructive"
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
-                        Eliminar
+                        {t('actions_menu.delete')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -287,19 +289,18 @@ export function ClientsList({ clients }: ClientsListProps) {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogTitle>{t('confirm_delete_client.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente el cliente
-              "{clientToDelete?.name}" y todos sus datos asociados.
+              {t('confirm_delete_client.description', { clientName: clientToDelete?.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t('confirm_delete_client.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Eliminar
+              {t('confirm_delete_client.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

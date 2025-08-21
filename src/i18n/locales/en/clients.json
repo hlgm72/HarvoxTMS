@@ -69,5 +69,20 @@
   },
   "filters": {
     "title": "Smart Client Filters"
+  },
+  "actions_menu": {
+    "view_details": "View Details", 
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "labels": {
+    "domain": "Domain:",
+    "address": "Address:"
+  },
+  "confirm_delete_client": {
+    "title": "Are you sure?",
+    "description": "This action cannot be undone. Client \"{clientName}\" and all associated data will be permanently deleted.",
+    "cancel": "Cancel",
+    "delete": "Delete"
   }
 }

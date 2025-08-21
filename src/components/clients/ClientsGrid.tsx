@@ -25,12 +25,14 @@ import { EditClientDialog } from "./EditClientDialog";
 import { ClientDetailDialog } from "./ClientDetailDialog";
 import { ClientDispatchersPopover } from "./ClientDispatchersPopover";
 import { LogoMigrationDialog } from "./LogoMigrationDialog";
+import { useTranslation } from 'react-i18next';
 
 interface ClientsGridProps {
   clients: Client[];
 }
 
 export function ClientsGrid({ clients }: ClientsGridProps) {
+  const { t } = useTranslation('clients');
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
@@ -88,7 +90,7 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
                     </AvatarFallback>
                   </Avatar>
                   <Badge variant={client.is_active ? "default" : "secondary"} className="text-xs">
-                    {client.is_active ? "Activo" : "Inactivo"}
+                    {client.is_active ? t('status.active') : t('status.inactive')}
                   </Badge>
                 </div>
                 <DropdownMenu>
@@ -100,18 +102,18 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => handleView(client)}>
                       <Eye className="h-4 w-4 mr-2" />
-                      Ver Detalles
+                      {t('actions_menu.view_details')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleEdit(client)}>
                       <Edit className="h-4 w-4 mr-2" />
-                      Editar
+                      {t('actions_menu.edit')}
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => handleDelete(client)}
                       className="text-destructive"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
-                      Eliminar
+                      {t('actions_menu.delete')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -143,7 +145,7 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
               {client.email_domain && (
                 <div className="flex items-center gap-2 text-sm">
                   <Mail className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-muted-foreground">Dominio:</span>
+                  <span className="text-muted-foreground">{t('labels.domain')}</span>
                   <span className="truncate">{client.email_domain}</span>
                 </div>
               )}
@@ -151,7 +153,7 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
               {client.address && (
                 <div className="flex items-start gap-2 text-sm">
                   <MapPin className="h-3 w-3 text-muted-foreground mt-0.5" />
-                  <span className="text-muted-foreground">Dirección:</span>
+                  <span className="text-muted-foreground">{t('labels.address')}</span>
                   <span className="flex-1">{client.address}</span>
                 </div>
                 )}
@@ -167,7 +169,7 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
                   onClick={() => handleView(client)}
                 >
                   <Eye className="h-4 w-4 mr-2" />
-                  Ver Detalles
+                  {t('actions_menu.view_details')}
                 </Button>
               </div>
             </CardContent>
@@ -198,19 +200,18 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogTitle>{t('confirm_delete_client.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente el cliente
-              "{clientToDelete?.name}" y todos sus datos asociados.
+              {t('confirm_delete_client.description', { clientName: clientToDelete?.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t('confirm_delete_client.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Eliminar
+              {t('confirm_delete_client.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

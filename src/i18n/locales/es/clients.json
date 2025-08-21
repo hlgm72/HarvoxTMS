@@ -69,5 +69,20 @@
   },
   "filters": {
     "title": "Filtros Inteligentes de Clientes"
+  },
+  "actions_menu": {
+    "view_details": "Ver Detalles",
+    "edit": "Editar", 
+    "delete": "Eliminar"
+  },
+  "labels": {
+    "domain": "Dominio:",
+    "address": "Dirección:"
+  },
+  "confirm_delete_client": {
+    "title": "¿Estás seguro?",
+    "description": "Esta acción no se puede deshacer. Se eliminará permanentemente el cliente \"{clientName}\" y todos sus datos asociados.",
+    "cancel": "Cancelar",
+    "delete": "Eliminar"
   }
 }
