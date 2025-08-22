@@ -15,12 +15,19 @@ interface SendDocumentsRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  console.log("=== FUNCTION START ===");
+  console.log("Request method:", req.method);
+  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
+    console.log("CORS preflight - returning headers");
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log("=== PROCESSING POST REQUEST ===");
+  
   try {
+    console.log("=== STEP 1: CHECKING ENVIRONMENT ===");
     // Initialize clients
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -39,11 +46,14 @@ const handler = async (req: Request): Promise<Response> => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const resend = new Resend(resendApiKey);
 
+    console.log("=== STEP 2: PARSING REQUEST ===");
     // Get request data
     const { recipients, subject, message, documentIds }: SendDocumentsRequest = await req.json();
 
+    console.log("=== STEP 3: REQUEST PARSED ===");
     console.log("Sending documents email:", { recipients, subject, documentIds });
 
+    console.log("=== STEP 4: CHECKING AUTH ===");
     // Get the authenticated user
     const authHeader = req.headers.get("Authorization");
     console.log("Auth header present:", !!authHeader);
@@ -356,7 +366,9 @@ const handler = async (req: Request): Promise<Response> => {
     );
 
   } catch (error: any) {
+    console.log("=== ERROR CAUGHT ===");
     console.error("Error in send-documents-email function:", error);
+    console.error("Error stack:", error.stack);
     
     return new Response(
       JSON.stringify({
