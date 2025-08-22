@@ -75,7 +75,7 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
 
   return (
     <>
-      <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
         {clients.map((client) => {
           console.log('🔍 Cliente en grid:', client.name, 'MC:', client.mc_number, 'DOT:', client.dot_number);
           return (
