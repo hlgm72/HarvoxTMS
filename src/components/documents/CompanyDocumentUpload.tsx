@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { formatDateInUserTimeZone, formatDateAuto, formatDateTimeAuto, formatPrettyDate } from '@/lib/dateFormatting';
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useFleetNotifications } from "@/components/notifications";
-import { Upload, FileText, Calendar as CalendarIcon2, AlertTriangle, Copy, Replace } from "lucide-react";
+import { Upload, FileText, Copy, Replace } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface PredefinedDocumentType {
@@ -326,7 +326,7 @@ export function CompanyDocumentUpload({
         
         {selectedTypeInfo?.critical && (
           <p className="text-sm text-amber-600 flex items-center space-x-1">
-            <Calendar className="w-4 h-4" />
+            <AlertTriangle className="w-4 h-4" />
             <span>Este es un documento crítico para operaciones</span>
           </p>
         )}
