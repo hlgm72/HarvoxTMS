@@ -85,7 +85,7 @@ const handler = async (req: Request): Promise<Response> => {
       .from("user_company_roles")
       .select(`
         company_id,
-        companies (
+        companies!user_company_roles_company_id_fkey (
           name,
           email,
           owner_email,
