@@ -154,7 +154,11 @@ export function DocumentCard({
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className={`hover:shadow-md transition-shadow ${
+      expiryStatus === "expired" || expiryStatus === "expiring" 
+        ? "border-red-300 bg-red-50/30" 
+        : ""
+    }`}>
       <div className="flex gap-4 p-4">
         {/* Left column - Document Info */}
         <div className="flex-1 space-y-3">
