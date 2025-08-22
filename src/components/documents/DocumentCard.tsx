@@ -35,6 +35,7 @@ interface CompanyDocument {
   document_type: string;
   file_name: string;
   file_url: string;
+  issue_date?: string;
   expires_at?: string;
   created_at: string;
   file_size?: number;
@@ -252,15 +253,26 @@ export function DocumentCard({
       </CardHeader>
 
       <CardContent className="pt-0 space-y-3">
-        {/* Expiry Date */}
-        {document.expires_at && (
-          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-            <Calendar className="h-3 w-3" />
-            <span>
-              Vence: {formatExpiryDate(document.expires_at)}
-            </span>
-          </div>
-        )}
+        {/* Document Dates */}
+        <div className="space-y-1">
+          {document.issue_date && (
+            <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+              <Calendar className="h-3 w-3" />
+              <span>
+                Emitido: {formatDateOnly(document.issue_date)}
+              </span>
+            </div>
+          )}
+          
+          {document.expires_at && (
+            <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+              <Calendar className="h-3 w-3" />
+              <span>
+                Vence: {formatExpiryDate(document.expires_at)}
+              </span>
+            </div>
+          )}
+        </div>
 
         {/* File Info */}
         <div className="space-y-1 text-xs text-muted-foreground">

@@ -68,6 +68,7 @@ interface CompanyDocument {
   document_type: string;
   file_name: string;
   file_url: string;
+  issue_date?: string;
   expires_at?: string;
   created_at: string;
   file_size?: number;
@@ -90,7 +91,7 @@ interface DocumentTableProps {
   isArchived?: boolean;
 }
 
-type SortField = 'file_name' | 'document_type' | 'created_at' | 'expires_at' | 'file_size';
+type SortField = 'file_name' | 'document_type' | 'created_at' | 'issue_date' | 'expires_at' | 'file_size';
 type SortDirection = 'asc' | 'desc';
 
 export function DocumentTable({
@@ -218,7 +219,7 @@ export function DocumentTable({
         bValue = getDocumentTypeInfo(b.document_type).label;
       }
 
-      if (sortField === 'created_at' || sortField === 'expires_at') {
+      if (sortField === 'created_at' || sortField === 'expires_at' || sortField === 'issue_date') {
         aValue = new Date(aValue || 0);
         bValue = new Date(bValue || 0);
       }
@@ -329,6 +330,15 @@ export function DocumentTable({
               <TableHead>Estado</TableHead>
               <TableHead 
                 className="cursor-pointer hover:bg-muted/50"
+                onClick={() => handleSort('issue_date')}
+              >
+                <div className="flex items-center gap-2">
+                  Fecha de emisión
+                  {getSortIcon('issue_date')}
+                </div>
+              </TableHead>
+              <TableHead 
+                className="cursor-pointer hover:bg-muted/50"
                 onClick={() => handleSort('expires_at')}
               >
                 <div className="flex items-center gap-2">
@@ -363,7 +373,7 @@ export function DocumentTable({
                 {/* Group header */}
                 {groupBy !== 'none' && group.title && (
                   <TableRow className="bg-muted/30">
-                    <TableCell colSpan={8} className="font-medium">
+                    <TableCell colSpan={9} className="font-medium">
                       {group.title} ({group.documents.length})
                     </TableCell>
                   </TableRow>
@@ -406,6 +416,18 @@ export function DocumentTable({
                       </TableCell>
                       <TableCell>
                         {getExpiryBadge(expiryStatus)}
+                      </TableCell>
+                      <TableCell>
+                        {document.issue_date ? (
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm">
+                              {formatDateOnly(document.issue_date)}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">Sin fecha</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         {document.expires_at ? (
